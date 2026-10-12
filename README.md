@@ -15,7 +15,7 @@ specification is imported and founder-approved.
 
 ### Stack
 
-- Expo SDK 52 · React Native 0.76 · TypeScript (strict)
+- Expo SDK 57 · React Native 0.86 · React 19.2 · TypeScript 6 (strict)
 - Expo Router (file-based routing, typed routes)
 - NativeWind v4 + Tailwind CSS
 - React Native Reanimated + Gesture Handler
