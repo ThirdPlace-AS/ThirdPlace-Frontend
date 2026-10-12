@@ -24,7 +24,7 @@
 | Env/secrets checklist           | DONE — `.env.example` (EXPO*PUBLIC*\* only, no secrets)                                                     |
 | Test infrastructure baseline    | DONE — jest-expo + one passing unit test                                                                    |
 | Lint / format / typecheck       | DONE — ESLint (expo), Prettier, `tsc --noEmit` strict                                                       |
-| Progressive CI (partial Gate 7) | DONE — lint/typecheck/unit on PR; generated-client-drift is a no-op placeholder                             |
+| Progressive CI (partial Gate 7) | GREEN — lint/typecheck/unit pass on PR #1 (run 38288528478); generated-client-drift is a no-op placeholder  |
 | Screen/route inventory          | STUB — `docs/SCREEN_INVENTORY.md` (API column = BLOCKED_CONTRACT_GAP)                                       |
 
 ## Canonical registry checks (status at Phase 0)

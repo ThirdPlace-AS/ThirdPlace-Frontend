@@ -67,7 +67,7 @@
       "resolution_trigger": "Read-only audit plus actual commit/CI/native checks.",
       "safe_parallel_work": "Prioritized plan and implementation ledger.",
       "status": "PARTIALLY_ADDRESSED",
-      "note": "This Phase 0 adds real repo scaffolding and a progressive CI pipeline (lint/typecheck/unit). Full closure requires the contract-bearing CI (Gate 7) which remains blocked by TP-BLOCK-001/002."
+      "note": "This Phase 0 added real repo scaffolding and a progressive CI pipeline (lint/typecheck/unit) — now GREEN on PR #1 (run 38288528478). Full closure requires the contract-bearing CI (Gate 7) which remains blocked by TP-BLOCK-001/002."
     }
   ],
   "conflicts_not_to_silently_settle": [
