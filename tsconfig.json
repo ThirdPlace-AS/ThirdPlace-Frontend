@@ -9,7 +9,11 @@
     "baseUrl": ".",
     "paths": {
       "@/*": ["./src/*"]
-    }
+    },
+    // baseUrl is required for Expo Metro's "@/*" path resolution; it is
+    // deprecated in TS 6 (removed in 7). Silence the deprecation until the
+    // resolver no longer needs baseUrl.
+    "ignoreDeprecations": "6.0"
   },
   "include": [
     "**/*.ts",
