@@ -1,0 +1,89 @@
+{
+  "report_id": "TP-PHASE0-BLOCKERS-FRONTEND",
+  "generated": "2026-10-12",
+  "source_package": "TP-SOT-v1.1.0-2026-10-12",
+  "global_disposition": "BLOCKED_NOT_V22_CERTIFIED",
+  "scope_note": "Phase 0 authorizes non-contract scaffolding only. No public API, canonical entity, DTO, state machine, event, migration schema, RLS policy, or monetization rule is defined in this repo. UI surfaces are not wired to any API.",
+  "blockers": [
+    {
+      "id": "TP-BLOCK-001",
+      "severity": "critical",
+      "domain": "source-evidence",
+      "truth": "Approved V2.2 requirements/contract primary files are not available in the accessible archive.",
+      "resolution_trigger": "Import founder-approved V2.2 and reconcile entity/API/state/event/UI contracts; hash sources.",
+      "safe_parallel_work": "Read-only inventory, design tokens, greenfield CI scaffolding.",
+      "status": "OPEN"
+    },
+    {
+      "id": "TP-BLOCK-002",
+      "severity": "critical",
+      "domain": "test-coverage",
+      "truth": "The exact V2.2 435 scenario IDs, cases, assertions and domain mappings are absent (0 recovered).",
+      "resolution_trigger": "Import the real registry and establish an automated coverage matrix with status per ID.",
+      "safe_parallel_work": "Isolated fixtures, test runners and sample tests without claiming V2.2 coverage.",
+      "status": "OPEN"
+    },
+    {
+      "id": "TP-BLOCK-003",
+      "severity": "high",
+      "domain": "governance",
+      "truth": "Gates 1-4 reported locked but exact numbered definitions/acceptance evidence are absent.",
+      "resolution_trigger": "Recover founder-approved verbatim text for Gates 1-4; add original hash/record.",
+      "safe_parallel_work": "Implement verifiable Gate 5-8 requirements incrementally.",
+      "status": "OPEN"
+    },
+    {
+      "id": "TP-BLOCK-004",
+      "severity": "critical",
+      "domain": "api",
+      "truth": "Archived Oct 1 checkpoint had 151 ops / 121 paths, only 42 implementation-ready, 109 blocked. Global API_LOCKED=false.",
+      "resolution_trigger": "Field DTO/authorization/error/client/contract closure against approved V2.2.",
+      "safe_parallel_work": "Route-independent mobile screens; approved field-ready slices only.",
+      "status": "OPEN"
+    },
+    {
+      "id": "TP-BLOCK-005",
+      "severity": "critical",
+      "domain": "database",
+      "truth": "Historical entity counts conflict (140/147/164/176/240/241); the 249 ledger rows are NOT 249 tables.",
+      "resolution_trigger": "Canonical named inventory and reviewed migrations with RLS.",
+      "safe_parallel_work": "Schema diff / read-only inventory; independent migration tooling (empty).",
+      "status": "OPEN"
+    },
+    {
+      "id": "TP-BLOCK-006",
+      "severity": "high",
+      "domain": "commercial",
+      "truth": "Checkout/commission, external links, booking, financial models and provider policies need legal/provider validation before production.",
+      "resolution_trigger": "Approved policy decisions and compliance review per market/provider.",
+      "safe_parallel_work": "Architecture adapters; non-production mocked UI only.",
+      "status": "OPEN"
+    },
+    {
+      "id": "TP-BLOCK-007",
+      "severity": "high",
+      "domain": "implementation",
+      "truth": "No repo changes or live CI results were verified by the package build.",
+      "resolution_trigger": "Read-only audit plus actual commit/CI/native checks.",
+      "safe_parallel_work": "Prioritized plan and implementation ledger.",
+      "status": "PARTIALLY_ADDRESSED",
+      "note": "This Phase 0 added real repo scaffolding and a progressive CI pipeline (lint/typecheck/unit) — now GREEN on PR #1 (run 38288528478). Full closure requires the contract-bearing CI (Gate 7) which remains blocked by TP-BLOCK-001/002."
+    }
+  ],
+  "conflicts_not_to_silently_settle": [
+    "Two-repo topology (ThirdPlace-Frontend + ThirdPlace-Backend) is founder-locked (TP-D-006); this is NOT a monorepo.",
+    "Backend baseline is Python/FastAPI/Celery/Redis. An earlier Node.js direction must NOT silently replace it (CLAUDE.md:10, OPEN_ISSUES:28).",
+    "Unresolved entity names pending canonical inventory: swipe_sessions, organization_memberships, idempotency_records, event_consumer_checkpoints.",
+    "Rejected entity: creator_payables (must not be added without new canonical founder approval).",
+    "An archived structural OpenAPI candidate (151/121) is not proof of field-level readiness; do not implement blocked operations as production routes."
+  ],
+  "provenance_of_supplied_materials": [
+    {
+      "file": "ThirdPlace_V2.2_RECONCILIATION_AUDIT_2026-10-12.md",
+      "supplied": "2026-10-12 (session)",
+      "classification": "REFERENCE / AUDIT",
+      "determination": "This is a reconciliation AUDIT that re-confirms the V2.2 primary spec, 435 scenarios and Gates 1-4 are still absent (0 recovered). It is NOT the authoritative V2.2 source and does not unblock any contract.",
+      "sha256": "994e768ffb90fd7efb1e3a04e5a99ebdcb0374f39baa78ffcae352830adee3b8"
+    }
+  ]
+}

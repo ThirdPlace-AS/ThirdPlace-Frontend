@@ -1,0 +1,42 @@
+name: frontend-ci
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  quality:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install
+        run: npm ci
+
+      - name: Prettier
+        run: npm run format
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Unit tests
+        run: npm test
+
+      # Generated-client drift check — SCAFFOLD ONLY.
+      # Activates when a V2.2 OpenAPI contract is imported and the typed
+      # client is generated. Until then there is no contract to drift from
+      # (BLOCKED_CONTRACT_GAP), so this is an explicit no-op placeholder.
+      - name: Generated client drift (placeholder)
+        run: echo "No V2.2 contract imported yet — client drift check not applicable (BLOCKED_CONTRACT_GAP)."
