@@ -5,7 +5,12 @@ import { Platform, Text, View } from "react-native";
 import type { MockPlace } from "@/fixtures";
 import { env } from "@/lib/env";
 
-type MapProps = { places: MockPlace[]; onSelect?: (p: MockPlace) => void };
+type MapProps = {
+  places: MockPlace[];
+  onSelect?: (p: MockPlace) => void;
+  // Bump to recenter the real map on the MOCK demo location (ignored by SoftMap).
+  recenterSignal?: number;
+};
 
 // Native availability and token presence are SEPARATE concerns:
 //   - nativeMapAvailable: the @rnmapbox/maps native module is compiled in. True
@@ -61,6 +66,7 @@ function SoftMap() {
 export function MapCanvas({
   places,
   onSelect,
+  recenterSignal,
   height = 160,
   fill = false,
 }: MapProps & { height?: number; fill?: boolean }) {
@@ -75,7 +81,15 @@ export function MapCanvas({
       }
       style={fill ? undefined : { height }}
     >
-      {RealMap ? <RealMap places={places} onSelect={onSelect} /> : <SoftMap />}
+      {RealMap ? (
+        <RealMap
+          places={places}
+          onSelect={onSelect}
+          recenterSignal={recenterSignal}
+        />
+      ) : (
+        <SoftMap />
+      )}
     </View>
   );
 }
