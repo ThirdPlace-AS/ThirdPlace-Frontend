@@ -1,0 +1,189 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>ThirdPlace Tokens</title>
+    <style>
+      :root {
+        font-family:
+          system-ui,
+          -apple-system,
+          Segoe UI,
+          Roboto,
+          sans-serif;
+      }
+      body {
+        margin: 0;
+        padding: 24px;
+        background: #fafafa;
+        color: #202020;
+      }
+      h1 {
+        font-size: 20px;
+        margin: 0 0 4px;
+      }
+      p.sub {
+        color: #808080;
+        margin: 0 0 20px;
+      }
+      .cols {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+      }
+      @media (max-width: 720px) {
+        .cols {
+          grid-template-columns: 1fr;
+        }
+      }
+      .card {
+        border: 1px solid #e0e0e0;
+        border-radius: 12px;
+        padding: 16px;
+        background: #fff;
+      }
+      .card h2 {
+        font-size: 14px;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+        color: #808080;
+        margin: 0 0 12px;
+      }
+      .tag {
+        display: inline-block;
+        font-size: 11px;
+        padding: 2px 8px;
+        border-radius: 9999px;
+        margin-left: 8px;
+        vertical-align: middle;
+      }
+      .tag.old {
+        background: #f0f0f0;
+        color: #808080;
+      }
+      .tag.new {
+        background: #ffe5e5;
+        color: #d80000;
+      }
+      .swatches {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+        gap: 10px;
+      }
+      .sw {
+        border: 1px solid #e0e0e0;
+        border-radius: 10px;
+        overflow: hidden;
+        font-size: 12px;
+      }
+      .chip {
+        height: 52px;
+      }
+      .meta {
+        padding: 6px 8px;
+      }
+      .meta b {
+        display: block;
+      }
+      .meta code {
+        color: #808080;
+      }
+      .buttons {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-top: 8px;
+      }
+      .btn {
+        padding: 12px 20px;
+        border-radius: 12px;
+        font-weight: 600;
+        font-size: 14px;
+        border: 1px solid transparent;
+      }
+      .btn.ember {
+        background: #d80000;
+        color: #fff;
+      }
+      .btn.ink {
+        background: #202020;
+        color: #fff;
+      }
+      .btn.secondary {
+        background: #f0f0f0;
+        color: #202020;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>ThirdPlace — Design Token Comparison</h1>
+    <p class="sub">
+      Placeholder (previous guess) vs Provisional (extracted from
+      ThirdPlace_All_Screens.pdf, 2026-10-12). Provisional = NOT
+      founder-approved.
+    </p>
+
+    <div class="cols">
+      <div class="card">
+        <h2>Placeholder <span class="tag old">was</span></h2>
+        <div class="swatches" id="old"></div>
+      </div>
+      <div class="card">
+        <h2>Provisional <span class="tag new">extracted</span></h2>
+        <div class="swatches" id="new"></div>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top: 20px">
+      <h2>Primary button styles (from the real screens)</h2>
+      <div class="buttons">
+        <span class="btn ember">Opprett konto</span>
+        <span class="btn ink">Logg inn</span>
+        <span class="btn secondary">Fortsett med Google</span>
+      </div>
+      <p class="sub" style="margin-top: 12px">
+        Ember red = acquisition CTAs &amp; links · Ink = returning/confirm
+        actions · Grey pill = secondary.
+      </p>
+    </div>
+
+    <script>
+      const OLD = {
+        ink: "#0B0B0F",
+        surface: "#15151C",
+        muted: "#6B6B7B",
+        line: "#2A2A36",
+        accent: "#6C5CE7",
+        onAccent: "#FFFFFF",
+        success: "#2ECC71",
+        warning: "#F1C40F",
+        danger: "#E74C3C",
+      };
+      const NEW = {
+        background: "#F8F8F8",
+        surface: "#FFFFFF",
+        surfaceMuted: "#F0F0F0",
+        line: "#E0E0E0",
+        ink: "#202020",
+        muted: "#6B6B6B",
+        ember: "#D80000",
+        success: "#387850",
+        danger: "#B5342B",
+        warning: "#B05008",
+      };
+      function render(id, obj) {
+        const el = document.getElementById(id);
+        el.innerHTML = Object.entries(obj)
+          .map(
+            ([k, v]) =>
+              `<div class="sw"><div class="chip" style="background:${v}"></div>` +
+              `<div class="meta"><b>${k}</b><code>${v}</code></div></div>`,
+          )
+          .join("");
+      }
+      render("old", OLD);
+      render("new", NEW);
+    </script>
+  </body>
+</html>
