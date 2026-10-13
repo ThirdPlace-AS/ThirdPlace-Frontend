@@ -20,7 +20,7 @@ const colors = {
   // Text / ink
   ink: "#202020", // primary text; also the "ink" primary button (sign-in/confirm)
   onInk: "#FFFFFF",
-  muted: "#808080", // secondary text / placeholders
+  muted: "#6B6B6B", // secondary text / placeholders (WCAG AA ~5:1 on #F8F8F8)
 
   // Brand — "Ember" red (logo, primary CTAs, inline links)
   ember: "#D80000",

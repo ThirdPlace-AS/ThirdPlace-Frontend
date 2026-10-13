@@ -21,7 +21,7 @@ master spec §Phase 0 — "visual specification, not a database or API source of
 | `line`         | `#E0E0E0` | Borders, dividers                                        | High              |
 | `ink`          | `#202020` | Primary text; **ink** primary button (sign-in / confirm) | High              |
 | `onInk`        | `#FFFFFF` | Text/icon on ink                                         | High              |
-| `muted`        | `#808080` | Secondary text, placeholders                             | High              |
+| `muted`        | `#6B6B6B` | Secondary text, placeholders (WCAG AA ~5:1 on `#F8F8F8`) | High              |
 | `ember`        | `#D80000` | Brand red — logo, primary CTAs, inline links             | High              |
 | `onEmber`      | `#FFFFFF` | Text/icon on Ember                                       | High              |
 | `success`      | `#387850` | Green secondary (maps / nature / success)                | Medium            |
@@ -49,9 +49,11 @@ Observed histogram leaders: `#F8F8F8` (bg) ≫ `#202020` (ink) > greys (`#F0F0F0
 
 ## Typography (PROVISIONAL — family UNVERIFIED)
 
-Rendered screens show a single geometric/humanist sans with weight-based hierarchy. The family
-name **cannot be reliably read from a rendered PDF** — confirm against the design source before
-coding type tokens. Provisional scale (px):
+**TEMPORARY: platform system fonts** (founder decision, Phase 0.3) — iOS San Francisco, Android
+Roboto. No custom font is loaded (`src/theme/typography.ts`). The rendered screens show a single
+geometric/humanist sans with weight-based hierarchy, but the family name **cannot be reliably
+read from a rendered PDF** — confirm against the design source before loading a custom typeface.
+Provisional scale (px):
 
 | Role                   | Size  | Weight                                |
 | ---------------------- | ----- | ------------------------------------- |
