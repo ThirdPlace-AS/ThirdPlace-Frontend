@@ -7,14 +7,23 @@ import { env } from "@/lib/env";
 
 type MapProps = { places: MockPlace[]; onSelect?: (p: MockPlace) => void };
 
-// Expo Go reports executionEnvironment "storeClient" — the Mapbox native module
-// is not present there, nor on web. We only load the real map in a native
-// dev/standalone build that also has a token. Otherwise we show a SoftMap
-// placeholder. The require is gated so @rnmapbox/maps is never evaluated in
-// Expo Go / web (avoids a native-module crash).
+// Native availability and token presence are SEPARATE concerns:
+//   - nativeMapAvailable: the @rnmapbox/maps native module is compiled in. True
+//     only in a native dev/standalone build (EXPO_PUBLIC_USE_NATIVE_MAP=1, the
+//     same flag that keeps the real module in the Metro bundle), never in Expo
+//     Go (executionEnvironment "storeClient") or on web.
+//   - env.mapboxToken: the public pk.* token needed to actually render tiles.
+// The require is gated on nativeMapAvailable so @rnmapbox/maps is never evaluated
+// in Expo Go / web (avoids a native-module crash). When the native module is
+// available but the token is missing we still fall back to SoftMap — we never
+// crash on a missing token.
 const isExpoGo =
   Constants.executionEnvironment === ExecutionEnvironment.StoreClient;
-const canUseMapbox = Platform.OS !== "web" && !isExpoGo && !!env.mapboxToken;
+const nativeMapAvailable =
+  Platform.OS !== "web" &&
+  !isExpoGo &&
+  process.env.EXPO_PUBLIC_USE_NATIVE_MAP === "1";
+const canUseMapbox = nativeMapAvailable && !!env.mapboxToken;
 
 let RealMap: ComponentType<MapProps> | null = null;
 if (canUseMapbox) {

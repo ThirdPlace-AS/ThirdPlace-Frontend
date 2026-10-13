@@ -40,3 +40,40 @@ jobs:
       # (BLOCKED_CONTRACT_GAP), so this is an explicit no-op placeholder.
       - name: Generated client drift (placeholder)
         run: echo "No V2.2 contract imported yet — client drift check not applicable (BLOCKED_CONTRACT_GAP)."
+
+  # Bundle/export smoke for the supported, device-free configs. CI does NOT run a
+  # native build, so this catches Metro/stub/entry breakage that lint+typecheck
+  # miss. It runs with NO native flag and NO token — the stub path (Expo Go / web
+  # config). A native Mapbox build is intentionally out of scope here.
+  bundle:
+    runs-on: ubuntu-latest
+    needs: quality
+    env:
+      # Explicitly token-less and non-native so the @rnmapbox stub is active.
+      EXPO_PUBLIC_MAPBOX_TOKEN: ""
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install
+        run: npm ci
+
+      - name: Expo doctor
+        run: npx expo-doctor
+
+      - name: Export web bundle (stub path)
+        run: npx expo export -p web --output-dir dist-web
+
+      - name: Export android JS bundle (stub path)
+        run: npx expo export -p android --output-dir dist-android
+
+      - name: Assert no secret (sk.*) token in exported bundles
+        run: |
+          if grep -rIl --include='*.js' -E 'sk\.[A-Za-z0-9._-]{20,}' dist-web dist-android; then
+            echo "::error::A secret sk.* token leaked into an exported bundle"; exit 1
+          fi
+          echo "No sk.* token found in exported bundles."
