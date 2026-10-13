@@ -1,42 +1,57 @@
-// Design tokens — PLACEHOLDER baseline for Phase 0 scaffolding.
+// Design tokens — PROVISIONAL (extracted 2026-10-12), NOT founder-approved.
 //
-// These are neutral development placeholders so the styling pipeline
-// (NativeWind + Tailwind) is wired and testable. They are NOT the
-// authoritative ThirdPlace brand values. The real palette/spacing/scale
-// must be extracted from DESIGN/ThirdPlace_All_Screens.pdf (visual reference,
-// per master spec §Phase 0) before any UI is treated as design-approved.
+// Values were extracted from DESIGN/ThirdPlace_All_Screens.pdf (the visual screen
+// reference, per master spec §Phase 0) by rendering all 28 pages and sampling the
+// colour histogram, then confirming usage visually. They are a faithful FIRST
+// APPROXIMATION for founder review — see docs/design/DESIGN_TOKENS_PROVISIONAL.md
+// and docs/design/tokens-comparison.html. Do NOT treat these as final brand
+// values; the design system source (Figma) is the authority once confirmed.
 //
-// CommonJS so tailwind.config.js can require() it; re-exported typed from
-// src/theme/index.ts for app code.
+// CommonJS so tailwind.config.js can require() it; typed re-export in index.ts.
 
 /** @type {Record<string, string>} */
 const colors = {
-  // placeholder neutrals
-  ink: "#0B0B0F",
-  surface: "#15151C",
-  muted: "#6B6B7B",
-  line: "#2A2A36",
-  // placeholder accent — replace from design system
-  accent: "#6C5CE7",
-  onAccent: "#FFFFFF",
-  // status placeholders
-  success: "#2ECC71",
-  warning: "#F1C40F",
-  danger: "#E74C3C",
+  // Surfaces (light theme)
+  background: "#F8F8F8", // app background
+  surface: "#FFFFFF", // cards / sheets / inputs
+  surfaceMuted: "#F0F0F0", // secondary buttons / subtle fills
+  line: "#E0E0E0", // borders / dividers
+
+  // Text / ink
+  ink: "#202020", // primary text; also the "ink" primary button (sign-in/confirm)
+  onInk: "#FFFFFF",
+  muted: "#6B6B6B", // secondary text / placeholders (WCAG AA ~5:1 on #F8F8F8)
+
+  // Brand — "Ember" red (logo, primary CTAs, inline links)
+  ember: "#D80000",
+  onEmber: "#FFFFFF",
+
+  // Secondary accent — green (maps / nature / success surfaces)
+  success: "#387850",
+  onSuccess: "#FFFFFF",
+
+  // Status (LOW confidence — confirm with design source)
+  danger: "#B5342B",
+  warning: "#B05008",
 };
 
 /** @type {Record<string, string>} */
 const radius = {
   none: "0px",
-  sm: "6px",
-  md: "12px",
-  lg: "20px",
-  full: "9999px",
+  sm: "8px",
+  md: "12px", // primary buttons / inputs
+  lg: "20px", // cards / logo mark
+  full: "9999px", // pill chips
 };
 
 /** @type {Record<string, string>} */
 const spacing = {
-  gutter: "16px",
+  xs: "4px",
+  sm: "8px",
+  md: "12px",
+  gutter: "16px", // screen side padding
+  lg: "20px",
+  xl: "24px",
 };
 
 module.exports = { colors, radius, spacing };
