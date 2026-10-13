@@ -3,6 +3,8 @@
 // BLOCKED_CONTRACT_GAP: none of this is real data, a canonical entity, or an API
 // shape. It exists solely to render the visual shell. No field here implies an
 // approved schema/DTO. Real data arrives only with the authoritative V2.2 contract.
+// `coord` values are MOCK demo points near Oslo for map markers — NOT authoritative
+// places or real geodata.
 
 export const PLACE_CATEGORIES = [
   "Alle",
@@ -19,6 +21,7 @@ export type MockPlace = {
   category: Exclude<PlaceCategory, "Alle">;
   distance: string;
   distanceM: number;
+  coord: [number, number]; // [lng, lat] — MOCK demo point
   blurb: string;
   rating: number;
   reviews: number;
@@ -34,6 +37,7 @@ export const places: MockPlace[] = [
     category: "Kafé",
     distance: "120 m",
     distanceM: 120,
+    coord: [10.7579, 59.9227],
     blurb: "Lun nabolagskafé med spesialkaffe.",
     rating: 4.6,
     reviews: 128,
@@ -48,6 +52,7 @@ export const places: MockPlace[] = [
     category: "Bokcafé",
     distance: "450 m",
     distanceM: 450,
+    coord: [10.7605, 59.925],
     blurb: "Bøker, te og stille kroker.",
     rating: 4.8,
     reviews: 86,
@@ -61,6 +66,7 @@ export const places: MockPlace[] = [
     category: "Vinbar",
     distance: "800 m",
     distanceM: 800,
+    coord: [10.751, 59.9269],
     blurb: "Naturvin og småretter.",
     rating: 4.4,
     reviews: 203,
@@ -75,6 +81,7 @@ export const places: MockPlace[] = [
     category: "Verksted",
     distance: "1.1 km",
     distanceM: 1100,
+    coord: [10.767, 59.919],
     blurb: "Fiks sykkelen mens du venter.",
     rating: 4.9,
     reviews: 54,
@@ -84,6 +91,9 @@ export const places: MockPlace[] = [
       "Lite verksted drevet av entusiaster. Kaffe mens du venter på dekkskiftet.",
   },
 ];
+
+// Map default camera center (mock — central Oslo).
+export const MAP_CENTER: [number, number] = [10.758, 59.9227];
 
 export type MockSwipeCard = {
   id: string;
