@@ -29,4 +29,9 @@ export const env = {
     process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY,
     "EXPO_PUBLIC_SUPABASE_ANON_KEY",
   ),
+  /** Public Mapbox access token (pk.*). Enables the real map in a dev/EAS build. */
+  mapboxToken: pick(
+    process.env.EXPO_PUBLIC_MAPBOX_TOKEN,
+    "EXPO_PUBLIC_MAPBOX_TOKEN",
+  ),
 } as const;
