@@ -15,17 +15,17 @@
 
 ## What Phase 0 established in this repo
 
-| Deliverable                     | State                                                                                                       |
-| ------------------------------- | ----------------------------------------------------------------------------------------------------------- |
-| Repository structure baseline   | DONE — `app/`, `src/{features,components,services/api,stores,hooks,lib,types,constants,theme}/`, `tests/`   |
-| Stack baseline                  | DONE — Expo 52, RN 0.76, TS strict, Expo Router, NativeWind v4, Reanimated, Gesture Handler, TanStack Query |
-| Design tokens                   | PLACEHOLDER — `src/theme/tokens.js`; real values to be extracted from `DESIGN/ThirdPlace_All_Screens.pdf`   |
-| API client                      | SHELL ONLY — TanStack Query client, zero endpoints                                                          |
-| Env/secrets checklist           | DONE — `.env.example` (EXPO*PUBLIC*\* only, no secrets)                                                     |
-| Test infrastructure baseline    | DONE — jest-expo + one passing unit test                                                                    |
-| Lint / format / typecheck       | DONE — ESLint (expo), Prettier, `tsc --noEmit` strict                                                       |
-| Progressive CI (partial Gate 7) | GREEN — lint/typecheck/unit pass on PR #1 (run 38288528478); generated-client-drift is a no-op placeholder  |
-| Screen/route inventory          | STUB — `docs/SCREEN_INVENTORY.md` (API column = BLOCKED_CONTRACT_GAP)                                       |
+| Deliverable                     | State                                                                                                                          |
+| ------------------------------- | ------------------------------------------------------------------------------------------------------------------------------ |
+| Repository structure baseline   | DONE — `app/`, `src/{features,components,services/api,stores,hooks,lib,types,constants,theme}/`, `tests/`                      |
+| Stack baseline                  | DONE — Expo 57, RN 0.86, React 19.2, TS 6 strict, Expo Router, NativeWind 4.2.7, Reanimated 4, Gesture Handler, TanStack Query |
+| Design tokens                   | PLACEHOLDER — `src/theme/tokens.js`; real values to be extracted from `DESIGN/ThirdPlace_All_Screens.pdf`                      |
+| API client                      | SHELL ONLY — TanStack Query client, zero endpoints                                                                             |
+| Env/secrets checklist           | DONE — `.env.example` (EXPO*PUBLIC*\* only, no secrets)                                                                        |
+| Test infrastructure baseline    | DONE — jest-expo + one passing unit test                                                                                       |
+| Lint / format / typecheck       | DONE — ESLint (expo), Prettier, `tsc --noEmit` strict                                                                          |
+| Progressive CI (partial Gate 7) | GREEN — lint/typecheck/unit pass on PR #1 (run 38288528478); generated-client-drift is a no-op placeholder                     |
+| Screen/route inventory          | STUB — `docs/SCREEN_INVENTORY.md` (API column = BLOCKED_CONTRACT_GAP)                                                          |
 
 ## Canonical registry checks (status at Phase 0)
 
