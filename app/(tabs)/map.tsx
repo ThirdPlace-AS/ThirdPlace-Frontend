@@ -1,20 +1,16 @@
 import { useMemo, useState } from "react";
 import { FlatList, Pressable, Text, View } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-import { Card } from "@/components/Card";
 import { MapCanvas } from "@/components/map/MapCanvas";
 import { PlaceDetailSheet } from "@/components/PlaceDetailSheet";
 import { SearchBar } from "@/components/SearchBar";
-import { EmptyState } from "@/components/states/StateView";
-import { SkeletonCard } from "@/components/states/Skeleton";
 import {
   PLACE_CATEGORIES,
   places,
   type MockPlace,
   type PlaceCategory,
 } from "@/fixtures";
-import { useMockResource } from "@/hooks/useMockResource";
 
 function CategoryFilter({
   value,
@@ -50,11 +46,10 @@ function CategoryFilter({
 }
 
 export default function MapScreen() {
+  const insets = useSafeAreaInsets();
   const [query, setQuery] = useState("");
   const [category, setCategory] = useState<PlaceCategory>("Alle");
   const [selected, setSelected] = useState<MockPlace | null>(null);
-
-  const { status } = useMockResource(places, { delayMs: 500 });
 
   const filtered = useMemo(() => {
     return places.filter((p) => {
@@ -67,71 +62,28 @@ export default function MapScreen() {
     });
   }, [query, category]);
 
-  const loading = status === "loading";
-
+  // Full-bleed map fills the whole tab (everything above the bottom nav). Search
+  // + category chips float on top; tapping a pin opens the place-detail sheet.
   return (
-    <SafeAreaView className="flex-1 bg-background" edges={["top"]}>
-      <FlatList
-        data={loading ? [] : filtered}
-        keyExtractor={(p) => p.id}
-        contentContainerClassName="gap-3 p-gutter"
-        keyboardShouldPersistTaps="handled"
-        ListHeaderComponent={
-          <View className="gap-4 pb-1">
-            <Text className="text-2xl font-bold text-ink">Kart</Text>
-            <SearchBar
-              placeholder="Søk steder og opplevelser"
-              value={query}
-              onChangeText={setQuery}
-            />
-            <CategoryFilter value={category} onChange={setCategory} />
-            <MapCanvas places={filtered} onSelect={setSelected} height={160} />
-            <Text className="text-base font-semibold text-ink">I nærheten</Text>
-            {loading ? (
-              <View className="gap-3">
-                <SkeletonCard />
-                <SkeletonCard />
-              </View>
-            ) : null}
-          </View>
-        }
-        ListEmptyComponent={
-          loading ? null : (
-            <EmptyState
-              icon="search"
-              title="Ingen treff"
-              message="Prøv et annet søk eller en annen kategori."
-              actionLabel="Nullstill"
-              onAction={() => {
-                setQuery("");
-                setCategory("Alle");
-              }}
-            />
-          )
-        }
-        renderItem={({ item }) => (
-          <Pressable
-            accessibilityRole="button"
-            onPress={() => setSelected(item)}
-          >
-            <Card>
-              <View className="flex-row items-center justify-between">
-                <Text className="text-base font-semibold text-ink">
-                  {item.name}
-                </Text>
-                <Text className="text-sm text-muted">{item.distance}</Text>
-              </View>
-              <Text className="mt-0.5 text-sm text-ember">{item.category}</Text>
-              <Text className="mt-1 text-sm text-muted">{item.blurb}</Text>
-            </Card>
-          </Pressable>
-        )}
-      />
+    <View className="flex-1 bg-background">
+      <MapCanvas fill places={filtered} onSelect={setSelected} />
+      <View
+        className="absolute left-0 right-0 top-0 gap-3 px-gutter pb-2"
+        style={{ paddingTop: insets.top + 8 }}
+      >
+        <Text className="text-2xl font-bold text-ink">Kart</Text>
+        <SearchBar
+          placeholder="Søk steder og opplevelser"
+          value={query}
+          onChangeText={setQuery}
+        />
+        <CategoryFilter value={category} onChange={setCategory} />
+      </View>
       <PlaceDetailSheet
         place={selected}
         visible={selected !== null}
         onClose={() => setSelected(null)}
       />
-    </SafeAreaView>
+    </View>
   );
 }

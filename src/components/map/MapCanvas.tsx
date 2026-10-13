@@ -62,11 +62,18 @@ export function MapCanvas({
   places,
   onSelect,
   height = 160,
-}: MapProps & { height?: number }) {
+  fill = false,
+}: MapProps & { height?: number; fill?: boolean }) {
+  // `fill` => edge-to-edge (full-screen map tab): fill the parent, no rounding
+  // or border. Default => a bordered, rounded, fixed-height card.
   return (
     <View
-      className="overflow-hidden rounded-lg border border-line bg-surfaceMuted"
-      style={{ height }}
+      className={
+        fill
+          ? "flex-1 bg-surfaceMuted"
+          : "overflow-hidden rounded-lg border border-line bg-surfaceMuted"
+      }
+      style={fill ? undefined : { height }}
     >
       {RealMap ? <RealMap places={places} onSelect={onSelect} /> : <SoftMap />}
     </View>
