@@ -1,29 +1,25 @@
 import Constants, { ExecutionEnvironment } from "expo-constants";
 import type { ComponentType } from "react";
-import { Platform, Text, View } from "react-native";
+import { Platform, Pressable, Text, View } from "react-native";
 
-import type { MockPlace } from "@/fixtures";
 import { env } from "@/lib/env";
 
+import { clusterByGrid } from "./services/softClustering";
+import type { DiscoveryItem } from "./types/mapPresentation";
+
 type MapProps = {
-  places: MockPlace[];
-  onSelect?: (p: MockPlace) => void;
-  // Id of the currently-selected place (highlights its pin). Ignored by SoftMap.
-  selectedId?: string | null;
-  // Bump to recenter the real map on the MOCK demo location (ignored by SoftMap).
+  markers: DiscoveryItem[];
+  // markerId of the current selection (highlights its pin).
+  selectedMarkerId?: string | null;
+  onSelectMarker?: (markerId: string) => void;
+  // Bump to recenter the real map on the MOCK demo location (SoftMap ignores it).
   recenterSignal?: number;
 };
 
-// Native availability and token presence are SEPARATE concerns:
-//   - nativeMapAvailable: the @rnmapbox/maps native module is compiled in. True
-//     only in a native dev/standalone build (EXPO_PUBLIC_USE_NATIVE_MAP=1, the
-//     same flag that keeps the real module in the Metro bundle), never in Expo
-//     Go (executionEnvironment "storeClient") or on web.
-//   - env.mapboxToken: the public pk.* token needed to actually render tiles.
-// The require is gated on nativeMapAvailable so @rnmapbox/maps is never evaluated
-// in Expo Go / web (avoids a native-module crash). When the native module is
-// available but the token is missing we still fall back to SoftMap — we never
-// crash on a missing token.
+// Native availability and token presence are SEPARATE concerns (see the long note
+// retained from the original): the native @rnmapbox module is only present in a
+// native build with EXPO_PUBLIC_USE_NATIVE_MAP=1; the pk token only decides
+// whether tiles render. Missing token still falls back to SoftMap, never crashes.
 const isExpoGo =
   Constants.executionEnvironment === ExecutionEnvironment.StoreClient;
 const nativeMapAvailable =
@@ -42,9 +38,20 @@ if (canUseMapbox) {
   }
 }
 
-// Pastel placeholder shown when the real map is unavailable (Expo Go, web, or no
-// token). It is a visual fixture, NOT authoritative geodata.
-function SoftMap() {
+// Category → dot color (tailwind classes so NativeWind can resolve them).
+const softPinClass: Record<string, string> = {
+  Kafé: "bg-warning",
+  Bokcafé: "bg-success",
+  Vinbar: "bg-ember",
+  Verksted: "bg-ink",
+  Opplevelse: "bg-ember",
+};
+
+// Pastel placeholder shown when the real map is unavailable. It plots MOCK marker
+// dots + grid-bucketed cluster badges so the discovery surface is explorable in
+// Expo Go / web. NOT authoritative geodata.
+function SoftMap({ markers, selectedMarkerId, onSelectMarker }: MapProps) {
+  const clusters = clusterByGrid(markers);
   return (
     <View className="h-full w-full">
       <View
@@ -55,26 +62,76 @@ function SoftMap() {
         className="absolute h-20 w-20 rounded-full bg-ember/10"
         style={{ bottom: 12, right: 28 }}
       />
-      <View className="flex-1 items-center justify-center gap-1">
-        <View className="h-9 w-9 items-center justify-center rounded-full bg-ink">
-          <View className="h-2.5 w-2.5 rounded-full bg-onInk" />
-        </View>
-        <Text className="text-[10px] text-muted">Kartvisning (dev-build)</Text>
+
+      {clusters.map((c) => {
+        const left = `${c.x * 100}%` as const;
+        const top = `${c.y * 100}%` as const;
+        if (c.items.length > 1) {
+          return (
+            <Pressable
+              key={c.key}
+              accessibilityRole="button"
+              accessibilityLabel={`${c.items.length} steder her`}
+              onPress={() => onSelectMarker?.(c.items[0]!.markerId)}
+              className="absolute h-8 w-8 items-center justify-center rounded-full border-2 border-surface bg-ink"
+              style={{
+                left,
+                top,
+                transform: [{ translateX: -16 }, { translateY: -16 }],
+              }}
+            >
+              <Text className="text-xs font-bold text-onInk">
+                {c.items.length}
+              </Text>
+            </Pressable>
+          );
+        }
+        const item = c.items[0]!;
+        const selected = item.markerId === selectedMarkerId;
+        return (
+          <Pressable
+            key={c.key}
+            accessibilityRole="button"
+            accessibilityLabel={item.title}
+            accessibilityState={{ selected }}
+            onPress={() => onSelectMarker?.(item.markerId)}
+            className={`absolute items-center justify-center rounded-full border-2 ${
+              selected ? "border-ember" : "border-surface"
+            } ${softPinClass[item.category] ?? "bg-ink"} ${
+              selected ? "h-7 w-7" : "h-5 w-5"
+            }`}
+            style={{
+              left,
+              top,
+              transform: [{ translateX: -14 }, { translateY: -14 }],
+            }}
+          >
+            <View className="h-2 w-2 rounded-full bg-onInk" />
+          </Pressable>
+        );
+      })}
+
+      <View
+        className="absolute bottom-1 self-center"
+        pointerEvents="none"
+        style={{ left: 0, right: 0 }}
+      >
+        <Text className="text-center text-[10px] text-muted">
+          Kartvisning (dev-build)
+        </Text>
       </View>
     </View>
   );
 }
 
 export function MapCanvas({
-  places,
-  onSelect,
-  selectedId,
+  markers,
+  selectedMarkerId,
+  onSelectMarker,
   recenterSignal,
   height = 160,
   fill = false,
 }: MapProps & { height?: number; fill?: boolean }) {
-  // `fill` => edge-to-edge (full-screen map tab): fill the parent, no rounding
-  // or border. Default => a bordered, rounded, fixed-height card.
   return (
     <View
       className={
@@ -86,13 +143,17 @@ export function MapCanvas({
     >
       {RealMap ? (
         <RealMap
-          places={places}
-          onSelect={onSelect}
-          selectedId={selectedId}
+          markers={markers}
+          selectedMarkerId={selectedMarkerId}
+          onSelectMarker={onSelectMarker}
           recenterSignal={recenterSignal}
         />
       ) : (
-        <SoftMap />
+        <SoftMap
+          markers={markers}
+          selectedMarkerId={selectedMarkerId}
+          onSelectMarker={onSelectMarker}
+        />
       )}
     </View>
   );

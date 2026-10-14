@@ -1,85 +1,100 @@
 import { Ionicons } from "@expo/vector-icons";
 import { useMemo, useState } from "react";
-import {
-  ActivityIndicator,
-  FlatList,
-  Pressable,
-  Text,
-  View,
-} from "react-native";
+import { ActivityIndicator, Pressable, Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { DemoBadge } from "@/components/DemoBadge";
 import { MapCanvas } from "@/components/map/MapCanvas";
-import {
-  activeExtraFilterCount,
-  applyFilters,
-  DEFAULT_FILTERS,
-  MapFilterSheet,
-  type MapFilters,
-} from "@/components/map/MapFilterSheet";
+import { DiscoveryModeTabs } from "@/components/map/DiscoveryModeTabs";
 import { MapDetailSheet } from "@/components/map/MapDetailSheet";
-import type { SheetTarget } from "@/components/map/sheetTypes";
+import { MapFilterSheet } from "@/components/map/MapFilterSheet";
+import { MapPreviewCard } from "@/components/map/MapPreviewCard";
+import { MapResultsList } from "@/components/map/MapResultsList";
+import { useMapCamera } from "@/components/map/hooks/useMapCamera";
+import { useMapDiscovery } from "@/components/map/hooks/useMapDiscovery";
+import { useMapFilters } from "@/components/map/hooks/useMapFilters";
+import { useMapPresentation } from "@/components/map/hooks/useMapPresentation";
+import { useMapSaved } from "@/components/map/hooks/useMapSaved";
+import { useMapSelection } from "@/components/map/hooks/useMapSelection";
 import { NotificationsSheet } from "@/components/NotificationsSheet";
 import { SearchBar } from "@/components/SearchBar";
-import { Chip } from "@/components/Chip";
-import { PLACE_CATEGORIES, places } from "@/fixtures";
+import { places } from "@/fixtures";
 import { useMockResource } from "@/hooks/useMockResource";
 import { colors } from "@/theme";
 
+// Map discovery surface. Thin composition over feature hooks:
+// filters/search, discovery mode, selection (preview + detail sheet), map/list
+// presentation, camera, saved. All data is MOCK fixtures (no backend).
 export default function MapScreen() {
   const insets = useSafeAreaInsets();
-  const [query, setQuery] = useState("");
-  const [filters, setFilters] = useState<MapFilters>(DEFAULT_FILTERS);
   const [filterOpen, setFilterOpen] = useState(false);
   const [notifOpen, setNotifOpen] = useState(false);
-  // In-sheet navigation stack for the expandable detail sheet (Google-Maps style).
-  const [sheetStack, setSheetStack] = useState<SheetTarget[]>([]);
-  // Bumped on each "my location" tap to recenter the map on the demo location.
-  const [recenterSignal, setRecenterSignal] = useState(0);
 
-  const openPlaceId = sheetStack.find((t) => t.kind === "place")?.id ?? null;
+  const filters = useMapFilters();
+  const saved = useMapSaved();
+  const discovery = useMapDiscovery({
+    places: filters.filteredPlaces,
+    query: filters.query,
+    savedIds: saved.savedIds,
+  });
+  const selection = useMapSelection();
+  const presentation = useMapPresentation();
+  const camera = useMapCamera();
 
   // Mock async load so the surface can show a loading state (no backend).
   const { status } = useMockResource(places, { delayMs: 500 });
   const loading = status === "loading";
 
-  const filtered = useMemo(
-    () => applyFilters(places, query, filters),
-    [query, filters],
-  );
-  const extraFilters = activeExtraFilterCount(filters);
-  const noResults = !loading && filtered.length === 0;
+  const items = discovery.items;
+  const noResults = !loading && items.length === 0;
+  const isMap = presentation.view === "map";
 
-  const resetAll = () => {
-    setQuery("");
-    setFilters(DEFAULT_FILTERS);
+  const itemByMarker = useMemo(() => {
+    const map = new Map(items.map((i) => [i.markerId, i]));
+    return map;
+  }, [items]);
+
+  const handleSelectMarker = (markerId: string) => {
+    const item = itemByMarker.get(markerId);
+    if (item) selection.selectPreview(item);
   };
 
-  // Full-bleed map fills the whole tab (everything above the bottom nav). Search
-  // + category chips + a filter button float on top; tapping a pin opens the
-  // place-detail sheet.
   return (
     <View className="flex-1 bg-background">
-      <MapCanvas
-        fill
-        places={loading ? [] : filtered}
-        onSelect={(p) => setSheetStack([{ kind: "place", id: p.id }])}
-        selectedId={openPlaceId}
-        recenterSignal={recenterSignal}
-      />
+      {isMap ? (
+        <MapCanvas
+          fill
+          markers={loading ? [] : items}
+          selectedMarkerId={selection.selectedMarkerId}
+          onSelectMarker={handleSelectMarker}
+          recenterSignal={camera.recenterSignal}
+        />
+      ) : (
+        <View className="flex-1" style={{ paddingTop: insets.top + 118 }}>
+          <MapResultsList
+            items={items}
+            selectedMarkerId={selection.selectedMarkerId}
+            onSelect={(i) => selection.openTarget({ kind: i.kind, id: i.id })}
+            isSaved={saved.isSaved}
+            onToggleSave={(i) => saved.toggle(i.markerId)}
+            demo={discovery.demo}
+            note={discovery.note}
+            emptyMessage={discovery.emptyMessage}
+          />
+        </View>
+      )}
 
-      {/* Floating controls */}
+      {/* Floating top controls: search + notifications, then discovery modes */}
       <View
-        className="absolute left-0 right-0 top-0 gap-3 px-gutter pb-2"
+        className="absolute left-0 right-0 top-0 gap-2 px-gutter pb-2"
         style={{ paddingTop: insets.top + 8 }}
       >
         <View className="flex-row items-center gap-2">
           <View className="flex-1">
             <SearchBar
               placeholder="Søk steder og opplevelser"
-              value={query}
-              onChangeText={setQuery}
+              value={filters.query}
+              onChangeText={filters.setQuery}
               right={
                 <Pressable
                   accessibilityRole="button"
@@ -92,10 +107,10 @@ export default function MapScreen() {
                     size={20}
                     color={colors.ink}
                   />
-                  {extraFilters > 0 ? (
+                  {filters.extraCount > 0 ? (
                     <View className="absolute -right-1 -top-1 h-4 w-4 items-center justify-center rounded-full bg-ember">
                       <Text className="text-[9px] font-bold text-onEmber">
-                        {extraFilters}
+                        {filters.extraCount}
                       </Text>
                     </View>
                   ) : null}
@@ -117,24 +132,25 @@ export default function MapScreen() {
           </Pressable>
         </View>
 
-        <FlatList
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          data={PLACE_CATEGORIES}
-          keyExtractor={(c) => c}
-          contentContainerClassName="gap-2"
-          renderItem={({ item }) => (
-            <Chip
-              label={item}
-              selected={filters.category === item}
-              onPress={() => setFilters((f) => ({ ...f, category: item }))}
-            />
-          )}
-        />
+        <View className="rounded-full border border-line bg-surface px-3 py-1">
+          <DiscoveryModeTabs
+            mode={discovery.mode}
+            onChange={discovery.setMode}
+          />
+        </View>
+
+        {discovery.demo ? (
+          <View className="flex-row items-center gap-2 self-start rounded-full border border-line bg-surface px-3 py-1">
+            <DemoBadge />
+            {discovery.note ? (
+              <Text className="text-[11px] text-muted">{discovery.note}</Text>
+            ) : null}
+          </View>
+        ) : null}
       </View>
 
       {/* Loading overlay (mock async load) */}
-      {loading ? (
+      {loading && isMap ? (
         <View
           pointerEvents="box-none"
           className="absolute inset-0 items-center justify-center"
@@ -146,8 +162,8 @@ export default function MapScreen() {
         </View>
       ) : null}
 
-      {/* Empty overlay — no results for the current search/filters */}
-      {noResults ? (
+      {/* Empty overlay (map view) — no results for the current mode/filters */}
+      {noResults && isMap ? (
         <View
           pointerEvents="box-none"
           className="absolute inset-x-0 bottom-0 top-0 items-center justify-center p-gutter"
@@ -158,11 +174,11 @@ export default function MapScreen() {
               Ingen treff
             </Text>
             <Text className="text-center text-sm text-muted">
-              Prøv et annet søk eller juster filtrene.
+              {discovery.emptyMessage}
             </Text>
             <Pressable
               accessibilityRole="button"
-              onPress={resetAll}
+              onPress={filters.reset}
               className="mt-1 rounded-md bg-surfaceMuted px-4 py-2"
             >
               <Text className="text-sm font-semibold text-ink">Nullstill</Text>
@@ -171,37 +187,76 @@ export default function MapScreen() {
         </View>
       ) : null}
 
-      {/* "My location" — DEMO: recenters on the mock demo location, no real GPS. */}
+      {/* Preview card (map view) — floats above the bottom controls */}
+      {isMap && selection.preview ? (
+        <View
+          className="absolute left-gutter right-gutter"
+          style={{ bottom: 140 + insets.bottom }}
+        >
+          <MapPreviewCard
+            item={selection.preview}
+            saved={saved.isSaved(selection.preview.markerId)}
+            onToggleSave={() => saved.toggle(selection.preview!.markerId)}
+            onExpand={selection.expand}
+            onDismiss={selection.clearPreview}
+            demo={discovery.demo}
+            note={discovery.note}
+          />
+        </View>
+      ) : null}
+
+      {/* Bottom-left: map/list view toggle */}
       <View
-        className="absolute right-gutter items-end gap-1"
+        className="absolute left-gutter"
         style={{ bottom: 72 + insets.bottom }}
       >
-        <DemoBadge />
         <Pressable
           accessibilityRole="button"
-          accessibilityLabel="Gå til min posisjon (demo)"
-          onPress={() => setRecenterSignal((n) => n + 1)}
+          accessibilityLabel={isMap ? "Vis liste" : "Vis kart"}
+          onPress={presentation.toggle}
           className="h-12 w-12 items-center justify-center rounded-full border border-line bg-surface shadow-sm"
         >
-          <Ionicons name="locate" size={22} color={colors.ink} />
+          <Ionicons
+            name={isMap ? "list" : "map"}
+            size={22}
+            color={colors.ink}
+          />
         </Pressable>
       </View>
 
+      {/* Bottom-right: "my location" (DEMO recenter, no real GPS) */}
+      {isMap ? (
+        <View
+          className="absolute right-gutter items-end gap-1"
+          style={{ bottom: 72 + insets.bottom }}
+        >
+          <DemoBadge />
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel="Gå til min posisjon (demo)"
+            onPress={camera.recenter}
+            className="h-12 w-12 items-center justify-center rounded-full border border-line bg-surface shadow-sm"
+          >
+            <Ionicons name="locate" size={22} color={colors.ink} />
+          </Pressable>
+        </View>
+      ) : null}
+
       <MapFilterSheet
         visible={filterOpen}
-        filters={filters}
+        filters={filters.filters}
         onClose={() => setFilterOpen(false)}
-        onApply={setFilters}
+        onApply={filters.setFilters}
       />
       <NotificationsSheet
         visible={notifOpen}
         onClose={() => setNotifOpen(false)}
       />
       <MapDetailSheet
-        stack={sheetStack}
-        push={(t) => setSheetStack((s) => [...s, t])}
-        onBack={() => setSheetStack((s) => s.slice(0, -1))}
-        onClose={() => setSheetStack([])}
+        stack={selection.sheetStack}
+        push={selection.push}
+        onBack={selection.back}
+        onClose={selection.close}
       />
     </View>
   );
