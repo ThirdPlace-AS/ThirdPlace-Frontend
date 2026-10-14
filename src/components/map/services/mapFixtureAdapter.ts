@@ -9,6 +9,7 @@ import {
   placeById,
   type MockExperience,
   type MockPlace,
+  type TimeWindow,
 } from "@/fixtures";
 
 import {
@@ -58,6 +59,8 @@ export type AdapterInput = {
   query: string;
   // markerIds the user has saved this session (in-memory demo).
   savedIds: readonly string[];
+  // Time window filter (applies to experiences). null = any.
+  time?: TimeWindow | null;
 };
 
 // Resolves the active discovery mode into the items to show on the map + list.
@@ -66,10 +69,12 @@ export function resultForMode({
   places,
   query,
   savedIds,
+  time = null,
 }: AdapterInput): ModeResult {
   const placeItems = places.map(placeToItem);
   const liveItems = experiences
     .filter((e) => e.status === "open" || e.status === "waitlist")
+    .filter((e) => time === null || e.day === time)
     .filter((e) => matchesQuery(e.title, "Opplevelse", query))
     .map(experienceToItem);
 

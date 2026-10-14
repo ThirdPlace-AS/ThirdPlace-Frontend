@@ -12,11 +12,19 @@ export function SearchBar({
   value,
   onChangeText,
   right,
+  onFocus,
+  onSubmit,
+  autoFocus = false,
+  editable = true,
 }: {
   placeholder?: string;
   value?: string;
   onChangeText?: (t: string) => void;
   right?: ReactNode;
+  onFocus?: () => void;
+  onSubmit?: (t: string) => void;
+  autoFocus?: boolean;
+  editable?: boolean;
 }) {
   return (
     <View className="flex-row items-center gap-2 rounded-md border border-line bg-surface px-3 py-2.5">
@@ -27,6 +35,10 @@ export function SearchBar({
         placeholderTextColor={colors.muted}
         value={value}
         onChangeText={onChangeText}
+        onFocus={onFocus}
+        onSubmitEditing={(e) => onSubmit?.(e.nativeEvent.text)}
+        autoFocus={autoFocus}
+        editable={editable}
         returnKeyType="search"
         accessibilityLabel={placeholder}
       />

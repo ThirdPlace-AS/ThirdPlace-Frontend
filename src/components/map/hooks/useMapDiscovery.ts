@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
 
-import type { MockPlace } from "@/fixtures";
+import type { MockPlace, TimeWindow } from "@/fixtures";
 
 import { resultForMode } from "../services/mapFixtureAdapter";
 import type { DiscoveryMode } from "../types/mapPresentation";
@@ -12,18 +12,20 @@ export function useMapDiscovery({
   places,
   query,
   savedIds,
+  time = null,
   initial = "explore",
 }: {
   places: MockPlace[];
   query: string;
   savedIds: readonly string[];
+  time?: TimeWindow | null;
   initial?: DiscoveryMode;
 }) {
   const [mode, setMode] = useState<DiscoveryMode>(initial);
 
   const result = useMemo(
-    () => resultForMode({ mode, places, query, savedIds }),
-    [mode, places, query, savedIds],
+    () => resultForMode({ mode, places, query, savedIds, time }),
+    [mode, places, query, savedIds, time],
   );
 
   return { mode, setMode, ...result };

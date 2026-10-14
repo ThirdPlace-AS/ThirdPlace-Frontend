@@ -10,6 +10,7 @@ import { MapDetailSheet } from "@/components/map/MapDetailSheet";
 import { MapFilterSheet } from "@/components/map/MapFilterSheet";
 import { MapPreviewCard } from "@/components/map/MapPreviewCard";
 import { MapResultsList } from "@/components/map/MapResultsList";
+import { MapSearchOverlay } from "@/components/map/MapSearchOverlay";
 import { useMapCamera } from "@/components/map/hooks/useMapCamera";
 import { useMapDiscovery } from "@/components/map/hooks/useMapDiscovery";
 import { useMapFilters } from "@/components/map/hooks/useMapFilters";
@@ -29,6 +30,7 @@ export default function MapScreen() {
   const insets = useSafeAreaInsets();
   const [filterOpen, setFilterOpen] = useState(false);
   const [notifOpen, setNotifOpen] = useState(false);
+  const [searchOpen, setSearchOpen] = useState(false);
 
   const filters = useMapFilters();
   const saved = useMapSaved();
@@ -36,6 +38,7 @@ export default function MapScreen() {
     places: filters.filteredPlaces,
     query: filters.query,
     savedIds: saved.savedIds,
+    time: filters.filters.time,
   });
   const selection = useMapSelection();
   const presentation = useMapPresentation();
@@ -95,6 +98,7 @@ export default function MapScreen() {
               placeholder="Søk steder og opplevelser"
               value={filters.query}
               onChangeText={filters.setQuery}
+              onFocus={() => setSearchOpen(true)}
               right={
                 <Pressable
                   accessibilityRole="button"
@@ -251,6 +255,13 @@ export default function MapScreen() {
       <NotificationsSheet
         visible={notifOpen}
         onClose={() => setNotifOpen(false)}
+      />
+      <MapSearchOverlay
+        visible={searchOpen}
+        initialQuery={filters.query}
+        onClose={() => setSearchOpen(false)}
+        onSubmit={filters.setQuery}
+        onSelect={(r) => selection.openTarget({ kind: r.kind, id: r.id })}
       />
       <MapDetailSheet
         stack={selection.sheetStack}

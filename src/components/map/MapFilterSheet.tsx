@@ -6,25 +6,34 @@ import { Chip } from "@/components/Chip";
 import { Sheet } from "@/components/Sheet";
 import {
   PLACE_CATEGORIES,
-  PRICE_LEVELS,
+  PRICE_BANDS,
+  priceBandFor,
   RADIUS_OPTIONS,
+  TIME_WINDOWS,
+  VIBES,
   type MockPlace,
   type PlaceCategory,
-  type PriceLevel,
+  type PriceBand,
+  type TimeWindow,
+  type Vibe,
 } from "@/fixtures";
 
 // Map filters (MOCK — client-side only over fixtures, no contract).
 export type MapFilters = {
   category: PlaceCategory;
   maxDistanceM: number | null; // null = any distance
-  priceLevels: PriceLevel[]; // empty = any price
+  priceBand: PriceBand | null; // null = any price
+  vibes: Vibe[]; // empty = any vibe
+  time: TimeWindow | null; // null = any time (applies to experiences)
   openNowOnly: boolean;
 };
 
 export const DEFAULT_FILTERS: MapFilters = {
   category: "Alle",
   maxDistanceM: null,
-  priceLevels: [],
+  priceBand: null,
+  vibes: [],
+  time: null,
   openNowOnly: false,
 };
 
@@ -32,11 +41,8 @@ function radiusLabel(m: number): string {
   return m < 1000 ? `${m} m` : `${m / 1000} km`;
 }
 
-function priceLabel(level: PriceLevel): string {
-  return "kr".repeat(level);
-}
-
-// Applies search text + filters to the place list. Shared by the map screen.
+// Applies search text + place-level filters to the place list. Time is an
+// experience concept and is applied by the discovery adapter, not here.
 export function applyFilters(
   all: MockPlace[],
   query: string,
@@ -46,7 +52,9 @@ export function applyFilters(
   return all.filter((p) => {
     if (f.category !== "Alle" && p.category !== f.category) return false;
     if (f.maxDistanceM !== null && p.distanceM > f.maxDistanceM) return false;
-    if (f.priceLevels.length > 0 && !f.priceLevels.includes(p.priceLevel))
+    if (f.priceBand !== null && priceBandFor(p.priceNok) !== f.priceBand)
+      return false;
+    if (f.vibes.length > 0 && !f.vibes.some((v) => p.vibes.includes(v)))
       return false;
     if (f.openNowOnly && !p.openNow) return false;
     if (
@@ -63,7 +71,9 @@ export function applyFilters(
 export function activeExtraFilterCount(f: MapFilters): number {
   return (
     (f.maxDistanceM !== null ? 1 : 0) +
-    (f.priceLevels.length > 0 ? 1 : 0) +
+    (f.priceBand !== null ? 1 : 0) +
+    (f.vibes.length > 0 ? 1 : 0) +
+    (f.time !== null ? 1 : 0) +
     (f.openNowOnly ? 1 : 0)
   );
 }
@@ -105,12 +115,12 @@ function FilterBody({
 }) {
   const [draft, setDraft] = useState<MapFilters>(filters);
 
-  const togglePrice = (level: PriceLevel) =>
+  const toggleVibe = (v: Vibe) =>
     setDraft((d) => ({
       ...d,
-      priceLevels: d.priceLevels.includes(level)
-        ? d.priceLevels.filter((l) => l !== level)
-        : [...d.priceLevels, level],
+      vibes: d.vibes.includes(v)
+        ? d.vibes.filter((x) => x !== v)
+        : [...d.vibes, v],
     }));
 
   return (
@@ -151,12 +161,50 @@ function FilterBody({
       <View className="gap-2">
         <SectionLabel>Pris</SectionLabel>
         <View className="flex-row flex-wrap gap-2">
-          {PRICE_LEVELS.map((level) => (
+          <Chip
+            label="Alle"
+            selected={draft.priceBand === null}
+            onPress={() => setDraft((d) => ({ ...d, priceBand: null }))}
+          />
+          {PRICE_BANDS.map((band) => (
             <Chip
-              key={level}
-              label={priceLabel(level)}
-              selected={draft.priceLevels.includes(level)}
-              onPress={() => togglePrice(level)}
+              key={band}
+              label={band}
+              selected={draft.priceBand === band}
+              onPress={() => setDraft((d) => ({ ...d, priceBand: band }))}
+            />
+          ))}
+        </View>
+      </View>
+
+      <View className="gap-2">
+        <SectionLabel>Vibe</SectionLabel>
+        <View className="flex-row flex-wrap gap-2">
+          {VIBES.map((v) => (
+            <Chip
+              key={v}
+              label={v}
+              selected={draft.vibes.includes(v)}
+              onPress={() => toggleVibe(v)}
+            />
+          ))}
+        </View>
+      </View>
+
+      <View className="gap-2">
+        <SectionLabel>Når</SectionLabel>
+        <View className="flex-row flex-wrap gap-2">
+          <Chip
+            label="Når som helst"
+            selected={draft.time === null}
+            onPress={() => setDraft((d) => ({ ...d, time: null }))}
+          />
+          {TIME_WINDOWS.map((t) => (
+            <Chip
+              key={t}
+              label={t}
+              selected={draft.time === t}
+              onPress={() => setDraft((d) => ({ ...d, time: t }))}
             />
           ))}
         </View>

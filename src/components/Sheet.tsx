@@ -3,6 +3,9 @@ import { Modal, Pressable, Text, View } from "react-native";
 
 // Lightweight bottom sheet (Modal-based) for filters and detail panels.
 // No external sheet lib — keeps the dependency surface small for Phase 1.
+// The backdrop (tap-to-close) is a SIBLING behind the card, not its ancestor,
+// so the card's Chips/Buttons are never nested inside a <button>. The opaque
+// card sits on top of the backdrop, so taps on it don't reach the backdrop.
 export function Sheet({
   visible,
   onClose,
@@ -21,23 +24,21 @@ export function Sheet({
       animationType="slide"
       onRequestClose={onClose}
     >
-      <Pressable
-        accessibilityLabel="Lukk"
-        accessibilityRole="button"
-        onPress={onClose}
-        className="flex-1 justify-end bg-ink/40"
-      >
+      <View className="flex-1 justify-end">
         <Pressable
-          onPress={(e) => e.stopPropagation()}
-          className="gap-4 rounded-t-lg bg-surface p-gutter pb-8"
-        >
+          accessibilityLabel="Lukk"
+          accessibilityRole="button"
+          onPress={onClose}
+          className="absolute inset-0 bg-ink/40"
+        />
+        <View className="gap-4 rounded-t-lg bg-surface p-gutter pb-8">
           <View className="h-1 w-10 self-center rounded-full bg-line" />
           {title ? (
             <Text className="text-lg font-bold text-ink">{title}</Text>
           ) : null}
           {children}
-        </Pressable>
-      </Pressable>
+        </View>
+      </View>
     </Modal>
   );
 }

@@ -57,4 +57,12 @@ describe("resultForMode", () => {
     );
     expect(r.items.length).toBeGreaterThan(0);
   });
+
+  it("live respects the time filter", () => {
+    // Weekend experiences exist (e1/e2), weekday open/waitlist ones do not.
+    const helg = resultForMode({ ...base, mode: "live", time: "Helg" });
+    expect(helg.items.length).toBeGreaterThan(0);
+    const weekday = resultForMode({ ...base, mode: "live", time: "Denne uka" });
+    expect(weekday.items).toHaveLength(0);
+  });
 });
