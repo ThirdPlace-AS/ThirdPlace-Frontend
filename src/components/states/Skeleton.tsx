@@ -8,6 +8,8 @@ import Animated, {
   withTiming,
 } from "react-native-reanimated";
 
+import { motion } from "@/theme";
+
 // Shimmer placeholder block. Respects reduced-motion (static when enabled).
 export function Skeleton({
   height = 16,
@@ -23,7 +25,11 @@ export function Skeleton({
 
   useEffect(() => {
     if (reduced) return;
-    opacity.value = withRepeat(withTiming(1, { duration: 800 }), -1, true);
+    opacity.value = withRepeat(
+      withTiming(1, { duration: motion.duration.shimmer }),
+      -1,
+      true,
+    );
   }, [opacity, reduced]);
 
   const style = useAnimatedStyle(() => ({ opacity: opacity.value }));

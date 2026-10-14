@@ -21,6 +21,7 @@ import { NotificationsSheet } from "@/components/NotificationsSheet";
 import { SearchBar } from "@/components/SearchBar";
 import { places } from "@/fixtures";
 import { useMockResource } from "@/hooks/useMockResource";
+import { haptics } from "@/lib/haptics";
 import { colors } from "@/theme";
 
 // Map discovery surface. Thin composition over feature hooks:
@@ -59,7 +60,25 @@ export default function MapScreen() {
 
   const handleSelectMarker = (markerId: string) => {
     const item = itemByMarker.get(markerId);
-    if (item) selection.selectPreview(item);
+    if (item) {
+      haptics.selection();
+      selection.selectPreview(item);
+    }
+  };
+
+  const handleModeChange = (m: typeof discovery.mode) => {
+    haptics.selection();
+    discovery.setMode(m);
+  };
+
+  const handleApplyFilters = (next: typeof filters.filters) => {
+    haptics.light();
+    filters.setFilters(next);
+  };
+
+  const handleExpandPreview = () => {
+    haptics.light();
+    selection.expand();
   };
 
   return (
@@ -139,7 +158,7 @@ export default function MapScreen() {
         <View className="rounded-full border border-line bg-surface px-3 py-1">
           <DiscoveryModeTabs
             mode={discovery.mode}
-            onChange={discovery.setMode}
+            onChange={handleModeChange}
           />
         </View>
 
@@ -201,7 +220,7 @@ export default function MapScreen() {
             item={selection.preview}
             saved={saved.isSaved(selection.preview.markerId)}
             onToggleSave={() => saved.toggle(selection.preview!.markerId)}
-            onExpand={selection.expand}
+            onExpand={handleExpandPreview}
             onDismiss={selection.clearPreview}
             demo={discovery.demo}
             note={discovery.note}
@@ -250,7 +269,7 @@ export default function MapScreen() {
         visible={filterOpen}
         filters={filters.filters}
         onClose={() => setFilterOpen(false)}
-        onApply={filters.setFilters}
+        onApply={handleApplyFilters}
       />
       <NotificationsSheet
         visible={notifOpen}

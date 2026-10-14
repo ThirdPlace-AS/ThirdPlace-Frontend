@@ -11,6 +11,7 @@ export const duration = {
   fast: 150,
   base: 220,
   slow: 320,
+  fling: 180, // card/preview flung off-screen
   recenter: 500, // map camera recenter
   shimmer: 800, // skeleton pulse
 } as const;

@@ -15,7 +15,7 @@ import Animated, {
 import { DemoBadge } from "@/components/DemoBadge";
 import { EmptyState } from "@/components/states/StateView";
 import { swipeCards } from "@/fixtures";
-import { colors } from "@/theme";
+import { colors, motion } from "@/theme";
 
 const THRESHOLD = 110;
 
@@ -37,7 +37,7 @@ export default function SwipeScreen() {
   };
 
   const fling = (dir: 1 | -1) => {
-    x.value = withTiming(dir * 600, { duration: 180 }, () =>
+    x.value = withTiming(dir * 600, { duration: motion.duration.fling }, () =>
       runOnJS(advance)(),
     );
   };
@@ -50,12 +50,14 @@ export default function SwipeScreen() {
     })
     .onFinalize(() => {
       if (Math.abs(x.value) > THRESHOLD) {
-        x.value = withTiming(Math.sign(x.value) * 600, { duration: 180 }, () =>
-          runOnJS(advance)(),
+        x.value = withTiming(
+          Math.sign(x.value) * 600,
+          { duration: motion.duration.fling },
+          () => runOnJS(advance)(),
         );
       } else {
-        x.value = withSpring(0);
-        y.value = withSpring(0);
+        x.value = withSpring(0, motion.spring.snappy);
+        y.value = withSpring(0, motion.spring.snappy);
       }
     });
 
