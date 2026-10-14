@@ -18,6 +18,7 @@ import {
   MapFilterSheet,
   type MapFilters,
 } from "@/components/map/MapFilterSheet";
+import { NotificationsSheet } from "@/components/NotificationsSheet";
 import { PlaceDetailSheet } from "@/components/PlaceDetailSheet";
 import { SearchBar } from "@/components/SearchBar";
 import { Chip } from "@/components/Chip";
@@ -30,6 +31,7 @@ export default function MapScreen() {
   const [query, setQuery] = useState("");
   const [filters, setFilters] = useState<MapFilters>(DEFAULT_FILTERS);
   const [filterOpen, setFilterOpen] = useState(false);
+  const [notifOpen, setNotifOpen] = useState(false);
   const [selected, setSelected] = useState<MockPlace | null>(null);
   // Bumped on each "my location" tap to recenter the map on the demo location.
   const [recenterSignal, setRecenterSignal] = useState(0);
@@ -74,22 +76,40 @@ export default function MapScreen() {
               placeholder="Søk steder og opplevelser"
               value={query}
               onChangeText={setQuery}
+              right={
+                <Pressable
+                  accessibilityRole="button"
+                  accessibilityLabel="Filtre"
+                  onPress={() => setFilterOpen(true)}
+                  className="-mr-1 h-7 w-7 items-center justify-center rounded-full"
+                >
+                  <Ionicons
+                    name="options-outline"
+                    size={20}
+                    color={colors.ink}
+                  />
+                  {extraFilters > 0 ? (
+                    <View className="absolute -right-1 -top-1 h-4 w-4 items-center justify-center rounded-full bg-ember">
+                      <Text className="text-[9px] font-bold text-onEmber">
+                        {extraFilters}
+                      </Text>
+                    </View>
+                  ) : null}
+                </Pressable>
+              }
             />
           </View>
           <Pressable
             accessibilityRole="button"
-            accessibilityLabel="Filtre"
-            onPress={() => setFilterOpen(true)}
+            accessibilityLabel="Varsler"
+            onPress={() => setNotifOpen(true)}
             className="h-12 w-12 items-center justify-center rounded-full border border-line bg-surface"
           >
-            <Ionicons name="options-outline" size={22} color={colors.ink} />
-            {extraFilters > 0 ? (
-              <View className="absolute -right-0.5 -top-0.5 h-5 w-5 items-center justify-center rounded-full bg-ember">
-                <Text className="text-[10px] font-bold text-onEmber">
-                  {extraFilters}
-                </Text>
-              </View>
-            ) : null}
+            <Ionicons
+              name="notifications-outline"
+              size={22}
+              color={colors.ink}
+            />
           </Pressable>
         </View>
 
@@ -173,6 +193,10 @@ export default function MapScreen() {
         place={selected}
         visible={selected !== null}
         onClose={() => setSelected(null)}
+      />
+      <NotificationsSheet
+        visible={notifOpen}
+        onClose={() => setNotifOpen(false)}
       />
     </View>
   );
