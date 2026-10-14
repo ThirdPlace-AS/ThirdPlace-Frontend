@@ -1,21 +1,15 @@
 import { Ionicons } from "@expo/vector-icons";
-import { useRouter } from "expo-router";
 import { useState } from "react";
 import { Pressable, Text, View } from "react-native";
 
 import { Button } from "@/components/Button";
 import { Chip } from "@/components/Chip";
 import { DemoBadge } from "@/components/DemoBadge";
-import { Sheet } from "@/components/Sheet";
-import {
-  groupById,
-  type ExperienceStatus,
-  type MockExperience,
-} from "@/fixtures";
+import { experienceById, groupById, type ExperienceStatus } from "@/fixtures";
 import { colors } from "@/theme";
 
-// Visual status of the experience (lifecycle bar). MOCK — not a real state
-// machine or booking status (BLOCKED_CONTRACT_GAP).
+import type { PushFn } from "../sheetTypes";
+
 const statusMeta: Record<
   ExperienceStatus,
   { label: string; className: string }
@@ -28,23 +22,6 @@ const statusMeta: Record<
 };
 
 type UserState = "none" | "joined" | "waitlisted";
-
-export function ExperienceDetailSheet({
-  experience,
-  visible,
-  onClose,
-}: {
-  experience: MockExperience | null;
-  visible: boolean;
-  onClose: () => void;
-}) {
-  if (!experience) return null;
-  return (
-    <Sheet visible={visible} onClose={onClose} title={experience.title}>
-      {visible ? <Body experience={experience} onClose={onClose} /> : null}
-    </Sheet>
-  );
-}
 
 function LinkRow({
   icon,
@@ -68,28 +45,20 @@ function LinkRow({
   );
 }
 
-function Body({
-  experience,
-  onClose,
-}: {
-  experience: MockExperience;
-  onClose: () => void;
-}) {
-  const router = useRouter();
+export function ExperienceContent({ id, push }: { id: string; push: PushFn }) {
+  const experience = experienceById(id);
   const [user, setUser] = useState<UserState>(
-    experience.status === "joined" ? "joined" : "none",
+    experience?.status === "joined" ? "joined" : "none",
   );
-  const group = groupById(experience.groupId);
 
-  const go = (nav: () => void) => {
-    onClose();
-    nav();
-  };
+  if (!experience) {
+    return <Text className="text-sm text-muted">Fant ikke arrangementet.</Text>;
+  }
 
   const meta = statusMeta[experience.status];
   const joinedCount = experience.going + (user === "joined" ? 1 : 0);
+  const group = groupById(experience.groupId);
 
-  // Demo join state machine — purely local, no real attendance/booking.
   const primary = (() => {
     if (user === "joined")
       return { label: "Forlat", action: () => setUser("none") };
@@ -106,8 +75,7 @@ function Body({
   })();
 
   return (
-    <>
-      {/* Lifecycle status bar */}
+    <View className="gap-4">
       <View className="flex-row items-center gap-2">
         <View className={`rounded-full px-3 py-1 ${meta.className}`}>
           <Text className="text-xs font-semibold text-onInk">{meta.label}</Text>
@@ -127,61 +95,31 @@ function Body({
         ))}
       </View>
 
-      {/* Related screens */}
       <View className="gap-2">
         <LinkRow
           icon="people-outline"
           label={`Se deltakere (${experience.going})`}
-          onPress={() =>
-            go(() =>
-              router.push({
-                pathname: "/attendees/[id]",
-                params: { id: experience.id },
-              }),
-            )
-          }
+          onPress={() => push({ kind: "attendees", id: experience.id })}
         />
         {group ? (
           <LinkRow
             icon="people-circle-outline"
             label={`Gruppe: ${group.name}`}
-            onPress={() =>
-              go(() =>
-                router.push({
-                  pathname: "/group/[id]",
-                  params: { id: group.id },
-                }),
-              )
-            }
+            onPress={() => push({ kind: "group", id: group.id })}
           />
         ) : null}
         <LinkRow
           icon="location-outline"
           label="Sjekk inn (GPS)"
-          onPress={() =>
-            go(() =>
-              router.push({
-                pathname: "/checkin/[id]",
-                params: { id: experience.id },
-              }),
-            )
-          }
+          onPress={() => push({ kind: "checkin", id: experience.id })}
         />
         <LinkRow
           icon="settings-outline"
           label="Administrer (vert)"
-          onPress={() =>
-            go(() =>
-              router.push({
-                pathname: "/host/[id]",
-                params: { id: experience.id },
-              }),
-            )
-          }
+          onPress={() => push({ kind: "host", id: experience.id })}
         />
       </View>
 
-      {/* In-chat banner — shown once "joined"/"waitlisted" (DEMO link). */}
       {user !== "none" ? (
         <View className="flex-row items-center gap-2 rounded-md border border-line bg-surfaceMuted px-3 py-2">
           <Ionicons name="chatbubbles-outline" size={18} color={colors.ink} />
@@ -207,6 +145,6 @@ function Body({
         disabled={primary.disabled}
         onPress={primary.action}
       />
-    </>
+    </View>
   );
 }

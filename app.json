@@ -6,9 +6,7 @@
     "version": "0.0.0",
     "orientation": "portrait",
     "userInterfaceStyle": "light",
-    "assetBundlePatterns": [
-      "**/*"
-    ],
+    "assetBundlePatterns": ["**/*"],
     "ios": {
       "supportsTablet": false,
       "bundleIdentifier": "com.thirdplace.app",
@@ -26,12 +24,7 @@
       "bundler": "metro",
       "output": "static"
     },
-    "plugins": [
-      "expo-router",
-      "expo-font",
-      "expo-asset",
-      "@rnmapbox/maps"
-    ],
+    "plugins": ["expo-router", "expo-font", "expo-asset", "@rnmapbox/maps"],
     "experiments": {
       "typedRoutes": true
     },

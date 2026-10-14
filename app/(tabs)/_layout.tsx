@@ -47,17 +47,6 @@ export default function TabsLayout() {
         name="profile"
         options={{ title: "Profil", tabBarIcon: icon("person-outline") }}
       />
-
-      {/* Detail routes — rendered inside the tabs so the bottom nav stays
-          visible, but hidden from the tab bar itself (href: null). */}
-      <Tabs.Screen name="place/[id]" options={{ href: null }} />
-      <Tabs.Screen name="business/[id]" options={{ href: null }} />
-      <Tabs.Screen name="host/[id]" options={{ href: null }} />
-      <Tabs.Screen name="attendees/[id]" options={{ href: null }} />
-      <Tabs.Screen name="reviews/[id]" options={{ href: null }} />
-      <Tabs.Screen name="group/[id]" options={{ href: null }} />
-      <Tabs.Screen name="checkin/[id]" options={{ href: null }} />
-      <Tabs.Screen name="verification" options={{ href: null }} />
     </Tabs>
   );
 }

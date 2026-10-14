@@ -18,11 +18,12 @@ import {
   MapFilterSheet,
   type MapFilters,
 } from "@/components/map/MapFilterSheet";
+import { MapDetailSheet } from "@/components/map/MapDetailSheet";
+import type { SheetTarget } from "@/components/map/sheetTypes";
 import { NotificationsSheet } from "@/components/NotificationsSheet";
-import { PlaceDetailSheet } from "@/components/PlaceDetailSheet";
 import { SearchBar } from "@/components/SearchBar";
 import { Chip } from "@/components/Chip";
-import { PLACE_CATEGORIES, places, type MockPlace } from "@/fixtures";
+import { PLACE_CATEGORIES, places } from "@/fixtures";
 import { useMockResource } from "@/hooks/useMockResource";
 import { colors } from "@/theme";
 
@@ -32,9 +33,12 @@ export default function MapScreen() {
   const [filters, setFilters] = useState<MapFilters>(DEFAULT_FILTERS);
   const [filterOpen, setFilterOpen] = useState(false);
   const [notifOpen, setNotifOpen] = useState(false);
-  const [selected, setSelected] = useState<MockPlace | null>(null);
+  // In-sheet navigation stack for the expandable detail sheet (Google-Maps style).
+  const [sheetStack, setSheetStack] = useState<SheetTarget[]>([]);
   // Bumped on each "my location" tap to recenter the map on the demo location.
   const [recenterSignal, setRecenterSignal] = useState(0);
+
+  const openPlaceId = sheetStack.find((t) => t.kind === "place")?.id ?? null;
 
   // Mock async load so the surface can show a loading state (no backend).
   const { status } = useMockResource(places, { delayMs: 500 });
@@ -60,8 +64,8 @@ export default function MapScreen() {
       <MapCanvas
         fill
         places={loading ? [] : filtered}
-        onSelect={setSelected}
-        selectedId={selected?.id ?? null}
+        onSelect={(p) => setSheetStack([{ kind: "place", id: p.id }])}
+        selectedId={openPlaceId}
         recenterSignal={recenterSignal}
       />
 
@@ -189,14 +193,15 @@ export default function MapScreen() {
         onClose={() => setFilterOpen(false)}
         onApply={setFilters}
       />
-      <PlaceDetailSheet
-        place={selected}
-        visible={selected !== null}
-        onClose={() => setSelected(null)}
-      />
       <NotificationsSheet
         visible={notifOpen}
         onClose={() => setNotifOpen(false)}
+      />
+      <MapDetailSheet
+        stack={sheetStack}
+        push={(t) => setSheetStack((s) => [...s, t])}
+        onBack={() => setSheetStack((s) => s.slice(0, -1))}
+        onClose={() => setSheetStack([])}
       />
     </View>
   );
