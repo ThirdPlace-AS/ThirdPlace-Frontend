@@ -9,6 +9,8 @@ import { experienceById, groupById, type ExperienceStatus } from "@/fixtures";
 import { colors } from "@/theme";
 
 import type { PushFn } from "../sheetTypes";
+import { markerId } from "../types/mapPresentation";
+import { DetailActions } from "./DetailActions";
 
 const statusMeta: Record<
   ExperienceStatus,
@@ -94,6 +96,8 @@ export function ExperienceContent({ id, push }: { id: string; push: PushFn }) {
           <Chip key={t} label={t} />
         ))}
       </View>
+
+      <DetailActions markerId={markerId("experience", experience.id)} />
 
       <View className="gap-2">
         <LinkRow

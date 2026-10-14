@@ -3,10 +3,17 @@ import { Pressable, Text, View } from "react-native";
 
 import { Card } from "@/components/Card";
 import { Chip } from "@/components/Chip";
-import { businessForPlace, experiencesForPlace, placeById } from "@/fixtures";
+import {
+  businessForPlace,
+  experiencesForPlace,
+  placeById,
+  priceBandFor,
+} from "@/fixtures";
 import { colors } from "@/theme";
 
 import type { PushFn } from "../sheetTypes";
+import { markerId } from "../types/mapPresentation";
+import { DetailActions } from "./DetailActions";
 
 export function PlaceContent({ id, push }: { id: string; push: PushFn }) {
   const place = placeById(id);
@@ -34,13 +41,39 @@ export function PlaceContent({ id, push }: { id: string; push: PushFn }) {
           · {place.openNow ? "Åpent nå" : "Stengt"}
         </Text>
         <Text className="text-sm text-muted">· {place.category}</Text>
+        <Text className="text-sm text-muted">
+          · {priceBandFor(place.priceNok)}
+        </Text>
       </View>
 
-      <View className="h-40 items-center justify-center rounded-lg bg-surfaceMuted">
-        <Ionicons name="image-outline" size={40} color={colors.muted} />
+      {/* Image gallery (placeholders — no real media in fixtures) */}
+      <View className="flex-row gap-2">
+        <View className="h-40 flex-1 items-center justify-center rounded-lg bg-surfaceMuted">
+          <Ionicons name="image-outline" size={40} color={colors.muted} />
+        </View>
+        <View className="gap-2">
+          <View className="h-[72px] w-20 items-center justify-center rounded-lg bg-surfaceMuted">
+            <Ionicons name="image-outline" size={20} color={colors.muted} />
+          </View>
+          <View className="h-[72px] w-20 items-center justify-center rounded-lg bg-surfaceMuted">
+            <Ionicons name="images-outline" size={20} color={colors.muted} />
+          </View>
+        </View>
       </View>
+
+      <DetailActions markerId={markerId("place", place.id)} />
 
       <Text className="text-sm text-muted">{place.about}</Text>
+
+      {/* Vibe tags */}
+      <View className="gap-1">
+        <Text className="text-sm font-semibold text-ink">Vibe</Text>
+        <View className="flex-row flex-wrap gap-2">
+          {place.vibes.map((v) => (
+            <Chip key={v} label={v} />
+          ))}
+        </View>
+      </View>
 
       <View className="flex-row flex-wrap gap-2">
         {place.tags.map((t) => (
