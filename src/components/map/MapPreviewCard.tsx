@@ -18,7 +18,8 @@ import type { DiscoveryItem } from "./types/mapPresentation";
 
 // Floating contextual preview for the selected marker/list row. Drag up (or tap)
 // to expand into the full detail sheet; drag down to dismiss. Reanimated + Gesture
-// Handler; honors reduced motion. The Save toggle writes the in-memory demo store
+// Handler; honors reduced motion. The tappable area and the Save/expand controls
+// are SIBLINGS (never nested buttons). Save writes the in-memory demo store
 // (persistence is CONTRACT-BLOCKED).
 export function MapPreviewCard({
   item,
@@ -80,36 +81,39 @@ export function MapPreviewCard({
         {/* drag handle */}
         <View className="mb-2 h-1 w-10 self-center rounded-full bg-line" />
 
-        <Pressable
-          accessibilityRole="button"
-          accessibilityHint="Åpne detaljer"
-          onPress={onExpand}
-          className="flex-row gap-3"
-        >
-          <View className="h-16 w-16 items-center justify-center rounded-md bg-surfaceMuted">
-            <Ionicons name="image-outline" size={24} color={colors.muted} />
-          </View>
-          <View className="flex-1 justify-center gap-0.5">
-            {demo ? (
-              <View className="mb-0.5 flex-row items-center gap-2">
-                <DemoBadge />
-                {note ? (
-                  <Text className="text-[10px] text-muted">{note}</Text>
-                ) : null}
-              </View>
-            ) : null}
-            <Text className="text-base font-bold text-ink" numberOfLines={1}>
-              {item.title}
-            </Text>
-            <Text className="text-sm text-muted" numberOfLines={1}>
-              {item.category} · {item.subtitle}
-            </Text>
-            {item.meta ? (
-              <Text className="text-sm text-ink" numberOfLines={1}>
-                {item.meta}
+        <View className="flex-row gap-3">
+          <Pressable
+            accessibilityRole="button"
+            accessibilityHint="Åpne detaljer"
+            onPress={onExpand}
+            className="flex-1 flex-row gap-3"
+          >
+            <View className="h-16 w-16 items-center justify-center rounded-md bg-surfaceMuted">
+              <Ionicons name="image-outline" size={24} color={colors.muted} />
+            </View>
+            <View className="flex-1 justify-center gap-0.5">
+              {demo ? (
+                <View className="mb-0.5 flex-row items-center gap-2">
+                  <DemoBadge />
+                  {note ? (
+                    <Text className="text-[10px] text-muted">{note}</Text>
+                  ) : null}
+                </View>
+              ) : null}
+              <Text className="text-base font-bold text-ink" numberOfLines={1}>
+                {item.title}
               </Text>
-            ) : null}
-          </View>
+              <Text className="text-sm text-muted" numberOfLines={1}>
+                {item.category} · {item.subtitle}
+              </Text>
+              {item.meta ? (
+                <Text className="text-sm text-ink" numberOfLines={1}>
+                  {item.meta}
+                </Text>
+              ) : null}
+            </View>
+          </Pressable>
+
           <View className="items-center justify-between py-1">
             <Pressable
               accessibilityRole="button"
@@ -124,9 +128,16 @@ export function MapPreviewCard({
                 color={saved ? colors.ember : colors.muted}
               />
             </Pressable>
-            <Ionicons name="chevron-up" size={20} color={colors.muted} />
+            <Pressable
+              accessibilityRole="button"
+              accessibilityLabel="Utvid"
+              onPress={onExpand}
+              hitSlop={8}
+            >
+              <Ionicons name="chevron-up" size={20} color={colors.muted} />
+            </Pressable>
           </View>
-        </Pressable>
+        </View>
       </Animated.View>
     </GestureDetector>
   );

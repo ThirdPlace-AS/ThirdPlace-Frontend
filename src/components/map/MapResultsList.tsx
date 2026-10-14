@@ -9,7 +9,8 @@ import type { DiscoveryItem } from "./types/mapPresentation";
 // List presentation of the active discovery results. Accessible, non-gesture
 // alternative to the map markers (journey K + a11y). Row tap opens the detail
 // sheet; the row matching the map selection is highlighted so the two views stay
-// in sync. Save writes the in-memory demo store.
+// in sync. The row tap target and the Save control are SIBLINGS (no nested
+// buttons). Save writes the in-memory demo store.
 export function MapResultsList({
   items,
   selectedMarkerId,
@@ -52,34 +53,38 @@ export function MapResultsList({
         const selected = item.markerId === selectedMarkerId;
         const saved = isSaved(item.markerId);
         return (
-          <Pressable
-            accessibilityRole="button"
-            accessibilityState={{ selected }}
-            accessibilityLabel={`${item.title}, ${item.category}, ${item.subtitle}`}
-            onPress={() => onSelect(item)}
+          <View
             className={`flex-row gap-3 rounded-lg border bg-surface p-3 ${
               selected ? "border-ink" : "border-line"
             }`}
           >
-            <View className="h-14 w-14 items-center justify-center rounded-md bg-surfaceMuted">
-              <Ionicons name="image-outline" size={22} color={colors.muted} />
-            </View>
-            <View className="flex-1 justify-center gap-0.5">
-              <Text
-                className="text-base font-semibold text-ink"
-                numberOfLines={1}
-              >
-                {item.title}
-              </Text>
-              <Text className="text-sm text-muted" numberOfLines={1}>
-                {item.category} · {item.subtitle}
-              </Text>
-              {item.meta ? (
-                <Text className="text-sm text-ink" numberOfLines={1}>
-                  {item.meta}
+            <Pressable
+              accessibilityRole="button"
+              accessibilityState={{ selected }}
+              accessibilityLabel={`${item.title}, ${item.category}, ${item.subtitle}`}
+              onPress={() => onSelect(item)}
+              className="flex-1 flex-row gap-3"
+            >
+              <View className="h-14 w-14 items-center justify-center rounded-md bg-surfaceMuted">
+                <Ionicons name="image-outline" size={22} color={colors.muted} />
+              </View>
+              <View className="flex-1 justify-center gap-0.5">
+                <Text
+                  className="text-base font-semibold text-ink"
+                  numberOfLines={1}
+                >
+                  {item.title}
                 </Text>
-              ) : null}
-            </View>
+                <Text className="text-sm text-muted" numberOfLines={1}>
+                  {item.category} · {item.subtitle}
+                </Text>
+                {item.meta ? (
+                  <Text className="text-sm text-ink" numberOfLines={1}>
+                    {item.meta}
+                  </Text>
+                ) : null}
+              </View>
+            </Pressable>
             <Pressable
               accessibilityRole="button"
               accessibilityLabel={saved ? "Fjern fra lagret" : "Lagre"}
@@ -94,7 +99,7 @@ export function MapResultsList({
                 color={saved ? colors.ember : colors.muted}
               />
             </Pressable>
-          </Pressable>
+          </View>
         );
       }}
     />
