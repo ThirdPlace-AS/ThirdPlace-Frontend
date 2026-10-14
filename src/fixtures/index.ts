@@ -15,6 +15,11 @@ export const PLACE_CATEGORIES = [
 ] as const;
 export type PlaceCategory = (typeof PLACE_CATEGORIES)[number];
 
+// Filter option constants (MOCK — not a pricing/geo contract).
+export const RADIUS_OPTIONS = [500, 1000, 2000] as const; // meters
+export const PRICE_LEVELS = [1, 2, 3] as const; // "kr" tiers
+export type PriceLevel = (typeof PRICE_LEVELS)[number];
+
 export type MockPlace = {
   id: string;
   name: string;
@@ -22,6 +27,7 @@ export type MockPlace = {
   distance: string;
   distanceM: number;
   coord: [number, number]; // [lng, lat] — MOCK demo point
+  priceLevel: PriceLevel; // MOCK price tier (1–3), not a real price
   blurb: string;
   rating: number;
   reviews: number;
@@ -38,6 +44,7 @@ export const places: MockPlace[] = [
     distance: "120 m",
     distanceM: 120,
     coord: [10.7579, 59.9227],
+    priceLevel: 1,
     blurb: "Lun nabolagskafé med spesialkaffe.",
     rating: 4.6,
     reviews: 128,
@@ -53,6 +60,7 @@ export const places: MockPlace[] = [
     distance: "450 m",
     distanceM: 450,
     coord: [10.7605, 59.925],
+    priceLevel: 1,
     blurb: "Bøker, te og stille kroker.",
     rating: 4.8,
     reviews: 86,
@@ -67,6 +75,7 @@ export const places: MockPlace[] = [
     distance: "800 m",
     distanceM: 800,
     coord: [10.751, 59.9269],
+    priceLevel: 3,
     blurb: "Naturvin og småretter.",
     rating: 4.4,
     reviews: 203,
@@ -82,6 +91,7 @@ export const places: MockPlace[] = [
     distance: "1.1 km",
     distanceM: 1100,
     coord: [10.767, 59.919],
+    priceLevel: 2,
     blurb: "Fiks sykkelen mens du venter.",
     rating: 4.9,
     reviews: 54,

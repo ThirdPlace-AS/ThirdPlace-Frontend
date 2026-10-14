@@ -8,6 +8,8 @@ import { env } from "@/lib/env";
 type MapProps = {
   places: MockPlace[];
   onSelect?: (p: MockPlace) => void;
+  // Id of the currently-selected place (highlights its pin). Ignored by SoftMap.
+  selectedId?: string | null;
   // Bump to recenter the real map on the MOCK demo location (ignored by SoftMap).
   recenterSignal?: number;
 };
@@ -66,6 +68,7 @@ function SoftMap() {
 export function MapCanvas({
   places,
   onSelect,
+  selectedId,
   recenterSignal,
   height = 160,
   fill = false,
@@ -85,6 +88,7 @@ export function MapCanvas({
         <RealMap
           places={places}
           onSelect={onSelect}
+          selectedId={selectedId}
           recenterSignal={recenterSignal}
         />
       ) : (
