@@ -1,12 +1,17 @@
 import { Ionicons } from "@expo/vector-icons";
+import { useRouter } from "expo-router";
 import { useState } from "react";
-import { Text, View } from "react-native";
+import { Pressable, Text, View } from "react-native";
 
 import { Button } from "@/components/Button";
 import { Chip } from "@/components/Chip";
 import { DemoBadge } from "@/components/DemoBadge";
 import { Sheet } from "@/components/Sheet";
-import type { ExperienceStatus, MockExperience } from "@/fixtures";
+import {
+  groupById,
+  type ExperienceStatus,
+  type MockExperience,
+} from "@/fixtures";
 import { colors } from "@/theme";
 
 // Visual status of the experience (lifecycle bar). MOCK — not a real state
@@ -36,15 +41,50 @@ export function ExperienceDetailSheet({
   if (!experience) return null;
   return (
     <Sheet visible={visible} onClose={onClose} title={experience.title}>
-      {visible ? <Body experience={experience} /> : null}
+      {visible ? <Body experience={experience} onClose={onClose} /> : null}
     </Sheet>
   );
 }
 
-function Body({ experience }: { experience: MockExperience }) {
+function LinkRow({
+  icon,
+  label,
+  onPress,
+}: {
+  icon: keyof typeof Ionicons.glyphMap;
+  label: string;
+  onPress: () => void;
+}) {
+  return (
+    <Pressable
+      accessibilityRole="button"
+      onPress={onPress}
+      className="flex-row items-center gap-2 rounded-md border border-line bg-surface px-3 py-3"
+    >
+      <Ionicons name={icon} size={18} color={colors.ink} />
+      <Text className="flex-1 text-sm text-ink">{label}</Text>
+      <Ionicons name="chevron-forward" size={18} color={colors.muted} />
+    </Pressable>
+  );
+}
+
+function Body({
+  experience,
+  onClose,
+}: {
+  experience: MockExperience;
+  onClose: () => void;
+}) {
+  const router = useRouter();
   const [user, setUser] = useState<UserState>(
     experience.status === "joined" ? "joined" : "none",
   );
+  const group = groupById(experience.groupId);
+
+  const go = (nav: () => void) => {
+    onClose();
+    nav();
+  };
 
   const meta = statusMeta[experience.status];
   const joinedCount = experience.going + (user === "joined" ? 1 : 0);
@@ -85,6 +125,48 @@ function Body({ experience }: { experience: MockExperience }) {
         {experience.tags.map((t) => (
           <Chip key={t} label={t} />
         ))}
+      </View>
+
+      {/* Related screens */}
+      <View className="gap-2">
+        <LinkRow
+          icon="people-outline"
+          label={`Se deltakere (${experience.going})`}
+          onPress={() =>
+            go(() =>
+              router.push({
+                pathname: "/attendees/[id]",
+                params: { id: experience.id },
+              }),
+            )
+          }
+        />
+        {group ? (
+          <LinkRow
+            icon="people-circle-outline"
+            label={`Gruppe: ${group.name}`}
+            onPress={() =>
+              go(() =>
+                router.push({
+                  pathname: "/group/[id]",
+                  params: { id: group.id },
+                }),
+              )
+            }
+          />
+        ) : null}
+        <LinkRow
+          icon="settings-outline"
+          label="Administrer (vert)"
+          onPress={() =>
+            go(() =>
+              router.push({
+                pathname: "/host/[id]",
+                params: { id: experience.id },
+              }),
+            )
+          }
+        />
       </View>
 
       {/* In-chat banner — shown once "joined"/"waitlisted" (DEMO link). */}

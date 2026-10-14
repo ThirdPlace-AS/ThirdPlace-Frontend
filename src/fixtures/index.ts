@@ -176,6 +176,7 @@ export type MockExperience = {
   host: string;
   when: string;
   placeId: string;
+  groupId: string;
   status: ExperienceStatus;
   capacity: number;
   going: number;
@@ -190,6 +191,7 @@ export const experiences: MockExperience[] = [
     host: "Maria M.",
     when: "Lør 09:00",
     placeId: "p1",
+    groupId: "g1",
     status: "open",
     capacity: 8,
     going: 5,
@@ -202,6 +204,7 @@ export const experiences: MockExperience[] = [
     host: "Åse K.",
     when: "Søn 18:00",
     placeId: "p2",
+    groupId: "g2",
     status: "waitlist",
     capacity: 10,
     going: 10,
@@ -214,6 +217,7 @@ export const experiences: MockExperience[] = [
     host: "Tom T.",
     when: "Fre 19:00",
     placeId: "p3",
+    groupId: "g3",
     status: "full",
     capacity: 12,
     going: 12,
@@ -236,6 +240,110 @@ export function experiencesForPlace(placeId: string): MockExperience[] {
 }
 export function experienceById(id: string): MockExperience | undefined {
   return experiences.find((e) => e.id === id);
+}
+
+// ── Attendees / reviews / groups (MOCK — not canonical entities) ─────────────
+export type MockAttendee = {
+  id: string;
+  name: string;
+  initials: string;
+  isHost: boolean;
+};
+
+// Keyed by experience id.
+export const attendeesByExperience: Record<string, MockAttendee[]> = {
+  e1: [
+    { id: "a1", name: "Maria Monsen", initials: "MM", isHost: true },
+    { id: "a2", name: "Tom Tangen", initials: "TT", isHost: false },
+    { id: "a3", name: "Åse Kvam", initials: "ÅK", isHost: false },
+    { id: "a4", name: "Jonas Berg", initials: "JB", isHost: false },
+    { id: "a5", name: "Nina Dahl", initials: "ND", isHost: false },
+  ],
+  e2: [
+    { id: "a6", name: "Åse Kvam", initials: "ÅK", isHost: true },
+    { id: "a7", name: "Per Olsen", initials: "PO", isHost: false },
+  ],
+  e3: [{ id: "a8", name: "Tom Tangen", initials: "TT", isHost: true }],
+};
+
+export function attendeesForExperience(expId: string): MockAttendee[] {
+  return attendeesByExperience[expId] ?? [];
+}
+
+export type MockReview = {
+  id: string;
+  placeId: string;
+  author: string;
+  rating: number;
+  when: string;
+  text: string;
+};
+
+export const reviews: MockReview[] = [
+  {
+    id: "r1",
+    placeId: "p1",
+    author: "Kari N.",
+    rating: 5,
+    when: "2 uker siden",
+    text: "Beste kaffen på Løkka. Rolig om morgenen.",
+  },
+  {
+    id: "r2",
+    placeId: "p1",
+    author: "Ola H.",
+    rating: 4,
+    when: "1 måned siden",
+    text: "God stemning, men kan bli fullt i helgene.",
+  },
+  {
+    id: "r3",
+    placeId: "p2",
+    author: "Ingrid S.",
+    rating: 5,
+    when: "3 dager siden",
+    text: "Koselig bokkafé med et godt utvalg.",
+  },
+];
+
+export function reviewsForPlace(placeId: string): MockReview[] {
+  return reviews.filter((r) => r.placeId === placeId);
+}
+
+export type MockGroup = {
+  id: string;
+  name: string;
+  about: string;
+  memberCount: number;
+  members: string[]; // initials
+};
+
+export const groups: MockGroup[] = [
+  {
+    id: "g1",
+    name: "Morgenkaffe-gjengen",
+    about: "Naboer som møtes til kaffe i helgene.",
+    memberCount: 34,
+    members: ["MM", "TT", "ÅK", "JB", "ND"],
+  },
+  {
+    id: "g2",
+    name: "Løkka Lesesirkel",
+    about: "Månedlig lesesirkel på Grünerløkka.",
+    memberCount: 18,
+    members: ["ÅK", "PO", "IS"],
+  },
+  {
+    id: "g3",
+    name: "Naturvin-klubben",
+    about: "Vi smaker naturvin sammen én gang i måneden.",
+    memberCount: 52,
+    members: ["TT", "MM", "KN"],
+  },
+];
+
+export function groupById(id: string): MockGroup | undefined {
+  return groups.find((g) => g.id === id);
 }
 
 export type MockSwipeCard = {

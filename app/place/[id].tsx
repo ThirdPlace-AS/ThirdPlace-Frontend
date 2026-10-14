@@ -111,6 +111,28 @@ export default function PlaceDetailScreen() {
           </Pressable>
         ) : null}
 
+        <Pressable
+          accessibilityRole="button"
+          onPress={() =>
+            router.push({ pathname: "/reviews/[id]", params: { id: place.id } })
+          }
+        >
+          <Card>
+            <View className="flex-row items-center justify-between">
+              <View className="flex-row items-center gap-1">
+                <Ionicons name="star" size={16} color={colors.ember} />
+                <Text className="text-base font-semibold text-ink">
+                  {place.rating.toFixed(1)}
+                </Text>
+                <Text className="text-sm text-muted">
+                  · {place.reviews} anmeldelser
+                </Text>
+              </View>
+              <Ionicons name="chevron-forward" size={20} color={colors.muted} />
+            </View>
+          </Card>
+        </Pressable>
+
         <View className="gap-2">
           <Text className="text-base font-semibold text-ink">
             Arrangementer her
