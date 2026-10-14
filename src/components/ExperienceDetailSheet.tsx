@@ -156,6 +156,18 @@ function Body({
           />
         ) : null}
         <LinkRow
+          icon="location-outline"
+          label="Sjekk inn (GPS)"
+          onPress={() =>
+            go(() =>
+              router.push({
+                pathname: "/checkin/[id]",
+                params: { id: experience.id },
+              }),
+            )
+          }
+        />
+        <LinkRow
           icon="settings-outline"
           label="Administrer (vert)"
           onPress={() =>

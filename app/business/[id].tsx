@@ -1,6 +1,6 @@
 import { Ionicons } from "@expo/vector-icons";
 import { useLocalSearchParams, useRouter } from "expo-router";
-import { ScrollView, Text, View } from "react-native";
+import { Pressable, ScrollView, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { Card } from "@/components/Card";
@@ -93,6 +93,25 @@ export default function BusinessDetailScreen() {
             </Card>
           </View>
         ) : null}
+
+        <Pressable
+          accessibilityRole="button"
+          onPress={() => router.push("/verification")}
+        >
+          <Card>
+            <View className="flex-row items-center justify-between">
+              <View className="flex-row items-center gap-2">
+                <Ionicons
+                  name="shield-checkmark-outline"
+                  size={20}
+                  color={colors.ink}
+                />
+                <Text className="text-base text-ink">Verifiseringsstatus</Text>
+              </View>
+              <Ionicons name="chevron-forward" size={20} color={colors.muted} />
+            </View>
+          </Card>
+        </Pressable>
 
         <View className="flex-row items-center gap-2">
           <DemoBadge />
