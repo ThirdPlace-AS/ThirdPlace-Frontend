@@ -59,11 +59,19 @@ founder-approved), `historical` (prior doc, not V2.2-certified), `blocked`
 | Accessibility pass                                 | 22      | provisional | partial labels/roles                        | partial                      | —                | high     | a11y                 | no                   |
 | Map test coverage                                  | 24      | provisional | none (0 map tests)                          | missing                      | —                | high     | —                    | no                   |
 
-## Completion summary (M1 baseline)
+## Completion summary (after M1–M8)
 
-- **Demo-complete:** map canvas + fallback, detail sheet + all 9 content views, base filters, notifications, selected-marker highlight.
-- **Partial:** search (no overlay/grouped results), location control (no GPS), category pins (places only), loading/empty states, guest mode, a11y.
-- **Missing:** discovery modes, preview card, clustering, map/list toggle, vibes/time/price-band filters, permission states + manual area, error/offline/recovery, motion tokens, haptics, map tests.
-- **Contract-blocked:** personalization/ranking, social-location privacy, real counts, real mutations (join/save/follow/review/attendance), real search backend, saved persistence.
+- **Demo-complete:** map canvas + fallback, detail sheet + 9 content views,
+  6 discovery modes, floating preview card, map/list toggle + results list,
+  marker model + clustering, full search overlay (grouped results + recent),
+  base + vibes/time/price-band filters, notifications, selected-marker highlight,
+  central motion tokens, haptics, location permission UX + manual-area fallback,
+  guest sign-in journey, error/offline recovery, 53 unit/interaction tests.
+- **Contract-blocked:** personalization/ranking, social-location privacy, real
+  counts/social proof, real mutations (join/save/follow/review/attendance),
+  real search backend, saved persistence, real auth.
+- **Native-verification-outstanding:** real GPS, native tile load + clustering,
+  category pins/selected ring on tiles, camera/gesture feel, haptics, 60fps.
 
-See [MAP_BLOCKERS.md](MAP_BLOCKERS.md) for the blocker + native-verify registers.
+See [MAP_BLOCKERS.md](MAP_BLOCKERS.md) for the blocker + native-verify registers
+and [MAP_DELIVERABLES.md](MAP_DELIVERABLES.md) for journeys + completion classes.

@@ -1,4 +1,5 @@
 import { Ionicons } from "@expo/vector-icons";
+import { memo } from "react";
 import { Pressable, Text, View } from "react-native";
 import { Gesture, GestureDetector } from "react-native-gesture-handler";
 import Animated, {
@@ -21,7 +22,7 @@ import type { DiscoveryItem } from "./types/mapPresentation";
 // Handler; honors reduced motion. The tappable area and the Save/expand controls
 // are SIBLINGS (never nested buttons). Save writes the in-memory demo store
 // (persistence is CONTRACT-BLOCKED).
-export function MapPreviewCard({
+export const MapPreviewCard = memo(function MapPreviewCard({
   item,
   saved,
   onToggleSave,
@@ -141,4 +142,4 @@ export function MapPreviewCard({
       </Animated.View>
     </GestureDetector>
   );
-}
+});

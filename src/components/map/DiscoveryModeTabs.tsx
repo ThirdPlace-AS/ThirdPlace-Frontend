@@ -1,3 +1,4 @@
+import { memo } from "react";
 import { Pressable, ScrollView, Text, View } from "react-native";
 import Animated, { FadeIn, useReducedMotion } from "react-native-reanimated";
 
@@ -13,7 +14,8 @@ import {
 // Horizontal discovery-mode selector with a subtle animated active underline.
 // `role="tab"` + selected state announced for screen readers. For You / Friends
 // get a small "demo" dot (non-personalized shells — see docs/map/MAP_BLOCKERS.md).
-export function DiscoveryModeTabs({
+// memo'd: only re-renders when the active mode changes (onChange is stable).
+export const DiscoveryModeTabs = memo(function DiscoveryModeTabs({
   mode,
   onChange,
 }: {
@@ -71,4 +73,4 @@ export function DiscoveryModeTabs({
       })}
     </ScrollView>
   );
-}
+});

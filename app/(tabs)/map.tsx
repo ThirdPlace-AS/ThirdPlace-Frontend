@@ -1,5 +1,5 @@
 import { Ionicons } from "@expo/vector-icons";
-import { useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { ActivityIndicator, Pressable, Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
@@ -12,6 +12,10 @@ import { MapLocationSheet } from "@/components/map/MapLocationSheet";
 import { MapPreviewCard } from "@/components/map/MapPreviewCard";
 import { MapResultsList } from "@/components/map/MapResultsList";
 import { MapSearchOverlay } from "@/components/map/MapSearchOverlay";
+import type {
+  DiscoveryItem,
+  DiscoveryMode,
+} from "@/components/map/types/mapPresentation";
 import { useGuestMode } from "@/components/map/hooks/useGuestMode";
 import { useMapCamera } from "@/components/map/hooks/useMapCamera";
 import { useMapLocation } from "@/components/map/hooks/useMapLocation";
@@ -53,15 +57,23 @@ export default function MapScreen() {
   const guest = useGuestMode();
   const [signInOpen, setSignInOpen] = useState(false);
 
+  // Stable methods (the hooks useCallback these) for memo-friendly handlers.
+  const { selectPreview, expand, openTarget } = selection;
+  const { setMode: setDiscoveryMode } = discovery;
+  const { toggle: toggleSaved } = saved;
+
   // Save is an account-only action: a guest gets a sign-in prompt instead.
-  const handleToggleSave = (markerId: string) => {
-    if (guest.isGuest) {
-      setSignInOpen(true);
-      return;
-    }
-    haptics.selection();
-    saved.toggle(markerId);
-  };
+  const handleToggleSave = useCallback(
+    (markerId: string) => {
+      if (guest.isGuest) {
+        setSignInOpen(true);
+        return;
+      }
+      haptics.selection();
+      toggleSaved(markerId);
+    },
+    [guest.isGuest, toggleSaved],
+  );
 
   // Mock async load so the surface can show loading/error states (no backend).
   // `offline` is a demo toggle (from the location sheet) that forces an error.
@@ -87,28 +99,44 @@ export default function MapScreen() {
     return map;
   }, [items]);
 
-  const handleSelectMarker = (markerId: string) => {
-    const item = itemByMarker.get(markerId);
-    if (item) {
-      haptics.selection();
-      selection.selectPreview(item);
-    }
-  };
+  // Handlers passed to memoized children are stabilized so the memo holds.
+  const handleSelectMarker = useCallback(
+    (markerId: string) => {
+      const item = itemByMarker.get(markerId);
+      if (item) {
+        haptics.selection();
+        selectPreview(item);
+      }
+    },
+    [itemByMarker, selectPreview],
+  );
 
-  const handleModeChange = (m: typeof discovery.mode) => {
-    haptics.selection();
-    discovery.setMode(m);
-  };
+  const handleModeChange = useCallback(
+    (m: DiscoveryMode) => {
+      haptics.selection();
+      setDiscoveryMode(m);
+    },
+    [setDiscoveryMode],
+  );
 
   const handleApplyFilters = (next: typeof filters.filters) => {
     haptics.light();
     filters.setFilters(next);
   };
 
-  const handleExpandPreview = () => {
+  const handleExpandPreview = useCallback(() => {
     haptics.light();
-    selection.expand();
-  };
+    expand();
+  }, [expand]);
+
+  const handleListSelect = useCallback(
+    (i: DiscoveryItem) => openTarget({ kind: i.kind, id: i.id }),
+    [openTarget],
+  );
+  const handleListToggleSave = useCallback(
+    (i: DiscoveryItem) => handleToggleSave(i.markerId),
+    [handleToggleSave],
+  );
 
   const handleLocationPress = () => {
     if (location.status === "granted") {
@@ -145,9 +173,9 @@ export default function MapScreen() {
           <MapResultsList
             items={items}
             selectedMarkerId={selection.selectedMarkerId}
-            onSelect={(i) => selection.openTarget({ kind: i.kind, id: i.id })}
+            onSelect={handleListSelect}
             isSaved={saved.isSaved}
-            onToggleSave={(i) => handleToggleSave(i.markerId)}
+            onToggleSave={handleListToggleSave}
             demo={discovery.demo}
             note={discovery.note}
             emptyMessage={discovery.emptyMessage}

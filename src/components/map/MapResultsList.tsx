@@ -1,4 +1,5 @@
 import { Ionicons } from "@expo/vector-icons";
+import { memo } from "react";
 import { FlatList, Pressable, Text, View } from "react-native";
 
 import { DemoBadge } from "@/components/DemoBadge";
@@ -11,7 +12,7 @@ import type { DiscoveryItem } from "./types/mapPresentation";
 // sheet; the row matching the map selection is highlighted so the two views stay
 // in sync. The row tap target and the Save control are SIBLINGS (no nested
 // buttons). Save writes the in-memory demo store.
-export function MapResultsList({
+export const MapResultsList = memo(function MapResultsList({
   items,
   selectedMarkerId,
   onSelect,
@@ -104,4 +105,4 @@ export function MapResultsList({
       }}
     />
   );
-}
+});
