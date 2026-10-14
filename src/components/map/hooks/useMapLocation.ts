@@ -1,7 +1,11 @@
-import * as Location from "expo-location";
 import { useCallback, useState } from "react";
 
 import { MAP_CENTER, type MockArea } from "@/fixtures";
+
+// expo-location is loaded lazily inside request() so a build that doesn't include
+// the native module doesn't crash at import — the request just resolves to
+// "unavailable" and the manual-area fallback takes over.
+type LocationModule = typeof import("expo-location");
 
 // Location states we present. "idle" = never requested; "unavailable" = the
 // permission/GPS API could not be reached (web blocked, Expo Go limits, revoked).
@@ -25,6 +29,8 @@ export function useMapLocation() {
   const request = useCallback(async () => {
     setStatus("requesting");
     try {
+      // eslint-disable-next-line @typescript-eslint/no-require-imports
+      const Location: LocationModule = require("expo-location");
       const perm = await Location.requestForegroundPermissionsAsync();
       if (perm.status !== "granted") {
         setStatus("denied");
