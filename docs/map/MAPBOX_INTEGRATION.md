@@ -46,8 +46,10 @@ token only decides whether a native build renders tiles vs. shows `SoftMap`.
   it in the Mapbox account and apply URL restrictions.
 - **`MAPBOX_DOWNLOADS_TOKEN` (secret `sk.*`, `DOWNLOADS:READ` scope)** — **required at Android native
   build time** for `@rnmapbox/maps@^10.x` (Maven auth to fetch the native SDK). Read only in
-  `app.config.ts` and passed to the config plugin as `RNMapboxMapsDownloadToken`. It is a native
-  build input (Gradle/Pods), **never** written to `expoConfig.extra`, never exposed as `EXPO_PUBLIC_*`,
+  `app.config.ts`, which maps it onto the `RNMAPBOX_MAPS_DOWNLOAD_TOKEN` env var the plugin reads
+  (the old `RNMapboxMapsDownloadToken` plugin option is deprecated and would land in
+  `gradle.properties`). It is a native build input (Gradle/Pods), **never** written to
+  `expoConfig.extra`, never exposed as `EXPO_PUBLIC_*`,
   and so **never inlined into the JS bundle**. Set it in the shell / EAS secrets; never commit it.
   Not needed for Expo Go / web (no native compile). The CI bundle job greps exported bundles to
   assert no `sk.*` string leaks.
