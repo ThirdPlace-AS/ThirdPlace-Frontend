@@ -1,8 +1,10 @@
-import { ScrollView, Text, View } from "react-native";
+import { Pressable, ScrollView, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { Button } from "@/components/Button";
 import { Card } from "@/components/Card";
+import { DemoBadge } from "@/components/DemoBadge";
+import { useGuestMode } from "@/components/map/hooks/useGuestMode";
 import { profile } from "@/fixtures";
 
 function Stat({ value, label }: { value: number; label: string }) {
@@ -16,6 +18,7 @@ function Stat({ value, label }: { value: number; label: string }) {
 
 // Fixture profile (visual only). No account/session backend.
 export default function ProfileScreen() {
+  const guest = useGuestMode();
   return (
     <SafeAreaView className="flex-1 bg-background" edges={["top"]}>
       <ScrollView contentContainerClassName="gap-5 p-gutter">
@@ -41,6 +44,30 @@ export default function ProfileScreen() {
             <Stat value={profile.stats.venner} label="Venner" />
           </View>
         </Card>
+
+        <Pressable
+          accessibilityRole="switch"
+          accessibilityLabel="Vis som gjest (demo)"
+          accessibilityState={{ checked: guest.isGuest }}
+          onPress={guest.toggle}
+          className="flex-row items-center justify-between rounded-md border border-line bg-surface px-4 py-3"
+        >
+          <View className="flex-1 flex-row items-center gap-2">
+            <Text className="text-base text-ink">Vis som gjest</Text>
+            <DemoBadge />
+          </View>
+          <View
+            className={`h-6 w-11 justify-center rounded-full px-0.5 ${
+              guest.isGuest ? "bg-ink" : "bg-surfaceMuted"
+            }`}
+          >
+            <View
+              className={`h-5 w-5 rounded-full bg-surface ${
+                guest.isGuest ? "self-end" : "self-start"
+              }`}
+            />
+          </View>
+        </Pressable>
 
         <View className="gap-3">
           <Button label="Rediger profil" variant="secondary" />

@@ -46,22 +46,24 @@ export function MapboxMap({
   selectedMarkerId,
   onSelectMarker,
   recenterSignal,
+  center = MAP_CENTER,
 }: {
   markers: DiscoveryItem[];
   selectedMarkerId?: string | null;
   onSelectMarker?: (markerId: string) => void;
   recenterSignal?: number;
+  center?: [number, number];
 }) {
   const cameraRef = useRef<Camera>(null);
 
   useEffect(() => {
     if (recenterSignal === undefined || recenterSignal === 0) return;
     cameraRef.current?.setCamera({
-      centerCoordinate: MAP_CENTER,
+      centerCoordinate: center,
       zoomLevel: 13,
       animationDuration: motion.duration.recenter,
     });
-  }, [recenterSignal]);
+  }, [recenterSignal, center]);
 
   const shape = useMemo<FeatureCollection<Point>>(
     () => ({
@@ -85,7 +87,7 @@ export function MapboxMap({
       <Camera
         ref={cameraRef}
         zoomLevel={13}
-        centerCoordinate={MAP_CENTER}
+        centerCoordinate={center}
         animationDuration={0}
       />
       <ShapeSource

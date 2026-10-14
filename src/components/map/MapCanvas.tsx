@@ -12,8 +12,10 @@ type MapProps = {
   // markerId of the current selection (highlights its pin).
   selectedMarkerId?: string | null;
   onSelectMarker?: (markerId: string) => void;
-  // Bump to recenter the real map on the MOCK demo location (SoftMap ignores it).
+  // Bump to recenter the real map on `center` (SoftMap ignores it).
   recenterSignal?: number;
+  // Camera center (GPS fix / manual area / demo default). SoftMap ignores it.
+  center?: [number, number];
 };
 
 // Native availability and token presence are SEPARATE concerns (see the long note
@@ -129,6 +131,7 @@ export function MapCanvas({
   selectedMarkerId,
   onSelectMarker,
   recenterSignal,
+  center,
   height = 160,
   fill = false,
 }: MapProps & { height?: number; fill?: boolean }) {
@@ -147,6 +150,7 @@ export function MapCanvas({
           selectedMarkerId={selectedMarkerId}
           onSelectMarker={onSelectMarker}
           recenterSignal={recenterSignal}
+          center={center}
         />
       ) : (
         <SoftMap
