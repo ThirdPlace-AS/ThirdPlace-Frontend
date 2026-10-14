@@ -1,4 +1,5 @@
 import { Ionicons } from "@expo/vector-icons";
+import { useRouter } from "expo-router";
 import { Text, View } from "react-native";
 
 import { Button } from "@/components/Button";
@@ -8,8 +9,9 @@ import { Sheet } from "@/components/Sheet";
 import type { MockPlace } from "@/fixtures";
 import { colors } from "@/theme";
 
-// Visual place/experience detail (PDF 6). Participants, reviews and the "join"
-// action are MOCK — no real attendance, reviews, or booking (BLOCKED_CONTRACT_GAP).
+// Quick place peek (PDF 6). Participants and reviews shown are MOCK — no real
+// attendance, reviews, or booking (BLOCKED_CONTRACT_GAP). "Åpne" opens the full
+// place-detail screen.
 export function PlaceDetailSheet({
   place,
   visible,
@@ -19,6 +21,7 @@ export function PlaceDetailSheet({
   visible: boolean;
   onClose: () => void;
 }) {
+  const router = useRouter();
   if (!place) return null;
   return (
     <Sheet visible={visible} onClose={onClose} title={place.name}>
@@ -67,7 +70,14 @@ export function PlaceDetailSheet({
           Demo — ingen reell påmelding eller betaling skjer.
         </Text>
       </View>
-      <Button label="Bli med" variant="ember" onPress={onClose} />
+      <Button
+        label="Åpne"
+        variant="ink"
+        onPress={() => {
+          onClose();
+          router.push({ pathname: "/place/[id]", params: { id: place.id } });
+        }}
+      />
     </Sheet>
   );
 }

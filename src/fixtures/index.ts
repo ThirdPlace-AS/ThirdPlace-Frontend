@@ -105,6 +105,139 @@ export const places: MockPlace[] = [
 // Map default camera center (mock — central Oslo).
 export const MAP_CENTER: [number, number] = [10.758, 59.9227];
 
+// ── Businesses (MOCK — not a canonical entity/DTO) ───────────────────────────
+export type MockBusiness = {
+  id: string;
+  name: string;
+  category: Exclude<PlaceCategory, "Alle">;
+  verified: boolean;
+  about: string;
+  address: string;
+  hours: string;
+  placeId: string; // the place this business runs
+};
+
+export const businesses: MockBusiness[] = [
+  {
+    id: "b1",
+    name: "Oslo Kaffebar AS",
+    category: "Kafé",
+    verified: true,
+    about: "Familiedrevet mikrobakeri og kafé siden 2014.",
+    address: "Thorvald Meyers gate 12, 0555 Oslo",
+    hours: "Man–fre 07–18 · Lør–søn 09–17",
+    placeId: "p1",
+  },
+  {
+    id: "b2",
+    name: "Grünerløkka Bokcafé",
+    category: "Bokcafé",
+    verified: false,
+    about: "Uavhengig bokkafé med bruktbøker og lesesirkler.",
+    address: "Markveien 35, 0554 Oslo",
+    hours: "Hver dag 10–22",
+    placeId: "p2",
+  },
+  {
+    id: "b3",
+    name: "Mathallen Vinbar",
+    category: "Vinbar",
+    verified: true,
+    about: "Naturvinbar inne i Mathallen Oslo.",
+    address: "Vulkan 5, 0178 Oslo",
+    hours: "Ons–søn 15–23",
+    placeId: "p3",
+  },
+  {
+    id: "b4",
+    name: "Sofienberg Sykkelverksted",
+    category: "Verksted",
+    verified: false,
+    about: "Drop-in sykkelverksted drevet av entusiaster.",
+    address: "Sofienberggata 7, 0558 Oslo",
+    hours: "Man–fre 10–18",
+    placeId: "p4",
+  },
+];
+
+// ── Experiences (MOCK — lifecycle is a demo state, not a real state machine) ──
+export const EXPERIENCE_STATUSES = [
+  "open",
+  "waitlist",
+  "full",
+  "joined",
+  "cancelled",
+] as const;
+export type ExperienceStatus = (typeof EXPERIENCE_STATUSES)[number];
+
+export type MockExperience = {
+  id: string;
+  title: string;
+  host: string;
+  when: string;
+  placeId: string;
+  status: ExperienceStatus;
+  capacity: number;
+  going: number;
+  tags: string[];
+  about: string;
+};
+
+export const experiences: MockExperience[] = [
+  {
+    id: "e1",
+    title: "Morgenkaffe & prat",
+    host: "Maria M.",
+    when: "Lør 09:00",
+    placeId: "p1",
+    status: "open",
+    capacity: 8,
+    going: 5,
+    tags: ["Sosialt", "Kaffe"],
+    about: "Uformell morgenkaffe for naboer. Bare å møte opp.",
+  },
+  {
+    id: "e2",
+    title: "Lesesirkel: nordisk krim",
+    host: "Åse K.",
+    when: "Søn 18:00",
+    placeId: "p2",
+    status: "waitlist",
+    capacity: 10,
+    going: 10,
+    tags: ["Bøker", "Diskusjon"],
+    about: "Månedlig lesesirkel. Denne gang nordisk krim.",
+  },
+  {
+    id: "e3",
+    title: "Naturvin-smaking",
+    host: "Tom T.",
+    when: "Fre 19:00",
+    placeId: "p3",
+    status: "full",
+    capacity: 12,
+    going: 12,
+    tags: ["Vin", "Smaking"],
+    about: "Guidet smaking av fem naturviner med småretter.",
+  },
+];
+
+export function placeById(id: string): MockPlace | undefined {
+  return places.find((p) => p.id === id);
+}
+export function businessForPlace(placeId: string): MockBusiness | undefined {
+  return businesses.find((b) => b.placeId === placeId);
+}
+export function businessById(id: string): MockBusiness | undefined {
+  return businesses.find((b) => b.id === id);
+}
+export function experiencesForPlace(placeId: string): MockExperience[] {
+  return experiences.filter((e) => e.placeId === placeId);
+}
+export function experienceById(id: string): MockExperience | undefined {
+  return experiences.find((e) => e.id === id);
+}
+
 export type MockSwipeCard = {
   id: string;
   title: string;
