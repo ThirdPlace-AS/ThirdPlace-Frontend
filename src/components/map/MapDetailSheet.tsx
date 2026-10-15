@@ -1,7 +1,5 @@
 import { Ionicons } from "@expo/vector-icons";
-import BottomSheet, { BottomSheetScrollView } from "@gorhom/bottom-sheet";
-import { useMemo } from "react";
-import { Pressable, Text, View } from "react-native";
+import { Modal, Pressable, ScrollView, Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { businessById, experienceById, groupById, placeById } from "@/fixtures";
@@ -64,6 +62,10 @@ function Content({ target, push }: { target: SheetTarget; push: PushFn }) {
   }
 }
 
+// Detail sheet — a bottom-docked Modal (matches the app's other sheets): slides up
+// from the bottom edge, dims the map behind it, and closes on a backdrop tap, the
+// close button, or Android back. Drilling in pushes onto the in-sheet stack
+// (content swaps + a back chevron) instead of pushing a route.
 export function MapDetailSheet({
   stack,
   push,
@@ -76,66 +78,69 @@ export function MapDetailSheet({
   onClose: () => void;
 }) {
   const insets = useSafeAreaInsets();
-  // Keep the sheet above the bottom tab bar (~49pt + bottom safe area).
-  const tabBarHeight = 49 + insets.bottom;
-  const snapPoints = useMemo(() => ["16%", "50%", "92%"], []);
-
   const open = stack.length > 0;
   const top = stack[stack.length - 1];
+  const nested = stack.length > 1;
 
   return (
-    <BottomSheet
-      // Controlled: open → mid snap; closed → hidden. Children are always
-      // rendered (empty View when closed) so gorhom can measure snap points.
-      index={open ? 1 : -1}
-      snapPoints={snapPoints}
-      enableDynamicSizing={false}
-      enablePanDownToClose
-      bottomInset={tabBarHeight}
-      onChange={(i) => {
-        if (i === -1 && open) onClose();
-      }}
-      handleIndicatorStyle={{ backgroundColor: colors.line }}
-      backgroundStyle={{ backgroundColor: colors.surface }}
+    <Modal
+      visible={open}
+      transparent
+      animationType="slide"
+      onRequestClose={nested ? onBack : onClose}
     >
-      {top ? (
-        <>
-          <View className="flex-row items-center gap-2 px-gutter pb-2">
-            {stack.length > 1 ? (
+      <View className="flex-1 justify-end">
+        {/* Backdrop: tap outside the card to close. Sibling BEHIND the opaque
+            card, so taps on the card don't fall through to it. */}
+        <Pressable
+          accessibilityRole="button"
+          accessibilityLabel="Lukk"
+          onPress={onClose}
+          className="absolute inset-0 bg-ink/40"
+        />
+
+        {top ? (
+          <View
+            className="max-h-[90%] rounded-t-lg bg-surface"
+            style={{ paddingBottom: insets.bottom + 8 }}
+          >
+            <View className="my-2 h-1 w-10 self-center rounded-full bg-line" />
+            <View className="flex-row items-center gap-2 px-gutter pb-2">
+              {nested ? (
+                <Pressable
+                  accessibilityRole="button"
+                  accessibilityLabel="Tilbake"
+                  onPress={onBack}
+                  className="-ml-2 h-9 w-9 items-center justify-center rounded-full"
+                >
+                  <Ionicons name="chevron-back" size={22} color={colors.ink} />
+                </Pressable>
+              ) : null}
+              <Text
+                className="flex-1 text-xl font-bold text-ink"
+                numberOfLines={1}
+              >
+                {titleFor(top)}
+              </Text>
               <Pressable
                 accessibilityRole="button"
-                accessibilityLabel="Tilbake"
-                onPress={onBack}
-                className="-ml-2 h-9 w-9 items-center justify-center rounded-full"
+                accessibilityLabel="Lukk"
+                onPress={onClose}
+                className="h-9 w-9 items-center justify-center rounded-full"
+                hitSlop={8}
               >
-                <Ionicons name="chevron-back" size={22} color={colors.ink} />
+                <Ionicons name="close" size={22} color={colors.muted} />
               </Pressable>
-            ) : null}
-            <Text
-              className="flex-1 text-xl font-bold text-ink"
-              numberOfLines={1}
+            </View>
+            <ScrollView
+              contentContainerClassName="gap-4 px-gutter pb-8"
+              keyboardShouldPersistTaps="handled"
             >
-              {titleFor(top)}
-            </Text>
-            <Pressable
-              accessibilityRole="button"
-              accessibilityLabel="Lukk"
-              onPress={onClose}
-              className="h-9 w-9 items-center justify-center rounded-full"
-            >
-              <Ionicons name="close" size={22} color={colors.muted} />
-            </Pressable>
+              <Content target={top} push={push} />
+            </ScrollView>
           </View>
-          <BottomSheetScrollView
-            contentContainerClassName="gap-4 px-gutter pb-16"
-            keyboardShouldPersistTaps="handled"
-          >
-            <Content target={top} push={push} />
-          </BottomSheetScrollView>
-        </>
-      ) : (
-        <View />
-      )}
-    </BottomSheet>
+        ) : null}
+      </View>
+    </Modal>
   );
 }

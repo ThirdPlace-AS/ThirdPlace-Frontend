@@ -29,9 +29,9 @@ export function MapSearchOverlay({
   return (
     <Modal
       visible={visible}
-      animationType="slide"
+      animationType="fade"
       onRequestClose={onClose}
-      transparent={false}
+      transparent
     >
       {/* Mount the body only while open so query state seeds fresh from
           `initialQuery` on each open (no setState-in-effect). */}
@@ -78,92 +78,106 @@ function SearchBody({
   };
 
   return (
-    <View
-      className="flex-1 bg-background"
-      style={{ paddingTop: insets.top + 8 }}
-    >
-      {/* Header: back + search field */}
-      <View className="flex-row items-center gap-2 px-gutter pb-2">
-        <Pressable
-          accessibilityRole="button"
-          accessibilityLabel="Tilbake"
-          onPress={onClose}
-          className="-ml-1 h-10 w-10 items-center justify-center rounded-full"
-        >
-          <Ionicons name="arrow-back" size={24} color={colors.ink} />
-        </Pressable>
-        <View className="flex-1">
-          <SearchBar
-            placeholder="Søk steder, opplevelser, grupper"
-            value={query}
-            onChangeText={setQuery}
-            onSubmit={submit}
-            autoFocus
-            right={
-              hasQuery ? (
-                <Pressable
-                  accessibilityRole="button"
-                  accessibilityLabel="Tøm søk"
-                  onPress={() => setQuery("")}
-                  hitSlop={8}
-                >
-                  <Ionicons
-                    name="close-circle"
-                    size={18}
-                    color={colors.muted}
-                  />
-                </Pressable>
-              ) : undefined
-            }
-          />
-        </View>
-      </View>
+    <View className="flex-1">
+      {/* Dim backdrop — tap the area below the panel to close (plus the back
+          arrow and Android back). */}
+      <Pressable
+        accessibilityRole="button"
+        accessibilityLabel="Lukk"
+        onPress={onClose}
+        className="absolute inset-0 bg-ink/40"
+      />
 
-      <ScrollView
-        className="flex-1"
-        contentContainerClassName="gap-4 px-gutter pb-16 pt-2"
-        keyboardShouldPersistTaps="handled"
+      <View
+        className="flex-1 bg-background"
+        style={{
+          paddingTop: insets.top + 8,
+          marginBottom: insets.bottom + 56,
+        }}
       >
-        {!hasQuery ? (
-          <RecentSearches
-            recent={recent}
-            onPick={submit}
-            onRemove={remove}
-            onClear={clear}
-          />
-        ) : results.total === 0 ? (
-          <View className="items-center gap-2 pt-10">
-            <Ionicons name="search" size={32} color={colors.muted} />
-            <Text className="text-base font-semibold text-ink">
-              Ingen treff
-            </Text>
-            <Text className="text-center text-sm text-muted">
-              Prøv et annet søkeord.
-            </Text>
+        {/* Header: back + search field */}
+        <View className="flex-row items-center gap-2 px-gutter pb-2">
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel="Tilbake"
+            onPress={onClose}
+            className="-ml-1 h-10 w-10 items-center justify-center rounded-full"
+          >
+            <Ionicons name="arrow-back" size={24} color={colors.ink} />
+          </Pressable>
+          <View className="flex-1">
+            <SearchBar
+              placeholder="Søk steder, opplevelser, grupper"
+              value={query}
+              onChangeText={setQuery}
+              onSubmit={submit}
+              autoFocus
+              right={
+                hasQuery ? (
+                  <Pressable
+                    accessibilityRole="button"
+                    accessibilityLabel="Tøm søk"
+                    onPress={() => setQuery("")}
+                    hitSlop={8}
+                  >
+                    <Ionicons
+                      name="close-circle"
+                      size={18}
+                      color={colors.muted}
+                    />
+                  </Pressable>
+                ) : undefined
+              }
+            />
           </View>
-        ) : (
-          <>
-            <ResultGroup
-              title="På kartet"
-              icon="location-outline"
-              items={results.places}
-              onPick={pick}
+        </View>
+
+        <ScrollView
+          className="flex-1"
+          contentContainerClassName="gap-4 px-gutter pb-16 pt-2"
+          keyboardShouldPersistTaps="handled"
+        >
+          {!hasQuery ? (
+            <RecentSearches
+              recent={recent}
+              onPick={submit}
+              onRemove={remove}
+              onClear={clear}
             />
-            <ResultGroup
-              title="Opplevelser"
-              icon="sparkles-outline"
-              items={results.experiences}
-              onPick={pick}
-            />
-            <ResultGroup
-              title="Grupper"
-              icon="people-outline"
-              items={results.groups}
-              onPick={pick}
-            />
-          </>
-        )}
-      </ScrollView>
+          ) : results.total === 0 ? (
+            <View className="items-center gap-2 pt-10">
+              <Ionicons name="search" size={32} color={colors.muted} />
+              <Text className="text-base font-semibold text-ink">
+                Ingen treff
+              </Text>
+              <Text className="text-center text-sm text-muted">
+                Prøv et annet søkeord.
+              </Text>
+            </View>
+          ) : (
+            <>
+              <ResultGroup
+                title="På kartet"
+                icon="location-outline"
+                items={results.places}
+                onPick={pick}
+              />
+              <ResultGroup
+                title="Opplevelser"
+                icon="sparkles-outline"
+                items={results.experiences}
+                onPick={pick}
+              />
+              <ResultGroup
+                title="Grupper"
+                icon="people-outline"
+                items={results.groups}
+                onPick={pick}
+              />
+            </>
+          )}
+        </ScrollView>
+      </View>
     </View>
   );
 }

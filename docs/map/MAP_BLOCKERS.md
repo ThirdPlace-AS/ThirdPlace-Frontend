@@ -30,7 +30,7 @@ native API but marked unverified until a device build runs
 | ID   | Capability                      | Status                                                       |
 | ---- | ------------------------------- | ------------------------------------------------------------ |
 | NV-1 | Real Mapbox tile load           | ✅ verified on Android emulator (dev build + Metro)          |
-| NV-2 | Native marker rendering         | ✅ category pins verified on emulator; selected ring pending |
+| NV-2 | Native marker rendering         | ✅ category pins + selected ring verified on emulator |
 | NV-3 | Native clustering (ShapeSource) | pending (4 fixtures don't cluster at this zoom)              |
 | NV-4 | Camera transitions / recenter   | pending                                                      |
 | NV-5 | Native map gestures             | pending (pan/pinch vs sheet/preview handoff)                 |
