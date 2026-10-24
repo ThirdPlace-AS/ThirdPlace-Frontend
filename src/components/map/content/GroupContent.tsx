@@ -3,7 +3,6 @@ import { Text, View } from "react-native";
 import { Avatar } from "@/components/Avatar";
 import { Button } from "@/components/Button";
 import { Card } from "@/components/Card";
-import { DemoBadge } from "@/components/DemoBadge";
 import { GuestLock } from "@/components/GuestLock";
 import { groupById } from "@/fixtures";
 
@@ -30,13 +29,6 @@ export function GroupContent({ id }: { id: string }) {
       </Card>
 
       <GuestLock message="Logg inn for å bli medlem og se gruppechatten." />
-
-      <View className="flex-row items-center gap-2">
-        <DemoBadge />
-        <Text className="flex-1 text-xs text-muted">
-          Demo — ingen reell gruppemedlemskap eller chat.
-        </Text>
-      </View>
 
       <Button label="Bli medlem" variant="ember" />
     </View>

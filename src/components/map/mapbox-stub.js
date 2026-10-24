@@ -7,9 +7,19 @@ const Noop = () => null;
 
 module.exports = {
   __esModule: true,
-  default: { setAccessToken() {}, StyleURL: { Street: "street" } },
+  default: {
+    setAccessToken() {},
+    StyleURL: {
+      Street: "street",
+      SatelliteStreet: "satellite-streets",
+      Outdoors: "outdoors",
+      Light: "light",
+      Dark: "dark",
+    },
+  },
   MapView: Noop,
   Camera: Noop,
+  UserLocation: Noop,
   PointAnnotation: Noop,
   MarkerView: Noop,
   ShapeSource: Noop,

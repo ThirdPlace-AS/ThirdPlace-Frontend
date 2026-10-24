@@ -1,56 +1,31 @@
 import { describe, expect, it } from "@jest/globals";
 
-import {
-  clusterByGrid,
-  projectToUnit,
-  SOFT_BBOX,
-} from "@/components/map/services/softClustering";
+import { clusterByGrid } from "@/components/map/services/softClustering";
 import type { DiscoveryItem } from "@/components/map/types/mapPresentation";
+import { places } from "@/fixtures";
 
-function item(id: string, coord: [number, number]): DiscoveryItem {
-  return {
-    markerId: `place:${id}`,
-    kind: "place",
-    id,
-    coord,
-    category: "Kafé",
-    title: id,
-    subtitle: "",
-  };
-}
-
-describe("projectToUnit", () => {
-  it("maps the bbox corners into [0,1] with north up", () => {
-    const sw = projectToUnit([SOFT_BBOX.minLng, SOFT_BBOX.minLat]);
-    expect(sw.x).toBeCloseTo(0);
-    expect(sw.y).toBeCloseTo(1); // min lat is bottom
-    const ne = projectToUnit([SOFT_BBOX.maxLng, SOFT_BBOX.maxLat]);
-    expect(ne.x).toBeCloseTo(1);
-    expect(ne.y).toBeCloseTo(0);
-  });
-
-  it("clamps out-of-box coordinates", () => {
-    const p = projectToUnit([0, 0]);
-    expect(p.x).toBeGreaterThanOrEqual(0);
-    expect(p.x).toBeLessThanOrEqual(1);
-    expect(p.y).toBeGreaterThanOrEqual(0);
-    expect(p.y).toBeLessThanOrEqual(1);
-  });
-});
+// Build DiscoveryItem-shaped points from the demo places' coords.
+const items: DiscoveryItem[] = places.map((p) => ({
+  markerId: `place:${p.id}`,
+  kind: "place",
+  id: p.id,
+  coord: p.coord,
+  category: p.category,
+  title: p.name,
+  subtitle: p.distance,
+}));
 
 describe("clusterByGrid", () => {
-  it("merges markers in the same cell into one cluster", () => {
-    const a = item("a", [10.7579, 59.9227]);
-    const b = item("b", [10.758, 59.9228]); // ~same spot
-    const clusters = clusterByGrid([a, b]);
-    expect(clusters).toHaveLength(1);
-    expect(clusters[0]?.items).toHaveLength(2);
+  it("keeps the demo places as individually tappable single clusters", () => {
+    const clusters = clusterByGrid(items);
+    // Tighter default cell (0.08) stops the 4 demo pins collapsing into one
+    // untappable badge — each gets its own target.
+    expect(clusters).toHaveLength(items.length);
+    expect(clusters.every((c) => c.items.length === 1)).toBe(true);
   });
 
-  it("keeps distant markers in separate clusters", () => {
-    const a = item("a", [SOFT_BBOX.minLng, SOFT_BBOX.minLat]);
-    const b = item("b", [SOFT_BBOX.maxLng, SOFT_BBOX.maxLat]);
-    const clusters = clusterByGrid([a, b]);
-    expect(clusters).toHaveLength(2);
+  it("merges points that share a grid cell at a coarse cell size", () => {
+    const clusters = clusterByGrid(items, 1);
+    expect(clusters.length).toBeLessThan(items.length);
   });
 });

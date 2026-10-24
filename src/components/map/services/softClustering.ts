@@ -40,7 +40,7 @@ export type SoftCluster = {
 // the same cell merge into one cluster with a count. Deterministic (input order).
 export function clusterByGrid(
   items: DiscoveryItem[],
-  cell = 0.18,
+  cell = 0.08,
 ): SoftCluster[] {
   const buckets = new Map<string, SoftCluster>();
   for (const item of items) {

@@ -3,7 +3,6 @@ import { Pressable, Text, View } from "react-native";
 
 import { Button } from "@/components/Button";
 import { Chip } from "@/components/Chip";
-import { DemoBadge } from "@/components/DemoBadge";
 import { Sheet } from "@/components/Sheet";
 import { OSLO_AREAS, type MockArea } from "@/fixtures";
 import { colors } from "@/theme";
@@ -100,17 +99,16 @@ export function MapLocationSheet({
         </View>
       </View>
 
-      {/* Demo: simulate an offline/error state to exercise recovery. */}
+      {/* Simulate an offline/error state to exercise recovery. */}
       <Pressable
         accessibilityRole="switch"
-        accessibilityLabel="Simuler frakoblet (demo)"
+        accessibilityLabel="Simuler frakoblet"
         accessibilityState={{ checked: offline }}
         onPress={onToggleOffline}
         className="flex-row items-center justify-between rounded-md border border-line bg-surface px-4 py-3"
       >
         <View className="flex-1 flex-row items-center gap-2">
           <Text className="text-base text-ink">Simuler frakoblet</Text>
-          <DemoBadge />
         </View>
         <View
           className={`h-6 w-11 justify-center rounded-full px-0.5 ${

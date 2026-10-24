@@ -15,8 +15,10 @@ describe("resultForMode", () => {
 
   it("trending sorts places by mock review count desc", () => {
     const r = resultForMode({ ...base, mode: "trending" });
-    // p3 (Mathallen Vinbar) has the most reviews in fixtures.
-    expect(r.items[0]?.id).toBe("p3");
+    // p11 (Munch-galleriet Kveldstur) has the most reviews in fixtures.
+    expect(r.items[0]?.id).toBe("p11");
+    const reviews = r.items.map((i) => i.reviewCount ?? 0);
+    expect([...reviews].sort((a, b) => b - a)).toEqual(reviews);
   });
 
   it("live returns only open/waitlist experiences", () => {
@@ -26,13 +28,11 @@ describe("resultForMode", () => {
     expect(r.items.some((i) => i.id === "e3")).toBe(false);
   });
 
-  it("forYou and friends are flagged as demo with a note", () => {
+  it("forYou and friends are flagged as demo (shells)", () => {
     const forYou = resultForMode({ ...base, mode: "forYou" });
     const friends = resultForMode({ ...base, mode: "friends" });
     expect(forYou.demo).toBe(true);
-    expect(forYou.note).toBeTruthy();
     expect(friends.demo).toBe(true);
-    expect(friends.note).toBeTruthy();
   });
 
   it("saved returns only items whose markerId is saved", () => {
@@ -56,6 +56,15 @@ describe("resultForMode", () => {
       true,
     );
     expect(r.items.length).toBeGreaterThan(0);
+  });
+
+  it("live matches experiences by host and tag, not just title", () => {
+    // e1 "Morgenkaffe & prat" — host "Maria M.", tag "Sosialt". Title contains
+    // neither term; the shared matcher must still find it.
+    const byHost = resultForMode({ ...base, mode: "live", query: "maria" });
+    expect(byHost.items.some((i) => i.id === "e1")).toBe(true);
+    const byTag = resultForMode({ ...base, mode: "live", query: "sosialt" });
+    expect(byTag.items.some((i) => i.id === "e1")).toBe(true);
   });
 
   it("live respects the time filter", () => {

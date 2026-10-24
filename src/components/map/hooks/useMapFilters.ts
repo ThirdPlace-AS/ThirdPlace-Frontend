@@ -7,7 +7,8 @@ import {
   applyFilters,
   DEFAULT_FILTERS,
   type MapFilters,
-} from "../MapFilterSheet";
+  sortPlaces,
+} from "../services/mapFilters";
 
 // Owns search query + applied filters and derives the filtered place list. Pure
 // client-side over fixtures (no contract). Extracted from the map screen so the
@@ -17,7 +18,7 @@ export function useMapFilters() {
   const [filters, setFilters] = useState<MapFilters>(DEFAULT_FILTERS);
 
   const filteredPlaces = useMemo(
-    () => applyFilters(places, query, filters),
+    () => sortPlaces(applyFilters(places, query, filters), filters.ratingSort),
     [query, filters],
   );
   const extraCount = useMemo(() => activeExtraFilterCount(filters), [filters]);

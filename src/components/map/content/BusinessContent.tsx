@@ -2,7 +2,6 @@ import { Ionicons } from "@expo/vector-icons";
 import { Pressable, Text, View } from "react-native";
 
 import { Card } from "@/components/Card";
-import { DemoBadge } from "@/components/DemoBadge";
 import { businessById, placeById } from "@/fixtures";
 import { colors } from "@/theme";
 
@@ -87,13 +86,6 @@ export function BusinessContent({ id, push }: { id: string; push: PushFn }) {
           </View>
         </Card>
       </Pressable>
-
-      <View className="flex-row items-center gap-2">
-        <DemoBadge />
-        <Text className="flex-1 text-xs text-muted">
-          Demo — bedriftsprofil er visuell, ingen reelle data eller handlinger.
-        </Text>
-      </View>
     </View>
   );
 }

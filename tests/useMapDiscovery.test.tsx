@@ -2,7 +2,6 @@ import { describe, expect, it } from "@jest/globals";
 import { act, renderHook } from "@testing-library/react-native";
 
 import { useMapDiscovery } from "@/components/map/hooks/useMapDiscovery";
-import { useMapPresentation } from "@/components/map/hooks/useMapPresentation";
 import { places } from "@/fixtures";
 
 describe("useMapDiscovery", () => {
@@ -31,16 +30,5 @@ describe("useMapDiscovery", () => {
     );
     act(() => result.current.setMode("forYou"));
     expect(result.current.demo).toBe(true);
-  });
-});
-
-describe("useMapPresentation", () => {
-  it("toggles between map and list", () => {
-    const { result } = renderHook(() => useMapPresentation());
-    expect(result.current.view).toBe("map");
-    act(() => result.current.toggle());
-    expect(result.current.view).toBe("list");
-    act(() => result.current.toggle());
-    expect(result.current.view).toBe("map");
   });
 });

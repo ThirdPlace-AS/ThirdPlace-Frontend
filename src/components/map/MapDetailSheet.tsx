@@ -1,6 +1,11 @@
 import { Ionicons } from "@expo/vector-icons";
-import { Modal, Pressable, ScrollView, Text, View } from "react-native";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
+import BottomSheet, {
+  BottomSheetBackdrop,
+  type BottomSheetBackdropProps,
+  BottomSheetScrollView,
+} from "@gorhom/bottom-sheet";
+import { useCallback, useEffect, useMemo, useRef } from "react";
+import { Pressable, Text, View } from "react-native";
 
 import { businessById, experienceById, groupById, placeById } from "@/fixtures";
 import { colors } from "@/theme";
@@ -62,85 +67,125 @@ function Content({ target, push }: { target: SheetTarget; push: PushFn }) {
   }
 }
 
-// Detail sheet — a bottom-docked Modal (matches the app's other sheets): slides up
-// from the bottom edge, dims the map behind it, and closes on a backdrop tap, the
-// close button, or Android back. Drilling in pushes onto the in-sheet stack
-// (content swaps + a back chevron) instead of pushing a route.
+// Google-Maps-style expandable detail sheet (@gorhom/bottom-sheet). Draggable
+// with momentum between three snaps — peek (16%), mid (50%), full (92%). Marker
+// taps open it at the peek so a slice of the detail shows right away; the user
+// drags up for more or pulls down to dismiss. Above the peek a backdrop dims the
+// map and closes the sheet on tap; at the peek there is NO backdrop so the map
+// stays interactive (tapping the map collapses the sheet — handled in map.tsx).
+// Drilling in (reviews, attendees, …) swaps content on the in-sheet stack with a
+// back chevron instead of pushing a route.
 export function MapDetailSheet({
   stack,
+  openIndex,
+  openNonce,
   push,
   onBack,
   onClose,
 }: {
   stack: SheetTarget[];
+  // Snap index to animate to when a new target opens (0 peek / 1 mid).
+  openIndex: number;
+  // Bumped by the selection hook on every tap — re-snaps the sheet open even
+  // when the target is unchanged, so a marker tap always shows the detail.
+  openNonce: number;
   push: PushFn;
   onBack: () => void;
   onClose: () => void;
 }) {
-  const insets = useSafeAreaInsets();
+  const snapPoints = useMemo(() => ["35%", "60%", "92%"], []);
+
+  const sheetRef = useRef<BottomSheet>(null);
   const open = stack.length > 0;
   const top = stack[stack.length - 1];
   const nested = stack.length > 1;
+  // Re-snap only when the ROOT target changes (not on in-sheet push/back).
+  const rootKey = stack[0] ? `${stack[0].kind}:${stack[0].id}` : null;
+
+  // Open → animate to the requested snap; closed → hide. Driven imperatively so
+  // the user can still drag freely once it is open. `openNonce` is in the deps
+  // so EVERY tap re-snaps the sheet open, even when the target is unchanged or
+  // the sheet was left mounted at a different snap. Belt-and-suspenders with the
+  // declarative `index` prop below, which handles the first-mount open without
+  // relying on effect timing.
+  useEffect(() => {
+    if (open) sheetRef.current?.snapToIndex(openIndex);
+    else sheetRef.current?.close();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [open, rootKey, openNonce]);
+
+  const renderBackdrop = useCallback(
+    (props: BottomSheetBackdropProps) => (
+      <BottomSheetBackdrop
+        {...props}
+        appearsOnIndex={1}
+        disappearsOnIndex={0}
+        pressBehavior="close"
+      />
+    ),
+    [],
+  );
 
   return (
-    <Modal
-      visible={open}
-      transparent
-      animationType="slide"
-      onRequestClose={nested ? onBack : onClose}
+    <BottomSheet
+      ref={sheetRef}
+      // Declarative open: mount already at the requested snap so the detail
+      // shows on the first frame (no wait for the effect to fire — fixes taps
+      // that intermittently opened nothing on the SoftMap/web path).
+      index={open ? openIndex : -1}
+      snapPoints={snapPoints}
+      enableDynamicSizing={false}
+      enablePanDownToClose
+      // No bottomInset: the sheet docks to the bottom of the screen content
+      // (just above the tab bar) so it reads as sliding up from the nav instead
+      // of floating in the middle of the map.
+      backdropComponent={renderBackdrop}
+      onClose={() => {
+        // Sync React state when the sheet is dismissed by gesture/backdrop.
+        if (open) onClose();
+      }}
+      handleIndicatorStyle={{ backgroundColor: colors.line }}
+      backgroundStyle={{ backgroundColor: colors.surface }}
     >
-      <View className="flex-1 justify-end">
-        {/* Backdrop: tap outside the card to close. Sibling BEHIND the opaque
-            card, so taps on the card don't fall through to it. */}
-        <Pressable
-          accessibilityRole="button"
-          accessibilityLabel="Lukk"
-          onPress={onClose}
-          className="absolute inset-0 bg-ink/40"
-        />
-
-        {top ? (
-          <View
-            className="max-h-[90%] rounded-t-lg bg-surface"
-            style={{ paddingBottom: insets.bottom + 8 }}
-          >
-            <View className="my-2 h-1 w-10 self-center rounded-full bg-line" />
-            <View className="flex-row items-center gap-2 px-gutter pb-2">
-              {nested ? (
-                <Pressable
-                  accessibilityRole="button"
-                  accessibilityLabel="Tilbake"
-                  onPress={onBack}
-                  className="-ml-2 h-9 w-9 items-center justify-center rounded-full"
-                >
-                  <Ionicons name="chevron-back" size={22} color={colors.ink} />
-                </Pressable>
-              ) : null}
-              <Text
-                className="flex-1 text-xl font-bold text-ink"
-                numberOfLines={1}
-              >
-                {titleFor(top)}
-              </Text>
+      {top ? (
+        <>
+          <View className="flex-row items-center gap-2 pb-2 px-gutter">
+            {nested ? (
               <Pressable
                 accessibilityRole="button"
-                accessibilityLabel="Lukk"
-                onPress={onClose}
-                className="h-9 w-9 items-center justify-center rounded-full"
-                hitSlop={8}
+                accessibilityLabel="Tilbake"
+                onPress={onBack}
+                className="items-center justify-center -ml-2 rounded-full h-9 w-9"
               >
-                <Ionicons name="close" size={22} color={colors.muted} />
+                <Ionicons name="chevron-back" size={22} color={colors.ink} />
               </Pressable>
-            </View>
-            <ScrollView
-              contentContainerClassName="gap-4 px-gutter pb-8"
-              keyboardShouldPersistTaps="handled"
+            ) : null}
+            <Text
+              className="flex-1 text-xl font-bold text-ink"
+              numberOfLines={1}
             >
-              <Content target={top} push={push} />
-            </ScrollView>
+              {titleFor(top)}
+            </Text>
+            <Pressable
+              accessibilityRole="button"
+              accessibilityLabel="Lukk"
+              onPress={onClose}
+              className="items-center justify-center rounded-full h-9 w-9"
+              hitSlop={8}
+            >
+              <Ionicons name="close" size={22} color={colors.muted} />
+            </Pressable>
           </View>
-        ) : null}
-      </View>
-    </Modal>
+          <BottomSheetScrollView
+            contentContainerClassName="gap-4 px-gutter pb-16"
+            keyboardShouldPersistTaps="handled"
+          >
+            <Content target={top} push={push} />
+          </BottomSheetScrollView>
+        </>
+      ) : (
+        <View />
+      )}
+    </BottomSheet>
   );
 }

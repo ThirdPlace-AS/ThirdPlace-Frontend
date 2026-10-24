@@ -3,7 +3,6 @@ import { useState } from "react";
 import { Pressable, Text, View } from "react-native";
 
 import { Button } from "@/components/Button";
-import { DemoBadge } from "@/components/DemoBadge";
 import { experienceById } from "@/fixtures";
 import { colors } from "@/theme";
 
@@ -44,7 +43,7 @@ export function CheckinContent({ id }: { id: string }) {
         </Text>
         <Text className="text-center text-sm text-muted">
           {checkedIn
-            ? "God tur! (demo)"
+            ? "God tur!"
             : near
               ? "Du kan sjekke inn nå."
               : "Kom nærmere stedet for å sjekke inn."}
@@ -70,13 +69,6 @@ export function CheckinContent({ id }: { id: string }) {
           />
         </View>
       </Pressable>
-
-      <View className="flex-row items-center gap-2">
-        <DemoBadge />
-        <Text className="flex-1 text-xs text-muted">
-          Demo — simulert posisjon. Ingen ekte GPS eller innsjekking skjer.
-        </Text>
-      </View>
 
       <Button
         label={checkedIn ? "Angre innsjekk" : "Sjekk inn"}

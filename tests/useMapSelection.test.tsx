@@ -1,7 +1,11 @@
 import { describe, expect, it } from "@jest/globals";
 import { act, renderHook } from "@testing-library/react-native";
 
-import { useMapSelection } from "@/components/map/hooks/useMapSelection";
+import {
+  SNAP_MID,
+  SNAP_PEEK,
+  useMapSelection,
+} from "@/components/map/hooks/useMapSelection";
 import type { DiscoveryItem } from "@/components/map/types/mapPresentation";
 
 const item: DiscoveryItem = {
@@ -17,32 +21,24 @@ const item: DiscoveryItem = {
 describe("useMapSelection", () => {
   it("starts empty", () => {
     const { result } = renderHook(() => useMapSelection());
-    expect(result.current.preview).toBeNull();
     expect(result.current.sheetStack).toHaveLength(0);
     expect(result.current.selectedMarkerId).toBeNull();
   });
 
-  it("selectPreview sets the preview and drives selectedMarkerId", () => {
+  it("selectMarker opens the sheet at the peek snap and drives selectedMarkerId", () => {
     const { result } = renderHook(() => useMapSelection());
-    act(() => result.current.selectPreview(item));
-    expect(result.current.preview?.markerId).toBe("place:p1");
-    expect(result.current.selectedMarkerId).toBe("place:p1");
-  });
-
-  it("expand promotes the preview into the sheet and clears the preview", () => {
-    const { result } = renderHook(() => useMapSelection());
-    act(() => result.current.selectPreview(item));
-    act(() => result.current.expand());
-    expect(result.current.preview).toBeNull();
+    act(() => result.current.selectMarker(item));
     expect(result.current.sheetStack).toEqual([{ kind: "place", id: "p1" }]);
-    // Selection still tracked via the sheet root (map/list stay in sync).
+    expect(result.current.openIndex).toBe(SNAP_PEEK);
+    // Selection tracked via the sheet root (map/list stay in sync).
     expect(result.current.selectedMarkerId).toBe("place:p1");
   });
 
-  it("openTarget opens the sheet directly and skips the preview", () => {
+  it("openTarget opens the sheet at the mid snap", () => {
     const { result } = renderHook(() => useMapSelection());
     act(() => result.current.openTarget({ kind: "business", id: "b1" }));
-    expect(result.current.preview).toBeNull();
+    expect(result.current.sheetStack).toEqual([{ kind: "business", id: "b1" }]);
+    expect(result.current.openIndex).toBe(SNAP_MID);
     expect(result.current.selectedMarkerId).toBe("business:b1");
   });
 

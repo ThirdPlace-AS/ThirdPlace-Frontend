@@ -31,7 +31,11 @@ function norm(s: string): string {
   return s.trim().toLowerCase();
 }
 
-function placeMatch(p: MockPlace, q: string): boolean {
+// Shared query matchers (q must be pre-normalized via `norm`). Exported so the
+// map place filter (applyFilters) and the discovery adapter use the SAME match
+// logic as this overlay search — no divergence between what the overlay shows
+// and what submitting the text narrows on the map.
+export function placeMatchesQuery(p: MockPlace, q: string): boolean {
   return (
     p.name.toLowerCase().includes(q) ||
     p.category.toLowerCase().includes(q) ||
@@ -39,7 +43,7 @@ function placeMatch(p: MockPlace, q: string): boolean {
   );
 }
 
-function experienceMatch(e: MockExperience, q: string): boolean {
+export function experienceMatchesQuery(e: MockExperience, q: string): boolean {
   return (
     e.title.toLowerCase().includes(q) ||
     e.host.toLowerCase().includes(q) ||
@@ -58,7 +62,7 @@ export function searchFixtures(query: string): SearchGroups {
   if (q === "") return { places: [], experiences: [], groups: [], total: 0 };
 
   const placeResults: SearchResult[] = places
-    .filter((p) => placeMatch(p, q))
+    .filter((p) => placeMatchesQuery(p, q))
     .map((p) => ({
       kind: "place",
       id: p.id,
@@ -67,7 +71,7 @@ export function searchFixtures(query: string): SearchGroups {
     }));
 
   const experienceResults: SearchResult[] = experiences
-    .filter((e) => experienceMatch(e, q))
+    .filter((e) => experienceMatchesQuery(e, q))
     .map((e) => ({
       kind: "experience",
       id: e.id,

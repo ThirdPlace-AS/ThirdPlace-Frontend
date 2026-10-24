@@ -4,9 +4,11 @@ import Mapbox, {
   MapView,
   ShapeSource,
   SymbolLayer,
+  UserLocation,
 } from "@rnmapbox/maps";
 import type { FeatureCollection, Point } from "geojson";
 import { useEffect, useMemo, useRef } from "react";
+import { Dimensions } from "react-native";
 
 import { MAP_CENTER } from "@/fixtures";
 import { colors, motion } from "@/theme";
@@ -47,12 +49,18 @@ export function MapboxMap({
   onSelectMarker,
   recenterSignal,
   center = MAP_CENTER,
+  onMapPress,
+  focusCoord,
+  styleURL,
 }: {
   markers: DiscoveryItem[];
   selectedMarkerId?: string | null;
   onSelectMarker?: (markerId: string) => void;
   recenterSignal?: number;
   center?: [number, number];
+  onMapPress?: () => void;
+  focusCoord?: [number, number] | null;
+  styleURL?: string;
 }) {
   const cameraRef = useRef<Camera>(null);
 
@@ -65,13 +73,34 @@ export function MapboxMap({
     });
   }, [recenterSignal, center]);
 
+  // Selecting a marker pans the camera so the pin sits centered in the map area
+  // ABOVE the detail sheet (bottom padding ≈ the peek height), Google-Maps style.
+  const focusKey = focusCoord ? `${focusCoord[0]},${focusCoord[1]}` : null;
+  useEffect(() => {
+    if (!focusCoord) return;
+    cameraRef.current?.setCamera({
+      centerCoordinate: focusCoord,
+      padding: {
+        paddingTop: 0,
+        paddingBottom: Dimensions.get("window").height * 0.35,
+        paddingLeft: 0,
+        paddingRight: 0,
+      },
+      animationDuration: motion.duration.recenter,
+    });
+  }, [focusKey, focusCoord]);
+
   const shape = useMemo<FeatureCollection<Point>>(
     () => ({
       type: "FeatureCollection",
       features: markers.map((m) => ({
         type: "Feature",
         id: m.markerId,
-        properties: { markerId: m.markerId, category: m.category },
+        properties: {
+          markerId: m.markerId,
+          category: m.category,
+          title: m.title,
+        },
         geometry: { type: "Point", coordinates: m.coord },
       })),
     }),
@@ -81,9 +110,19 @@ export function MapboxMap({
   return (
     <MapView
       style={{ flex: 1 }}
-      styleURL={Mapbox.StyleURL.Street}
+      styleURL={styleURL ?? Mapbox.StyleURL.Street}
       scaleBarEnabled={false}
+      // Tap on empty map (a marker tap is consumed by the ShapeSource below and
+      // does not fire this) — collapses the sheet + dismisses the keyboard.
+      onPress={() => onMapPress?.()}
     >
+      {/* User-location puck — visible whenever OS location permission is granted.
+          showsUserHeadingIndicator draws the native facing-direction cone. */}
+      <UserLocation
+        visible
+        showsUserHeadingIndicator
+        androidRenderMode="normal"
+      />
       <Camera
         ref={cameraRef}
         zoomLevel={13}
@@ -122,7 +161,7 @@ export function MapboxMap({
           style={{
             circleColor: colors.ink,
             circleRadius: ["step", ["get", "point_count"], 16, 5, 20, 10, 26],
-            circleStrokeWidth: 2,
+            circleStrokeWidth: 3,
             circleStrokeColor: colors.surface,
           }}
         />
@@ -135,14 +174,28 @@ export function MapboxMap({
             textColor: colors.onInk,
           }}
         />
-        {/* Unclustered points, colored by category */}
+        {/* Invisible enlarged hit target for unclustered points so taps NEAR a
+            pin still register (the visible dot is only 8px). ShapeSource.onPress
+            hit-tests this layer too. */}
+        <CircleLayer
+          id="points-hit"
+          filter={["!", ["has", "point_count"]]}
+          style={{
+            circleColor: colors.ink,
+            circleRadius: 20,
+            circleOpacity: 0,
+          }}
+        />
+        {/* Unclustered points, colored by category. A thick white stroke keeps
+            every pin legible on any basemap (light/dark/satellite) — the pin
+            color is a fixed per-category value and never derives from the map. */}
         <CircleLayer
           id="points"
           filter={["!", ["has", "point_count"]]}
           style={{
             circleColor: PIN_COLOR,
             circleRadius: 8,
-            circleStrokeWidth: 2,
+            circleStrokeWidth: 3,
             circleStrokeColor: colors.surface,
           }}
         />
@@ -155,6 +208,27 @@ export function MapboxMap({
             circleRadius: 13,
             circleStrokeWidth: 3,
             circleStrokeColor: colors.ember,
+          }}
+        />
+        {/* Per-marker title under each un-clustered pin. White halo keeps it
+            legible on any basemap; Mapbox declutters overlaps automatically. */}
+        <SymbolLayer
+          id="point-title"
+          filter={["!", ["has", "point_count"]]}
+          style={{
+            textField: ["get", "title"],
+            textSize: 12,
+            // Dark ink text inside a thick white halo stays readable on ANY
+            // basemap — including a dark/night map, where the halo forms a bright
+            // outline around every glyph.
+            textColor: colors.ink,
+            textHaloColor: colors.surface,
+            textHaloWidth: 2,
+            textHaloBlur: 0.5,
+            textAnchor: "top",
+            textOffset: [0, 0.9],
+            textAllowOverlap: false,
+            textOptional: true,
           }}
         />
       </ShapeSource>

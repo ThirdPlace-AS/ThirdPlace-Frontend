@@ -4,7 +4,6 @@ import { Text, View } from "react-native";
 
 import { Button } from "@/components/Button";
 import { Card } from "@/components/Card";
-import { DemoBadge } from "@/components/DemoBadge";
 import { GuestLock } from "@/components/GuestLock";
 import { colors } from "@/theme";
 
@@ -79,13 +78,6 @@ export function VerificationContent() {
 
       <GuestLock message="Logg inn som bedrift for å starte verifisering." />
 
-      <View className="flex-row items-center gap-2">
-        <DemoBadge />
-        <Text className="flex-1 text-xs text-muted">
-          Demo — ingen reell identitets- eller bedriftsverifisering skjer.
-        </Text>
-      </View>
-
       {status === "unverified" ? (
         <Button
           label="Start verifisering"
@@ -100,7 +92,7 @@ export function VerificationContent() {
         />
       ) : (
         <Button
-          label="Nullstill (demo)"
+          label="Nullstill"
           variant="secondary"
           onPress={() => setStatus("unverified")}
         />

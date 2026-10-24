@@ -15,6 +15,21 @@ import type { PushFn } from "../sheetTypes";
 import { markerId } from "../types/mapPresentation";
 import { DetailActions } from "./DetailActions";
 
+function InfoRow({
+  icon,
+  text,
+}: {
+  icon: keyof typeof Ionicons.glyphMap;
+  text: string;
+}) {
+  return (
+    <View className="flex-row items-center gap-2">
+      <Ionicons name={icon} size={16} color={colors.muted} />
+      <Text className="flex-1 text-sm text-ink">{text}</Text>
+    </View>
+  );
+}
+
 export function PlaceContent({ id, push }: { id: string; push: PushFn }) {
   const place = placeById(id);
   if (!place) {
@@ -65,6 +80,17 @@ export function PlaceContent({ id, push }: { id: string; push: PushFn }) {
 
       <Text className="text-sm text-muted">{place.about}</Text>
 
+      {/* Location & opening hours */}
+      <Card>
+        <View className="gap-2">
+          <InfoRow icon="location-outline" text={place.address} />
+          <InfoRow icon="time-outline" text={place.hours} />
+          {place.specialHours ? (
+            <InfoRow icon="calendar-outline" text={place.specialHours} />
+          ) : null}
+        </View>
+      </Card>
+
       {/* Vibe tags */}
       <View className="gap-1">
         <Text className="text-sm font-semibold text-ink">Vibe</Text>
@@ -79,6 +105,30 @@ export function PlaceContent({ id, push }: { id: string; push: PushFn }) {
         {place.tags.map((t) => (
           <Chip key={t} label={t} />
         ))}
+      </View>
+
+      {/* Accessibility */}
+      {place.accessibility.length > 0 ? (
+        <View className="gap-1">
+          <Text className="text-sm font-semibold text-ink">
+            Tilgjengelighet
+          </Text>
+          <View className="flex-row flex-wrap gap-2">
+            {place.accessibility.map((a) => (
+              <Chip key={a} label={a} />
+            ))}
+          </View>
+        </View>
+      ) : null}
+
+      {/* Source / provenance indicator */}
+      <View className="flex-row items-center gap-2">
+        <Ionicons
+          name="shield-checkmark-outline"
+          size={16}
+          color={colors.muted}
+        />
+        <Text className="flex-1 text-xs text-muted">{place.source}</Text>
       </View>
 
       {business ? (
@@ -130,6 +180,12 @@ export function PlaceContent({ id, push }: { id: string; push: PushFn }) {
           </View>
         </Card>
       </Pressable>
+
+      {/* Place chat — no real chat room is opened. */}
+      <View className="flex-row items-center gap-2 rounded-md border border-line bg-surface px-3 py-3">
+        <Ionicons name="chatbubbles-outline" size={18} color={colors.ink} />
+        <Text className="flex-1 text-sm text-ink">Stedschat</Text>
+      </View>
 
       <View className="gap-2">
         <Text className="text-base font-semibold text-ink">

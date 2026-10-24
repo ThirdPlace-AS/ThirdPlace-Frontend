@@ -4,7 +4,6 @@ import { Pressable, Text, View } from "react-native";
 
 import { Button } from "@/components/Button";
 import { Card } from "@/components/Card";
-import { DemoBadge } from "@/components/DemoBadge";
 import {
   attendeesForExperience,
   experienceById,
@@ -59,13 +58,6 @@ export function HostContent({ id, push }: { id: string; push: PushFn }) {
           </View>
         </Card>
       </Pressable>
-
-      <View className="flex-row items-center gap-2">
-        <DemoBadge />
-        <Text className="flex-1 text-xs text-muted">
-          Demo — vertshandlinger endrer kun visningen, ingenting lagres.
-        </Text>
-      </View>
 
       <View className="gap-3">
         <Button label="Rediger arrangement" variant="secondary" />

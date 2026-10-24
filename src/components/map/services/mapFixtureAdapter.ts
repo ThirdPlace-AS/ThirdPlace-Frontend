@@ -19,6 +19,8 @@ import {
   type ModeResult,
 } from "../types/mapPresentation";
 
+import { experienceMatchesQuery } from "./mapSearch";
+
 function placeToItem(p: MockPlace): DiscoveryItem {
   return {
     markerId: markerId("place", p.id),
@@ -29,6 +31,9 @@ function placeToItem(p: MockPlace): DiscoveryItem {
     title: p.name,
     subtitle: p.distance,
     meta: `${"kr".repeat(p.priceLevel)} · ${p.openNow ? "Åpent" : "Stengt"}`,
+    rating: p.rating,
+    reviewCount: p.reviews,
+    tags: p.vibes,
   };
 }
 
@@ -43,13 +48,17 @@ function experienceToItem(e: MockExperience): DiscoveryItem {
     title: e.title,
     subtitle: e.when,
     meta: `${e.going}/${e.capacity} påmeldt`,
+    tags: e.tags,
   };
 }
 
-function matchesQuery(title: string, category: string, query: string): boolean {
+// Matches an experience against free text using the SAME matcher as the overlay
+// search (title/host/tags), plus the literal "Opplevelse" category so typing the
+// category still matches. Empty query matches all.
+function experienceMatchesText(e: MockExperience, query: string): boolean {
   const q = query.trim().toLowerCase();
   if (q === "") return true;
-  return title.toLowerCase().includes(q) || category.toLowerCase().includes(q);
+  return experienceMatchesQuery(e, q) || "opplevelse".includes(q);
 }
 
 export type AdapterInput = {
@@ -61,6 +70,9 @@ export type AdapterInput = {
   savedIds: readonly string[];
   // Time window filter (applies to experiences). null = any.
   time?: TimeWindow | null;
+  // Only experiences with free spots (capacity - going > 0). Applies to
+  // experiences. false = no constraint.
+  hasSpots?: boolean;
 };
 
 // Resolves the active discovery mode into the items to show on the map + list.
@@ -70,12 +82,14 @@ export function resultForMode({
   query,
   savedIds,
   time = null,
+  hasSpots = false,
 }: AdapterInput): ModeResult {
   const placeItems = places.map(placeToItem);
   const liveItems = experiences
     .filter((e) => e.status === "open" || e.status === "waitlist")
     .filter((e) => time === null || e.day === time)
-    .filter((e) => matchesQuery(e.title, "Opplevelse", query))
+    .filter((e) => !hasSpots || e.capacity - e.going > 0)
+    .filter((e) => experienceMatchesText(e, query))
     .map(experienceToItem);
 
   switch (mode) {
@@ -107,16 +121,14 @@ export function resultForMode({
       return {
         items: placeItems,
         demo: true,
-        note: "Ikke personalisert (demo)",
-        emptyMessage: "Ingen anbefalinger å vise (demo).",
+        emptyMessage: "Ingen anbefalinger å vise.",
       };
 
     case "friends":
       return {
         items: liveItems,
         demo: true,
-        note: "Venneaktivitet (demo)",
-        emptyMessage: "Ingen venneaktivitet å vise (demo).",
+        emptyMessage: "Ingen venneaktivitet å vise.",
       };
 
     case "saved": {

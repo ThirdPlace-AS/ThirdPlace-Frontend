@@ -41,6 +41,11 @@ export type DiscoveryItem = {
   title: string;
   subtitle: string; // distance or time
   meta?: string; // price tier / status / rating
+  // Optional richer list fields (MOCK, from fixtures) — the browse list cards
+  // surface these; markers/clusters ignore them. Not a canonical contract.
+  rating?: number; // MOCK average rating (1–5)
+  reviewCount?: number; // MOCK review count
+  tags?: string[]; // MOCK vibe / tag chips
 };
 
 // Result of resolving a discovery mode over the fixtures.

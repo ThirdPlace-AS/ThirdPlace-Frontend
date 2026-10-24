@@ -4,7 +4,6 @@ import { Pressable, Text, View } from "react-native";
 
 import { Button } from "@/components/Button";
 import { Chip } from "@/components/Chip";
-import { DemoBadge } from "@/components/DemoBadge";
 import { experienceById, groupById, type ExperienceStatus } from "@/fixtures";
 import { colors } from "@/theme";
 
@@ -132,16 +131,8 @@ export function ExperienceContent({ id, push }: { id: string; push: PushFn }) {
               ? "Du er med — gruppechatten er åpnet."
               : "Du står på venteliste — vi varsler deg ved ledig plass."}
           </Text>
-          <DemoBadge />
         </View>
       ) : null}
-
-      <View className="flex-row items-center gap-2">
-        <DemoBadge />
-        <Text className="flex-1 text-xs text-muted">
-          Demo — ingen reell påmelding, venteliste eller chat skjer.
-        </Text>
-      </View>
 
       <Button
         label={primary.label}

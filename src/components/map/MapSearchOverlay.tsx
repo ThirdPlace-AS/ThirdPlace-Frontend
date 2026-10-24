@@ -1,13 +1,25 @@
 import { Ionicons } from "@expo/vector-icons";
 import { useMemo, useState } from "react";
-import { Modal, Pressable, ScrollView, Text, View } from "react-native";
+import {
+  Keyboard,
+  Modal,
+  Pressable,
+  ScrollView,
+  Text,
+  View,
+} from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
+import { Chip } from "@/components/Chip";
 import { SearchBar } from "@/components/SearchBar";
 import { colors } from "@/theme";
 
 import { useRecentSearches } from "./hooks/useRecentSearches";
-import { searchFixtures, type SearchResult } from "./services/mapSearch";
+import {
+  searchFixtures,
+  suggestFixtures,
+  type SearchResult,
+} from "./services/mapSearch";
 
 // Full-screen search overlay. Deterministic fixture search only (no network, no
 // stored history — CB-8). Focused field → recent searches (empty query) or
@@ -26,11 +38,17 @@ export function MapSearchOverlay({
   onSubmit: (q: string) => void;
   onSelect: (r: SearchResult) => void;
 }) {
+  // Closing fully disengages search: drop the keyboard, then close. The map's
+  // search is a button (not an input), so there is no field to refocus behind us.
+  const close = () => {
+    Keyboard.dismiss();
+    onClose();
+  };
   return (
     <Modal
       visible={visible}
       animationType="fade"
-      onRequestClose={onClose}
+      onRequestClose={close}
       transparent
     >
       {/* Mount the body only while open so query state seeds fresh from
@@ -38,7 +56,7 @@ export function MapSearchOverlay({
       {visible ? (
         <SearchBody
           initialQuery={initialQuery}
-          onClose={onClose}
+          onClose={close}
           onSubmit={onSubmit}
           onSelect={onSelect}
         />
@@ -63,6 +81,7 @@ function SearchBody({
   const [query, setQuery] = useState(initialQuery);
 
   const results = useMemo(() => searchFixtures(query), [query]);
+  const suggestions = useMemo(() => suggestFixtures(query, 5), [query]);
   const hasQuery = query.trim() !== "";
 
   const submit = (q: string) => {
@@ -78,21 +97,14 @@ function SearchBody({
   };
 
   return (
-    <View className="flex-1">
-      {/* Dim backdrop — tap the area below the panel to close (plus the back
-          arrow and Android back). */}
-      <Pressable
-        accessibilityRole="button"
-        accessibilityLabel="Lukk"
-        onPress={onClose}
-        className="absolute inset-0 bg-ink/40"
-      />
-
+    <View className="flex-1 bg-background">
+      {/* Full-screen search: opaque, edge-to-edge (covers the map + tab bar).
+          Closes via the back arrow, Android back, or on submit/select. */}
       <View
-        className="flex-1 bg-background"
+        className="flex-1"
         style={{
           paddingTop: insets.top + 8,
-          marginBottom: insets.bottom + 56,
+          paddingBottom: insets.bottom,
         }}
       >
         {/* Header: back + search field */}
@@ -156,6 +168,7 @@ function SearchBody({
             </View>
           ) : (
             <>
+              <SuggestionChips suggestions={suggestions} onPick={setQuery} />
               <ResultGroup
                 title="På kartet"
                 icon="location-outline"
@@ -178,6 +191,25 @@ function SearchBody({
           )}
         </ScrollView>
       </View>
+    </View>
+  );
+}
+
+// Bounded, non-personalized demo suggestions (entity titles) — a stand-in for
+// the contract-blocked /search/suggestions endpoint. Tapping fills the field.
+function SuggestionChips({
+  suggestions,
+  onPick,
+}: {
+  suggestions: string[];
+  onPick: (q: string) => void;
+}) {
+  if (suggestions.length === 0) return null;
+  return (
+    <View className="flex-row flex-wrap gap-2">
+      {suggestions.map((s) => (
+        <Chip key={s} label={s} selected={false} onPress={() => onPick(s)} />
+      ))}
     </View>
   );
 }

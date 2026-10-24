@@ -13,19 +13,21 @@ export function useMapDiscovery({
   query,
   savedIds,
   time = null,
+  hasSpots = false,
   initial = "explore",
 }: {
   places: MockPlace[];
   query: string;
   savedIds: readonly string[];
   time?: TimeWindow | null;
+  hasSpots?: boolean;
   initial?: DiscoveryMode;
 }) {
   const [mode, setMode] = useState<DiscoveryMode>(initial);
 
   const result = useMemo(
-    () => resultForMode({ mode, places, query, savedIds, time }),
-    [mode, places, query, savedIds, time],
+    () => resultForMode({ mode, places, query, savedIds, time, hasSpots }),
+    [mode, places, query, savedIds, time, hasSpots],
   );
 
   return { mode, setMode, ...result };
