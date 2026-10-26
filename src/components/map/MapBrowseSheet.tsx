@@ -1,6 +1,6 @@
 import { Ionicons } from "@expo/vector-icons";
 import BottomSheet, { BottomSheetFlatList } from "@gorhom/bottom-sheet";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Pressable, Text, View } from "react-native";
 import Animated, {
   Extrapolation,
@@ -103,6 +103,36 @@ export function MapBrowseSheet({
     };
   }, []);
 
+  // Parent callbacks are read through refs so the card callbacks stay stable;
+  // with memoized cards, a map re-render only re-renders cards whose
+  // selected/saved state actually changed.
+  const onSelectRef = useRef(onSelect);
+  const onToggleSaveRef = useRef(onToggleSave);
+  useEffect(() => {
+    onSelectRef.current = onSelect;
+    onToggleSaveRef.current = onToggleSave;
+  }, [onSelect, onToggleSave]);
+  const handleSelect = useCallback(
+    (item: DiscoveryItem) => onSelectRef.current(item),
+    [],
+  );
+  const handleToggleSave = useCallback(
+    (item: DiscoveryItem) => onToggleSaveRef.current(item),
+    [],
+  );
+  const renderItem = useCallback(
+    ({ item }: { item: DiscoveryItem }) => (
+      <BrowseCard
+        item={item}
+        selected={item.markerId === selectedMarkerId}
+        saved={isSaved(item.markerId)}
+        onSelect={handleSelect}
+        onToggleSave={handleToggleSave}
+      />
+    ),
+    [selectedMarkerId, isSaved, handleSelect, handleToggleSave],
+  );
+
   const cityLine = areaLabel ? `${MAP_CITY} · ${areaLabel}` : MAP_CITY;
   // The pill is mounted whenever the sheet is live; its own opacity hides it
   // until the sheet nears full extent.
@@ -162,110 +192,10 @@ export function MapBrowseSheet({
               </Text>
             </View>
           }
-          renderItem={({ item }) => {
-            const selected = item.markerId === selectedMarkerId;
-            const saved = isSaved(item.markerId);
-            return (
-              // Card wrapper is a View; the save heart is a SIBLING of the
-              // select Pressable (never nested) — nested <button> is invalid
-              // DOM on web.
-              <View className="relative gap-3">
-                <Pressable
-                  accessibilityRole="button"
-                  accessibilityState={{ selected }}
-                  accessibilityLabel={`${item.title}, ${item.category}, ${item.subtitle}`}
-                  onPress={() => onSelect(item)}
-                  className="gap-3"
-                >
-                  {/* Hero — full-width placeholder image block with overlays. */}
-                  <View
-                    className={`h-52 w-full items-center justify-center overflow-hidden rounded-lg bg-surfaceMuted ${
-                      selected ? "border-2 border-ink" : ""
-                    }`}
-                  >
-                    <Ionicons
-                      name="image-outline"
-                      size={40}
-                      color={colors.muted}
-                    />
-
-                    {/* Top-left: category chip. */}
-                    <View className="absolute left-3 top-3">
-                      <View className="px-3 py-1 rounded-full bg-surface">
-                        <Text className="text-xs font-semibold text-ink">
-                          {item.category}
-                        </Text>
-                      </View>
-                    </View>
-                  </View>
-
-                  {/* Body — title + rating, subtitle, info line, tag chips. */}
-                  <View className="gap-1">
-                    <View className="flex-row items-center gap-2">
-                      <Text
-                        className="flex-1 text-base font-semibold text-ink"
-                        numberOfLines={1}
-                      >
-                        {item.title}
-                      </Text>
-                      {item.rating != null ? (
-                        <View className="flex-row items-center gap-1">
-                          <Ionicons name="star" size={13} color={colors.ink} />
-                          <Text className="text-sm font-semibold text-ink">
-                            {item.rating.toFixed(1).replace(".", ",")}
-                          </Text>
-                          {item.reviewCount != null ? (
-                            <Text className="text-sm text-muted">
-                              ({item.reviewCount})
-                            </Text>
-                          ) : null}
-                        </View>
-                      ) : null}
-                    </View>
-                    <Text className="text-sm text-muted" numberOfLines={1}>
-                      {item.category} · {item.subtitle}
-                    </Text>
-                    {item.meta ? (
-                      <Text
-                        className="text-sm font-semibold text-ink"
-                        numberOfLines={1}
-                      >
-                        {item.meta}
-                      </Text>
-                    ) : null}
-                    {item.tags && item.tags.length > 0 ? (
-                      <View className="flex-row flex-wrap gap-1.5 mt-0.5">
-                        {item.tags.slice(0, 3).map((t) => (
-                          <View
-                            key={t}
-                            className="px-2 py-0.5 rounded-full bg-surfaceMuted"
-                          >
-                            <Text className="text-[11px] text-muted">{t}</Text>
-                          </View>
-                        ))}
-                      </View>
-                    ) : null}
-                  </View>
-                </Pressable>
-
-                {/* Top-right save (heart) — sibling overlay over the hero. */}
-                <Pressable
-                  accessibilityRole="button"
-                  accessibilityLabel={saved ? "Fjern fra lagret" : "Lagre"}
-                  accessibilityState={{ selected: saved }}
-                  onPress={() => onToggleSave(item)}
-                  hitSlop={8}
-                  className="absolute items-center justify-center rounded-full right-3 top-3 h-9 w-9 bg-surface/90"
-                >
-                  <Ionicons
-                    name={saved ? "heart" : "heart-outline"}
-                    size={22}
-                    color={saved ? colors.ember : colors.ink}
-                  />
-                </Pressable>
-              </View>
-            );
-          }}
+          renderItem={renderItem}
+          initialNumToRender={4}
+          maxToRenderPerBatch={4}
+          windowSize={7}
         />
       </BottomSheet>
 
@@ -292,3 +222,113 @@ export function MapBrowseSheet({
     </>
   );
 }
+
+// One result card. Memoized: props are primitives + stable callbacks, so it
+// re-renders only when its own item/selected/saved changes.
+const BrowseCard = memo(function BrowseCard({
+  item,
+  selected,
+  saved,
+  onSelect,
+  onToggleSave,
+}: {
+  item: DiscoveryItem;
+  selected: boolean;
+  saved: boolean;
+  onSelect: (item: DiscoveryItem) => void;
+  onToggleSave: (item: DiscoveryItem) => void;
+}) {
+  return (
+    // Card wrapper is a View; the save heart is a SIBLING of the
+    // select Pressable (never nested) — nested <button> is invalid
+    // DOM on web.
+    <View className="relative gap-3">
+      <Pressable
+        accessibilityRole="button"
+        accessibilityState={{ selected }}
+        accessibilityLabel={`${item.title}, ${item.category}, ${item.subtitle}`}
+        onPress={() => onSelect(item)}
+        className="gap-3"
+      >
+        {/* Hero — full-width placeholder image block with overlays. */}
+        <View
+          className={`h-52 w-full items-center justify-center overflow-hidden rounded-lg bg-surfaceMuted ${
+            selected ? "border-2 border-ink" : ""
+          }`}
+        >
+          <Ionicons name="image-outline" size={40} color={colors.muted} />
+
+          {/* Top-left: category chip. */}
+          <View className="absolute left-3 top-3">
+            <View className="px-3 py-1 rounded-full bg-surface">
+              <Text className="text-xs font-semibold text-ink">
+                {item.category}
+              </Text>
+            </View>
+          </View>
+        </View>
+
+        {/* Body — title + rating, subtitle, info line, tag chips. */}
+        <View className="gap-1">
+          <View className="flex-row items-center gap-2">
+            <Text
+              className="flex-1 text-base font-semibold text-ink"
+              numberOfLines={1}
+            >
+              {item.title}
+            </Text>
+            {item.rating != null ? (
+              <View className="flex-row items-center gap-1">
+                <Ionicons name="star" size={13} color={colors.ink} />
+                <Text className="text-sm font-semibold text-ink">
+                  {item.rating.toFixed(1).replace(".", ",")}
+                </Text>
+                {item.reviewCount != null ? (
+                  <Text className="text-sm text-muted">
+                    ({item.reviewCount})
+                  </Text>
+                ) : null}
+              </View>
+            ) : null}
+          </View>
+          <Text className="text-sm text-muted" numberOfLines={1}>
+            {item.category} · {item.subtitle}
+          </Text>
+          {item.meta ? (
+            <Text className="text-sm font-semibold text-ink" numberOfLines={1}>
+              {item.meta}
+            </Text>
+          ) : null}
+          {item.tags && item.tags.length > 0 ? (
+            <View className="flex-row flex-wrap gap-1.5 mt-0.5">
+              {item.tags.slice(0, 3).map((t) => (
+                <View
+                  key={t}
+                  className="px-2 py-0.5 rounded-full bg-surfaceMuted"
+                >
+                  <Text className="text-[11px] text-muted">{t}</Text>
+                </View>
+              ))}
+            </View>
+          ) : null}
+        </View>
+      </Pressable>
+
+      {/* Top-right save (heart) — sibling overlay over the hero. */}
+      <Pressable
+        accessibilityRole="button"
+        accessibilityLabel={saved ? "Fjern fra lagret" : "Lagre"}
+        accessibilityState={{ selected: saved }}
+        onPress={() => onToggleSave(item)}
+        hitSlop={8}
+        className="absolute items-center justify-center rounded-full right-3 top-3 h-9 w-9 bg-surface/90"
+      >
+        <Ionicons
+          name={saved ? "heart" : "heart-outline"}
+          size={22}
+          color={saved ? colors.ember : colors.ink}
+        />
+      </Pressable>
+    </View>
+  );
+});
