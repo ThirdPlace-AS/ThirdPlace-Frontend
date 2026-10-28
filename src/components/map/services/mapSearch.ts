@@ -27,6 +27,9 @@ export type SearchGroups = {
   total: number;
 };
 
+// Max rows shown per group in the overlay (places / experiences / groups).
+const GROUP_LIMIT = 5;
+
 function norm(s: string): string {
   return s.trim().toLowerCase();
 }
@@ -63,6 +66,7 @@ export function searchFixtures(query: string): SearchGroups {
 
   const placeResults: SearchResult[] = places
     .filter((p) => placeMatchesQuery(p, q))
+    .slice(0, GROUP_LIMIT)
     .map((p) => ({
       kind: "place",
       id: p.id,
@@ -72,6 +76,7 @@ export function searchFixtures(query: string): SearchGroups {
 
   const experienceResults: SearchResult[] = experiences
     .filter((e) => experienceMatchesQuery(e, q))
+    .slice(0, GROUP_LIMIT)
     .map((e) => ({
       kind: "experience",
       id: e.id,
@@ -81,6 +86,7 @@ export function searchFixtures(query: string): SearchGroups {
 
   const groupResults: SearchResult[] = groups
     .filter((g) => groupMatch(g, q))
+    .slice(0, GROUP_LIMIT)
     .map((g) => ({
       kind: "group",
       id: g.id,

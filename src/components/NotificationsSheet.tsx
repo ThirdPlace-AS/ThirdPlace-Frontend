@@ -9,6 +9,7 @@ import {
   useWindowDimensions,
   View,
 } from "react-native";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
 import Animated, {
   useAnimatedStyle,
   useReducedMotion,
@@ -236,7 +237,14 @@ export function NotificationsSheet({
       animationType="none"
       onRequestClose={onClose}
     >
-      {visible ? <NotificationsBody onClose={onClose} /> : null}
+      {/* A RN Modal mounts in its own native view hierarchy, outside the root
+          GestureHandlerRootView — so the swipe rows need their own one here, or
+          RNGH receives no pan events (the rows wouldn't slide). */}
+      {visible ? (
+        <GestureHandlerRootView style={{ flex: 1 }}>
+          <NotificationsBody onClose={onClose} />
+        </GestureHandlerRootView>
+      ) : null}
     </Modal>
   );
 }
