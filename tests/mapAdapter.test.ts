@@ -68,10 +68,18 @@ describe("resultForMode", () => {
   });
 
   it("live respects the time filter", () => {
-    // Weekend experiences exist (e1/e2), weekday open/waitlist ones do not.
+    // Every TimeWindow is populated (fixtures spread across day values): "Helg"
+    // holds the waitlist e2; "Denne uka" holds the open e1/e4 (the full e3 is
+    // excluded by live). The filter must keep each window's own items and no
+    // other window's.
     const helg = resultForMode({ ...base, mode: "live", time: "Helg" });
-    expect(helg.items.length).toBeGreaterThan(0);
+    expect(helg.items.some((i) => i.id === "e2")).toBe(true);
+    expect(helg.items.some((i) => i.id === "e1")).toBe(false);
+
     const weekday = resultForMode({ ...base, mode: "live", time: "Denne uka" });
-    expect(weekday.items).toHaveLength(0);
+    expect(weekday.items.some((i) => i.id === "e1")).toBe(true);
+    expect(weekday.items.some((i) => i.id === "e4")).toBe(true);
+    expect(weekday.items.some((i) => i.id === "e2")).toBe(false);
+    expect(weekday.items.some((i) => i.id === "e3")).toBe(false); // full → not live
   });
 });

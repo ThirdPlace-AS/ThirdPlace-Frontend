@@ -163,6 +163,9 @@ export function MapboxMap({
             circleRadius: ["step", ["get", "point_count"], 16, 5, 20, 10, 26],
             circleStrokeWidth: 3,
             circleStrokeColor: colors.surface,
+            // Fully self-emissive so the Mapbox Standard light preset
+            // (day/dusk/night) never dims the bubble — see `points` below.
+            circleEmissiveStrength: 1,
           }}
         />
         <SymbolLayer
@@ -188,7 +191,11 @@ export function MapboxMap({
         />
         {/* Unclustered points, colored by category. A thick white stroke keeps
             every pin legible on any basemap (light/dark/satellite) — the pin
-            color is a fixed per-category value and never derives from the map. */}
+            color is a fixed per-category value and never derives from the map.
+            circleEmissiveStrength:1 makes the pin fully self-lit so the Mapbox
+            Standard light preset (day/dusk/night) can't dim it toward the dark
+            basemap — without it, circle layers default to emissive 0 and the
+            night preset renders them near-black. */}
         <CircleLayer
           id="points"
           filter={["!", ["has", "point_count"]]}
@@ -197,6 +204,7 @@ export function MapboxMap({
             circleRadius: 8,
             circleStrokeWidth: 3,
             circleStrokeColor: colors.surface,
+            circleEmissiveStrength: 1,
           }}
         />
         {/* Selected-point highlight ring */}
@@ -208,6 +216,7 @@ export function MapboxMap({
             circleRadius: 13,
             circleStrokeWidth: 3,
             circleStrokeColor: colors.ember,
+            circleEmissiveStrength: 1,
           }}
         />
         {/* Per-marker title under each un-clustered pin. White halo keeps it

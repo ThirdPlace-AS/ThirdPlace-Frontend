@@ -7,65 +7,10 @@ import BottomSheet, {
 import { useCallback, useEffect, useMemo, useRef } from "react";
 import { Pressable, Text, View } from "react-native";
 
-import { businessById, experienceById, groupById, placeById } from "@/fixtures";
 import { colors } from "@/theme";
 
-import { AttendeesContent } from "./content/AttendeesContent";
-import { BusinessContent } from "./content/BusinessContent";
-import { CheckinContent } from "./content/CheckinContent";
-import { ExperienceContent } from "./content/ExperienceContent";
-import { GroupContent } from "./content/GroupContent";
-import { HostContent } from "./content/HostContent";
-import { PlaceContent } from "./content/PlaceContent";
-import { ReviewsContent } from "./content/ReviewsContent";
-import { VerificationContent } from "./content/VerificationContent";
+import { DetailContent, titleFor } from "./DetailContentRouter";
 import type { PushFn, SheetTarget } from "./sheetTypes";
-
-function titleFor(t: SheetTarget): string {
-  switch (t.kind) {
-    case "place":
-      return placeById(t.id)?.name ?? "Sted";
-    case "business":
-      return businessById(t.id)?.name ?? "Bedrift";
-    case "experience":
-      return experienceById(t.id)?.title ?? "Arrangement";
-    case "group":
-      return groupById(t.id)?.name ?? "Gruppe";
-    case "reviews":
-      return "Anmeldelser";
-    case "attendees":
-      return "Deltakere";
-    case "host":
-      return "Administrer";
-    case "checkin":
-      return "Innsjekk";
-    case "verification":
-      return "Verifisering";
-  }
-}
-
-function Content({ target, push }: { target: SheetTarget; push: PushFn }) {
-  switch (target.kind) {
-    case "place":
-      return <PlaceContent id={target.id} push={push} />;
-    case "business":
-      return <BusinessContent id={target.id} push={push} />;
-    case "experience":
-      return <ExperienceContent id={target.id} push={push} />;
-    case "reviews":
-      return <ReviewsContent id={target.id} />;
-    case "attendees":
-      return <AttendeesContent id={target.id} />;
-    case "host":
-      return <HostContent id={target.id} push={push} />;
-    case "group":
-      return <GroupContent id={target.id} />;
-    case "checkin":
-      return <CheckinContent id={target.id} />;
-    case "verification":
-      return <VerificationContent />;
-  }
-}
 
 // Google-Maps-style expandable detail sheet (@gorhom/bottom-sheet). Draggable
 // with momentum between three snaps — peek (16%), mid (50%), full (92%). Marker
@@ -180,7 +125,7 @@ export function MapDetailSheet({
             contentContainerClassName="gap-4 px-gutter pb-16"
             keyboardShouldPersistTaps="handled"
           >
-            <Content target={top} push={push} />
+            <DetailContent target={top} push={push} />
           </BottomSheetScrollView>
         </>
       ) : (

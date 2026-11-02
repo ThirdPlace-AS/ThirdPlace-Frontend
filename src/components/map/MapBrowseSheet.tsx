@@ -46,7 +46,7 @@ export function MapBrowseSheet({
   // Bumped to force the sheet to expand (e.g. a SoftMap cluster tap).
   expandSignal?: number;
 }) {
-  const snapPoints = useMemo(() => ["7.2%", "49%", "84.5%"], []);
+  const snapPoints = useMemo(() => ["8%", "49%", "84.5%"], []);
   const sheetRef = useRef<BottomSheet>(null);
 
   // The floating "Kart" pill mirrors the tab bar: it fades + slides in as the
@@ -157,7 +157,7 @@ export function MapBrowseSheet({
         {/* Peek header — city (left) + weather (right). Always visible. */}
         <View className="flex-row items-center justify-between pb-3 px-gutter">
           <View className="flex-row items-center flex-1 gap-2">
-            <Ionicons name="location" size={18} color={colors.ember} />
+            <Ionicons name="location" size={20} color={colors.ember} />
             <Text
               className="text-base font-semibold text-ink"
               numberOfLines={1}
@@ -169,7 +169,7 @@ export function MapBrowseSheet({
             <View className="flex-row items-center gap-1.5 rounded-full border border-line bg-surface px-3 py-1">
               <Ionicons
                 name={weather.icon as keyof typeof Ionicons.glyphMap}
-                size={16}
+                size={20}
                 color={colors.ink}
               />
               <Text className="text-sm font-semibold text-ink">

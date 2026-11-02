@@ -6,6 +6,8 @@
 // `coord` values are MOCK demo points near Oslo for map markers — NOT authoritative
 // places or real geodata.
 
+import type { ImageSourcePropType } from "react-native";
+
 export const PLACE_CATEGORIES = [
   "Alle",
   "Kafé",
@@ -800,6 +802,14 @@ export type MockExperience = {
   day: TimeWindow; // MOCK time window for the "Når" filter
   tags: string[];
   about: string;
+  // Bundled sample photos for the swipe-card carousel (MOCK demo art — not real
+  // venue media, no canonical asset contract). First is the card's cover.
+  photos: ImageSourcePropType[];
+  // Per-photo scrim tint (parallel to `photos`): a darkened sample of each
+  // photo's lower region, so the swipe card's bottom gradient blends with the
+  // image it covers. MOCK/presentational — not a contract field, no canonical
+  // colour source (BLOCKED_CONTRACT_GAP).
+  scrims: string[];
 };
 
 export const experiences: MockExperience[] = [
@@ -807,15 +817,22 @@ export const experiences: MockExperience[] = [
     id: "e1",
     title: "Morgenkaffe & prat",
     host: "Maria M.",
-    when: "Lør 09:00",
+    when: "Ons 09:00",
     placeId: "p1",
     groupId: "g1",
     status: "open",
     capacity: 8,
     going: 5,
-    day: "Helg",
+    day: "Denne uka",
     tags: ["Sosialt", "Kaffe"],
     about: "Uformell morgenkaffe for naboer. Bare å møte opp.",
+    // Each card carries only its OWN two on-theme photos (MOCK demo art, no
+    // canonical media contract); `scrims` is parallel to `photos`.
+    photos: [
+      require("../../assets/swipe/e1-1.jpg"),
+      require("../../assets/swipe/e1-2.jpg"),
+    ],
+    scrims: ["#28241E", "#221F19"],
   },
   {
     id: "e2",
@@ -830,12 +847,17 @@ export const experiences: MockExperience[] = [
     day: "Helg",
     tags: ["Bøker", "Diskusjon"],
     about: "Månedlig lesesirkel. Denne gang nordisk krim.",
+    photos: [
+      require("../../assets/swipe/e2-1.jpg"),
+      require("../../assets/swipe/e2-2.jpg"),
+    ],
+    scrims: ["#422F17", "#3B2F29"],
   },
   {
     id: "e3",
     title: "Naturvin-smaking",
     host: "Tom T.",
-    when: "Fre 19:00",
+    when: "Tor 19:00",
     placeId: "p3",
     groupId: "g3",
     status: "full",
@@ -844,6 +866,68 @@ export const experiences: MockExperience[] = [
     day: "Denne uka",
     tags: ["Vin", "Smaking"],
     about: "Guidet smaking av fem naturviner med småretter.",
+    photos: [
+      require("../../assets/swipe/e3-1.jpg"),
+      require("../../assets/swipe/e3-2.jpg"),
+    ],
+    scrims: ["#38312F", "#222327"],
+  },
+  {
+    id: "e4",
+    title: "Kveldsjogg i Frognerparken",
+    host: "Jonas B.",
+    when: "Tir 18:00",
+    placeId: "p1",
+    groupId: "g1",
+    status: "open",
+    capacity: 15,
+    going: 7,
+    day: "Denne uka",
+    tags: ["Trening", "Løping"],
+    about: "Rolig fellesjogg på 5 km. Alle tempo velkommen.",
+    photos: [
+      require("../../assets/swipe/e4-1.jpg"),
+      require("../../assets/swipe/e4-2.jpg"),
+    ],
+    scrims: ["#100A0A", "#302718"],
+  },
+  {
+    id: "e5",
+    title: "Brettspillkveld",
+    host: "Nina D.",
+    when: "I morgen 19:00",
+    placeId: "p2",
+    groupId: "g2",
+    status: "open",
+    capacity: 12,
+    going: 6,
+    day: "I morgen",
+    tags: ["Spill", "Sosialt"],
+    about: "Strategispill og kortspill. Nybegynnere lærer bort.",
+    photos: [
+      require("../../assets/swipe/e5-1.jpg"),
+      require("../../assets/swipe/e5-2.jpg"),
+    ],
+    scrims: ["#2B1B1D", "#1B1A17"],
+  },
+  {
+    id: "e6",
+    title: "Fotovandring på Grünerløkka",
+    host: "Per O.",
+    when: "I dag 11:00",
+    placeId: "p3",
+    groupId: "g3",
+    status: "waitlist",
+    capacity: 10,
+    going: 10,
+    day: "I dag",
+    tags: ["Foto", "Kultur"],
+    about: "Vi går en runde og fanger gatelivet. Ta med kamera.",
+    photos: [
+      require("../../assets/swipe/e6-1.jpg"),
+      require("../../assets/swipe/e6-2.jpg"),
+    ],
+    scrims: ["#1D201E", "#0A0A0A"],
   },
 ];
 
@@ -966,42 +1050,6 @@ export const groups: MockGroup[] = [
 export function groupById(id: string): MockGroup | undefined {
   return groups.find((g) => g.id === id);
 }
-
-export type MockSwipeCard = {
-  id: string;
-  title: string;
-  host: string;
-  when: string;
-  tag: string;
-  spots: string;
-};
-
-export const swipeCards: MockSwipeCard[] = [
-  {
-    id: "s1",
-    title: "Jazzkveld på Løkka",
-    host: "Maria M.",
-    when: "I kveld 20:00",
-    tag: "Live-musikk",
-    spots: "3 plasser igjen",
-  },
-  {
-    id: "s2",
-    title: "Morgenløp langs elva",
-    host: "Tom T.",
-    when: "Lør 09:00",
-    tag: "Trening",
-    spots: "6 plasser igjen",
-  },
-  {
-    id: "s3",
-    title: "Keramikk-workshop",
-    host: "Åse K.",
-    when: "Søn 13:00",
-    tag: "Kunst",
-    spots: "2 plasser igjen",
-  },
-];
 
 export type MockChat = {
   id: string;
