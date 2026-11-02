@@ -1138,11 +1138,82 @@ export function chatById(id: string): MockChat | undefined {
   return chats.find((c) => c.id === id);
 }
 
+// ── Profile (MOCK — visual only, NO account/session/reputation backend) ──────
+// BLOCKED_CONTRACT_GAP: there is no identity, trust, verification, achievement,
+// or persona model in the certified contract. Every field below is demo art for
+// layout. `verification` is NOT a real trust signal; `achievements` are NOT
+// earned; `personas` do NOT switch any real capability/entitlement.
+export type MockPersonaKey = "explorer" | "creator" | "business";
+
+export type MockAchievement = {
+  id: string;
+  label: string; // Norwegian title
+  caption: string; // short Norwegian description
+  icon: string; // Ionicons glyph
+  earned: boolean; // MOCK — not a real award
+};
+
+export type MockVisited = {
+  placeId: string; // references `places`
+  when: string; // MOCK human label, not a stored timestamp
+};
+
+export const PERSONAS: { key: MockPersonaKey; label: string; icon: string }[] = [
+  { key: "explorer", label: "Utforsker", icon: "compass-outline" },
+  { key: "creator", label: "Skaper", icon: "sparkles-outline" },
+  { key: "business", label: "Bedrift", icon: "storefront-outline" },
+];
+
 export const profile = {
   name: "Ola Nordmann",
   handle: "@ola",
   bio: "Utforsker i Oslo. Kaffe, konserter og lange turer.",
+  avatar: "person-ola" as const, // key into fixtures/images LIBRARY
+  memberSince: "Medlem siden 2024", // MOCK label
+  // MOCK verification chip — NOT a real identity/trust check (BLOCKED_CONTRACT_GAP)
+  verification: {
+    verified: true,
+    label: "Verifisert nabo",
+    note: "Demo — ingen reell ID-sjekk er utført.",
+  },
   stats: { steder: 24, opplevelser: 8, venner: 56 },
+  // Places the user has "been" — MOCK history, references real place fixtures.
+  visited: [
+    { placeId: "p1", when: "Sist uke" },
+    { placeId: "p2", when: "For 2 uker siden" },
+    { placeId: "p3", when: "Forrige måned" },
+    { placeId: "p4", when: "I fjor" },
+  ] as MockVisited[],
+  achievements: [
+    {
+      id: "a1",
+      label: "Nabolagsfan",
+      caption: "Besøkt 10+ steder",
+      icon: "ribbon-outline",
+      earned: true,
+    },
+    {
+      id: "a2",
+      label: "Vertskap",
+      caption: "Arrangert en opplevelse",
+      icon: "megaphone-outline",
+      earned: true,
+    },
+    {
+      id: "a3",
+      label: "Tidligfugl",
+      caption: "5 morgenmøter",
+      icon: "sunny-outline",
+      earned: true,
+    },
+    {
+      id: "a4",
+      label: "Stamgjest",
+      caption: "Samme sted 3 uker på rad",
+      icon: "repeat-outline",
+      earned: false,
+    },
+  ] as MockAchievement[],
 };
 
 // ── Notifications (MOCK — static demo activity, no real push/inbox) ──────────
