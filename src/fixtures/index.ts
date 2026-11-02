@@ -1051,12 +1051,20 @@ export function groupById(id: string): MockGroup | undefined {
   return groups.find((g) => g.id === id);
 }
 
+// MOCK chat list. BLOCKED_CONTRACT_GAP: not a real realtime/messaging backend —
+// `kind`/`members`/`pinnedExperienceId` are demo labels, NOT the certified V2.2
+// chat-type / access-mode / membership model. No delivery or read receipts.
 export type MockChat = {
   id: string;
   name: string;
   last: string;
   time: string;
   unread: number;
+  kind: "group" | "direct";
+  // Demo-only grouping: a group thread pinned to a demo experience.
+  pinnedExperienceId?: string;
+  members?: number;
+  initials: string;
 };
 
 export const chats: MockChat[] = [
@@ -1066,6 +1074,10 @@ export const chats: MockChat[] = [
     last: "Vi sees kl 20!",
     time: "18:42",
     unread: 2,
+    kind: "group",
+    pinnedExperienceId: "e1",
+    members: 7,
+    initials: "JL",
   },
   {
     id: "c2",
@@ -1073,6 +1085,8 @@ export const chats: MockChat[] = [
     last: "Takk for sist 😊",
     time: "I går",
     unread: 0,
+    kind: "direct",
+    initials: "MM",
   },
   {
     id: "c3",
@@ -1080,8 +1094,49 @@ export const chats: MockChat[] = [
     last: "Noen som løper i regnet?",
     time: "Man",
     unread: 0,
+    kind: "group",
+    members: 12,
+    initials: "MG",
   },
 ];
+
+// MOCK message logs per chat (DEMO ONLY — no realtime, no delivery/read state).
+// BLOCKED_CONTRACT_GAP: no certified message DTO. `mine` flags the demo viewer's
+// own lines; `author` is a display name only.
+export type MockMessage = {
+  id: string;
+  author: string;
+  initials: string;
+  text: string;
+  time: string;
+  mine: boolean;
+};
+
+export const messagesByChat: Record<string, MockMessage[]> = {
+  c1: [
+    { id: "m1", author: "Sofie", initials: "SO", text: "Hei! Gleder meg til i kveld 🎷", time: "17:30", mine: false },
+    { id: "m2", author: "Ola", initials: "OL", text: "Samme her! Noen som vil ta en kaffe før?", time: "17:34", mine: true },
+    { id: "m3", author: "Jonas", initials: "JO", text: "Jeg er på Tim Wendelboe fra 19.", time: "17:40", mine: false },
+    { id: "m4", author: "Sofie", initials: "SO", text: "Vi sees kl 20!", time: "18:42", mine: false },
+  ],
+  c2: [
+    { id: "m1", author: "Maria", initials: "MM", text: "Det var en fin kveld 🙌", time: "I går", mine: false },
+    { id: "m2", author: "Ola", initials: "OL", text: "Enig! Vi tar en tur igjen snart.", time: "I går", mine: true },
+    { id: "m3", author: "Maria", initials: "MM", text: "Takk for sist 😊", time: "I går", mine: false },
+  ],
+  c3: [
+    { id: "m1", author: "Ketil", initials: "KE", text: "Noen som løper i regnet?", time: "Man", mine: false },
+    { id: "m2", author: "Ola", initials: "OL", text: "Jeg er med hvis det letter litt 🌧️", time: "Man", mine: true },
+  ],
+};
+
+export function messagesForChat(chatId: string): MockMessage[] {
+  return messagesByChat[chatId] ?? [];
+}
+
+export function chatById(id: string): MockChat | undefined {
+  return chats.find((c) => c.id === id);
+}
 
 export const profile = {
   name: "Ola Nordmann",
