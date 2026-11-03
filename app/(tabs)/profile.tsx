@@ -53,7 +53,18 @@ export default function ProfileScreen() {
   return (
     <SafeAreaView className="flex-1 bg-background" edges={["top"]}>
       <ScrollView contentContainerClassName="gap-5 p-gutter pb-10">
-        <Text className="text-2xl font-bold text-ink">Profil</Text>
+        <View className="flex-row items-center justify-between">
+          <Text className="text-2xl font-bold text-ink">Profil</Text>
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel="Innstillinger"
+            hitSlop={8}
+            onPress={() => router.push("/settings")}
+            className="h-10 w-10 items-center justify-center rounded-full active:bg-surfaceMuted"
+          >
+            <Ionicons name="settings-outline" size={22} color={colors.ink} />
+          </Pressable>
+        </View>
 
         {/* Header */}
         <View className="items-center gap-2">
