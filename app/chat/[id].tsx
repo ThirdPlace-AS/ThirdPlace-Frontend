@@ -103,17 +103,19 @@ export default function ChatThreadScreen() {
           contentContainerClassName="gap-3 p-gutter"
           ListHeaderComponent={
             pinned ? (
-              <Pressable
-                accessibilityRole="button"
-                onPress={() => router.back()}
-                className="mb-1 flex-row items-center gap-2 rounded-lg border border-line bg-surface px-3 py-2.5 active:opacity-80"
-              >
-                <Ionicons name="pricetag-outline" size={16} color={colors.ember} />
+              // Informational pin (the experience this group organizes). Not a
+              // link — experience detail is a map sheet, not reachable here.
+              <View className="mb-1 flex-row items-center gap-2 rounded-lg border border-line bg-surface px-3 py-2.5">
+                <Ionicons
+                  name="pricetag-outline"
+                  size={16}
+                  color={colors.ember}
+                />
                 <Text className="flex-1 text-sm text-ink" numberOfLines={1}>
                   {pinned.title}
                 </Text>
                 <Text className="text-xs text-muted">Festet</Text>
-              </Pressable>
+              </View>
             ) : null
           }
           renderItem={({ item }) => <Bubble message={item} />}

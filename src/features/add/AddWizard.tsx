@@ -16,10 +16,30 @@ import { type AddDraft, type AddKind, EMPTY_DRAFT } from "./types";
 // Bundled sample art reused as the demo photo pool (MOCK — no media contract).
 const PHOTO_POOL = experiences.flatMap((e) => e.photos);
 
-const KINDS: { kind: AddKind; label: string; hint: string; icon: keyof typeof Ionicons.glyphMap }[] = [
-  { kind: "place", label: "Sted", hint: "En kafé, bar eller et verksted", icon: "cafe-outline" },
-  { kind: "experience", label: "Opplevelse", hint: "Noe som skjer til en bestemt tid", icon: "calendar-outline" },
-  { kind: "group", label: "Gruppe", hint: "Et fellesskap folk kan bli med i", icon: "people-outline" },
+const KINDS: {
+  kind: AddKind;
+  label: string;
+  hint: string;
+  icon: keyof typeof Ionicons.glyphMap;
+}[] = [
+  {
+    kind: "place",
+    label: "Sted",
+    hint: "En kafé, bar eller et verksted",
+    icon: "cafe-outline",
+  },
+  {
+    kind: "experience",
+    label: "Opplevelse",
+    hint: "Noe som skjer til en bestemt tid",
+    icon: "calendar-outline",
+  },
+  {
+    kind: "group",
+    label: "Gruppe",
+    hint: "Et fellesskap folk kan bli med i",
+    icon: "people-outline",
+  },
 ];
 
 const CATEGORIES: Record<AddKind, string[]> = {
@@ -30,7 +50,14 @@ const CATEGORIES: Record<AddKind, string[]> = {
 
 const WHEN_OPTIONS = ["I kveld", "I morgen", "Denne helgen", "Neste uke"];
 
-type StepKey = "kind" | "name" | "category" | "where" | "when" | "photo" | "review";
+type StepKey =
+  | "kind"
+  | "name"
+  | "category"
+  | "where"
+  | "when"
+  | "photo"
+  | "review";
 
 function stepsFor(kind: AddKind | null): StepKey[] {
   const base: StepKey[] = ["kind", "name", "category", "where"];
@@ -106,7 +133,10 @@ export function AddWizard() {
         keyboardShouldPersistTaps="handled"
       >
         {step === "kind" ? (
-          <StepShell title="Hva vil du dele?" subtitle="Velg hva du legger til i nabolaget.">
+          <StepShell
+            title="Hva vil du dele?"
+            subtitle="Velg hva du legger til i nabolaget."
+          >
             <View className="gap-3">
               {KINDS.map((k) => (
                 <SelectCard
@@ -123,7 +153,10 @@ export function AddWizard() {
         ) : null}
 
         {step === "name" ? (
-          <StepShell title="Gi det et navn" subtitle="Et tydelig navn og en kort beskrivelse.">
+          <StepShell
+            title="Gi det et navn"
+            subtitle="Et tydelig navn og en kort beskrivelse."
+          >
             <View className="gap-4">
               <Input
                 label="Navn"
@@ -146,7 +179,10 @@ export function AddWizard() {
         ) : null}
 
         {step === "category" && draft.kind ? (
-          <StepShell title="Velg kategori" subtitle="Dette hjelper folk å finne det.">
+          <StepShell
+            title="Velg kategori"
+            subtitle="Dette hjelper folk å finne det."
+          >
             <View className="flex-row flex-wrap gap-2">
               {CATEGORIES[draft.kind].map((c) => (
                 <Chip
@@ -176,7 +212,10 @@ export function AddWizard() {
         ) : null}
 
         {step === "when" ? (
-          <StepShell title="Når skjer det?" subtitle="Velg et omtrentlig tidspunkt.">
+          <StepShell
+            title="Når skjer det?"
+            subtitle="Velg et omtrentlig tidspunkt."
+          >
             <View className="gap-3">
               {WHEN_OPTIONS.map((w) => (
                 <SelectCard
@@ -192,7 +231,10 @@ export function AddWizard() {
         ) : null}
 
         {step === "photo" ? (
-          <StepShell title="Legg til et bilde" subtitle="Valgfritt — velg et bilde som passer.">
+          <StepShell
+            title="Legg til et bilde"
+            subtitle="Valgfritt — velg et bilde som passer."
+          >
             <View className="flex-row flex-wrap gap-3">
               {PHOTO_POOL.map((src, i) => {
                 const selected = draft.photoIndex === i;
@@ -255,7 +297,9 @@ function StepShell({
     <View className="gap-5">
       <View className="gap-1.5">
         <Text className="text-2xl font-bold text-ink">{title}</Text>
-        {subtitle ? <Text className="text-base text-muted">{subtitle}</Text> : null}
+        {subtitle ? (
+          <Text className="text-base text-muted">{subtitle}</Text>
+        ) : null}
       </View>
       {children}
     </View>
@@ -335,15 +379,26 @@ function ReviewStep({ draft }: { draft: AddDraft }) {
           ) : null}
           <View className="gap-2 pt-1">
             {draft.kind ? (
-              <SummaryRow icon="pricetag-outline" value={`${KIND_LABEL[draft.kind]} · ${draft.category ?? "—"}`} />
+              <SummaryRow
+                icon="pricetag-outline"
+                value={`${KIND_LABEL[draft.kind]} · ${draft.category ?? "—"}`}
+              />
             ) : null}
-            {draft.area ? <SummaryRow icon="location-outline" value={draft.area} /> : null}
-            {draft.when ? <SummaryRow icon="time-outline" value={draft.when} /> : null}
+            {draft.area ? (
+              <SummaryRow icon="location-outline" value={draft.area} />
+            ) : null}
+            {draft.when ? (
+              <SummaryRow icon="time-outline" value={draft.when} />
+            ) : null}
           </View>
         </View>
       </View>
       <View className="flex-row items-start gap-2 rounded-lg border border-line bg-surfaceMuted px-4 py-3">
-        <Ionicons name="information-circle-outline" size={18} color={colors.muted} />
+        <Ionicons
+          name="information-circle-outline"
+          size={18}
+          color={colors.muted}
+        />
         <Text className="flex-1 text-sm text-muted">
           Dette er en demo. Ingenting publiseres eller sendes — appen har ingen
           server ennå.

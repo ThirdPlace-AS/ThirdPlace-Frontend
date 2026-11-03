@@ -15,10 +15,8 @@ export default function ChatScreen() {
   const [read, setRead] = useState<Record<string, boolean>>({});
   const [muted, setMuted] = useState<Record<string, boolean>>({});
 
-  const markRead = (id: string) =>
-    setRead((r) => ({ ...r, [id]: true }));
-  const toggleMute = (id: string) =>
-    setMuted((m) => ({ ...m, [id]: !m[id] }));
+  const markRead = (id: string) => setRead((r) => ({ ...r, [id]: true }));
+  const toggleMute = (id: string) => setMuted((m) => ({ ...m, [id]: !m[id] }));
 
   return (
     <SafeAreaView className="flex-1 bg-background" edges={["top"]}>
@@ -40,7 +38,9 @@ export default function ChatScreen() {
             background="#F8F8F8"
             actions={[
               {
-                icon: muted[item.id] ? "notifications-outline" : "notifications-off-outline",
+                icon: muted[item.id]
+                  ? "notifications-outline"
+                  : "notifications-off-outline",
                 bg: "#F0F0F0",
                 tint: "#202020",
                 accessibilityLabel: muted[item.id] ? "Slå på varsler" : "Demp",
@@ -88,7 +88,9 @@ function ChatRow({
       className="flex-row items-center gap-3 rounded-xl bg-surface px-3 py-3 active:opacity-80"
     >
       <View className="h-12 w-12 items-center justify-center rounded-full bg-surfaceMuted">
-        <Text className="text-base font-semibold text-ink">{chat.initials}</Text>
+        <Text className="text-base font-semibold text-ink">
+          {chat.initials}
+        </Text>
       </View>
       <View className="flex-1">
         <View className="flex-row items-center gap-1.5">

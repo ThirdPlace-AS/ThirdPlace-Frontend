@@ -2,9 +2,9 @@ import type { ImageSourcePropType } from "react-native";
 
 // ── Bundled image library (MOCK demo art — NOT a canonical media contract) ──
 // BLOCKED_CONTRACT_GAP: ThirdPlace has no media-rights / asset model. These are
-// curated Creative-Commons-style photos from Unsplash, bundled locally (like the
-// swipe deck's assets) so the UI renders real imagery offline and in the CI web
-// bundle — no remote fetch, no per-entity media rows. Keys are semantic, not IDs.
+// curated photos from Unsplash (used under the Unsplash License), bundled locally
+// (like the swipe deck's assets) so the UI renders real imagery offline and in the
+// CI web bundle — no remote fetch, no per-entity media rows. Keys are semantic.
 // People portraits stand in for user/host avatars; `venue-*` for place covers;
 // `group-*` for group/activity covers; `market-*` for marketplace listings.
 // None of these depict the real people or venues named in the fixtures.

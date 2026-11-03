@@ -35,7 +35,12 @@ export function LogoMark({
     return (
       <Svg width={size} height={size} viewBox="0 0 100 100">
         <Path d={PIN} fill={tone} />
-        <Circle cx={PIN_HEAD.cx} cy={PIN_HEAD.cy} r={PIN_HEAD.r} fill="#FFFFFF" />
+        <Circle
+          cx={PIN_HEAD.cx}
+          cy={PIN_HEAD.cy}
+          r={PIN_HEAD.r}
+          fill="#FFFFFF"
+        />
       </Svg>
     );
   }

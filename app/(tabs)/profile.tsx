@@ -1,5 +1,6 @@
 import { Ionicons } from "@expo/vector-icons";
 import { Image } from "expo-image";
+import { router } from "expo-router";
 import { useState } from "react";
 import { Pressable, ScrollView, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -42,6 +43,7 @@ export default function ProfileScreen() {
   const [persona, setPersona] = useState<MockPersonaKey>("explorer");
   const [notifOpen, setNotifOpen] = useState(false);
   const [editOpen, setEditOpen] = useState(false);
+  const [logoutOpen, setLogoutOpen] = useState(false);
   const [signIn, setSignIn] = useState<string | null>(null);
 
   // Account-only actions route a guest to the sign-in prompt (demo).
@@ -66,7 +68,11 @@ export default function ProfileScreen() {
           <View className="flex-row items-center gap-1.5">
             <Text className="text-lg font-bold text-ink">{profile.name}</Text>
             {profile.verification.verified ? (
-              <Ionicons name="checkmark-circle" size={18} color={colors.ember} />
+              <Ionicons
+                name="checkmark-circle"
+                size={18}
+                color={colors.ember}
+              />
             ) : null}
           </View>
           <Text className="text-sm text-muted">{profile.handle}</Text>
@@ -76,12 +82,19 @@ export default function ProfileScreen() {
 
           {/* Verification chip — honest: not a real ID check */}
           <View className="mt-1 flex-row items-center gap-2 rounded-full border border-line bg-surface px-3 py-1.5">
-            <Ionicons name="shield-checkmark-outline" size={14} color={colors.success} />
+            <Ionicons
+              name="shield-checkmark-outline"
+              size={14}
+              color={colors.success}
+            />
             <Text className="text-xs font-medium text-ink">
               {profile.verification.label}
             </Text>
             <DemoBadge />
           </View>
+          <Text className="px-6 text-center text-[11px] text-muted">
+            {profile.verification.note}
+          </Text>
           <Text className="text-[11px] text-muted">{profile.memberSince}</Text>
         </View>
 
@@ -156,7 +169,9 @@ export default function ProfileScreen() {
         {/* Prestasjoner */}
         <View className="gap-2">
           <View className="flex-row items-center gap-2">
-            <Text className="text-base font-semibold text-ink">Prestasjoner</Text>
+            <Text className="text-base font-semibold text-ink">
+              Prestasjoner
+            </Text>
             <DemoBadge />
           </View>
           <View className="flex-row flex-wrap gap-3">
@@ -164,6 +179,16 @@ export default function ProfileScreen() {
               <AchievementBadge key={a.id} achievement={a} />
             ))}
           </View>
+        </View>
+
+        {/* Oppdag */}
+        <View className="gap-2">
+          <Text className="text-base font-semibold text-ink">Oppdag</Text>
+          <AccountRow
+            icon="people-outline"
+            label="Naboer"
+            onPress={() => router.push("/people")}
+          />
         </View>
 
         {/* Account */}
@@ -206,16 +231,35 @@ export default function ProfileScreen() {
             icon="create-outline"
             onPress={gated("redigere profilen", () => setEditOpen(true))}
           />
-          <Button
-            label="Logg ut"
-            variant="ink"
-            onPress={gated("logge ut", () => setSignIn("logge ut"))}
-          />
+          {guest.isGuest ? (
+            <Button
+              label="Logg inn"
+              variant="ink"
+              onPress={() => setSignIn("logge inn")}
+            />
+          ) : (
+            <Button
+              label="Logg ut"
+              variant="ink"
+              onPress={() => setLogoutOpen(true)}
+            />
+          )}
         </View>
       </ScrollView>
 
-      <NotificationsSheet visible={notifOpen} onClose={() => setNotifOpen(false)} />
+      <NotificationsSheet
+        visible={notifOpen}
+        onClose={() => setNotifOpen(false)}
+      />
       <EditProfileSheet visible={editOpen} onClose={() => setEditOpen(false)} />
+      <LogoutSheet
+        visible={logoutOpen}
+        onClose={() => setLogoutOpen(false)}
+        onConfirm={() => {
+          setLogoutOpen(false);
+          router.replace("/");
+        }}
+      />
       <SignInPrompt
         visible={signIn !== null}
         onClose={() => setSignIn(null)}
@@ -329,6 +373,36 @@ function EditProfileSheet({
           </Text>
         </View>
         <Button label="Lagre" variant="ink" onPress={onClose} />
+      </View>
+    </Sheet>
+  );
+}
+
+// Demo logout — there is no real session to end. Confirming just returns to the
+// welcome screen; a note + DemoBadge keep it honest (no fake "logged out").
+function LogoutSheet({
+  visible,
+  onClose,
+  onConfirm,
+}: {
+  visible: boolean;
+  onClose: () => void;
+  onConfirm: () => void;
+}) {
+  return (
+    <Sheet visible={visible} onClose={onClose} title="Logg ut">
+      <View className="gap-4">
+        <Text className="text-sm text-muted">
+          Vil du logge ut og gå tilbake til velkomstskjermen?
+        </Text>
+        <View className="flex-row items-center gap-2">
+          <DemoBadge />
+          <Text className="flex-1 text-xs text-muted">
+            Demo — ingen reell økt avsluttes.
+          </Text>
+        </View>
+        <Button label="Logg ut" variant="ink" onPress={onConfirm} />
+        <Button label="Avbryt" variant="secondary" onPress={onClose} />
       </View>
     </Sheet>
   );

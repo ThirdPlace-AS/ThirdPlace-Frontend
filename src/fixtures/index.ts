@@ -8,6 +8,8 @@
 
 import type { ImageSourcePropType } from "react-native";
 
+import type { LibraryKey } from "./images";
+
 export const PLACE_CATEGORIES = [
   "Alle",
   "Kafé",
@@ -1070,14 +1072,14 @@ export type MockChat = {
 export const chats: MockChat[] = [
   {
     id: "c1",
-    name: "Jazzkveld på Løkka",
-    last: "Vi sees kl 20!",
+    name: "Morgenkaffe på Løkka",
+    last: "Vi sees i morgen kl 09 ☕",
     time: "18:42",
     unread: 2,
     kind: "group",
-    pinnedExperienceId: "e1",
+    pinnedExperienceId: "e1", // e1 = "Morgenkaffe & prat" (coherent)
     members: 7,
-    initials: "JL",
+    initials: "MK",
   },
   {
     id: "c2",
@@ -1114,19 +1116,82 @@ export type MockMessage = {
 
 export const messagesByChat: Record<string, MockMessage[]> = {
   c1: [
-    { id: "m1", author: "Sofie", initials: "SO", text: "Hei! Gleder meg til i kveld 🎷", time: "17:30", mine: false },
-    { id: "m2", author: "Ola", initials: "OL", text: "Samme her! Noen som vil ta en kaffe før?", time: "17:34", mine: true },
-    { id: "m3", author: "Jonas", initials: "JO", text: "Jeg er på Tim Wendelboe fra 19.", time: "17:40", mine: false },
-    { id: "m4", author: "Sofie", initials: "SO", text: "Vi sees kl 20!", time: "18:42", mine: false },
+    {
+      id: "m1",
+      author: "Sofie",
+      initials: "SO",
+      text: "Hei! Gleder meg til morgenkaffen i morgen ☕",
+      time: "17:30",
+      mine: false,
+    },
+    {
+      id: "m2",
+      author: "Ola",
+      initials: "OL",
+      text: "Samme her! Noen som vil ta en tur etterpå?",
+      time: "17:34",
+      mine: true,
+    },
+    {
+      id: "m3",
+      author: "Jonas",
+      initials: "JO",
+      text: "Jeg stikker innom Tim Wendelboe på veien.",
+      time: "17:40",
+      mine: false,
+    },
+    {
+      id: "m4",
+      author: "Sofie",
+      initials: "SO",
+      text: "Vi sees i morgen kl 09!",
+      time: "18:42",
+      mine: false,
+    },
   ],
   c2: [
-    { id: "m1", author: "Maria", initials: "MM", text: "Det var en fin kveld 🙌", time: "I går", mine: false },
-    { id: "m2", author: "Ola", initials: "OL", text: "Enig! Vi tar en tur igjen snart.", time: "I går", mine: true },
-    { id: "m3", author: "Maria", initials: "MM", text: "Takk for sist 😊", time: "I går", mine: false },
+    {
+      id: "m1",
+      author: "Maria",
+      initials: "MM",
+      text: "Det var en fin kveld 🙌",
+      time: "I går",
+      mine: false,
+    },
+    {
+      id: "m2",
+      author: "Ola",
+      initials: "OL",
+      text: "Enig! Vi tar en tur igjen snart.",
+      time: "I går",
+      mine: true,
+    },
+    {
+      id: "m3",
+      author: "Maria",
+      initials: "MM",
+      text: "Takk for sist 😊",
+      time: "I går",
+      mine: false,
+    },
   ],
   c3: [
-    { id: "m1", author: "Ketil", initials: "KE", text: "Noen som løper i regnet?", time: "Man", mine: false },
-    { id: "m2", author: "Ola", initials: "OL", text: "Jeg er med hvis det letter litt 🌧️", time: "Man", mine: true },
+    {
+      id: "m1",
+      author: "Ketil",
+      initials: "KE",
+      text: "Noen som løper i regnet?",
+      time: "Man",
+      mine: false,
+    },
+    {
+      id: "m2",
+      author: "Ola",
+      initials: "OL",
+      text: "Jeg er med hvis det letter litt 🌧️",
+      time: "Man",
+      mine: true,
+    },
   ],
 };
 
@@ -1158,11 +1223,12 @@ export type MockVisited = {
   when: string; // MOCK human label, not a stored timestamp
 };
 
-export const PERSONAS: { key: MockPersonaKey; label: string; icon: string }[] = [
-  { key: "explorer", label: "Utforsker", icon: "compass-outline" },
-  { key: "creator", label: "Skaper", icon: "sparkles-outline" },
-  { key: "business", label: "Bedrift", icon: "storefront-outline" },
-];
+export const PERSONAS: { key: MockPersonaKey; label: string; icon: string }[] =
+  [
+    { key: "explorer", label: "Utforsker", icon: "compass-outline" },
+    { key: "creator", label: "Skaper", icon: "sparkles-outline" },
+    { key: "business", label: "Bedrift", icon: "storefront-outline" },
+  ];
 
 export const profile = {
   name: "Ola Nordmann",
@@ -1215,6 +1281,92 @@ export const profile = {
     },
   ] as MockAchievement[],
 };
+
+// ── People (MOCK — demo neighbours, NO social graph / follow backend) ────────
+// BLOCKED_CONTRACT_GAP: there is no person entity, follow edge, mutual-friends
+// count, or discovery ranking in the certified contract. `avatar` keys into the
+// bundled image LIBRARY (fixtures/images) — stand-in portraits, not real people.
+// `mutuals`/`interests`/`area` are demo art; following is local demo state only.
+export type MockPerson = {
+  id: string;
+  name: string;
+  handle: string;
+  avatar: LibraryKey;
+  area: string; // MOCK Oslo neighbourhood label
+  bio: string;
+  mutuals: number; // MOCK shared-friends count (not a real graph)
+  interests: string[]; // MOCK tags, not a canonical taxonomy
+  hostsExperienceId?: string; // optional link to an experience they "host"
+};
+
+export const people: MockPerson[] = [
+  {
+    id: "u1",
+    name: "Maria Movik",
+    handle: "@maria",
+    avatar: "person-maria",
+    area: "Grünerløkka",
+    bio: "Kaffeentusiast og vert for morgenkaffen. Elsker å møte nye naboer.",
+    mutuals: 4,
+    interests: ["Kaffe", "Morgenmøter", "Fotografi"],
+    hostsExperienceId: "e1",
+  },
+  {
+    id: "u2",
+    name: "Jonas Berg",
+    handle: "@jonasb",
+    avatar: "person-jonas",
+    area: "Tøyen",
+    bio: "Løper, syklist og kaffedrikker. Ofte på Tim Wendelboe.",
+    mutuals: 2,
+    interests: ["Løping", "Sykkel", "Kaffe"],
+  },
+  {
+    id: "u3",
+    name: "Åse Kvam",
+    handle: "@asek",
+    avatar: "person-ase",
+    area: "Sofienberg",
+    bio: "Bokorm. Leder lesesirkelen for nordisk krim.",
+    mutuals: 1,
+    interests: ["Bøker", "Diskusjon", "Vin"],
+    hostsExperienceId: "e2",
+  },
+  {
+    id: "u4",
+    name: "Sofie Lind",
+    handle: "@sofie",
+    avatar: "person-sofie",
+    area: "Grünerløkka",
+    bio: "Musikkelsker og konsertgjenger. Alltid klar for en jazzkveld.",
+    mutuals: 3,
+    interests: ["Konserter", "Jazz", "Vin"],
+  },
+  {
+    id: "u5",
+    name: "Erik Haug",
+    handle: "@erikh",
+    avatar: "person-erik",
+    area: "Grønland",
+    bio: "Hobbykokk og krydderjeger. Driver et lite sykkelverksted på si.",
+    mutuals: 0,
+    interests: ["Matlaging", "Sykkel", "Verksted"],
+  },
+  {
+    id: "u6",
+    name: "Nina Dahl",
+    handle: "@ninad",
+    avatar: "person-nina",
+    area: "Torshov",
+    bio: "Naturvin, lange turer og helgeklatring.",
+    mutuals: 2,
+    interests: ["Vin", "Natur", "Klatring"],
+  },
+];
+
+export function personById(id: string): MockPerson | undefined {
+  return people.find((p) => p.id === id);
+}
 
 // ── Notifications (MOCK — static demo activity, no real push/inbox) ──────────
 // BLOCKED_CONTRACT_GAP: not a real notification feed. `minutesAgo` is a MOCK
