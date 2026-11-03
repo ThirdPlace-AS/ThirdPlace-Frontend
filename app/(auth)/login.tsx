@@ -3,12 +3,15 @@ import { ScrollView, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { Button } from "@/components/Button";
+import { DemoBadge } from "@/components/DemoBadge";
 import { Input } from "@/components/Input";
 import { Logo } from "@/components/Logo";
 import { ScreenHeader } from "@/components/ScreenHeader";
+import { useGuestMode } from "@/components/map/hooks/useGuestMode";
 
 // Visual-only sign-in. Inputs are inert; no auth is performed (no backend).
 export default function Login() {
+  const { setGuest } = useGuestMode();
   return (
     <SafeAreaView className="flex-1 bg-background">
       <ScrollView contentContainerClassName="gap-6 p-gutter">
@@ -35,8 +38,17 @@ export default function Login() {
           <Button
             label="Logg inn"
             variant="ink"
-            onPress={() => router.replace("/map")}
+            onPress={() => {
+              setGuest(false);
+              router.replace("/map");
+            }}
           />
+          <View className="flex-row items-center justify-center gap-2">
+            <DemoBadge />
+            <Text className="text-xs text-muted">
+              Demo — ingen reell innlogging; feltene lagrer ingenting.
+            </Text>
+          </View>
         </View>
         <Text className="text-center text-sm text-muted">
           Har du ikke konto?{" "}

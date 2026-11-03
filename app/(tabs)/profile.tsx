@@ -196,6 +196,16 @@ export default function ProfileScreen() {
         <View className="gap-2">
           <Text className="text-base font-semibold text-ink">Oppdag</Text>
           <AccountRow
+            icon="calendar-outline"
+            label="Opplevelser"
+            onPress={() => router.push("/experiences")}
+          />
+          <AccountRow
+            icon="location-outline"
+            label="Steder"
+            onPress={() => router.push("/places")}
+          />
+          <AccountRow
             icon="people-outline"
             label="Naboer"
             onPress={() => router.push("/people")}

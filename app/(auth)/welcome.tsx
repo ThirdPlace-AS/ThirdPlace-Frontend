@@ -4,9 +4,11 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 import { Button } from "@/components/Button";
 import { Logo } from "@/components/Logo";
+import { useGuestMode } from "@/components/map/hooks/useGuestMode";
 
 // Welcome / entry screen (visual only). Matches the auth flow in the screens PDF.
 export default function Welcome() {
+  const { setGuest } = useGuestMode();
   return (
     <SafeAreaView className="flex-1 bg-background">
       <View className="flex-1 justify-between p-gutter">
@@ -21,12 +23,15 @@ export default function Welcome() {
           <Button
             label="Kom i gang"
             variant="ember"
-            onPress={() => router.push("/register")}
+            onPress={() => router.push("/onboarding")}
           />
           <Button
             label="Fortsett som gjest"
             variant="secondary"
-            onPress={() => router.replace("/map")}
+            onPress={() => {
+              setGuest(true);
+              router.replace("/map");
+            }}
           />
           <Text className="text-center text-sm text-muted">
             Allerede medlem?{" "}
