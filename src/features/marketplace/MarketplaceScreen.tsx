@@ -165,7 +165,7 @@ function ListingSheet({
                   contacted ? "text-muted" : "text-onEmber"
                 }`}
               >
-                {contacted ? "Melding sendt (demo)" : "Kontakt selger"}
+                {contacted ? "Demo — ingen melding sendt" : "Kontakt selger"}
               </Text>
             </Pressable>
             <View className="flex-row items-center gap-2">

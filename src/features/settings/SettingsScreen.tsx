@@ -23,6 +23,10 @@ export default function SettingsScreen() {
   const [nearby, setNearby] = useState(true);
   const [logoutOpen, setLogoutOpen] = useState(false);
   const [signIn, setSignIn] = useState<string | null>(null);
+  const [info, setInfo] = useState<{ title: string; body: string } | null>(
+    null,
+  );
+  const show = (title: string, body: string) => () => setInfo({ title, body });
 
   const gated = (action: string, run: () => void) => () =>
     guest.isGuest ? setSignIn(action) : run();
@@ -40,20 +44,27 @@ export default function SettingsScreen() {
 
         <SettingsSection title="Konto">
           <NavRow
-            icon="person-outline"
-            label="Rediger profil"
-            onPress={() => router.back()}
-          />
-          <NavRow
             icon="mail-outline"
             label="E-post"
             value={guest.isGuest ? "—" : "ola@eksempel.no"}
-            onPress={gated("endre e-post", () => {})}
+            onPress={gated(
+              "endre e-post",
+              show(
+                "E-post",
+                "Endring av e-post er ikke koblet til en konto ennå. Ingenting lagres.",
+              ),
+            )}
           />
           <NavRow
             icon="link-outline"
             label="Koblede kontoer"
-            onPress={gated("koble kontoer", () => {})}
+            onPress={gated(
+              "koble kontoer",
+              show(
+                "Koblede kontoer",
+                "Ingen kontoer er koblet. Innlogging med andre tjenester kommer senere.",
+              ),
+            )}
           />
           <NavRow
             icon="card-outline"
@@ -95,7 +106,7 @@ export default function SettingsScreen() {
             icon="eye-off-outline"
             label="Blokkerte"
             value="0"
-            onPress={() => {}}
+            onPress={show("Blokkerte", "Du har ikke blokkert noen.")}
           />
         </SettingsSection>
 
@@ -104,23 +115,35 @@ export default function SettingsScreen() {
             icon="language-outline"
             label="Språk"
             value="Norsk"
-            onPress={() => {}}
+            onPress={show(
+              "Språk",
+              "ThirdPlace er foreløpig bare på norsk. Flere språk kommer.",
+            )}
           />
           <NavRow
             icon="document-text-outline"
             label="Vilkår"
-            onPress={() => {}}
+            onPress={show(
+              "Vilkår",
+              "Brukervilkårene er ikke publisert ennå. De kommer før lansering.",
+            )}
           />
           <NavRow
             icon="shield-outline"
             label="Personvernerklæring"
-            onPress={() => {}}
+            onPress={show(
+              "Personvernerklæring",
+              "Personvernerklæringen er ikke publisert ennå. Den kommer før lansering.",
+            )}
           />
           <NavRow
             icon="information-circle-outline"
             label="Om ThirdPlace"
             value="v0 · demo"
-            onPress={() => {}}
+            onPress={show(
+              "Om ThirdPlace",
+              "ThirdPlace hjelper deg å finne møteplasser i nabolaget. Dette er en demoversjon med eksempeldata.",
+            )}
           />
         </SettingsSection>
 
@@ -136,8 +159,7 @@ export default function SettingsScreen() {
         </SettingsSection>
 
         <Text className="px-1 text-center text-[11px] text-muted">
-          Medlem siden {profile.memberSince.replace("Medlem siden ", "")} ·
-          BLOCKED_CONTRACT_GAP
+          {profile.memberSince} · demoversjon
         </Text>
       </ScrollView>
 
@@ -168,6 +190,20 @@ export default function SettingsScreen() {
             onPress={() => setLogoutOpen(false)}
           />
         </View>
+      </Sheet>
+
+      <Sheet
+        visible={info !== null}
+        onClose={() => setInfo(null)}
+        title={info?.title ?? ""}
+      >
+        <DemoBadge />
+        <Text className="text-sm text-ink">{info?.body}</Text>
+        <Button
+          variant="secondary"
+          label="Lukk"
+          onPress={() => setInfo(null)}
+        />
       </Sheet>
 
       <SignInPrompt

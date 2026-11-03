@@ -1,4 +1,5 @@
 import { Ionicons } from "@expo/vector-icons";
+import { Image } from "expo-image";
 import { Pressable, Text, View } from "react-native";
 
 import { Card } from "@/components/Card";
@@ -9,6 +10,7 @@ import {
   placeById,
   priceBandFor,
 } from "@/fixtures";
+import { coverForPlace, libImage } from "@/fixtures/images";
 import { colors } from "@/theme";
 
 import type { PushFn } from "../sheetTypes";
@@ -61,20 +63,15 @@ export function PlaceContent({ id, push }: { id: string; push: PushFn }) {
         </Text>
       </View>
 
-      {/* Image gallery (placeholders — no real media in fixtures) */}
-      <View className="flex-row gap-2">
-        <View className="h-40 flex-1 items-center justify-center rounded-lg bg-surfaceMuted">
-          <Ionicons name="image-outline" size={40} color={colors.muted} />
-        </View>
-        <View className="gap-2">
-          <View className="h-[72px] w-20 items-center justify-center rounded-lg bg-surfaceMuted">
-            <Ionicons name="image-outline" size={20} color={colors.muted} />
-          </View>
-          <View className="h-[72px] w-20 items-center justify-center rounded-lg bg-surfaceMuted">
-            <Ionicons name="images-outline" size={20} color={colors.muted} />
-          </View>
-        </View>
-      </View>
+      {/* Cover — illustrative library photo (MOCK; not of this venue). */}
+      <Image
+        source={libImage(coverForPlace(place))}
+        contentFit="cover"
+        transition={150}
+        accessibilityLabel={place.name}
+        style={{ height: 176, width: "100%", borderRadius: 12 }}
+        className="bg-surfaceMuted"
+      />
 
       <DetailActions markerId={markerId("place", place.id)} />
 

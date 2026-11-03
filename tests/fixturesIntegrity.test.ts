@@ -7,10 +7,12 @@ import {
   messagesForChat,
   people,
   placeById,
+  places,
   profile,
 } from "@/fixtures";
 import {
   LIBRARY,
+  coverForPlace,
   coverForPlaceCategory,
   libImage,
   type LibraryKey,
@@ -73,5 +75,18 @@ describe("coverForPlaceCategory", () => {
     expect(map["Bokcafé"]).toBe("venue-books");
     expect(map["Vinbar"]).toBe("venue-bar");
     expect(map["Verksted"]).toBe("venue-workshop");
+  });
+});
+
+describe("coverForPlace", () => {
+  it("gives every place a real library cover", () => {
+    for (const p of places) {
+      expect(LIBRARY[coverForPlace(p)]).toBeDefined();
+    }
+  });
+
+  it("does not collapse same-category places onto one photo", () => {
+    const covers = new Set(places.map((p) => coverForPlace(p)));
+    expect(covers.size).toBeGreaterThan(places.length / 2);
   });
 });

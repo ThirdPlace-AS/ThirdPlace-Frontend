@@ -22,7 +22,7 @@ import {
   type MockPersonaKey,
   type MockVisited,
 } from "@/fixtures";
-import { coverForPlaceCategory, libImage } from "@/fixtures/images";
+import { coverForPlace, libImage } from "@/fixtures/images";
 import { colors } from "@/theme";
 
 function Stat({ value, label }: { value: number; label: string }) {
@@ -316,7 +316,7 @@ function VisitedCard({ visit }: { visit: MockVisited }) {
   return (
     <View className="w-40 gap-1.5">
       <Image
-        source={libImage(coverForPlaceCategory(place.category))}
+        source={libImage(coverForPlace(place))}
         contentFit="cover"
         transition={200}
         style={{ height: 112, width: 160, borderRadius: 12 }}

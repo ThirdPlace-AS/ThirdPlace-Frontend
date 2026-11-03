@@ -8,7 +8,7 @@ import { DetailStackSheet } from "@/components/DetailStackSheet";
 import { RouteHeader } from "@/components/RouteHeader";
 import type { SheetTarget } from "@/components/map/sheetTypes";
 import { places, type MockPlace } from "@/fixtures";
-import { coverForPlaceCategory, libImage } from "@/fixtures/images";
+import { coverForPlace, libImage } from "@/fixtures/images";
 import { colors } from "@/theme";
 
 // Places index route (DEMO). Reached from Profile → Oppdag → Steder. Reuses the
@@ -55,7 +55,7 @@ function PlaceRow({
       className="flex-row items-center gap-3 rounded-xl bg-surface p-2.5 active:opacity-90"
     >
       <Image
-        source={libImage(coverForPlaceCategory(place.category))}
+        source={libImage(coverForPlace(place))}
         contentFit="cover"
         transition={150}
         style={{ height: 64, width: 64, borderRadius: 12 }}

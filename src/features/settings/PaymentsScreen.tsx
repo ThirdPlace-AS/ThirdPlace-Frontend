@@ -64,8 +64,9 @@ export default function PaymentsScreen() {
         </SettingsSection>
 
         <Text className="px-1 text-[11px] text-muted">
-          Betaling og fakturering er ikke en del av den sertifiserte kontrakten
-          (BLOCKED_CONTRACT_GAP). Denne skjermen viser kun strukturen.
+          {/* BLOCKED_CONTRACT_GAP: no payment/billing contract. */}
+          Betaling er ikke tilgjengelig i demoen. Denne skjermen viser bare
+          oppsettet — ingen kortdata samles inn og ingen betaling skjer.
         </Text>
       </ScrollView>
 

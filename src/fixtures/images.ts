@@ -59,3 +59,30 @@ export function coverForPlaceCategory(category: string): LibraryKey {
       return "venue-cafe";
   }
 }
+
+// Per-place cover (MOCK — presentational only). Category alone gave every Kafé
+// the same photo; this picks a photo that fits each listing. Falls back to the
+// category cover for any place not listed here.
+const PLACE_COVERS: Record<string, LibraryKey> = {
+  p1: "venue-cafe",
+  p2: "venue-books",
+  p3: "venue-bar",
+  p4: "market-bike",
+  p5: "venue-outdoor",
+  p6: "market-ceramics",
+  p7: "venue-restaurant",
+  p8: "market-plant",
+  p9: "venue-workshop",
+  p10: "group-wine",
+  p11: "venue-gallery",
+  p12: "venue-music",
+  p13: "venue-restaurant",
+  p14: "venue-gallery",
+};
+
+export function coverForPlace(place: {
+  id: string;
+  category: string;
+}): LibraryKey {
+  return PLACE_COVERS[place.id] ?? coverForPlaceCategory(place.category);
+}

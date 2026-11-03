@@ -80,9 +80,8 @@ export default function PrivacyScreen() {
         </SettingsSection>
 
         <Text className="px-1 text-[11px] text-muted">
-          Synlighetsreglene er ikke endelig fastsatt i kontrakten
-          (BLOCKED_CONTRACT_GAP). Denne skjermen viser strukturen, ikke en reell
-          personverninnstilling.
+          {/* BLOCKED_CONTRACT_GAP: visibility rules not yet fixed. */}
+          Demo — valgene her lagres ikke og endrer ikke hvem som ser deg ennå.
         </Text>
       </ScrollView>
     </SafeAreaView>
