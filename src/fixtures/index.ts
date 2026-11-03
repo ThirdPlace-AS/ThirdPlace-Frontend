@@ -1023,6 +1023,7 @@ export type MockGroup = {
   about: string;
   memberCount: number;
   members: string[]; // initials
+  cover: LibraryKey; // MOCK demo cover photo (bundled LIBRARY key)
 };
 
 export const groups: MockGroup[] = [
@@ -1032,6 +1033,7 @@ export const groups: MockGroup[] = [
     about: "Naboer som møtes til kaffe i helgene.",
     memberCount: 34,
     members: ["MM", "TT", "ÅK", "JB", "ND"],
+    cover: "venue-cafe",
   },
   {
     id: "g2",
@@ -1039,6 +1041,7 @@ export const groups: MockGroup[] = [
     about: "Månedlig lesesirkel på Grünerløkka.",
     memberCount: 18,
     members: ["ÅK", "PO", "IS"],
+    cover: "venue-books",
   },
   {
     id: "g3",
@@ -1046,6 +1049,7 @@ export const groups: MockGroup[] = [
     about: "Vi smaker naturvin sammen én gang i måneden.",
     memberCount: 52,
     members: ["TT", "MM", "KN"],
+    cover: "group-wine",
   },
 ];
 
@@ -1366,6 +1370,58 @@ export const people: MockPerson[] = [
 
 export function personById(id: string): MockPerson | undefined {
   return people.find((p) => p.id === id);
+}
+
+// ── Creators (MOCK — demo progression shell, NO creator/reputation backend) ──
+// BLOCKED_CONTRACT_GAP: there is no creator entity, level/XP system, reputation
+// score, or payout model in the certified contract. `level`/`progressPct`/`hosted`
+// are demo art; progression proves and unlocks nothing.
+export type MockCreator = {
+  id: string;
+  name: string;
+  avatar: LibraryKey;
+  tagline: string;
+  level: string; // MOCK level label (not a real tier)
+  progressPct: number; // MOCK progress toward the next demo level (0–100)
+  hosted: number; // MOCK count of experiences "hosted"
+  specialties: string[]; // MOCK tags
+};
+
+export const creators: MockCreator[] = [
+  {
+    id: "cr1",
+    name: "Maria Movik",
+    avatar: "person-maria",
+    tagline: "Vert for morgenkaffen på Løkka.",
+    level: "Aktiv skaper",
+    progressPct: 72,
+    hosted: 12,
+    specialties: ["Kaffe", "Morgenmøter", "Fotografi"],
+  },
+  {
+    id: "cr2",
+    name: "Erik Haug",
+    avatar: "person-erik",
+    tagline: "Hobbykokk og sykkelmekker.",
+    level: "Ny skaper",
+    progressPct: 34,
+    hosted: 3,
+    specialties: ["Matlaging", "Verksted"],
+  },
+  {
+    id: "cr3",
+    name: "Sofie Lind",
+    avatar: "person-sofie",
+    tagline: "Samler folk til konserter og jazzkvelder.",
+    level: "Erfaren skaper",
+    progressPct: 90,
+    hosted: 21,
+    specialties: ["Konserter", "Jazz", "Musikk"],
+  },
+];
+
+export function creatorById(id: string): MockCreator | undefined {
+  return creators.find((c) => c.id === id);
 }
 
 // ── Notifications (MOCK — static demo activity, no real push/inbox) ──────────

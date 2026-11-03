@@ -189,6 +189,21 @@ export default function ProfileScreen() {
             label="Naboer"
             onPress={() => router.push("/people")}
           />
+          <AccountRow
+            icon="people-circle-outline"
+            label="Grupper"
+            onPress={() => router.push("/groups")}
+          />
+          <AccountRow
+            icon="storefront-outline"
+            label="Bedrifter"
+            onPress={() => router.push("/businesses")}
+          />
+          <AccountRow
+            icon="sparkles-outline"
+            label="Skapere"
+            onPress={() => router.push("/creators")}
+          />
         </View>
 
         {/* Account */}
