@@ -1424,6 +1424,75 @@ export function creatorById(id: string): MockCreator | undefined {
   return creators.find((c) => c.id === id);
 }
 
+// ── Marketplace (MOCK — demo listings, NO commerce backend) ──
+// BLOCKED_CONTRACT_GAP: there is no listing entity, inventory, pricing,
+// availability, checkout, or payment model in the certified contract. `price` is
+// a display string only; nothing can be bought and no transaction occurs.
+export type MockListing = {
+  id: string;
+  title: string;
+  price: string; // MOCK display label (e.g. "250 kr"), not a real amount
+  cover: LibraryKey;
+  category: string; // MOCK tag
+  sellerName: string;
+  sellerArea: string;
+  condition: string; // MOCK ("Som ny", "Pent brukt"…)
+  description: string;
+};
+
+export const listings: MockListing[] = [
+  {
+    id: "m1",
+    title: "Håndlaget keramikkskål",
+    price: "250 kr",
+    cover: "market-ceramics",
+    category: "Hjem",
+    sellerName: "Åse Kvam",
+    sellerArea: "Sofienberg",
+    condition: "Som ny",
+    description:
+      "Dreid og glasert på verkstedet på Grünerløkka. Fin til frukt eller nøkler i gangen.",
+  },
+  {
+    id: "m2",
+    title: "Monstera i leirpotte",
+    price: "180 kr",
+    cover: "market-plant",
+    category: "Planter",
+    sellerName: "Nina Dahl",
+    sellerArea: "Torshov",
+    condition: "Frisk",
+    description: "Stor og frodig, har fått for lite plass i vinduskarmen min.",
+  },
+  {
+    id: "m3",
+    title: "Bybruktsykkel, 7 gir",
+    price: "1 400 kr",
+    cover: "market-bike",
+    category: "Sykkel",
+    sellerName: "Erik Haug",
+    sellerArea: "Grønland",
+    condition: "Pent brukt",
+    description:
+      "Nylig servicet på verkstedet. Perfekt til jobbpendling på flat Oslo-asfalt.",
+  },
+  {
+    id: "m4",
+    title: "Jazzplater, 12 stk",
+    price: "600 kr",
+    cover: "market-vinyl",
+    category: "Musikk",
+    sellerName: "Sofie Lind",
+    sellerArea: "Grünerløkka",
+    condition: "Brukt",
+    description: "Norsk og nordisk jazz fra 70-tallet. Selges samlet.",
+  },
+];
+
+export function listingById(id: string): MockListing | undefined {
+  return listings.find((l) => l.id === id);
+}
+
 // ── Notifications (MOCK — static demo activity, no real push/inbox) ──────────
 // BLOCKED_CONTRACT_GAP: not a real notification feed. `minutesAgo` is a MOCK
 // relative offset (demo), not a stored timestamp. Rendered Instagram-style.

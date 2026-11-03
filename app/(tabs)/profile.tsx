@@ -215,6 +215,11 @@ export default function ProfileScreen() {
             label="Skapere"
             onPress={() => router.push("/creators")}
           />
+          <AccountRow
+            icon="pricetags-outline"
+            label="Markedsplass"
+            onPress={() => router.push("/marketplace")}
+          />
         </View>
 
         {/* Account */}

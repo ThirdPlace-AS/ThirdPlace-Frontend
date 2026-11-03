@@ -55,6 +55,11 @@ export default function SettingsScreen() {
             label="Koblede kontoer"
             onPress={gated("koble kontoer", () => {})}
           />
+          <NavRow
+            icon="card-outline"
+            label="Betaling"
+            onPress={() => router.push("/payments")}
+          />
         </SettingsSection>
 
         <SettingsSection title="Varsler">
