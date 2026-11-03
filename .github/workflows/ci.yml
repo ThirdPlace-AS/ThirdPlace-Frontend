@@ -72,8 +72,9 @@ jobs:
         run: npx expo export -p android --output-dir dist-android
 
       - name: Assert no secret (sk.*) token in exported bundles
+        # sk. must start a token: `back-icon-mask.<hash>` is not a secret.
         run: |
-          if grep -rIl --include='*.js' -E 'sk\.[A-Za-z0-9._-]{20,}' dist-web dist-android; then
+          if grep -rIl --include='*.js' -E '(^|[^A-Za-z0-9_])sk\.[A-Za-z0-9._-]{20,}' dist-web dist-android; then
             echo "::error::A secret sk.* token leaked into an exported bundle"; exit 1
           fi
           echo "No sk.* token found in exported bundles."
