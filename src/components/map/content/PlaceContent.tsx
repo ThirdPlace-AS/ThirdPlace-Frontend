@@ -73,7 +73,10 @@ export function PlaceContent({ id, push }: { id: string; push: PushFn }) {
         className="bg-surfaceMuted"
       />
 
-      <DetailActions markerId={markerId("place", place.id)} />
+      <DetailActions
+        markerId={markerId("place", place.id)}
+        title={place.name}
+      />
 
       <Text className="text-sm text-muted">{place.about}</Text>
 

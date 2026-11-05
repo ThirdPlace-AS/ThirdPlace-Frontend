@@ -15,8 +15,6 @@ export const demoCopy = {
   paymentsDemoScreen: "Kun en demo-skjerm.",
   privacyNotSaved: "Ingen reell synlighet eller samtykke lagres eller endres.",
   settingsNotSaved: "Innstillinger lagres ikke og nullstilles ved omstart.",
-  shareInactive: "Deling er ikke aktiv ennå — ingen delingsmeny åpnes.",
-  reportNotSent: "Ingen rapport sendes — rapportering er ikke koblet til ennå.",
   joinedNoBackend:
     "Du er med i demoen — ingen reell påmelding, og ingen gruppechat er åpnet.",
   waitlistedNoBackend:

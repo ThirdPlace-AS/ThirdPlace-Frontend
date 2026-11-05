@@ -15,6 +15,8 @@ import type { PushFn } from "../sheetTypes";
 import { markerId } from "../types/mapPresentation";
 import { DetailActions } from "./DetailActions";
 
+import { LeaveSheet, WaitlistSheet } from "@/components/actions/ActionSheets";
+
 const statusMeta: Record<
   ExperienceStatus,
   { label: string; className: string }
@@ -57,6 +59,8 @@ export function ExperienceContent({ id, push }: { id: string; push: PushFn }) {
   );
   const { isGuest } = useGuestMode();
   const [promptOpen, setPromptOpen] = useState(false);
+  // PDF p23: leaving and joining the waitlist confirm in a sheet first.
+  const [confirm, setConfirm] = useState<"leave" | "waitlist" | null>(null);
   // Join / waitlist are account actions: guests get the sign-in prompt, the
   // signed-in demo flips local state only (BLOCKED_CONTRACT_GAP).
   const gated = (run: () => void) => () =>
@@ -72,7 +76,7 @@ export function ExperienceContent({ id, push }: { id: string; push: PushFn }) {
 
   const primary = (() => {
     if (user === "joined")
-      return { label: "Forlat", action: () => setUser("none") };
+      return { label: "Forlat", action: () => setConfirm("leave") };
     if (user === "waitlisted")
       return { label: "Meld av venteliste", action: () => setUser("none") };
     if (experience.status === "cancelled")
@@ -80,7 +84,7 @@ export function ExperienceContent({ id, push }: { id: string; push: PushFn }) {
     if (experience.status === "full" || experience.status === "waitlist")
       return {
         label: "Meld på venteliste",
-        action: gated(() => setUser("waitlisted")),
+        action: gated(() => setConfirm("waitlist")),
       };
     return { label: "Bli med", action: gated(() => setUser("joined")) };
   })();
@@ -106,7 +110,23 @@ export function ExperienceContent({ id, push }: { id: string; push: PushFn }) {
         ))}
       </View>
 
-      <DetailActions markerId={markerId("experience", experience.id)} />
+      <DetailActions
+        markerId={markerId("experience", experience.id)}
+        title={experience.title}
+      />
+      {confirm === "leave" ? (
+        <LeaveSheet
+          onClose={() => setConfirm(null)}
+          onConfirm={() => setUser("none")}
+        />
+      ) : null}
+      {confirm === "waitlist" ? (
+        <WaitlistSheet
+          ahead={3}
+          onClose={() => setConfirm(null)}
+          onConfirm={() => setUser("waitlisted")}
+        />
+      ) : null}
 
       <View className="gap-2">
         <LinkRow

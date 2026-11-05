@@ -3,6 +3,7 @@ import { Image } from "expo-image";
 import { useState } from "react";
 import { Pressable, Text, TextInput, View } from "react-native";
 
+import { ReportSheet } from "@/components/actions/ActionSheets";
 import { Button } from "@/components/Button";
 import { DemoNote } from "@/components/DemoNote";
 import { Sheet } from "@/components/Sheet";
@@ -70,6 +71,7 @@ function InfoSheet({
   onInvite: () => void;
 }) {
   const [notice, setNotice] = useState<string | null>(null);
+  const [report, setReport] = useState(false);
   const exp = chat.pinnedExperienceId
     ? experienceById(chat.pinnedExperienceId)
     : undefined;
@@ -113,7 +115,11 @@ function InfoSheet({
               key={a.label}
               accessibilityRole="button"
               onPress={() =>
-                a.label === "Inviter" ? onInvite() : setNotice(a.label)
+                a.label === "Inviter"
+                  ? onInvite()
+                  : a.label === "Rapporter"
+                    ? setReport(true)
+                    : setNotice(a.label)
               }
               className="flex-1 items-center gap-1 rounded-xl border border-line bg-surface py-3 active:opacity-80"
             >
@@ -125,6 +131,7 @@ function InfoSheet({
         {notice ? (
           <DemoNote>{`«${notice}» gjør ingenting i demoen.`}</DemoNote>
         ) : null}
+        {report ? <ReportSheet onClose={() => setReport(false)} /> : null}
       </View>
     </Sheet>
   );
@@ -147,7 +154,9 @@ function MembersSheet({
   return (
     <Sheet visible={visible} onClose={onClose} title="Medlemmer">
       <View className="gap-3">
-        <Text className="text-sm text-muted">{chat.members ?? all.length} i chatten</Text>
+        <Text className="text-sm text-muted">
+          {chat.members ?? all.length} i chatten
+        </Text>
         <SearchField value={q} onChange={setQ} placeholder="Søk medlemmer …" />
         {list.map((m) => (
           <MemberRow key={m.person.id} {...m} />

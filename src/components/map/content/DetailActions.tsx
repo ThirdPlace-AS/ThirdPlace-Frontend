@@ -2,9 +2,8 @@ import { Ionicons } from "@expo/vector-icons";
 import { useState } from "react";
 import { Pressable, Text, View } from "react-native";
 
-import { DemoNote } from "@/components/DemoNote";
+import { ReportSheet, ShareSheet } from "@/components/actions/ActionSheets";
 import { SignInPrompt } from "@/components/SignInPrompt";
-import { demoCopy } from "@/copy";
 import { colors } from "@/theme";
 
 import { useGuestMode } from "../hooks/useGuestMode";
@@ -12,9 +11,15 @@ import { useMapSaved } from "../hooks/useMapSaved";
 
 // Save / Share / Report action row shared by detail content. Save toggles the
 // in-memory demo store (persistence CONTRACT-BLOCKED CB-5) — or, for a guest,
-// prompts sign-in. Share and Report are DEMO: tapping them only reveals a note
-// saying nothing was shared or reported (never a fake "Rapportert" state).
-export function DetailActions({ markerId }: { markerId: string }) {
+// prompts sign-in. Del and Rapporter open the PDF p23 sheets, which say
+// plainly that nothing was shared or reported.
+export function DetailActions({
+  markerId,
+  title,
+}: {
+  markerId: string;
+  title: string;
+}) {
   const { isSaved, toggle } = useMapSaved();
   const { isGuest } = useGuestMode();
   const [promptOpen, setPromptOpen] = useState(false);
@@ -71,10 +76,15 @@ export function DetailActions({ markerId }: { markerId: string }) {
         </Pressable>
       </View>
 
-      {notice ? (
-        <DemoNote>
-          {notice === "share" ? demoCopy.shareInactive : demoCopy.reportNotSent}
-        </DemoNote>
+      {notice === "share" ? (
+        <ShareSheet
+          title={title}
+          slug={markerId.replace(":", "/")}
+          onClose={() => setNotice(null)}
+        />
+      ) : null}
+      {notice === "report" ? (
+        <ReportSheet onClose={() => setNotice(null)} />
       ) : null}
 
       <SignInPrompt
