@@ -1,6 +1,6 @@
 import { Ionicons } from "@expo/vector-icons";
 import { Image } from "expo-image";
-import { router } from "expo-router";
+import { router, type Href } from "expo-router";
 import { useMemo, useState } from "react";
 import { FlatList, Pressable, Text, TextInput, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -32,6 +32,10 @@ export default function MarketplaceScreen() {
   const { isGuest } = useGuestMode();
   const [query, setQuery] = useState("");
   const [type, setType] = useState<MockListingType | null>(null);
+  // Filtre (PDF p16): only facets the fixtures carry — 'Kun gratis' reads
+  // the display terms; no invented price logic.
+  const [freeOnly, setFreeOnly] = useState(false);
+  const [filterOpen, setFilterOpen] = useState(false);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [signIn, setSignIn] = useState(false);
   const selected = selectedId ? listingById(selectedId) : undefined;
@@ -42,12 +46,13 @@ export default function MarketplaceScreen() {
       listings.filter(
         (l) =>
           (!type || l.type === type) &&
+          (!freeOnly || l.terms.toLowerCase().includes("gratis")) &&
           (!q ||
             l.title.toLowerCase().includes(q) ||
             l.owner.toLowerCase().includes(q) ||
             l.tags.some((t) => t.toLowerCase().includes(q))),
       ),
-    [q, type],
+    [q, type, freeOnly],
   );
 
   return (
@@ -74,6 +79,30 @@ export default function MarketplaceScreen() {
                 Mine listings →
               </Text>
             </Pressable>
+            <View className="flex-row gap-4">
+              <Pressable
+                accessibilityRole="button"
+                onPress={() => setFilterOpen(true)}
+                className="flex-row items-center gap-1.5"
+              >
+                <Ionicons name="options-outline" size={16} color={colors.ink} />
+                <Text className="text-sm font-semibold text-ink">
+                  Filtre{freeOnly ? " (1)" : ""}
+                </Text>
+              </Pressable>
+              <Pressable
+                accessibilityRole="button"
+                onPress={() => router.push("/workspace/analytics" as Href)}
+                className="flex-row items-center gap-1.5"
+              >
+                <Ionicons
+                  name="stats-chart-outline"
+                  size={16}
+                  color={colors.ink}
+                />
+                <Text className="text-sm font-semibold text-ink">Analyse</Text>
+              </Pressable>
+            </View>
             <View className="flex-row items-center gap-2 rounded-full border border-line bg-surface px-4">
               <Ionicons name="search" size={18} color={colors.muted} />
               <TextInput
@@ -121,6 +150,43 @@ export default function MarketplaceScreen() {
         }}
         isGuest={isGuest}
       />
+      <Sheet
+        visible={filterOpen}
+        onClose={() => setFilterOpen(false)}
+        title="Filtre"
+      >
+        <View className="gap-3">
+          <Text className="text-sm font-semibold text-ink">Type</Text>
+          <View className="flex-row flex-wrap gap-2">
+            <Chip
+              label="Alle"
+              selected={type === null}
+              onPress={() => setType(null)}
+            />
+            {LISTING_TYPES.map((t) => (
+              <Chip
+                key={t}
+                label={t}
+                selected={type === t}
+                onPress={() => setType(t)}
+              />
+            ))}
+          </View>
+          <Text className="text-sm font-semibold text-ink">Vilkår</Text>
+          <View className="flex-row flex-wrap gap-2">
+            <Chip
+              label="Kun gratis / eksponering"
+              selected={freeOnly}
+              onPress={() => setFreeOnly((f) => !f)}
+            />
+          </View>
+          <Button
+            label={`Vis ${data.length} listings`}
+            variant="ink"
+            onPress={() => setFilterOpen(false)}
+          />
+        </View>
+      </Sheet>
       <SignInPrompt
         visible={signIn}
         onClose={() => setSignIn(false)}
