@@ -1,5 +1,6 @@
 import { Ionicons } from "@expo/vector-icons";
 import { Image } from "expo-image";
+import { router } from "expo-router";
 import { useMemo, useState } from "react";
 import { FlatList, Pressable, Text, TextInput, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -237,7 +238,14 @@ function ListingSheet({
               <Button
                 label="Send forespørsel"
                 variant="ink"
-                onPress={() => (isGuest ? onGuest() : setNotice("request"))}
+                onPress={() => {
+                  if (isGuest) return onGuest();
+                  close();
+                  router.push({
+                    pathname: "/collab/new",
+                    params: { listing: listing.id },
+                  });
+                }}
               />
             </View>
             <View className="w-28">
