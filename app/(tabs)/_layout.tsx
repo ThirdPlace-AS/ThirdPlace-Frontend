@@ -21,16 +21,12 @@ function icon(idle: IconName, active: IconName) {
   return Comp;
 }
 
-// Center "Legg til": the one primary action, so it gets the brand fill instead
-// of a plain glyph. Label hidden visually; the tab title stays the a11y name.
-function AddIcon({ focused }: { focused: boolean }) {
+// Center "Legg til" per the design (PDF p5–p8): a dark round "+" with the
+// "Legg til" label underneath, like the other tabs.
+function AddIcon() {
   return (
-    <View
-      className={`h-10 w-14 items-center justify-center rounded-2xl ${
-        focused ? "bg-ink" : "bg-ember"
-      }`}
-    >
-      <Ionicons name="add" size={26} color={colors.onEmber} />
+    <View className="h-9 w-9 items-center justify-center rounded-full bg-ink">
+      <Ionicons name="add" size={24} color={colors.onEmber} />
     </View>
   );
 }
@@ -43,7 +39,8 @@ export default function TabsLayout() {
     <Tabs
       screenOptions={{
         headerShown: false,
-        tabBarActiveTintColor: colors.ink,
+        // PDF: the active tab's icon + label are Ember; the rest muted.
+        tabBarActiveTintColor: colors.ember,
         tabBarInactiveTintColor: colors.muted,
         tabBarStyle: {
           backgroundColor: colors.surface,
@@ -66,7 +63,6 @@ export default function TabsLayout() {
         name="add"
         options={{
           title: "Legg til",
-          tabBarLabel: () => null,
           tabBarIcon: AddIcon,
         }}
       />
