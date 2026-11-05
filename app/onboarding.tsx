@@ -146,6 +146,11 @@ export default function Onboarding() {
 
   const back = () => (step === 0 ? router.back() : setStep((s) => s - 1));
   const next = () => {
+    // Bedrift / Enterprise continue in the business branch (PDF p3–p5).
+    if (step === 0 && (role === "business" || role === "enterprise")) {
+      router.push("/business-onboarding");
+      return;
+    }
     if (step === 1 && age.status === "underage") {
       setBlocked(true);
       return;
@@ -256,12 +261,6 @@ export default function Onboarding() {
                 </Pressable>
               );
             })}
-            {role === "business" || role === "enterprise" ? (
-              <DemoNote>
-                Bedriftsoppsettet er ikke klart i demoen — du fortsetter med
-                profiloppsettet.
-              </DemoNote>
-            ) : null}
           </Shell>
         ) : null}
 
