@@ -10,6 +10,7 @@ import { Chip } from "@/components/Chip";
 import { DemoBadge } from "@/components/DemoBadge";
 import { DemoNote } from "@/components/DemoNote";
 import { Input } from "@/components/Input";
+import { PlacePicker } from "@/components/pickers/Pickers";
 import { experiences, OSLO_AREAS, places } from "@/fixtures";
 import { colors } from "@/theme";
 
@@ -254,6 +255,7 @@ function StepBody({
   patch: (p: Partial<AddDraft>) => void;
 }) {
   const isPlace = draft.kind === "place";
+  const [picker, setPicker] = useState(false);
   switch (step) {
     case "about":
       return (
@@ -330,6 +332,22 @@ function StepBody({
               onPress={() => patch({ area: p.name })}
             />
           ))}
+          <Pressable
+            accessibilityRole="button"
+            onPress={() => setPicker(true)}
+            className="flex-row items-center gap-2 rounded-xl border border-line bg-surface p-3.5 active:opacity-80"
+          >
+            <Ionicons name="search" size={16} color={colors.muted} />
+            <Text className="flex-1 text-sm text-muted">
+              Søk etter et annet sted …
+            </Text>
+          </Pressable>
+          {picker ? (
+            <PlacePicker
+              onPick={(pl) => patch({ area: pl.name })}
+              onClose={() => setPicker(false)}
+            />
+          ) : null}
           <Label>Annet sted</Label>
           <ChipRow
             options={OSLO_AREAS.map((a) => a.name)}

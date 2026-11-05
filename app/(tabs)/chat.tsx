@@ -8,6 +8,7 @@ import { Button } from "@/components/Button";
 import { Chip } from "@/components/Chip";
 import { DemoNote } from "@/components/DemoNote";
 import { Input } from "@/components/Input";
+import { UserSearch } from "@/components/pickers/Pickers";
 import { NotificationsSheet } from "@/components/NotificationsSheet";
 import { Sheet } from "@/components/Sheet";
 import {
@@ -267,6 +268,8 @@ function NewChatSheet({
 }) {
   const [name, setName] = useState("");
   const [access, setAccess] = useState<MockChatAccess>("open");
+  const [members, setMembers] = useState<string[]>([]);
+  const [search, setSearch] = useState(false);
   return (
     <Sheet visible={visible} onClose={onClose} title="Ny chat">
       <View className="gap-4">
@@ -290,6 +293,28 @@ function NewChatSheet({
             ))}
           </View>
         </View>
+        <View className="gap-2">
+          <Text className="text-sm font-semibold text-ink">Medlemmer</Text>
+          {members.length ? (
+            <Text className="text-sm text-ink">{members.join(", ")}</Text>
+          ) : null}
+          <Pressable
+            accessibilityRole="button"
+            onPress={() => setSearch(true)}
+            className="flex-row items-center gap-2 self-start rounded-full border border-line bg-surface px-3 py-2"
+          >
+            <Ionicons name="person-add-outline" size={16} color={colors.ink} />
+            <Text className="text-sm font-medium text-ink">Legg til</Text>
+          </Pressable>
+        </View>
+        {search ? (
+          <UserSearch
+            onPick={(p) =>
+              setMembers((m) => (m.includes(p.name) ? m : [...m, p.name]))
+            }
+            onClose={() => setSearch(false)}
+          />
+        ) : null}
         <DemoNote>Ingen chat opprettes, og ingen blir invitert.</DemoNote>
         <Button
           label="Opprett chat"
