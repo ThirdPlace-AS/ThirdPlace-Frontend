@@ -24,6 +24,7 @@ import {
   messagesForChat,
   type MockMessage,
 } from "@/fixtures";
+import { ChatInfoSheets } from "@/features/chat/ChatInfoSheets";
 import { colors } from "@/theme";
 
 // Chat conversation (DEMO ONLY). BLOCKED_CONTRACT_GAP: no realtime/messaging
@@ -41,6 +42,9 @@ export default function ChatThreadScreen() {
   // messages). The composer is replaced by a sign-in entry point.
   const { isGuest } = useGuestMode();
   const [promptOpen, setPromptOpen] = useState(false);
+  const [panel, setPanel] = useState<"info" | "members" | "invite" | null>(
+    null,
+  );
 
   if (!chat) {
     return (
@@ -104,6 +108,19 @@ export default function ChatThreadScreen() {
           </Text>
         </View>
         <DemoBadge />
+        <Pressable
+          accessibilityRole="button"
+          accessibilityLabel="Chat-info"
+          hitSlop={8}
+          onPress={() => setPanel("info")}
+          className="h-9 w-9 items-center justify-center rounded-full active:bg-surfaceMuted"
+        >
+          <Ionicons
+            name="information-circle-outline"
+            size={24}
+            color={colors.ink}
+          />
+        </Pressable>
       </View>
 
       <KeyboardAvoidingView
@@ -181,6 +198,7 @@ export default function ChatThreadScreen() {
           </View>
         )}
       </KeyboardAvoidingView>
+      <ChatInfoSheets chat={chat} panel={panel} onPanel={setPanel} />
       <SignInPrompt
         visible={promptOpen}
         onClose={() => setPromptOpen(false)}
