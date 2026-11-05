@@ -64,6 +64,16 @@ export default function MarketplaceScreen() {
               Samarbeid mellom skapere og bedrifter — lokaler, vertskap,
               sponsing og brand.
             </Text>
+            <Pressable
+              accessibilityRole="button"
+              onPress={() => router.push("/my-listings")}
+              className="flex-row items-center gap-2 self-start"
+            >
+              <Ionicons name="albums-outline" size={16} color={colors.ember} />
+              <Text className="text-sm font-semibold text-ember">
+                Mine listings →
+              </Text>
+            </Pressable>
             <View className="flex-row items-center gap-2 rounded-full border border-line bg-surface px-4">
               <Ionicons name="search" size={18} color={colors.muted} />
               <TextInput
