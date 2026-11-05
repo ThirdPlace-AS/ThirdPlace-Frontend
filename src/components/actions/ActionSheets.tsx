@@ -1,5 +1,5 @@
 import { Ionicons } from "@expo/vector-icons";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Pressable, Text, View } from "react-native";
 
 import { Button } from "@/components/Button";
@@ -188,6 +188,88 @@ export function WaitlistSheet({
           }}
         />
         <Button label="Avbryt" variant="secondary" onPress={onClose} />
+      </View>
+    </Sheet>
+  );
+}
+
+// Betal → Fullfører betaling … → Du er med! (PDF p23–p24). STRUCTURE ONLY:
+// no card or bank field is shown or collected and no payment is made — the
+// steps only show what the flow looks like, and the final state says so.
+export function PaySheet({
+  title,
+  when,
+  priceNok,
+  onClose,
+  onJoined,
+}: Base & {
+  title: string;
+  when: string;
+  priceNok: number;
+  onJoined: () => void;
+}) {
+  const [phase, setPhase] = useState<"summary" | "processing" | "done">(
+    "summary",
+  );
+  useEffect(() => {
+    if (phase !== "processing") return;
+    const t = setTimeout(() => setPhase("done"), 1200);
+    return () => clearTimeout(t);
+  }, [phase]);
+  return (
+    <Sheet
+      visible
+      onClose={onClose}
+      title={
+        phase === "summary"
+          ? "Bli med"
+          : phase === "processing"
+            ? "Fullfører betaling …"
+            : "Du er med! 🎉"
+      }
+    >
+      <View className="gap-3">
+        <View className="gap-0.5 rounded-xl border border-line bg-surface p-3">
+          <Text className="text-sm font-semibold text-ink">{title}</Text>
+          <Text className="text-xs text-muted">{when}</Text>
+        </View>
+        {phase === "summary" ? (
+          <>
+            <View className="flex-row justify-between px-1">
+              <Text className="text-sm text-muted">Billett</Text>
+              <Text className="text-sm font-semibold text-ink">
+                {priceNok} kr
+              </Text>
+            </View>
+            <DemoNote>
+              Betaling er ikke aktiv — ingen kort brukes og ingenting belastes.
+            </DemoNote>
+            <Button
+              label={`Betal ${priceNok} kr og bli med`}
+              variant="ink"
+              onPress={() => setPhase("processing")}
+            />
+            <Button label="Avbryt" variant="secondary" onPress={onClose} />
+          </>
+        ) : phase === "processing" ? (
+          <Text className="py-4 text-center text-sm text-muted">
+            Venter på bekreftelse …
+          </Text>
+        ) : (
+          <>
+            <DemoNote>
+              Ingen betaling ble gjennomført og ingen plass er reservert.
+            </DemoNote>
+            <Button
+              label="Ferdig"
+              variant="ink"
+              onPress={() => {
+                onJoined();
+                onClose();
+              }}
+            />
+          </>
+        )}
       </View>
     </Sheet>
   );

@@ -801,6 +801,9 @@ export type MockExperience = {
   status: ExperienceStatus;
   capacity: number;
   going: number;
+  // MOCK ticket price in NOK; absent = free. Display only — no payment
+  // contract exists (BLOCKED_CONTRACT_GAP).
+  priceNok?: number;
   day: TimeWindow; // MOCK time window for the "Når" filter
   tags: string[];
   about: string;
@@ -901,6 +904,7 @@ export const experiences: MockExperience[] = [
     placeId: "p2",
     groupId: "g2",
     status: "open",
+    priceNok: 150,
     capacity: 12,
     going: 6,
     day: "I morgen",

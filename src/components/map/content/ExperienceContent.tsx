@@ -15,7 +15,11 @@ import type { PushFn } from "../sheetTypes";
 import { markerId } from "../types/mapPresentation";
 import { DetailActions } from "./DetailActions";
 
-import { LeaveSheet, WaitlistSheet } from "@/components/actions/ActionSheets";
+import {
+  LeaveSheet,
+  PaySheet,
+  WaitlistSheet,
+} from "@/components/actions/ActionSheets";
 
 const statusMeta: Record<
   ExperienceStatus,
@@ -60,7 +64,9 @@ export function ExperienceContent({ id, push }: { id: string; push: PushFn }) {
   const { isGuest } = useGuestMode();
   const [promptOpen, setPromptOpen] = useState(false);
   // PDF p23: leaving and joining the waitlist confirm in a sheet first.
-  const [confirm, setConfirm] = useState<"leave" | "waitlist" | null>(null);
+  const [confirm, setConfirm] = useState<"leave" | "waitlist" | "pay" | null>(
+    null,
+  );
   // Join / waitlist are account actions: guests get the sign-in prompt, the
   // signed-in demo flips local state only (BLOCKED_CONTRACT_GAP).
   const gated = (run: () => void) => () =>
@@ -85,6 +91,11 @@ export function ExperienceContent({ id, push }: { id: string; push: PushFn }) {
       return {
         label: "Meld på venteliste",
         action: gated(() => setConfirm("waitlist")),
+      };
+    if (experience.priceNok)
+      return {
+        label: `Bli med · ${experience.priceNok} kr`,
+        action: gated(() => setConfirm("pay")),
       };
     return { label: "Bli med", action: gated(() => setUser("joined")) };
   })();
@@ -118,6 +129,15 @@ export function ExperienceContent({ id, push }: { id: string; push: PushFn }) {
         <LeaveSheet
           onClose={() => setConfirm(null)}
           onConfirm={() => setUser("none")}
+        />
+      ) : null}
+      {confirm === "pay" && experience.priceNok ? (
+        <PaySheet
+          title={experience.title}
+          when={experience.when}
+          priceNok={experience.priceNok}
+          onClose={() => setConfirm(null)}
+          onJoined={() => setUser("joined")}
         />
       ) : null}
       {confirm === "waitlist" ? (
