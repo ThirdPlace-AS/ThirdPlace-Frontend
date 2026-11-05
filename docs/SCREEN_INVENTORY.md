@@ -78,3 +78,28 @@ These are **not** mismatches:
 - "Naboer" label (PDF: "Oppdag folk").
 - Consumer second-hand Marketplace (PDF: B2B listings/collaboration).
 - NotificationsSheet dark theme + off-palette hex colours.
+
+## Realignment progress (2026-11-05)
+
+| Slice                        | PDF          | Result                                      | Ledger     |
+| ---------------------------- | ------------ | ------------------------------------------- | ---------- |
+| Map modes + default          | p5           | ok — Trending, For deg default, search copy | 0108, 0117 |
+| Guest cannot send chat       | spec §4      | ok                                          | 0109       |
+| Swipe tabs + actions + empty | p7–p8        | ok — Steder place cards still to build      | 0110       |
+| Tab bar                      | p5–p8        | ok                                          | 0111       |
+| Profile + invented removal   | p12, p22     | ok — Lagret not yet linked                  | 0112       |
+| Add flows                    | p10–p12      | ok — Innleveringer, map pin, upload pending | 0113       |
+| Onboarding + 18+             | p2–p3        | ok — business branch pending                | 0114       |
+| Chat list/thread             | p9–p10       | ok — info, members, invite pending          | 0115       |
+| Settings + privacy           | p19–p21, p28 | ok — payouts, sessions screen pending       | 0116       |
+| Notifications + verification | p7, p20      | ok                                          | 0117       |
+| Marketplace B2B + Bli Skaper | p14–p16      | partial — collaboration flow pending        | 0118       |
+
+Every item in "Invented in the app" above has been removed or replaced.
+
+**Still missing (next):** Lagret (p14) + My Plans (REQUIRED_V1), business onboarding
+(p3–p5), auth extras (reset, e-post-kode, 2FA, Google/Apple; p1–p2), group swipe +
+match (p8–p9), chat info / members / invite (p9–p10), workspaces (Dashboard,
+Analyse, Kalender, Lokasjoner; p13–p15), collaboration flow (p16–p18), payouts
+(p21), age verification + invites + rewards (p22), share / report / block / pay /
+leave / waitlist sheets (p23–p25), system states (p26–p27).

@@ -28,21 +28,21 @@ rule was invented.
 | Chat                        | `app/(tabs)/chat.tsx`, `app/chat/[id]` | chat list + thread                | demo-complete | composer does not send (demo line) | chat types, access modes, delivery/receipts | emulator        | 0086         |
 | Profil                      | `app/(tabs)/profile.tsx`               | profile + Oppdag hub (7 surfaces) | demo-complete | DemoNote, "Verifisert nabo · DEMO" | identity/verification, stats, achievements  | emulator        | 0087–0088    |
 
-## Nested routes
+## Nested routes (realigned to the PDF, 2026-11-05)
 
-| Surface       | Route                      | Main code                                                                  | Status                         | Markers                                                            | Blocked on (contract)                           | Verified         | Ledger           |
-| ------------- | -------------------------- | -------------------------------------------------------------------------- | ------------------------------ | ------------------------------------------------------------------ | ----------------------------------------------- | ---------------- | ---------------- |
-| Experiences   | `app/experiences.tsx`      | `features/discovery/ExperiencesScreen` → detail                            | demo-complete                  | join/waitlist SignInPrompt + DemoNote; Del/Rapporter DemoNote      | attendance, availability, join lifecycle        | emulator, review | 0098, 0099, 0104 |
-| Places        | `app/places.tsx`           | `features/discovery/PlacesScreen` → `PlaceContent`                         | demo-complete                  | Save SignInPrompt; illustrative cover photo                        | place entity, hours/availability, media rights  | emulator, tests  | 0098, 0099       |
-| People        | `app/people.tsx`           | `features/people/PeopleScreen`                                             | demo-complete                  | follow = DemoNote; guest SignInPrompt                              | social graph, follow, privacy visibility        | emulator         | 0089             |
-| Groups        | `app/groups.tsx`           | `features/groups/GroupsScreen` → `GroupContent`                            | demo-complete                  | GuestLock on membership                                            | group membership, roles                         | emulator         | 0090, 0099       |
-| Businesses    | `app/businesses.tsx`       | `features/businesses/BusinessesScreen` → business + verification push/back | demo-complete                  | GuestLock on verification                                          | business onboarding, verification, subscription | emulator         | 0091, 0099       |
-| Creators      | `app/creators.tsx`         | `features/creators/CreatorsScreen` (progression sheet)                     | demo-complete                  | DEMO level, "teller ingenting"                                     | creator progression, levels, hosting stats      | emulator         | 0092             |
-| Marketplace   | `app/marketplace.tsx`      | `features/marketplace/MarketplaceScreen`                                   | demo-complete                  | contact = "Demo — ingen melding sendt"; SignInPrompt               | listings, messaging, checkout, payments         | emulator         | 0095, 0099       |
-| Notifications | Profil → Varsler; map bell | `components/NotificationsSheet`                                            | demo-complete                  | DemoNote (static, no push)                                         | push, inbox, follow                             | emulator, tests  | ≤ 0083, 0093     |
-| Settings      | `app/settings.tsx`         | `features/settings/SettingsScreen`                                         | demo-complete                  | every row opens a demo info sheet; logout DemoNote                 | account, session, preferences, legal texts      | emulator         | 0093, 0099, 0102 |
-| Privacy       | `app/privacy.tsx`          | `features/settings/PrivacyScreen`                                          | demo-complete                  | single DemoNote; toggles persist nothing                           | visibility rules, consent records               | emulator         | 0094, 0099, 0103 |
-| Payments      | `app/payments.tsx`         | `features/settings/PaymentsScreen`                                         | demo-complete (structure-only) | structure-only; **no input fields, no card data, no transactions** | payment provider, billing, pricing              | emulator         | 0096, 0099       |
+Directory routes with no PDF page (`experiences`, `places`, `groups`,
+`businesses`, `creators`) and the Profile "Oppdag" hub were **removed**
+(ledger 0112). Their detail content still lives in the map sheets.
+
+| Surface       | Route / entry                      | PDF      | Status                         | Markers                                        | Ledger     |
+| ------------- | ---------------------------------- | -------- | ------------------------------ | ---------------------------------------------- | ---------- |
+| Oppdag folk   | `app/people.tsx` (Profil → Venner) | p22      | partial (no filter/invite)     | follow = DemoNote; guest SignInPrompt          | 0089, 0112 |
+| Bli Skaper    | `app/become-creator.tsx`           | p14      | demo-complete                  | illustrative requirements, apply sends nothing | 0118       |
+| Marketplace   | `app/marketplace.tsx`              | p15–p16  | partial (list + detail only)   | B2B; request/save DemoNote; guest SignInPrompt | 0118       |
+| Notifications | map / chat / swipe bell            | p20      | demo-complete                  | DemoNote (no push/inbox)                       | 0117       |
+| Settings      | `app/settings.tsx`                 | p19–p20  | demo-complete                  | every sheet DemoNote                           | 0116       |
+| Privacy       | `app/privacy.tsx`                  | p19, p21 | demo-complete                  | blocked/export/delete DemoNote                 | 0116       |
+| Payments      | `app/payments.tsx`                 | p20      | demo-complete (structure-only) | no input fields, no card data, no transactions | 0096, 0099 |
 
 ## Entry
 
