@@ -150,6 +150,22 @@ export function CollabDetailScreen() {
             />
           </View>
         </View>
+        <View className="flex-row gap-3">
+          <View className="flex-1">
+            <Button
+              label="Betalingsstatus"
+              variant="secondary"
+              onPress={() => router.push("/collab/payment-status" as Href)}
+            />
+          </View>
+          <View className="flex-1">
+            <Button
+              label="Historikk"
+              variant="secondary"
+              onPress={() => router.push("/collab/history" as Href)}
+            />
+          </View>
+        </View>
       </ScrollView>
       {panel === "offer" ? <OfferSheet onClose={() => setPanel(null)} /> : null}
       {panel === "contract" ? (
