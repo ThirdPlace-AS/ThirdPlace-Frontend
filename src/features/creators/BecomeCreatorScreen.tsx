@@ -93,12 +93,30 @@ export default function BecomeCreatorScreen() {
           ingenting blir vurdert.
         </DemoNote>
 
-        {applied ? <DemoNote>Ingen søknad er sendt.</DemoNote> : null}
+        {applied ? (
+          <View className="items-center gap-2 rounded-2xl bg-surfaceMuted p-5">
+            <Text className="text-xl font-bold text-ink">Du er nå Skaper!</Text>
+            <Text className="text-center text-sm text-muted">
+              Slik ser det ut når søknaden er godkjent: Dashboard og Marketplace
+              låses opp.
+            </Text>
+            <DemoNote>
+              Forhåndsvisning — ingen søknad er sendt eller godkjent.
+            </DemoNote>
+          </View>
+        ) : null}
 
         <Button
           label="Søk om Skaper-rolle"
           variant="ink"
           onPress={() => setApplied(true)}
+        />
+        <Button
+          label="Se en skaperprofil"
+          variant="secondary"
+          onPress={() =>
+            router.push({ pathname: "/creator/[id]", params: { id: "u1" } })
+          }
         />
         <Button
           label="Se Marketplace (forhåndsvisning)"

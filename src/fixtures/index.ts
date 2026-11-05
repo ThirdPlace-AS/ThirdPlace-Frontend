@@ -830,7 +830,7 @@ export const experiences: MockExperience[] = [
     going: 5,
     day: "Denne uka",
     tags: ["Sosialt", "Kaffe"],
-    about: "Uformell morgenkaffe for naboer. Bare å møte opp.",
+    about: "Uformell morgenkaffe for alle. Bare å møte opp.",
     // Each card carries only its OWN two on-theme photos (MOCK demo art, no
     // canonical media contract); `scrims` is parallel to `photos`.
     photos: [
@@ -1034,7 +1034,7 @@ export const groups: MockGroup[] = [
   {
     id: "g1",
     name: "Morgenkaffe-gjengen",
-    about: "Naboer som møtes til kaffe i helgene.",
+    about: "Folk som møtes til kaffe i helgene.",
     memberCount: 34,
     members: ["MM", "TT", "ÅK", "JB", "ND"],
     cover: "venue-cafe",
@@ -1458,7 +1458,7 @@ export const people: MockPerson[] = [
     handle: "@maria",
     avatar: "person-maria",
     area: "Grünerløkka",
-    bio: "Kaffeentusiast og vert for morgenkaffen. Elsker å møte nye naboer.",
+    bio: "Kaffeentusiast og vert for morgenkaffen. Elsker å møte nye folk.",
     mutuals: 4,
     interests: ["Kaffe", "Morgenmøter", "Fotografi"],
     hostsExperienceId: "e1",
