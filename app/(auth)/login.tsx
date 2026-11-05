@@ -1,4 +1,4 @@
-import { Link, router } from "expo-router";
+import { Link } from "expo-router";
 import { ScrollView, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
@@ -8,6 +8,7 @@ import { Input } from "@/components/Input";
 import { Logo } from "@/components/Logo";
 import { ScreenHeader } from "@/components/ScreenHeader";
 import { useGuestMode } from "@/components/map/hooks/useGuestMode";
+import { resetTo } from "@/lib/navigation";
 
 // Visual-only sign-in. Inputs are inert; no auth is performed (no backend).
 export default function Login() {
@@ -40,7 +41,7 @@ export default function Login() {
             variant="ink"
             onPress={() => {
               setGuest(false);
-              router.replace("/map");
+              resetTo("/map");
             }}
           />
           <View className="flex-row items-center justify-center gap-2">

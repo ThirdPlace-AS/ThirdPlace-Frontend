@@ -10,6 +10,7 @@ import { Sheet } from "@/components/Sheet";
 import { SignInPrompt } from "@/components/SignInPrompt";
 import { useGuestMode } from "@/components/map/hooks/useGuestMode";
 import { profile } from "@/fixtures";
+import { resetTo } from "@/lib/navigation";
 
 import { NavRow, SettingsSection, ToggleRow } from "./settingsUi";
 
@@ -181,7 +182,7 @@ export default function SettingsScreen() {
             label="Logg ut"
             onPress={() => {
               setLogoutOpen(false);
-              router.replace("/");
+              resetTo("/");
             }}
           />
           <Button

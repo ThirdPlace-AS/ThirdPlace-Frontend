@@ -10,6 +10,7 @@ import { DemoBadge } from "@/components/DemoBadge";
 import { Logo } from "@/components/Logo";
 import { useGuestMode } from "@/components/map/hooks/useGuestMode";
 import { PERSONAS, type MockPersonaKey } from "@/fixtures";
+import { resetTo } from "@/lib/navigation";
 import { colors } from "@/theme";
 
 // Onboarding (DEMO). Reached from Welcome → "Kom i gang" (and after the inert
@@ -46,7 +47,7 @@ export default function Onboarding() {
   const next = () => {
     if (last) {
       setGuest(false);
-      router.replace("/map");
+      resetTo("/map");
     } else {
       setStep((s) => s + 1);
     }

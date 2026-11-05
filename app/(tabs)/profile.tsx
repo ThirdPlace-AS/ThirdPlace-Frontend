@@ -23,6 +23,7 @@ import {
   type MockVisited,
 } from "@/fixtures";
 import { coverForPlace, libImage } from "@/fixtures/images";
+import { resetTo } from "@/lib/navigation";
 import { colors } from "@/theme";
 
 function Stat({ value, label }: { value: number; label: string }) {
@@ -298,7 +299,7 @@ export default function ProfileScreen() {
         onClose={() => setLogoutOpen(false)}
         onConfirm={() => {
           setLogoutOpen(false);
-          router.replace("/");
+          resetTo("/");
         }}
       />
       <SignInPrompt

@@ -5,6 +5,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { Button } from "@/components/Button";
 import { Logo } from "@/components/Logo";
 import { useGuestMode } from "@/components/map/hooks/useGuestMode";
+import { resetTo } from "@/lib/navigation";
 
 // Welcome / entry screen (visual only). Matches the auth flow in the screens PDF.
 export default function Welcome() {
@@ -30,7 +31,7 @@ export default function Welcome() {
             variant="secondary"
             onPress={() => {
               setGuest(true);
-              router.replace("/map");
+              resetTo("/map");
             }}
           />
           <Text className="text-center text-sm text-muted">
