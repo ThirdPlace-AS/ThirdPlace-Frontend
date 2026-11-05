@@ -20,13 +20,13 @@ rule was invented.
 
 ## Tabs (exactly 5, locked)
 
-| Surface                     | Route / entry                          | Main code                         | Status        | Markers                            | Blocked on (contract)                       | Verified        | Ledger       |
-| --------------------------- | -------------------------------------- | --------------------------------- | ------------- | ---------------------------------- | ------------------------------------------- | --------------- | ------------ |
-| Kart (Map)                  | `app/(tabs)/map.tsx`                   | `src/components/map/*`            | demo-complete | DemoNote, SignInPrompt, DEMO modes | see Map matrix                              | emulator, tests | ≤ 0083       |
-| Sveip (Swipe)               | `app/(tabs)/swipe.tsx`                 | `src/components/swipe/*`          | demo-complete | DemoNote, SignInPrompt             | ranking/personalization, join, report/block | emulator, tests | ≤ 0083, 0104 |
-| Legg til (Add) — center CTA | `app/(tabs)/add.tsx`                   | `src/features/add/AddWizard.tsx`  | demo-complete | "Demo — ikke publisert" end state  | publish, moderation, capacity/pricing       | emulator        | 0085, 0101   |
-| Chat                        | `app/(tabs)/chat.tsx`, `app/chat/[id]` | chat list + thread                | demo-complete | composer does not send (demo line) | chat types, access modes, delivery/receipts | emulator        | 0086         |
-| Profil                      | `app/(tabs)/profile.tsx`               | profile + Oppdag hub (7 surfaces) | demo-complete | DemoNote, "Verifisert nabo · DEMO" | identity/verification, stats, achievements  | emulator        | 0087–0088    |
+| Surface                     | Route / entry                          | Main code                               | Status                               | Markers                                 | Blocked on (contract)                       | Verified        | Ledger           |
+| --------------------------- | -------------------------------------- | --------------------------------------- | ------------------------------------ | --------------------------------------- | ------------------------------------------- | --------------- | ---------------- |
+| Kart (Map)                  | `app/(tabs)/map.tsx`                   | `src/components/map/*`                  | demo-complete                        | DemoNote, SignInPrompt, DEMO modes      | see Map matrix                              | emulator, tests | ≤ 0083, 0108     |
+| Sveip (Swipe)               | `app/(tabs)/swipe.tsx`                 | `src/components/swipe/*`                | demo-complete (Steder cards pending) | DemoNote, SignInPrompt, join-chat sheet | ranking/personalization, join, report/block | emulator, tests | 0104, 0110, 0120 |
+| Legg til (Add) — center CTA | `app/(tabs)/add.tsx`                   | `src/features/add/AddWizard.tsx`        | demo-complete                        | IKKE SENDT / IKKE PUBLISERT end states  | publish, moderation, capacity/pricing       | emulator, tests | 0111, 0113       |
+| Chat                        | `app/(tabs)/chat.tsx`, `app/chat/[id]` | chat list + thread                      | demo-complete (info/members pending) | guests read-only; archived read-only    | chat types, access modes, delivery/receipts | emulator        | 0109, 0115       |
+| Profil                      | `app/(tabs)/profile.tsx`               | profile (PDF p12) + Lagret, Mine planer | demo-complete                        | DemoBadge on counts + Veien til Skaper  | identity, follow graph, creator criteria    | emulator        | 0112, 0119       |
 
 ## Nested routes (realigned to the PDF, 2026-11-05)
 
@@ -46,35 +46,32 @@ Directory routes with no PDF page (`experiences`, `places`, `groups`,
 
 ## Entry
 
-| Surface    | Route                     | Status        | Markers                                        | Blocked on                           | Verified | Ledger     |
-| ---------- | ------------------------- | ------------- | ---------------------------------------------- | ------------------------------------ | -------- | ---------- |
-| Welcome    | `app/(auth)/welcome.tsx`  | demo-complete | guest entry sets demo guest mode               | auth                                 | emulator | 0097       |
-| Login      | `app/(auth)/login.tsx`    | demo-complete | DemoNote "ingen reell innlogging"              | auth, session                        | emulator | 0097       |
-| Register   | `app/(auth)/register.tsx` | demo-complete | DemoNote "ingen konto opprettes"               | account creation                     | emulator | 0097       |
-| Onboarding | `app/onboarding.tsx`      | demo-complete | DemoNote per step (location, persona, account) | interests taxonomy, consent, persona | emulator | 0097, 0102 |
+| Surface    | Route                     | Status                                  | Markers                                       | Blocked on                           | Verified        | Ledger |
+| ---------- | ------------------------- | --------------------------------------- | --------------------------------------------- | ------------------------------------ | --------------- | ------ |
+| Welcome    | `app/(auth)/welcome.tsx`  | demo-complete                           | guest entry sets demo guest mode              | auth                                 | emulator        | 0097   |
+| Login      | `app/(auth)/login.tsx`    | demo-complete                           | DemoNote "ingen reell innlogging"             | auth, session                        | emulator        | 0097   |
+| Register   | `app/(auth)/register.tsx` | demo-complete                           | DemoNote "ingen konto opprettes"              | account creation                     | emulator        | 0097   |
+| Onboarding | `app/onboarding.tsx`      | demo-complete (business branch pending) | 18+ gate; DemoNote on role, permissions, feed | interests taxonomy, consent, persona | emulator, tests | 0114   |
 
 ## Cross-cutting
 
-| Concern                     | Where                                        | Status   | Notes                                                                                | Ledger |
-| --------------------------- | -------------------------------------------- | -------- | ------------------------------------------------------------------------------------ | ------ |
-| Brand logo / app icon       | `src/components/Logo.tsx`, `assets/`         | complete | SVG mark, provisional ember token                                                    | 0084   |
-| Imagery                     | `src/fixtures/images.ts` (Unsplash, bundled) | complete | per-place covers; none depict the named venues/people                                | 0099   |
-| Honesty copy                | `src/copy/demo.ts` + `DemoNote`              | partial  | 13 rows migrated; 13 inline "Demo —" strings with other markup remain (see 0103)     | 0103   |
-| Session-boundary navigation | `src/lib/navigation.ts` `resetTo`            | complete | back after logout/onboarding exits instead of returning to a signed-in screen        | 0102   |
-| Tab bar                     | `app/(tabs)/_layout.tsx`                     | complete | center CTA, filled-when-active icons                                                 | 0101   |
-| CI secret check             | `.github/workflows/ci.yml`                   | complete | anchored `sk.` grep (asset-hash false positive)                                      | 0100   |
-| Persistence of demo state   | in-memory stores                             | blocked  | saved/guest/recent searches reset on reload — persistence is contract-blocked (CB-5) | —      |
+| Concern                     | Where                                        | Status   | Notes                                                                                | Ledger     |
+| --------------------------- | -------------------------------------------- | -------- | ------------------------------------------------------------------------------------ | ---------- |
+| Brand logo / app icon       | `src/components/Logo.tsx`, `assets/`         | complete | SVG mark, provisional ember token                                                    | 0084       |
+| Imagery                     | `src/fixtures/images.ts` (Unsplash, bundled) | complete | per-place covers; none depict the named venues/people                                | 0099       |
+| Honesty copy                | `src/copy/demo.ts` + `DemoNote`              | partial  | DemoNote text never repeats "Demo —"; many slice-specific notes stay inline          | 0103, 0118 |
+| Session-boundary navigation | `src/lib/navigation.ts` `resetTo`            | complete | back after logout/onboarding exits instead of returning to a signed-in screen        | 0102       |
+| Tab bar                     | `app/(tabs)/_layout.tsx`                     | complete | center CTA, filled-when-active icons                                                 | 0101       |
+| CI secret check             | `.github/workflows/ci.yml`                   | complete | anchored `sk.` grep (asset-hash false positive)                                      | 0100       |
+| Persistence of demo state   | in-memory stores                             | blocked  | saved/guest/recent searches reset on reload — persistence is contract-blocked (CB-5) | —          |
 
 ## Known gaps (not done)
 
 - **No backend anywhere.** Every action above is local demo state; making any
   surface real needs the V2.2 contract (`BLOCKED_NOT_V22_CERTIFIED`).
-- **Copy centralization is partial** — non-demo UI strings are still inline;
-  13 demo strings with non-standard markup are not yet in `@/copy`.
-- **Businesses list** still uses one cover per category (no per-business photo).
+- **Copy centralization is partial** — UI strings are still inline per screen.
 - **No automated UI tests** for gestures (sliders, swipe), location watchers or
   sheet push/back — verified on the emulator only.
 - **Native verification outstanding** for real GPS/heading and haptics on a
   physical device (see `docs/map/MAP_BLOCKERS.md`, NV register).
-- **expo-doctor patch drift** (expo, expo-location, expo-router) — handled as a
-  separate, revertable slice.
+- **PDF screens still missing** — see the list at the end of `docs/SCREEN_INVENTORY.md`.
