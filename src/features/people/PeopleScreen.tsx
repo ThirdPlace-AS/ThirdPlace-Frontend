@@ -5,7 +5,7 @@ import { useState } from "react";
 import { FlatList, Pressable, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-import { IconButton } from "@/components/ui";
+import { Header, IconButton } from "@/components/ui";
 import { BlockSheet } from "@/components/actions/ActionSheets";
 import { Button } from "@/components/Button";
 import { Chip } from "@/components/Chip";
@@ -50,7 +50,7 @@ export default function PeopleScreen() {
 
   return (
     <SafeAreaView className="flex-1 bg-background" edges={["top"]}>
-      <ScreenHeader title="Oppdag folk" />
+      <Header title="Oppdag folk" />
       <FlatList
         data={list}
         keyExtractor={(p) => p.id}
@@ -68,16 +68,22 @@ export default function PeopleScreen() {
             <View className="flex-row flex-wrap items-center gap-2">
               <Chip
                 label="Alle"
+                size="sm"
+                role="radio"
                 selected={tab === "all"}
                 onPress={() => setTab("all")}
               />
               <Chip
                 label="Nærheten"
+                size="sm"
+                role="radio"
                 selected={tab === "near"}
                 onPress={() => setTab("near")}
               />
               <Chip
                 label="Interesser"
+                size="sm"
+                role="radio"
                 selected={tab === "interests"}
                 onPress={() => setTab("interests")}
               />
@@ -85,6 +91,7 @@ export default function PeopleScreen() {
                 icon="options-outline"
                 label="Filter folk"
                 variant="outline"
+                size="sm"
                 badge={filterTags.length > 0}
                 selected={filterTags.length > 0}
                 onPress={() => setFilterOpen(true)}
@@ -94,6 +101,7 @@ export default function PeopleScreen() {
                 icon="person-add-outline"
                 label="Inviter venner"
                 variant="outline"
+                size="sm"
                 onPress={() => router.push("/invite")}
               />
             </View>
@@ -157,20 +165,6 @@ export default function PeopleScreen() {
         action="følge folk"
       />
     </SafeAreaView>
-  );
-}
-
-function ScreenHeader({ title }: { title: string }) {
-  return (
-    <View className="flex-row items-center gap-3 border-b border-line px-gutter pb-3">
-      <IconButton
-        icon="chevron-back"
-        label="Tilbake"
-        size="sm"
-        onPress={() => router.back()}
-      />
-      <Text className="text-xl font-bold text-ink">{title}</Text>
-    </View>
   );
 }
 

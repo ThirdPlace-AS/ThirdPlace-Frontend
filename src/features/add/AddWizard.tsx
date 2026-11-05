@@ -6,7 +6,7 @@ import { Pressable, ScrollView, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { Switch } from "@/components/ui/Switch";
-import { IconButton } from "@/components/ui";
+import { StepContent, StepHeader } from "@/components/ui";
 import { Button } from "@/components/Button";
 import { Chip } from "@/components/Chip";
 import { DemoBadge } from "@/components/DemoBadge";
@@ -146,29 +146,12 @@ export function AddWizard() {
 
   return (
     <SafeAreaView className="flex-1 bg-background" edges={["top"]}>
-      <View className="gap-3 px-gutter pb-2 pt-1">
-        <View className="flex-row items-center justify-between">
-          <IconButton
-            icon="chevron-back"
-            label="Tilbake"
-            variant="outline"
-            onPress={back}
-          />
-          <Text className="text-xs font-medium text-muted">
-            Steg {stepIndex + 1} av {steps.length}
-          </Text>
-        </View>
-        <View className="flex-row gap-1.5">
-          {steps.map((s, i) => (
-            <View
-              key={s}
-              className={`h-1 flex-1 rounded-full ${
-                i <= stepIndex ? "bg-ink" : "bg-line"
-              }`}
-            />
-          ))}
-        </View>
-      </View>
+      <StepHeader
+        current={stepIndex}
+        total={steps.length}
+        onBack={back}
+        label={`Steg ${stepIndex + 1} av ${steps.length}`}
+      />
 
       <ScrollView
         contentContainerClassName="gap-5 p-gutter pb-8"
@@ -697,27 +680,8 @@ function SubmittedState({
   );
 }
 
-function Shell({
-  title,
-  subtitle,
-  children,
-}: {
-  title: string;
-  subtitle?: string;
-  children: React.ReactNode;
-}) {
-  return (
-    <View className="gap-4">
-      <View className="gap-1">
-        <Text className="text-3xl font-bold text-ink">{title}</Text>
-        {subtitle ? (
-          <Text className="text-sm text-muted">{subtitle}</Text>
-        ) : null}
-      </View>
-      {children}
-    </View>
-  );
-}
+// Wizard step body (design-system StepContent).
+const Shell = StepContent;
 
 function Label({ children }: { children: string }) {
   return <Text className="text-sm font-semibold text-ink">{children}</Text>;

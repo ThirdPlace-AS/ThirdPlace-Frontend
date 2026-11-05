@@ -63,7 +63,7 @@ One family, weight-led hierarchy. Use the `Text` primitive's `variant`, not raw 
 | `caption` | 13 / 18     | 400          |
 | `micro`   | 11 / 14     | 500, tracked |
 
-No arbitrary sizes (`text-[10px]`).
+No arbitrary sizes (`text-[10px]`). Note: NativeWind uses rem = 14 px on native, so legacy Tailwind classes render smaller than their names suggest (`text-sm` ≈ 12 px, `text-base` = 14 px). The scale above is in real px, so migrated text is intentionally larger; migrate a screen as a whole rather than mixing old and new text in one block.
 
 ### Spacing
 

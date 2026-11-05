@@ -23,3 +23,4 @@ export {
 } from "./Pressable";
 export { Switch } from "./Switch";
 export { Text, type TextProps, type TextTone, type TextVariant } from "./Text";
+export { Header, StepContent, StepHeader, TitleBlock } from "./Header";

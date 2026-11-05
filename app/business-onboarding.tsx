@@ -5,7 +5,7 @@ import { ScrollView, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { Switch } from "@/components/ui/Switch";
-import { IconButton } from "@/components/ui";
+import { StepContent, StepHeader } from "@/components/ui";
 import { Button } from "@/components/Button";
 import { Chip } from "@/components/Chip";
 import { DemoNote } from "@/components/DemoNote";
@@ -114,27 +114,7 @@ export default function BusinessOnboarding() {
 
   return (
     <SafeAreaView className="flex-1 bg-background">
-      <View className="gap-3 px-gutter pb-2 pt-1">
-        <View className="flex-row items-center justify-between">
-          <IconButton
-            icon="chevron-back"
-            label="Tilbake"
-            variant="outline"
-            onPress={back}
-          />
-          <Text className="text-xs font-medium text-muted">
-            {step} av {TOTAL}
-          </Text>
-        </View>
-        <View className="flex-row gap-1.5">
-          {Array.from({ length: TOTAL }, (_, i) => (
-            <View
-              key={i}
-              className={`h-1 flex-1 rounded-full ${i < step ? "bg-ink" : "bg-line"}`}
-            />
-          ))}
-        </View>
-      </View>
+      <StepHeader current={step - 1} total={TOTAL} onBack={back} />
 
       <ScrollView
         contentContainerClassName="gap-4 p-gutter pb-8"
@@ -387,25 +367,8 @@ export default function BusinessOnboarding() {
   );
 }
 
-function Shell({
-  title,
-  subtitle,
-  children,
-}: {
-  title: string;
-  subtitle: string;
-  children: React.ReactNode;
-}) {
-  return (
-    <View className="gap-4">
-      <View className="gap-1">
-        <Text className="text-3xl font-bold text-ink">{title}</Text>
-        <Text className="text-sm text-muted">{subtitle}</Text>
-      </View>
-      {children}
-    </View>
-  );
-}
+// Wizard step body (design-system StepContent).
+const Shell = StepContent;
 
 function Label({ children }: { children: string }) {
   return <Text className="text-sm font-semibold text-ink">{children}</Text>;

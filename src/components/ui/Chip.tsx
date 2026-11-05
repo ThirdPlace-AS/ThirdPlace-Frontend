@@ -28,7 +28,8 @@ export type ChipProps = {
 const SHELL: Record<ChipVariant, { on: string; off: string }> = {
   filled: {
     on: "border border-ink bg-ink",
-    off: "border border-line bg-surface",
+    // PDF (p5 Filtre, p22 Oppdag folk/Filter folk): unselected = grey fill, no visible border.
+    off: "border border-surfaceMuted bg-surfaceMuted",
   },
   outline: {
     on: "border-2 border-ink bg-surface",

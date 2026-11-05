@@ -1,20 +1,7 @@
-import { router } from "expo-router";
-import { Text, View } from "react-native";
+import { Header } from "@/components/ui/Header";
 
-import { IconButton } from "@/components/ui";
-
-// Back + title header for pushed (non-tab) route screens. Detail is still a
-// sheet; this is just the route chrome.
+// Back + title header for pushed (non-tab) route screens — the design-system
+// <Header>. Kept for existing call sites.
 export function RouteHeader({ title }: { title: string }) {
-  return (
-    <View className="flex-row items-center gap-3 border-b border-line px-gutter pb-3">
-      <IconButton
-        icon="chevron-back"
-        label="Tilbake"
-        size="sm"
-        onPress={() => router.back()}
-      />
-      <Text className="text-xl font-bold text-ink">{title}</Text>
-    </View>
-  );
+  return <Header title={title} />;
 }
