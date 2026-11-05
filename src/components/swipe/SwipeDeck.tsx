@@ -4,7 +4,6 @@ import { Asset } from "expo-asset";
 import { StatusBar } from "expo-status-bar";
 import { useEffect, useLayoutEffect, useMemo, useState } from "react";
 import {
-  Modal,
   Platform,
   Pressable,
   ScrollView,
@@ -31,7 +30,7 @@ import Animated, {
   type SharedValue,
 } from "react-native-reanimated";
 
-import { Icon, IconButton } from "@/components/ui";
+import { Icon, IconButton, ListRow, Overlay } from "@/components/ui";
 import { Button } from "@/components/Button";
 import { DemoBadge } from "@/components/DemoBadge";
 import { DemoNote } from "@/components/DemoNote";
@@ -459,9 +458,7 @@ export function SwipeDeck() {
 
       {/* In-place detail — a full-screen DARK experience sheet (swipe-local, so
           the shared map detail stays light). Pan is disabled while it is open. */}
-      {expand ? (
-        <ExpandDetail exp={expand} onClose={() => setExpand(null)} />
-      ) : null}
+      <ExpandDetail exp={expand} onClose={() => setExpand(null)} />
 
       <JoinChatSheet exp={joinChatFor} onClose={() => setJoinChatFor(null)} />
 
@@ -775,6 +772,30 @@ function ExpandDetail({
   exp,
   onClose,
 }: {
+  exp: MockExperience | null;
+  onClose: () => void;
+}) {
+  // Keep the last experience on screen while the overlay animates out.
+  const [shown, setShown] = useState(exp);
+  if (exp && exp !== shown) setShown(exp);
+  return (
+    <Overlay
+      visible={exp !== null}
+      onClose={onClose}
+      enter="up"
+      statusBarTranslucent
+      style={{ backgroundColor: media.base }}
+      accessibilityLabel={shown?.title}
+    >
+      {shown ? <ExpandBody exp={shown} onClose={onClose} /> : null}
+    </Overlay>
+  );
+}
+
+function ExpandBody({
+  exp,
+  onClose,
+}: {
   exp: MockExperience;
   onClose: () => void;
 }) {
@@ -809,221 +830,179 @@ function ExpandDetail({
   };
 
   return (
-    // A real Modal so Android hardware back closes the detail (onRequestClose)
-    // and focus is contained to the sheet (F2/F7), not the deck behind it.
-    <Modal
-      visible
-      transparent={false}
-      animationType="slide"
-      onRequestClose={onClose}
-      statusBarTranslucent
-    >
-      <View style={[StyleSheet.absoluteFill, { backgroundColor: media.base }]}>
-        {/* Light status-bar content over the dark detail surface. */}
-        <StatusBar style="light" />
-        {/* Header: title + collapse. */}
-        <View
-          className="flex-row items-center gap-2 px-gutter pb-2"
-          style={{ paddingTop: insets.top + 4 }}
-        >
-          <Text
-            className="flex-1 text-xl font-bold text-white"
-            numberOfLines={1}
-          >
-            {exp.title}
-          </Text>
-          <IconButton
-            icon="ellipsis-horizontal"
-            label="Flere valg"
-            variant="mediaSubtle"
-            size="sm"
-            onPress={() => setSafetyOpen(true)}
-          />
-          <IconButton
-            icon="arrow-down"
-            label="Lukk detaljer"
-            variant="mediaSubtle"
-            size="sm"
-            onPress={onClose}
-          />
-        </View>
-
-        <ScrollView
-          contentContainerClassName="gap-5 px-gutter pb-28 pt-1"
-          keyboardShouldPersistTaps="handled"
-        >
-          <View
-            className="overflow-hidden rounded-lg bg-ink"
-            style={{ height: heroH }}
-          >
-            <PhotoCarousel photos={exp.photos} interactive />
-          </View>
-
-          <View className="flex-row items-center gap-2">
-            <DemoBadge />
-            <Text className="flex-1 text-xs text-white/60 font-normal">
-              Demo — ingen reell påmelding eller lagring på server.
-            </Text>
-          </View>
-
-          <View className="gap-2">
-            <MetaLine icon="people-outline">
-              {`${statusText} · ${exp.going}/${exp.capacity} påmeldt`}
-            </MetaLine>
-            <MetaLine icon="calendar-outline">{exp.when}</MetaLine>
-            {place ? (
-              <MetaLine icon="location-outline">
-                {`${place.name} · ${place.distance}`}
-              </MetaLine>
-            ) : null}
-            <MetaLine icon="person-outline">{`Vert: ${exp.host}`}</MetaLine>
-          </View>
-
-          <View className="gap-1">
-            <Text className="text-base font-bold text-white">Om</Text>
-            <Text className="text-[15px] leading-6 text-white/85 font-normal">
-              {exp.about}
-            </Text>
-          </View>
-
-          {exp.tags.length > 0 ? (
-            <View className="gap-2">
-              <Text className="text-base font-bold text-white">Interesser</Text>
-              <View className="flex-row flex-wrap gap-2">
-                {exp.tags.map((t) => (
-                  <View
-                    key={t}
-                    className="rounded-full px-3.5 py-1.5"
-                    style={{ backgroundColor: media.fillSubtle }}
-                  >
-                    <Text className="text-[14px] font-medium text-white">
-                      {t}
-                    </Text>
-                  </View>
-                ))}
-              </View>
-            </View>
-          ) : null}
-        </ScrollView>
-
-        {/* Sticky bottom bar — primary join CTA + save + share. */}
-        <View
-          className="absolute inset-x-0 bottom-0 flex-row items-center gap-3 px-gutter"
-          style={{
-            paddingTop: 12,
-            paddingBottom: Math.max(insets.bottom, 12),
-            backgroundColor: media.sheet,
-            borderTopWidth: 1,
-            borderColor: media.hairline,
-          }}
-        >
-          <Pressable
-            accessibilityRole="button"
-            accessibilityLabel={joined ? "Meld av (demo)" : joinLabel}
-            accessibilityState={{ selected: joined }}
-            onPress={() => gate(joinLabel, () => setJoined((j) => !j))}
-            style={{ backgroundColor: colors.ember }}
-            className="h-12 flex-1 flex-row items-center justify-center gap-2 rounded-full"
-          >
-            <Icon name="heart" size="md" tone="onEmber" />
-            <Text
-              className="text-base font-bold"
-              style={{ color: colors.onEmber }}
-            >
-              {joined ? "Du er med · demo" : joinLabel}
-            </Text>
-          </Pressable>
-          <IconButton
-            icon={saved ? "bookmark" : "bookmark-outline"}
-            label={saved ? "Fjern fra lagret" : "Lagre"}
-            variant="mediaOutline"
-            size="lg"
-            selected={saved}
-            onPress={() => gate("lagre", () => toggle(savedKey))}
-          />
-          <IconButton
-            icon="paper-plane-outline"
-            label="Del"
-            variant="mediaOutline"
-            size="lg"
-            onPress={() =>
-              void Share.share({ message: `${exp.title} — ThirdPlace` }).catch(
-                () => {},
-              )
-            }
-          />
-        </View>
-
-        {/* Safety action sheet (Master §7 report/block) — local demo, no report
-            is sent; account-gated for guests. */}
-        <Modal
-          visible={safetyOpen}
-          transparent
-          animationType="fade"
-          onRequestClose={() => setSafetyOpen(false)}
-        >
-          <Pressable
-            accessibilityRole="button"
-            accessibilityLabel="Lukk"
-            onPress={() => setSafetyOpen(false)}
-            style={[StyleSheet.absoluteFill, { backgroundColor: media.scrim }]}
-          />
-          <View
-            className="absolute inset-x-0 bottom-0 gap-2 rounded-t-xl bg-surface px-gutter pt-4"
-            style={{ paddingBottom: Math.max(insets.bottom, 16) }}
-          >
-            <View className="flex-row items-center gap-2 pb-1">
-              <DemoBadge />
-              <Text className="flex-1 text-xs text-muted font-normal">
-                Demo — ingen rapport sendes og ingen blokkering lagres.
-              </Text>
-            </View>
-            <Pressable
-              accessibilityRole="button"
-              accessibilityLabel="Rapporter opplevelsen"
-              onPress={() => {
-                setSafetyOpen(false);
-                gate("rapportere");
-              }}
-              className="flex-row items-center gap-3 rounded-lg border border-line px-4 py-4"
-            >
-              <Icon name="flag-outline" size="md" tone="ink" />
-              <Text className="text-base font-semibold text-ink">
-                Rapporter opplevelsen
-              </Text>
-            </Pressable>
-            <Pressable
-              accessibilityRole="button"
-              accessibilityLabel={`Blokker ${exp.host}`}
-              onPress={() => {
-                setSafetyOpen(false);
-                gate("blokkere");
-              }}
-              className="flex-row items-center gap-3 rounded-lg border border-line px-4 py-4"
-            >
-              <Icon name="ban-outline" size="md" tone="ember" />
-              <Text className="text-base font-semibold text-ink">
-                {`Blokker ${exp.host}`}
-              </Text>
-            </Pressable>
-            <Pressable
-              accessibilityRole="button"
-              accessibilityLabel="Avbryt"
-              onPress={() => setSafetyOpen(false)}
-              className="items-center rounded-lg px-4 py-4"
-            >
-              <Text className="text-base font-semibold text-muted">Avbryt</Text>
-            </Pressable>
-          </View>
-        </Modal>
-
-        <SignInPrompt
-          visible={signInFor !== null}
-          action={signInFor ?? "fortsette"}
-          onClose={() => setSignInFor(null)}
+    // Inside an Overlay (Modal engine): Android back closes the detail and
+    // focus is contained to it (F2/F7), not the deck behind it.
+    <View className="flex-1">
+      {/* Light status-bar content over the dark detail surface. */}
+      <StatusBar style="light" />
+      {/* Header: title + collapse. */}
+      <View
+        className="flex-row items-center gap-2 px-gutter pb-2"
+        style={{ paddingTop: insets.top + 4 }}
+      >
+        <Text className="flex-1 text-xl font-bold text-white" numberOfLines={1}>
+          {exp.title}
+        </Text>
+        <IconButton
+          icon="ellipsis-horizontal"
+          label="Flere valg"
+          variant="mediaSubtle"
+          size="sm"
+          onPress={() => setSafetyOpen(true)}
+        />
+        <IconButton
+          icon="arrow-down"
+          label="Lukk detaljer"
+          variant="mediaSubtle"
+          size="sm"
+          onPress={onClose}
         />
       </View>
-    </Modal>
+
+      <ScrollView
+        contentContainerClassName="gap-5 px-gutter pb-28 pt-1"
+        keyboardShouldPersistTaps="handled"
+      >
+        <View
+          className="overflow-hidden rounded-lg bg-ink"
+          style={{ height: heroH }}
+        >
+          <PhotoCarousel photos={exp.photos} interactive />
+        </View>
+
+        <View className="flex-row items-center gap-2">
+          <DemoBadge />
+          <Text className="flex-1 text-xs text-white/60 font-normal">
+            Demo — ingen reell påmelding eller lagring på server.
+          </Text>
+        </View>
+
+        <View className="gap-2">
+          <MetaLine icon="people-outline">
+            {`${statusText} · ${exp.going}/${exp.capacity} påmeldt`}
+          </MetaLine>
+          <MetaLine icon="calendar-outline">{exp.when}</MetaLine>
+          {place ? (
+            <MetaLine icon="location-outline">
+              {`${place.name} · ${place.distance}`}
+            </MetaLine>
+          ) : null}
+          <MetaLine icon="person-outline">{`Vert: ${exp.host}`}</MetaLine>
+        </View>
+
+        <View className="gap-1">
+          <Text className="text-base font-bold text-white">Om</Text>
+          <Text className="text-[15px] leading-6 text-white/85 font-normal">
+            {exp.about}
+          </Text>
+        </View>
+
+        {exp.tags.length > 0 ? (
+          <View className="gap-2">
+            <Text className="text-base font-bold text-white">Interesser</Text>
+            <View className="flex-row flex-wrap gap-2">
+              {exp.tags.map((t) => (
+                <View
+                  key={t}
+                  className="rounded-full px-3.5 py-1.5"
+                  style={{ backgroundColor: media.fillSubtle }}
+                >
+                  <Text className="text-[14px] font-medium text-white">
+                    {t}
+                  </Text>
+                </View>
+              ))}
+            </View>
+          </View>
+        ) : null}
+      </ScrollView>
+
+      {/* Sticky bottom bar — primary join CTA + save + share. */}
+      <View
+        className="absolute inset-x-0 bottom-0 flex-row items-center gap-3 px-gutter"
+        style={{
+          paddingTop: 12,
+          paddingBottom: Math.max(insets.bottom, 12),
+          backgroundColor: media.sheet,
+          borderTopWidth: 1,
+          borderColor: media.hairline,
+        }}
+      >
+        <Pressable
+          accessibilityRole="button"
+          accessibilityLabel={joined ? "Meld av (demo)" : joinLabel}
+          accessibilityState={{ selected: joined }}
+          onPress={() => gate(joinLabel, () => setJoined((j) => !j))}
+          style={{ backgroundColor: colors.ember }}
+          className="h-12 flex-1 flex-row items-center justify-center gap-2 rounded-full"
+        >
+          <Icon name="heart" size="md" tone="onEmber" />
+          <Text
+            className="text-base font-bold"
+            style={{ color: colors.onEmber }}
+          >
+            {joined ? "Du er med · demo" : joinLabel}
+          </Text>
+        </Pressable>
+        <IconButton
+          icon={saved ? "bookmark" : "bookmark-outline"}
+          label={saved ? "Fjern fra lagret" : "Lagre"}
+          variant="mediaOutline"
+          size="lg"
+          selected={saved}
+          onPress={() => gate("lagre", () => toggle(savedKey))}
+        />
+        <IconButton
+          icon="paper-plane-outline"
+          label="Del"
+          variant="mediaOutline"
+          size="lg"
+          onPress={() =>
+            void Share.share({ message: `${exp.title} — ThirdPlace` }).catch(
+              () => {},
+            )
+          }
+        />
+      </View>
+
+      {/* Safety action sheet (Master §7 report/block) — local demo, no report
+            is sent; account-gated for guests. */}
+      <Sheet visible={safetyOpen} onClose={() => setSafetyOpen(false)}>
+        <DemoNote>Ingen rapport sendes, og ingen blokkering lagres.</DemoNote>
+        <ListRow
+          variant="card"
+          icon="flag-outline"
+          title="Rapporter opplevelsen"
+          chevron={false}
+          onPress={() => {
+            setSafetyOpen(false);
+            gate("rapportere");
+          }}
+        />
+        <ListRow
+          variant="card"
+          icon="ban-outline"
+          danger
+          title={`Blokker ${exp.host}`}
+          chevron={false}
+          onPress={() => {
+            setSafetyOpen(false);
+            gate("blokkere");
+          }}
+        />
+        <Button
+          label="Avbryt"
+          variant="ghost"
+          onPress={() => setSafetyOpen(false)}
+        />
+      </Sheet>
+
+      <SignInPrompt
+        visible={signInFor !== null}
+        action={signInFor ?? "fortsette"}
+        onClose={() => setSignInFor(null)}
+      />
+    </View>
   );
 }
 

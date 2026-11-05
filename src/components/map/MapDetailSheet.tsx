@@ -4,10 +4,9 @@ import BottomSheet, {
   BottomSheetScrollView,
 } from "@gorhom/bottom-sheet";
 import { useCallback, useEffect, useMemo, useRef } from "react";
-import { Text, View } from "react-native";
+import { View } from "react-native";
 
-import { IconButton } from "@/components/ui";
-import { useThemeColors } from "@/theme";
+import { SheetHeader, useSheetChrome } from "@/components/ui";
 
 import { DetailContent, titleFor } from "./DetailContentRouter";
 import type { PushFn, SheetTarget } from "./sheetTypes";
@@ -38,7 +37,7 @@ export function MapDetailSheet({
   onBack: () => void;
   onClose: () => void;
 }) {
-  const colors = useThemeColors();
+  const chrome = useSheetChrome();
   const snapPoints = useMemo(() => ["35%", "60%", "92%"], []);
 
   const sheetRef = useRef<BottomSheet>(null);
@@ -90,32 +89,15 @@ export function MapDetailSheet({
         // Sync React state when the sheet is dismissed by gesture/backdrop.
         if (open) onClose();
       }}
-      handleIndicatorStyle={{ backgroundColor: colors.line }}
-      backgroundStyle={{ backgroundColor: colors.surface }}
+      {...chrome}
     >
       {top ? (
         <>
-          <View className="flex-row items-center gap-2 pb-2 px-gutter">
-            {nested ? (
-              <IconButton
-                icon="chevron-back"
-                label="Tilbake"
-                size="sm"
-                onPress={onBack}
-              />
-            ) : null}
-            <Text
-              className="flex-1 text-xl font-bold text-ink"
-              numberOfLines={1}
-            >
-              {titleFor(top)}
-            </Text>
-            <IconButton
-              icon="close"
-              label="Lukk"
-              size="sm"
-              tone="muted"
-              onPress={onClose}
+          <View className="px-gutter pb-2">
+            <SheetHeader
+              title={titleFor(top)}
+              onBack={nested ? onBack : undefined}
+              onClose={onClose}
             />
           </View>
           <BottomSheetScrollView

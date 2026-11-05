@@ -106,6 +106,21 @@ All primitives live in `src/components/ui/`. Each one must implement the states 
 
 Touch targets are at least 44×44 (use `hitSlop` to reach it on small visuals).
 
+### Sheets & overlays
+
+One family, two engines, one look (handle, 28 px top radius, `e3`, `SheetHeader`):
+
+| Need                                                                   | Use                                                         | Engine |
+| ---------------------------------------------------------------------- | ----------------------------------------------------------- | ------ | -------- | ----- |
+| Action sheet, picker, form, prompt                                     | `<Sheet>` (`fullHeight` for the tall filter sheet)          | Modal  |
+| Snapping map sheet (browse, detail)                                    | `@gorhom/bottom-sheet` + `useSheetChrome()` + `SheetHeader` | gorhom |
+| Full-screen surface (search, filter panel, swipe detail, image viewer) | `<Overlay enter="fade"                                      | "up"   | "left">` | Modal |
+
+- Enter 320 ms (`easing.enter`), exit 200 ms (`easing.exit`); reduced motion → 150 ms fade. The Modal stays mounted until the exit finishes (`usePresence`).
+- `<Sheet>` closes on scrim tap, Android back, or a drag down on the handle/header (past 25 % of its height or a 900 px/s flick).
+- Children mount only while open, so state seeds fresh each time. Render the body unconditionally inside `<Overlay>`; mount a whole `<Sheet>` conditionally only when it must reset between uses.
+- No raw `Modal` outside `src/components/ui/Sheet.tsx` and `Overlay.tsx`.
+
 ## 5. Motion
 
 | Token           | Value        | Use                             |
@@ -116,6 +131,8 @@ Touch targets are at least 44×44 (use `hitSlop` to reach it on small visuals).
 | `spring.snappy` | 20 / 220 / 1 | Press, heart pop                |
 | `spring.gentle` | 26 / 160 / 1 | Sheets, toasts                  |
 | `spring.card`   | 16 / 240 / 1 | Swipe cards                     |
+
+Easing curves (`easing.*`, cubic-bezier): `standard` 0.2, 0, 0, 1 · `enter` 0.05, 0.7, 0.1, 1 · `exit` 0.3, 0, 0.8, 0.15. Sheet/overlay timing lives in `presentation`.
 
 Motion explains a change (where something came from, what it became); it never delays navigation. Every animated hook checks `useReducedMotion()` and falls back to an opacity change or none.
 

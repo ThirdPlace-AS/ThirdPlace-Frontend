@@ -17,3 +17,6 @@ jest.mock("expo-font", () => ({
   loadAsync: () => Promise.resolve(),
   useFonts: () => [true, null],
 }));
+
+// Gesture handler: GestureDetector/RootView render as plain views under Jest.
+require("react-native-gesture-handler/jestSetup");

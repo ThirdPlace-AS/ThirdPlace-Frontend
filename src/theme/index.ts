@@ -16,7 +16,14 @@ export const spacing = tokens.spacing;
 export default tokens;
 
 // Motion tokens (see motion.ts) — re-exported for `import { motion } from "@/theme"`.
-export { motion, duration, spring, gesture } from "./motion";
+export {
+  motion,
+  duration,
+  spring,
+  easing,
+  presentation,
+  gesture,
+} from "./motion";
 export { elevation, type ElevationLevel } from "./elevation";
 export { iconSize, iconStroke, type IconSize } from "./icons";
 export {

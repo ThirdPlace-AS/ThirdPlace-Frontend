@@ -1,8 +1,15 @@
-import { Ionicons } from "@expo/vector-icons";
 import { Image } from "expo-image";
 import { useState } from "react";
-import { Modal, Pressable, Text, View } from "react-native";
-import { Avatar, Icon, ListRow } from "@/components/ui";
+import { Pressable, Text, View } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+import {
+  Avatar,
+  Icon,
+  IconButton,
+  ListRow,
+  Overlay,
+  Text as UIText,
+} from "@/components/ui";
 import { ReportSheet } from "@/components/actions/ActionSheets";
 import { Button } from "@/components/Button";
 import { DemoNote } from "@/components/DemoNote";
@@ -313,56 +320,60 @@ function ImageViewer({
   onIndex: (i: number) => void;
   onClose: () => void;
 }) {
+  const insets = useSafeAreaInsets();
   const n = SHARED.length;
   return (
-    <Modal visible animationType="fade" onRequestClose={onClose}>
-      <View className="flex-1 justify-center bg-black">
+    <Overlay
+      visible
+      onClose={onClose}
+      enter="fade"
+      statusBarTranslucent
+      style={{ backgroundColor: media.black }}
+      accessibilityLabel={`Bilde ${index + 1} av ${n}`}
+    >
+      <View className="flex-1 justify-center">
         <Image
           source={SHARED[index]}
           contentFit="contain"
           style={{ width: "100%", height: "70%" }}
         />
-        <View className="absolute inset-x-0 top-12 flex-row items-center justify-between px-gutter">
-          <Pressable
-            accessibilityRole="button"
-            accessibilityLabel="Lukk"
+        <View
+          className="absolute inset-x-0 flex-row items-center justify-between px-gutter"
+          style={{ top: insets.top + 8 }}
+        >
+          <IconButton
+            icon="close"
+            label="Lukk"
+            variant="mediaSubtle"
             onPress={onClose}
-            hitSlop={8}
-          >
-            <Icon name="close" size="xl" tone="onMedia" />
-          </Pressable>
-          <Text className="text-sm font-semibold text-white">
-            {index + 1} / {n}
-          </Text>
-          <View className="w-7" />
+          />
+          <UIText variant="label" weight="semibold" tone="onMedia">
+            {`${index + 1} / ${n}`}
+          </UIText>
+          <View className="w-10" />
         </View>
-        <View className="absolute inset-x-0 bottom-16 flex-row justify-center gap-10">
-          <Pressable
-            accessibilityRole="button"
-            accessibilityLabel="Forrige bilde"
+        <View
+          className="absolute inset-x-0 flex-row justify-center gap-10"
+          style={{ bottom: insets.bottom + 48 }}
+        >
+          <IconButton
+            icon="chevron-back"
+            label="Forrige bilde"
+            variant="mediaSubtle"
+            size="lg"
             disabled={index === 0}
             onPress={() => onIndex(index - 1)}
-          >
-            <Ionicons
-              name="chevron-back"
-              size={32}
-              color={index === 0 ? media.onMediaMuted : media.onMedia}
-            />
-          </Pressable>
-          <Pressable
-            accessibilityRole="button"
-            accessibilityLabel="Neste bilde"
+          />
+          <IconButton
+            icon="chevron-forward"
+            label="Neste bilde"
+            variant="mediaSubtle"
+            size="lg"
             disabled={index === n - 1}
             onPress={() => onIndex(index + 1)}
-          >
-            <Ionicons
-              name="chevron-forward"
-              size={32}
-              color={index === n - 1 ? media.onMediaMuted : media.onMedia}
-            />
-          </Pressable>
+          />
         </View>
       </View>
-    </Modal>
+    </Overlay>
   );
 }

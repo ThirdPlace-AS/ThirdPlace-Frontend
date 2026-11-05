@@ -23,6 +23,22 @@ export const spring = {
   card: { damping: 16, stiffness: 240, mass: 1 }, // swipe-card spring-back (crisp, tiny overshoot — matches the reference)
 } as const;
 
+// Cubic-bezier control points (plain data — components build the curve with
+// Reanimated's `Easing.bezier(...easing.standard)`).
+export const easing = {
+  standard: [0.2, 0, 0, 1], // most moves on screen
+  enter: [0.05, 0.7, 0.1, 1], // things arriving (sheets, overlays)
+  exit: [0.3, 0, 0.8, 0.15], // things leaving — quick, accelerating
+} as const;
+
+// Sheet / overlay presentation.
+export const presentation = {
+  enter: 320, // = duration.slow
+  exit: 200,
+  dismissRatio: 0.25, // drag past this fraction of the sheet height closes it
+  dismissVelocity: 900, // px/s
+} as const;
+
 // Gesture commit thresholds.
 export const gesture = {
   flingVelocity: 600, // px/s past which a drag commits regardless of distance
@@ -36,5 +52,11 @@ export const gesture = {
   swipeVertDamp: 0.35, // vertical drag follows the finger, damped
 } as const;
 
-export const motion = { duration, spring, gesture } as const;
+export const motion = {
+  duration,
+  spring,
+  easing,
+  presentation,
+  gesture,
+} as const;
 export default motion;

@@ -1,16 +1,9 @@
 import { Ionicons } from "@expo/vector-icons";
 import { useMemo, useState } from "react";
-import {
-  Keyboard,
-  Modal,
-  Pressable,
-  ScrollView,
-  Text,
-  View,
-} from "react-native";
+import { Keyboard, Pressable, ScrollView, Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-import { Icon, IconButton } from "@/components/ui";
+import { Icon, IconButton, Overlay } from "@/components/ui";
 import { Chip } from "@/components/Chip";
 import { SearchBar } from "@/components/SearchBar";
 
@@ -45,23 +38,21 @@ export function MapSearchOverlay({
     onClose();
   };
   return (
-    <Modal
+    // The Overlay mounts the body only while open, so query state seeds fresh
+    // from `initialQuery` on each open (no setState-in-effect).
+    <Overlay
       visible={visible}
-      animationType="fade"
-      onRequestClose={close}
-      transparent
+      onClose={close}
+      enter="fade"
+      className="bg-background"
     >
-      {/* Mount the body only while open so query state seeds fresh from
-          `initialQuery` on each open (no setState-in-effect). */}
-      {visible ? (
-        <SearchBody
-          initialQuery={initialQuery}
-          onClose={close}
-          onSubmit={onSubmit}
-          onSelect={onSelect}
-        />
-      ) : null}
-    </Modal>
+      <SearchBody
+        initialQuery={initialQuery}
+        onClose={close}
+        onSubmit={onSubmit}
+        onSelect={onSelect}
+      />
+    </Overlay>
   );
 }
 

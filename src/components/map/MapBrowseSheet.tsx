@@ -9,9 +9,8 @@ import Animated, {
   useAnimatedReaction,
   useAnimatedStyle,
 } from "react-native-reanimated";
-import { Icon } from "@/components/ui";
+import { Icon, useSheetChrome } from "@/components/ui";
 import { MAP_CITY, type MockWeather } from "@/fixtures";
-import { useThemeColors } from "@/theme";
 import { browseAnimatedIndex } from "./browseSheetProgress";
 import type { DiscoveryItem } from "./types/mapPresentation";
 
@@ -45,7 +44,7 @@ export function MapBrowseSheet({
   // Bumped to force the sheet to expand (e.g. a SoftMap cluster tap).
   expandSignal?: number;
 }) {
-  const colors = useThemeColors();
+  const chrome = useSheetChrome();
   const snapPoints = useMemo(() => ["8%", "49%", "84.5%"], []);
   const sheetRef = useRef<BottomSheet>(null);
 
@@ -151,8 +150,7 @@ export function MapBrowseSheet({
         // point. gorhom's default overdrag rubber-bands ~60px past the peek on
         // an active down-drag; disabling it clamps the gesture at index 0.
         enableOverDrag={false}
-        handleIndicatorStyle={{ backgroundColor: colors.line }}
-        backgroundStyle={{ backgroundColor: colors.surface }}
+        {...chrome}
       >
         {/* Peek header — city (left) + weather (right). Always visible. */}
         <View className="flex-row items-center justify-between pb-3 px-gutter">

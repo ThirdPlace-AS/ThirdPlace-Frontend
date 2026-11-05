@@ -1,26 +1,12 @@
 import { StatusBar } from "expo-status-bar";
-import { useEffect, useState } from "react";
-import {
-  Modal,
-  Pressable,
-  ScrollView,
-  Text,
-  useWindowDimensions,
-  View,
-} from "react-native";
-import Animated, {
-  useAnimatedStyle,
-  useReducedMotion,
-  useSharedValue,
-  withTiming,
-} from "react-native-reanimated";
+import { useState } from "react";
+import { Pressable, ScrollView, Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { IconButton } from "@/components/ui";
+import { IconButton, Overlay } from "@/components/ui";
 import { Button } from "@/components/Button";
 import { CheckboxRow } from "@/components/CheckboxRow";
 import { TypeChip } from "@/components/map/TypeChip";
 import { experiences, TIME_WINDOWS } from "@/fixtures";
-import { motion } from "@/theme";
 import { DemoNote } from "@/components/DemoNote";
 import { demoCopy } from "@/copy";
 import { tagIcon } from "./SwipeCard";
@@ -85,18 +71,16 @@ export function SwipeFilterSheet({
   onApply: (f: SwipeFilters) => void;
 }) {
   return (
-    <Modal
+    // Slides in from the LEFT (notifications enter from the right). The Overlay
+    // mounts the body only while open, so the draft seeds fresh from `value`.
+    <Overlay
       visible={visible}
-      transparent
-      animationType="none"
-      onRequestClose={onClose}
+      onClose={onClose}
+      enter="left"
+      className="bg-surfaceMuted"
     >
-      {/* Mount the body only while open so the slide replays and the draft seeds
-          fresh from `value` on each open. */}
-      {visible ? (
-        <FilterBody value={value} onClose={onClose} onApply={onApply} />
-      ) : null}
-    </Modal>
+      <FilterBody value={value} onClose={onClose} onApply={onApply} />
+    </Overlay>
   );
 }
 
@@ -110,21 +94,6 @@ function FilterBody({
   onApply: (f: SwipeFilters) => void;
 }) {
   const insets = useSafeAreaInsets();
-  const { width } = useWindowDimensions();
-  const reduced = useReducedMotion();
-  const translateX = useSharedValue(reduced ? 0 : -width);
-
-  // Slide in from the LEFT on mount (mirror of the notifications screen, which
-  // enters from the right).
-  useEffect(() => {
-    translateX.value = reduced
-      ? 0
-      : withTiming(0, { duration: motion.duration.base });
-  }, [reduced, translateX, width]);
-
-  const slideStyle = useAnimatedStyle(() => ({
-    transform: [{ translateX: translateX.value }],
-  }));
 
   const [draft, setDraft] = useState<SwipeFilters>(value);
 
@@ -147,9 +116,9 @@ function FilterBody({
     resultCount === 0 ? "Ingen forslag" : `Vis ${resultCount} forslag`;
 
   return (
-    <Animated.View
-      className="flex-1 gap-4 bg-surfaceMuted px-gutter pb-8"
-      style={[slideStyle, { paddingTop: insets.top + 8 }]}
+    <View
+      className="flex-1 gap-4 px-gutter pb-8"
+      style={{ paddingTop: insets.top + 8 }}
     >
       {/* Dark status-bar content over the light panel. */}
       <StatusBar style="dark" />
@@ -246,6 +215,6 @@ function FilterBody({
           />
         </View>
       </View>
-    </Animated.View>
+    </View>
   );
 }

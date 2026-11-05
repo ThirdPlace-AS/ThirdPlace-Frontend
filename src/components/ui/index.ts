@@ -30,3 +30,14 @@ export { Avatar, initialsOf, type AvatarSize } from "./Avatar";
 export { Input, type InputProps } from "./Input";
 export { ListRow, MetaRow, type ListRowVariant } from "./ListRow";
 export { SearchBar } from "./SearchBar";
+export { Overlay, type OverlayEnter } from "./Overlay";
+export {
+  Sheet,
+  SheetHandle,
+  SheetHeader,
+  SHEET_RADIUS,
+  useSheetChrome,
+  type SheetProps,
+  type SheetTone,
+} from "./Sheet";
+export { usePresence } from "./usePresence";
