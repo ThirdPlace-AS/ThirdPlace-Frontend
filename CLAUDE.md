@@ -4,78 +4,84 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## What this is
 
-ThirdPlace — an Expo / React Native (TypeScript) mobile client. **Post-restart (2026-10-12) codebase**: a fixtures-only visual shell. No product surface is wired to a real backend yet.
+ThirdPlace — an Expo / React Native (TypeScript) mobile client. **Post-restart (2026-10-12) codebase**: a fixtures-only demo of the full UI. No product surface is wired to a real backend yet. Stack: Expo SDK 57 · RN 0.86 · React 19.2 · TS strict · Expo Router (typed routes) · NativeWind v4 · Reanimated 4 + Gesture Handler · TanStack Query (client shell, no endpoints).
 
 ## Governance (read before writing feature code)
 
-The authoritative V2.2 product contract is **not imported** — preserve `BLOCKED_NOT_V22_CERTIFIED`. Do **not** invent: API endpoints, request/response DTOs, DB tables/migrations, RLS policies, auth entitlements, ranking/matchmaking formulas, real counts/social proof, or payment/booking rules.
+The authoritative V2.2 product contract is **not imported** — preserve `BLOCKED_NOT_V22_CERTIFIED`. Do **not** invent: API endpoints, request/response DTOs, DB tables/migrations, RLS policies, auth entitlements, ranking/matchmaking formulas, real counts/social proof, or payment/booking rules. This includes **copy**: don't state a rule as product behaviour ("participants are notified", "spot passes on after the deadline", "1/N split", reward perks, payout timing, SLAs). When the design PDF shows such copy, leave it out or mark it as an example.
 
-- All data is MOCK, from a single file: [src/fixtures/index.ts](src/fixtures/index.ts). Every type is `Mock*`-prefixed; the header flags `BLOCKED_CONTRACT_GAP`. New fixture fields are allowed but must keep that non-contract framing.
-- **Honesty markers are mandatory.** A demo action must never look like a real backend success. Use `DemoBadge` ([src/components/DemoBadge.tsx](src/components/DemoBadge.tsx)) for non-functional demo UI and `GuestLock` / `SignInPrompt` for account-gated actions. Join/save/follow/review/attendance/login are all local demo state only.
-- `docs/IMPLEMENTATION_BASELINE.md` + `docs/PHASE0_BLOCKER_REPORT.json` hold governance state; `docs/implementation-ledger/TP-PHASE0-FE.jsonl` is an append-only ledger — add one JSON line per slice. `docs/map/` holds the Map gap matrix, blocker/native-verify registers, and deliverables.
+- **Source of truth** lives outside the repo: `C:\Users\Ahmed\Documents\ThirdPlace AS\ThirdPlace_SOURCE_OF_TRUTH_v1.1_AUDITED_2026-10-12\` — `CANONICAL/THIRDPLACE_MASTER_SPEC.md` (behaviour/policy authority), `CANONICAL/DECISION_REGISTER.json` (founder-locked decisions, e.g. TP-D-001 18+ gate, TP-D-002 five tabs, TP-D-004 four roles Utforsker/Skaper/Bedrift/Enterprise), and `DESIGN/ThirdPlace_All_Screens.pdf` (**UI authority** for layout, order and Norwegian copy). The PDF is image-only: render pages with poppler (`pdftoppm -png -r 150 -f N -l N <pdf> <out>`) and read the PNGs.
+- [docs/SCREEN_INVENTORY.md](docs/SCREEN_INVENTORY.md) maps every PDF page → app route/component with status. Check the relevant page **before** building or changing a screen; don't add UI that has no PDF/spec basis (invented UI was removed in the 2026-11-05 realignment). [docs/surfaces/SURFACE_GAP_MATRIX.md](docs/surfaces/SURFACE_GAP_MATRIX.md) tracks each route's status/markers/ledger ids; `docs/map/` holds the Map matrix and blocker/native-verify registers. Keep these consistent with the code when you change a surface.
+- All data is MOCK, from [src/fixtures/index.ts](src/fixtures/index.ts) (`Mock*` types, `BLOCKED_CONTRACT_GAP` header); bundled photos via [src/fixtures/images.ts](src/fixtures/images.ts) (`libImage`, `coverForPlace`).
+- **Honesty markers are mandatory.** A demo action must never look like a real backend success — no fake "processing → success" flows. Payments/payouts are **structure only**: never render card/bank inputs or amounts as real.
+- `docs/implementation-ledger/TP-PHASE0-FE.jsonl` is append-only — add one JSON line per slice (ledger_id, found/fix/not_done/honesty/verification, blockers_open).
 
 ## Commands
 
 ```bash
 npm install
 npm run start        # expo dev server
-npm run web          # expo web (fastest way to view/verify the UI; uses the SoftMap fallback)
-npm run android      # expo on a connected Android device/emulator
+npm run web          # expo web (SoftMap fallback; not the preferred verification path — see below)
+npm run android      # expo run:android = full native build (needed after native dep changes)
 npm run typecheck    # tsc --noEmit (strict)
 npm run lint         # eslint (flat config)
 npm run format       # prettier --check .   (CI uses this)
-npm run format:write # prettier --write .
 npm test             # jest --ci
 npx jest tests/mapAdapter.test.ts         # single test file
 npx jest -t "trending sorts"              # single test by name
-npx expo-doctor      # dependency/config health (CI runs this)
+npx expo-doctor      # dependency/config health (CI runs this; patch drift fails it → `npx expo install --fix`)
 ```
 
-CI (`.github/workflows/ci.yml`): a **quality** job (format → lint → typecheck → test, Node 22) and a **bundle** job (expo-doctor + `expo export` web & android on the stub path, then greps the bundles to assert no `sk.*` Mapbox token leaked). Run the full local gate (`typecheck`, `lint`, `format`, `test`) before committing.
+CI (`.github/workflows/ci.yml`): a **quality** job (format → lint → typecheck → test, Node 22) and a **bundle** job (expo-doctor + `expo export` web & android with `EXPO_PUBLIC_USE_NATIVE_MAP=0`, then an anchored grep asserting no `sk.*` Mapbox token is in the bundles).
 
-**Line endings:** the working tree is CRLF, the git index is LF. `prettier --check` locally flags CRLF (cosmetic); CI runs on LF and passes. After `prettier --write`, format only the files you touched (a repo-wide write creates line-ending-only churn in unrelated files — don't stage those). `.jsonl` has no prettier parser and is skipped.
+**Line endings:** the working tree is CRLF, the git index is LF, so local `prettier --check` flags every file. Run `npx prettier --write` only on files you touched (a repo-wide write creates EOL-only churn — `git checkout` those). To check what CI sees: `git show HEAD:<file> | npx prettier --stdin-filepath <file> --check`. Edits made after a prettier run (scripts, sed) need re-formatting before commit.
 
 ## Conventions (differ from common defaults)
 
-- **Styling is NativeWind `className`, not StyleSheet.** Tailwind extends tokens from [src/theme/tokens.js](src/theme/tokens.js) (CommonJS so `tailwind.config.js` can `require` it). Use the imperative `colors` object from `@/theme` only where `className` can't reach: native color props (Ionicons `color`, `backgroundColor`, `ActivityIndicator`). The token is lowercase `colors` (ember `#D80000`, success `#387850`, ink `#202020`), light-theme only, **provisional**. Fonts are system (no custom typeface loaded).
-- **Motion tokens** live in [src/theme/motion.ts](src/theme/motion.ts) (`motion.duration` / `motion.spring` / `motion.gesture`); route new Reanimated durations/springs through them and honor `useReducedMotion()`.
-- **Navigation is Expo Router** (file-based, `app/`), 5 tabs (map/swipe/add/chat/profile). **Detail screens are sheets, not routes.** Two sheet patterns: the Modal-based [src/components/Sheet.tsx](src/components/Sheet.tsx) (filters, notifications, location, sign-in, map detail) — note its tap-to-close backdrop is a **sibling behind** the card, never an ancestor, so card buttons aren't nested inside a `<button>` (this matters on web). Avoid nested `Pressable`/`Button` — it is invalid DOM on web.
-- UI language is **Norwegian**.
-- Strict TypeScript; avoid `any` except a documented interop boundary (e.g. the lazy native-module requires in `src/lib/haptics.ts` / `useMapLocation`).
+- **Styling is NativeWind `className`, not StyleSheet.** Tokens come from [src/theme/tokens.js](src/theme/tokens.js) (CommonJS so `tailwind.config.js` can `require` it); use `colors` from `@/theme` only for native color props (Ionicons `color`, Switch `trackColor`, etc.). Light theme only, ember `#D80000` / ink `#202020` / success `#387850`, **provisional** — no off-palette hex. **Gotcha:** `theme.extend.spacing` replaces the numeric scale, so sizes like `h-36`/`w-28`/`h-32` silently don't resolve — use `style={{ height: … }}` for fixed sizes; opacity modifiers on some tokens (e.g. `bg-danger/15`) also don't resolve.
+- **Motion tokens** in [src/theme/motion.ts](src/theme/motion.ts); honor `useReducedMotion()`.
+- **Navigation:** Expo Router, exactly 5 tabs (`app/(tabs)/` map/swipe/add/chat/profile; centre "Legg til" is a dark round "+", active tab ember). Most surfaces are stack routes in `app/*.tsx` that re-export a screen from `src/features/<domain>/` (`export { default } from "@/features/…"`); map details stay sheets. Use `resetTo(href)` from [src/lib/navigation.ts](src/lib/navigation.ts) at session boundaries (login/logout/onboarding finish) so back can't return to a signed-in screen. Typed routes can lag for new `index` routes — cast with `as Href`.
+- **Sheets:** [src/components/Sheet.tsx](src/components/Sheet.tsx) is RN-Modal based; its tap-to-close backdrop is a **sibling behind** the card — never wrap buttons in a backdrop `Pressable` (nested `<button>` on web). Don't swap one Modal for another in the same render (iOS refuses) — close, then open after a delay. Mount stateful sheets only while open (`{open ? <X/> : null}`) so state doesn't leak between uses.
+- UI language is **Norwegian**. Strict TS; `any` only at documented interop boundaries (lazy native requires in `src/lib/haptics.ts`, `useMapLocation`).
 
-## Map feature architecture (the one area that spans many files)
+## Shared building blocks (cross-cutting, used by most screens)
 
-The Map is a thin screen ([app/(tabs)/map.tsx](<app/(tabs)/map.tsx>)) composing feature hooks + components under [src/components/map/](src/components/map). Understanding the data flow requires several files:
+- **Demo honesty:** `DemoBadge`, `DemoNote` (badge + muted line — its text must **not** start with "Demo —"; see `tests/demoCopy.test.ts`), shared lines in [src/copy/demo.ts](src/copy/demo.ts).
+- **Guest mode:** `useGuestMode` (in-memory store in `src/components/map/hooks/`) gates account actions → `SignInPrompt` (routes to `/login`/`/register` via `resetTo`) or `GuestLock`. Guests can read chats but not send.
+- **Demo stores:** `useMapSaved` (shared by map Lagret mode, swipe, place deck, `/saved`), `useGuestMode`, `useRecentSearches` — `useSyncExternalStore` modules that reset on reload (persistence is contract-blocked).
+- **Action sheets** [src/components/actions/ActionSheets.tsx](src/components/actions/ActionSheets.tsx) (Del/Rapporter/Blokker/Forlat/Venteliste/Pay/Avlys/plass ledig/Rate/Del regningen), **pickers** [src/components/pickers/Pickers.tsx](src/components/pickers/Pickers.tsx) (place/category/user + `SearchField`), `StateView`/`EmptyState` (optional second action), `Toast` (`showToast()`; host in root layout renders _under_ Modals — call only from screen-level actions).
+- **System screens:** `app/state/[kind].tsx` (offline/error/maintenance/suspended/update/invite), reachable by deep link `thirdplace://state/<kind>`.
 
-- **Presentation model** — `types/mapPresentation.ts` defines `DiscoveryItem` (the shape markers, clusters, preview and list all render) and the 6 `DiscoveryMode`s (`DEMO_MODES` = For You/Friends, which must stay non-personalized demo shells).
-- **Services (pure)** — `services/mapFixtureAdapter.ts` resolves a mode → `DiscoveryItem[]`; `services/mapSearch.ts` does grouped fixture search; `services/softClustering.ts` projects coords + grid-clusters for the fallback map.
-- **Hooks** — `hooks/useMap{Filters,Discovery,Selection,Presentation,Camera,Location,Saved}.ts` + `useGuestMode` + `useRecentSearches`. Selection splits a lightweight **preview** (floating `MapPreviewCard`) from the expanded **detail sheet** (`sheetStack` with in-sheet push/back nav). `useMapSaved`/`useGuestMode`/`useRecentSearches` are in-memory `useSyncExternalStore` demo stores (reset on reload — persistence is contract-blocked).
-- **Rendering** — `MapCanvas` chooses the native `MapboxMap` (a clustered `ShapeSource`, category-colored pins, selected ring) vs the `SoftMap` fallback.
+## Map feature architecture (spans many files)
 
-### Mapbox (important gotchas)
+The Map is a thin screen ([app/(tabs)/map.tsx](<app/(tabs)/map.tsx>)) composing hooks + components under [src/components/map/](src/components/map):
 
-- `@rnmapbox/maps` is native-only. [metro.config.js](metro.config.js) aliases it to `src/components/map/mapbox-stub.js` when `platform === "web"` **or** `EXPO_PUBLIC_USE_NATIVE_MAP !== "1"`. So: web + Expo Go + CI always get the stub + `SoftMap`; only a native dev build with the flag loads real Mapbox. Keep the stub's exports in sync with what `MapboxMap` imports.
-- Token model: public `pk.*` = `EXPO_PUBLIC_MAPBOX_TOKEN` (inlined, decides tile render). Secret `sk.*` = `MAPBOX_DOWNLOADS_TOKEN`, a native-build input only ([app.config.ts](app.config.ts)) — never in the JS bundle.
-- Optional native modules (`expo-location`, `expo-haptics`) are required **lazily + guarded** so a dev build that predates them degrades gracefully instead of crashing at import.
+- **Presentation model** — `types/mapPresentation.ts`: `DiscoveryItem` (what markers, clusters, preview and list render) and 6 `DiscoveryMode`s in PDF order (For deg default · Trending · Live · Utforsk · Lagret · Venner); `DEMO_MODES` (For deg/Venner) must stay non-personalized demo shells.
+- **Services (pure)** — `services/mapFixtureAdapter.ts` (mode → items), `mapSearch.ts` (grouped search), `softClustering.ts`.
+- **Hooks** — `hooks/useMap{Filters,Discovery,Selection,Presentation,Camera,Location,Saved}.ts`. Selection splits a floating **preview** (`MapPreviewCard`) from the **detail sheet** (`sheetStack` push/back via `DetailContentRouter` → `content/*`).
+- **Rendering** — `MapCanvas` picks native `MapboxMap` (clustered `ShapeSource`) vs `SoftMap` fallback.
+- **Mapbox:** `@rnmapbox/maps` is native-only; [metro.config.js](metro.config.js) aliases it to `mapbox-stub.js` on web or when `EXPO_PUBLIC_USE_NATIVE_MAP !== "1"` (keep stub exports in sync). Public `pk.*` = `EXPO_PUBLIC_MAPBOX_TOKEN`; secret `sk.*` = `MAPBOX_DOWNLOADS_TOKEN`, native-build input only ([app.config.ts](app.config.ts)). `expo-location`/`expo-haptics` are required lazily + guarded.
+
+Swipe ([src/components/swipe/](src/components/swipe)): `SwipeDeck` (gesture engine, tabs For deg/Opplevelser/Steder; like → "Bli med i samtalen" sheet), pure `deckLogic.ts`/`swipeFilters.ts`/`useSwipeDeck.ts` (tested), `PlaceDeck` for Steder; group swipe is `src/features/groupswipe`.
 
 ## Verifying changes
 
-Fastest: `npm run web` (SoftMap path) — drive it in a browser. For the native map / GPS / haptics you need an Android dev build.
-
-Running the existing dev build on an emulator (Windows / Git Bash):
+Verify UI on the **Android emulator dev build**, not `npm run web` (project preference; web is only a quick sanity path). Windows / Git Bash:
 
 ```bash
 export PATH="$PATH:/c/Users/Ahmed/AppData/Local/Android/Sdk/platform-tools"
-npx expo start --dev-client --port 8083          # Metro
-adb reverse tcp:8083 tcp:8083
+/c/Users/Ahmed/AppData/Local/Android/Sdk/emulator/emulator -avd Android -no-snapshot-save -no-boot-anim -memory 2048   # background
+npx expo start --dev-client --port 8090          # Metro (add --clear after dep changes)
+adb reverse tcp:8090 tcp:8090
 adb shell am start -a android.intent.action.VIEW \
-  -d "thirdplace://expo-development-client/?url=http://localhost:8083" com.thirdplace.app
+  -d "thirdplace://expo-development-client/?url=http%3A%2F%2Flocalhost%3A8090" com.thirdplace.app
 ```
 
-- `adb`/`emulator` are not on PATH; use `$ANDROID_HOME/platform-tools/adb.exe`.
-- In Git Bash, prefix device paths with `//` (e.g. `adb pull //sdcard/s.png`) to stop MSYS mangling `/sdcard` into a Windows path.
-- The on-device dev build has native `@rnmapbox` but may lack newer native deps; real GPS/haptics require a fresh `expo run:android`.
+- Launch the dev client **once** (force-stop first); a second launch intent while starting crashes it ("react context shouldn't be created before"). After it's up, deep links work: `thirdplace://map`, `…://settings`, `…://chat/c1`, `…://state/maintenance`, etc.
+- Screenshot: `adb exec-out screencap -p` (strip bytes before `\x89PNG`). Find tap targets with `adb shell uiautomator dump //sdcard/u.xml`. In Git Bash prefix device paths with `//` (MSYS path mangling). Modal content may render a beat after a tap — wait before capturing.
+- The host is RAM-constrained: emulator ANRs ("isn't responding", even for System UI) are usually CPU/RAM starvation, not app bugs — confirm via `adb root` + `adb shell cat //data/anr/<newest>` (main thread in `MainActivity.<init>` with no app frames = environment). Killing the process on port 8090 can also kill the adb server (`adb devices` restarts it).
+- The dev build predates newer native deps (latest Expo patch bump); real GPS/haptics need a fresh `npx expo run:android`.
 
 ## PR / change management
 
-Small, reviewable, one-slice PRs; add a ledger line per slice. Never auto-merge, force-push shared branches, or deploy. Do not weaken tests to pass CI.
+Small, reviewable, one-slice commits/PRs, each with a ledger line; keep honesty/not_done fields truthful (say what wasn't emulator-verified). Never auto-merge, force-push shared branches, or deploy. Do not weaken tests to pass CI.
