@@ -5,12 +5,14 @@ import { useState } from "react";
 import { FlatList, Pressable, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
+import { BlockSheet } from "@/components/actions/ActionSheets";
+import { Button } from "@/components/Button";
 import { Chip } from "@/components/Chip";
-import { DemoBadge } from "@/components/DemoBadge";
+import { DemoNote } from "@/components/DemoNote";
 import { Sheet } from "@/components/Sheet";
 import { SignInPrompt } from "@/components/SignInPrompt";
 import { useGuestMode } from "@/components/map/hooks/useGuestMode";
-import { experienceById, people, type MockPerson } from "@/fixtures";
+import { experienceById, people, profile, type MockPerson } from "@/fixtures";
 import { libImage } from "@/fixtures/images";
 import { colors } from "@/theme";
 
@@ -22,6 +24,20 @@ export default function PeopleScreen() {
   const [open, setOpen] = useState<MockPerson | null>(null);
   const [following, setFollowing] = useState<Record<string, boolean>>({});
   const [signIn, setSignIn] = useState(false);
+  // PDF p22: Alle / Nærheten / Interesser tabs + "Filter folk" sheet.
+  const [tab, setTab] = useState<"all" | "near" | "interests">("all");
+  const [filterOpen, setFilterOpen] = useState(false);
+  const [filterTags, setFilterTags] = useState<string[]>([]);
+  const allTags = Array.from(new Set(people.flatMap((p) => p.interests)));
+  const shared = (p: MockPerson) =>
+    p.interests.filter((i) => profile.interests.includes(i));
+  const list = people.filter((p) => {
+    if (tab === "near" && p.area !== "Grünerløkka") return false;
+    if (tab === "interests" && shared(p).length === 0) return false;
+    if (filterTags.length && !p.interests.some((i) => filterTags.includes(i)))
+      return false;
+    return true;
+  });
 
   const toggleFollow = (id: string) => {
     if (guest.isGuest) {
@@ -35,13 +51,60 @@ export default function PeopleScreen() {
     <SafeAreaView className="flex-1 bg-background" edges={["top"]}>
       <ScreenHeader title="Oppdag folk" />
       <FlatList
-        data={people}
+        data={list}
         keyExtractor={(p) => p.id}
         contentContainerClassName="px-gutter pb-10"
-        ListHeaderComponent={
-          <Text className="pb-3 pt-1 text-sm text-muted">
-            Mennesker du kanskje vil møte.
+        ListEmptyComponent={
+          <Text className="py-10 text-center text-sm text-muted">
+            Ingen treff — prøv et annet filter.
           </Text>
+        }
+        ListHeaderComponent={
+          <View className="gap-3 pb-3 pt-1">
+            <Text className="text-sm text-muted">
+              Mennesker du kanskje vil møte.
+            </Text>
+            <View className="flex-row flex-wrap items-center gap-2">
+              <Chip
+                label="Alle"
+                selected={tab === "all"}
+                onPress={() => setTab("all")}
+              />
+              <Chip
+                label="Nærheten"
+                selected={tab === "near"}
+                onPress={() => setTab("near")}
+              />
+              <Chip
+                label="Interesser"
+                selected={tab === "interests"}
+                onPress={() => setTab("interests")}
+              />
+              <Pressable
+                accessibilityRole="button"
+                accessibilityLabel="Filter folk"
+                onPress={() => setFilterOpen(true)}
+                className="ml-auto h-10 w-10 items-center justify-center rounded-full border border-line bg-surface"
+              >
+                <Ionicons name="options-outline" size={18} color={colors.ink} />
+                {filterTags.length ? (
+                  <View className="absolute right-1 top-1 h-2 w-2 rounded-full bg-ember" />
+                ) : null}
+              </Pressable>
+              <Pressable
+                accessibilityRole="button"
+                accessibilityLabel="Inviter venner"
+                onPress={() => router.push("/invite")}
+                className="h-10 w-10 items-center justify-center rounded-full border border-line bg-surface"
+              >
+                <Ionicons
+                  name="person-add-outline"
+                  size={18}
+                  color={colors.ink}
+                />
+              </Pressable>
+            </View>
+          </View>
         }
         ItemSeparatorComponent={() => <View className="h-2" />}
         renderItem={({ item }) => (
@@ -60,6 +123,47 @@ export default function PeopleScreen() {
         onFollow={() => open && toggleFollow(open.id)}
         onClose={() => setOpen(null)}
       />
+      <Sheet
+        visible={filterOpen}
+        onClose={() => setFilterOpen(false)}
+        title="Filter folk"
+      >
+        <View className="gap-3">
+          <Text className="text-sm font-semibold text-ink">Interesser</Text>
+          <View className="flex-row flex-wrap gap-2">
+            {allTags.map((t) => (
+              <Chip
+                key={t}
+                label={t}
+                selected={filterTags.includes(t)}
+                onPress={() =>
+                  setFilterTags((s) =>
+                    s.includes(t) ? s.filter((x) => x !== t) : [...s, t],
+                  )
+                }
+              />
+            ))}
+          </View>
+          <Button
+            label={`Vis ${
+              people.filter(
+                (p) =>
+                  !filterTags.length ||
+                  p.interests.some((i) => filterTags.includes(i)),
+              ).length
+            } personer`}
+            variant="ink"
+            onPress={() => setFilterOpen(false)}
+          />
+          {filterTags.length ? (
+            <Button
+              label="Nullstill"
+              variant="secondary"
+              onPress={() => setFilterTags([])}
+            />
+          ) : null}
+        </View>
+      </Sheet>
       <SignInPrompt
         visible={signIn}
         onClose={() => setSignIn(false)}
@@ -145,10 +249,10 @@ function FollowButton({
       onPress={onPress}
       className={`items-center justify-center rounded-full ${
         compact ? "px-4 py-2" : "px-5 py-2.5"
-      } ${following ? "bg-surfaceMuted" : "bg-ember active:opacity-80"}`}
+      } ${following ? "bg-surfaceMuted" : "bg-ink active:opacity-80"}`}
     >
       <Text
-        className={`text-sm font-semibold ${following ? "text-ink" : "text-onEmber"}`}
+        className={`text-sm font-semibold ${following ? "text-ink" : "text-onInk"}`}
       >
         {following ? "Følger" : "Følg"}
       </Text>
@@ -170,6 +274,7 @@ function PersonDetailSheet({
   const hosts = person?.hostsExperienceId
     ? experienceById(person.hostsExperienceId)
     : undefined;
+  const [block, setBlock] = useState(false);
   return (
     <Sheet visible={person !== null} onClose={onClose} title="Profil">
       {person ? (
@@ -212,13 +317,15 @@ function PersonDetailSheet({
           ) : null}
 
           <FollowButton following={following} onPress={onFollow} />
-
-          <View className="flex-row items-center justify-center gap-2">
-            <DemoBadge />
-            <Text className="text-xs text-muted">
-              Demo — å følge lagrer eller sender ingenting.
-            </Text>
-          </View>
+          <Button
+            label="Blokker"
+            variant="secondary"
+            onPress={() => setBlock(true)}
+          />
+          <DemoNote>Å følge lagrer eller sender ingenting.</DemoNote>
+          {block ? (
+            <BlockSheet name={person.name} onClose={() => setBlock(false)} />
+          ) : null}
         </View>
       ) : null}
     </Sheet>

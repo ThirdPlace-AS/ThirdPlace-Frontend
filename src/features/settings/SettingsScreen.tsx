@@ -192,6 +192,20 @@ function AccountSheet({ visible, onClose }: SheetProps) {
           </Text>
           <Ionicons name="chevron-forward" size={16} color={colors.muted} />
         </Pressable>
+        <Pressable
+          accessibilityRole="button"
+          onPress={() => {
+            onClose();
+            router.push("/age-verification");
+          }}
+          className="flex-row items-center gap-3 rounded-xl border border-line bg-surface p-3 active:opacity-80"
+        >
+          <Ionicons name="id-card-outline" size={20} color={colors.ink} />
+          <Text className="flex-1 text-sm font-semibold text-ink">
+            Aldersverifisering
+          </Text>
+          <Ionicons name="chevron-forward" size={16} color={colors.muted} />
+        </Pressable>
         <Text className="pt-1 text-xs font-semibold uppercase tracking-wide text-muted">
           Aktive økter
         </Text>
