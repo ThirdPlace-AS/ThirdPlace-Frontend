@@ -12,6 +12,8 @@ import { useGuestMode } from "@/components/map/hooks/useGuestMode";
 import { PERSONAS, type MockPersonaKey } from "@/fixtures";
 import { resetTo } from "@/lib/navigation";
 import { colors } from "@/theme";
+import { DemoNote } from "@/components/DemoNote";
+import { demoCopy } from "@/copy";
 
 // Onboarding (DEMO). Reached from Welcome → "Kom i gang" (and after the inert
 // register form). A short, local multi-step flow that creates NO account and
@@ -133,12 +135,7 @@ export default function Onboarding() {
                   : "Vi ber aldri om nøyaktig adresse."}
               </Text>
             </Pressable>
-            <View className="flex-row items-center gap-2">
-              <DemoBadge />
-              <Text className="flex-1 text-xs text-muted">
-                Demo — ingen reell posisjonstilgang bes om her.
-              </Text>
-            </View>
+            <DemoNote>{demoCopy.locationNotRequested}</DemoNote>
           </StepShell>
         ) : null}
 
@@ -181,12 +178,7 @@ export default function Onboarding() {
                 );
               })}
             </View>
-            <View className="flex-row items-center gap-2">
-              <DemoBadge />
-              <Text className="flex-1 text-xs text-muted">
-                Demo — modus bytter ingen reell funksjon ennå.
-              </Text>
-            </View>
+            <DemoNote>{demoCopy.personaNoEffect}</DemoNote>
           </StepShell>
         ) : null}
 

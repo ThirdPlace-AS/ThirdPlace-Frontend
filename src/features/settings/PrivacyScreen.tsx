@@ -1,9 +1,10 @@
 import { useState } from "react";
-import { ScrollView, Text, View } from "react-native";
+import { ScrollView } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-import { DemoBadge } from "@/components/DemoBadge";
 import { RouteHeader } from "@/components/RouteHeader";
+import { DemoNote } from "@/components/DemoNote";
+import { demoCopy } from "@/copy";
 
 import { SettingsSection, ToggleRow } from "./settingsUi";
 
@@ -23,12 +24,7 @@ export default function PrivacyScreen() {
     <SafeAreaView className="flex-1 bg-background" edges={["top"]}>
       <RouteHeader title="Personvern" />
       <ScrollView contentContainerClassName="gap-5 px-gutter py-4 pb-12">
-        <View className="flex-row items-center gap-2">
-          <DemoBadge />
-          <Text className="flex-1 text-xs text-muted">
-            Demo — ingen reell synlighet eller samtykke lagres eller endres.
-          </Text>
-        </View>
+        <DemoNote>{demoCopy.privacyNotSaved}</DemoNote>
 
         <SettingsSection title="Synlighet">
           <ToggleRow
@@ -78,11 +74,6 @@ export default function PrivacyScreen() {
             onValueChange={setAnalytics}
           />
         </SettingsSection>
-
-        <Text className="px-1 text-[11px] text-muted">
-          {/* BLOCKED_CONTRACT_GAP: visibility rules not yet fixed. */}
-          Demo — valgene her lagres ikke og endrer ikke hvem som ser deg ennå.
-        </Text>
       </ScrollView>
     </SafeAreaView>
   );

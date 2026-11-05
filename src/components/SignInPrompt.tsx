@@ -2,9 +2,10 @@ import { Ionicons } from "@expo/vector-icons";
 import { Text, View } from "react-native";
 
 import { Button } from "@/components/Button";
-import { DemoBadge } from "@/components/DemoBadge";
 import { Sheet } from "@/components/Sheet";
 import { colors } from "@/theme";
+import { DemoNote } from "@/components/DemoNote";
+import { demoCopy } from "@/copy";
 
 // Respectful sign-in prompt shown when a guest tries an account-only action
 // (save / join / follow / chat / create). It is a modal over the current screen,
@@ -33,12 +34,7 @@ export function SignInPrompt({
       <Button label="Logg inn" variant="ink" onPress={onClose} />
       <Button label="Opprett konto" variant="secondary" onPress={onClose} />
 
-      <View className="flex-row items-center gap-2">
-        <DemoBadge />
-        <Text className="flex-1 text-xs text-muted">
-          Demo — innlogging er ikke aktiv ennå.
-        </Text>
-      </View>
+      <DemoNote>{demoCopy.signInInactive}</DemoNote>
     </Sheet>
   );
 }

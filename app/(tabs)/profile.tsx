@@ -25,6 +25,8 @@ import {
 import { coverForPlace, libImage } from "@/fixtures/images";
 import { resetTo } from "@/lib/navigation";
 import { colors } from "@/theme";
+import { DemoNote } from "@/components/DemoNote";
+import { demoCopy } from "@/copy";
 
 function Stat({ value, label }: { value: number; label: string }) {
   return (
@@ -408,12 +410,7 @@ function EditProfileSheet({
         <Input label="Navn" value={name} onChangeText={setName} />
         <Input label="Brukernavn" value={handle} onChangeText={setHandle} />
         <Input label="Bio" value={bio} onChangeText={setBio} multiline />
-        <View className="flex-row items-center gap-2">
-          <DemoBadge />
-          <Text className="flex-1 text-xs text-muted">
-            Demo — endringer lagres ikke.
-          </Text>
-        </View>
+        <DemoNote>{demoCopy.editsNotSaved}</DemoNote>
         <Button label="Lagre" variant="ink" onPress={onClose} />
       </View>
     </Sheet>
@@ -437,12 +434,7 @@ function LogoutSheet({
         <Text className="text-sm text-muted">
           Vil du logge ut og gå tilbake til velkomstskjermen?
         </Text>
-        <View className="flex-row items-center gap-2">
-          <DemoBadge />
-          <Text className="flex-1 text-xs text-muted">
-            Demo — ingen reell økt avsluttes.
-          </Text>
-        </View>
+        <DemoNote>{demoCopy.logoutNoSession}</DemoNote>
         <Button label="Logg ut" variant="ink" onPress={onConfirm} />
         <Button label="Avbryt" variant="secondary" onPress={onClose} />
       </View>

@@ -7,6 +7,8 @@ import { DemoBadge } from "@/components/DemoBadge";
 import { RouteHeader } from "@/components/RouteHeader";
 import { Sheet } from "@/components/Sheet";
 import { colors } from "@/theme";
+import { DemoNote } from "@/components/DemoNote";
+import { demoCopy } from "@/copy";
 
 import { SettingsSection } from "./settingsUi";
 
@@ -20,13 +22,7 @@ export default function PaymentsScreen() {
     <SafeAreaView className="flex-1 bg-background" edges={["top"]}>
       <RouteHeader title="Betaling" />
       <ScrollView contentContainerClassName="gap-5 px-gutter py-4 pb-12">
-        <View className="flex-row items-center gap-2">
-          <DemoBadge />
-          <Text className="flex-1 text-xs text-muted">
-            Demo — kun struktur. Ingen kortdata samles inn og ingen betaling
-            skjer.
-          </Text>
-        </View>
+        <DemoNote>{demoCopy.paymentsStructureOnly}</DemoNote>
 
         <SettingsSection title="Betalingsmetoder">
           <View className="items-center gap-2 px-4 py-8">
@@ -75,10 +71,7 @@ export default function PaymentsScreen() {
         onClose={() => setInfoOpen(false)}
         title="Betalingsmetode"
       >
-        <View className="flex-row items-center gap-2">
-          <DemoBadge />
-          <Text className="flex-1 text-xs text-muted">Kun en demo-skjerm.</Text>
-        </View>
+        <DemoNote>{demoCopy.paymentsDemoScreen}</DemoNote>
         <View className="flex-row items-start gap-3 rounded-2xl bg-surfaceMuted p-3">
           <Ionicons
             name="shield-checkmark-outline"

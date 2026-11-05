@@ -1,11 +1,12 @@
 import { Ionicons } from "@expo/vector-icons";
 import { useState } from "react";
-import { Pressable, Text, TextInput, View } from "react-native";
+import { Pressable, TextInput, View } from "react-native";
 
 import { Button } from "@/components/Button";
-import { DemoBadge } from "@/components/DemoBadge";
 import { Sheet } from "@/components/Sheet";
 import { colors } from "@/theme";
+import { DemoNote } from "@/components/DemoNote";
+import { demoCopy } from "@/copy";
 
 export function WriteReviewSheet({
   placeName,
@@ -56,12 +57,7 @@ function Body({ onClose }: { onClose: () => void }) {
         textAlignVertical="top"
       />
 
-      <View className="flex-row items-center gap-2">
-        <DemoBadge />
-        <Text className="flex-1 text-xs text-muted">
-          Demo — anmeldelsen lagres ikke og sendes ingen steder.
-        </Text>
-      </View>
+      <DemoNote>{demoCopy.reviewNotSent}</DemoNote>
 
       <Button
         label="Send anmeldelse"

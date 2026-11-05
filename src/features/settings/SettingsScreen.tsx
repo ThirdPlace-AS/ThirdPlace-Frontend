@@ -11,6 +11,8 @@ import { SignInPrompt } from "@/components/SignInPrompt";
 import { useGuestMode } from "@/components/map/hooks/useGuestMode";
 import { profile } from "@/fixtures";
 import { resetTo } from "@/lib/navigation";
+import { DemoNote } from "@/components/DemoNote";
+import { demoCopy } from "@/copy";
 
 import { NavRow, SettingsSection, ToggleRow } from "./settingsUi";
 
@@ -36,12 +38,7 @@ export default function SettingsScreen() {
     <SafeAreaView className="flex-1 bg-background" edges={["top"]}>
       <RouteHeader title="Innstillinger" />
       <ScrollView contentContainerClassName="gap-5 px-gutter py-4 pb-12">
-        <View className="flex-row items-center gap-2">
-          <DemoBadge />
-          <Text className="flex-1 text-xs text-muted">
-            Demo — innstillinger lagres ikke og nullstilles ved omstart.
-          </Text>
-        </View>
+        <DemoNote>{demoCopy.settingsNotSaved}</DemoNote>
 
         <SettingsSection title="Konto">
           <NavRow
@@ -169,12 +166,7 @@ export default function SettingsScreen() {
         onClose={() => setLogoutOpen(false)}
         title="Logg ut"
       >
-        <View className="flex-row items-center gap-2">
-          <DemoBadge />
-          <Text className="flex-1 text-xs text-muted">
-            Demo — ingen reell økt avsluttes.
-          </Text>
-        </View>
+        <DemoNote>{demoCopy.logoutNoSession}</DemoNote>
         <Text className="text-sm text-ink">Vil du logge ut av ThirdPlace?</Text>
         <View className="mt-1 gap-2">
           <Button

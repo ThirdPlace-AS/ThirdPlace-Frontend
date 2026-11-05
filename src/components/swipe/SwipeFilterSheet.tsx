@@ -19,10 +19,11 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { Button } from "@/components/Button";
 import { CheckboxRow } from "@/components/CheckboxRow";
-import { DemoBadge } from "@/components/DemoBadge";
 import { TypeChip } from "@/components/map/TypeChip";
 import { experiences, TIME_WINDOWS } from "@/fixtures";
 import { colors, motion } from "@/theme";
+import { DemoNote } from "@/components/DemoNote";
+import { demoCopy } from "@/copy";
 
 import { tagIcon } from "./SwipeCard";
 import {
@@ -184,12 +185,7 @@ function FilterBody({
         keyboardShouldPersistTaps="handled"
       >
         {/* Honesty marker — local-only filtering, no server request. */}
-        <View className="flex-row items-center gap-2">
-          <DemoBadge />
-          <Text className="flex-1 text-xs text-muted">
-            Demo — filtrerer kun forslagene lokalt, ingen serverforespørsel.
-          </Text>
-        </View>
+        <DemoNote>{demoCopy.filterLocalOnly}</DemoNote>
 
         {/* Interesser — real local filter on the fixture's tags. */}
         <Section title="Interesser">

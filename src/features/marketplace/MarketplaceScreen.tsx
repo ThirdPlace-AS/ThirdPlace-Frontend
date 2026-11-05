@@ -12,6 +12,8 @@ import { useGuestMode } from "@/components/map/hooks/useGuestMode";
 import { listingById, listings, type MockListing } from "@/fixtures";
 import { libImage } from "@/fixtures/images";
 import { colors } from "@/theme";
+import { DemoNote } from "@/components/DemoNote";
+import { demoCopy } from "@/copy";
 
 // Marketplace (DEMO). Reached from Profile → Oppdag → Markedsplass. A grid of
 // neighbour listings opening a detail shell. NO checkout, no cart, no payment —
@@ -165,15 +167,10 @@ function ListingSheet({
                   contacted ? "text-muted" : "text-onEmber"
                 }`}
               >
-                {contacted ? "Demo — ingen melding sendt" : "Kontakt selger"}
+                {contacted ? demoCopy.listingContacted : "Kontakt selger"}
               </Text>
             </Pressable>
-            <View className="flex-row items-center gap-2">
-              <DemoBadge />
-              <Text className="flex-1 text-xs text-muted">
-                Demo — ingen melding sendes og ingen betaling skjer.
-              </Text>
-            </View>
+            <DemoNote>{demoCopy.listingContactNoop}</DemoNote>
           </View>
         </View>
       ) : null}
