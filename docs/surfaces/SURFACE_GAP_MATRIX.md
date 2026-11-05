@@ -44,14 +44,33 @@ Directory routes with no PDF page (`experiences`, `places`, `groups`,
 | Privacy       | `app/privacy.tsx`                  | p19, p21 | demo-complete                  | blocked/export/delete DemoNote                 | 0116       |
 | Payments      | `app/payments.tsx`                 | p20      | demo-complete (structure-only) | no input fields, no card data, no transactions | 0096, 0099 |
 
+## Phase 3 routes (PDF screens, 2026-11-05)
+
+| Surface                      | Route                            | PDF       | Status                         | Markers                          | Ledger     |
+| ---------------------------- | -------------------------------- | --------- | ------------------------------ | -------------------------------- | ---------- |
+| E-post-kode / identitet      | `app/(auth)/verify-code.tsx`     | p2        | demo-complete                  | any 6 digits pass; DemoNote      | 0122       |
+| Lag nytt passord             | `app/(auth)/reset-password.tsx`  | p1        | demo-complete                  | nothing stored                   | 0122       |
+| Totrinnsbekreftelse          | `app/two-factor.tsx`             | p2        | demo-complete                  | nothing enabled                  | 0122       |
+| Bedriftsonboarding           | `app/business-onboarding.tsx`    | p3–p5     | demo-complete                  | 18+ gate; nothing created        | 0123, 0133 |
+| Gruppe-sveip                 | `app/group-swipe.tsx`            | p8–p9     | demo-complete                  | simulated friends/votes, said so | 0124       |
+| Systemskjermer               | `app/state/[kind].tsx`           | p26–p27   | demo-complete (deep link)      | review-only note                 | 0127       |
+| Inviter venner / Belønninger | `app/invite.tsx`                 | p22       | demo-complete                  | rewards undefined                | 0128, 0133 |
+| Aldersverifisering           | `app/age-verification.tsx`       | p22       | demo-complete                  | provider not connected           | 0128       |
+| Bedriftsarbeidsflate         | `app/workspace/*`                | p13–p15   | demo-complete                  | EKSEMPELTALL; nothing billed     | 0129, 0133 |
+| Kontobytte                   | `app/account-switch.tsx`         | p27       | demo-complete                  | navigation only                  | 0129, 0133 |
+| Samarbeid                    | `app/collab/*`                   | p16–p18   | partial                        | nothing sent/signed              | 0130       |
+| Utbetalinger                 | `app/payouts.tsx`                | p21       | demo-complete (structure-only) | no account data accepted         | 0132, 0133 |
+| Innleveringer                | `app/submissions.tsx`            | p12       | demo-complete                  | example entries                  | 0132       |
+| Lagret / Mine planer         | `app/saved.tsx`, `app/plans.tsx` | p14 / REQ | demo-complete                  | clears on reload                 | 0119       |
+
 ## Entry
 
-| Surface    | Route                     | Status                                  | Markers                                       | Blocked on                           | Verified        | Ledger |
-| ---------- | ------------------------- | --------------------------------------- | --------------------------------------------- | ------------------------------------ | --------------- | ------ |
-| Welcome    | `app/(auth)/welcome.tsx`  | demo-complete                           | guest entry sets demo guest mode              | auth                                 | emulator        | 0097   |
-| Login      | `app/(auth)/login.tsx`    | demo-complete                           | DemoNote "ingen reell innlogging"             | auth, session                        | emulator        | 0097   |
-| Register   | `app/(auth)/register.tsx` | demo-complete                           | DemoNote "ingen konto opprettes"              | account creation                     | emulator        | 0097   |
-| Onboarding | `app/onboarding.tsx`      | demo-complete (business branch pending) | 18+ gate; DemoNote on role, permissions, feed | interests taxonomy, consent, persona | emulator, tests | 0114   |
+| Surface    | Route                                               | Status        | Markers                              | Blocked on                           | Verified        | Ledger           |
+| ---------- | --------------------------------------------------- | ------------- | ------------------------------------ | ------------------------------------ | --------------- | ---------------- |
+| Welcome    | `app/(auth)/welcome.tsx`                            | demo-complete | guest entry sets demo guest mode     | auth                                 | emulator        | 0097             |
+| Login      | `app/(auth)/login.tsx`                              | demo-complete | DemoNote "ingen reell innlogging"    | auth, session                        | emulator        | 0097             |
+| Register   | `app/(auth)/register.tsx`                           | demo-complete | DemoNote "ingen konto opprettes"     | account creation                     | emulator        | 0097             |
+| Onboarding | `app/onboarding.tsx`, `app/business-onboarding.tsx` | demo-complete | 18+ gate in both branches; DemoNotes | interests taxonomy, consent, persona | emulator, tests | 0114, 0123, 0133 |
 
 ## Cross-cutting
 
