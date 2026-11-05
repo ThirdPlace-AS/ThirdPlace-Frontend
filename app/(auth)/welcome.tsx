@@ -24,7 +24,7 @@ export default function Welcome() {
           <Button
             label="Kom i gang"
             variant="ember"
-            onPress={() => router.push("/onboarding")}
+            onPress={() => router.push("/register")}
           />
           <Button
             label="Fortsett som gjest"

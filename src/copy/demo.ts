@@ -5,8 +5,6 @@
 // BLOCKED_CONTRACT_GAP: every line here exists because no backend is wired.
 export const demoCopy = {
   // Shown with a DEMO badge (DemoNote)
-  locationNotRequested: "Ingen reell posisjonstilgang bes om her.",
-  personaNoEffect: "Modus bytter ingen reell funksjon ennå.",
   editsNotSaved: "Endringer lagres ikke.",
   logoutNoSession: "Ingen reell økt avsluttes.",
   signInInactive: "Innlogging er ikke aktiv ennå.",
