@@ -231,7 +231,7 @@ export default function MapScreen() {
                 numberOfLines={1}
                 className={`flex-1 text-base ${filters.query ? "text-ink" : "text-muted"}`}
               >
-                {filters.query || "Søk steder og opplevelser"}
+                {filters.query || "Søk steder, opplevelser …"}
               </Text>
             </Pressable>
             <View className="w-px h-6 bg-line" />

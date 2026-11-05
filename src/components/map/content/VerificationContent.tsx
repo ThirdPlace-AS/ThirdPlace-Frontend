@@ -1,102 +1,104 @@
 import { Ionicons } from "@expo/vector-icons";
-import { useState } from "react";
 import { Text, View } from "react-native";
 
-import { Button } from "@/components/Button";
-import { Card } from "@/components/Card";
-import { GuestLock } from "@/components/GuestLock";
+import { DemoNote } from "@/components/DemoNote";
 import { colors } from "@/theme";
 
-type VStatus = "unverified" | "pending" | "verified";
+// Verifisering (DEMO), per the design (PDF p7): a three-step timeline —
+// Innsendt → Under vurdering → Godkjent — and the submitted documents with
+// their own status. Shown in a static "under vurdering" example state; there is
+// no claim/verification backend and nothing can be submitted or approved here
+// (BLOCKED_CONTRACT_GAP). The earlier "Simuler godkjenning" / "Nullstill"
+// controls were invented and are removed.
+type StepState = "done" | "current" | "todo";
 
-const meta: Record<
-  VStatus,
-  { label: string; icon: keyof typeof Ionicons.glyphMap; className: string }
-> = {
-  unverified: {
-    label: "Uverifisert",
-    icon: "close-circle",
-    className: "bg-surfaceMuted",
-  },
-  pending: {
-    label: "Venter på gjennomgang",
-    icon: "time",
-    className: "bg-warning",
-  },
-  verified: {
-    label: "Verifisert",
-    icon: "checkmark-circle",
-    className: "bg-success",
-  },
-};
+const STEPS: { label: string; meta?: string; state: StepState }[] = [
+  { label: "Innsendt", meta: "12. juli 14:32", state: "done" },
+  { label: "Under vurdering", state: "current" },
+  { label: "Godkjent", state: "todo" },
+];
 
-const steps = [
-  "Last opp organisasjonsnummer",
-  "Bekreft eierskap til stedet",
-  "Gjennomgang av ThirdPlace",
+const DOCS: { name: string; status: "Godkjent" | "Vurderes" }[] = [
+  { name: "Firmaattest.pdf", status: "Godkjent" },
+  { name: "Skjønnvilkår.pdf", status: "Vurderes" },
 ];
 
 export function VerificationContent() {
-  const [status, setStatus] = useState<VStatus>("unverified");
-  const m = meta[status];
-
   return (
-    <View className="gap-4">
-      <View className="flex-row items-center gap-3 rounded-lg border border-line bg-surface p-4">
-        <View
-          className={`h-12 w-12 items-center justify-center rounded-full ${m.className}`}
-        >
-          <Ionicons
-            name={m.icon}
-            size={24}
-            color={status === "unverified" ? colors.muted : colors.onEmber}
-          />
-        </View>
-        <View className="flex-1">
-          <Text className="text-xs uppercase tracking-wide text-muted">
-            Status
-          </Text>
-          <Text className="text-base font-semibold text-ink">{m.label}</Text>
-        </View>
+    <View className="gap-5">
+      <View className="gap-0">
+        {STEPS.map((s, i) => (
+          <View key={s.label} className="flex-row gap-3">
+            <View className="items-center">
+              <View
+                className={`h-6 w-6 rounded-full ${
+                  s.state === "done"
+                    ? "bg-success"
+                    : s.state === "current"
+                      ? "bg-ink"
+                      : "bg-line"
+                }`}
+              />
+              {i < STEPS.length - 1 ? (
+                <View
+                  className="w-0.5 flex-1 bg-line"
+                  style={{ minHeight: 28 }}
+                />
+              ) : null}
+            </View>
+            <View className="flex-1 pb-4">
+              <Text
+                className={`text-base ${
+                  s.state === "todo" ? "text-muted" : "font-semibold text-ink"
+                }`}
+              >
+                {s.label}
+              </Text>
+              {s.meta ? (
+                <Text className="text-xs text-muted">{s.meta}</Text>
+              ) : null}
+            </View>
+          </View>
+        ))}
       </View>
 
-      <Card>
-        <View className="gap-2">
-          <Text className="text-base font-semibold text-ink">
-            Slik verifiserer du
-          </Text>
-          {steps.map((s, i) => (
-            <View key={s} className="flex-row items-center gap-2">
-              <View className="h-6 w-6 items-center justify-center rounded-full bg-surfaceMuted">
-                <Text className="text-xs font-semibold text-ink">{i + 1}</Text>
-              </View>
-              <Text className="flex-1 text-sm text-ink">{s}</Text>
+      <View className="gap-2">
+        <Text className="text-sm font-semibold text-ink">Dokumenter</Text>
+        {DOCS.map((d) => (
+          <View
+            key={d.name}
+            className="flex-row items-center gap-3 rounded-xl border border-line bg-surface p-3"
+          >
+            <Ionicons name="document-outline" size={18} color={colors.ink} />
+            <Text className="flex-1 text-sm text-ink">{d.name}</Text>
+            <View
+              className={`rounded-full px-2.5 py-1 ${
+                d.status === "Godkjent" ? "bg-success/15" : "bg-warning/20"
+              }`}
+            >
+              <Text
+                className={`text-xs font-semibold ${
+                  d.status === "Godkjent" ? "text-success" : "text-ink"
+                }`}
+              >
+                {d.status}
+              </Text>
             </View>
-          ))}
-        </View>
-      </Card>
+          </View>
+        ))}
+      </View>
 
-      <GuestLock message="Logg inn som bedrift for å starte verifisering." />
+      <View className="rounded-xl bg-surfaceMuted p-3">
+        <Text className="text-sm text-ink">
+          Vi sier ifra med push-varsel så snart vurderingen er klar. Du trenger
+          ikke foreta deg noe.
+        </Text>
+      </View>
 
-      {status === "unverified" ? (
-        <Button
-          label="Start verifisering"
-          variant="ember"
-          onPress={() => setStatus("pending")}
-        />
-      ) : status === "pending" ? (
-        <Button
-          label="Simuler godkjenning"
-          variant="ink"
-          onPress={() => setStatus("verified")}
-        />
-      ) : (
-        <Button
-          label="Nullstill"
-          variant="secondary"
-          onPress={() => setStatus("unverified")}
-        />
-      )}
+      <DemoNote>
+        Eksempelstatus — ingen dokumenter er sendt inn, og ingen vurdering
+        pågår.
+      </DemoNote>
     </View>
   );
 }
