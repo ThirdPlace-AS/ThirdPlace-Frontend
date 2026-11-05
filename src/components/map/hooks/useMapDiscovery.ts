@@ -7,14 +7,15 @@ import type { DiscoveryMode } from "../types/mapPresentation";
 
 // Owns the active discovery mode and resolves it (over the already-filtered
 // places + saved ids) into the items the map/list render. Default mode is
-// "explore" (the only fully non-personalized, non-contract mix).
+// "forYou" per the design (PDF p5). It is a non-personalized DEMO shell
+// (DEMO_MODES), so the map marks it as such — nothing is personalized.
 export function useMapDiscovery({
   places,
   query,
   savedIds,
   time = null,
   hasSpots = false,
-  initial = "explore",
+  initial = "forYou",
 }: {
   places: MockPlace[];
   query: string;

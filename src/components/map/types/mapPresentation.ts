@@ -4,21 +4,22 @@
 
 import type { SheetKind } from "../sheetTypes";
 
-// The six documented discovery modes.
+// The six documented discovery modes, in the PDF p5 chip order (For deg ·
+// Trending · Live · Utforsk · Lagret); Venner follows off-screen.
 export const DISCOVERY_MODES = [
   "forYou",
   "trending",
   "live",
   "explore",
-  "friends",
   "saved",
+  "friends",
 ] as const;
 export type DiscoveryMode = (typeof DISCOVERY_MODES)[number];
 
 // Norwegian labels for the mode selector.
 export const DISCOVERY_MODE_LABELS: Record<DiscoveryMode, string> = {
   forYou: "For deg",
-  trending: "Populært",
+  trending: "Trending",
   live: "Live",
   explore: "Utforsk",
   friends: "Venner",
