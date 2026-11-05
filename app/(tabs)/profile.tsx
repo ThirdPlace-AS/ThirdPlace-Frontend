@@ -41,15 +41,27 @@ export default function ProfileScreen() {
       <ScrollView contentContainerClassName="gap-5 p-gutter pb-10">
         <View className="flex-row items-center justify-between">
           <Text className="text-2xl font-bold text-ink">Profil</Text>
-          <Pressable
-            accessibilityRole="button"
-            accessibilityLabel="Innstillinger"
-            hitSlop={8}
-            onPress={() => router.push("/settings")}
-            className="h-10 w-10 items-center justify-center rounded-full active:bg-surfaceMuted"
-          >
-            <Ionicons name="settings-outline" size={22} color={colors.ink} />
-          </Pressable>
+          <View className="flex-row items-center gap-1">
+            <HeaderIcon
+              icon="calendar-outline"
+              label="Mine planer"
+              onPress={() => router.push("/plans")}
+            />
+            <HeaderIcon
+              icon="bookmark-outline"
+              label="Lagret"
+              onPress={() => router.push("/saved")}
+            />
+            <Pressable
+              accessibilityRole="button"
+              accessibilityLabel="Innstillinger"
+              hitSlop={8}
+              onPress={() => router.push("/settings")}
+              className="h-10 w-10 items-center justify-center rounded-full active:bg-surfaceMuted"
+            >
+              <Ionicons name="settings-outline" size={22} color={colors.ink} />
+            </Pressable>
+          </View>
         </View>
 
         {isGuest ? (
@@ -121,6 +133,28 @@ export default function ProfileScreen() {
         action="se profilen din"
       />
     </SafeAreaView>
+  );
+}
+
+function HeaderIcon({
+  icon,
+  label,
+  onPress,
+}: {
+  icon: keyof typeof Ionicons.glyphMap;
+  label: string;
+  onPress: () => void;
+}) {
+  return (
+    <Pressable
+      accessibilityRole="button"
+      accessibilityLabel={label}
+      hitSlop={6}
+      onPress={onPress}
+      className="h-10 w-10 items-center justify-center rounded-full active:bg-surfaceMuted"
+    >
+      <Ionicons name={icon} size={22} color={colors.ink} />
+    </Pressable>
   );
 }
 

@@ -1340,6 +1340,14 @@ export type MockProfileReview = {
   when: string; // MOCK human label
 };
 
+// One row in "Mine planer" (REQUIRED_V1). MOCK — no attendance lifecycle.
+export type MockPlanState = "upcoming" | "past" | "cancelled" | "waitlisted";
+export type MockPlan = {
+  experienceId: string; // references `experiences`
+  state: MockPlanState;
+  note: string; // MOCK line, e.g. "Du er påmeldt"
+};
+
 export const PERSONAS: {
   key: MockPersonaKey;
   label: string;
@@ -1399,6 +1407,13 @@ export const profile = {
     { placeId: "p3", when: "Forrige måned" },
     { placeId: "p4", when: "I fjor" },
   ] as MockVisited[],
+  plans: [
+    { experienceId: "e1", state: "upcoming", note: "Du er påmeldt" },
+    { experienceId: "e5", state: "upcoming", note: "Du er påmeldt" },
+    { experienceId: "e2", state: "waitlisted", note: "Nr. 4 på ventelisten" },
+    { experienceId: "e3", state: "past", note: "Du deltok" },
+    { experienceId: "e4", state: "cancelled", note: "Avlyst av verten" },
+  ] as MockPlan[],
   reviews: [
     {
       placeId: "p1",
