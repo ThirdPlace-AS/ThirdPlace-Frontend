@@ -11,6 +11,7 @@ import { SafeAreaProvider } from "react-native-safe-area-context";
 import { ToastHost } from "@/components/Toast";
 import { queryClient } from "@/services/api/queryClient";
 import { useThemeColors } from "@/theme";
+import { fontAssets } from "@/theme/fonts";
 import { ThemeRoot } from "@/theme/ThemeRoot";
 
 export default function RootLayout() {
@@ -20,7 +21,12 @@ export default function RootLayout() {
   // flashes empty glyphs; the holder uses the theme background to avoid a flash.
   // If the font fails, still render — a blank-forever screen is worse than
   // briefly missing glyphs.
-  const [fontsLoaded, fontError] = useFonts(Ionicons.font);
+  const [fontsLoaded, fontError] = useFonts({
+    ...Ionicons.font,
+    // Brand typeface (src/theme/fonts.ts) — same gate, so text never
+    // flashes in the fallback font.
+    ...fontAssets,
+  });
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>

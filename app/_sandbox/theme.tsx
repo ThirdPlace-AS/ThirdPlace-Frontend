@@ -10,6 +10,39 @@ import {
   useSchemePreference,
   type SchemePreference,
 } from "@/theme";
+import { Text as UIText } from "@/components/ui";
+import { ACTIVE_FONT_SET, FONT_LABELS, type FontSet } from "@/theme/fonts";
+
+const SAMPLE_BODY =
+  "Oppdag nabolagets lune møteplasser. Finn din neste third place — der byen faktisk skjer.";
+
+function SpecimenLines({ fontSet }: { fontSet: FontSet }) {
+  return (
+    <>
+      <UIText variant="display" fontSet={fontSet}>
+        Velkommen hjem
+      </UIText>
+      <UIText variant="h1" fontSet={fontSet}>
+        Jazzkveld på Blå
+      </UIText>
+      <UIText variant="title" fontSet={fontSet}>
+        Grünerløkka Bokcafé
+      </UIText>
+      <UIText variant="body" fontSet={fontSet}>
+        {SAMPLE_BODY}
+      </UIText>
+      <UIText variant="label" weight="semibold" fontSet={fontSet}>
+        Bli med · Lagre · 0123456789
+      </UIText>
+      <UIText variant="caption" tone="muted" fontSet={fontSet}>
+        Lørdag 1. august · 20:00 · 1,2 km
+      </UIText>
+      <UIText variant="micro" tone="muted" fontSet={fontSet}>
+        Aktive samtaler · ÆØÅ æøå
+      </UIText>
+    </>
+  );
+}
 
 // Design-system specimen (docs/design/DESIGN_SYSTEM.md). Dev-only preview of
 // the semantic colours in both schemes, radius, elevation and the type scale —
@@ -122,10 +155,41 @@ export default function ThemeSandbox() {
           </View>
         </Section>
 
-        <Section title="Typografi">
+        <Section title="Skrift — velg familie">
+          {(["dmSans", "jakarta"] as const).map((set) => (
+            <View
+              key={set}
+              className="gap-xs rounded-lg border border-line bg-surface p-gutter"
+            >
+              <UIText variant="micro" tone="muted">
+                {FONT_LABELS[set]}
+                {set === ACTIVE_FONT_SET ? " · aktiv" : ""}
+              </UIText>
+              <SpecimenLines fontSet={set} />
+            </View>
+          ))}
+          <View className="gap-xs rounded-lg border border-line bg-surface p-gutter">
+            <Text className="text-micro font-medium uppercase text-muted">
+              Systemfont (dagens app)
+            </Text>
+            <Text className="text-h1 font-bold text-ink">Jazzkveld på Blå</Text>
+            <Text className="text-body text-ink">{SAMPLE_BODY}</Text>
+            <Text className="text-label font-semibold text-ink">
+              Bli med · 0123456789
+            </Text>
+          </View>
+        </Section>
+
+        <Section title="Typografi (Text-komponent)">
           {TYPE.map((t) => (
-            <Text key={t} className={`text-ink ${TYPE_CLASS[t]}`}>
+            <UIText key={t} variant={t}>
               {t} — Kaffe på Grünerløkka
+            </UIText>
+          ))}
+          {/* Legacy class-based scale, for comparison until screens migrate. */}
+          {TYPE.map((t) => (
+            <Text key={`legacy-${t}`} className={`text-ink ${TYPE_CLASS[t]}`}>
+              {t} (system)
             </Text>
           ))}
         </Section>
