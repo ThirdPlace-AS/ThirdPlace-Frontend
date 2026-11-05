@@ -6,16 +6,16 @@ import {
   DEFAULT_SWIPE_FILTERS,
 } from "@/components/swipe/swipeFilters";
 
-// The modes are audience shells (For deg / Gruppeaktivitet / Reiserute), NOT
-// filters: all three show the same (non-cancelled) deck — group/itinerary are
-// non-personalized demo shells, no invented matching. Real local filtering is the
-// facets (tags / when / hasSpots), exercised below.
+// The tabs (For deg / Opplevelser / Steder, PDF p7) do NOT narrow the
+// experience list — "For deg" is a non-personalized demo shell over the same
+// deck (no invented ranking). Real local filtering is the facets
+// (tags / when / hasSpots), exercised below.
 describe("applySwipeFilters — modes are demo shells, not filters", () => {
   const nonCancelled = experiences.filter(
     (e) => e.status !== "cancelled",
   ).length;
 
-  it.each(["forYou", "group", "itinerary"] as const)(
+  it.each(["forYou", "experiences"] as const)(
     '"%s" returns the whole (non-cancelled) deck',
     (mode) => {
       const r = applySwipeFilters(experiences, {

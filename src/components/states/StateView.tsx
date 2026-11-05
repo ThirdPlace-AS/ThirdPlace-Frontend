@@ -13,6 +13,8 @@ export function StateView({
   message,
   actionLabel,
   onAction,
+  secondaryLabel,
+  onSecondary,
   tone = "muted",
 }: {
   icon: IconName;
@@ -20,6 +22,10 @@ export function StateView({
   message?: string;
   actionLabel?: string;
   onAction?: () => void;
+  // Optional second action (PDF p8 empty deck: "Endre filtre" + "Utforsk
+  // kartet"). With two actions the primary renders ink, the second outlined.
+  secondaryLabel?: string;
+  onSecondary?: () => void;
   tone?: "muted" | "danger";
 }) {
   const iconColor = tone === "danger" ? colors.danger : colors.muted;
@@ -34,7 +40,16 @@ export function StateView({
           {message}
         </Text>
       ) : null}
-      {actionLabel ? (
+      {actionLabel && secondaryLabel ? (
+        <View className="mt-2 w-full max-w-xs gap-3">
+          <Button label={actionLabel} variant="ink" onPress={onAction} />
+          <Button
+            label={secondaryLabel}
+            variant="secondary"
+            onPress={onSecondary}
+          />
+        </View>
+      ) : actionLabel ? (
         <View className="mt-2 w-48">
           <Button label={actionLabel} variant="secondary" onPress={onAction} />
         </View>

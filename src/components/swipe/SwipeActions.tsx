@@ -28,8 +28,10 @@ const INK = "#202020"; // inverted glyph on a light fill
 const DIM = "rgba(255,255,255,0.4)"; // rewind glyph when there's nothing to undo
 const SAVE = "rgba(255,255,255,0.92)"; // neutral light fill when save commits
 const LIKE = "#D80000"; // ember (brand) — like / join: resting heart + fill
-const ACCENT_BLUE = "#4F8CFF"; // save language — resting bookmark + paper-plane
-const UNDO_ACCENT = "#FFD166"; // rewind flashes amber on press
+// PDF p7: every action glyph rests white except the ember heart — no
+// off-palette accents.
+const ACCENT_BLUE = "#FFFFFF"; // resting bookmark + paper-plane
+const UNDO_ACCENT = LIKE; // rewind / share flash ember on press
 
 // Per-button sizing matched to the reference: X + heart large, rewind/save/send
 // smaller, the glyphs filling a good share of the disc.

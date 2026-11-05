@@ -5,17 +5,17 @@ import { Pressable, ScrollView, Text, View } from "react-native";
 // row of mode text-tabs (selected = dark pill, the rest plain text), and a
 // notifications bell on the right.
 //
-// The modes are audience shells (Master §7 solo vs group swipe). "For deg" is the
-// solo deck; "Gruppeaktivitet" and "Reiserute" are NON-PERSONALIZED demo shells
-// (DEMO_MODES rule) — same deck + a demo note, no invented ranking or group
-// matching (BLOCKED_CONTRACT_GAP). The real local filtering (interests / Når /
-// availability) lives in the Filtre sheet, not here.
-export type SwipeMode = "forYou" | "group" | "itinerary";
+// The tabs follow the design (PDF p7): For deg · Opplevelser · Steder. "For deg"
+// is a NON-PERSONALIZED demo shell (DEMO_MODES rule — no invented ranking);
+// "Opplevelser" is the plain experience deck; "Steder" is the place deck (not
+// built yet — honest empty state). Group swipe is its own flow ("Start
+// gruppe-sveip", PDF p8), not a tab. Local filtering lives in the Filtre sheet.
+export type SwipeMode = "forYou" | "experiences" | "places";
 
 export const SWIPE_MODES: { key: SwipeMode; label: string }[] = [
   { key: "forYou", label: "For deg" },
-  { key: "group", label: "Gruppeaktivitet" },
-  { key: "itinerary", label: "Reiserute" },
+  { key: "experiences", label: "Opplevelser" },
+  { key: "places", label: "Steder" },
 ];
 
 export function SwipeFilterBar({
@@ -25,6 +25,7 @@ export function SwipeFilterBar({
   filterActive,
   onOpenNotifications,
   unreadCount,
+  onLight = false,
 }: {
   mode: SwipeMode;
   onSelectMode: (m: SwipeMode) => void;
@@ -32,7 +33,11 @@ export function SwipeFilterBar({
   filterActive: boolean;
   onOpenNotifications: () => void;
   unreadCount: number;
+  // True when the bar sits over a light screen (empty / Steder states) rather
+  // than a photo — glyphs and text switch to ink.
+  onLight?: boolean;
 }) {
+  const glyph = onLight ? "#202020" : "#FFFFFF";
   return (
     <View className="flex-row items-center gap-2 px-gutter">
       <Pressable
@@ -42,7 +47,7 @@ export function SwipeFilterBar({
         hitSlop={8}
         className="h-10 w-10 items-center justify-center"
       >
-        <Ionicons name="options-outline" size={24} color="#FFFFFF" />
+        <Ionicons name="options-outline" size={24} color={glyph} />
         {filterActive ? (
           <View className="absolute right-1.5 top-1.5 h-2 w-2 rounded-full bg-ember" />
         ) : null}
@@ -63,13 +68,21 @@ export function SwipeFilterBar({
               accessibilityState={{ selected: active }}
               onPress={() => onSelectMode(m.key)}
               style={
-                active ? { backgroundColor: "rgba(0,0,0,0.65)" } : undefined
+                active
+                  ? {
+                      backgroundColor: onLight ? "#202020" : "rgba(0,0,0,0.65)",
+                    }
+                  : undefined
               }
               className={active ? "rounded-full px-4 py-2" : "px-3 py-2"}
             >
               <Text
                 className={`text-sm ${
-                  active ? "font-bold text-white" : "font-medium text-white/70"
+                  active
+                    ? "font-bold text-white"
+                    : onLight
+                      ? "font-medium text-muted"
+                      : "font-medium text-white/70"
                 }`}
               >
                 {m.label}
@@ -85,10 +98,12 @@ export function SwipeFilterBar({
         accessibilityRole="button"
         accessibilityLabel="Varsler"
         onPress={onOpenNotifications}
-        style={{ backgroundColor: "rgba(0,0,0,0.35)" }}
+        style={{
+          backgroundColor: onLight ? "transparent" : "rgba(0,0,0,0.35)",
+        }}
         className="h-10 w-10 items-center justify-center rounded-full"
       >
-        <Ionicons name="notifications-outline" size={20} color="#FFFFFF" />
+        <Ionicons name="notifications-outline" size={20} color={glyph} />
         {unreadCount > 0 ? (
           <View className="absolute -right-0.5 -top-0.5 h-4 w-4 items-center justify-center rounded-full bg-ember">
             <Text className="text-[9px] font-bold text-onEmber">

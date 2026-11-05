@@ -1,3 +1,4 @@
+import { router } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import { Asset } from "expo-asset";
 import { StatusBar } from "expo-status-bar";
@@ -67,10 +68,11 @@ export function SwipeDeck() {
   const { width: screenW, height: screenH } = useWindowDimensions();
 
   // ── Audience mode tabs ──
-  // "For deg" is the solo deck; "Gruppeaktivitet" / "Reiserute" are
-  // non-personalized demo shells (DEMO_MODES rule) — the same deck plus a demo
-  // note, no invented ranking or group matching (BLOCKED_CONTRACT_GAP). The real
-  // local filtering (tags/when/availability) lives in the Filtre sheet.
+  // PDF p7: For deg · Opplevelser · Steder. "For deg" is a non-personalized
+  // demo shell (DEMO_MODES rule) over the experience deck — marked with a demo
+  // note, no invented ranking (BLOCKED_CONTRACT_GAP). "Steder" (place cards) is
+  // not built yet and shows an honest empty state. Local filtering
+  // (tags/when/availability) lives in the Filtre sheet.
   const [filters, setFilters] = useState<SwipeFilters>(DEFAULT_SWIPE_FILTERS);
   const mode = filters.mode;
   const setMode = (m: SwipeMode) => setFilters((f) => ({ ...f, mode: m }));
@@ -280,20 +282,33 @@ export function SwipeDeck() {
 
   return (
     <View className="flex-1 bg-ink">
-      {deck.done ? (
+      {mode === "places" ? (
         <View
-          className="flex-1 justify-center"
+          className="flex-1 justify-center bg-background"
+          style={{ paddingTop: insets.top }}
+        >
+          <EmptyState
+            icon="storefront-outline"
+            title="Steder i sveip kommer"
+            message="Stedskort er ikke klare i demoen ennå. Utforsk steder på kartet i mellomtiden."
+            actionLabel="Utforsk kartet"
+            onAction={() => router.navigate("/map")}
+          />
+        </View>
+      ) : deck.done ? (
+        // PDF p8 "Du har sett alt for nå" — light screen, two actions.
+        <View
+          className="flex-1 justify-center bg-background"
           style={{ paddingTop: insets.top }}
         >
           <EmptyState
             icon="albums-outline"
-            title="Tomt for nå"
-            message="Ingen treff for dette filteret. Juster modus/filter eller nullstill."
-            actionLabel="Nullstill"
-            onAction={() => {
-              setFilters(DEFAULT_SWIPE_FILTERS);
-              deck.restart();
-            }}
+            title="Du har sett alt for nå"
+            message="Nye anbefalinger dukker opp gjennom dagen. Prøv andre filtre, eller utforsk kartet i mellomtiden."
+            actionLabel="Endre filtre"
+            onAction={() => setFiltersOpen(true)}
+            secondaryLabel="Utforsk kartet"
+            onSecondary={() => router.navigate("/map")}
           />
         </View>
       ) : (
@@ -392,12 +407,12 @@ export function SwipeDeck() {
           }
           onOpenNotifications={() => setNotifOpen(true)}
           unreadCount={unreadNotifs}
+          onLight={mode === "places" || deck.done}
         />
 
-        {/* Honest demo note for the non-personalized audience shells — the
-            Gruppeaktivitet / Reiserute modes show the same deck, no real
-            matching yet. */}
-        {mode !== "forYou" ? (
+        {/* Honest demo note: "For deg" is not personalized yet — it shows the
+            same deck as "Opplevelser". */}
+        {mode === "forYou" ? (
           <View className="mx-gutter mt-2 flex-row items-center gap-2 self-start rounded-full bg-black/55 px-3 py-1.5">
             <DemoBadge />
             <Text className="text-xs font-medium text-white/80">
@@ -698,7 +713,7 @@ function Stamps({
         <Ionicons
           name="bookmark"
           size={STAMP_SIZE - 20}
-          color="#4F8CFF"
+          color="#FFFFFF"
           style={stampShadow}
         />
       </Animated.View>

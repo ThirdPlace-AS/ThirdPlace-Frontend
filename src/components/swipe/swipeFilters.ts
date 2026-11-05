@@ -5,10 +5,10 @@ import type { SwipeMode } from "./SwipeFilterBar";
 // Pure swipe-deck filter model — no React/Reanimated, so it is unit-testable in
 // isolation (mirrors deckLogic.ts). The UI (SwipeFilterSheet) re-exports these.
 // Every facet maps to a real fixture field (tags / when / hasSpots). The `mode`
-// is an audience shell only — "For deg" / "Gruppeaktivitet" / "Reiserute" all show
-// the same deck; group/itinerary are non-personalized demo shells, so mode does
-// NOT narrow the list (no invented ranking/matching). DEMO only — no scoring or
-// backend (BLOCKED_CONTRACT_GAP).
+// does NOT narrow the experience list: "For deg" is a non-personalized demo
+// shell over the same deck as "Opplevelser" (no invented ranking), and "Steder"
+// swaps to a place deck in the UI. DEMO only — no scoring or backend
+// (BLOCKED_CONTRACT_GAP).
 
 export type SwipeFilters = {
   mode: SwipeMode;
