@@ -5,6 +5,7 @@ import { Pressable, ScrollView, Text, TextInput, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { Button } from "@/components/Button";
+import { IconButton } from "@/components/ui";
 import { Chip } from "@/components/Chip";
 import { DemoNote } from "@/components/DemoNote";
 import { Input } from "@/components/Input";
@@ -76,19 +77,11 @@ export default function ChatScreen() {
       >
         <View className="flex-row items-center justify-between pt-1">
           <Text className="text-2xl font-bold text-ink">Chat</Text>
-          <Pressable
-            accessibilityRole="button"
-            accessibilityLabel="Varsler"
-            hitSlop={8}
+          <IconButton
+            icon="notifications-outline"
+            label="Varsler"
             onPress={() => setNotifOpen(true)}
-            className="h-10 w-10 items-center justify-center rounded-full active:bg-surfaceMuted"
-          >
-            <Ionicons
-              name="notifications-outline"
-              size={22}
-              color={colors.ink}
-            />
-          </Pressable>
+          />
         </View>
 
         <View className="flex-row items-center gap-2 rounded-full border border-line bg-surface px-4">
@@ -169,14 +162,15 @@ export default function ChatScreen() {
         ) : null}
       </ScrollView>
 
-      <Pressable
-        accessibilityRole="button"
-        accessibilityLabel="Ny chat"
+      <IconButton
+        icon="create-outline"
+        label="Ny chat"
+        variant="ink"
+        size="xl"
+        haptic="light"
         onPress={() => setNewOpen(true)}
-        className="absolute bottom-5 right-5 h-14 w-14 items-center justify-center rounded-full bg-ink shadow-lg active:opacity-80"
-      >
-        <Ionicons name="create-outline" size={24} color={colors.onInk} />
-      </Pressable>
+        className="absolute bottom-5 right-5"
+      />
 
       <NewChatSheet visible={newOpen} onClose={() => setNewOpen(false)} />
       <Sheet

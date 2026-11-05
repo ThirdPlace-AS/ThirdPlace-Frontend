@@ -4,7 +4,7 @@
 // (custom fonts need one family per weight on Android).
 import { Text as RNText, type TextProps as RNTextProps } from "react-native";
 
-import { fontFamilyFor, type FontSet, type FontWeight } from "@/theme/fonts";
+import { fontFamilyFor, type FontWeight } from "@/theme/fonts";
 
 export type TextVariant =
   | "display"
@@ -67,8 +67,6 @@ export type TextProps = RNTextProps & {
   variant?: TextVariant;
   weight?: FontWeight;
   tone?: TextTone;
-  /** Override the family set (specimen only). */
-  fontSet?: FontSet;
   className?: string;
 };
 
@@ -76,13 +74,12 @@ export function Text({
   variant = "body",
   weight,
   tone = "ink",
-  fontSet,
   className,
   style,
   accessibilityRole,
   ...rest
 }: TextProps) {
-  const fontFamily = fontFamilyFor(weight ?? DEFAULT_WEIGHT[variant], fontSet);
+  const fontFamily = fontFamilyFor(weight ?? DEFAULT_WEIGHT[variant]);
   return (
     <RNText
       accessibilityRole={

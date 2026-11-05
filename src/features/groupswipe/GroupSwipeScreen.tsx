@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { Pressable, ScrollView, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
+import { IconButton } from "@/components/ui";
 import { Button } from "@/components/Button";
 import { Chip } from "@/components/Chip";
 import { DemoNote } from "@/components/DemoNote";
@@ -58,14 +59,12 @@ export default function GroupSwipeScreen() {
   return (
     <SafeAreaView className="flex-1 bg-background">
       <View className="flex-row items-center justify-between px-gutter pb-2 pt-1">
-        <Pressable
-          accessibilityRole="button"
-          accessibilityLabel="Tilbake"
+        <IconButton
+          icon="chevron-back"
+          label="Tilbake"
+          variant="outline"
           onPress={back}
-          className="h-10 w-10 items-center justify-center rounded-full border border-line bg-surface"
-        >
-          <Ionicons name="arrow-back" size={20} color={colors.ink} />
-        </Pressable>
+        />
         {phase === "swipe" ? (
           <Text className="text-base font-semibold text-ink">{title}</Text>
         ) : null}

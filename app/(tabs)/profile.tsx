@@ -6,6 +6,7 @@ import { Pressable, ScrollView, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { Button } from "@/components/Button";
+import { IconButton } from "@/components/ui";
 import { DemoBadge } from "@/components/DemoBadge";
 import { DemoNote } from "@/components/DemoNote";
 import { GuestLock } from "@/components/GuestLock";
@@ -52,15 +53,11 @@ export default function ProfileScreen() {
               label="Lagret"
               onPress={() => router.push("/saved")}
             />
-            <Pressable
-              accessibilityRole="button"
-              accessibilityLabel="Innstillinger"
-              hitSlop={8}
+            <HeaderIcon
+              icon="settings-outline"
+              label="Innstillinger"
               onPress={() => router.push("/settings")}
-              className="h-10 w-10 items-center justify-center rounded-full active:bg-surfaceMuted"
-            >
-              <Ionicons name="settings-outline" size={22} color={colors.ink} />
-            </Pressable>
+            />
           </View>
         </View>
 
@@ -145,17 +142,7 @@ function HeaderIcon({
   label: string;
   onPress: () => void;
 }) {
-  return (
-    <Pressable
-      accessibilityRole="button"
-      accessibilityLabel={label}
-      hitSlop={6}
-      onPress={onPress}
-      className="h-10 w-10 items-center justify-center rounded-full active:bg-surfaceMuted"
-    >
-      <Ionicons name={icon} size={22} color={colors.ink} />
-    </Pressable>
-  );
+  return <IconButton icon={icon} label={label} onPress={onPress} />;
 }
 
 function GuestProfile({ onSignIn }: { onSignIn: () => void }) {

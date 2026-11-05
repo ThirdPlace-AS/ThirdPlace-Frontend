@@ -5,6 +5,7 @@ import { useState } from "react";
 import { FlatList, Pressable, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
+import { IconButton } from "@/components/ui";
 import { BlockSheet } from "@/components/actions/ActionSheets";
 import { Button } from "@/components/Button";
 import { Chip } from "@/components/Chip";
@@ -80,29 +81,21 @@ export default function PeopleScreen() {
                 selected={tab === "interests"}
                 onPress={() => setTab("interests")}
               />
-              <Pressable
-                accessibilityRole="button"
-                accessibilityLabel="Filter folk"
+              <IconButton
+                icon="options-outline"
+                label="Filter folk"
+                variant="outline"
+                badge={filterTags.length > 0}
+                selected={filterTags.length > 0}
                 onPress={() => setFilterOpen(true)}
-                className="ml-auto h-10 w-10 items-center justify-center rounded-full border border-line bg-surface"
-              >
-                <Ionicons name="options-outline" size={18} color={colors.ink} />
-                {filterTags.length ? (
-                  <View className="absolute right-1 top-1 h-2 w-2 rounded-full bg-ember" />
-                ) : null}
-              </Pressable>
-              <Pressable
-                accessibilityRole="button"
-                accessibilityLabel="Inviter venner"
+                className="ml-auto"
+              />
+              <IconButton
+                icon="person-add-outline"
+                label="Inviter venner"
+                variant="outline"
                 onPress={() => router.push("/invite")}
-                className="h-10 w-10 items-center justify-center rounded-full border border-line bg-surface"
-              >
-                <Ionicons
-                  name="person-add-outline"
-                  size={18}
-                  color={colors.ink}
-                />
-              </Pressable>
+              />
             </View>
           </View>
         }
@@ -170,15 +163,12 @@ export default function PeopleScreen() {
 function ScreenHeader({ title }: { title: string }) {
   return (
     <View className="flex-row items-center gap-3 border-b border-line px-gutter pb-3">
-      <Pressable
-        accessibilityRole="button"
-        accessibilityLabel="Tilbake"
-        hitSlop={8}
+      <IconButton
+        icon="chevron-back"
+        label="Tilbake"
+        size="sm"
         onPress={() => router.back()}
-        className="h-9 w-9 items-center justify-center rounded-full active:bg-surfaceMuted"
-      >
-        <Ionicons name="chevron-back" size={24} color={colors.ink} />
-      </Pressable>
+      />
       <Text className="text-xl font-bold text-ink">{title}</Text>
     </View>
   );

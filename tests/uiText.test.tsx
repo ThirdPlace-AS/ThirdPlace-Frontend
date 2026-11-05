@@ -3,7 +3,7 @@ import { render, screen } from "@testing-library/react-native";
 import { StyleSheet } from "react-native";
 
 import { Text } from "@/components/ui";
-import { FONT_SETS, fontFamilyFor } from "@/theme/fonts";
+import { FONT_FAMILY, fontFamilyFor } from "@/theme/fonts";
 
 function familyOf(label: string) {
   return StyleSheet.flatten(screen.getByText(label).props.style)?.fontFamily;
@@ -21,13 +21,9 @@ describe("Text primitive", () => {
     expect(familyOf("Brødtekst")).toBe(fontFamilyFor("regular"));
   });
 
-  it("lets weight and fontSet override the family", () => {
-    render(
-      <Text weight="semibold" fontSet="jakarta">
-        Bli med
-      </Text>,
-    );
-    expect(familyOf("Bli med")).toBe(FONT_SETS.jakarta.semibold);
+  it("lets weight override the family", () => {
+    render(<Text weight="semibold">Bli med</Text>);
+    expect(familyOf("Bli med")).toBe(FONT_FAMILY.semibold);
   });
 
   it("marks headings with the header role, body without", () => {
@@ -43,14 +39,12 @@ describe("Text primitive", () => {
     ).toBeUndefined();
   });
 
-  it("every set defines all four weights", () => {
-    for (const set of Object.values(FONT_SETS)) {
-      expect(Object.keys(set).sort()).toEqual([
-        "bold",
-        "medium",
-        "regular",
-        "semibold",
-      ]);
-    }
+  it("defines all four weights", () => {
+    expect(Object.keys(FONT_FAMILY).sort()).toEqual([
+      "bold",
+      "medium",
+      "regular",
+      "semibold",
+    ]);
   });
 });

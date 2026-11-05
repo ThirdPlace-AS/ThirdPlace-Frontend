@@ -1,12 +1,12 @@
-import { Ionicons } from "@expo/vector-icons";
 import BottomSheet, {
   BottomSheetBackdrop,
   type BottomSheetBackdropProps,
   BottomSheetScrollView,
 } from "@gorhom/bottom-sheet";
 import { useCallback, useEffect, useMemo, useRef } from "react";
-import { Pressable, Text, View } from "react-native";
+import { Text, View } from "react-native";
 
+import { IconButton } from "@/components/ui";
 import { colors } from "@/theme";
 
 import { DetailContent, titleFor } from "./DetailContentRouter";
@@ -96,14 +96,12 @@ export function MapDetailSheet({
         <>
           <View className="flex-row items-center gap-2 pb-2 px-gutter">
             {nested ? (
-              <Pressable
-                accessibilityRole="button"
-                accessibilityLabel="Tilbake"
+              <IconButton
+                icon="chevron-back"
+                label="Tilbake"
+                size="sm"
                 onPress={onBack}
-                className="items-center justify-center -ml-2 rounded-full h-9 w-9"
-              >
-                <Ionicons name="chevron-back" size={22} color={colors.ink} />
-              </Pressable>
+              />
             ) : null}
             <Text
               className="flex-1 text-xl font-bold text-ink"
@@ -111,15 +109,13 @@ export function MapDetailSheet({
             >
               {titleFor(top)}
             </Text>
-            <Pressable
-              accessibilityRole="button"
-              accessibilityLabel="Lukk"
+            <IconButton
+              icon="close"
+              label="Lukk"
+              size="sm"
+              tone="muted"
               onPress={onClose}
-              className="items-center justify-center rounded-full h-9 w-9"
-              hitSlop={8}
-            >
-              <Ionicons name="close" size={22} color={colors.muted} />
-            </Pressable>
+            />
           </View>
           <BottomSheetScrollView
             contentContainerClassName="gap-4 px-gutter pb-16"

@@ -4,6 +4,7 @@ import { useState } from "react";
 import { Pressable, ScrollView, Switch, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
+import { IconButton } from "@/components/ui";
 import { Button } from "@/components/Button";
 import { Chip } from "@/components/Chip";
 import { DemoNote } from "@/components/DemoNote";
@@ -177,14 +178,12 @@ export default function Onboarding() {
     <SafeAreaView className="flex-1 bg-background">
       <View className="gap-3 px-gutter pb-2 pt-1">
         <View className="flex-row items-center justify-between">
-          <Pressable
-            accessibilityRole="button"
-            accessibilityLabel="Tilbake"
+          <IconButton
+            icon="chevron-back"
+            label="Tilbake"
+            variant="outline"
             onPress={back}
-            className="h-10 w-10 items-center justify-center rounded-full border border-line bg-surface active:opacity-80"
-          >
-            <Ionicons name="arrow-back" size={20} color={colors.ink} />
-          </Pressable>
+          />
           {step < STEP_COUNT - 1 ? (
             <Text className="text-xs font-medium text-muted">
               {step + 1} av {STEP_COUNT}

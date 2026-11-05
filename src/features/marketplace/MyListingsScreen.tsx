@@ -1,8 +1,8 @@
-import { Ionicons } from "@expo/vector-icons";
 import { useState } from "react";
 import { Pressable, ScrollView, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
+import { IconButton } from "@/components/ui";
 import { Button } from "@/components/Button";
 import { Chip } from "@/components/Chip";
 import { DemoNote } from "@/components/DemoNote";
@@ -10,7 +10,6 @@ import { Input } from "@/components/Input";
 import { RouteHeader } from "@/components/RouteHeader";
 import { Sheet } from "@/components/Sheet";
 import { LISTING_TYPES, listings, type MockListingType } from "@/fixtures";
-import { colors } from "@/theme";
 
 // Mine listings + Ny / Rediger listing (DEMO), per the design (PDF p16).
 // Tabs Aktive / Utkast / Avsluttede over the user's example listings, a
@@ -81,14 +80,15 @@ export default function MyListingsScreen() {
         ))}
         <DemoNote>Eksempel-listings — ingenting er publisert.</DemoNote>
       </ScrollView>
-      <Pressable
-        accessibilityRole="button"
-        accessibilityLabel="Ny listing"
+      <IconButton
+        icon="add"
+        label="Ny listing"
+        variant="ember"
+        size="xl"
+        haptic="light"
         onPress={() => setEditing({ title: "", type: "Venue", about: "" })}
-        className="absolute bottom-6 right-5 h-14 w-14 items-center justify-center rounded-full bg-ember active:opacity-80"
-      >
-        <Ionicons name="add" size={28} color={colors.onEmber} />
-      </Pressable>
+        className="absolute bottom-6 right-5"
+      />
       {editing ? (
         <ListingEditor initial={editing} onClose={() => setEditing(null)} />
       ) : null}

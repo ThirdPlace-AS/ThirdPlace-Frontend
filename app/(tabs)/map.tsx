@@ -10,6 +10,7 @@ import {
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
+import { IconButton } from "@/components/ui";
 import { MapCanvas } from "@/components/map/MapCanvas";
 import { DiscoveryModeTabs } from "@/components/map/DiscoveryModeTabs";
 import { MapDetailSheet } from "@/components/map/MapDetailSheet";
@@ -251,25 +252,14 @@ export default function MapScreen() {
               ) : null}
             </Pressable>
           </View>
-          <Pressable
-            accessibilityRole="button"
-            accessibilityLabel="Varsler"
+          <IconButton
+            icon="notifications-outline"
+            label="Varsler"
+            variant="outline"
+            size="lg"
+            badge={unreadNotifs}
             onPress={() => setNotifOpen(true)}
-            className="items-center justify-center w-12 h-12 border rounded-full border-line bg-surface"
-          >
-            <Ionicons
-              name="notifications-outline"
-              size={22}
-              color={colors.ink}
-            />
-            {unreadNotifs > 0 ? (
-              <View className="absolute items-center justify-center w-4 h-4 rounded-full -right-1 -top-1 bg-ember">
-                <Text className="text-[9px] font-bold text-onEmber">
-                  {unreadNotifs}
-                </Text>
-              </View>
-            ) : null}
-          </Pressable>
+          />
         </View>
 
         <DiscoveryModeTabs mode={discovery.mode} onChange={handleModeChange} />

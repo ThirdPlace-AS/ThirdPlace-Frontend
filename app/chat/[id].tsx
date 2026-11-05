@@ -12,6 +12,7 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
+import { IconButton } from "@/components/ui";
 import { Button } from "@/components/Button";
 import { DemoBadge } from "@/components/DemoBadge";
 import { useGuestMode } from "@/components/map/hooks/useGuestMode";
@@ -79,15 +80,12 @@ export default function ChatThreadScreen() {
     <SafeAreaView className="flex-1 bg-background" edges={["top", "bottom"]}>
       {/* Header */}
       <View className="flex-row items-center gap-3 border-b border-line px-gutter pb-3">
-        <Pressable
-          accessibilityRole="button"
-          accessibilityLabel="Tilbake"
-          hitSlop={8}
+        <IconButton
+          icon="chevron-back"
+          label="Tilbake"
+          size="sm"
           onPress={() => router.back()}
-          className="h-9 w-9 items-center justify-center rounded-full active:bg-surfaceMuted"
-        >
-          <Ionicons name="chevron-back" size={24} color={colors.ink} />
-        </Pressable>
+        />
         <View className="h-10 w-10 items-center justify-center rounded-full bg-surfaceMuted">
           <Text className="text-base font-semibold text-ink">
             {chat.initials}
@@ -108,19 +106,12 @@ export default function ChatThreadScreen() {
           </Text>
         </View>
         <DemoBadge />
-        <Pressable
-          accessibilityRole="button"
-          accessibilityLabel="Chat-info"
-          hitSlop={8}
+        <IconButton
+          icon="information-circle-outline"
+          label="Chat-info"
+          size="sm"
           onPress={() => setPanel("info")}
-          className="h-9 w-9 items-center justify-center rounded-full active:bg-surfaceMuted"
-        >
-          <Ionicons
-            name="information-circle-outline"
-            size={24}
-            color={colors.ink}
-          />
-        </Pressable>
+        />
       </View>
 
       <KeyboardAvoidingView

@@ -34,6 +34,7 @@ const palette = {
     danger: "#B5342B", // LOW confidence
     warning: "#B05008", // LOW confidence
     scrim: "#000000", // use with an opacity modifier, e.g. bg-scrim/40
+    onMedia: "#FFFFFF", // content over photos/video (with a scrim), any scheme
   },
   dark: {
     background: "#111111",
@@ -51,6 +52,7 @@ const palette = {
     danger: "#B5342B",
     warning: "#B05008",
     scrim: "#000000",
+    onMedia: "#FFFFFF",
   },
 };
 

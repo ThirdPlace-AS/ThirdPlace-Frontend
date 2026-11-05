@@ -1,5 +1,7 @@
-import { Pressable, Text, View } from "react-native";
 import { router } from "expo-router";
+import { Text, View } from "react-native";
+
+import { IconButton } from "@/components/ui";
 
 // Title block with an optional circular back button, matching the screens.
 export function ScreenHeader({
@@ -14,14 +16,12 @@ export function ScreenHeader({
   return (
     <View className="gap-3">
       {showBack ? (
-        <Pressable
-          accessibilityRole="button"
-          accessibilityLabel="Tilbake"
+        <IconButton
+          icon="chevron-back"
+          label="Tilbake"
+          variant="outline"
           onPress={() => router.back()}
-          className="h-10 w-10 items-center justify-center rounded-full border border-line bg-surface"
-        >
-          <Text className="text-lg text-ink">←</Text>
-        </Pressable>
+        />
       ) : null}
       <View className="gap-1.5">
         <Text className="text-2xl font-bold text-ink">{title}</Text>

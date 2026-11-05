@@ -10,6 +10,7 @@ import {
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
+import { IconButton } from "@/components/ui";
 import { Chip } from "@/components/Chip";
 import { SearchBar } from "@/components/SearchBar";
 import { colors } from "@/theme";
@@ -109,14 +110,7 @@ function SearchBody({
       >
         {/* Header: back + search field */}
         <View className="flex-row items-center gap-2 px-gutter pb-2">
-          <Pressable
-            accessibilityRole="button"
-            accessibilityLabel="Tilbake"
-            onPress={onClose}
-            className="-ml-1 h-10 w-10 items-center justify-center rounded-full"
-          >
-            <Ionicons name="arrow-back" size={24} color={colors.ink} />
-          </Pressable>
+          <IconButton icon="chevron-back" label="Tilbake" onPress={onClose} />
           <View className="flex-1">
             <SearchBar
               placeholder="Søk steder, opplevelser, grupper"

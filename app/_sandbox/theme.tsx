@@ -11,33 +11,24 @@ import {
   type SchemePreference,
 } from "@/theme";
 import { Text as UIText } from "@/components/ui";
-import { ACTIVE_FONT_SET, FONT_LABELS, type FontSet } from "@/theme/fonts";
 
 const SAMPLE_BODY =
   "Oppdag nabolagets lune møteplasser. Finn din neste third place — der byen faktisk skjer.";
 
-function SpecimenLines({ fontSet }: { fontSet: FontSet }) {
+function SpecimenLines() {
   return (
     <>
-      <UIText variant="display" fontSet={fontSet}>
-        Velkommen hjem
-      </UIText>
-      <UIText variant="h1" fontSet={fontSet}>
-        Jazzkveld på Blå
-      </UIText>
-      <UIText variant="title" fontSet={fontSet}>
-        Grünerløkka Bokcafé
-      </UIText>
-      <UIText variant="body" fontSet={fontSet}>
-        {SAMPLE_BODY}
-      </UIText>
-      <UIText variant="label" weight="semibold" fontSet={fontSet}>
+      <UIText variant="display">Velkommen hjem</UIText>
+      <UIText variant="h1">Jazzkveld på Blå</UIText>
+      <UIText variant="title">Grünerløkka Bokcafé</UIText>
+      <UIText variant="body">{SAMPLE_BODY}</UIText>
+      <UIText variant="label" weight="semibold">
         Bli med · Lagre · 0123456789
       </UIText>
-      <UIText variant="caption" tone="muted" fontSet={fontSet}>
+      <UIText variant="caption" tone="muted">
         Lørdag 1. august · 20:00 · 1,2 km
       </UIText>
-      <UIText variant="micro" tone="muted" fontSet={fontSet}>
+      <UIText variant="micro" tone="muted">
         Aktive samtaler · ÆØÅ æøå
       </UIText>
     </>
@@ -155,19 +146,13 @@ export default function ThemeSandbox() {
           </View>
         </Section>
 
-        <Section title="Skrift — velg familie">
-          {(["dmSans", "jakarta"] as const).map((set) => (
-            <View
-              key={set}
-              className="gap-xs rounded-lg border border-line bg-surface p-gutter"
-            >
-              <UIText variant="micro" tone="muted">
-                {FONT_LABELS[set]}
-                {set === ACTIVE_FONT_SET ? " · aktiv" : ""}
-              </UIText>
-              <SpecimenLines fontSet={set} />
-            </View>
-          ))}
+        <Section title="Skrift">
+          <View className="gap-xs rounded-lg border border-line bg-surface p-gutter">
+            <UIText variant="micro" tone="muted">
+              DM Sans · valgt 2026-11-05
+            </UIText>
+            <SpecimenLines />
+          </View>
           <View className="gap-xs rounded-lg border border-line bg-surface p-gutter">
             <Text className="text-micro font-medium uppercase text-muted">
               Systemfont (dagens app)
