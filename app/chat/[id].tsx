@@ -168,9 +168,7 @@ export default function ChatThreadScreen() {
                 disabled={!draft.trim()}
                 onPress={send}
                 className={`h-11 w-11 items-center justify-center rounded-full ${
-                  draft.trim()
-                    ? "bg-ink active:opacity-80"
-                    : "bg-surfaceMuted"
+                  draft.trim() ? "bg-ink active:opacity-80" : "bg-surfaceMuted"
                 }`}
               >
                 <Ionicons

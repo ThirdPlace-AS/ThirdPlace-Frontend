@@ -130,9 +130,7 @@ export default function PrivacyScreen() {
             Få en kopi av alt ThirdPlace vet om deg (GDPR). Lenken sendes på
             e-post.
           </Text>
-          <DemoNote>
-            Ingen eksport lages, og ingen e-post sendes.
-          </DemoNote>
+          <DemoNote>Ingen eksport lages, og ingen e-post sendes.</DemoNote>
           <Button label="Be om eksport" variant="ink" onPress={close} />
         </View>
       </Sheet>
