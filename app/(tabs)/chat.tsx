@@ -57,10 +57,12 @@ export default function ChatScreen() {
       items: visible.filter((c) => c.type === "place" || c.type === "business"),
     },
   ];
-  // "Aktive samtaler": the most recent threads across every type.
-  const active = visible.filter(
-    (c) => c.unread > 0 || c.type === "dm" || c.type === "user_created",
-  );
+  // "Aktive samtaler": everything that is not filed under a group below
+  // (DMs, user-created, group-swipe, marketplace …) plus any grouped chat with
+  // unread messages.
+  const grouped = (c: MockChat) =>
+    c.type === "experience" || c.type === "place" || c.type === "business";
+  const active = visible.filter((c) => !grouped(c) || c.unread > 0);
 
   const openChat = (c: MockChat) =>
     router.push({ pathname: "/chat/[id]", params: { id: c.id } });
@@ -119,7 +121,7 @@ export default function ChatScreen() {
             >
               <Pressable
                 accessibilityRole="button"
-                accessibilityState={{ expanded: !!open[g.key] }}
+                accessibilityState={{ expanded: !!open[g.key] || !!q }}
                 onPress={() => setOpen((s) => ({ ...s, [g.key]: !s[g.key] }))}
                 className="flex-row items-center gap-3 px-4 py-3.5 active:opacity-80"
               >
@@ -129,12 +131,12 @@ export default function ChatScreen() {
                 </Text>
                 <Text className="text-sm text-muted">{g.items.length}</Text>
                 <Ionicons
-                  name={open[g.key] ? "chevron-up" : "chevron-down"}
+                  name={open[g.key] || q ? "chevron-up" : "chevron-down"}
                   size={18}
                   color={colors.muted}
                 />
               </Pressable>
-              {open[g.key] ? (
+              {open[g.key] || q ? (
                 <View className="gap-2 px-2 pb-2">
                   {g.items.map((c) => (
                     <ChatRow key={c.id} chat={c} onPress={() => openChat(c)} />

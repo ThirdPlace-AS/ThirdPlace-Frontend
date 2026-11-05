@@ -8,6 +8,8 @@ import { DemoNote } from "@/components/DemoNote";
 import { Input } from "@/components/Input";
 import { RouteHeader } from "@/components/RouteHeader";
 import { Sheet } from "@/components/Sheet";
+import { SignInPrompt } from "@/components/SignInPrompt";
+import { useGuestMode } from "@/components/map/hooks/useGuestMode";
 import { demoCopy } from "@/copy";
 
 import { NavRow, SettingsSection, ToggleRow } from "./settingsUi";
@@ -34,6 +36,11 @@ export default function PrivacyScreen() {
     null,
   );
   const close = () => setPanel(null);
+  // Data actions are account-only; guests get the sign-in prompt instead.
+  const { isGuest } = useGuestMode();
+  const [signIn, setSignIn] = useState(false);
+  const openPanel = (p: "blocked" | "export" | "delete") => () =>
+    isGuest ? setSignIn(true) : setPanel(p);
 
   return (
     <SafeAreaView className="flex-1 bg-background" edges={["top"]}>
@@ -70,24 +77,20 @@ export default function PrivacyScreen() {
             icon="ban-outline"
             label="Blokkerte brukere"
             value={String(BLOCKED.length)}
-            onPress={() => setPanel("blocked")}
+            onPress={openPanel("blocked")}
           />
           <NavRow
             icon="download-outline"
             label="GDPR: Last ned dine data"
-            onPress={() => setPanel("export")}
+            onPress={openPanel("export")}
           />
           <NavRow
             icon="trash-outline"
             label="Slett konto"
             danger
-            onPress={() => setPanel("delete")}
+            onPress={openPanel("delete")}
           />
         </SettingsSection>
-
-        <Text className="px-1 text-xs text-muted">
-          Religion og etnisitet deles aldri — kun brukt for dine anbefalinger.
-        </Text>
       </ScrollView>
 
       <Sheet
@@ -135,7 +138,15 @@ export default function PrivacyScreen() {
         </View>
       </Sheet>
 
-      <DeleteAccountSheet visible={panel === "delete"} onClose={close} />
+      {/* Mounted only while open, so the typed «SLETT» never survives a close. */}
+      {panel === "delete" ? (
+        <DeleteAccountSheet visible onClose={close} />
+      ) : null}
+      <SignInPrompt
+        visible={signIn}
+        onClose={() => setSignIn(false)}
+        action="administrere dataene dine"
+      />
     </SafeAreaView>
   );
 }

@@ -2,6 +2,8 @@ import { Ionicons } from "@expo/vector-icons";
 import { Text, View } from "react-native";
 
 import { DemoNote } from "@/components/DemoNote";
+import { GuestLock } from "@/components/GuestLock";
+import { useGuestMode } from "@/components/map/hooks/useGuestMode";
 import { colors } from "@/theme";
 
 // Verifisering (DEMO), per the design (PDF p7): a three-step timeline —
@@ -24,8 +26,19 @@ const DOCS: { name: string; status: "Godkjent" | "Vurderes" }[] = [
 ];
 
 export function VerificationContent() {
+  const { isGuest } = useGuestMode();
+  if (isGuest) {
+    return (
+      <GuestLock message="Logg inn som bedrift for å se og starte verifisering." />
+    );
+  }
   return (
     <View className="gap-5">
+      {/* Honesty first: everything below is an example, not a real claim. */}
+      <DemoNote>
+        Eksempelstatus — ingen dokumenter er sendt inn, og ingen vurdering
+        pågår.
+      </DemoNote>
       <View className="gap-0">
         {STEPS.map((s, i) => (
           <View key={s.label} className="flex-row gap-3">
@@ -90,15 +103,10 @@ export function VerificationContent() {
 
       <View className="rounded-xl bg-surfaceMuted p-3">
         <Text className="text-sm text-ink">
-          Vi sier ifra med push-varsel så snart vurderingen er klar. Du trenger
-          ikke foreta deg noe.
+          Når verifisering er aktiv, får du beskjed så snart vurderingen er
+          klar.
         </Text>
       </View>
-
-      <DemoNote>
-        Eksempelstatus — ingen dokumenter er sendt inn, og ingen vurdering
-        pågår.
-      </DemoNote>
     </View>
   );
 }

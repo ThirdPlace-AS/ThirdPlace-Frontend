@@ -271,7 +271,14 @@ export function SwipeDeck() {
 
   // Web keyboard alternative: ← nope, → like, ↑ save, Backspace undo.
   useEffect(() => {
-    if (Platform.OS !== "web" || deck.done || expand !== null) return;
+    if (
+      Platform.OS !== "web" ||
+      deck.done ||
+      expand !== null ||
+      mode === "places" ||
+      joinChatFor !== null
+    )
+      return;
     const onKey = (ev: KeyboardEvent) => {
       if (busy) return;
       if (ev.key === "ArrowLeft") commit("nope");
@@ -282,7 +289,7 @@ export function SwipeDeck() {
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [deck.done, deck.index, expand, reduced, busy]);
+  }, [deck.done, deck.index, expand, reduced, busy, mode, joinChatFor]);
 
   // Render behind→front so the top card (slot 0) sits on top.
   const slots = deck.window.map((exp, n) => ({ exp, n })).reverse();
@@ -308,15 +315,27 @@ export function SwipeDeck() {
           className="flex-1 justify-center bg-background"
           style={{ paddingTop: insets.top }}
         >
-          <EmptyState
-            icon="albums-outline"
-            title="Du har sett alt for nå"
-            message="Nye anbefalinger dukker opp gjennom dagen. Prøv andre filtre, eller utforsk kartet i mellomtiden."
-            actionLabel="Endre filtre"
-            onAction={() => setFiltersOpen(true)}
-            secondaryLabel="Utforsk kartet"
-            onSecondary={() => router.navigate("/map")}
-          />
+          {deck.deck.length === 0 ? (
+            <EmptyState
+              icon="albums-outline"
+              title="Ingen treff"
+              message="Ingen opplevelser passer filtrene dine. Prøv andre filtre."
+              actionLabel="Nullstill filtre"
+              onAction={() => setFilters(DEFAULT_SWIPE_FILTERS)}
+              secondaryLabel="Utforsk kartet"
+              onSecondary={() => router.navigate("/map")}
+            />
+          ) : (
+            <EmptyState
+              icon="albums-outline"
+              title="Du har sett alt for nå"
+              message="Nye anbefalinger dukker opp gjennom dagen. Prøv andre filtre, eller utforsk kartet i mellomtiden."
+              actionLabel="Endre filtre"
+              onAction={() => setFiltersOpen(true)}
+              secondaryLabel="Se kortene igjen"
+              onSecondary={deck.restart}
+            />
+          )}
         </View>
       ) : (
         <View

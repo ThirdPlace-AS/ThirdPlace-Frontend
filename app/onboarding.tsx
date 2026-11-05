@@ -327,7 +327,12 @@ export default function Onboarding() {
                     key={o}
                     label={o}
                     selected={identity[g.label] === o}
-                    onPress={() => setIdentity((s) => ({ ...s, [g.label]: o }))}
+                    onPress={() =>
+                      setIdentity((s) => ({
+                        ...s,
+                        [g.label]: s[g.label] === o ? "" : o,
+                      }))
+                    }
                   />
                 ))}
               </Group>
@@ -340,7 +345,7 @@ export default function Onboarding() {
               maxLength={40}
             />
             <Text className="text-xs text-muted">
-              Alt her er valgfritt, og «Vil ikke si» er alltid et alternativ.
+              Alt her er valgfritt — trykk på et valg igjen for å fjerne det.
             </Text>
           </Shell>
         ) : null}
@@ -407,7 +412,12 @@ export default function Onboarding() {
                     key={o}
                     label={o}
                     selected={prefs[g.label] === o}
-                    onPress={() => setPrefs((s) => ({ ...s, [g.label]: o }))}
+                    onPress={() =>
+                      setPrefs((s) => ({
+                        ...s,
+                        [g.label]: s[g.label] === o ? "" : o,
+                      }))
+                    }
                   />
                 ))}
               </Group>
