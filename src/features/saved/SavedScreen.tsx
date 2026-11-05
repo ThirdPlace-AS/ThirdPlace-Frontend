@@ -8,6 +8,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { Chip } from "@/components/Chip";
 import { DemoNote } from "@/components/DemoNote";
 import { RouteHeader } from "@/components/RouteHeader";
+import { showToast } from "@/components/Toast";
 import { EmptyState } from "@/components/states/StateView";
 import { useMapSaved } from "@/components/map/hooks/useMapSaved";
 import { businessById, experienceById, placeById } from "@/fixtures";
@@ -152,7 +153,14 @@ export default function SavedScreen() {
                 accessibilityRole="button"
                 accessibilityLabel={`Fjern ${item.title} fra lagret`}
                 hitSlop={8}
-                onPress={() => toggle(item.key)}
+                onPress={() => {
+                  toggle(item.key);
+                  showToast({
+                    title: "Fjernet fra Lagret",
+                    body: item.title,
+                    icon: "bookmark-outline",
+                  });
+                }}
               >
                 <Ionicons name="bookmark" size={20} color={colors.ink} />
               </Pressable>

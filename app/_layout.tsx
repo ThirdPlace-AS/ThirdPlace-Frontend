@@ -9,6 +9,7 @@ import { View } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 
+import { ToastHost } from "@/components/Toast";
 import { queryClient } from "@/services/api/queryClient";
 import { colors } from "@/theme";
 
@@ -41,6 +42,7 @@ export default function RootLayout() {
           ) : (
             <View style={{ flex: 1, backgroundColor: colors.background }} />
           )}
+          <ToastHost />
         </QueryClientProvider>
       </SafeAreaProvider>
     </GestureHandlerRootView>

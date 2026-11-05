@@ -9,6 +9,7 @@ import { useGuestMode } from "@/components/map/hooks/useGuestMode";
 import { useMapSaved } from "@/components/map/hooks/useMapSaved";
 import { markerId } from "@/components/map/types/mapPresentation";
 import { SignInPrompt } from "@/components/SignInPrompt";
+import { showToast } from "@/components/Toast";
 import { EmptyState } from "@/components/states/StateView";
 import { places } from "@/fixtures";
 import { coverForPlace, libImage } from "@/fixtures/images";
@@ -82,7 +83,15 @@ export function PlaceDeck() {
             icon={saved ? "bookmark" : "bookmark-outline"}
             label={saved ? "Fjern fra lagret" : "Lagre"}
             big
-            onPress={() => (isGuest ? setSignIn(true) : toggle(key))}
+            onPress={() => {
+              if (isGuest) return setSignIn(true);
+              toggle(key);
+              showToast({
+                title: saved ? "Fjernet fra Lagret" : "Lagret",
+                body: `${place.name} · demo — tømmes ved omstart`,
+                icon: saved ? "bookmark-outline" : "bookmark",
+              });
+            }}
           />
           <Round
             icon="map-outline"
