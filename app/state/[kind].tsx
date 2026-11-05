@@ -83,7 +83,7 @@ export default function SystemState() {
                 Vi gjennomgår saken og svarer deg.
               </Text>
             </View>
-            <Button label="Send klage" variant="ink" onPress={() => {}} />
+            <Button label="Send klage" variant="ink" disabled />
           </State>
         ) : kind === "update" ? (
           <State
@@ -91,7 +91,7 @@ export default function SystemState() {
             title="Oppdatering kreves"
             body="En ny versjon av ThirdPlace er tilgjengelig med viktige forbedringer og sikkerhetsfikser."
           >
-            <Button label="Oppdater nå" variant="ember" onPress={() => {}} />
+            <Button label="Oppdater nå" variant="ember" disabled />
           </State>
         ) : kind === "invite" ? (
           <Invite />

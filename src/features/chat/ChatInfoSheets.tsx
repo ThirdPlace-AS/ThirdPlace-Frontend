@@ -42,14 +42,20 @@ export function ChatInfoSheets({
   onPanel: (p: Panel) => void;
 }) {
   const close = () => onPanel(null);
+  // Close the info sheet first, then open the next once its Modal has
+  // dismissed (iOS refuses to present while another is dismissing).
+  const swap = (p: Panel) => {
+    onPanel(null);
+    setTimeout(() => onPanel(p), 350);
+  };
   return (
     <>
       <InfoSheet
         chat={chat}
         visible={panel === "info"}
         onClose={close}
-        onMembers={() => onPanel("members")}
-        onInvite={() => onPanel("invite")}
+        onMembers={() => swap("members")}
+        onInvite={() => swap("invite")}
       />
       <MembersSheet chat={chat} visible={panel === "members"} onClose={close} />
       <InviteSheet chat={chat} visible={panel === "invite"} onClose={close} />

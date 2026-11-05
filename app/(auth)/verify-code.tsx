@@ -1,6 +1,6 @@
 import { router, useLocalSearchParams } from "expo-router";
 import { useEffect, useState } from "react";
-import { Pressable, ScrollView, Text, View } from "react-native";
+import { ScrollView, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { CodeInput } from "@/components/auth/CodeInput";
@@ -76,17 +76,14 @@ export default function VerifyCode() {
           ) : null}
         </View>
         {identity ? (
-          <Pressable
-            accessibilityRole="button"
-            className="gap-0.5 rounded-xl border border-line bg-surface p-3"
-          >
+          <View className="gap-0.5 rounded-xl border border-line bg-surface p-3">
             <Text className="text-sm font-semibold text-ink">
               Mistet tilgang?
             </Text>
             <Text className="text-sm font-semibold text-ember">
-              Bruk en backupkode →
+              Backupkoder er ikke aktive i demoen
             </Text>
-          </Pressable>
+          </View>
         ) : null}
         <DemoNote>
           {resent

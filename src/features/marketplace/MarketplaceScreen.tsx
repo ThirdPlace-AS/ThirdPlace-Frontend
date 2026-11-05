@@ -170,7 +170,7 @@ function ListingSheet({
   onGuest: () => void;
   isGuest: boolean;
 }) {
-  const [notice, setNotice] = useState<"request" | "save" | null>(null);
+  const [notice, setNotice] = useState<"save" | null>(null);
   const close = () => {
     setNotice(null);
     onClose();
@@ -226,13 +226,7 @@ function ListingSheet({
               <Text className="text-xs text-muted">{listing.ownerMeta}</Text>
             </View>
           </View>
-          {notice ? (
-            <DemoNote>
-              {notice === "request"
-                ? "Ingen forespørsel sendes, og ingen avtale opprettes."
-                : "Listingen lagres ikke."}
-            </DemoNote>
-          ) : null}
+          {notice ? <DemoNote>Listingen lagres ikke.</DemoNote> : null}
           <View className="flex-row gap-3">
             <View className="flex-1">
               <Button

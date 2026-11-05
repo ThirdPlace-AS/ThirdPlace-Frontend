@@ -24,7 +24,11 @@ export function WorkspaceHub() {
       <RouteHeader title={BIZ?.name ?? "Bedrift"} />
       <ScrollView contentContainerClassName="gap-3 px-gutter py-4 pb-12">
         <View className="flex-row items-center gap-1.5">
-          <Ionicons name="checkmark-circle" size={16} color={colors.success} />
+          <Ionicons
+            name={BIZ?.verified ? "checkmark-circle" : "time-outline"}
+            size={16}
+            color={BIZ?.verified ? colors.success : colors.muted}
+          />
           <Text className="text-sm font-semibold text-ink">
             {BIZ?.verified ? "Verifisert bedrift" : "Ikke verifisert"}
           </Text>
@@ -267,14 +271,11 @@ export function WorkspaceLocations() {
             <Text className="text-xs text-muted">{b.address}</Text>
           </View>
         ))}
-        <Pressable
-          accessibilityRole="button"
-          className="items-center rounded-2xl border border-dashed border-line py-4"
-        >
-          <Text className="text-sm font-semibold text-ink">
-            + Legg til lokasjon
+        <View className="items-center rounded-2xl border border-dashed border-line py-4">
+          <Text className="text-sm font-semibold text-muted">
+            + Legg til lokasjon (ikke aktiv)
           </Text>
-        </Pressable>
+        </View>
         <DemoNote>
           Lokasjoner og priser er ikke aktive — ingenting faktureres.
         </DemoNote>

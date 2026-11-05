@@ -145,13 +145,7 @@ export default function PeopleScreen() {
             ))}
           </View>
           <Button
-            label={`Vis ${
-              people.filter(
-                (p) =>
-                  !filterTags.length ||
-                  p.interests.some((i) => filterTags.includes(i)),
-              ).length
-            } personer`}
+            label={`Vis ${list.length} personer`}
             variant="ink"
             onPress={() => setFilterOpen(false)}
           />

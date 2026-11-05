@@ -35,12 +35,16 @@ export default function AccountSwitch() {
     },
   ];
   return (
-    <Pressable
-      accessibilityRole="button"
-      accessibilityLabel="Lukk"
-      onPress={() => router.back()}
-      className="flex-1 justify-end bg-black/50 p-gutter pb-28"
-    >
+    <View className="flex-1 justify-end p-gutter pb-28">
+      {/* Tap-to-close backdrop is a SIBLING behind the card, never its
+          ancestor (no nested buttons — invalid DOM on web). */}
+      <Pressable
+        accessibilityRole="button"
+        accessibilityLabel="Lukk"
+        onPress={() => router.back()}
+        style={{ position: "absolute", top: 0, right: 0, bottom: 0, left: 0 }}
+        className="bg-black/50"
+      />
       <View
         className="gap-2 self-end rounded-2xl bg-surface p-3"
         style={{ width: 280 }}
@@ -75,6 +79,6 @@ export default function AccountSwitch() {
         </Pressable>
         <DemoNote>Kontobytte er bare navigasjon i demoen.</DemoNote>
       </View>
-    </Pressable>
+    </View>
   );
 }

@@ -97,9 +97,18 @@ These are **not** mismatches:
 
 Every item in "Invented in the app" above has been removed or replaced.
 
-**Still missing (next):** Lagret (p14) + My Plans (REQUIRED_V1), business onboarding
-(p3–p5), auth extras (reset, e-post-kode, 2FA, Google/Apple; p1–p2), group swipe +
-match (p8–p9), chat info / members / invite (p9–p10), workspaces (Dashboard,
-Analyse, Kalender, Lokasjoner; p13–p15), collaboration flow (p16–p18), payouts
-(p21), age verification + invites + rewards (p22), share / report / block / pay /
-leave / waitlist sheets (p23–p25), system states (p26–p27).
+**Phase 3 built (0122–0133):** auth extras (p1–p2), business onboarding (p3–p5),
+group swipe + match (p8–p9), chat info / members / invite (p9–p10), shared
+Del / Rapporter / Blokker / Forlat / Venteliste sheets (p23), system states
+(p26–p27), Oppdag folk tabs + filter, Inviter venner, Belønninger,
+Aldersverifisering (p22), business workspace hub / Analyse / Kalender /
+Lokasjoner + account switcher (p13–p15, p27), collaboration flow (p16–p18),
+structure-only paid join (p23), Utbetalinger (p21), Innleveringer (p12).
+
+**Still missing:** Steder place cards in Sveip; creator "Du er nå Skaper!" and
+creator profile (p14); Delte bilder (p9); Mine listings / Ny listing /
+marketplace filters / Betalingsstatus / Marketplace-analyse / historikk /
+vurdering / venteliste (p16–p18); Inviter kontakter (p22); En plass åpnet seg,
+host Avlys + refund, Del regningen, Hvordan var det? (p24–p25); bildeviser,
+Velg sted, Velg kategori, Søk brukere (p24–p25); Importer innhold (p26);
+flytende varsler (p27); Utbetalingshistorikk rows (p21).

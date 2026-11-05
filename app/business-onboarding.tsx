@@ -10,6 +10,8 @@ import { DemoNote } from "@/components/DemoNote";
 import { Input } from "@/components/Input";
 import { useGuestMode } from "@/components/map/hooks/useGuestMode";
 import { OSLO_AREAS } from "@/fixtures";
+import { checkBirthday, formatBirthdayInput } from "@/features/onboarding/age";
+import { UnderageScreen } from "@/features/onboarding/UnderageScreen";
 import { resetTo } from "@/lib/navigation";
 import { colors } from "@/theme";
 
@@ -54,6 +56,11 @@ export default function BusinessOnboarding() {
   const [step, setStep] = useState(2); // 1 = the shared role step
   const [owner, setOwner] = useState("");
   const [email, setEmail] = useState("");
+  // The business branch skips the profile step, so it carries the 18+ gate
+  // itself (TP-D-001).
+  const [birthday, setBirthday] = useState("");
+  const [blocked, setBlocked] = useState(false);
+  const age = checkBirthday(birthday);
   const [name, setName] = useState("");
   const [category, setCategory] = useState<string | null>(null);
   const [about, setAbout] = useState("");
@@ -72,7 +79,9 @@ export default function BusinessOnboarding() {
 
   const can =
     step === 2
-      ? owner.trim().length > 0 && email.includes("@")
+      ? owner.trim().length > 0 &&
+        email.includes("@") &&
+        (age.status === "ok" || age.status === "underage")
       : step === 3
         ? name.trim().length > 1 && category !== null
         : step === 4
@@ -81,6 +90,10 @@ export default function BusinessOnboarding() {
 
   const back = () => (step === 2 ? router.back() : setStep((s) => s - 1));
   const next = () => {
+    if (step === 2 && age.status === "underage") {
+      setBlocked(true);
+      return;
+    }
     if (step === TOTAL) {
       setGuest(false);
       resetTo("/map");
@@ -94,6 +107,8 @@ export default function BusinessOnboarding() {
         : step === TOTAL
           ? "Se bedriften din på kartet"
           : "Fortsett";
+
+  if (blocked) return <UnderageScreen />;
 
   return (
     <SafeAreaView className="flex-1 bg-background">
@@ -151,6 +166,17 @@ export default function BusinessOnboarding() {
               value={email}
               onChangeText={setEmail}
             />
+            <Input
+              label="Fødselsdag"
+              placeholder="dd.mm.åååå"
+              keyboardType="numeric"
+              value={birthday}
+              onChangeText={(t) => setBirthday(formatBirthdayInput(t))}
+              maxLength={10}
+            />
+            <Text className="text-xs text-muted">
+              Du må være minst 18 år for å administrere en bedrift.
+            </Text>
           </Shell>
         ) : null}
 

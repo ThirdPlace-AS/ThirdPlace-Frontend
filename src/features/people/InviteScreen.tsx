@@ -23,11 +23,19 @@ const REWARDS: {
   hint: string;
   icon: keyof typeof Ionicons.glyphMap;
 }[] = [
-  { label: "3 venner", hint: "Gratis boost (1 uke)", icon: "flash-outline" },
-  { label: "5 venner", hint: "Premium-filter", icon: "star-outline" },
+  {
+    label: "3 venner",
+    hint: "Belønning ikke definert ennå",
+    icon: "flash-outline",
+  },
+  {
+    label: "5 venner",
+    hint: "Belønning ikke definert ennå",
+    icon: "star-outline",
+  },
   {
     label: "10 venner",
-    hint: "Skaper-forhåndsgodkjenning",
+    hint: "Belønning ikke definert ennå",
     icon: "trophy-outline",
   },
 ];

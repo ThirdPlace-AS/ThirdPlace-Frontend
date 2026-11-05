@@ -12,11 +12,8 @@ import { EmptyState } from "@/components/states/StateView";
 // Utbetalinger (PDF p21) — STRUCTURE ONLY. Shows the payout method slot, the
 // payout schedule and an empty history. It never asks for or shows bank or
 // account numbers and moves no money (prohibited + BLOCKED_CONTRACT_GAP).
-const PLANS = [
-  "Automatisk (24t etter opplevelse)",
-  "Ukentlig (hver mandag)",
-  "Månedlig (1. i måneden)",
-];
+// Schedule names only — timing rules are not defined (no payout contract).
+const PLANS = ["Automatisk", "Ukentlig", "Månedlig"];
 
 export function PayoutsScreen() {
   const [plan, setPlan] = useState(PLANS[0] ?? "");
