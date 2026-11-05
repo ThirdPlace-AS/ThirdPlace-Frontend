@@ -1,4 +1,5 @@
 import { Ionicons } from "@expo/vector-icons";
+import { router } from "expo-router";
 import { Text, View } from "react-native";
 
 import { Button } from "@/components/Button";
@@ -31,8 +32,24 @@ export function SignInPrompt({
         </Text>
       </View>
 
-      <Button label="Logg inn" variant="ink" onPress={onClose} />
-      <Button label="Opprett konto" variant="secondary" onPress={onClose} />
+      {/* Route to the (demo) auth screens — login clears guest mode; the
+          register flow continues into onboarding. */}
+      <Button
+        label="Logg inn"
+        variant="ink"
+        onPress={() => {
+          onClose();
+          router.push("/login");
+        }}
+      />
+      <Button
+        label="Opprett konto"
+        variant="secondary"
+        onPress={() => {
+          onClose();
+          router.push("/register");
+        }}
+      />
 
       <DemoNote>{demoCopy.signInInactive}</DemoNote>
     </Sheet>

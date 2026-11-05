@@ -33,14 +33,14 @@ export default function PeopleScreen() {
 
   return (
     <SafeAreaView className="flex-1 bg-background" edges={["top"]}>
-      <ScreenHeader title="Naboer" />
+      <ScreenHeader title="Oppdag folk" />
       <FlatList
         data={people}
         keyExtractor={(p) => p.id}
         contentContainerClassName="px-gutter pb-10"
         ListHeaderComponent={
           <Text className="pb-3 pt-1 text-sm text-muted">
-            Folk i nabolaget med lignende interesser.
+            Mennesker du kanskje vil møte.
           </Text>
         }
         ItemSeparatorComponent={() => <View className="h-2" />}
@@ -63,7 +63,7 @@ export default function PeopleScreen() {
       <SignInPrompt
         visible={signIn}
         onClose={() => setSignIn(false)}
-        action="følge naboer"
+        action="følge folk"
       />
     </SafeAreaView>
   );

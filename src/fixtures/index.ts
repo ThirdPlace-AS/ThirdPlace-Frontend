@@ -1208,45 +1208,85 @@ export function chatById(id: string): MockChat | undefined {
 }
 
 // ── Profile (MOCK — visual only, NO account/session/reputation backend) ──────
-// BLOCKED_CONTRACT_GAP: there is no identity, trust, verification, achievement,
-// or persona model in the certified contract. Every field below is demo art for
-// layout. `verification` is NOT a real trust signal; `achievements` are NOT
-// earned; `personas` do NOT switch any real capability/entitlement.
-export type MockPersonaKey = "explorer" | "creator" | "business";
-
-export type MockAchievement = {
-  id: string;
-  label: string; // Norwegian title
-  caption: string; // short Norwegian description
-  icon: string; // Ionicons glyph
-  earned: boolean; // MOCK — not a real award
-};
+// BLOCKED_CONTRACT_GAP: there is no identity, trust, follow graph, review or
+// creator-progression model in the certified contract. Every field below is
+// demo art laid out per the design (PDF p12). Counts are NOT real social proof;
+// `creatorPath` is illustrative copy only — no thresholds are evaluated.
+// The four roles (TP-D-004): Utforsker / Skaper / Bedrift / Enterprise. Copy and
+// the Skaper lock are from the onboarding role step (PDF p2).
+export type MockPersonaKey = "explorer" | "creator" | "business" | "enterprise";
 
 export type MockVisited = {
   placeId: string; // references `places`
   when: string; // MOCK human label, not a stored timestamp
 };
 
-export const PERSONAS: { key: MockPersonaKey; label: string; icon: string }[] =
-  [
-    { key: "explorer", label: "Utforsker", icon: "compass-outline" },
-    { key: "creator", label: "Skaper", icon: "sparkles-outline" },
-    { key: "business", label: "Bedrift", icon: "storefront-outline" },
-  ];
+// One row in the profile's Opplevelser tab (PDF p12): hosted or attended.
+export type MockProfileActivity = {
+  experienceId: string; // references `experiences`
+  role: "Arrangert" | "Deltok";
+  meta: string; // MOCK line, e.g. "★ 4.9 · 38 deltakere" — not real counts
+};
+
+export type MockProfileReview = {
+  placeId: string; // references `places`
+  stars: number; // MOCK 1–5
+  text: string;
+  when: string; // MOCK human label
+};
+
+export const PERSONAS: {
+  key: MockPersonaKey;
+  label: string;
+  hint: string;
+  icon: string;
+  locked?: boolean;
+}[] = [
+  {
+    key: "explorer",
+    label: "Utforsker",
+    hint: "Oppdag steder, opplevelser og folk",
+    icon: "compass-outline",
+  },
+  {
+    key: "creator",
+    label: "Skaper",
+    hint: "Arranger opplevelser — låses opp etter hvert",
+    icon: "color-palette-outline",
+    locked: true,
+  },
+  {
+    key: "business",
+    label: "Bedrift",
+    hint: "Vis frem stedet ditt og nå nye kunder",
+    icon: "storefront-outline",
+  },
+  {
+    key: "enterprise",
+    label: "Enterprise",
+    hint: "Flere lokasjoner og skreddersydd oppsett",
+    icon: "business-outline",
+  },
+];
 
 export const profile = {
   name: "Ola Nordmann",
+  age: 29, // MOCK
   handle: "@ola",
-  bio: "Utforsker i Oslo. Kaffe, konserter og lange turer.",
+  bio: "Kaffeelsker · alltid klar for en fotowalk",
   avatar: "person-ola" as const, // key into fixtures/images LIBRARY
   memberSince: "Medlem siden 2024", // MOCK label
-  // MOCK verification chip — NOT a real identity/trust check (BLOCKED_CONTRACT_GAP)
-  verification: {
-    verified: true,
-    label: "Verifisert nabo",
-    note: "Demo — ingen reell ID-sjekk er utført.",
-  },
-  stats: { steder: 24, opplevelser: 8, venner: 56 },
+  // MOCK counts — not a real follow graph (PDF p12: Følgere / Følger / Venner)
+  stats: { followers: 48, following: 61, friends: 12 },
+  interests: ["Kaffe", "Jazz", "Fotografi", "Brettspill"], // MOCK tags
+  // "Veien til Skaper" card (PDF p12/p14). Illustrative copy only — the real
+  // creator criteria are not defined (master spec §10: do not fabricate tiers).
+  creatorPath: { hosted: 2, required: 3, rating: "4.8" },
+  activity: [
+    { experienceId: "e6", role: "Arrangert", meta: "★ 4.9 · 38 deltakere" },
+    { experienceId: "e3", role: "Deltok", meta: "lørdag" },
+    { experienceId: "e1", role: "Arrangert", meta: "★ 4.7 · 12 deltakere" },
+  ] as MockProfileActivity[],
   // Places the user has "been" — MOCK history, references real place fixtures.
   visited: [
     { placeId: "p1", when: "Sist uke" },
@@ -1254,36 +1294,20 @@ export const profile = {
     { placeId: "p3", when: "Forrige måned" },
     { placeId: "p4", when: "I fjor" },
   ] as MockVisited[],
-  achievements: [
+  reviews: [
     {
-      id: "a1",
-      label: "Nabolagsfan",
-      caption: "Besøkt 10+ steder",
-      icon: "ribbon-outline",
-      earned: true,
+      placeId: "p1",
+      stars: 5,
+      text: "Beste flat white i byen.",
+      when: "I går",
     },
     {
-      id: "a2",
-      label: "Vertskap",
-      caption: "Arrangert en opplevelse",
-      icon: "megaphone-outline",
-      earned: true,
+      placeId: "p3",
+      stars: 4,
+      text: "Rolig og fint, litt trangt på kvelden.",
+      when: "Forrige uke",
     },
-    {
-      id: "a3",
-      label: "Tidligfugl",
-      caption: "5 morgenmøter",
-      icon: "sunny-outline",
-      earned: true,
-    },
-    {
-      id: "a4",
-      label: "Stamgjest",
-      caption: "Samme sted 3 uker på rad",
-      icon: "repeat-outline",
-      earned: false,
-    },
-  ] as MockAchievement[],
+  ] as MockProfileReview[],
 };
 
 // ── People (MOCK — demo neighbours, NO social graph / follow backend) ────────
