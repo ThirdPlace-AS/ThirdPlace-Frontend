@@ -27,16 +27,16 @@ below cannot be proven in this environment. They are implemented against the
 native API but marked unverified until a device build runs
 (`EXPO_PUBLIC_USE_NATIVE_MAP=1`).
 
-| ID   | Capability                      | Status                                                       |
-| ---- | ------------------------------- | ------------------------------------------------------------ |
-| NV-1 | Real Mapbox tile load           | ✅ verified on Android emulator (dev build + Metro)          |
-| NV-2 | Native marker rendering         | ✅ category pins + selected ring verified on emulator |
-| NV-3 | Native clustering (ShapeSource) | pending (4 fixtures don't cluster at this zoom)              |
-| NV-4 | Camera transitions / recenter   | pending                                                      |
-| NV-5 | Native map gestures             | pending (pan/pinch vs sheet/preview handoff)                 |
-| NV-6 | Real GPS (expo-location)        | module not in current dev build → degrades to manual-area    |
-| NV-7 | Haptics (expo-haptics)          | module not in current dev build → degrades to no-op          |
-| NV-8 | 60fps under load                | pending                                                      |
+| ID   | Capability                      | Status                                                    |
+| ---- | ------------------------------- | --------------------------------------------------------- |
+| NV-1 | Real Mapbox tile load           | ✅ verified on Android emulator (dev build + Metro)       |
+| NV-2 | Native marker rendering         | ✅ category pins + selected ring verified on emulator     |
+| NV-3 | Native clustering (ShapeSource) | pending (4 fixtures don't cluster at this zoom)           |
+| NV-4 | Camera transitions / recenter   | pending                                                   |
+| NV-5 | Native map gestures             | pending (pan/pinch vs sheet/preview handoff)              |
+| NV-6 | Real GPS (expo-location)        | module not in current dev build → degrades to manual-area |
+| NV-7 | Haptics (expo-haptics)          | module not in current dev build → degrades to no-op       |
+| NV-8 | 60fps under load                | pending                                                   |
 
 > NV-6/NV-7 need a fresh native build (`expo run:android`) that compiles in
 > expo-location + expo-haptics. The current dev build predates them; the app now
