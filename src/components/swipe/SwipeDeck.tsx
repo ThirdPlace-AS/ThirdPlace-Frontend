@@ -434,6 +434,7 @@ export function SwipeDeck() {
           onOpenNotifications={() => setNotifOpen(true)}
           unreadCount={unreadNotifs}
           onLight={mode === "places" || deck.done}
+          onOpenGroup={() => router.push("/group-swipe")}
         />
 
         {/* Honest demo note: "For deg" is not personalized yet — it shows the

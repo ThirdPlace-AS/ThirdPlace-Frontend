@@ -26,6 +26,7 @@ export function SwipeFilterBar({
   onOpenNotifications,
   unreadCount,
   onLight = false,
+  onOpenGroup,
 }: {
   mode: SwipeMode;
   onSelectMode: (m: SwipeMode) => void;
@@ -36,6 +37,8 @@ export function SwipeFilterBar({
   // True when the bar sits over a light screen (empty / Steder states) rather
   // than a photo — glyphs and text switch to ink.
   onLight?: boolean;
+  // Opens "Start gruppe-sveip" (PDF p8).
+  onOpenGroup?: () => void;
 }) {
   const glyph = onLight ? "#202020" : "#FFFFFF";
   return (
@@ -91,6 +94,20 @@ export function SwipeFilterBar({
           );
         })}
       </ScrollView>
+
+      {onOpenGroup ? (
+        <Pressable
+          accessibilityRole="button"
+          accessibilityLabel="Start gruppe-sveip"
+          onPress={onOpenGroup}
+          style={{
+            backgroundColor: onLight ? "transparent" : "rgba(0,0,0,0.35)",
+          }}
+          className="h-10 w-10 items-center justify-center rounded-full"
+        >
+          <Ionicons name="people-outline" size={20} color={glyph} />
+        </Pressable>
+      ) : null}
 
       {/* Notifications bell (opens the demo notifications sheet), with an unread
           count badge — same affordance as the map's top bar. */}
