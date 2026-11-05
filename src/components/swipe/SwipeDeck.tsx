@@ -31,7 +31,10 @@ import Animated, {
   type SharedValue,
 } from "react-native-reanimated";
 
+import { Button } from "@/components/Button";
 import { DemoBadge } from "@/components/DemoBadge";
+import { DemoNote } from "@/components/DemoNote";
+import { Sheet } from "@/components/Sheet";
 import { useGuestMode } from "@/components/map/hooks/useGuestMode";
 import { useMapSaved } from "@/components/map/hooks/useMapSaved";
 import { markerId } from "@/components/map/types/mapPresentation";
@@ -94,6 +97,7 @@ export function SwipeDeck() {
   // When a guest tries an account-only action (join/save), we show the sign-in
   // prompt instead of committing. `nope` (pass), share and undo stay open.
   const [signInFor, setSignInFor] = useState<string | null>(null);
+  const [joinChatFor, setJoinChatFor] = useState<MockExperience | null>(null);
   // Guards a second commit while a card is still flying off (F3) — without it a
   // rapid second drag clobbers the in-flight exit and strands/double-advances.
   const [busy, setBusy] = useState(false);
@@ -153,6 +157,9 @@ export function SwipeDeck() {
     }
     haptics.light();
     setBusy(true);
+    // PDF p8: a like (♥ / right swipe) offers "Bli med i samtalen" — joining
+    // the experience's chat is a separate, explicit step.
+    if (action === "like") setJoinChatFor(card);
 
     if (reduced) {
       op.value = withTiming(0, { duration: motion.duration.fast }, (fin) => {
@@ -416,7 +423,7 @@ export function SwipeDeck() {
           <View className="mx-gutter mt-2 flex-row items-center gap-2 self-start rounded-full bg-black/55 px-3 py-1.5">
             <DemoBadge />
             <Text className="text-xs font-medium text-white/80">
-              Demo — ikke personalisert ennå
+              Ikke personalisert ennå
             </Text>
           </View>
         ) : null}
@@ -443,6 +450,8 @@ export function SwipeDeck() {
       {expand ? (
         <ExpandDetail exp={expand} onClose={() => setExpand(null)} />
       ) : null}
+
+      <JoinChatSheet exp={joinChatFor} onClose={() => setJoinChatFor(null)} />
 
       {/* Account gate for guest join/save (also used by the detail's CTAs). */}
       <SignInPrompt
@@ -1014,5 +1023,47 @@ function ExpandDetail({
         />
       </View>
     </Modal>
+  );
+}
+
+// "Bli med i samtalen" (PDF p8): after a like, offer the experience's chat.
+// DEMO — "Bli med i chatten" joins nothing; the note says so. The PDF's
+// "N personer snakker …" count is left out (no real social proof).
+function JoinChatSheet({
+  exp,
+  onClose,
+}: {
+  exp: MockExperience | null;
+  onClose: () => void;
+}) {
+  const [tried, setTried] = useState(false);
+  const close = () => {
+    setTried(false);
+    onClose();
+  };
+  return (
+    <Sheet visible={exp !== null} onClose={close} title="Bli med i samtalen">
+      {exp ? (
+        <View className="gap-3">
+          <Text className="text-base font-semibold text-ink">{exp.title}</Text>
+          <Text className="text-sm text-muted">{exp.when}</Text>
+          <View className="flex-row items-center gap-2 rounded-xl bg-surfaceMuted p-3">
+            <Ionicons name="chatbubbles-outline" size={16} color={colors.ink} />
+            <Text className="flex-1 text-sm text-ink">
+              Chat er gratis — billett kjøper du når du vil.
+            </Text>
+          </View>
+          {tried ? (
+            <DemoNote>Du ble ikke lagt til i noen chat i demoen.</DemoNote>
+          ) : null}
+          <Button
+            label="Bli med i chatten"
+            variant="ink"
+            onPress={() => setTried(true)}
+          />
+          <Button label="Avbryt" variant="secondary" onPress={close} />
+        </View>
+      ) : null}
+    </Sheet>
   );
 }
