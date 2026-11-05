@@ -1,125 +1,303 @@
 import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
-import { useState } from "react";
-import { FlatList, Pressable, Text, View } from "react-native";
+import { useMemo, useState } from "react";
+import { Pressable, ScrollView, Text, TextInput, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-import { SwipeableRow } from "@/components/SwipeableRow";
-import { chats, type MockChat } from "@/fixtures";
+import { Button } from "@/components/Button";
+import { Chip } from "@/components/Chip";
+import { DemoNote } from "@/components/DemoNote";
+import { Input } from "@/components/Input";
+import { NotificationsSheet } from "@/components/NotificationsSheet";
+import { Sheet } from "@/components/Sheet";
+import {
+  CHAT_ACCESS_LABEL,
+  chats,
+  type MockChat,
+  type MockChatAccess,
+} from "@/fixtures";
 import { colors } from "@/theme";
 
-// Chat tab — conversation list. Tapping a row opens the thread (/chat/[id]).
-// DEMO ONLY: no realtime/messaging backend. Mute and mark-as-read are local
-// demo state (reset on reload); nothing is delivered or persisted.
+// Chat tab, laid out per the design (PDF p9): search, "Aktive samtaler", then
+// collapsible Opplevelser / Steder groups, a pencil FAB for "Ny chat" (p10) and
+// a link to "Arkiverte chatter" (read-only, p10). DEMO ONLY: no realtime or
+// messaging backend; chat types / access modes are display labels
+// (BLOCKED_CONTRACT_GAP).
 export default function ChatScreen() {
-  const [read, setRead] = useState<Record<string, boolean>>({});
-  const [muted, setMuted] = useState<Record<string, boolean>>({});
+  const [query, setQuery] = useState("");
+  const [open, setOpen] = useState<Record<string, boolean>>({});
+  const [newOpen, setNewOpen] = useState(false);
+  const [notifOpen, setNotifOpen] = useState(false);
+  const [archOpen, setArchOpen] = useState(false);
 
-  const markRead = (id: string) => setRead((r) => ({ ...r, [id]: true }));
-  const toggleMute = (id: string) => setMuted((m) => ({ ...m, [id]: !m[id] }));
+  const q = query.trim().toLowerCase();
+  const visible = useMemo(
+    () =>
+      chats.filter(
+        (c) =>
+          c.status === "active" &&
+          (!q ||
+            c.name.toLowerCase().includes(q) ||
+            c.last.toLowerCase().includes(q)),
+      ),
+    [q],
+  );
+  const archived = chats.filter((c) => c.status === "archived");
+  const groups = [
+    {
+      key: "experience",
+      label: "Opplevelser",
+      icon: "sparkles-outline" as const,
+      items: visible.filter((c) => c.type === "experience"),
+    },
+    {
+      key: "place",
+      label: "Steder",
+      icon: "location-outline" as const,
+      items: visible.filter((c) => c.type === "place" || c.type === "business"),
+    },
+  ];
+  // "Aktive samtaler": the most recent threads across every type.
+  const active = visible.filter(
+    (c) => c.unread > 0 || c.type === "dm" || c.type === "user_created",
+  );
+
+  const openChat = (c: MockChat) =>
+    router.push({ pathname: "/chat/[id]", params: { id: c.id } });
 
   return (
     <SafeAreaView className="flex-1 bg-background" edges={["top"]}>
-      <FlatList
-        data={chats}
-        keyExtractor={(c) => c.id}
-        contentContainerClassName="px-gutter pb-6"
-        ListHeaderComponent={
-          <View className="gap-1 pb-3 pt-1">
-            <Text className="text-2xl font-bold text-ink">Chat</Text>
-            <Text className="text-sm text-muted">
-              Samtaler fra steder og opplevelser du er med på.
-            </Text>
-          </View>
-        }
-        ItemSeparatorComponent={() => <View className="h-2" />}
-        renderItem={({ item }) => (
-          <SwipeableRow
-            background="#F8F8F8"
-            actions={[
-              {
-                icon: muted[item.id]
-                  ? "notifications-outline"
-                  : "notifications-off-outline",
-                bg: "#F0F0F0",
-                tint: "#202020",
-                accessibilityLabel: muted[item.id] ? "Slå på varsler" : "Demp",
-                onPress: () => toggleMute(item.id),
-              },
-              {
-                icon: "checkmark-done-outline",
-                bg: "#D80000",
-                tint: "#FFFFFF",
-                accessibilityLabel: "Marker som lest",
-                onPress: () => markRead(item.id),
-              },
-            ]}
+      <ScrollView
+        contentContainerClassName="gap-4 px-gutter pb-28"
+        keyboardShouldPersistTaps="handled"
+      >
+        <View className="flex-row items-center justify-between pt-1">
+          <Text className="text-2xl font-bold text-ink">Chat</Text>
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel="Varsler"
+            hitSlop={8}
+            onPress={() => setNotifOpen(true)}
+            className="h-10 w-10 items-center justify-center rounded-full active:bg-surfaceMuted"
           >
-            <ChatRow
-              chat={item}
-              muted={!!muted[item.id]}
-              unread={read[item.id] ? 0 : item.unread}
-              onPress={() =>
-                router.push({ pathname: "/chat/[id]", params: { id: item.id } })
-              }
+            <Ionicons
+              name="notifications-outline"
+              size={22}
+              color={colors.ink}
             />
-          </SwipeableRow>
+          </Pressable>
+        </View>
+
+        <View className="flex-row items-center gap-2 rounded-full border border-line bg-surface px-4">
+          <Ionicons name="search" size={18} color={colors.muted} />
+          <TextInput
+            value={query}
+            onChangeText={setQuery}
+            placeholder="Søk i samtaler eller personer …"
+            placeholderTextColor={colors.muted}
+            className="flex-1 py-3 text-base text-ink"
+            accessibilityLabel="Søk i samtaler"
+          />
+        </View>
+
+        {active.length > 0 ? (
+          <View className="gap-2">
+            <Text className="text-xs font-semibold uppercase tracking-wide text-muted">
+              Aktive samtaler
+            </Text>
+            {active.map((c) => (
+              <ChatRow key={c.id} chat={c} onPress={() => openChat(c)} />
+            ))}
+          </View>
+        ) : null}
+
+        {groups.map((g) =>
+          g.items.length > 0 ? (
+            <View
+              key={g.key}
+              className="overflow-hidden rounded-2xl border border-line bg-surface"
+            >
+              <Pressable
+                accessibilityRole="button"
+                accessibilityState={{ expanded: !!open[g.key] }}
+                onPress={() => setOpen((s) => ({ ...s, [g.key]: !s[g.key] }))}
+                className="flex-row items-center gap-3 px-4 py-3.5 active:opacity-80"
+              >
+                <Ionicons name={g.icon} size={18} color={colors.ink} />
+                <Text className="flex-1 text-base font-semibold text-ink">
+                  {g.label}
+                </Text>
+                <Text className="text-sm text-muted">{g.items.length}</Text>
+                <Ionicons
+                  name={open[g.key] ? "chevron-up" : "chevron-down"}
+                  size={18}
+                  color={colors.muted}
+                />
+              </Pressable>
+              {open[g.key] ? (
+                <View className="gap-2 px-2 pb-2">
+                  {g.items.map((c) => (
+                    <ChatRow key={c.id} chat={c} onPress={() => openChat(c)} />
+                  ))}
+                </View>
+              ) : null}
+            </View>
+          ) : null,
         )}
+
+        {visible.length === 0 ? (
+          <Text className="py-8 text-center text-sm text-muted">
+            Ingen samtaler matcher «{query}».
+          </Text>
+        ) : null}
+
+        {archived.length > 0 && !q ? (
+          <Pressable
+            accessibilityRole="button"
+            onPress={() => setArchOpen(true)}
+            className="flex-row items-center gap-3 px-1 py-2 active:opacity-70"
+          >
+            <Ionicons name="archive-outline" size={18} color={colors.muted} />
+            <Text className="flex-1 text-sm text-muted">
+              Arkiverte chatter ({archived.length})
+            </Text>
+            <Ionicons name="chevron-forward" size={16} color={colors.muted} />
+          </Pressable>
+        ) : null}
+      </ScrollView>
+
+      <Pressable
+        accessibilityRole="button"
+        accessibilityLabel="Ny chat"
+        onPress={() => setNewOpen(true)}
+        className="absolute bottom-5 right-5 h-14 w-14 items-center justify-center rounded-full bg-ink shadow-lg active:opacity-80"
+      >
+        <Ionicons name="create-outline" size={24} color={colors.onInk} />
+      </Pressable>
+
+      <NewChatSheet visible={newOpen} onClose={() => setNewOpen(false)} />
+      <Sheet
+        visible={archOpen}
+        onClose={() => setArchOpen(false)}
+        title="Arkiverte chatter"
+      >
+        <View className="gap-2">
+          <Text className="text-sm text-muted">
+            Kun lesbart — du kan ikke sende nye meldinger.
+          </Text>
+          {archived.map((c) => (
+            <ChatRow
+              key={c.id}
+              chat={{
+                ...c,
+                last: `${c.archivedNote ?? "Arkivert"} · ${c.last}`,
+              }}
+              onPress={() => {
+                setArchOpen(false);
+                openChat(c);
+              }}
+            />
+          ))}
+        </View>
+      </Sheet>
+      <NotificationsSheet
+        visible={notifOpen}
+        onClose={() => setNotifOpen(false)}
       />
     </SafeAreaView>
   );
 }
 
-function ChatRow({
-  chat,
-  muted,
-  unread,
-  onPress,
-}: {
-  chat: MockChat;
-  muted: boolean;
-  unread: number;
-  onPress: () => void;
-}) {
+function ChatRow({ chat, onPress }: { chat: MockChat; onPress: () => void }) {
+  const icon =
+    chat.type === "experience"
+      ? "musical-notes-outline"
+      : chat.type === "place" || chat.type === "business"
+        ? "cafe-outline"
+        : null;
   return (
     <Pressable
       accessibilityRole="button"
       onPress={onPress}
       className="flex-row items-center gap-3 rounded-xl bg-surface px-3 py-3 active:opacity-80"
     >
-      <View className="h-12 w-12 items-center justify-center rounded-full bg-surfaceMuted">
-        <Text className="text-base font-semibold text-ink">
-          {chat.initials}
-        </Text>
+      <View className="h-11 w-11 items-center justify-center rounded-full bg-surfaceMuted">
+        {icon ? (
+          <Ionicons name={icon} size={18} color={colors.ink} />
+        ) : (
+          <Text className="text-sm font-semibold text-ink">
+            {chat.initials}
+          </Text>
+        )}
       </View>
       <View className="flex-1">
-        <View className="flex-row items-center gap-1.5">
-          {chat.kind === "group" ? (
-            <Ionicons name="people" size={13} color={colors.muted} />
-          ) : null}
-          <Text
-            className="flex-1 text-base font-semibold text-ink"
-            numberOfLines={1}
-          >
-            {chat.name}
-          </Text>
-        </View>
+        <Text className="text-base font-semibold text-ink" numberOfLines={1}>
+          {chat.name}
+        </Text>
         <Text className="text-sm text-muted" numberOfLines={1}>
           {chat.last}
         </Text>
       </View>
       <View className="items-end gap-1">
         <Text className="text-xs text-muted">{chat.time}</Text>
-        {muted ? (
-          <Ionicons name="notifications-off" size={14} color={colors.muted} />
-        ) : unread > 0 ? (
+        {chat.unread > 0 ? (
           <View className="h-5 min-w-5 items-center justify-center rounded-full bg-ember px-1.5">
-            <Text className="text-xs font-semibold text-onEmber">{unread}</Text>
+            <Text className="text-xs font-semibold text-onEmber">
+              {chat.unread}
+            </Text>
           </View>
         ) : (
           <View className="h-5" />
         )}
       </View>
     </Pressable>
+  );
+}
+
+// "Ny chat" (PDF p10): Navn, Type (Åpen / Lukket / Kun invitasjon). DEMO —
+// "Opprett chat" creates nothing; a DemoNote says so.
+function NewChatSheet({
+  visible,
+  onClose,
+}: {
+  visible: boolean;
+  onClose: () => void;
+}) {
+  const [name, setName] = useState("");
+  const [access, setAccess] = useState<MockChatAccess>("open");
+  return (
+    <Sheet visible={visible} onClose={onClose} title="Ny chat">
+      <View className="gap-4">
+        <Input
+          label="Navn"
+          placeholder="F.eks. «Løpegjengen på Løkka»"
+          value={name}
+          onChangeText={setName}
+          maxLength={50}
+        />
+        <View className="gap-2">
+          <Text className="text-sm font-semibold text-ink">Type</Text>
+          <View className="flex-row flex-wrap gap-2">
+            {(Object.keys(CHAT_ACCESS_LABEL) as MockChatAccess[]).map((a) => (
+              <Chip
+                key={a}
+                label={CHAT_ACCESS_LABEL[a]}
+                selected={access === a}
+                onPress={() => setAccess(a)}
+              />
+            ))}
+          </View>
+        </View>
+        <DemoNote>
+          Demo — ingen chat opprettes, og ingen blir invitert.
+        </DemoNote>
+        <Button
+          label="Opprett chat"
+          variant="ink"
+          disabled={name.trim().length === 0}
+          onPress={onClose}
+        />
+      </View>
+    </Sheet>
   );
 }

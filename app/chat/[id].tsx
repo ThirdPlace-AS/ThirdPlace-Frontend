@@ -17,6 +17,8 @@ import { DemoBadge } from "@/components/DemoBadge";
 import { useGuestMode } from "@/components/map/hooks/useGuestMode";
 import { SignInPrompt } from "@/components/SignInPrompt";
 import {
+  CHAT_ACCESS_LABEL,
+  CHAT_TYPE_LABEL,
   chatById,
   experienceById,
   messagesForChat,
@@ -70,7 +72,7 @@ export default function ChatThreadScreen() {
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-background" edges={["top"]}>
+    <SafeAreaView className="flex-1 bg-background" edges={["top", "bottom"]}>
       {/* Header */}
       <View className="flex-row items-center gap-3 border-b border-line px-gutter pb-3">
         <Pressable
@@ -92,9 +94,13 @@ export default function ChatThreadScreen() {
             {chat.name}
           </Text>
           <Text className="text-xs text-muted">
-            {chat.kind === "group"
-              ? `Gruppe · ${chat.members} medlemmer`
-              : "Direktemelding"}
+            {[
+              CHAT_TYPE_LABEL[chat.type],
+              chat.type === "dm" ? null : CHAT_ACCESS_LABEL[chat.access],
+              chat.members ? `${chat.members} i chatten` : null,
+            ]
+              .filter(Boolean)
+              .join(" · ")}
           </Text>
         </View>
         <DemoBadge />
@@ -128,7 +134,13 @@ export default function ChatThreadScreen() {
           renderItem={({ item }) => <Bubble message={item} />}
         />
 
-        {isGuest ? (
+        {chat.status === "archived" ? (
+          <View className="border-t border-line px-gutter pb-3 pt-3">
+            <Text className="text-center text-sm text-muted">
+              Arkivert — kun lesbart. Du kan ikke sende nye meldinger.
+            </Text>
+          </View>
+        ) : isGuest ? (
           <View className="border-t border-line px-gutter pb-2 pt-2.5">
             <Button
               label="Logg inn for å skrive"
@@ -157,14 +169,14 @@ export default function ChatThreadScreen() {
                 onPress={send}
                 className={`h-11 w-11 items-center justify-center rounded-full ${
                   draft.trim()
-                    ? "bg-ember active:opacity-80"
+                    ? "bg-ink active:opacity-80"
                     : "bg-surfaceMuted"
                 }`}
               >
                 <Ionicons
                   name="arrow-up"
                   size={20}
-                  color={draft.trim() ? colors.onEmber : colors.muted}
+                  color={draft.trim() ? colors.onInk : colors.muted}
                 />
               </Pressable>
             </View>
@@ -184,9 +196,9 @@ function Bubble({ message }: { message: MockMessage }) {
   if (message.mine) {
     return (
       <View className="max-w-[80%] flex-row items-end gap-2 self-end">
-        <View className="rounded-2xl rounded-br-sm bg-ember px-3.5 py-2.5">
-          <Text className="text-base text-onEmber">{message.text}</Text>
-          <Text className="pt-0.5 text-[10px] text-onEmber/70">
+        <View className="rounded-2xl rounded-br-sm bg-ink px-3.5 py-2.5">
+          <Text className="text-base text-onInk">{message.text}</Text>
+          <Text className="pt-0.5 text-[10px] text-onInk/70">
             {message.time}
           </Text>
         </View>

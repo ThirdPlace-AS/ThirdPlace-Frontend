@@ -1057,31 +1057,64 @@ export function groupById(id: string): MockGroup | undefined {
   return groups.find((g) => g.id === id);
 }
 
-// MOCK chat list. BLOCKED_CONTRACT_GAP: not a real realtime/messaging backend —
-// `kind`/`members`/`pinnedExperienceId` are demo labels, NOT the certified V2.2
-// chat-type / access-mode / membership model. No delivery or read receipts.
+// MOCK chat list. BLOCKED_CONTRACT_GAP: not a real realtime/messaging backend.
+// `type` uses the documented chat types (reconciled docs §4: byrom, business,
+// experience, group-swipe, user-created, DM, marketplace) and `access` the
+// documented access modes (Åpen / Lukket / Kun invitasjon, PDF p10). They are
+// display labels only — no membership, join lifecycle, admin rule, delivery or
+// read receipt is implemented. Archived chats are read-only (PDF p10).
+export type MockChatType =
+  | "experience"
+  | "place"
+  | "business"
+  | "group_swipe"
+  | "user_created"
+  | "dm"
+  | "marketplace";
+export type MockChatAccess = "open" | "closed" | "invite_only";
+
+export const CHAT_TYPE_LABEL: Record<MockChatType, string> = {
+  experience: "Opplevelse-chat",
+  place: "Steds-chat",
+  business: "Bedrifts-chat",
+  group_swipe: "Gruppe-sveip",
+  user_created: "Gruppechat",
+  dm: "Direktemelding",
+  marketplace: "Marketplace-chat",
+};
+export const CHAT_ACCESS_LABEL: Record<MockChatAccess, string> = {
+  open: "Åpen",
+  closed: "Lukket",
+  invite_only: "Kun invitasjon",
+};
+
 export type MockChat = {
   id: string;
   name: string;
   last: string;
   time: string;
   unread: number;
-  kind: "group" | "direct";
-  // Demo-only grouping: a group thread pinned to a demo experience.
+  type: MockChatType;
+  access: MockChatAccess;
+  status: "active" | "archived";
+  // An experience chat is pinned to its experience.
   pinnedExperienceId?: string;
-  members?: number;
+  members?: number; // MOCK count, not real social proof
   initials: string;
+  archivedNote?: string; // e.g. "avsluttet 12. juli"
 };
 
 export const chats: MockChat[] = [
   {
     id: "c1",
-    name: "Morgenkaffe på Løkka",
-    last: "Vi sees i morgen kl 09 ☕",
+    name: "Morgenkaffe & prat",
+    last: "Sofie: Vi sees i morgen kl 09 ☕",
     time: "18:42",
     unread: 2,
-    kind: "group",
-    pinnedExperienceId: "e1", // e1 = "Morgenkaffe & prat" (coherent)
+    type: "experience",
+    access: "open",
+    status: "active",
+    pinnedExperienceId: "e1", // e1 = "Morgenkaffe & prat"
     members: 7,
     initials: "MK",
   },
@@ -1091,7 +1124,9 @@ export const chats: MockChat[] = [
     last: "Takk for sist 😊",
     time: "I går",
     unread: 0,
-    kind: "direct",
+    type: "dm",
+    access: "invite_only",
+    status: "active",
     initials: "MM",
   },
   {
@@ -1100,9 +1135,49 @@ export const chats: MockChat[] = [
     last: "Noen som løper i regnet?",
     time: "Man",
     unread: 0,
-    kind: "group",
+    type: "user_created",
+    access: "closed",
+    status: "active",
     members: 12,
     initials: "MG",
+  },
+  {
+    id: "c4",
+    name: "Grünerløkka Bokcafé",
+    last: "Ny lesesirkel starter søndag",
+    time: "I går",
+    unread: 1,
+    type: "place",
+    access: "open",
+    status: "active",
+    members: 34,
+    initials: "GB",
+  },
+  {
+    id: "c5",
+    name: "Oslo Kaffebar",
+    last: "Nye bønner fra Colombia i dag",
+    time: "Søn",
+    unread: 0,
+    type: "business",
+    access: "open",
+    status: "active",
+    members: 58,
+    initials: "OK",
+  },
+  {
+    id: "c6",
+    name: "Naturvin-smaking",
+    last: "Takk for en fantastisk kveld!",
+    time: "12. juli",
+    unread: 0,
+    type: "experience",
+    access: "open",
+    status: "archived",
+    pinnedExperienceId: "e3",
+    members: 14,
+    initials: "NS",
+    archivedNote: "avsluttet 12. juli",
   },
 ];
 
@@ -1195,6 +1270,36 @@ export const messagesByChat: Record<string, MockMessage[]> = {
       text: "Jeg er med hvis det letter litt 🌧️",
       time: "Man",
       mine: true,
+    },
+  ],
+  c4: [
+    {
+      id: "m40",
+      author: "Grünerløkka Bokcafé",
+      initials: "GB",
+      text: "Ny lesesirkel starter søndag kl 18 — nordisk krim denne gangen.",
+      time: "I går",
+      mine: false,
+    },
+  ],
+  c5: [
+    {
+      id: "m50",
+      author: "Oslo Kaffebar",
+      initials: "OK",
+      text: "Nye bønner fra Colombia i dag. Kom innom og smak!",
+      time: "Søn",
+      mine: false,
+    },
+  ],
+  c6: [
+    {
+      id: "m60",
+      author: "Nina",
+      initials: "NI",
+      text: "Takk for en fantastisk kveld!",
+      time: "12. juli",
+      mine: false,
     },
   ],
 };
