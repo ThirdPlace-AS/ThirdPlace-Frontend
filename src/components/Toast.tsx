@@ -1,6 +1,6 @@
 import { Ionicons } from "@expo/vector-icons";
 import { useEffect, useSyncExternalStore } from "react";
-import { Pressable, Text, View } from "react-native";
+import { View } from "react-native";
 import Animated, {
   FadeInUp,
   FadeOutUp,
@@ -8,8 +8,8 @@ import Animated, {
 } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-import { Icon } from "@/components/ui";
-import { elevation } from "@/theme";
+import { Icon, Pressable, Text } from "@/components/ui";
+import { duration, elevation } from "@/theme";
 
 // Flytende varsler (PDF p27): a floating banner at the top of the screen —
 // icon, bold title, one-line body. A tiny module store so any screen can call
@@ -64,49 +64,49 @@ export function ToastHost() {
     return () => clearTimeout(t);
   }, [toast]);
 
-  if (!toast) return null;
+  // The host stays mounted so the toast can animate out.
   return (
     <View
       pointerEvents="box-none"
       style={{ position: "absolute", left: 0, right: 0, top: insets.top + 8 }}
       className="px-gutter"
+      accessibilityLiveRegion="polite"
     >
-      <Animated.View
-        key={toast.id}
-        entering={reduced ? undefined : FadeInUp.duration(200)}
-        exiting={reduced ? undefined : FadeOutUp.duration(150)}
-      >
-        <Pressable
-          accessibilityRole="alert"
-          accessibilityLabel={`${toast.title}. ${toast.body ?? ""}`}
-          onPress={dismissToast}
-          className="flex-row items-center gap-3 rounded-lg bg-ink px-4 py-3"
-          style={{
-            ...elevation.e3,
-          }}
+      {toast ? (
+        <Animated.View
+          key={toast.id}
+          entering={reduced ? undefined : FadeInUp.duration(duration.base)}
+          exiting={reduced ? undefined : FadeOutUp.duration(duration.fast)}
         >
-          <View className="h-9 w-9 items-center justify-center rounded-full bg-white/10">
-            <Icon
-              name={toast.icon ?? "notifications-outline"}
-              size="md"
-              tone="onInk"
-            />
-          </View>
-          <View className="flex-1">
-            <Text className="text-sm font-semibold text-white">
-              {toast.title}
-            </Text>
-            {toast.body ? (
-              <Text
-                className="text-xs text-white/75 font-normal"
-                numberOfLines={2}
-              >
-                {toast.body}
+          <Pressable
+            accessibilityRole="alert"
+            accessibilityLabel={`${toast.title}. ${toast.body ?? ""}`}
+            accessibilityHint="Trykk for å lukke"
+            onPress={dismissToast}
+            pressedScale={0.98}
+            contentClassName="flex-row items-center gap-md rounded-lg bg-ink px-md py-md"
+            contentStyle={elevation.e3}
+          >
+            <View className="h-9 w-9 items-center justify-center rounded-full bg-onInk/10">
+              <Icon
+                name={toast.icon ?? "notifications-outline"}
+                size="md"
+                tone="onInk"
+              />
+            </View>
+            <View className="flex-1 gap-0.5">
+              <Text variant="label" weight="semibold" tone="onInk">
+                {toast.title}
               </Text>
-            ) : null}
-          </View>
-        </Pressable>
-      </Animated.View>
+              {toast.body ? (
+                <Text variant="caption" tone="onInk" numberOfLines={2}>
+                  {toast.body}
+                </Text>
+              ) : null}
+            </View>
+          </Pressable>
+        </Animated.View>
+      ) : null}
     </View>
   );
 }

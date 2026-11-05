@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Pressable, Text, View } from "react-native";
-import { Icon } from "@/components/ui";
+import { Icon, PopIcon } from "@/components/ui";
+import { haptics } from "@/lib/haptics";
 import { ReportSheet, ShareSheet } from "@/components/actions/ActionSheets";
 import { SignInPrompt } from "@/components/SignInPrompt";
 import { useGuestMode } from "../hooks/useGuestMode";
@@ -25,7 +26,10 @@ export function DetailActions({
 
   const onSave = () => {
     if (isGuest) setPromptOpen(true);
-    else toggle(markerId);
+    else {
+      if (!saved) haptics.light();
+      toggle(markerId);
+    }
   };
 
   return (
@@ -40,7 +44,8 @@ export function DetailActions({
             saved ? "border-ember bg-ember/10" : "border-line bg-surface"
           }`}
         >
-          <Icon
+          <PopIcon
+            pop={saved}
             name={saved ? "heart" : "heart-outline"}
             size="md"
             tone={saved ? "ember" : "ink"}

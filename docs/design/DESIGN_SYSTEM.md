@@ -106,6 +106,17 @@ All primitives live in `src/components/ui/`. Each one must implement the states 
 
 Touch targets are at least 44×44 (use `hitSlop` to reach it on small visuals).
 
+### Feedback & states
+
+| Need                | Use                                                                                            |
+| ------------------- | ---------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------- |
+| Like / save         | `<HeartToggle kind="heart"                                                                     | "bookmark">`(pop + ember + light haptic on save; quiet on unsave). Inside a custom button, use`<PopIcon pop={saved}>`. |
+| Follow              | `<FollowButton>` — "Følg" ink pill → "Følger" muted pill, label cross-fades, selection haptic. |
+| Collapsible section | `<Accordion>` (animated height + rotating chevron; `variant="card"` for grouped lists).        |
+| Loading list        | `<SkeletonList variant="row"                                                                   | "card"                                                                                                                 | "mediaCard">` — one busy element for screen readers. |
+| Empty / error       | `<EmptyState>` / `<ErrorState>` (icon in a soft disc, or an `illustration`).                   |
+| Toast               | `showToast()` — ink surface, polite live region, fades in/out. Demo-honest copy only.          |
+
 ### Sheets & overlays
 
 One family, two engines, one look (handle, 28 px top radius, `e3`, `SheetHeader`):

@@ -9,7 +9,12 @@ import Animated, {
   useAnimatedReaction,
   useAnimatedStyle,
 } from "react-native-reanimated";
-import { Icon, useSheetChrome } from "@/components/ui";
+import {
+  HeartToggle,
+  Icon,
+  SkeletonList,
+  useSheetChrome,
+} from "@/components/ui";
 import { MAP_CITY, type MockWeather } from "@/fixtures";
 import { browseAnimatedIndex } from "./browseSheetProgress";
 import type { DiscoveryItem } from "./types/mapPresentation";
@@ -31,6 +36,7 @@ export function MapBrowseSheet({
   weather,
   hidden,
   expandSignal = 0,
+  loading = false,
 }: {
   items: DiscoveryItem[];
   selectedMarkerId: string | null;
@@ -43,6 +49,8 @@ export function MapBrowseSheet({
   hidden: boolean;
   // Bumped to force the sheet to expand (e.g. a SoftMap cluster tap).
   expandSignal?: number;
+  /** Mock load in flight: show skeleton cards instead of the empty message. */
+  loading?: boolean;
 }) {
   const chrome = useSheetChrome();
   const snapPoints = useMemo(() => ["8%", "49%", "84.5%"], []);
@@ -183,12 +191,20 @@ export function MapBrowseSheet({
           contentContainerClassName="gap-6 px-gutter pb-28"
           showsVerticalScrollIndicator={false}
           ListEmptyComponent={
-            <View className="items-center gap-2 p-gutter">
-              <Icon name="compass-outline" size="xl" tone="muted" />
-              <Text className="text-sm text-center text-muted font-normal">
-                {emptyMessage}
-              </Text>
-            </View>
+            loading ? (
+              <SkeletonList
+                variant="mediaCard"
+                count={2}
+                label="Laster steder"
+              />
+            ) : (
+              <View className="items-center gap-2 p-gutter">
+                <Icon name="compass-outline" size="xl" tone="muted" />
+                <Text className="text-sm text-center text-muted font-normal">
+                  {emptyMessage}
+                </Text>
+              </View>
+            )
           }
           renderItem={renderItem}
           initialNumToRender={4}
@@ -315,20 +331,13 @@ const BrowseCard = memo(function BrowseCard({
       </Pressable>
 
       {/* Top-right save (heart) — sibling overlay over the hero. */}
-      <Pressable
-        accessibilityRole="button"
-        accessibilityLabel={saved ? "Fjern fra lagret" : "Lagre"}
-        accessibilityState={{ selected: saved }}
-        onPress={() => onToggleSave(item)}
-        hitSlop={8}
-        className="absolute items-center justify-center rounded-full right-3 top-3 h-9 w-9 bg-surface/90"
-      >
-        <Icon
-          name={saved ? "heart" : "heart-outline"}
-          size="lg"
-          tone={saved ? "ember" : "ink"}
-        />
-      </Pressable>
+      <HeartToggle
+        selected={saved}
+        onToggle={() => onToggleSave(item)}
+        variant="floating"
+        size="sm"
+        className="absolute right-3 top-3"
+      />
     </View>
   );
 });

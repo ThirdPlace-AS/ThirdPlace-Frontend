@@ -3,7 +3,7 @@ import { useLocalSearchParams } from "expo-router";
 import { useState } from "react";
 import { ScrollView, Text, View } from "react-native";
 
-import { Screen } from "@/components/ui";
+import { FollowButton, Screen } from "@/components/ui";
 import { Button } from "@/components/Button";
 import { DemoBadge } from "@/components/DemoBadge";
 import { DemoNote } from "@/components/DemoNote";
@@ -58,10 +58,12 @@ export default function CreatorProfileScreen() {
         </View>
         <View className="flex-row gap-3">
           <View className="flex-1">
-            <Button
-              label={follow ? "Følger" : "Følg"}
-              variant={follow ? "secondary" : "ink"}
+            <FollowButton
+              following={follow}
               onPress={() => setFollow((f) => !f)}
+              name={person.name}
+              size="md"
+              fullWidth
             />
           </View>
           <View className="flex-1">

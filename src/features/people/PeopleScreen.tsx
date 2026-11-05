@@ -3,7 +3,13 @@ import { router } from "expo-router";
 import { useState } from "react";
 import { FlatList, Pressable, Text, View } from "react-native";
 
-import { Header, Icon, IconButton, Screen } from "@/components/ui";
+import {
+  FollowButton,
+  Header,
+  Icon,
+  IconButton,
+  Screen,
+} from "@/components/ui";
 import { BlockSheet } from "@/components/actions/ActionSheets";
 import { Button } from "@/components/Button";
 import { Chip } from "@/components/Chip";
@@ -203,35 +209,12 @@ function PersonRow({
           </Text>
         </View>
       </Pressable>
-      <FollowButton following={following} onPress={onFollow} compact />
+      <FollowButton
+        following={following}
+        onPress={onFollow}
+        name={person.name}
+      />
     </View>
-  );
-}
-
-function FollowButton({
-  following,
-  onPress,
-  compact = false,
-}: {
-  following: boolean;
-  onPress: () => void;
-  compact?: boolean;
-}) {
-  return (
-    <Pressable
-      accessibilityRole="button"
-      accessibilityLabel={following ? "Slutt å følge" : "Følg"}
-      onPress={onPress}
-      className={`items-center justify-center rounded-full ${
-        compact ? "px-4 py-2" : "px-5 py-2.5"
-      } ${following ? "bg-surfaceMuted" : "bg-ink active:opacity-80"}`}
-    >
-      <Text
-        className={`text-sm font-semibold ${following ? "text-ink" : "text-onInk"}`}
-      >
-        {following ? "Følger" : "Følg"}
-      </Text>
-    </Pressable>
   );
 }
 
@@ -290,7 +273,13 @@ function PersonDetailSheet({
             </View>
           ) : null}
 
-          <FollowButton following={following} onPress={onFollow} />
+          <FollowButton
+            following={following}
+            onPress={onFollow}
+            name={person.name}
+            size="md"
+            fullWidth
+          />
           <Button
             label="Blokker"
             variant="secondary"

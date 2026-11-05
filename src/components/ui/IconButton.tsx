@@ -7,6 +7,7 @@ import { View } from "react-native";
 import { elevation } from "@/theme";
 
 import { Icon, type IconName, type IconTone } from "./Icon";
+import { PopIcon } from "./PopIcon";
 import { Pressable, type PressHaptic } from "./Pressable";
 import { Text } from "./Text";
 
@@ -73,6 +74,8 @@ export type IconButtonProps = {
   /** `true` = dot, number = count (99+ capped). */
   badge?: boolean | number;
   selected?: boolean;
+  /** Glyph pops when this turns true (like/save — see HeartToggle). */
+  pop?: boolean;
   disabled?: boolean;
   haptic?: PressHaptic;
   /** Layout-only classes (position/margins), not colours. */
@@ -89,6 +92,7 @@ export function IconButton({
   tone,
   badge,
   selected,
+  pop,
   disabled,
   haptic = "none",
   className,
@@ -119,11 +123,20 @@ export function IconButton({
           : null,
       ]}
     >
-      <Icon
-        name={icon}
-        size={GLYPH[size]}
-        tone={tone ?? VARIANT_TONE[variant]}
-      />
+      {pop !== undefined ? (
+        <PopIcon
+          pop={pop}
+          name={icon}
+          size={GLYPH[size]}
+          tone={tone ?? VARIANT_TONE[variant]}
+        />
+      ) : (
+        <Icon
+          name={icon}
+          size={GLYPH[size]}
+          tone={tone ?? VARIANT_TONE[variant]}
+        />
+      )}
       {showBadge ? (
         <View
           pointerEvents="none"

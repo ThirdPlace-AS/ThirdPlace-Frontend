@@ -3,7 +3,14 @@ import { useMemo, useState } from "react";
 import { Pressable, ScrollView, Text, View } from "react-native";
 
 import { Button } from "@/components/Button";
-import { Header, Icon, IconButton, Screen, SearchBar } from "@/components/ui";
+import {
+  Header,
+  Icon,
+  IconButton,
+  Screen,
+  SearchBar,
+  Accordion,
+} from "@/components/ui";
 import { Chip } from "@/components/Chip";
 import { DemoNote } from "@/components/DemoNote";
 import { Input } from "@/components/Input";
@@ -105,37 +112,21 @@ export default function ChatScreen() {
 
         {groups.map((g) =>
           g.items.length > 0 ? (
-            <View
+            <Accordion
               key={g.key}
-              className="overflow-hidden rounded-lg border border-line bg-surface"
+              variant="card"
+              icon={g.icon}
+              title={g.label}
+              meta={String(g.items.length)}
+              open={!!open[g.key] || !!q}
+              onToggle={() => setOpen((s) => ({ ...s, [g.key]: !s[g.key] }))}
             >
-              <Pressable
-                accessibilityRole="button"
-                accessibilityState={{ expanded: !!open[g.key] || !!q }}
-                onPress={() => setOpen((s) => ({ ...s, [g.key]: !s[g.key] }))}
-                className="flex-row items-center gap-3 px-4 py-3.5 active:opacity-80"
-              >
-                <Icon name={g.icon} size="md" tone="ink" />
-                <Text className="flex-1 text-base font-semibold text-ink">
-                  {g.label}
-                </Text>
-                <Text className="text-sm text-muted font-normal">
-                  {g.items.length}
-                </Text>
-                <Icon
-                  name={open[g.key] || q ? "chevron-up" : "chevron-down"}
-                  size="md"
-                  tone="muted"
-                />
-              </Pressable>
-              {open[g.key] || q ? (
-                <View className="gap-2 px-2 pb-2">
-                  {g.items.map((c) => (
-                    <ChatRow key={c.id} chat={c} onPress={() => openChat(c)} />
-                  ))}
-                </View>
-              ) : null}
-            </View>
+              <View className="gap-2 px-2 pb-2">
+                {g.items.map((c) => (
+                  <ChatRow key={c.id} chat={c} onPress={() => openChat(c)} />
+                ))}
+              </View>
+            </Accordion>
           ) : null,
         )}
 

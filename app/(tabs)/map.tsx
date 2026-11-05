@@ -406,9 +406,10 @@ export default function MapScreen() {
           the Airbnb list of the active mode. Rendered BEFORE the detail sheet so
           it sits behind it — while a marker detail is open the sheet collapses
           to its peek (never below) and the detail, on top, covers it. */}
-      {!loading && !errored ? (
+      {!errored ? (
         <MapBrowseSheet
-          items={items}
+          items={loading ? [] : items}
+          loading={loading}
           selectedMarkerId={selection.selectedMarkerId}
           onSelect={handleSelectItem}
           isSaved={saved.isSaved}

@@ -30,7 +30,13 @@ import Animated, {
   type SharedValue,
 } from "react-native-reanimated";
 
-import { Icon, IconButton, ListRow, Overlay } from "@/components/ui";
+import {
+  HeartToggle,
+  Icon,
+  IconButton,
+  ListRow,
+  Overlay,
+} from "@/components/ui";
 import { Button } from "@/components/Button";
 import { DemoBadge } from "@/components/DemoBadge";
 import { DemoNote } from "@/components/DemoNote";
@@ -944,13 +950,13 @@ function ExpandBody({
             {joined ? "Du er med · demo" : joinLabel}
           </Text>
         </Pressable>
-        <IconButton
-          icon={saved ? "bookmark" : "bookmark-outline"}
-          label={saved ? "Fjern fra lagret" : "Lagre"}
+        <HeartToggle
+          kind="bookmark"
+          selected={saved}
           variant="mediaOutline"
           size="lg"
-          selected={saved}
-          onPress={() => gate("lagre", () => toggle(savedKey))}
+          haptic={!isGuest}
+          onToggle={() => gate("lagre", () => toggle(savedKey))}
         />
         <IconButton
           icon="paper-plane-outline"
