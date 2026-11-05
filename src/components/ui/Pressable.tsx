@@ -2,13 +2,23 @@
 // Every tappable surface gets the same tactile response: a quick spring scale
 // on press-in, back on release, optional haptic on press. Under reduced motion
 // it dims instead of scaling. Disabled → 40 % and no feedback.
-import { cssInterop } from "nativewind";
-import { forwardRef } from "react";
+//
+// Structure (deliberate — NativeWind only styles core components reliably):
+//   core Pressable   ← a11y, hitSlop, press handlers, `className` (LAYOUT only:
+//                      w-full, self-start, absolute bottom-5 right-5, ml-auto)
+//     Animated.View  ← scale/opacity (style only)
+//       core View    ← `contentClassName` (VISUALS: bg, border, rounded, padding,
+//                      flex-row…) + `contentStyle` (sizes, elevation)
+// Keeping the core Pressable outermost keeps hitSlop working (a touchable
+// can't receive touches outside its parent's bounds).
+import { forwardRef, type ReactNode } from "react";
 import {
   Pressable as RNPressable,
+  View,
   type GestureResponderEvent,
   type PressableProps as RNPressableProps,
-  type View,
+  type StyleProp,
+  type ViewStyle,
 } from "react-native";
 import Animated, {
   useAnimatedStyle,
@@ -21,15 +31,19 @@ import Animated, {
 import { haptics } from "@/lib/haptics";
 import { duration, spring } from "@/theme";
 
-const AnimatedPressable = Animated.createAnimatedComponent(RNPressable);
-// Let `className` reach the animated wrapper (NativeWind only interops core components).
-cssInterop(AnimatedPressable, { className: "style" });
-
 export type PressFeedback = "scale" | "none";
 export type PressHaptic = "selection" | "light" | "none";
 
-export type PressableProps = RNPressableProps & {
+export type PressableProps = Omit<RNPressableProps, "children" | "style"> & {
+  children?: ReactNode;
+  /** Layout classes for the touch target (position, width, margins). */
   className?: string;
+  /** Layout style for the touch target. */
+  style?: StyleProp<ViewStyle>;
+  /** Visual classes for the pressed-scaled surface (bg, border, rounded…). */
+  contentClassName?: string;
+  /** Visual style for the surface (fixed sizes, elevation). */
+  contentStyle?: StyleProp<ViewStyle>;
   /** Visual press response. Default "scale". */
   feedback?: PressFeedback;
   /** Pressed scale (default 0.97; small controls look better at ~0.92). */
@@ -40,6 +54,11 @@ export type PressableProps = RNPressableProps & {
 
 export const Pressable = forwardRef<View, PressableProps>(function Pressable(
   {
+    children,
+    className,
+    style,
+    contentClassName,
+    contentStyle,
     feedback = "scale",
     pressedScale = 0.97,
     haptic = "none",
@@ -47,7 +66,6 @@ export const Pressable = forwardRef<View, PressableProps>(function Pressable(
     onPressIn,
     onPressOut,
     onPress,
-    style,
     accessibilityState,
     ...rest
   },
@@ -64,16 +82,17 @@ export const Pressable = forwardRef<View, PressableProps>(function Pressable(
     };
   });
 
+  const to = (v: number) =>
+    reduced
+      ? withTiming(v, { duration: duration.fast })
+      : withSpring(v, spring.snappy);
+
   const handleIn = (e: GestureResponderEvent) => {
-    pressed.value = reduced
-      ? withTiming(1, { duration: duration.fast })
-      : withSpring(1, spring.snappy);
+    pressed.value = to(1);
     onPressIn?.(e);
   };
   const handleOut = (e: GestureResponderEvent) => {
-    pressed.value = reduced
-      ? withTiming(0, { duration: duration.fast })
-      : withSpring(0, spring.snappy);
+    pressed.value = to(0);
     onPressOut?.(e);
   };
   const handlePress = (e: GestureResponderEvent) => {
@@ -83,20 +102,22 @@ export const Pressable = forwardRef<View, PressableProps>(function Pressable(
   };
 
   return (
-    <AnimatedPressable
+    <RNPressable
       ref={ref}
       disabled={disabled}
       accessibilityState={{ ...accessibilityState, disabled: !!disabled }}
       onPressIn={handleIn}
       onPressOut={handleOut}
       onPress={handlePress}
-      // `style` may be a function in RN Pressable; animated wrapper needs an object.
-      style={[
-        typeof style === "function" ? undefined : style,
-        animated,
-        disabled ? { opacity: 0.4 } : null,
-      ]}
+      className={className}
+      style={style}
       {...rest}
-    />
+    >
+      <Animated.View style={[animated, disabled ? { opacity: 0.4 } : null]}>
+        <View className={contentClassName} style={contentStyle}>
+          {children}
+        </View>
+      </Animated.View>
+    </RNPressable>
   );
 });

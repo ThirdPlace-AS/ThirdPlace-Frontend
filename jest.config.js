@@ -2,8 +2,8 @@
 module.exports = {
   preset: "jest-expo",
   roots: ["<rootDir>/src", "<rootDir>/tests"],
-  // Shared mocks for native-only animation runtimes.
-  setupFiles: ["<rootDir>/tests/setup/reanimated.js"],
+  // Shared mocks for native-only runtimes (animation, fonts).
+  setupFiles: ["<rootDir>/tests/setup/nativeMocks.js"],
   moduleNameMapper: {
     "^@/(.*)$": "<rootDir>/src/$1",
   },

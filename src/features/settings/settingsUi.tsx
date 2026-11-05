@@ -1,7 +1,8 @@
 import { Ionicons } from "@expo/vector-icons";
 import type { ReactNode } from "react";
-import { Pressable, Switch, Text, View } from "react-native";
+import { Pressable, Text, View } from "react-native";
 
+import { Switch } from "@/components/ui/Switch";
 import { colors } from "@/theme";
 
 // Shared building blocks for the Settings + Privacy routes. All inert/demo:
@@ -82,13 +83,7 @@ export function ToggleRow({
         <Text className="text-base text-ink">{label}</Text>
         {hint ? <Text className="text-xs text-muted">{hint}</Text> : null}
       </View>
-      <Switch
-        value={value}
-        onValueChange={onValueChange}
-        trackColor={{ true: colors.ember, false: colors.line }}
-        thumbColor="#FFFFFF"
-        accessibilityLabel={label}
-      />
+      <Switch value={value} onValueChange={onValueChange} label={label} />
     </View>
   );
 }

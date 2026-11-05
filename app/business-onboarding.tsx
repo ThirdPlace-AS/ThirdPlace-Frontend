@@ -1,9 +1,10 @@
 import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
 import { useState } from "react";
-import { ScrollView, Switch, Text, View } from "react-native";
+import { ScrollView, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
+import { Switch } from "@/components/ui/Switch";
 import { IconButton } from "@/components/ui";
 import { Button } from "@/components/Button";
 import { Chip } from "@/components/Chip";
@@ -439,13 +440,7 @@ function Perm({
         </View>
         <Text className="text-xs text-muted">{hint}</Text>
       </View>
-      <Switch
-        value={value}
-        onValueChange={onChange}
-        trackColor={{ true: colors.ember, false: colors.line }}
-        thumbColor={colors.surface}
-        accessibilityLabel={label}
-      />
+      <Switch value={value} onValueChange={onChange} label={label} />
     </View>
   );
 }

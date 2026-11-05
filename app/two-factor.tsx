@@ -1,9 +1,10 @@
 import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
 import { useState } from "react";
-import { Pressable, ScrollView, Switch, Text, View } from "react-native";
+import { Pressable, ScrollView, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
+import { Switch } from "@/components/ui/Switch";
 import { Button } from "@/components/Button";
 import { DemoNote } from "@/components/DemoNote";
 import { RouteHeader } from "@/components/RouteHeader";
@@ -47,13 +48,7 @@ export default function TwoFactor() {
         </Text>
         <View className="flex-row items-center justify-between">
           <Text className="text-base font-semibold text-ink">Aktiver 2FA</Text>
-          <Switch
-            value={on}
-            onValueChange={setOn}
-            trackColor={{ true: colors.ember, false: colors.line }}
-            thumbColor={colors.surface}
-            accessibilityLabel="Aktiver 2FA"
-          />
+          <Switch value={on} onValueChange={setOn} label="Aktiver 2FA" />
         </View>
 
         {on ? (

@@ -1,9 +1,10 @@
 import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
 import { useState } from "react";
-import { Pressable, ScrollView, Switch, Text, View } from "react-native";
+import { Pressable, ScrollView, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
+import { Switch } from "@/components/ui/Switch";
 import { IconButton } from "@/components/ui";
 import { Button } from "@/components/Button";
 import { Chip } from "@/components/Chip";
@@ -461,9 +462,7 @@ export default function Onboarding() {
                 <Switch
                   value={!!perms[p.key]}
                   onValueChange={(v) => setPerms((s) => ({ ...s, [p.key]: v }))}
-                  trackColor={{ true: colors.ember, false: colors.line }}
-                  thumbColor={colors.surface}
-                  accessibilityLabel={p.label}
+                  label={p.label}
                 />
               </View>
             ))}

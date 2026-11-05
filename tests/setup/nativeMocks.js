@@ -8,3 +8,12 @@ jest.mock("react-native-reanimated", () => ({
   ...require("react-native-reanimated/mock"),
   useReducedMotion: () => false,
 }));
+
+// Icon fonts: report as loaded so @expo/vector-icons doesn't set state after
+// render (act() warnings) — there are no real fonts under Jest.
+jest.mock("expo-font", () => ({
+  ...jest.requireActual("expo-font"),
+  isLoaded: () => true,
+  loadAsync: () => Promise.resolve(),
+  useFonts: () => [true, null],
+}));

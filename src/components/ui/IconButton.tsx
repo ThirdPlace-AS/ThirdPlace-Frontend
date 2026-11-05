@@ -104,10 +104,9 @@ export function IconButton({
       haptic={haptic}
       hitSlop={slop}
       pressedScale={0.92}
-      className={`items-center justify-center rounded-full ${VARIANT_CLASS[variant]}${
-        className ? ` ${className}` : ""
-      }`}
-      style={[
+      className={className}
+      contentClassName={`items-center justify-center rounded-full ${VARIANT_CLASS[variant]}`}
+      contentStyle={[
         { width: px, height: px },
         variant === "floating" || variant === "ink" || variant === "ember"
           ? elevation.e2

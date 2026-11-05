@@ -20,6 +20,7 @@ export type TextTone =
   | "ink"
   | "muted"
   | "inverse"
+  | "onInk"
   | "ember"
   | "success"
   | "danger"
@@ -53,6 +54,7 @@ const TONE_CLASS: Record<TextTone, string> = {
   ink: "text-ink",
   muted: "text-muted",
   inverse: "text-onInk",
+  onInk: "text-onInk",
   ember: "text-ember",
   success: "text-success",
   danger: "text-danger",
