@@ -12,3 +12,6 @@ export const colors = tokens.colors;
 export const radius = tokens.radius;
 export const spacing = tokens.spacing;
 export default tokens;
+
+// Motion tokens (see motion.ts) — re-exported for `import { motion } from "@/theme"`.
+export { motion, duration, spring, gesture } from "./motion";

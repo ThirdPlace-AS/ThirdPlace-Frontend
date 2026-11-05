@@ -2,7 +2,9 @@ import { Link, router } from "expo-router";
 import { ScrollView, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
+import { SocialAuthButtons } from "@/components/auth/SocialAuthButtons";
 import { Button } from "@/components/Button";
+import { DemoBadge } from "@/components/DemoBadge";
 import { Input } from "@/components/Input";
 import { Logo } from "@/components/Logo";
 import { ScreenHeader } from "@/components/ScreenHeader";
@@ -29,8 +31,20 @@ export default function Register() {
           <Button
             label="Opprett konto"
             variant="ember"
-            onPress={() => router.replace("/map")}
+            onPress={() =>
+              router.push({
+                pathname: "/verify-code",
+                params: { mode: "email" },
+              })
+            }
           />
+          <View className="flex-row items-center justify-center gap-2">
+            <DemoBadge />
+            <Text className="text-xs text-muted">
+              Ingen konto opprettes; feltene lagrer ingenting.
+            </Text>
+          </View>
+          <SocialAuthButtons verb="Fortsett med" />
         </View>
         <Text className="px-4 text-center text-xs text-muted">
           Ved å fortsette godtar du våre vilkår og personvernerklæring.
