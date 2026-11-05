@@ -129,7 +129,7 @@ export default function SavedScreen() {
         renderItem={({ item }) => {
           const place = item.placeId ? placeById(item.placeId) : undefined;
           return (
-            <View className="flex-row items-center gap-3 rounded-2xl border border-line bg-surface p-3">
+            <View className="flex-row items-center gap-3 rounded-lg border border-line bg-surface p-3">
               {place ? (
                 <Image
                   source={libImage(coverForPlace(place))}
@@ -138,7 +138,7 @@ export default function SavedScreen() {
                   className="bg-surfaceMuted"
                 />
               ) : (
-                <View className="h-12 w-12 rounded-xl bg-surfaceMuted" />
+                <View className="h-12 w-12 rounded-md bg-surfaceMuted" />
               )}
               <View className="flex-1">
                 <Text

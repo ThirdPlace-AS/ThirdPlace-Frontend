@@ -32,7 +32,7 @@ export function ShareSheet({
   return (
     <Sheet visible onClose={onClose} title="Del">
       <View className="gap-4">
-        <View className="gap-0.5 rounded-xl border border-line bg-surface p-3">
+        <View className="gap-0.5 rounded-md border border-line bg-surface p-3">
           <Text className="text-sm font-semibold text-ink">{title}</Text>
           <Text className="text-xs text-muted">thirdplace.app/{slug}</Text>
         </View>
@@ -83,7 +83,7 @@ export function ReportSheet({ onClose }: Base) {
             accessibilityRole="radio"
             accessibilityState={{ selected: reason === r }}
             onPress={() => setReason(r)}
-            className="flex-row items-center justify-between rounded-xl border border-line bg-surface px-4 py-3.5"
+            className="flex-row items-center justify-between rounded-md border border-line bg-surface px-4 py-3.5"
           >
             <Text className="text-sm font-medium text-ink">{r}</Text>
             <View
@@ -167,7 +167,7 @@ export function WaitlistSheet({
   return (
     <Sheet visible onClose={onClose} title="Bli med på ventelisten?">
       <View className="gap-3">
-        <View className="flex-row items-center gap-3 rounded-xl bg-surfaceMuted p-4">
+        <View className="flex-row items-center gap-3 rounded-md bg-surfaceMuted p-4">
           <Text className="text-2xl font-bold text-ink">#{ahead + 1}</Text>
           <View>
             <Text className="text-sm font-semibold text-ink">
@@ -214,7 +214,7 @@ export function PaySheet({
   return (
     <Sheet visible onClose={onClose} title="Bli med">
       <View className="gap-3">
-        <View className="gap-0.5 rounded-xl border border-line bg-surface p-3">
+        <View className="gap-0.5 rounded-md border border-line bg-surface p-3">
           <Text className="text-sm font-semibold text-ink">{title}</Text>
           <Text className="text-xs text-muted">{when}</Text>
         </View>
@@ -286,7 +286,7 @@ export function SpotOfferSheet({ title, onClose }: Base & { title: string }) {
   return (
     <Sheet visible onClose={onClose} title="En plass åpnet seg!">
       <View className="gap-3">
-        <View className="gap-0.5 rounded-xl border border-line bg-surface p-3">
+        <View className="gap-0.5 rounded-md border border-line bg-surface p-3">
           <Text className="text-sm font-semibold text-ink">{title}</Text>
         </View>
         <Text className="text-sm text-muted">Vil du ta plassen?</Text>
@@ -400,7 +400,7 @@ export function SplitBillSheet({
         {names.map((n) => (
           <View
             key={n}
-            className="flex-row items-center justify-between rounded-xl border border-line bg-surface px-4 py-3"
+            className="flex-row items-center justify-between rounded-md border border-line bg-surface px-4 py-3"
           >
             <Text className="text-sm font-semibold text-ink">{n}</Text>
             <Text className="text-xs text-muted">—</Text>

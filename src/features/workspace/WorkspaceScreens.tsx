@@ -63,7 +63,7 @@ export function WorkspaceHub() {
           hint="Samarbeid med skapere og bedrifter"
           onPress={() => router.push("/marketplace")}
         />
-        <View className="flex-row items-center gap-3 rounded-2xl bg-surfaceMuted p-4">
+        <View className="flex-row items-center gap-3 rounded-lg bg-surfaceMuted p-4">
           <Ionicons name="person-circle-outline" size={28} color={colors.ink} />
           <View className="flex-1">
             <Text className="text-sm font-semibold text-ink">
@@ -79,7 +79,7 @@ export function WorkspaceHub() {
             <Text className="text-xs font-semibold text-ink">Bytt til</Text>
           </Pressable>
         </View>
-        <View className="gap-1 rounded-2xl border border-line bg-surface p-4">
+        <View className="gap-1 rounded-lg border border-line bg-surface p-4">
           <Text className="text-sm font-semibold text-ink">
             Kom i gang: 1 av 2 steg gjenstår
           </Text>
@@ -110,9 +110,9 @@ function HubCard({
     <Pressable
       accessibilityRole="button"
       onPress={onPress}
-      className="flex-row items-center gap-3 rounded-2xl border border-line bg-surface p-4 active:opacity-80"
+      className="flex-row items-center gap-3 rounded-lg border border-line bg-surface p-4 active:opacity-80"
     >
-      <View className="h-11 w-11 items-center justify-center rounded-xl bg-surfaceMuted">
+      <View className="h-11 w-11 items-center justify-center rounded-md bg-surfaceMuted">
         <Ionicons name={icon} size={20} color={colors.ink} />
       </View>
       <View className="flex-1">
@@ -170,7 +170,7 @@ export function WorkspaceAnalytics() {
           {STATS[range].map(([v, l]) => (
             <View
               key={l}
-              className="w-[48%] gap-0.5 rounded-2xl bg-surfaceMuted p-4"
+              className="w-[48%] gap-0.5 rounded-lg bg-surfaceMuted p-4"
             >
               <Text className="text-2xl font-bold text-ink">{v}</Text>
               <Text className="text-xs text-muted">{l}</Text>
@@ -181,7 +181,7 @@ export function WorkspaceAnalytics() {
           Visninger siste periode
         </Text>
         <View
-          className="flex-row items-end gap-1.5 rounded-2xl border border-line bg-surface p-3"
+          className="flex-row items-end gap-1.5 rounded-lg border border-line bg-surface p-3"
           style={{ height: 160 }}
         >
           {BARS.map((h, i) => (
@@ -214,7 +214,7 @@ export function WorkspaceCalendar() {
         {upcoming.map((e) => (
           <View
             key={e.id}
-            className="flex-row items-center gap-3 rounded-xl border-l-4 border-l-ember bg-surface p-3"
+            className="flex-row items-center gap-3 rounded-md border-l-4 border-l-ember bg-surface p-3"
           >
             <View className="flex-1">
               <Text className="text-xs text-muted">{e.when}</Text>
@@ -250,7 +250,7 @@ export function WorkspaceLocations() {
         {businesses.map((b) => (
           <View
             key={b.id}
-            className="gap-1 rounded-2xl border border-line bg-surface p-4"
+            className="gap-1 rounded-lg border border-line bg-surface p-4"
           >
             <View className="flex-row items-center justify-between">
               <Text className="text-base font-semibold text-ink">{b.name}</Text>
@@ -271,7 +271,7 @@ export function WorkspaceLocations() {
             <Text className="text-xs text-muted">{b.address}</Text>
           </View>
         ))}
-        <View className="items-center rounded-2xl border border-dashed border-line py-4">
+        <View className="items-center rounded-lg border border-dashed border-line py-4">
           <Text className="text-sm font-semibold text-muted">
             + Legg til lokasjon (ikke aktiv)
           </Text>

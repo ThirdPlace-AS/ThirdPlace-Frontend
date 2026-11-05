@@ -96,7 +96,7 @@ function InfoSheet({
           {chat.type === "experience" ? " · arkiveres etter kvelden" : ""}
         </Text>
         {exp ? (
-          <View className="gap-0.5 rounded-xl bg-surfaceMuted p-3">
+          <View className="gap-0.5 rounded-md bg-surfaceMuted p-3">
             <Text className="text-xs font-semibold text-muted">
               Tilknyttet opplevelse
             </Text>
@@ -151,7 +151,7 @@ function InfoSheet({
                     ? setReport(true)
                     : setNotice(a.label)
               }
-              className="flex-1 items-center gap-1 rounded-xl border border-line bg-surface py-3 active:opacity-80"
+              className="flex-1 items-center gap-1 rounded-md border border-line bg-surface py-3 active:opacity-80"
             >
               <Ionicons name={a.icon} size={18} color={colors.ink} />
               <Text className="text-xs font-medium text-ink">{a.label}</Text>
@@ -233,11 +233,11 @@ function InviteSheet({
         <Text className="text-xs font-semibold uppercase tracking-wide text-muted">
           Del invitasjonslenke
         </Text>
-        <View className="gap-0.5 rounded-xl border border-line bg-surface p-3">
+        <View className="gap-0.5 rounded-md border border-line bg-surface p-3">
           <Text className="text-sm text-ember">thirdplace.app/join/{slug}</Text>
           <Text className="text-xs font-semibold text-ember">Kopier lenke</Text>
         </View>
-        <View className="items-center gap-2 rounded-xl border border-line bg-surface p-4">
+        <View className="items-center gap-2 rounded-md border border-line bg-surface p-4">
           <Ionicons name="qr-code-outline" size={72} color={colors.muted} />
           <Text className="text-xs text-muted">QR-kode</Text>
         </View>
@@ -250,7 +250,7 @@ function InviteSheet({
           .map((p) => (
             <View
               key={p.id}
-              className="flex-row items-center gap-3 rounded-xl border border-line bg-surface p-3"
+              className="flex-row items-center gap-3 rounded-md border border-line bg-surface p-3"
             >
               <Image
                 source={libImage(p.avatar)}
@@ -282,7 +282,7 @@ function MemberRow({
   role: string;
 }) {
   return (
-    <View className="flex-row items-center gap-3 rounded-xl border border-line bg-surface p-3">
+    <View className="flex-row items-center gap-3 rounded-md border border-line bg-surface p-3">
       <Image
         source={libImage(person.avatar)}
         style={{ height: 36, width: 36, borderRadius: 18 }}

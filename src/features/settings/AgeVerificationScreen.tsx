@@ -61,7 +61,7 @@ export default function AgeVerificationScreen() {
             key={m.key}
             accessibilityRole="button"
             onPress={() => setChosen(m.label)}
-            className={`flex-row items-center gap-3 rounded-2xl border bg-surface p-4 active:opacity-80 ${
+            className={`flex-row items-center gap-3 rounded-lg border bg-surface p-4 active:opacity-80 ${
               chosen === m.label ? "border-ink" : "border-line"
             }`}
           >

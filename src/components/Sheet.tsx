@@ -50,7 +50,7 @@ export function Sheet({
           className={`absolute inset-0 ${dark ? "bg-black/60" : "bg-ink/40"}`}
         />
         <View
-          className={`gap-4 rounded-t-lg p-gutter pb-8 ${
+          className={`gap-4 rounded-t-xl p-gutter pb-8 ${
             dark ? "bg-ink" : lightBg
           } ${fullHeight ? "h-[92%]" : ""}`}
         >

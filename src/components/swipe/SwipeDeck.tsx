@@ -852,7 +852,7 @@ function ExpandDetail({
           keyboardShouldPersistTaps="handled"
         >
           <View
-            className="overflow-hidden rounded-2xl bg-ink"
+            className="overflow-hidden rounded-lg bg-ink"
             style={{ height: heroH }}
           >
             <PhotoCarousel photos={exp.photos} interactive />
@@ -979,7 +979,7 @@ function ExpandDetail({
             ]}
           />
           <View
-            className="absolute inset-x-0 bottom-0 gap-2 rounded-t-3xl bg-surface px-gutter pt-4"
+            className="absolute inset-x-0 bottom-0 gap-2 rounded-t-xl bg-surface px-gutter pt-4"
             style={{ paddingBottom: Math.max(insets.bottom, 16) }}
           >
             <View className="flex-row items-center gap-2 pb-1">
@@ -995,7 +995,7 @@ function ExpandDetail({
                 setSafetyOpen(false);
                 gate("rapportere");
               }}
-              className="flex-row items-center gap-3 rounded-2xl border border-line px-4 py-4"
+              className="flex-row items-center gap-3 rounded-lg border border-line px-4 py-4"
             >
               <Ionicons name="flag-outline" size={20} color={colors.ink} />
               <Text className="text-base font-semibold text-ink">
@@ -1009,7 +1009,7 @@ function ExpandDetail({
                 setSafetyOpen(false);
                 gate("blokkere");
               }}
-              className="flex-row items-center gap-3 rounded-2xl border border-line px-4 py-4"
+              className="flex-row items-center gap-3 rounded-lg border border-line px-4 py-4"
             >
               <Ionicons name="ban-outline" size={20} color={colors.ember} />
               <Text className="text-base font-semibold text-ink">
@@ -1020,7 +1020,7 @@ function ExpandDetail({
               accessibilityRole="button"
               accessibilityLabel="Avbryt"
               onPress={() => setSafetyOpen(false)}
-              className="items-center rounded-2xl px-4 py-4"
+              className="items-center rounded-lg px-4 py-4"
             >
               <Text className="text-base font-semibold text-muted">Avbryt</Text>
             </Pressable>
@@ -1058,7 +1058,7 @@ function JoinChatSheet({
         <View className="gap-3">
           <Text className="text-base font-semibold text-ink">{exp.title}</Text>
           <Text className="text-sm text-muted">{exp.when}</Text>
-          <View className="flex-row items-center gap-2 rounded-xl bg-surfaceMuted p-3">
+          <View className="flex-row items-center gap-2 rounded-md bg-surfaceMuted p-3">
             <Ionicons name="chatbubbles-outline" size={16} color={colors.ink} />
             <Text className="flex-1 text-sm text-ink">
               Chat er gratis — billett kjøper du når du vil.

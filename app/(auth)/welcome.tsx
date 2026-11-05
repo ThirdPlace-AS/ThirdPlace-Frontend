@@ -39,7 +39,7 @@ export default function Welcome() {
           </Text>
         </View>
 
-        <View className="mx-3 mb-2 gap-4 rounded-3xl bg-background p-6">
+        <View className="mx-3 mb-2 gap-4 rounded-xl bg-background p-6">
           <View className="h-1 w-10 self-center rounded-full bg-line" />
           <Text className="text-center text-2xl font-bold text-ink">
             Velkommen hjem

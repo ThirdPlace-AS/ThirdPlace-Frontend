@@ -106,7 +106,7 @@ export default function PrivacyScreen() {
           {BLOCKED.map((b) => (
             <View
               key={b.name}
-              className="flex-row items-center gap-3 rounded-xl border border-line bg-surface p-3"
+              className="flex-row items-center gap-3 rounded-md border border-line bg-surface p-3"
             >
               <View className="flex-1">
                 <Text className="text-sm font-semibold text-ink">{b.name}</Text>
@@ -169,7 +169,7 @@ function DeleteAccountSheet({
         <Text className="text-sm font-semibold text-danger">
           Denne handlingen er permanent og kan ikke angres.
         </Text>
-        <View className="gap-1 rounded-xl bg-surfaceMuted p-3">
+        <View className="gap-1 rounded-md bg-surfaceMuted p-3">
           <Text className="text-sm font-semibold text-ink">
             Når du sletter kontoen din:
           </Text>

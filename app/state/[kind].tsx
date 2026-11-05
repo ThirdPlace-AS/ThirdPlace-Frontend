@@ -74,7 +74,7 @@ export default function SystemState() {
             title="Kontoen er suspendert"
             body="Kontoen din er midlertidig suspendert på grunn av brudd på retningslinjene våre."
           >
-            <View className="gap-1 rounded-xl border border-line bg-surface p-3">
+            <View className="gap-1 rounded-md border border-line bg-surface p-3">
               <Text className="text-xs font-semibold uppercase tracking-wide text-muted">
                 Hva kan du gjøre
               </Text>
@@ -153,7 +153,7 @@ function Invite() {
         {exp?.title ?? "Opplevelse"}
       </Text>
       <Text className="text-center text-sm text-muted">{exp?.when}</Text>
-      <View className="gap-1 rounded-xl border border-line bg-surface p-4">
+      <View className="gap-1 rounded-md border border-line bg-surface p-4">
         <Text className="text-center text-base font-semibold text-ink">
           Du er invitert!
         </Text>

@@ -41,7 +41,7 @@ export function NewCollabScreen() {
           Foreslå et samarbeid basert på en listing.
         </Text>
         <Label>Knyttet listing</Label>
-        <View className="gap-0.5 rounded-xl border border-line bg-surface p-3">
+        <View className="gap-0.5 rounded-md border border-line bg-surface p-3">
           <Text className="text-sm font-semibold text-ink">
             {listing?.title}
           </Text>
@@ -103,7 +103,7 @@ export function CollabDetailScreen() {
           <Party name="Maria Movik" role="Skaper · Primærvert" />
           <Party name="Oslo Kaffebar" role="Venue · Co-vert" />
         </View>
-        <View className="overflow-hidden rounded-xl border border-line bg-surface">
+        <View className="overflow-hidden rounded-md border border-line bg-surface">
           {[
             ["Type", "Co-hosting (primær/sekundær)"],
             ["Opplevelse", "Jazzkveld"],
@@ -187,7 +187,7 @@ function OfferSheet({ onClose }: { onClose: () => void }) {
       title={counter ? "Mottilbud" : "Innkommende tilbud"}
     >
       <View className="gap-3">
-        <View className="gap-0.5 rounded-xl border border-line bg-surface p-3">
+        <View className="gap-0.5 rounded-md border border-line bg-surface p-3">
           <Text className="text-sm font-semibold text-ink">Maria Movik</Text>
           <Text className="text-xs text-muted">
             Co-hosting · Primær/sekundær · 70 % / 30 %
@@ -243,7 +243,7 @@ function ContractSheet({ onClose }: { onClose: () => void }) {
   return (
     <Sheet visible onClose={onClose} title="Kontrakt">
       <View className="gap-3">
-        <View className="gap-2 rounded-xl border border-line bg-surface p-4">
+        <View className="gap-2 rounded-md border border-line bg-surface p-4">
           <Text className="text-xs font-semibold uppercase tracking-wide text-muted">
             Samarbeidsavtale
           </Text>
@@ -265,7 +265,7 @@ function ContractSheet({ onClose }: { onClose: () => void }) {
         <Pressable
           accessibilityRole="button"
           onPress={() => setSigned(true)}
-          className="items-center rounded-xl border-2 border-dashed border-line py-6"
+          className="items-center rounded-md border-2 border-dashed border-line py-6"
         >
           <Text className="text-sm text-muted">
             {signed ? "✓ Signert (demo)" : "Trykk for å signere"}
@@ -283,7 +283,7 @@ function ContractSheet({ onClose }: { onClose: () => void }) {
 
 function Party({ name, role }: { name: string; role: string }) {
   return (
-    <View className="flex-1 gap-0.5 rounded-xl border border-line bg-surface p-3">
+    <View className="flex-1 gap-0.5 rounded-md border border-line bg-surface p-3">
       <Ionicons name="person-circle-outline" size={22} color={colors.ink} />
       <Text className="text-sm font-semibold text-ink">{name}</Text>
       <Text className="text-xs text-muted">{role}</Text>

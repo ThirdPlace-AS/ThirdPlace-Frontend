@@ -36,7 +36,7 @@ export function Skeleton({
   const radius = {
     sm: "rounded-sm",
     md: "rounded-md",
-    lg: "rounded-lg",
+    lg: "rounded-xl",
     full: "rounded-full",
   }[rounded];
 
@@ -50,7 +50,7 @@ export function Skeleton({
 // A card-shaped skeleton row used by list loading states.
 export function SkeletonCard() {
   return (
-    <View className="gap-2 rounded-lg border border-line bg-surface p-4">
+    <View className="gap-2 rounded-xl border border-line bg-surface p-4">
       <Skeleton height={18} width="60%" />
       <Skeleton height={12} width="30%" />
       <Skeleton height={12} width="90%" />

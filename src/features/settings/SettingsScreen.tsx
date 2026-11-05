@@ -180,7 +180,7 @@ function AccountSheet({ visible, onClose }: SheetProps) {
             onClose();
             router.push("/two-factor");
           }}
-          className="flex-row items-center gap-3 rounded-xl border border-line bg-surface p-3 active:opacity-80"
+          className="flex-row items-center gap-3 rounded-md border border-line bg-surface p-3 active:opacity-80"
         >
           <Ionicons
             name="shield-checkmark-outline"
@@ -198,7 +198,7 @@ function AccountSheet({ visible, onClose }: SheetProps) {
             onClose();
             router.push("/age-verification");
           }}
-          className="flex-row items-center gap-3 rounded-xl border border-line bg-surface p-3 active:opacity-80"
+          className="flex-row items-center gap-3 rounded-md border border-line bg-surface p-3 active:opacity-80"
         >
           <Ionicons name="id-card-outline" size={20} color={colors.ink} />
           <Text className="flex-1 text-sm font-semibold text-ink">
@@ -238,7 +238,7 @@ function Session({
   meta: string;
 }) {
   return (
-    <View className="flex-row items-center gap-3 rounded-xl border border-line bg-surface p-3">
+    <View className="flex-row items-center gap-3 rounded-md border border-line bg-surface p-3">
       <Ionicons name={icon} size={20} color={colors.ink} />
       <View className="flex-1">
         <Text className="text-sm font-semibold text-ink">{name}</Text>
@@ -264,7 +264,7 @@ function LinkedSheet({ visible, onClose }: SheetProps) {
             onClose();
             router.push("/workspace" as Href);
           }}
-          className="flex-row items-center gap-3 rounded-xl border border-line bg-surface p-3 active:opacity-80"
+          className="flex-row items-center gap-3 rounded-md border border-line bg-surface p-3 active:opacity-80"
         >
           <Ionicons name="storefront-outline" size={20} color={colors.ink} />
           <View className="flex-1">
@@ -301,7 +301,7 @@ function ToggleList({
 }) {
   const [state, setState] = useState(initial);
   return (
-    <View className="overflow-hidden rounded-2xl bg-surface">
+    <View className="overflow-hidden rounded-lg bg-surface">
       {items.map((i) => (
         <ToggleRow
           key={i.label}
@@ -391,7 +391,7 @@ function LanguageSheet({ visible, onClose }: SheetProps) {
             accessibilityRole="radio"
             accessibilityState={{ selected: lang === l }}
             onPress={() => setLang(l)}
-            className="flex-row items-center justify-between rounded-xl border border-line bg-surface px-4 py-3.5"
+            className="flex-row items-center justify-between rounded-md border border-line bg-surface px-4 py-3.5"
           >
             <Text className="text-base text-ink">{l}</Text>
             {lang === l ? (
@@ -402,7 +402,7 @@ function LanguageSheet({ visible, onClose }: SheetProps) {
         <Text className="pt-2 text-xs font-semibold uppercase tracking-wide text-muted">
           Region
         </Text>
-        <View className="overflow-hidden rounded-2xl bg-surface">
+        <View className="overflow-hidden rounded-lg bg-surface">
           <NavRow
             icon="cash-outline"
             label="Valuta"
@@ -509,7 +509,7 @@ function HelpSheet({ visible, onClose }: SheetProps) {
         <Text className="text-xs font-semibold uppercase tracking-wide text-muted">
           Vanlige spørsmål
         </Text>
-        <View className="overflow-hidden rounded-2xl bg-surface">
+        <View className="overflow-hidden rounded-lg bg-surface">
           {faq.map((q) => (
             <NavRow
               key={q}

@@ -165,7 +165,7 @@ function Section({
   children: React.ReactNode;
 }) {
   return (
-    <View className="gap-3 rounded-2xl border border-line bg-surface px-5 py-5">
+    <View className="gap-3 rounded-lg border border-line bg-surface px-5 py-5">
       <View className="gap-0.5">
         <Text className="text-base font-semibold text-ink">{title}</Text>
         {subtitle ? (
@@ -261,7 +261,7 @@ function SearchRow({
     return (
       <View
         style={cardShadow}
-        className="gap-4 rounded-2xl border border-line bg-surface px-6 py-5"
+        className="gap-4 rounded-lg border border-line bg-surface px-6 py-5"
       >
         <Pressable
           accessibilityRole="button"
@@ -283,7 +283,7 @@ function SearchRow({
       accessibilityLabel={`${label}, ${value}`}
       onPress={onToggle}
       style={cardShadow}
-      className="flex-row items-center justify-between gap-2 rounded-2xl border border-line bg-surface px-6 py-5"
+      className="flex-row items-center justify-between gap-2 rounded-lg border border-line bg-surface px-6 py-5"
     >
       <Text className="shrink-0 text-base text-muted">{label}</Text>
       <View className="flex-1 flex-row items-center justify-end gap-1.5">
@@ -474,7 +474,7 @@ function FilterBody({
                           };
                         })
                       }
-                      className={`w-[48%] grow gap-0.5 rounded-2xl border px-3 py-3.5 ${
+                      className={`w-[48%] grow gap-0.5 rounded-lg border px-3 py-3.5 ${
                         selected ? "border-2 border-ink" : "border border-line"
                       }`}
                     >
@@ -640,11 +640,11 @@ function FilterBody({
                 }
               />
               <View className="flex-row items-center justify-between">
-                <View className="rounded-xl border border-line px-4 py-3">
+                <View className="rounded-md border border-line px-4 py-3">
                   <Text className="text-[10px] text-muted">Minst</Text>
                   <Text className="text-sm text-ink">kr {draft.priceMin}</Text>
                 </View>
-                <View className="rounded-xl border border-line px-4 py-3">
+                <View className="rounded-md border border-line px-4 py-3">
                   <Text className="text-[10px] text-muted">Maksimalt</Text>
                   <Text className="text-sm text-ink">
                     kr {draft.priceMax}

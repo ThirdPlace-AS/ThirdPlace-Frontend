@@ -3,7 +3,7 @@ import { router } from "expo-router";
 import { Tabs } from "expo-router/js-tabs";
 import { View, type ColorValue } from "react-native";
 
-import { colors } from "@/theme";
+import { useThemeColors } from "@/theme";
 
 type IconName = keyof typeof Ionicons.glyphMap;
 
@@ -25,9 +25,10 @@ function icon(idle: IconName, active: IconName) {
 // Center "Legg til" per the design (PDF p5–p8): a dark round "+" with the
 // "Legg til" label underneath, like the other tabs.
 function AddIcon() {
+  const c = useThemeColors();
   return (
     <View className="h-9 w-9 items-center justify-center rounded-full bg-ink">
-      <Ionicons name="add" size={24} color={colors.onEmber} />
+      <Ionicons name="add" size={24} color={c.onInk} />
     </View>
   );
 }
@@ -36,6 +37,7 @@ function AddIcon() {
 // reached full extent; that is gone — the sheet tops out within the screen
 // scene (above the bar), so the bar simply stays put on every screen.
 export default function TabsLayout() {
+  const colors = useThemeColors();
   return (
     <Tabs
       screenOptions={{

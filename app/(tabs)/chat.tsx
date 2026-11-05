@@ -118,7 +118,7 @@ export default function ChatScreen() {
           g.items.length > 0 ? (
             <View
               key={g.key}
-              className="overflow-hidden rounded-2xl border border-line bg-surface"
+              className="overflow-hidden rounded-lg border border-line bg-surface"
             >
               <Pressable
                 accessibilityRole="button"
@@ -222,7 +222,7 @@ function ChatRow({ chat, onPress }: { chat: MockChat; onPress: () => void }) {
     <Pressable
       accessibilityRole="button"
       onPress={onPress}
-      className="flex-row items-center gap-3 rounded-xl bg-surface px-3 py-3 active:opacity-80"
+      className="flex-row items-center gap-3 rounded-md bg-surface px-3 py-3 active:opacity-80"
     >
       <View className="h-11 w-11 items-center justify-center rounded-full bg-surfaceMuted">
         {icon ? (

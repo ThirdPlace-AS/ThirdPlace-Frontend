@@ -47,7 +47,7 @@ export default function BecomeCreatorScreen() {
           return (
             <View
               key={r.label}
-              className="gap-2 rounded-2xl border border-line bg-surface p-4"
+              className="gap-2 rounded-lg border border-line bg-surface p-4"
             >
               <View className="flex-row items-center gap-3">
                 <View
@@ -82,7 +82,7 @@ export default function BecomeCreatorScreen() {
           );
         })}
 
-        <View className="rounded-xl bg-surfaceMuted p-3">
+        <View className="rounded-md bg-surfaceMuted p-3">
           <Text className="text-sm font-medium text-ink">
             {met} av {reqs.length} krav oppfylt
           </Text>
@@ -94,7 +94,7 @@ export default function BecomeCreatorScreen() {
         </DemoNote>
 
         {applied ? (
-          <View className="items-center gap-2 rounded-2xl bg-surfaceMuted p-5">
+          <View className="items-center gap-2 rounded-lg bg-surfaceMuted p-5">
             <Text className="text-xl font-bold text-ink">Du er nå Skaper!</Text>
             <Text className="text-center text-sm text-muted">
               Slik ser det ut når søknaden er godkjent: Dashboard og Marketplace

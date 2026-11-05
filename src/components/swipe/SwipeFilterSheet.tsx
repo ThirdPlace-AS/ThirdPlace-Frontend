@@ -63,7 +63,7 @@ function Section({
   children: React.ReactNode;
 }) {
   return (
-    <View className="gap-3 rounded-2xl border border-line bg-surface px-5 py-5">
+    <View className="gap-3 rounded-lg border border-line bg-surface px-5 py-5">
       <View className="gap-0.5">
         <Text className="text-base font-semibold text-ink">{title}</Text>
         {subtitle ? (

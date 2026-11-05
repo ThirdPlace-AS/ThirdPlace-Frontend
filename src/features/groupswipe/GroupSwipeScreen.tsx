@@ -152,7 +152,7 @@ export default function GroupSwipeScreen() {
               />
             ))}
           </View>
-          <View className="rounded-xl bg-surfaceMuted p-3">
+          <View className="rounded-md bg-surfaceMuted p-3">
             <Text className="text-sm text-ink">
               Alle får se kortene — match når alle sveiper høyre.
             </Text>
@@ -179,7 +179,7 @@ export default function GroupSwipeScreen() {
             <MemberRow key={f.id} person={f} ready={ready.includes(f.id)} />
           ))}
           {filters.length || time ? (
-            <View className="gap-2 rounded-xl border border-line bg-surface p-3">
+            <View className="gap-2 rounded-md border border-line bg-surface p-3">
               <Text className="text-xs font-semibold uppercase tracking-wide text-muted">
                 Økt-innstillinger
               </Text>
@@ -216,7 +216,7 @@ export default function GroupSwipeScreen() {
 
       {phase === "swipe" && card ? (
         <ScrollView contentContainerClassName="gap-4 p-gutter pb-8">
-          <View className="overflow-hidden rounded-3xl bg-ink">
+          <View className="overflow-hidden rounded-xl bg-ink">
             <Image
               source={card.photos[0]}
               contentFit="cover"
@@ -315,7 +315,7 @@ export default function GroupSwipeScreen() {
 
 function MemberRow({ person, ready }: { person: MockPerson; ready: boolean }) {
   return (
-    <View className="flex-row items-center gap-3 rounded-2xl border border-line bg-surface p-3">
+    <View className="flex-row items-center gap-3 rounded-lg border border-line bg-surface p-3">
       <Image
         source={libImage(person.avatar)}
         style={{ height: 40, width: 40, borderRadius: 20 }}

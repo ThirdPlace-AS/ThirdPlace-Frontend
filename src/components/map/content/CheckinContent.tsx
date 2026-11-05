@@ -22,7 +22,7 @@ export function CheckinContent({ id }: { id: string }) {
         <Text className="text-sm text-muted">{exp.when}</Text>
       </View>
 
-      <View className="items-center gap-3 rounded-lg border border-line bg-surface p-6">
+      <View className="items-center gap-3 rounded-xl border border-line bg-surface p-6">
         <View
           className={`h-20 w-20 items-center justify-center rounded-full ${
             checkedIn ? "bg-success" : near ? "bg-ember" : "bg-surfaceMuted"

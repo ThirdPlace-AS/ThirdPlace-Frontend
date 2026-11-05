@@ -198,7 +198,7 @@ function PersonRow({
   // Row is a View (not a Pressable) so the Følg button is a SIBLING, never a
   // nested Pressable — nested pressables are invalid DOM in the CI web bundle.
   return (
-    <View className="flex-row items-center gap-3 rounded-xl bg-surface px-3 py-3">
+    <View className="flex-row items-center gap-3 rounded-md bg-surface px-3 py-3">
       <Pressable
         accessibilityRole="button"
         onPress={onPress}
@@ -298,7 +298,7 @@ function PersonDetailSheet({
           </View>
 
           {hosts ? (
-            <View className="flex-row items-center gap-2 rounded-xl border border-line bg-surface px-3 py-2.5">
+            <View className="flex-row items-center gap-2 rounded-md border border-line bg-surface px-3 py-2.5">
               <Ionicons
                 name="pricetag-outline"
                 size={16}

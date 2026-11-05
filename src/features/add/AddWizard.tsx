@@ -236,9 +236,9 @@ function KindMenu({ onPick }: { onPick: (k: AddKind) => void }) {
             key={r.kind}
             accessibilityRole="button"
             onPress={() => onPick(r.kind)}
-            className="flex-row items-center gap-3 rounded-2xl border border-line bg-surface p-4 active:opacity-80"
+            className="flex-row items-center gap-3 rounded-lg border border-line bg-surface p-4 active:opacity-80"
           >
-            <View className="h-11 w-11 items-center justify-center rounded-xl bg-surfaceMuted">
+            <View className="h-11 w-11 items-center justify-center rounded-md bg-surfaceMuted">
               <Ionicons name={r.icon} size={20} color={colors.ink} />
             </View>
             <View className="flex-1">
@@ -345,7 +345,7 @@ function StepBody({
           <Pressable
             accessibilityRole="button"
             onPress={() => setPicker(true)}
-            className="flex-row items-center gap-2 rounded-xl border border-line bg-surface p-3.5 active:opacity-80"
+            className="flex-row items-center gap-2 rounded-md border border-line bg-surface p-3.5 active:opacity-80"
           >
             <Ionicons name="search" size={16} color={colors.muted} />
             <Text className="flex-1 text-sm text-muted">
@@ -606,7 +606,7 @@ function ReviewStep({ draft }: { draft: AddDraft }) {
         ) : null}
       </View>
       {isPlace ? (
-        <View className="flex-row items-start gap-2 rounded-xl bg-surfaceMuted p-3">
+        <View className="flex-row items-start gap-2 rounded-md bg-surfaceMuted p-3">
           <Ionicons name="hourglass-outline" size={16} color={colors.ink} />
           <Text className="flex-1 text-sm text-ink">
             Steder gjennomgås manuelt av ThirdPlace før de blir synlige.
@@ -644,7 +644,7 @@ function Fact({
   value: string;
 }) {
   return (
-    <View className="flex-1 gap-1 rounded-xl border border-line bg-surface p-3">
+    <View className="flex-1 gap-1 rounded-md border border-line bg-surface p-3">
       <Ionicons name={icon} size={16} color={colors.ink} />
       <Text className="text-xs font-medium text-ink" numberOfLines={1}>
         {value}
@@ -766,7 +766,7 @@ function SelectRow({
       accessibilityRole="radio"
       accessibilityState={{ selected }}
       onPress={onPress}
-      className={`flex-row items-center gap-3 rounded-xl border bg-surface p-3.5 ${
+      className={`flex-row items-center gap-3 rounded-md border bg-surface p-3.5 ${
         selected ? "border-ink" : "border-line"
       }`}
     >
@@ -815,7 +815,7 @@ function MonthPicker({
     });
   const label = `${MONTHS[cursor.m]} ${cursor.y}`;
   return (
-    <View className="gap-2 rounded-2xl border border-line bg-surface p-3">
+    <View className="gap-2 rounded-lg border border-line bg-surface p-3">
       <View className="flex-row items-center justify-between">
         <Pressable
           accessibilityRole="button"

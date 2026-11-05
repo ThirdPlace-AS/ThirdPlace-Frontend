@@ -185,7 +185,7 @@ function CreatorPathCard() {
       accessibilityRole="button"
       accessibilityLabel="Veien til Skaper — se kravene"
       onPress={() => router.push("/become-creator")}
-      className="gap-2 rounded-2xl bg-surfaceMuted p-4 active:opacity-80"
+      className="gap-2 rounded-lg bg-surfaceMuted p-4 active:opacity-80"
     >
       <View className="flex-row items-center gap-2">
         <Ionicons name="color-palette-outline" size={18} color={colors.ink} />
@@ -246,8 +246,8 @@ function Row({
   meta: string;
 }) {
   return (
-    <View className="flex-row items-center gap-3 rounded-xl border border-line bg-surface p-3">
-      <View className="h-10 w-10 items-center justify-center rounded-lg bg-surfaceMuted">
+    <View className="flex-row items-center gap-3 rounded-md border border-line bg-surface p-3">
+      <View className="h-10 w-10 items-center justify-center rounded-xl bg-surfaceMuted">
         <Ionicons name={icon} size={18} color={colors.ink} />
       </View>
       <View className="flex-1">
@@ -290,7 +290,7 @@ function PlacesList() {
         return (
           <View
             key={v.placeId}
-            className="flex-row items-center gap-3 rounded-xl border border-line bg-surface p-3"
+            className="flex-row items-center gap-3 rounded-md border border-line bg-surface p-3"
           >
             <Image
               source={libImage(coverForPlace(place))}
@@ -327,7 +327,7 @@ function ReviewsList() {
         return (
           <View
             key={r.placeId}
-            className="gap-1 rounded-xl border border-line bg-surface p-3"
+            className="gap-1 rounded-md border border-line bg-surface p-3"
           >
             <View className="flex-row items-center justify-between">
               <Text className="text-base font-semibold text-ink">

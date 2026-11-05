@@ -135,7 +135,7 @@ export default function ChatThreadScreen() {
             pinned ? (
               // Informational pin (the experience this group organizes). Not a
               // link — experience detail is a map sheet, not reachable here.
-              <View className="mb-1 flex-row items-center gap-2 rounded-lg border border-line bg-surface px-3 py-2.5">
+              <View className="mb-1 flex-row items-center gap-2 rounded-xl border border-line bg-surface px-3 py-2.5">
                 <Ionicons
                   name="pricetag-outline"
                   size={16}
@@ -172,7 +172,7 @@ export default function ChatThreadScreen() {
             </Text>
             <View className="flex-row items-end gap-2">
               <TextInput
-                className="max-h-28 flex-1 rounded-2xl border border-line bg-surface px-4 py-2.5 text-base text-ink"
+                className="max-h-28 flex-1 rounded-lg border border-line bg-surface px-4 py-2.5 text-base text-ink"
                 placeholder="Skriv en melding …"
                 placeholderTextColor={colors.muted}
                 value={draft}
@@ -212,7 +212,7 @@ function Bubble({ message }: { message: MockMessage }) {
   if (message.mine) {
     return (
       <View className="max-w-[80%] flex-row items-end gap-2 self-end">
-        <View className="rounded-2xl rounded-br-sm bg-ink px-3.5 py-2.5">
+        <View className="rounded-lg rounded-br-sm bg-ink px-3.5 py-2.5">
           <Text className="text-base text-onInk">{message.text}</Text>
           <Text className="pt-0.5 text-[10px] text-onInk/70">
             {message.time}
@@ -228,7 +228,7 @@ function Bubble({ message }: { message: MockMessage }) {
           {message.initials}
         </Text>
       </View>
-      <View className="rounded-2xl rounded-bl-sm border border-line bg-surface px-3.5 py-2.5">
+      <View className="rounded-lg rounded-bl-sm border border-line bg-surface px-3.5 py-2.5">
         <Text className="text-xs font-semibold text-muted">
           {message.author}
         </Text>

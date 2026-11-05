@@ -53,7 +53,7 @@ export default function InviteScreen() {
         <Text className="text-xs font-semibold uppercase tracking-wide text-muted">
           Din kode
         </Text>
-        <View className="items-center rounded-2xl border border-line bg-surface py-5">
+        <View className="items-center rounded-lg border border-line bg-surface py-5">
           <Text className="text-2xl font-bold tracking-widest text-ember">
             OLA-TP2026
           </Text>
@@ -90,7 +90,7 @@ export default function InviteScreen() {
           {ACTIVITY.map((a) => (
             <View
               key={a.label}
-              className="flex-1 items-center gap-0.5 rounded-xl border border-line bg-surface py-3"
+              className="flex-1 items-center gap-0.5 rounded-md border border-line bg-surface py-3"
             >
               <Text className="text-xl font-bold text-ink">{a.value}</Text>
               <Text className="text-xs text-muted">{a.label}</Text>
@@ -104,7 +104,7 @@ export default function InviteScreen() {
         {REWARDS.map((r) => (
           <View
             key={r.label}
-            className="flex-row items-center gap-3 rounded-xl border border-line bg-surface p-3.5"
+            className="flex-row items-center gap-3 rounded-md border border-line bg-surface p-3.5"
           >
             <View className="h-10 w-10 items-center justify-center rounded-full bg-surfaceMuted">
               <Ionicons name={r.icon} size={18} color={colors.muted} />

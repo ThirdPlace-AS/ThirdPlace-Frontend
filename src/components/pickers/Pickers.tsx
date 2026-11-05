@@ -68,7 +68,7 @@ export function PlacePicker({
               onPick(p);
               onClose();
             }}
-            className="flex-row items-center gap-3 rounded-xl border border-line bg-surface p-3 active:opacity-80"
+            className="flex-row items-center gap-3 rounded-md border border-line bg-surface p-3 active:opacity-80"
           >
             <Ionicons name="location-outline" size={18} color={colors.ink} />
             <View className="flex-1">
@@ -112,7 +112,7 @@ export function CategoryPicker({
               onPick(o);
               onClose();
             }}
-            className="flex-row items-center justify-between rounded-xl border border-line bg-surface px-4 py-3.5 active:opacity-80"
+            className="flex-row items-center justify-between rounded-md border border-line bg-surface px-4 py-3.5 active:opacity-80"
           >
             <Text className="text-sm font-medium text-ink">{o}</Text>
             {value === o ? (
@@ -159,7 +159,7 @@ export function UserSearch({
               onPick(p);
               onClose();
             }}
-            className="flex-row items-center gap-3 rounded-xl border border-line bg-surface p-3 active:opacity-80"
+            className="flex-row items-center gap-3 rounded-md border border-line bg-surface p-3 active:opacity-80"
           >
             <Image
               source={libImage(p.avatar)}

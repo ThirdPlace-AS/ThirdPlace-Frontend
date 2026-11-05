@@ -73,7 +73,7 @@ export function CollabHistoryScreen() {
         {HISTORY.map((h) => (
           <View
             key={h.title}
-            className="gap-1 rounded-2xl border border-line bg-surface p-4"
+            className="gap-1 rounded-lg border border-line bg-surface p-4"
           >
             <Text className="text-base font-semibold text-ink">{h.title}</Text>
             <Text className="text-xs text-muted">

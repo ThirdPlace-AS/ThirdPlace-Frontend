@@ -72,7 +72,7 @@ export default function PaymentsScreen() {
         title="Betalingsmetode"
       >
         <DemoNote>{demoCopy.paymentsDemoScreen}</DemoNote>
-        <View className="flex-row items-start gap-3 rounded-2xl bg-surfaceMuted p-3">
+        <View className="flex-row items-start gap-3 rounded-lg bg-surfaceMuted p-3">
           <Ionicons
             name="shield-checkmark-outline"
             size={22}

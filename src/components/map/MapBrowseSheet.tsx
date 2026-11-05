@@ -252,7 +252,7 @@ const BrowseCard = memo(function BrowseCard({
       >
         {/* Hero — full-width placeholder image block with overlays. */}
         <View
-          className={`h-52 w-full items-center justify-center overflow-hidden rounded-lg bg-surfaceMuted ${
+          className={`h-52 w-full items-center justify-center overflow-hidden rounded-xl bg-surfaceMuted ${
             selected ? "border-2 border-ink" : ""
           }`}
         >

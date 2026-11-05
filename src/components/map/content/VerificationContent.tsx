@@ -80,7 +80,7 @@ export function VerificationContent() {
         {DOCS.map((d) => (
           <View
             key={d.name}
-            className="flex-row items-center gap-3 rounded-xl border border-line bg-surface p-3"
+            className="flex-row items-center gap-3 rounded-md border border-line bg-surface p-3"
           >
             <Ionicons name="document-outline" size={18} color={colors.ink} />
             <Text className="flex-1 text-sm text-ink">{d.name}</Text>
@@ -101,7 +101,7 @@ export function VerificationContent() {
         ))}
       </View>
 
-      <View className="rounded-xl bg-surfaceMuted p-3">
+      <View className="rounded-md bg-surfaceMuted p-3">
         <Text className="text-sm text-ink">
           Når verifisering er aktiv, får du beskjed så snart vurderingen er
           klar.

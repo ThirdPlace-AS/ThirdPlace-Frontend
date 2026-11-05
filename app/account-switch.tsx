@@ -46,7 +46,7 @@ export default function AccountSwitch() {
         className="bg-black/50"
       />
       <View
-        className="gap-2 self-end rounded-2xl bg-surface p-3"
+        className="gap-2 self-end rounded-lg bg-surface p-3"
         style={{ width: 280 }}
       >
         {rows.map((r) => (
@@ -54,7 +54,7 @@ export default function AccountSwitch() {
             key={r.title}
             accessibilityRole="button"
             onPress={r.onPress}
-            className="flex-row items-center gap-3 rounded-xl p-2.5 active:bg-surfaceMuted"
+            className="flex-row items-center gap-3 rounded-md p-2.5 active:bg-surfaceMuted"
           >
             <Ionicons name={r.icon} size={28} color={colors.ink} />
             <View className="flex-1">
@@ -71,7 +71,7 @@ export default function AccountSwitch() {
         <Pressable
           accessibilityRole="button"
           onPress={() => router.replace("/settings")}
-          className="items-center rounded-xl bg-surfaceMuted py-2.5"
+          className="items-center rounded-md bg-surfaceMuted py-2.5"
         >
           <Text className="text-sm font-semibold text-ink">
             Administrer kontoer

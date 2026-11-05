@@ -67,7 +67,7 @@ export function NotificationsSheet({
               accessibilityRole="button"
               accessibilityLabel={`${n.actorName} ${n.text}`}
               onPress={() => markRead(n.id)}
-              className={`flex-row items-start gap-3 rounded-2xl border bg-surface p-3.5 active:opacity-80 ${
+              className={`flex-row items-start gap-3 rounded-lg border bg-surface p-3.5 active:opacity-80 ${
                 isRead ? "border-line" : "border-ink"
               }`}
             >

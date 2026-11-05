@@ -29,7 +29,7 @@ export function PayoutsScreen() {
         <Pressable
           accessibilityRole="button"
           onPress={() => setTried(true)}
-          className="items-center rounded-2xl border border-dashed border-line py-4"
+          className="items-center rounded-lg border border-dashed border-line py-4"
         >
           <Text className="text-sm font-semibold text-ink">
             + Legg til bankkonto
@@ -47,7 +47,7 @@ export function PayoutsScreen() {
             accessibilityRole="radio"
             accessibilityState={{ selected: plan === p }}
             onPress={() => setPlan(p)}
-            className="flex-row items-center gap-3 rounded-xl border border-line bg-surface px-4 py-3.5"
+            className="flex-row items-center gap-3 rounded-md border border-line bg-surface px-4 py-3.5"
           >
             <View
               className={`h-5 w-5 rounded-full border-2 ${
@@ -58,7 +58,7 @@ export function PayoutsScreen() {
           </Pressable>
         ))}
         <Section>Valuta</Section>
-        <View className="rounded-xl border border-line bg-surface px-4 py-3.5">
+        <View className="rounded-md border border-line bg-surface px-4 py-3.5">
           <Text className="text-sm text-ink">NOK — Norske kroner</Text>
         </View>
         <Section>Utbetalingshistorikk</Section>
@@ -118,7 +118,7 @@ export function SubmissionsScreen() {
         {list.map((s) => (
           <View
             key={s.name}
-            className="gap-1 rounded-2xl border border-line bg-surface p-4"
+            className="gap-1 rounded-lg border border-line bg-surface p-4"
           >
             <Text className="text-base font-semibold text-ink">{s.name}</Text>
             <View

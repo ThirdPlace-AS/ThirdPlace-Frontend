@@ -76,7 +76,7 @@ export default function VerifyCode() {
           ) : null}
         </View>
         {identity ? (
-          <View className="gap-0.5 rounded-xl border border-line bg-surface p-3">
+          <View className="gap-0.5 rounded-md border border-line bg-surface p-3">
             <Text className="text-sm font-semibold text-ink">
               Mistet tilgang?
             </Text>

@@ -207,7 +207,7 @@ function ListingCard({
     <Pressable
       accessibilityRole="button"
       onPress={onPress}
-      className="flex-row gap-3 rounded-2xl border border-line bg-surface p-3 active:opacity-80"
+      className="flex-row gap-3 rounded-lg border border-line bg-surface p-3 active:opacity-80"
     >
       <Image
         source={libImage(listing.cover)}
@@ -271,7 +271,7 @@ function ListingSheet({
             </Text>
           </View>
           <Text className="text-sm text-ink">{listing.description}</Text>
-          <View className="overflow-hidden rounded-xl border border-line bg-surface">
+          <View className="overflow-hidden rounded-md border border-line bg-surface">
             {[{ label: "Pris", value: listing.terms }, ...listing.details].map(
               (d) => (
                 <View
@@ -293,7 +293,7 @@ function ListingSheet({
               </View>
             ))}
           </View>
-          <View className="flex-row items-center gap-3 rounded-xl border border-line bg-surface p-3">
+          <View className="flex-row items-center gap-3 rounded-md border border-line bg-surface p-3">
             <Ionicons name="storefront-outline" size={18} color={colors.ink} />
             <View className="flex-1">
               <Text className="text-sm font-semibold text-ink">

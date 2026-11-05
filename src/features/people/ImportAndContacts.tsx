@@ -39,7 +39,7 @@ export function ImportContentScreen() {
             Skriv inn en hel lenke som starter med https://
           </Text>
         ) : null}
-        <View className="gap-2 rounded-xl bg-surfaceMuted p-3">
+        <View className="gap-2 rounded-md bg-surfaceMuted p-3">
           {[
             "Arrangementssider",
             "Instagram-innlegg",

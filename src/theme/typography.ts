@@ -14,12 +14,15 @@ export const fontFamily = {
   }),
 } as const;
 
+// Mirrors tokens.js fontSize (Tailwind: text-display … text-micro). Prefer the
+// classes; these numbers are for places that need a raw value.
 export const fontSize = {
   display: 30,
   h1: 24,
   h2: 20,
-  title: 18,
+  title: 17,
   body: 16,
+  label: 15,
   caption: 13,
   micro: 11,
 } as const;

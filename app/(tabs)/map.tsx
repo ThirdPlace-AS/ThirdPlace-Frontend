@@ -335,7 +335,7 @@ export default function MapScreen() {
           pointerEvents="box-none"
           className="absolute inset-x-0 top-0 bottom-0 items-center justify-center p-gutter"
         >
-          <View className="items-center w-full max-w-sm gap-2 p-5 border rounded-lg border-line bg-surface">
+          <View className="items-center w-full max-w-sm gap-2 p-5 border rounded-xl border-line bg-surface">
             <Ionicons
               name="cloud-offline-outline"
               size={32}
@@ -364,7 +364,7 @@ export default function MapScreen() {
           pointerEvents="box-none"
           className="absolute inset-x-0 top-0 bottom-0 items-center justify-center p-gutter"
         >
-          <View className="items-center w-full max-w-sm gap-2 p-5 border rounded-lg border-line bg-surface">
+          <View className="items-center w-full max-w-sm gap-2 p-5 border rounded-xl border-line bg-surface">
             <Ionicons name="search" size={32} color={colors.muted} />
             <Text className="text-base font-semibold text-ink">
               Ingen treff

@@ -348,7 +348,7 @@ export default function BusinessOnboarding() {
             title="Se bedriften på kartet"
             subtitle="Slik vil kundene se dere — når dere er verifisert."
           >
-            <View className="gap-3 rounded-2xl border border-line bg-surface p-4">
+            <View className="gap-3 rounded-lg border border-line bg-surface p-4">
               <View className="flex-row items-center gap-1.5 self-start rounded-full border border-ember px-2.5 py-1">
                 <Ionicons name="eye-outline" size={12} color={colors.ember} />
                 <Text className="text-[11px] font-semibold text-ember">
@@ -427,7 +427,7 @@ function Perm({
   onChange: (v: boolean) => void;
 }) {
   return (
-    <View className="flex-row items-center gap-3 rounded-2xl border border-line bg-surface p-4">
+    <View className="flex-row items-center gap-3 rounded-lg border border-line bg-surface p-4">
       <View className="h-10 w-10 items-center justify-center rounded-full bg-surfaceMuted">
         <Ionicons name={icon} size={18} color={colors.ink} />
       </View>
@@ -461,7 +461,7 @@ function NextStep({
   hint: string;
 }) {
   return (
-    <View className="flex-row items-center gap-3 rounded-xl border border-line bg-surface p-3.5">
+    <View className="flex-row items-center gap-3 rounded-md border border-line bg-surface p-3.5">
       <View className="h-7 w-7 items-center justify-center rounded-full bg-surfaceMuted">
         <Text className="text-xs font-bold text-ink">{n}</Text>
       </View>

@@ -74,7 +74,7 @@ export default function PlansScreen() {
           const exp = experienceById(item.experienceId);
           if (!exp) return null;
           return (
-            <View className="gap-0.5 rounded-2xl border border-line bg-surface p-3.5">
+            <View className="gap-0.5 rounded-lg border border-line bg-surface p-3.5">
               <Text className="text-base font-semibold text-ink">
                 {exp.title}
               </Text>

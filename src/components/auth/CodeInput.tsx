@@ -26,7 +26,7 @@ export function CodeInput({
         return (
           <View
             key={i}
-            className={`h-14 flex-1 items-center justify-center rounded-xl border-2 bg-surface ${
+            className={`h-14 flex-1 items-center justify-center rounded-md border-2 bg-surface ${
               ch ? "border-ink" : active ? "border-ink/40" : "border-line"
             }`}
           >

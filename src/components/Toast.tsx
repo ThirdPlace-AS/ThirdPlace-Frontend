@@ -79,7 +79,7 @@ export function ToastHost() {
           accessibilityRole="alert"
           accessibilityLabel={`${toast.title}. ${toast.body ?? ""}`}
           onPress={dismissToast}
-          className="flex-row items-center gap-3 rounded-2xl bg-ink px-4 py-3"
+          className="flex-row items-center gap-3 rounded-lg bg-ink px-4 py-3"
           style={{
             shadowColor: "#000",
             shadowOpacity: 0.2,

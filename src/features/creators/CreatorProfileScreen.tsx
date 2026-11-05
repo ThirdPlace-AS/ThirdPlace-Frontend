@@ -79,7 +79,7 @@ export default function CreatorProfileScreen() {
           Kommende
         </Text>
         {hosted ? (
-          <View className="gap-0.5 rounded-2xl border border-line bg-surface p-4">
+          <View className="gap-0.5 rounded-lg border border-line bg-surface p-4">
             <Text className="text-base font-semibold text-ink">
               {hosted.title}
             </Text>

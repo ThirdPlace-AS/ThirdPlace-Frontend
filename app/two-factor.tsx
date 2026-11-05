@@ -69,7 +69,7 @@ export default function TwoFactor() {
                   accessibilityRole="radio"
                   accessibilityState={{ selected: active }}
                   onPress={() => setMethod(m.key)}
-                  className={`flex-row items-center gap-3 rounded-2xl border bg-surface p-4 ${
+                  className={`flex-row items-center gap-3 rounded-lg border bg-surface p-4 ${
                     active ? "border-ink" : "border-line"
                   }`}
                 >
@@ -102,9 +102,9 @@ export default function TwoFactor() {
                 <Text className="text-xs font-semibold uppercase tracking-wide text-muted">
                   QR-kode
                 </Text>
-                <View className="items-center gap-2 rounded-2xl border border-line bg-surface p-5">
+                <View className="items-center gap-2 rounded-lg border border-line bg-surface p-5">
                   <View
-                    className="items-center justify-center rounded-xl bg-surfaceMuted"
+                    className="items-center justify-center rounded-md bg-surfaceMuted"
                     style={{ height: 128, width: 128 }}
                   >
                     <Ionicons
