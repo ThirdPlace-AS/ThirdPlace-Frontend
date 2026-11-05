@@ -131,7 +131,7 @@ export default function PrivacyScreen() {
             e-post.
           </Text>
           <DemoNote>
-            Demo — ingen eksport lages, og ingen e-post sendes.
+            Ingen eksport lages, og ingen e-post sendes.
           </DemoNote>
           <Button label="Be om eksport" variant="ink" onPress={close} />
         </View>
@@ -193,7 +193,7 @@ function DeleteAccountSheet({
           onChangeText={setConfirm}
           maxLength={10}
         />
-        <DemoNote>Demo — ingen konto eller data blir slettet.</DemoNote>
+        <DemoNote>Ingen konto eller data blir slettet.</DemoNote>
         <Button
           label="Slett kontoen min"
           variant="secondary"

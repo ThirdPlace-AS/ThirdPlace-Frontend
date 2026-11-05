@@ -1501,120 +1501,119 @@ export function personById(id: string): MockPerson | undefined {
   return people.find((p) => p.id === id);
 }
 
-// ── Creators (MOCK — demo progression shell, NO creator/reputation backend) ──
-// BLOCKED_CONTRACT_GAP: there is no creator entity, level/XP system, reputation
-// score, or payout model in the certified contract. `level`/`progressPct`/`hosted`
-// are demo art; progression proves and unlocks nothing.
-export type MockCreator = {
-  id: string;
-  name: string;
-  avatar: LibraryKey;
-  tagline: string;
-  level: string; // MOCK level label (not a real tier)
-  progressPct: number; // MOCK progress toward the next demo level (0–100)
-  hosted: number; // MOCK count of experiences "hosted"
-  specialties: string[]; // MOCK tags
-};
+// ── Marketplace (MOCK — B2B collaboration listings, NO commerce backend) ──
+// Per the design (PDF p15–p16) and master spec §13, Marketplace is a B2B
+// collaboration space for creators, businesses and enterprises — venues,
+// creators, sponsorships, co-hosting and brand deals — not a consumer goods
+// market. BLOCKED_CONTRACT_GAP: there is no listing, offer, contract, pricing
+// or payment model in the certified contract. `terms` is a display string only;
+// nothing can be requested, signed or paid.
+export type MockListingType =
+  | "Venue"
+  | "Skaper"
+  | "Sponsing"
+  | "Co-hosting"
+  | "Brand";
 
-export const creators: MockCreator[] = [
-  {
-    id: "cr1",
-    name: "Maria Movik",
-    avatar: "person-maria",
-    tagline: "Vert for morgenkaffen på Løkka.",
-    level: "Aktiv skaper",
-    progressPct: 72,
-    hosted: 12,
-    specialties: ["Kaffe", "Morgenmøter", "Fotografi"],
-  },
-  {
-    id: "cr2",
-    name: "Erik Haug",
-    avatar: "person-erik",
-    tagline: "Hobbykokk og sykkelmekker.",
-    level: "Ny skaper",
-    progressPct: 34,
-    hosted: 3,
-    specialties: ["Matlaging", "Verksted"],
-  },
-  {
-    id: "cr3",
-    name: "Sofie Lind",
-    avatar: "person-sofie",
-    tagline: "Samler folk til konserter og jazzkvelder.",
-    level: "Erfaren skaper",
-    progressPct: 90,
-    hosted: 21,
-    specialties: ["Konserter", "Jazz", "Musikk"],
-  },
+export const LISTING_TYPES: MockListingType[] = [
+  "Venue",
+  "Skaper",
+  "Sponsing",
+  "Co-hosting",
+  "Brand",
 ];
 
-export function creatorById(id: string): MockCreator | undefined {
-  return creators.find((c) => c.id === id);
-}
-
-// ── Marketplace (MOCK — demo listings, NO commerce backend) ──
-// BLOCKED_CONTRACT_GAP: there is no listing entity, inventory, pricing,
-// availability, checkout, or payment model in the certified contract. `price` is
-// a display string only; nothing can be bought and no transaction occurs.
 export type MockListing = {
   id: string;
   title: string;
-  price: string; // MOCK display label (e.g. "250 kr"), not a real amount
+  type: MockListingType;
+  terms: string; // MOCK display label, e.g. "Gratis mot eksponering"
   cover: LibraryKey;
-  category: string; // MOCK tag
-  sellerName: string;
-  sellerArea: string;
-  condition: string; // MOCK ("Som ny", "Pent brukt"…)
+  owner: string;
+  ownerMeta: string; // MOCK, e.g. "Verifisert bedrift"
+  tags: string[];
+  details: { label: string; value: string }[]; // MOCK display rows
   description: string;
 };
 
 export const listings: MockListing[] = [
   {
     id: "m1",
-    title: "Håndlaget keramikkskål",
-    price: "250 kr",
-    cover: "market-ceramics",
-    category: "Hjem",
-    sellerName: "Åse Kvam",
-    sellerArea: "Sofienberg",
-    condition: "Som ny",
+    title: "Intimt jazzcafé-lokale",
+    type: "Venue",
+    terms: "Gratis mot eksponering",
+    cover: "venue-music",
+    owner: "Oslo Kaffebar",
+    ownerMeta: "Verifisert bedrift",
+    tags: ["Intimt", "Jazz", "Livemusikk"],
+    details: [
+      { label: "Tilgjengelig", value: "Kvelder og helger" },
+      { label: "Kapasitet", value: "25 personer" },
+      { label: "Utstyr", value: "PA-anlegg, lys, kjøkken" },
+    ],
     description:
-      "Dreid og glasert på verkstedet på Grünerløkka. Fin til frukt eller nøkler i gangen.",
+      "Koselig lokale i hjertet av Grünerløkka. Perfekt for intime konserter, smakinger eller workshops.",
   },
   {
     id: "m2",
-    title: "Monstera i leirpotte",
-    price: "180 kr",
-    cover: "market-plant",
-    category: "Planter",
-    sellerName: "Nina Dahl",
-    sellerArea: "Torshov",
-    condition: "Frisk",
-    description: "Stor og frodig, har fått for lite plass i vinduskarmen min.",
+    title: "Erfaren jazzvert",
+    type: "Skaper",
+    terms: "Fra 2 000 kr",
+    cover: "person-maria",
+    owner: "Maria Movik",
+    ownerMeta: "Skaper",
+    tags: ["Co-hosting", "Jazz"],
+    details: [
+      { label: "Tilgjengelig", value: "Torsdag–lørdag" },
+      { label: "Erfaring", value: "Arrangert 23 opplevelser" },
+    ],
+    description:
+      "Leter etter et koselig lokale for jazzkvelder. Tar med eget publikum og musikere.",
   },
   {
     id: "m3",
-    title: "Bybruktsykkel, 7 gir",
-    price: "1 400 kr",
-    cover: "market-bike",
-    category: "Sykkel",
-    sellerName: "Erik Haug",
-    sellerArea: "Grønland",
-    condition: "Pent brukt",
+    title: "Sponsoravtale: Live-jazz",
+    type: "Sponsing",
+    terms: "5 000 kr",
+    cover: "venue-bar",
+    owner: "Kulturetaten",
+    ownerMeta: "Enterprise",
+    tags: ["Festival", "Jazz"],
+    details: [
+      { label: "Periode", value: "August" },
+      { label: "Krav", value: "Logo på arrangement" },
+    ],
     description:
-      "Nylig servicet på verkstedet. Perfekt til jobbpendling på flat Oslo-asfalt.",
+      "Støtte til gratis jazzarrangementer i bydelen gjennom sommeren.",
   },
   {
     id: "m4",
-    title: "Jazzplater, 12 stk",
-    price: "600 kr",
-    cover: "market-vinyl",
-    category: "Musikk",
-    sellerName: "Sofie Lind",
-    sellerArea: "Grünerløkka",
-    condition: "Brukt",
-    description: "Norsk og nordisk jazz fra 70-tallet. Selges samlet.",
+    title: "Co-hosting: Kaffekurs",
+    type: "Co-hosting",
+    terms: "70 % / 30 %",
+    cover: "venue-cafe",
+    owner: "Grünerløkka Bokcafé",
+    ownerMeta: "Verifisert bedrift",
+    tags: ["Kurs", "Kaffe"],
+    details: [
+      { label: "Rolle", value: "Primær / sekundær vert" },
+      { label: "Kapasitet", value: "12 plasser" },
+    ],
+    description:
+      "Vi har lokalet og bønnene — vi søker en vert som vil lære bort latte art.",
+  },
+  {
+    id: "m5",
+    title: "Brand-samarbeid: Keramikk",
+    type: "Brand",
+    terms: "Etter avtale",
+    cover: "venue-workshop",
+    owner: "Vulkan Keramikkstudio",
+    ownerMeta: "Verifisert bedrift",
+    tags: ["Keramikk", "Kreativt"],
+    details: [{ label: "Format", value: "Workshop + innhold" }],
+    description:
+      "Ønsker å samarbeide med skapere om kveldsworkshops og innhold.",
   },
 ];
 

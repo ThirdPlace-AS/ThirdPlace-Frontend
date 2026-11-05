@@ -436,7 +436,7 @@ function ExportSheet({ visible, onClose }: SheetProps) {
             { label: "Betalingshistorikk", icon: "card-outline" },
           ]}
         />
-        <DemoNote>Demo — ingen eksport lages, og ingen e-post sendes.</DemoNote>
+        <DemoNote>Ingen eksport lages, og ingen e-post sendes.</DemoNote>
         <Button label="Be om eksport" variant="ink" onPress={onClose} />
       </View>
     </Sheet>

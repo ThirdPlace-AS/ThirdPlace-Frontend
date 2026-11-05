@@ -289,7 +289,7 @@ function NewChatSheet({
           </View>
         </View>
         <DemoNote>
-          Demo — ingen chat opprettes, og ingen blir invitert.
+          Ingen chat opprettes, og ingen blir invitert.
         </DemoNote>
         <Button
           label="Opprett chat"

@@ -10,7 +10,6 @@ export const demoCopy = {
   signInInactive: "Innlogging er ikke aktiv ennå.",
   reviewNotSent: "Anmeldelsen lagres ikke og sendes ingen steder.",
   filterLocalOnly: "Filtrerer kun forslagene lokalt, ingen serverforespørsel.",
-  listingContactNoop: "Ingen melding sendes og ingen betaling skjer.",
   paymentsStructureOnly:
     "Kun struktur. Ingen kortdata samles inn og ingen betaling skjer.",
   paymentsDemoScreen: "Kun en demo-skjerm.",
@@ -24,7 +23,6 @@ export const demoCopy = {
     "Du står på venteliste i demoen — ingen varsler blir sendt.",
 
   // Standalone (no badge next to them)
-  listingContacted: "Demo — ingen melding sendt",
 } as const;
 
 export type DemoCopyKey = keyof typeof demoCopy;

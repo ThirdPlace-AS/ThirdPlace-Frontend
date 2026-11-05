@@ -1,49 +1,120 @@
 import { Ionicons } from "@expo/vector-icons";
 import { Image } from "expo-image";
-import { useState } from "react";
-import { FlatList, Pressable, Text, View } from "react-native";
+import { useMemo, useState } from "react";
+import { FlatList, Pressable, Text, TextInput, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-import { DemoBadge } from "@/components/DemoBadge";
+import { Button } from "@/components/Button";
+import { Chip } from "@/components/Chip";
+import { DemoNote } from "@/components/DemoNote";
 import { RouteHeader } from "@/components/RouteHeader";
 import { Sheet } from "@/components/Sheet";
 import { SignInPrompt } from "@/components/SignInPrompt";
 import { useGuestMode } from "@/components/map/hooks/useGuestMode";
-import { listingById, listings, type MockListing } from "@/fixtures";
+import {
+  LISTING_TYPES,
+  listingById,
+  listings,
+  type MockListing,
+  type MockListingType,
+} from "@/fixtures";
 import { libImage } from "@/fixtures/images";
 import { colors } from "@/theme";
-import { DemoNote } from "@/components/DemoNote";
-import { demoCopy } from "@/copy";
 
-// Marketplace (DEMO). Reached from Profile → Oppdag → Markedsplass. A grid of
-// neighbour listings opening a detail shell. NO checkout, no cart, no payment —
-// "Kontakt selger" is a demo action. BLOCKED_CONTRACT_GAP: no listing/inventory/
-// pricing/checkout backend; price is a display label only.
+// Marketplace (DEMO), per the design (PDF p15–p16) and master spec §13: a B2B
+// collaboration space where creators, businesses and enterprises offer
+// venues, hosting, sponsorships and brand deals. Search + type chips (Alle /
+// Venue / Skaper / Sponsing / Co-hosting / Brand), listing cards, and a detail
+// sheet with "Send forespørsel" / "Lagre". BLOCKED_CONTRACT_GAP: no offers,
+// contracts or payments exist — nothing is sent, saved or signed.
 export default function MarketplaceScreen() {
+  const { isGuest } = useGuestMode();
+  const [query, setQuery] = useState("");
+  const [type, setType] = useState<MockListingType | null>(null);
   const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [signIn, setSignIn] = useState(false);
   const selected = selectedId ? listingById(selectedId) : undefined;
+
+  const q = query.trim().toLowerCase();
+  const data = useMemo(
+    () =>
+      listings.filter(
+        (l) =>
+          (!type || l.type === type) &&
+          (!q ||
+            l.title.toLowerCase().includes(q) ||
+            l.owner.toLowerCase().includes(q) ||
+            l.tags.some((t) => t.toLowerCase().includes(q))),
+      ),
+    [q, type],
+  );
+
   return (
     <SafeAreaView className="flex-1 bg-background" edges={["top"]}>
-      <RouteHeader title="Markedsplass" />
+      <RouteHeader title="Marketplace" />
       <FlatList
-        data={listings}
+        data={data}
         keyExtractor={(l) => l.id}
-        numColumns={2}
-        columnWrapperStyle={{ gap: 12, paddingHorizontal: 16 }}
-        contentContainerClassName="gap-3 pb-10 pt-1"
+        contentContainerClassName="gap-3 px-gutter pb-10"
+        keyboardShouldPersistTaps="handled"
         ListHeaderComponent={
-          <View className="flex-row items-center gap-2 px-gutter pb-2">
-            <DemoBadge />
-            <Text className="flex-1 text-xs text-muted">
-              Demo — ingen reell handel. Ingenting kan kjøpes eller selges.
+          <View className="gap-3 pb-1">
+            <Text className="text-sm text-muted">
+              Samarbeid mellom skapere og bedrifter — lokaler, vertskap,
+              sponsing og brand.
             </Text>
+            <View className="flex-row items-center gap-2 rounded-full border border-line bg-surface px-4">
+              <Ionicons name="search" size={18} color={colors.muted} />
+              <TextInput
+                value={query}
+                onChangeText={setQuery}
+                placeholder="Søk listings, samarbeid …"
+                placeholderTextColor={colors.muted}
+                className="flex-1 py-3 text-base text-ink"
+                accessibilityLabel="Søk i Marketplace"
+              />
+            </View>
+            <View className="flex-row flex-wrap gap-2">
+              <Chip
+                label="Alle"
+                selected={type === null}
+                onPress={() => setType(null)}
+              />
+              {LISTING_TYPES.map((t) => (
+                <Chip
+                  key={t}
+                  label={t}
+                  selected={type === t}
+                  onPress={() => setType(t)}
+                />
+              ))}
+            </View>
           </View>
+        }
+        ListEmptyComponent={
+          <Text className="py-10 text-center text-sm text-muted">
+            Ingen listings matcher søket.
+          </Text>
         }
         renderItem={({ item }) => (
           <ListingCard listing={item} onPress={() => setSelectedId(item.id)} />
         )}
       />
-      <ListingSheet listing={selected} onClose={() => setSelectedId(null)} />
+
+      <ListingSheet
+        listing={selected}
+        onClose={() => setSelectedId(null)}
+        onGuest={() => {
+          setSelectedId(null);
+          setSignIn(true);
+        }}
+        isGuest={isGuest}
+      />
+      <SignInPrompt
+        visible={signIn}
+        onClose={() => setSignIn(false)}
+        action="sende forespørsler i Marketplace"
+      />
     </SafeAreaView>
   );
 }
@@ -59,23 +130,28 @@ function ListingCard({
     <Pressable
       accessibilityRole="button"
       onPress={onPress}
-      className="flex-1 overflow-hidden rounded-2xl bg-surface active:opacity-90"
+      className="flex-row gap-3 rounded-2xl border border-line bg-surface p-3 active:opacity-80"
     >
       <Image
         source={libImage(listing.cover)}
         contentFit="cover"
-        transition={200}
-        style={{ height: 150, width: "100%" }}
+        transition={150}
+        style={{ height: 88, width: 88, borderRadius: 12 }}
         className="bg-surfaceMuted"
         accessibilityLabel={listing.title}
       />
-      <View className="gap-0.5 p-2.5">
-        <Text className="text-sm font-semibold text-ink" numberOfLines={1}>
+      <View className="flex-1 gap-1">
+        <Text className="text-base font-semibold text-ink" numberOfLines={1}>
           {listing.title}
         </Text>
-        <Text className="text-sm font-bold text-ember">{listing.price}</Text>
+        <View className="self-start rounded-full bg-surfaceMuted px-2 py-0.5">
+          <Text className="text-[11px] font-semibold text-ink">
+            {listing.type}
+          </Text>
+        </View>
+        <Text className="text-sm font-semibold text-ink">{listing.terms}</Text>
         <Text className="text-xs text-muted" numberOfLines={1}>
-          {listing.sellerArea} · {listing.condition}
+          {listing.owner}
         </Text>
       </View>
     </Pressable>
@@ -85,101 +161,95 @@ function ListingCard({
 function ListingSheet({
   listing,
   onClose,
+  onGuest,
+  isGuest,
 }: {
   listing: MockListing | undefined;
   onClose: () => void;
+  onGuest: () => void;
+  isGuest: boolean;
 }) {
-  const guest = useGuestMode();
-  const [signIn, setSignIn] = useState<string | null>(null);
-  const [contacted, setContacted] = useState(false);
-
-  // Reset the demo "contacted" state when a new listing opens.
-  const [seededFor, setSeededFor] = useState<string | undefined>(listing?.id);
-  if (listing?.id !== seededFor) {
-    setSeededFor(listing?.id);
-    setContacted(false);
-  }
-
+  const [notice, setNotice] = useState<"request" | "save" | null>(null);
+  const close = () => {
+    setNotice(null);
+    onClose();
+  };
   return (
     <Sheet
-      visible={listing != null}
-      onClose={onClose}
-      title={listing?.title}
-      fullHeight
+      visible={listing !== undefined}
+      onClose={close}
+      title={listing?.title ?? ""}
     >
       {listing ? (
         <View className="gap-4">
           <Image
             source={libImage(listing.cover)}
             contentFit="cover"
-            transition={200}
-            style={{ height: 220, width: "100%", borderRadius: 16 }}
+            style={{ height: 168, width: "100%", borderRadius: 14 }}
             className="bg-surfaceMuted"
-            accessibilityLabel={listing.title}
           />
-
-          <View className="flex-row items-center justify-between">
-            <Text className="text-2xl font-bold text-ember">
-              {listing.price}
+          <View className="self-start rounded-full bg-surfaceMuted px-2.5 py-1">
+            <Text className="text-xs font-semibold text-ink">
+              {listing.type}
             </Text>
-            <View className="rounded-full border border-line bg-surface px-3 py-1">
-              <Text className="text-xs text-ink">{listing.condition}</Text>
-            </View>
           </View>
-
-          <Text className="text-sm leading-5 text-ink">
-            {listing.description}
-          </Text>
-
-          <View className="flex-row items-center gap-3 rounded-2xl bg-surfaceMuted p-3">
-            <View className="h-10 w-10 items-center justify-center rounded-full bg-surface">
-              <Ionicons name="person" size={18} color={colors.muted} />
-            </View>
+          <Text className="text-sm text-ink">{listing.description}</Text>
+          <View className="overflow-hidden rounded-xl border border-line bg-surface">
+            {[{ label: "Pris", value: listing.terms }, ...listing.details].map(
+              (d) => (
+                <View
+                  key={d.label}
+                  className="flex-row justify-between border-b border-line px-3.5 py-3"
+                >
+                  <Text className="text-sm text-muted">{d.label}</Text>
+                  <Text className="text-sm font-medium text-ink">
+                    {d.value}
+                  </Text>
+                </View>
+              ),
+            )}
+          </View>
+          <View className="flex-row flex-wrap gap-2">
+            {listing.tags.map((t) => (
+              <View key={t} className="rounded-full bg-surfaceMuted px-3 py-1">
+                <Text className="text-xs font-medium text-ink">{t}</Text>
+              </View>
+            ))}
+          </View>
+          <View className="flex-row items-center gap-3 rounded-xl border border-line bg-surface p-3">
+            <Ionicons name="storefront-outline" size={18} color={colors.ink} />
             <View className="flex-1">
               <Text className="text-sm font-semibold text-ink">
-                {listing.sellerName}
+                {listing.owner}
               </Text>
-              <Text className="text-xs text-muted">{listing.sellerArea}</Text>
+              <Text className="text-xs text-muted">{listing.ownerMeta}</Text>
             </View>
-            <Text className="text-xs text-muted">{listing.category}</Text>
           </View>
-
-          <View className="gap-2">
-            <Pressable
-              accessibilityRole="button"
-              onPress={() =>
-                guest.isGuest
-                  ? setSignIn("kontakte selgeren")
-                  : setContacted(true)
-              }
-              disabled={contacted}
-              className={`flex-row items-center justify-center gap-2 rounded-xl py-3.5 ${
-                contacted ? "bg-surfaceMuted" : "bg-ember active:opacity-90"
-              }`}
-            >
-              <Ionicons
-                name={contacted ? "checkmark" : "chatbubble-outline"}
-                size={18}
-                color={contacted ? colors.muted : colors.onEmber}
+          {notice ? (
+            <DemoNote>
+              {notice === "request"
+                ? "Ingen forespørsel sendes, og ingen avtale opprettes."
+                : "Listingen lagres ikke."}
+            </DemoNote>
+          ) : null}
+          <View className="flex-row gap-3">
+            <View className="flex-1">
+              <Button
+                label="Send forespørsel"
+                variant="ink"
+                onPress={() => (isGuest ? onGuest() : setNotice("request"))}
               />
-              <Text
-                className={`text-base font-semibold ${
-                  contacted ? "text-muted" : "text-onEmber"
-                }`}
-              >
-                {contacted ? demoCopy.listingContacted : "Kontakt selger"}
-              </Text>
-            </Pressable>
-            <DemoNote>{demoCopy.listingContactNoop}</DemoNote>
+            </View>
+            <View className="w-28">
+              <Button
+                label="Lagre"
+                variant="secondary"
+                onPress={() => (isGuest ? onGuest() : setNotice("save"))}
+              />
+            </View>
           </View>
         </View>
       ) : null}
-
-      <SignInPrompt
-        visible={signIn !== null}
-        onClose={() => setSignIn(null)}
-        action={signIn ?? ""}
-      />
     </Sheet>
   );
 }

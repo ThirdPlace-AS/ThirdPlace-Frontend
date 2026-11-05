@@ -4,7 +4,7 @@ import { demoCopy } from "@/copy";
 
 // Lines rendered by DemoNote sit next to a DEMO badge, so they must not repeat
 // "Demo"; standalone lines must carry it, or a demo state could read as real.
-const STANDALONE = new Set<keyof typeof demoCopy>(["listingContacted"]);
+const STANDALONE = new Set<keyof typeof demoCopy>([]);
 
 describe("demoCopy", () => {
   it("badge-paired lines do not repeat the Demo prefix", () => {

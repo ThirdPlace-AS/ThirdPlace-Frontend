@@ -147,7 +147,12 @@ function Stat({ value, label }: { value: number; label: string }) {
 function CreatorPathCard() {
   const { hosted, required, rating } = profile.creatorPath;
   return (
-    <View className="gap-2 rounded-2xl bg-surfaceMuted p-4">
+    <Pressable
+      accessibilityRole="button"
+      accessibilityLabel="Veien til Skaper — se kravene"
+      onPress={() => router.push("/become-creator")}
+      className="gap-2 rounded-2xl bg-surfaceMuted p-4 active:opacity-80"
+    >
       <View className="flex-row items-center gap-2">
         <Ionicons name="color-palette-outline" size={18} color={colors.ink} />
         <Text className="flex-1 text-base font-semibold text-ink">
@@ -164,7 +169,7 @@ function CreatorPathCard() {
           style={{ width: `${(hosted / required) * 100}%` }}
         />
       </View>
-    </View>
+    </Pressable>
   );
 }
 

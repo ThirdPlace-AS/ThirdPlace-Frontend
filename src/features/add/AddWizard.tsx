@@ -594,7 +594,7 @@ function ReviewStep({ draft }: { draft: AddDraft }) {
             ))}
           </View>
           <DemoNote>
-            Demo — publisering er ikke aktiv. Ingenting blir synlig, og ingen
+            Publisering er ikke aktiv. Ingenting blir synlig, og ingen
             chat opprettes.
           </DemoNote>
         </>
