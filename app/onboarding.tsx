@@ -1,10 +1,15 @@
-import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
 import { useState } from "react";
 import { Pressable, ScrollView, Text, View } from "react-native";
 
 import { Switch } from "@/components/ui/Switch";
-import { Icon, Screen, StepContent, StepHeader } from "@/components/ui";
+import {
+  Icon,
+  Screen,
+  StepContent,
+  StepHeader,
+  type IconName,
+} from "@/components/ui";
 import { Button } from "@/components/Button";
 import { Chip } from "@/components/Chip";
 import { DemoNote } from "@/components/DemoNote";
@@ -80,7 +85,7 @@ const PERMISSIONS: {
   label: string;
   tag: string;
   hint: string;
-  icon: keyof typeof Ionicons.glyphMap;
+  icon: IconName;
 }[] = [
   {
     key: "location",
@@ -208,11 +213,7 @@ export default function Onboarding() {
                   } ${p.locked ? "opacity-60" : ""}`}
                 >
                   <View className="h-10 w-10 items-center justify-center rounded-md bg-surfaceMuted">
-                    <Icon
-                      name={p.icon as keyof typeof Ionicons.glyphMap}
-                      size="md"
-                      tone="ink"
-                    />
+                    <Icon name={p.icon as IconName} size="md" tone="ink" />
                   </View>
                   <View className="flex-1">
                     <Text className="text-base font-semibold text-ink">
@@ -456,7 +457,7 @@ export default function Onboarding() {
                 className="flex-row items-center gap-3 rounded-lg border border-line bg-surface p-3.5"
               >
                 <View className="h-10 w-10 items-center justify-center rounded-md bg-surfaceMuted">
-                  <Icon name="sparkles-outline" size="md" tone="ink" />
+                  <Icon name="tp-experience" size="md" tone="ink" />
                 </View>
                 <View className="flex-1">
                   <Text

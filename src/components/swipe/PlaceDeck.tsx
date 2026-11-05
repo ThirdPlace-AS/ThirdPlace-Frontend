@@ -45,7 +45,7 @@ export function PlaceDeck({
       >
         <StatusBar style="dark" />
         <EmptyState
-          icon="storefront-outline"
+          icon="tp-business"
           title="Du har sett alle stedene"
           message="Utforsk kartet for flere, eller se gjennom dem på nytt."
           actionLabel="Se stedene igjen"

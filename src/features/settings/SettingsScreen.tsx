@@ -1,9 +1,8 @@
-import { Ionicons } from "@expo/vector-icons";
 import { router, type Href } from "expo-router";
 import { useState } from "react";
 import { Pressable, ScrollView, Text, View } from "react-native";
 
-import { Icon, Screen } from "@/components/ui";
+import { Icon, Screen, type IconName } from "@/components/ui";
 import { Button } from "@/components/Button";
 import { DemoNote } from "@/components/DemoNote";
 import { Input } from "@/components/Input";
@@ -230,7 +229,7 @@ function Session({
   name,
   meta,
 }: {
-  icon: keyof typeof Ionicons.glyphMap;
+  icon: IconName;
   name: string;
   meta: string;
 }) {
@@ -263,7 +262,7 @@ function LinkedSheet({ visible, onClose }: SheetProps) {
           }}
           className="flex-row items-center gap-3 rounded-md border border-line bg-surface p-3 active:opacity-80"
         >
-          <Icon name="storefront-outline" size="md" tone="ink" />
+          <Icon name="tp-business" size="md" tone="ink" />
           <View className="flex-1">
             <Text className="text-sm font-semibold text-ink">
               Oslo Kaffebar AS
@@ -294,7 +293,7 @@ function ToggleList({
   items: {
     label: string;
     hint?: string;
-    icon: keyof typeof Ionicons.glyphMap;
+    icon: IconName;
   }[];
   initial: Record<string, boolean>;
 }) {
@@ -334,7 +333,7 @@ function NotificationPrefsSheet({ visible, onClose }: SheetProps) {
             {
               label: "Opplevelser",
               hint: "24t og 1t før, «skjer nå»",
-              icon: "sparkles-outline",
+              icon: "tp-experience",
             },
             {
               label: "Venteliste",
@@ -481,7 +480,7 @@ function ExportSheet({ visible, onClose }: SheetProps) {
           items={[
             { label: "Profil og preferanser", icon: "person-outline" },
             { label: "Chathistorikk", icon: "chatbubble-outline" },
-            { label: "Opplevelser og påmeldinger", icon: "sparkles-outline" },
+            { label: "Opplevelser og påmeldinger", icon: "tp-experience" },
             { label: "Anmeldelser", icon: "star-outline" },
             { label: "Betalingshistorikk", icon: "card-outline" },
           ]}

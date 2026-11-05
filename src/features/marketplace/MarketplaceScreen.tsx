@@ -294,7 +294,7 @@ function ListingSheet({
             ))}
           </View>
           <View className="flex-row items-center gap-3 rounded-md border border-line bg-surface p-3">
-            <Icon name="storefront-outline" size="md" tone="ink" />
+            <Icon name="tp-business" size="md" tone="ink" />
             <View className="flex-1">
               <Text className="text-sm font-semibold text-ink">
                 {listing.owner}

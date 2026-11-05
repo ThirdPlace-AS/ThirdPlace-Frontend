@@ -1,8 +1,7 @@
-import { Ionicons } from "@expo/vector-icons";
 import { router, type Href } from "expo-router";
 import { Pressable, Text, View } from "react-native";
 
-import { Icon } from "@/components/ui";
+import { Icon, type IconName } from "@/components/ui";
 import { DemoNote } from "@/components/DemoNote";
 import { businesses, profile } from "@/fixtures";
 
@@ -16,7 +15,7 @@ export default function AccountSwitch() {
   const rows: {
     title: string;
     hint: string;
-    icon: keyof typeof Ionicons.glyphMap;
+    icon: IconName;
     onPress: () => void;
     active?: boolean;
   }[] = [
@@ -30,7 +29,7 @@ export default function AccountSwitch() {
     {
       title: biz?.name ?? "Bedrift",
       hint: "Dashbord",
-      icon: "storefront-outline",
+      icon: "tp-business",
       onPress: () => router.replace("/workspace" as Href),
     },
   ];

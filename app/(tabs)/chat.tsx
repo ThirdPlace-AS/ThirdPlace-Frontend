@@ -53,7 +53,7 @@ export default function ChatScreen() {
     {
       key: "experience",
       label: "Opplevelser",
-      icon: "sparkles-outline" as const,
+      icon: "tp-experience" as const,
       items: visible.filter((c) => c.type === "experience"),
     },
     {

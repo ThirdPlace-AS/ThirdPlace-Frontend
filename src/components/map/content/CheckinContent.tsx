@@ -31,7 +31,7 @@ export function CheckinContent({ id }: { id: string }) {
           }`}
         >
           <Icon
-            name={checkedIn ? "checkmark" : "location"}
+            name={checkedIn ? "checkmark" : "tp-arrival"}
             size="2xl"
             tone={checkedIn || near ? "onEmber" : "muted"}
           />

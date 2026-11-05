@@ -1,9 +1,8 @@
-import { Ionicons } from "@expo/vector-icons";
 import { useMemo, useState } from "react";
 import { Keyboard, Pressable, ScrollView, Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-import { Icon, IconButton, Overlay } from "@/components/ui";
+import { Icon, IconButton, Overlay, type IconName } from "@/components/ui";
 import { Chip } from "@/components/Chip";
 import { SearchBar } from "@/components/SearchBar";
 
@@ -145,7 +144,7 @@ function SearchBody({
               />
               <ResultGroup
                 title="Opplevelser"
-                icon="sparkles-outline"
+                icon="tp-experience"
                 items={results.experiences}
                 onPick={pick}
               />
@@ -250,7 +249,7 @@ function ResultGroup({
   onPick,
 }: {
   title: string;
-  icon: keyof typeof Ionicons.glyphMap;
+  icon: IconName;
   items: SearchResult[];
   onPick: (r: SearchResult) => void;
 }) {

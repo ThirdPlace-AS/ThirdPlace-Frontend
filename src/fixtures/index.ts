@@ -119,7 +119,7 @@ export const EXPERIENCE_TYPES: MockExperienceType[] = [
   { label: "Velvære", icon: "flower-outline" },
   { label: "Natteliv", icon: "moon-outline" },
   { label: "Konserter", icon: "mic-outline" },
-  { label: "Festivaler", icon: "sparkles-outline" },
+  { label: "Festivaler", icon: "musical-notes-outline" },
   { label: "Historie", icon: "time-outline" },
   { label: "Fotografering", icon: "camera-outline" },
   { label: "Sykkelturer", icon: "bicycle-outline" },
@@ -133,7 +133,7 @@ export const AUDIENCES: MockAudience[] = [
   { label: "Store grupper", icon: "people-outline" },
   { label: "Alenereisende", icon: "person-outline" },
   { label: "Par", icon: "heart-outline" },
-  { label: "Førstegangsbesøkende", icon: "sparkles-outline" },
+  { label: "Førstegangsbesøkende", icon: "hand-left-outline" },
   { label: "Lokalkjente", icon: "location-outline" },
 ];
 export const AUDIENCE_LABELS = AUDIENCES.map((a) => a.label);
@@ -204,7 +204,7 @@ export const VIBE_ICONS: Record<Vibe, string> = {
   Sosial: "people-outline",
   Romantisk: "rose-outline",
   Livlig: "pulse-outline",
-  Kreativ: "color-wand-outline",
+  Kreativ: "color-palette-outline",
   Luksuriøs: "diamond-outline",
 };
 export const TAG_ICONS: Record<string, string> = {
@@ -228,7 +228,7 @@ export const ACCESSIBILITY_ICONS: Record<string, string> = {
   "Syns- og hørselshjelpemidler": "eye-outline",
   "Alternativer for tegnspråk": "hand-left-outline",
   "Ledsager for synshemmede": "walk-outline",
-  "Sensoriske stimuli": "sparkles-outline",
+  "Sensoriske stimuli": "ear-outline",
   "Ingen ekstreme sensoriske stimuli": "volume-mute-outline",
 };
 // Fallback glyph for any label missing from a map above.
@@ -1376,7 +1376,7 @@ export const PERSONAS: {
     key: "business",
     label: "Bedrift",
     hint: "Vis frem stedet ditt og nå nye kunder",
-    icon: "storefront-outline",
+    icon: "tp-business",
   },
   {
     key: "enterprise",

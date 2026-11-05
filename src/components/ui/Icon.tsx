@@ -1,6 +1,6 @@
 // Icon (docs/design/DESIGN_SYSTEM.md §3 "Icons") — the single entry point for
-// glyphs. Ionicons today; ThirdPlace-specific SVG glyphs slot in here later
-// without touching call sites. Sizes and colours come from tokens only.
+// glyphs: Ionicons, plus ThirdPlace SVG glyphs ("tp-…", see ./glyphs) for the
+// concepts Ionicons has no honest glyph for. Sizes and colours come from tokens only.
 // Decorative by default (hidden from screen readers); the surrounding control
 // carries the label.
 import { Ionicons } from "@expo/vector-icons";
@@ -8,7 +8,10 @@ import type { ComponentProps } from "react";
 
 import { iconSize, useThemeColors, type IconSize } from "@/theme";
 
-export type IconName = ComponentProps<typeof Ionicons>["name"];
+import { glyphs, isGlyph, type GlyphName } from "./glyphs";
+
+export type IoniconName = ComponentProps<typeof Ionicons>["name"];
+export type IconName = IoniconName | GlyphName;
 
 export type IconTone =
   | "ink"
@@ -31,6 +34,10 @@ export type IconProps = {
 
 export function Icon({ name, size = "lg", tone = "ink", color }: IconProps) {
   const c = useThemeColors();
+  if (isGlyph(name)) {
+    const Glyph = glyphs[name];
+    return <Glyph size={iconSize[size]} color={String(color ?? c[tone])} />;
+  }
   return (
     <Ionicons
       name={name}

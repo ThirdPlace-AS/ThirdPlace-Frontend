@@ -1,7 +1,6 @@
-import { Ionicons } from "@expo/vector-icons";
 import type { ReactNode } from "react";
 import { Text, View } from "react-native";
-import { Icon, ListRow } from "@/components/ui";
+import { Icon, ListRow, type IconName } from "@/components/ui";
 import { Switch } from "@/components/ui/Switch";
 
 // Shared building blocks for the Settings + Privacy routes. All inert/demo:
@@ -34,7 +33,7 @@ export function NavRow({
   onPress,
   danger,
 }: {
-  icon: keyof typeof Ionicons.glyphMap;
+  icon: IconName;
   label: string;
   value?: string;
   onPress: () => void;
@@ -60,7 +59,7 @@ export function ToggleRow({
   value,
   onValueChange,
 }: {
-  icon: keyof typeof Ionicons.glyphMap;
+  icon: IconName;
   label: string;
   hint?: string;
   value: boolean;

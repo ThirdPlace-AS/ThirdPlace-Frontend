@@ -1,11 +1,10 @@
-import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
 import { Tabs } from "expo-router/js-tabs";
 import { View, type ColorValue } from "react-native";
 
+import { Icon, type IconName } from "@/components/ui";
 import { useThemeColors } from "@/theme";
-
-type IconName = keyof typeof Ionicons.glyphMap;
+import { fontFamilyFor } from "@/theme/fonts";
 
 // Outline when idle, filled when active — the usual iOS/Android tab convention.
 function icon(idle: IconName, active: IconName) {
@@ -17,7 +16,9 @@ function icon(idle: IconName, active: IconName) {
     color: ColorValue;
     size: number;
     focused: boolean;
-  }) => <Ionicons name={focused ? active : idle} color={color} size={size} />;
+    // The navigator supplies the colour (ember active / muted idle); size is
+    // the lg token (24), which is what the navigator asks for.
+  }) => <Icon name={focused ? active : idle} color={String(color)} size="lg" />;
   Comp.displayName = `TabIcon(${idle})`;
   return Comp;
 }
@@ -25,10 +26,9 @@ function icon(idle: IconName, active: IconName) {
 // Center "Legg til" per the design (PDF p5–p8): a dark round "+" with the
 // "Legg til" label underneath, like the other tabs.
 function AddIcon() {
-  const c = useThemeColors();
   return (
     <View className="h-9 w-9 items-center justify-center rounded-full bg-ink">
-      <Ionicons name="add" size={24} color={c.onInk} />
+      <Icon name="add" size="lg" tone="onInk" />
     </View>
   );
 }
@@ -43,8 +43,10 @@ export default function TabsLayout() {
       screenOptions={{
         headerShown: false,
         // PDF: the active tab's icon + label are Ember; the rest muted.
-        tabBarActiveTintColor: colors.ember,
+        // emberText keeps the active label readable on the dark surface too.
+        tabBarActiveTintColor: colors.emberText,
         tabBarInactiveTintColor: colors.muted,
+        tabBarLabelStyle: { fontFamily: fontFamilyFor("medium") },
         tabBarStyle: {
           backgroundColor: colors.surface,
           borderTopColor: colors.line,
@@ -59,7 +61,7 @@ export default function TabsLayout() {
         name="swipe"
         options={{
           title: "Sveip",
-          tabBarIcon: icon("albums-outline", "albums"),
+          tabBarIcon: icon("tp-swipe", "tp-swipe-filled"),
         }}
       />
       <Tabs.Screen

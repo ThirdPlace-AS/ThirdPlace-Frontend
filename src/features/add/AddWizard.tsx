@@ -12,6 +12,7 @@ import {
   Screen,
   StepContent,
   StepHeader,
+  type IconName,
 } from "@/components/ui";
 import { Button } from "@/components/Button";
 import { DemoBadge } from "@/components/DemoBadge";
@@ -188,7 +189,7 @@ function KindMenu({ onPick }: { onPick: (k: AddKind) => void }) {
     kind: AddKind;
     label: string;
     hint: string;
-    icon: keyof typeof Ionicons.glyphMap;
+    icon: IconName;
   }[] = [
     {
       kind: "place",
@@ -200,7 +201,7 @@ function KindMenu({ onPick }: { onPick: (k: AddKind) => void }) {
       kind: "experience",
       label: "Opplevelse",
       hint: "Arranger noe — stort eller lite",
-      icon: "sparkles-outline",
+      icon: "tp-experience",
     },
   ];
   return (
@@ -624,13 +625,7 @@ function ReviewStep({ draft }: { draft: AddDraft }) {
   );
 }
 
-function Fact({
-  icon,
-  value,
-}: {
-  icon: keyof typeof Ionicons.glyphMap;
-  value: string;
-}) {
+function Fact({ icon, value }: { icon: IconName; value: string }) {
   return (
     <View className="flex-1 gap-1 rounded-md border border-line bg-surface p-3">
       <Icon name={icon} size="sm" tone="ink" />
@@ -715,7 +710,7 @@ function SelectRow({
   selected,
   onPress,
 }: {
-  icon: keyof typeof Ionicons.glyphMap;
+  icon: IconName;
   title: string;
   hint: string;
   selected: boolean;
