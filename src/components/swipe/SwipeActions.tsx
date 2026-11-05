@@ -8,7 +8,7 @@ import Animated, {
   type SharedValue,
 } from "react-native-reanimated";
 
-import { motion } from "@/theme";
+import { motion, media } from "@/theme";
 
 const G = motion.gesture;
 
@@ -22,15 +22,15 @@ const G = motion.gesture;
 // send are neutral but flash on press. The save slot keeps the BOOKMARK (ThirdPlace
 // SAVES — no superlike/match), it is not the reference's star. Share opens the
 // device share sheet with the card title (local, no backend).
-const REST = "rgba(20,22,24,0.55)"; // translucent dark glass — lets each photo's own footer tint show through so the disc blends with the card instead of reading as a foreign grey chip, while staying dark enough that the colored glyphs keep contrast on any photo
-const PRESS = "rgba(20,22,24,0.72)"; // same glass, denser while pressed (rewind/share)
-const INK = "#202020"; // inverted glyph on a light fill
-const DIM = "rgba(255,255,255,0.4)"; // rewind glyph when there's nothing to undo
-const SAVE = "rgba(255,255,255,0.92)"; // neutral light fill when save commits
-const LIKE = "#D80000"; // ember (brand) — like / join: resting heart + fill
+const REST = media.glass; // translucent dark glass — lets each photo's own footer tint show through so the disc blends with the card instead of reading as a foreign grey chip, while staying dark enough that the colored glyphs keep contrast on any photo
+const PRESS = media.glassPressed; // same glass, denser while pressed (rewind/share)
+const INK = media.inkOnLight; // inverted glyph on a light fill
+const DIM = media.onMediaMuted; // rewind glyph when there's nothing to undo
+const SAVE = media.surface; // neutral light fill when save commits
+const LIKE = media.ember; // ember (brand) — like / join: resting heart + fill
 // PDF p7: every action glyph rests white except the ember heart — no
 // off-palette accents.
-const ACCENT_BLUE = "#FFFFFF"; // resting bookmark + paper-plane
+const ACCENT_BLUE = media.onMedia; // resting bookmark + paper-plane
 const UNDO_ACCENT = LIKE; // rewind / share flash ember on press
 
 // Per-button sizing matched to the reference: X + heart large, rewind/save/send
@@ -52,7 +52,7 @@ function disc(size: number) {
     // Hairline ring so the translucent glass disc reads as a distinct circle on
     // any footer — including a very dark one — without raising its fill.
     borderWidth: 1,
-    borderColor: "rgba(255,255,255,0.14)",
+    borderColor: media.hairline,
   } as const;
 }
 
@@ -211,7 +211,7 @@ export function SwipeActions({
         size={SIZE_SM}
         iconSize={25}
         icon="refresh"
-        color="#FFFFFF"
+        color={media.onMedia}
         pressColor={UNDO_ACCENT}
         label="Angre"
         onPress={onUndo}
@@ -221,11 +221,11 @@ export function SwipeActions({
       {/* Nope — large; fills white, X inverts to ink. */}
       <ReactiveButton
         progress={nope}
-        fill="#FFFFFF"
+        fill={media.onMedia}
         size={SIZE_LG}
         iconSize={38}
         icon="close"
-        baseColor="#FFFFFF"
+        baseColor={media.onMedia}
         overIcon="close"
         overColor={INK}
         reduced={reduced}
@@ -258,7 +258,7 @@ export function SwipeActions({
         icon="heart-outline"
         baseColor={LIKE}
         overIcon="heart"
-        overColor="#FFFFFF"
+        overColor={media.onMedia}
         reduced={reduced}
         label="Bli med"
         onPress={onLike}

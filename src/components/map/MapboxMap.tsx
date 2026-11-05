@@ -11,7 +11,7 @@ import { useEffect, useMemo, useRef } from "react";
 import { Dimensions } from "react-native";
 
 import { MAP_CENTER } from "@/fixtures";
-import { colors, motion } from "@/theme";
+import { colors, motion, useThemeColors } from "@/theme";
 
 import type { DiscoveryItem } from "./types/mapPresentation";
 
@@ -62,6 +62,7 @@ export function MapboxMap({
   focusCoord?: [number, number] | null;
   styleURL?: string;
 }) {
+  const colors = useThemeColors();
   const cameraRef = useRef<Camera>(null);
 
   useEffect(() => {

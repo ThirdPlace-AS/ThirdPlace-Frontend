@@ -5,7 +5,7 @@ import type { ViewStyle } from "react-native";
 
 export type ElevationLevel = "e0" | "e1" | "e2" | "e3";
 
-export const elevation: Record<ElevationLevel, ViewStyle> = {
+export const elevation: Record<ElevationLevel, Pick<ViewStyle, "boxShadow">> = {
   /** Flat — most content on the background. */
   e0: {},
   /** Cards on imagery or the map. */

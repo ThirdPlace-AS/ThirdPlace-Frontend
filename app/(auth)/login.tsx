@@ -33,7 +33,7 @@ export default function Login() {
           <Input label="Passord" placeholder="••••••••" secureTextEntry />
           <Link
             href="/forgot-password"
-            className="text-right text-sm font-semibold text-ember"
+            className="text-right text-sm font-semibold text-emberText"
           >
             Glemt passord?
           </Link>
@@ -48,14 +48,14 @@ export default function Login() {
           />
           <View className="flex-row items-center justify-center gap-2">
             <DemoBadge />
-            <Text className="text-xs text-muted">
+            <Text className="text-xs text-muted font-normal">
               Ingen reell innlogging; feltene lagrer ingenting.
             </Text>
           </View>
         </View>
-        <Text className="text-center text-sm text-muted">
+        <Text className="text-center text-sm text-muted font-normal">
           Har du ikke konto?{" "}
-          <Link href="/register" className="font-semibold text-ember">
+          <Link href="/register" className="font-semibold text-emberText">
             Registrer deg
           </Link>
         </Text>

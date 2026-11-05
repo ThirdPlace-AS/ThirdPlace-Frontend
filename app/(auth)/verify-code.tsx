@@ -53,7 +53,7 @@ export default function VerifyCode() {
           onPress={confirm}
         />
         <View className="items-center gap-1">
-          <Text className="text-sm text-muted">
+          <Text className="text-sm text-muted font-normal">
             Fikk du ikke koden?{" "}
             <Text
               onPress={
@@ -64,13 +64,13 @@ export default function VerifyCode() {
                     }
                   : undefined
               }
-              className={`font-semibold ${left <= 0 ? "text-ember" : "text-muted"}`}
+              className={`font-semibold ${left <= 0 ? "text-emberText" : "text-muted"}`}
             >
               Send på nytt
             </Text>
           </Text>
           {left > 0 ? (
-            <Text className="text-xs text-muted">
+            <Text className="text-xs text-muted font-normal">
               Du kan sende ny kode om {left} sekunder
             </Text>
           ) : null}
@@ -80,7 +80,7 @@ export default function VerifyCode() {
             <Text className="text-sm font-semibold text-ink">
               Mistet tilgang?
             </Text>
-            <Text className="text-sm font-semibold text-ember">
+            <Text className="text-sm font-semibold text-emberText">
               Backupkoder er ikke aktive i demoen
             </Text>
           </View>

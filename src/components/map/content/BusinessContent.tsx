@@ -1,21 +1,21 @@
 import { Ionicons } from "@expo/vector-icons";
 import { Pressable, Text, View } from "react-native";
 
+import { Icon } from "@/components/ui";
 import { Card } from "@/components/Card";
 import { businessById, placeById } from "@/fixtures";
-import { colors } from "@/theme";
 
 import type { PushFn } from "../sheetTypes";
 
 function InfoRow({ icon, text }: { icon: string; text: string }) {
   return (
     <View className="flex-row items-center gap-2">
-      <Ionicons
+      <Icon
         name={icon as keyof typeof Ionicons.glyphMap}
-        size={16}
-        color={colors.muted}
+        size="sm"
+        tone="muted"
       />
-      <Text className="flex-1 text-sm text-ink">{text}</Text>
+      <Text className="flex-1 text-sm text-ink font-normal">{text}</Text>
     </View>
   );
 }
@@ -23,29 +23,33 @@ function InfoRow({ icon, text }: { icon: string; text: string }) {
 export function BusinessContent({ id, push }: { id: string; push: PushFn }) {
   const business = businessById(id);
   if (!business) {
-    return <Text className="text-sm text-muted">Fant ikke bedriften.</Text>;
+    return (
+      <Text className="text-sm text-muted font-normal">
+        Fant ikke bedriften.
+      </Text>
+    );
   }
   const place = placeById(business.placeId);
 
   return (
     <View className="gap-4">
       <View className="flex-row items-center gap-2">
-        <Text className="text-sm text-muted">{business.category}</Text>
+        <Text className="text-sm text-muted font-normal">
+          {business.category}
+        </Text>
         {business.verified ? (
           <View className="flex-row items-center gap-1">
-            <Ionicons
-              name="checkmark-circle"
-              size={16}
-              color={colors.success}
-            />
-            <Text className="text-sm text-success">Verifisert</Text>
+            <Icon name="checkmark-circle" size="sm" tone="success" />
+            <Text className="text-sm text-successText font-normal">
+              Verifisert
+            </Text>
           </View>
         ) : (
-          <Text className="text-sm text-muted">· Uverifisert</Text>
+          <Text className="text-sm text-muted font-normal">· Uverifisert</Text>
         )}
       </View>
 
-      <Text className="text-sm text-muted">{business.about}</Text>
+      <Text className="text-sm text-muted font-normal">{business.about}</Text>
 
       <Card>
         <View className="gap-2">
@@ -61,8 +65,10 @@ export function BusinessContent({ id, push }: { id: string; push: PushFn }) {
         >
           <Card>
             <View className="flex-row items-center justify-between">
-              <Text className="text-base text-ink">{place.name}</Text>
-              <Ionicons name="chevron-forward" size={20} color={colors.muted} />
+              <Text className="text-base text-ink font-normal">
+                {place.name}
+              </Text>
+              <Icon name="chevron-forward" size="md" tone="muted" />
             </View>
           </Card>
         </Pressable>
@@ -75,14 +81,12 @@ export function BusinessContent({ id, push }: { id: string; push: PushFn }) {
         <Card>
           <View className="flex-row items-center justify-between">
             <View className="flex-row items-center gap-2">
-              <Ionicons
-                name="shield-checkmark-outline"
-                size={20}
-                color={colors.ink}
-              />
-              <Text className="text-base text-ink">Verifiseringsstatus</Text>
+              <Icon name="shield-checkmark-outline" size="md" tone="ink" />
+              <Text className="text-base text-ink font-normal">
+                Verifiseringsstatus
+              </Text>
             </View>
-            <Ionicons name="chevron-forward" size={20} color={colors.muted} />
+            <Icon name="chevron-forward" size="md" tone="muted" />
           </View>
         </Card>
       </Pressable>

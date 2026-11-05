@@ -1,9 +1,9 @@
 import { useState } from "react";
-import { Ionicons } from "@expo/vector-icons";
 import { Pressable, Text, TextInput, View } from "react-native";
 
+import { Icon } from "@/components/ui";
 import { OSLO_AREAS } from "@/fixtures";
-import { colors } from "@/theme";
+import { useThemeColors } from "@/theme";
 
 import { useRecentSearches } from "./hooks/useRecentSearches";
 
@@ -19,6 +19,7 @@ export function WhereField({
   value: string | null;
   onSelect: (area: string | null) => void;
 }) {
+  const colors = useThemeColors();
   const [text, setText] = useState("");
   const { recent, add } = useRecentSearches();
   const q = text.trim().toLowerCase();
@@ -41,16 +42,14 @@ export function WhereField({
         className="flex-row items-center gap-3 py-3"
       >
         <View className="h-11 w-11 items-center justify-center rounded-md bg-surfaceMuted">
-          <Ionicons name="location-outline" size={20} color={colors.ink} />
+          <Icon name="location-outline" size="md" tone="ink" />
         </View>
         <Text
-          className={`flex-1 text-base ${selected ? "font-semibold text-ink" : "text-ink"}`}
+          className={`font-normal flex-1 text-base ${selected ? "font-semibold text-ink" : "text-ink"}`}
         >
           {name}
         </Text>
-        {selected ? (
-          <Ionicons name="checkmark" size={18} color={colors.ember} />
-        ) : null}
+        {selected ? <Icon name="checkmark" size="md" tone="ember" /> : null}
       </Pressable>
     );
   };
@@ -58,13 +57,13 @@ export function WhereField({
   return (
     <View className="gap-4">
       <View className="h-14 flex-row items-center gap-3 rounded-lg border border-line bg-surface px-4">
-        <Ionicons name="search" size={20} color={colors.muted} />
+        <Icon name="search" size="md" tone="muted" />
         <TextInput
           value={text}
           onChangeText={setText}
           placeholder="Søk etter sted eller landemerke"
           placeholderTextColor={colors.muted}
-          className="flex-1 text-base text-ink"
+          className="flex-1 text-base text-ink font-normal"
         />
         {text || value ? (
           <Pressable
@@ -77,7 +76,7 @@ export function WhereField({
             hitSlop={8}
             className="h-7 w-7 items-center justify-center rounded-full bg-surfaceMuted"
           >
-            <Ionicons name="close" size={16} color={colors.muted} />
+            <Icon name="close" size="sm" tone="muted" />
           </Pressable>
         ) : null}
       </View>

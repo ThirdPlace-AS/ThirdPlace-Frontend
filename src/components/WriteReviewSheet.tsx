@@ -4,7 +4,7 @@ import { Pressable, TextInput, View } from "react-native";
 
 import { Button } from "@/components/Button";
 import { Sheet } from "@/components/Sheet";
-import { colors } from "@/theme";
+import { useThemeColors } from "@/theme";
 import { DemoNote } from "@/components/DemoNote";
 import { demoCopy } from "@/copy";
 
@@ -25,6 +25,7 @@ export function WriteReviewSheet({
 }
 
 function Body({ onClose }: { onClose: () => void }) {
+  const colors = useThemeColors();
   const [rating, setRating] = useState(0);
   const [text, setText] = useState("");
 
@@ -53,7 +54,7 @@ function Body({ onClose }: { onClose: () => void }) {
         value={text}
         onChangeText={setText}
         multiline
-        className="min-h-24 rounded-md border border-line bg-surface p-3 text-base text-ink"
+        className="min-h-24 rounded-md border border-line bg-surface p-3 text-base text-ink font-normal"
         textAlignVertical="top"
       />
 

@@ -1,11 +1,10 @@
-import { Ionicons } from "@expo/vector-icons";
 import { useState } from "react";
 import { Pressable, ScrollView, Text, View } from "react-native";
 
+import { Icon } from "@/components/ui";
 import { Sheet } from "@/components/Sheet";
 import { DetailContent, titleFor } from "@/components/map/DetailContentRouter";
 import type { SheetTarget } from "@/components/map/sheetTypes";
-import { colors } from "@/theme";
 
 // Reusable detail sheet with an in-sheet navigation stack, for surfaces outside
 // the map (people/groups/businesses index routes, nested list routes). Opening a
@@ -58,7 +57,7 @@ export function DetailStackSheet({
               onPress={back}
               className="-ml-1 flex-row items-center gap-1 self-start active:opacity-70"
             >
-              <Ionicons name="chevron-back" size={20} color={colors.ink} />
+              <Icon name="chevron-back" size="md" tone="ink" />
               <Text className="text-sm font-medium text-ink">Tilbake</Text>
             </Pressable>
           ) : null}

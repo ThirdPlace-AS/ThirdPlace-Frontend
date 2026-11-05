@@ -2,7 +2,7 @@ import { memo } from "react";
 import { Ionicons } from "@expo/vector-icons";
 import { Pressable, Text, View } from "react-native";
 
-import { colors } from "@/theme";
+import { Icon } from "@/components/ui";
 
 // A labelled checkbox row (used by the filter sheet's "Tid på dagen", "Språk"
 // and "Tilgjengelighetsfunksjoner" sections). Square box, ember check when on.
@@ -35,15 +35,17 @@ export const CheckboxRow = memo(function CheckboxRow({
     >
       <View className="flex-1 flex-row items-center gap-3 pr-3">
         {icon ? (
-          <Ionicons
+          <Icon
             name={icon as keyof typeof Ionicons.glyphMap}
-            size={20}
-            color={colors.ink}
+            size="md"
+            tone="ink"
           />
         ) : null}
         <View className="flex-1">
-          <Text className="text-base text-ink">{label}</Text>
-          {hint ? <Text className="text-xs text-muted">{hint}</Text> : null}
+          <Text className="text-base text-ink font-normal">{label}</Text>
+          {hint ? (
+            <Text className="text-xs text-muted font-normal">{hint}</Text>
+          ) : null}
         </View>
       </View>
       <View
@@ -51,9 +53,7 @@ export const CheckboxRow = memo(function CheckboxRow({
           checked ? "border-ember bg-ember" : "border-line bg-surface"
         }`}
       >
-        {checked ? (
-          <Ionicons name="checkmark" size={16} color={colors.onEmber} />
-        ) : null}
+        {checked ? <Icon name="checkmark" size="sm" tone="onEmber" /> : null}
       </View>
     </Pressable>
   );

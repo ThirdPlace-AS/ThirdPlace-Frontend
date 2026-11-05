@@ -1,12 +1,12 @@
-import { Ionicons } from "@expo/vector-icons";
 import { Image } from "expo-image";
 import { useState } from "react";
 import { Pressable, Text, TextInput, View } from "react-native";
 
+import { Icon } from "@/components/ui";
 import { Sheet } from "@/components/Sheet";
 import { people, places, type MockPerson, type MockPlace } from "@/fixtures";
 import { libImage } from "@/fixtures/images";
-import { colors } from "@/theme";
+import { useThemeColors } from "@/theme";
 
 // Shared pickers (PDF p24–p25): Velg sted, Velg kategori, Søk brukere. Search
 // over fixture data only — no geocoding or user directory exists
@@ -23,15 +23,16 @@ export function SearchField({
   placeholder: string;
   autoFocus?: boolean;
 }) {
+  const colors = useThemeColors();
   return (
     <View className="flex-row items-center gap-2 rounded-full border border-line bg-surface px-4">
-      <Ionicons name="search" size={16} color={colors.muted} />
+      <Icon name="search" size="sm" tone="muted" />
       <TextInput
         value={value}
         onChangeText={onChange}
         placeholder={placeholder}
         placeholderTextColor={colors.muted}
-        className="flex-1 py-2.5 text-sm text-ink"
+        className="flex-1 py-2.5 text-sm text-ink font-normal"
         autoFocus={autoFocus}
       />
     </View>
@@ -56,7 +57,7 @@ export function PlacePicker({
       <View className="gap-2">
         <SearchField value={q} onChange={setQ} placeholder="Søk etter sted …" />
         {list.length === 0 ? (
-          <Text className="py-6 text-center text-sm text-muted">
+          <Text className="py-6 text-center text-sm text-muted font-normal">
             Ingen steder matcher «{q}».
           </Text>
         ) : null}
@@ -70,10 +71,10 @@ export function PlacePicker({
             }}
             className="flex-row items-center gap-3 rounded-md border border-line bg-surface p-3 active:opacity-80"
           >
-            <Ionicons name="location-outline" size={18} color={colors.ink} />
+            <Icon name="location-outline" size="md" tone="ink" />
             <View className="flex-1">
               <Text className="text-sm font-semibold text-ink">{p.name}</Text>
-              <Text className="text-xs text-muted">
+              <Text className="text-xs text-muted font-normal">
                 {p.category} · {p.distance}
               </Text>
             </View>
@@ -116,7 +117,7 @@ export function CategoryPicker({
           >
             <Text className="text-sm font-medium text-ink">{o}</Text>
             {value === o ? (
-              <Ionicons name="checkmark" size={18} color={colors.ink} />
+              <Icon name="checkmark" size="md" tone="ink" />
             ) : null}
           </Pressable>
         ))}
@@ -147,7 +148,7 @@ export function UserSearch({
           placeholder="Navn eller brukernavn …"
         />
         {list.length === 0 ? (
-          <Text className="py-6 text-center text-sm text-muted">
+          <Text className="py-6 text-center text-sm text-muted font-normal">
             Ingen brukere matcher «{q}».
           </Text>
         ) : null}
@@ -167,7 +168,7 @@ export function UserSearch({
             />
             <View className="flex-1">
               <Text className="text-sm font-semibold text-ink">{p.name}</Text>
-              <Text className="text-xs text-muted">
+              <Text className="text-xs text-muted font-normal">
                 {p.handle} · {p.area}
               </Text>
             </View>

@@ -44,7 +44,7 @@ export default function Welcome() {
           <Text className="text-center text-2xl font-bold text-ink">
             Velkommen hjem
           </Text>
-          <Text className="text-center text-base text-muted">
+          <Text className="text-center text-base text-muted font-normal">
             Oppdag nabolagets lune møteplasser. Finn din neste third place — der
             byen faktisk skjer.
           </Text>
@@ -61,9 +61,9 @@ export default function Welcome() {
               resetTo("/map");
             }}
           />
-          <Text className="text-center text-sm text-muted">
+          <Text className="text-center text-sm text-muted font-normal">
             Allerede medlem?{" "}
-            <Link href="/login" className="font-semibold text-ember">
+            <Link href="/login" className="font-semibold text-emberText">
               Logg inn
             </Link>
           </Text>

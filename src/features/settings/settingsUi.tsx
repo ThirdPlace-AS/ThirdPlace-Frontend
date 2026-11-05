@@ -2,8 +2,9 @@ import { Ionicons } from "@expo/vector-icons";
 import type { ReactNode } from "react";
 import { Pressable, Text, View } from "react-native";
 
+import { Icon } from "@/components/ui";
 import { Switch } from "@/components/ui/Switch";
-import { colors } from "@/theme";
+import { useThemeColors } from "@/theme";
 
 // Shared building blocks for the Settings + Privacy routes. All inert/demo:
 // toggles keep local state only and persist nothing (BLOCKED_CONTRACT_GAP — no
@@ -41,6 +42,7 @@ export function NavRow({
   onPress: () => void;
   danger?: boolean;
 }) {
+  const colors = useThemeColors();
   return (
     <Pressable
       accessibilityRole="button"
@@ -53,12 +55,14 @@ export function NavRow({
         color={danger ? colors.ember : colors.ink}
       />
       <Text
-        className={`flex-1 text-base ${danger ? "text-ember" : "text-ink"}`}
+        className={`font-normal flex-1 text-base ${danger ? "text-emberText" : "text-ink"}`}
       >
         {label}
       </Text>
-      {value ? <Text className="text-sm text-muted">{value}</Text> : null}
-      <Ionicons name="chevron-forward" size={18} color={colors.muted} />
+      {value ? (
+        <Text className="text-sm text-muted font-normal">{value}</Text>
+      ) : null}
+      <Icon name="chevron-forward" size="md" tone="muted" />
     </Pressable>
   );
 }
@@ -78,10 +82,12 @@ export function ToggleRow({
 }) {
   return (
     <View className="flex-row items-center gap-3 border-b border-line px-4 py-3">
-      <Ionicons name={icon} size={20} color={colors.ink} />
+      <Icon name={icon} size="md" tone="ink" />
       <View className="flex-1">
-        <Text className="text-base text-ink">{label}</Text>
-        {hint ? <Text className="text-xs text-muted">{hint}</Text> : null}
+        <Text className="text-base text-ink font-normal">{label}</Text>
+        {hint ? (
+          <Text className="text-xs text-muted font-normal">{hint}</Text>
+        ) : null}
       </View>
       <Switch value={value} onValueChange={onValueChange} label={label} />
     </View>

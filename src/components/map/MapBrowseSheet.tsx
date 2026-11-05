@@ -10,8 +10,9 @@ import Animated, {
   useAnimatedStyle,
 } from "react-native-reanimated";
 
+import { Icon } from "@/components/ui";
 import { MAP_CITY, type MockWeather } from "@/fixtures";
-import { colors } from "@/theme";
+import { useThemeColors } from "@/theme";
 
 import { browseAnimatedIndex } from "./browseSheetProgress";
 import type { DiscoveryItem } from "./types/mapPresentation";
@@ -46,6 +47,7 @@ export function MapBrowseSheet({
   // Bumped to force the sheet to expand (e.g. a SoftMap cluster tap).
   expandSignal?: number;
 }) {
+  const colors = useThemeColors();
   const snapPoints = useMemo(() => ["8%", "49%", "84.5%"], []);
   const sheetRef = useRef<BottomSheet>(null);
 
@@ -157,7 +159,7 @@ export function MapBrowseSheet({
         {/* Peek header — city (left) + weather (right). Always visible. */}
         <View className="flex-row items-center justify-between pb-3 px-gutter">
           <View className="flex-row items-center flex-1 gap-2">
-            <Ionicons name="location" size={20} color={colors.ember} />
+            <Icon name="location" size="md" tone="ember" />
             <Text
               className="text-base font-semibold text-ink"
               numberOfLines={1}
@@ -167,10 +169,10 @@ export function MapBrowseSheet({
           </View>
           <View className="flex-row items-center gap-2">
             <View className="flex-row items-center gap-1.5 rounded-full border border-line bg-surface px-3 py-1">
-              <Ionicons
+              <Icon
                 name={weather.icon as keyof typeof Ionicons.glyphMap}
-                size={20}
-                color={colors.ink}
+                size="md"
+                tone="ink"
               />
               <Text className="text-sm font-semibold text-ink">
                 {weather.tempC}°
@@ -186,8 +188,8 @@ export function MapBrowseSheet({
           showsVerticalScrollIndicator={false}
           ListEmptyComponent={
             <View className="items-center gap-2 p-gutter">
-              <Ionicons name="compass-outline" size={32} color={colors.muted} />
-              <Text className="text-sm text-center text-muted">
+              <Icon name="compass-outline" size="xl" tone="muted" />
+              <Text className="text-sm text-center text-muted font-normal">
                 {emptyMessage}
               </Text>
             </View>
@@ -215,7 +217,7 @@ export function MapBrowseSheet({
             className="flex-row items-center gap-2 px-5 py-3 rounded-full bg-ink"
           >
             <Text className="text-sm font-semibold text-onInk">Kart</Text>
-            <Ionicons name="map" size={16} color={colors.onInk} />
+            <Icon name="map" size="sm" tone="onInk" />
           </Pressable>
         </Animated.View>
       ) : null}
@@ -238,6 +240,7 @@ const BrowseCard = memo(function BrowseCard({
   onSelect: (item: DiscoveryItem) => void;
   onToggleSave: (item: DiscoveryItem) => void;
 }) {
+  const colors = useThemeColors();
   return (
     // Card wrapper is a View; the save heart is a SIBLING of the
     // select Pressable (never nested) — nested <button> is invalid
@@ -279,19 +282,19 @@ const BrowseCard = memo(function BrowseCard({
             </Text>
             {item.rating != null ? (
               <View className="flex-row items-center gap-1">
-                <Ionicons name="star" size={13} color={colors.ink} />
+                <Icon name="star" size="sm" tone="ink" />
                 <Text className="text-sm font-semibold text-ink">
                   {item.rating.toFixed(1).replace(".", ",")}
                 </Text>
                 {item.reviewCount != null ? (
-                  <Text className="text-sm text-muted">
+                  <Text className="text-sm text-muted font-normal">
                     ({item.reviewCount})
                   </Text>
                 ) : null}
               </View>
             ) : null}
           </View>
-          <Text className="text-sm text-muted" numberOfLines={1}>
+          <Text className="text-sm text-muted font-normal" numberOfLines={1}>
             {item.category} · {item.subtitle}
           </Text>
           {item.meta ? (
@@ -306,7 +309,9 @@ const BrowseCard = memo(function BrowseCard({
                   key={t}
                   className="px-2 py-0.5 rounded-full bg-surfaceMuted"
                 >
-                  <Text className="text-[11px] text-muted">{t}</Text>
+                  <Text className="text-[11px] text-muted font-normal">
+                    {t}
+                  </Text>
                 </View>
               ))}
             </View>

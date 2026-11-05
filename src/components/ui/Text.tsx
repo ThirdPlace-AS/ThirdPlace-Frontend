@@ -55,10 +55,10 @@ const TONE_CLASS: Record<TextTone, string> = {
   muted: "text-muted",
   inverse: "text-onInk",
   onInk: "text-onInk",
-  ember: "text-ember",
-  success: "text-success",
-  danger: "text-danger",
-  warning: "text-warning",
+  ember: "text-emberText",
+  success: "text-successText",
+  danger: "text-dangerText",
+  warning: "text-warningText",
   onEmber: "text-onEmber",
 };
 

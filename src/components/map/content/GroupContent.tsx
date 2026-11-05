@@ -9,13 +9,17 @@ import { groupById } from "@/fixtures";
 export function GroupContent({ id }: { id: string }) {
   const group = groupById(id);
   if (!group) {
-    return <Text className="text-sm text-muted">Fant ikke gruppen.</Text>;
+    return (
+      <Text className="text-sm text-muted font-normal">Fant ikke gruppen.</Text>
+    );
   }
 
   return (
     <View className="gap-4">
-      <Text className="text-sm text-muted">{group.about}</Text>
-      <Text className="text-sm text-muted">{group.memberCount} medlemmer</Text>
+      <Text className="text-sm text-muted font-normal">{group.about}</Text>
+      <Text className="text-sm text-muted font-normal">
+        {group.memberCount} medlemmer
+      </Text>
 
       <Card>
         <View className="gap-2">

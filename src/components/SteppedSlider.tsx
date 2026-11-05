@@ -14,7 +14,7 @@ import Animated, {
   withSpring,
 } from "react-native-reanimated";
 
-import { colors, motion } from "@/theme";
+import { motion, useThemeColors, elevation } from "@/theme";
 
 const THUMB = 28;
 
@@ -33,6 +33,7 @@ export function SteppedSlider({
   index: number;
   onChange: (index: number) => void;
 }) {
+  const colors = useThemeColors();
   const [trackW, setTrackW] = useState(0);
   const trackWRef = useRef(0);
   const startIdx = useRef(index);
@@ -159,11 +160,7 @@ export function SteppedSlider({
               backgroundColor: colors.surface,
               borderWidth: 1,
               borderColor: colors.line,
-              shadowColor: "#000",
-              shadowOpacity: 0.15,
-              shadowRadius: 3,
-              shadowOffset: { width: 0, height: 1 },
-              elevation: 2,
+              ...elevation.e1,
             },
             thumbStyle,
           ]}
@@ -173,7 +170,7 @@ export function SteppedSlider({
         {labels.map((l, i) => (
           <Text
             key={l}
-            className={`text-[10px] ${i === index ? "text-ink" : "text-muted"}`}
+            className={`font-normal text-[10px] ${i === index ? "text-ink" : "text-muted"}`}
           >
             {l}
           </Text>

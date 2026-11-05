@@ -1,4 +1,5 @@
 import { Ionicons } from "@expo/vector-icons";
+import { media } from "@/theme";
 import { Pressable, ScrollView, Text, View } from "react-native";
 
 // Top overlay filter bar. A sliders button opens the Filtre sheet, a horizontal
@@ -40,7 +41,7 @@ export function SwipeFilterBar({
   // Opens "Start gruppe-sveip" (PDF p8).
   onOpenGroup?: () => void;
 }) {
-  const glyph = onLight ? "#202020" : "#FFFFFF";
+  const glyph = onLight ? media.inkOnLight : media.onMedia;
   return (
     <View className="flex-row items-center gap-2 px-gutter">
       <Pressable
@@ -73,14 +74,16 @@ export function SwipeFilterBar({
               style={
                 active
                   ? {
-                      backgroundColor: onLight ? "#202020" : "rgba(0,0,0,0.65)",
+                      backgroundColor: onLight
+                        ? media.inkOnLight
+                        : media.scrimStrong,
                     }
                   : undefined
               }
               className={active ? "rounded-full px-4 py-2" : "px-3 py-2"}
             >
               <Text
-                className={`text-sm ${
+                className={`font-normal text-sm ${
                   active
                     ? "font-bold text-white"
                     : onLight
@@ -101,7 +104,7 @@ export function SwipeFilterBar({
           accessibilityLabel="Start gruppe-sveip"
           onPress={onOpenGroup}
           style={{
-            backgroundColor: onLight ? "transparent" : "rgba(0,0,0,0.35)",
+            backgroundColor: onLight ? "transparent" : media.scrimSoft,
           }}
           className="h-10 w-10 items-center justify-center rounded-full"
         >
@@ -116,7 +119,7 @@ export function SwipeFilterBar({
         accessibilityLabel="Varsler"
         onPress={onOpenNotifications}
         style={{
-          backgroundColor: onLight ? "transparent" : "rgba(0,0,0,0.35)",
+          backgroundColor: onLight ? "transparent" : media.scrimSoft,
         }}
         className="h-10 w-10 items-center justify-center rounded-full"
       >

@@ -40,18 +40,18 @@ export default function Register() {
           />
           <View className="flex-row items-center justify-center gap-2">
             <DemoBadge />
-            <Text className="text-xs text-muted">
+            <Text className="text-xs text-muted font-normal">
               Ingen konto opprettes; feltene lagrer ingenting.
             </Text>
           </View>
           <SocialAuthButtons verb="Fortsett med" />
         </View>
-        <Text className="px-4 text-center text-xs text-muted">
+        <Text className="px-4 text-center text-xs text-muted font-normal">
           Ved å fortsette godtar du våre vilkår og personvernerklæring.
         </Text>
-        <Text className="text-center text-sm text-muted">
+        <Text className="text-center text-sm text-muted font-normal">
           Allerede medlem?{" "}
-          <Link href="/login" className="font-semibold text-ember">
+          <Link href="/login" className="font-semibold text-emberText">
             Logg inn
           </Link>
         </Text>

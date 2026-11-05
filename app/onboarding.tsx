@@ -5,7 +5,7 @@ import { Pressable, ScrollView, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { Switch } from "@/components/ui/Switch";
-import { StepContent, StepHeader } from "@/components/ui";
+import { Icon, StepContent, StepHeader } from "@/components/ui";
 import { Button } from "@/components/Button";
 import { Chip } from "@/components/Chip";
 import { DemoNote } from "@/components/DemoNote";
@@ -15,7 +15,6 @@ import { experiences, PERSONAS, type MockPersonaKey } from "@/fixtures";
 import { checkBirthday, formatBirthdayInput } from "@/features/onboarding/age";
 import { UnderageScreen } from "@/features/onboarding/UnderageScreen";
 import { resetTo } from "@/lib/navigation";
-import { colors } from "@/theme";
 
 // Onboarding (DEMO), 8 steps per the design (PDF p2–p3): role → "Dette er
 // deg" (with the 18+ birthday gate, TP-D-001) → "Hvem er du?" → "Hva ser du
@@ -210,35 +209,29 @@ export default function Onboarding() {
                   } ${p.locked ? "opacity-60" : ""}`}
                 >
                   <View className="h-10 w-10 items-center justify-center rounded-md bg-surfaceMuted">
-                    <Ionicons
+                    <Icon
                       name={p.icon as keyof typeof Ionicons.glyphMap}
-                      size={20}
-                      color={colors.ink}
+                      size="md"
+                      tone="ink"
                     />
                   </View>
                   <View className="flex-1">
                     <Text className="text-base font-semibold text-ink">
                       {p.label}
                     </Text>
-                    <Text className="text-xs text-muted">{p.hint}</Text>
+                    <Text className="text-xs text-muted font-normal">
+                      {p.hint}
+                    </Text>
                   </View>
                   {p.locked ? (
                     <View className="flex-row items-center gap-1 rounded-full bg-surfaceMuted px-2 py-0.5">
-                      <Ionicons
-                        name="lock-closed"
-                        size={10}
-                        color={colors.muted}
-                      />
+                      <Icon name="lock-closed" size="sm" tone="muted" />
                       <Text className="text-[10px] font-semibold text-muted">
                         LÅST
                       </Text>
                     </View>
                   ) : active ? (
-                    <Ionicons
-                      name="checkmark-circle"
-                      size={22}
-                      color={colors.ink}
-                    />
+                    <Icon name="checkmark-circle" size="lg" tone="ink" />
                   ) : null}
                 </Pressable>
               );
@@ -253,9 +246,9 @@ export default function Onboarding() {
           >
             <View className="items-center gap-2">
               <View className="h-24 w-24 items-center justify-center rounded-full bg-surfaceMuted">
-                <Ionicons name="camera-outline" size={26} color={colors.ink} />
+                <Icon name="camera-outline" size="lg" tone="ink" />
               </View>
-              <Text className="text-sm font-semibold text-ember">
+              <Text className="text-sm font-semibold text-emberText">
                 Legg til profilbilde
               </Text>
             </View>
@@ -276,11 +269,11 @@ export default function Onboarding() {
                 maxLength={10}
               />
               {age.status === "invalid" && birthday.length === 10 ? (
-                <Text className="text-xs text-danger">
+                <Text className="text-xs text-dangerText font-normal">
                   Sjekk datoen — bruk formatet dd.mm.åååå.
                 </Text>
               ) : (
-                <Text className="text-xs text-muted">
+                <Text className="text-xs text-muted font-normal">
                   Du må være minst 18 år for å bruke ThirdPlace.
                 </Text>
               )}
@@ -325,7 +318,7 @@ export default function Onboarding() {
               onChangeText={setNationality}
               maxLength={40}
             />
-            <Text className="text-xs text-muted">
+            <Text className="text-xs text-muted font-normal">
               Alt her er valgfritt — trykk på et valg igjen for å fjerne det.
             </Text>
           </Shell>
@@ -427,7 +420,7 @@ export default function Onboarding() {
                 className="flex-row items-center gap-3 rounded-lg border border-line bg-surface p-4"
               >
                 <View className="h-10 w-10 items-center justify-center rounded-full bg-surfaceMuted">
-                  <Ionicons name={p.icon} size={18} color={colors.ink} />
+                  <Icon name={p.icon} size="md" tone="ink" />
                 </View>
                 <View className="flex-1 gap-0.5">
                   <View className="flex-row items-center gap-2">
@@ -438,7 +431,9 @@ export default function Onboarding() {
                       {p.tag}
                     </Text>
                   </View>
-                  <Text className="text-xs text-muted">{p.hint}</Text>
+                  <Text className="text-xs text-muted font-normal">
+                    {p.hint}
+                  </Text>
                 </View>
                 <Switch
                   value={!!perms[p.key]}
@@ -462,11 +457,7 @@ export default function Onboarding() {
                 className="flex-row items-center gap-3 rounded-lg border border-line bg-surface p-3.5"
               >
                 <View className="h-10 w-10 items-center justify-center rounded-md bg-surfaceMuted">
-                  <Ionicons
-                    name="sparkles-outline"
-                    size={18}
-                    color={colors.ink}
-                  />
+                  <Icon name="sparkles-outline" size="md" tone="ink" />
                 </View>
                 <View className="flex-1">
                   <Text
@@ -475,11 +466,13 @@ export default function Onboarding() {
                   >
                     {e.title}
                   </Text>
-                  <Text className="text-xs text-muted">{e.when}</Text>
+                  <Text className="text-xs text-muted font-normal">
+                    {e.when}
+                  </Text>
                 </View>
               </View>
             ))}
-            <Text className="px-4 pt-2 text-center text-base text-muted">
+            <Text className="px-4 pt-2 text-center text-base text-muted font-normal">
               Her er noen ting som skjer i byen din.
             </Text>
             <DemoNote>

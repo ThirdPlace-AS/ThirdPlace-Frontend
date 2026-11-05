@@ -1,6 +1,6 @@
 import { View } from "react-native";
 
-import { colors } from "@/theme";
+import { useThemeColors } from "@/theme";
 
 const BARS = 28;
 
@@ -21,6 +21,7 @@ export function PriceHistogram({
   low: number;
   high: number;
 }) {
+  const colors = useThemeColors();
   const span = max - min || 1;
   const counts = new Array(BARS).fill(0) as number[];
   for (const v of values) {

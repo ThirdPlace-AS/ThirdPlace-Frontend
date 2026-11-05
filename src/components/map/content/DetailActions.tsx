@@ -2,9 +2,10 @@ import { Ionicons } from "@expo/vector-icons";
 import { useState } from "react";
 import { Pressable, Text, View } from "react-native";
 
+import { Icon } from "@/components/ui";
 import { ReportSheet, ShareSheet } from "@/components/actions/ActionSheets";
 import { SignInPrompt } from "@/components/SignInPrompt";
-import { colors } from "@/theme";
+import { useThemeColors } from "@/theme";
 
 import { useGuestMode } from "../hooks/useGuestMode";
 import { useMapSaved } from "../hooks/useMapSaved";
@@ -20,6 +21,7 @@ export function DetailActions({
   markerId: string;
   title: string;
 }) {
+  const colors = useThemeColors();
   const { isSaved, toggle } = useMapSaved();
   const { isGuest } = useGuestMode();
   const [promptOpen, setPromptOpen] = useState(false);
@@ -49,7 +51,7 @@ export function DetailActions({
             color={saved ? colors.ember : colors.ink}
           />
           <Text
-            className={`text-sm font-semibold ${saved ? "text-ember" : "text-ink"}`}
+            className={`text-sm font-semibold ${saved ? "text-emberText" : "text-ink"}`}
           >
             {saved ? "Lagret" : "Lagre"}
           </Text>
@@ -61,7 +63,7 @@ export function DetailActions({
           onPress={() => setNotice("share")}
           className="flex-1 flex-row items-center justify-center gap-2 rounded-md border border-line bg-surface px-3 py-2.5"
         >
-          <Ionicons name="share-outline" size={18} color={colors.ink} />
+          <Icon name="share-outline" size="md" tone="ink" />
           <Text className="text-sm font-semibold text-ink">Del</Text>
         </Pressable>
 
@@ -71,7 +73,7 @@ export function DetailActions({
           onPress={() => setNotice("report")}
           className="flex-1 flex-row items-center justify-center gap-2 rounded-md border border-line bg-surface px-3 py-2.5"
         >
-          <Ionicons name="flag-outline" size={18} color={colors.ink} />
+          <Icon name="flag-outline" size="md" tone="ink" />
           <Text className="text-sm font-semibold text-ink">Rapporter</Text>
         </Pressable>
       </View>

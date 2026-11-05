@@ -33,7 +33,9 @@ export default function GestureSandbox() {
 
   return (
     <SafeAreaView style={styles.root}>
-      <Text style={styles.hint}>Drag the box — it springs back.</Text>
+      <Text className="font-normal" style={styles.hint}>
+        Drag the box — it springs back.
+      </Text>
       <View style={styles.stage}>
         <GestureDetector gesture={pan}>
           <Animated.View style={[styles.box, boxStyle]} />

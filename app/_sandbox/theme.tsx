@@ -50,16 +50,6 @@ const TYPE = [
   "caption",
   "micro",
 ] as const;
-const TYPE_CLASS: Record<(typeof TYPE)[number], string> = {
-  display: "text-display font-bold",
-  h1: "text-h1 font-bold",
-  h2: "text-h2 font-semibold",
-  title: "text-title font-semibold",
-  body: "text-body",
-  label: "text-label font-medium",
-  caption: "text-caption",
-  micro: "text-micro font-medium uppercase",
-};
 const RADII = ["xs", "sm", "md", "lg", "xl", "2xl", "full"] as const;
 const RADIUS_CLASS: Record<(typeof RADII)[number], string> = {
   xs: "rounded-xs",
@@ -87,6 +77,11 @@ const SWATCH_CLASS: Record<string, string> = {
   danger: "bg-danger",
   warning: "bg-warning",
   scrim: "bg-scrim",
+  onMedia: "bg-onMedia",
+  emberText: "bg-emberText",
+  successText: "bg-successText",
+  dangerText: "bg-dangerText",
+  warningText: "bg-warningText",
 };
 
 export default function ThemeSandbox() {
@@ -99,7 +94,7 @@ export default function ThemeSandbox() {
       <ScrollView contentContainerClassName="gap-section p-gutter pb-20">
         <View className="gap-sm">
           <Text className="text-h1 font-bold text-ink">Designsystem</Text>
-          <Text className="text-caption text-muted">
+          <Text className="text-caption text-muted font-normal">
             Forhåndsvisning — aktiv modus: {scheme}
           </Text>
           <View
@@ -140,7 +135,9 @@ export default function ThemeSandbox() {
                   className={`h-14 rounded-md border border-line ${SWATCH_CLASS[key] ?? ""}`}
                 />
                 <Text className="text-caption font-medium text-ink">{key}</Text>
-                <Text className="text-micro text-muted">{hex[key]}</Text>
+                <Text className="text-micro text-muted font-normal">
+                  {hex[key]}
+                </Text>
               </View>
             ))}
           </View>
@@ -153,16 +150,6 @@ export default function ThemeSandbox() {
             </UIText>
             <SpecimenLines />
           </View>
-          <View className="gap-xs rounded-lg border border-line bg-surface p-gutter">
-            <Text className="text-micro font-medium uppercase text-muted">
-              Systemfont (dagens app)
-            </Text>
-            <Text className="text-h1 font-bold text-ink">Jazzkveld på Blå</Text>
-            <Text className="text-body text-ink">{SAMPLE_BODY}</Text>
-            <Text className="text-label font-semibold text-ink">
-              Bli med · 0123456789
-            </Text>
-          </View>
         </Section>
 
         <Section title="Typografi (Text-komponent)">
@@ -170,12 +157,6 @@ export default function ThemeSandbox() {
             <UIText key={t} variant={t}>
               {t} — Kaffe på Grünerløkka
             </UIText>
-          ))}
-          {/* Legacy class-based scale, for comparison until screens migrate. */}
-          {TYPE.map((t) => (
-            <Text key={`legacy-${t}`} className={`text-ink ${TYPE_CLASS[t]}`}>
-              {t} (system)
-            </Text>
           ))}
         </Section>
 
@@ -186,7 +167,7 @@ export default function ThemeSandbox() {
                 <View
                   className={`h-14 w-14 border border-line bg-surface ${RADIUS_CLASS[r]}`}
                 />
-                <Text className="text-micro text-muted">
+                <Text className="text-micro text-muted font-normal">
                   {r} · {radius[r]}
                 </Text>
               </View>
@@ -226,7 +207,7 @@ export default function ThemeSandbox() {
               </Text>
             </View>
             <View className="h-12 items-center justify-center rounded-full bg-danger/15">
-              <Text className="text-label font-semibold text-danger">
+              <Text className="text-label font-semibold text-dangerText">
                 Opasitet: bg-danger/15
               </Text>
             </View>

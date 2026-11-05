@@ -2,7 +2,7 @@ import type { ReactNode } from "react";
 import { Ionicons } from "@expo/vector-icons";
 import { Modal, Pressable, Text, View } from "react-native";
 
-import { colors } from "@/theme";
+import { useThemeColors } from "@/theme";
 
 // Lightweight bottom sheet (Modal-based) for filters and detail panels.
 // No external sheet lib — keeps the dependency surface small for Phase 1.
@@ -33,6 +33,7 @@ export function Sheet({
   fullHeight?: boolean;
   children: ReactNode;
 }) {
+  const colors = useThemeColors();
   const dark = tone === "dark";
   const lightBg = surfaceTone === "muted" ? "bg-surfaceMuted" : "bg-surface";
   return (

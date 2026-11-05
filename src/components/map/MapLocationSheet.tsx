@@ -1,11 +1,10 @@
-import { Ionicons } from "@expo/vector-icons";
 import { Pressable, Text, View } from "react-native";
 
+import { Icon } from "@/components/ui";
 import { Button } from "@/components/Button";
 import { Chip } from "@/components/Chip";
 import { Sheet } from "@/components/Sheet";
 import { OSLO_AREAS, type MockArea } from "@/fixtures";
-import { colors } from "@/theme";
 
 import type { LocationStatus } from "./hooks/useMapLocation";
 
@@ -38,19 +37,15 @@ export function MapLocationSheet({
 
   return (
     <Sheet visible={visible} onClose={onClose} title="Posisjon">
-      <Text className="text-sm text-muted">
+      <Text className="text-sm text-muted font-normal">
         Vi bruker posisjonen din bare til å vise steder og opplevelser i
         nærheten. Du kan også velge et område manuelt.
       </Text>
 
       {denied ? (
         <View className="flex-row items-start gap-2 rounded-md border border-line bg-surfaceMuted px-3 py-2">
-          <Ionicons
-            name="information-circle-outline"
-            size={18}
-            color={colors.muted}
-          />
-          <Text className="flex-1 text-sm text-muted">
+          <Icon name="information-circle-outline" size="md" tone="muted" />
+          <Text className="flex-1 text-sm text-muted font-normal">
             Posisjon er avslått. Du kan slå den på i innstillinger, eller velge
             et område under.
           </Text>
@@ -59,8 +54,8 @@ export function MapLocationSheet({
 
       {unavailable ? (
         <View className="flex-row items-start gap-2 rounded-md border border-line bg-surfaceMuted px-3 py-2">
-          <Ionicons name="warning-outline" size={18} color={colors.muted} />
-          <Text className="flex-1 text-sm text-muted">
+          <Icon name="warning-outline" size="md" tone="muted" />
+          <Text className="flex-1 text-sm text-muted font-normal">
             Posisjon er ikke tilgjengelig her. Velg et område under for å
             fortsette.
           </Text>
@@ -69,8 +64,10 @@ export function MapLocationSheet({
 
       {granted && areaLabel ? (
         <View className="flex-row items-center gap-2 rounded-md border border-success bg-success/10 px-3 py-2">
-          <Ionicons name="location" size={18} color={colors.success} />
-          <Text className="flex-1 text-sm text-ink">{areaLabel}</Text>
+          <Icon name="location" size="md" tone="success" />
+          <Text className="flex-1 text-sm text-ink font-normal">
+            {areaLabel}
+          </Text>
         </View>
       ) : null}
 
@@ -108,7 +105,9 @@ export function MapLocationSheet({
         className="flex-row items-center justify-between rounded-md border border-line bg-surface px-4 py-3"
       >
         <View className="flex-1 flex-row items-center gap-2">
-          <Text className="text-base text-ink">Simuler frakoblet</Text>
+          <Text className="text-base text-ink font-normal">
+            Simuler frakoblet
+          </Text>
         </View>
         <View
           className={`h-6 w-11 justify-center rounded-full px-0.5 ${

@@ -44,7 +44,7 @@ export default function ForgotPassword() {
             </>
           ) : null}
         </View>
-        <Link href="/login" className="text-sm font-semibold text-ember">
+        <Link href="/login" className="text-sm font-semibold text-emberText">
           Tilbake til innlogging
         </Link>
       </ScrollView>

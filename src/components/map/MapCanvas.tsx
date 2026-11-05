@@ -3,7 +3,7 @@ import type { ComponentType } from "react";
 import { Platform, Pressable, Text, View } from "react-native";
 
 import { env } from "@/lib/env";
-import { colors } from "@/theme";
+import { useThemeColors, elevation } from "@/theme";
 
 import { clusterByGrid, projectToUnit } from "./services/softClustering";
 import type { DiscoveryItem } from "./types/mapPresentation";
@@ -45,6 +45,7 @@ function SoftUserPuck({
   coord: [number, number];
   heading: number | null;
 }) {
+  const colors = useThemeColors();
   const { x, y } = projectToUnit(coord);
   return (
     <View
@@ -214,19 +215,17 @@ function SoftMap({
               className="absolute items-center"
               style={{ top: selected ? 32 : 28, left: -40, width: 124 }}
             >
-              <Text
-                numberOfLines={1}
-                style={{
-                  shadowColor: "#000",
-                  shadowOpacity: 0.18,
-                  shadowRadius: 2,
-                  shadowOffset: { width: 0, height: 1 },
-                  elevation: 2,
-                }}
-                className="overflow-hidden rounded-md border border-line bg-surface px-1.5 py-0.5 text-[10px] font-semibold text-ink"
+              <View
+                style={elevation.e1}
+                className="max-w-full rounded-md border border-line bg-surface px-1.5 py-0.5"
               >
-                {item.title}
-              </Text>
+                <Text
+                  numberOfLines={1}
+                  className="text-[10px] font-semibold text-ink"
+                >
+                  {item.title}
+                </Text>
+              </View>
             </View>
           </Pressable>
         );

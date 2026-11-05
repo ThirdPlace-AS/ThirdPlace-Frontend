@@ -4,6 +4,7 @@ import { useState } from "react";
 import { Pressable, ScrollView, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
+import { Icon } from "@/components/ui";
 import { Button } from "@/components/Button";
 import { DemoNote } from "@/components/DemoNote";
 import { Input } from "@/components/Input";
@@ -14,7 +15,6 @@ import { useGuestMode } from "@/components/map/hooks/useGuestMode";
 import { demoCopy } from "@/copy";
 import { profile } from "@/fixtures";
 import { resetTo } from "@/lib/navigation";
-import { colors } from "@/theme";
 
 import { NavRow, SettingsSection, ToggleRow } from "./settingsUi";
 
@@ -114,7 +114,7 @@ export default function SettingsScreen() {
           }
         />
 
-        <Text className="px-1 text-center text-[11px] text-muted">
+        <Text className="px-1 text-center text-[11px] text-muted font-normal">
           {profile.memberSince} · demoversjon
         </Text>
       </ScrollView>
@@ -135,7 +135,9 @@ export default function SettingsScreen() {
         onClose={() => setLogoutOpen(false)}
         title="Logg ut"
       >
-        <Text className="text-sm text-ink">Vil du logge ut av ThirdPlace?</Text>
+        <Text className="text-sm text-ink font-normal">
+          Vil du logge ut av ThirdPlace?
+        </Text>
         <DemoNote>{demoCopy.logoutNoSession}</DemoNote>
         <View className="mt-1 gap-2">
           <Button
@@ -182,15 +184,11 @@ function AccountSheet({ visible, onClose }: SheetProps) {
           }}
           className="flex-row items-center gap-3 rounded-md border border-line bg-surface p-3 active:opacity-80"
         >
-          <Ionicons
-            name="shield-checkmark-outline"
-            size={20}
-            color={colors.ink}
-          />
+          <Icon name="shield-checkmark-outline" size="md" tone="ink" />
           <Text className="flex-1 text-sm font-semibold text-ink">
             Totrinnsbekreftelse
           </Text>
-          <Ionicons name="chevron-forward" size={16} color={colors.muted} />
+          <Icon name="chevron-forward" size="sm" tone="muted" />
         </Pressable>
         <Pressable
           accessibilityRole="button"
@@ -200,11 +198,11 @@ function AccountSheet({ visible, onClose }: SheetProps) {
           }}
           className="flex-row items-center gap-3 rounded-md border border-line bg-surface p-3 active:opacity-80"
         >
-          <Ionicons name="id-card-outline" size={20} color={colors.ink} />
+          <Icon name="id-card-outline" size="md" tone="ink" />
           <Text className="flex-1 text-sm font-semibold text-ink">
             Aldersverifisering
           </Text>
-          <Ionicons name="chevron-forward" size={16} color={colors.muted} />
+          <Icon name="chevron-forward" size="sm" tone="muted" />
         </Pressable>
         <Text className="pt-1 text-xs font-semibold uppercase tracking-wide text-muted">
           Aktive økter
@@ -239,10 +237,10 @@ function Session({
 }) {
   return (
     <View className="flex-row items-center gap-3 rounded-md border border-line bg-surface p-3">
-      <Ionicons name={icon} size={20} color={colors.ink} />
+      <Icon name={icon} size="md" tone="ink" />
       <View className="flex-1">
         <Text className="text-sm font-semibold text-ink">{name}</Text>
-        <Text className="text-xs text-muted">{meta}</Text>
+        <Text className="text-xs text-muted font-normal">{meta}</Text>
       </View>
     </View>
   );
@@ -266,16 +264,18 @@ function LinkedSheet({ visible, onClose }: SheetProps) {
           }}
           className="flex-row items-center gap-3 rounded-md border border-line bg-surface p-3 active:opacity-80"
         >
-          <Ionicons name="storefront-outline" size={20} color={colors.ink} />
+          <Icon name="storefront-outline" size="md" tone="ink" />
           <View className="flex-1">
             <Text className="text-sm font-semibold text-ink">
               Oslo Kaffebar AS
             </Text>
-            <Text className="text-xs text-muted">Bedrift · eksempel</Text>
+            <Text className="text-xs text-muted font-normal">
+              Bedrift · eksempel
+            </Text>
           </View>
           <Text className="text-xs font-semibold text-ink">Bytt til</Text>
         </Pressable>
-        <Text className="text-xs text-muted">
+        <Text className="text-xs text-muted font-normal">
           Har du en bedrift eller er skaper, kan kontoene kobles her og byttes
           med langt trykk på Profil-fanen.
         </Text>
@@ -393,7 +393,7 @@ function LanguageSheet({ visible, onClose }: SheetProps) {
             onPress={() => setLang(l)}
             className="flex-row items-center justify-between rounded-md border border-line bg-surface px-4 py-3.5"
           >
-            <Text className="text-base text-ink">{l}</Text>
+            <Text className="text-base text-ink font-normal">{l}</Text>
             {lang === l ? (
               <View className="h-4 w-4 rounded-full bg-ink" />
             ) : null}
@@ -469,7 +469,7 @@ function ExportSheet({ visible, onClose }: SheetProps) {
   return (
     <Sheet visible={visible} onClose={onClose} title="Eksporter data">
       <View className="gap-3">
-        <Text className="text-sm text-muted">
+        <Text className="text-sm text-muted font-normal">
           Få en kopi av alt ThirdPlace vet om deg (GDPR).
         </Text>
         <ToggleList

@@ -1,11 +1,10 @@
-import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
 import { useMemo, useState } from "react";
 import { Pressable, ScrollView, Text, TextInput, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { Button } from "@/components/Button";
-import { IconButton } from "@/components/ui";
+import { Icon, IconButton } from "@/components/ui";
 import { Chip } from "@/components/Chip";
 import { DemoNote } from "@/components/DemoNote";
 import { Input } from "@/components/Input";
@@ -18,7 +17,7 @@ import {
   type MockChat,
   type MockChatAccess,
 } from "@/fixtures";
-import { colors } from "@/theme";
+import { useThemeColors } from "@/theme";
 
 // Chat tab, laid out per the design (PDF p9): search, "Aktive samtaler", then
 // collapsible Opplevelser / Steder groups, a pencil FAB for "Ny chat" (p10) and
@@ -26,6 +25,7 @@ import { colors } from "@/theme";
 // messaging backend; chat types / access modes are display labels
 // (BLOCKED_CONTRACT_GAP).
 export default function ChatScreen() {
+  const colors = useThemeColors();
   const [query, setQuery] = useState("");
   const [open, setOpen] = useState<Record<string, boolean>>({});
   const [newOpen, setNewOpen] = useState(false);
@@ -85,13 +85,13 @@ export default function ChatScreen() {
         </View>
 
         <View className="flex-row items-center gap-2 rounded-full border border-line bg-surface px-4">
-          <Ionicons name="search" size={18} color={colors.muted} />
+          <Icon name="search" size="md" tone="muted" />
           <TextInput
             value={query}
             onChangeText={setQuery}
             placeholder="Søk i samtaler eller personer …"
             placeholderTextColor={colors.muted}
-            className="flex-1 py-3 text-base text-ink"
+            className="flex-1 py-3 text-base text-ink font-normal"
             accessibilityLabel="Søk i samtaler"
           />
         </View>
@@ -119,15 +119,17 @@ export default function ChatScreen() {
                 onPress={() => setOpen((s) => ({ ...s, [g.key]: !s[g.key] }))}
                 className="flex-row items-center gap-3 px-4 py-3.5 active:opacity-80"
               >
-                <Ionicons name={g.icon} size={18} color={colors.ink} />
+                <Icon name={g.icon} size="md" tone="ink" />
                 <Text className="flex-1 text-base font-semibold text-ink">
                   {g.label}
                 </Text>
-                <Text className="text-sm text-muted">{g.items.length}</Text>
-                <Ionicons
+                <Text className="text-sm text-muted font-normal">
+                  {g.items.length}
+                </Text>
+                <Icon
                   name={open[g.key] || q ? "chevron-up" : "chevron-down"}
-                  size={18}
-                  color={colors.muted}
+                  size="md"
+                  tone="muted"
                 />
               </Pressable>
               {open[g.key] || q ? (
@@ -142,7 +144,7 @@ export default function ChatScreen() {
         )}
 
         {visible.length === 0 ? (
-          <Text className="py-8 text-center text-sm text-muted">
+          <Text className="py-8 text-center text-sm text-muted font-normal">
             Ingen samtaler matcher «{query}».
           </Text>
         ) : null}
@@ -153,11 +155,11 @@ export default function ChatScreen() {
             onPress={() => setArchOpen(true)}
             className="flex-row items-center gap-3 px-1 py-2 active:opacity-70"
           >
-            <Ionicons name="archive-outline" size={18} color={colors.muted} />
-            <Text className="flex-1 text-sm text-muted">
+            <Icon name="archive-outline" size="md" tone="muted" />
+            <Text className="flex-1 text-sm text-muted font-normal">
               Arkiverte chatter ({archived.length})
             </Text>
-            <Ionicons name="chevron-forward" size={16} color={colors.muted} />
+            <Icon name="chevron-forward" size="sm" tone="muted" />
           </Pressable>
         ) : null}
       </ScrollView>
@@ -179,7 +181,7 @@ export default function ChatScreen() {
         title="Arkiverte chatter"
       >
         <View className="gap-2">
-          <Text className="text-sm text-muted">
+          <Text className="text-sm text-muted font-normal">
             Kun lesbart — du kan ikke sende nye meldinger.
           </Text>
           {archived.map((c) => (
@@ -220,7 +222,7 @@ function ChatRow({ chat, onPress }: { chat: MockChat; onPress: () => void }) {
     >
       <View className="h-11 w-11 items-center justify-center rounded-full bg-surfaceMuted">
         {icon ? (
-          <Ionicons name={icon} size={18} color={colors.ink} />
+          <Icon name={icon} size="md" tone="ink" />
         ) : (
           <Text className="text-sm font-semibold text-ink">
             {chat.initials}
@@ -231,12 +233,12 @@ function ChatRow({ chat, onPress }: { chat: MockChat; onPress: () => void }) {
         <Text className="text-base font-semibold text-ink" numberOfLines={1}>
           {chat.name}
         </Text>
-        <Text className="text-sm text-muted" numberOfLines={1}>
+        <Text className="text-sm text-muted font-normal" numberOfLines={1}>
           {chat.last}
         </Text>
       </View>
       <View className="items-end gap-1">
-        <Text className="text-xs text-muted">{chat.time}</Text>
+        <Text className="text-xs text-muted font-normal">{chat.time}</Text>
         {chat.unread > 0 ? (
           <View className="h-5 min-w-5 items-center justify-center rounded-full bg-ember px-1.5">
             <Text className="text-xs font-semibold text-onEmber">
@@ -290,14 +292,16 @@ function NewChatSheet({
         <View className="gap-2">
           <Text className="text-sm font-semibold text-ink">Medlemmer</Text>
           {members.length ? (
-            <Text className="text-sm text-ink">{members.join(", ")}</Text>
+            <Text className="text-sm text-ink font-normal">
+              {members.join(", ")}
+            </Text>
           ) : null}
           <Pressable
             accessibilityRole="button"
             onPress={() => setSearch(true)}
             className="flex-row items-center gap-2 self-start rounded-full border border-line bg-surface px-3 py-2"
           >
-            <Ionicons name="person-add-outline" size={16} color={colors.ink} />
+            <Icon name="person-add-outline" size="sm" tone="ink" />
             <Text className="text-sm font-medium text-ink">Legg til</Text>
           </Pressable>
         </View>

@@ -5,14 +5,14 @@ import { useEffect, useState } from "react";
 import { Pressable, ScrollView, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-import { IconButton } from "@/components/ui";
+import { Icon, IconButton } from "@/components/ui";
 import { Button } from "@/components/Button";
 import { Chip } from "@/components/Chip";
 import { DemoNote } from "@/components/DemoNote";
 import { Input } from "@/components/Input";
 import { experiences, people, type MockPerson } from "@/fixtures";
 import { libImage } from "@/fixtures/images";
-import { colors } from "@/theme";
+import { useThemeColors } from "@/theme";
 
 type Phase = "setup" | "lobby" | "swipe" | "match";
 
@@ -79,7 +79,7 @@ export default function GroupSwipeScreen() {
           <Text className="text-3xl font-bold text-ink">
             Start gruppe-sveip
           </Text>
-          <Text className="text-sm text-muted">
+          <Text className="text-sm text-muted font-normal">
             Sveip sammen med venner — finn noe dere alle vil.
           </Text>
           <Input
@@ -114,7 +114,7 @@ export default function GroupSwipeScreen() {
                       style={{ height: 48, width: 48, borderRadius: 24 }}
                     />
                   </View>
-                  <Text className="text-xs text-ink">
+                  <Text className="text-xs text-ink font-normal">
                     {p.name.split(" ")[0]}
                   </Text>
                 </Pressable>
@@ -152,7 +152,7 @@ export default function GroupSwipeScreen() {
             ))}
           </View>
           <View className="rounded-md bg-surfaceMuted p-3">
-            <Text className="text-sm text-ink">
+            <Text className="text-sm text-ink font-normal">
               Alle får se kortene — match når alle sveiper høyre.
             </Text>
           </View>
@@ -171,7 +171,7 @@ export default function GroupSwipeScreen() {
       {phase === "lobby" ? (
         <ScrollView contentContainerClassName="gap-4 p-gutter pb-8">
           <Text className="text-3xl font-bold text-ink">{title}</Text>
-          <Text className="text-sm text-muted">
+          <Text className="text-sm text-muted font-normal">
             Venter på at alle blir med …
           </Text>
           {friends.map((f) => (
@@ -194,7 +194,7 @@ export default function GroupSwipeScreen() {
               </View>
             </View>
           ) : null}
-          <Text className="text-center text-sm text-muted">
+          <Text className="text-center text-sm text-muted font-normal">
             {ready.length} av {friends.length} klare
           </Text>
           <DemoNote>
@@ -224,14 +224,14 @@ export default function GroupSwipeScreen() {
           </View>
           <View className="gap-1">
             <Text className="text-2xl font-bold text-ink">{card.title}</Text>
-            <Text className="text-sm text-muted">{card.when}</Text>
+            <Text className="text-sm text-muted font-normal">{card.when}</Text>
             <View className="flex-row flex-wrap gap-2 pt-1">
               {card.tags.map((t) => (
                 <View
                   key={t}
                   className="rounded-full border border-line px-3 py-1"
                 >
-                  <Text className="text-xs text-ink">{t}</Text>
+                  <Text className="text-xs text-ink font-normal">{t}</Text>
                 </View>
               ))}
             </View>
@@ -243,13 +243,15 @@ export default function GroupSwipeScreen() {
             {friends.map((f) => (
               <View key={f.id} className="items-center gap-1">
                 <View className="h-10 w-10 items-center justify-center rounded-full bg-success">
-                  <Ionicons name="checkmark" size={18} color={colors.onInk} />
+                  <Icon name="checkmark" size="md" tone="onInk" />
                 </View>
-                <Text className="text-xs text-ink">{f.name.split(" ")[0]}</Text>
+                <Text className="text-xs text-ink font-normal">
+                  {f.name.split(" ")[0]}
+                </Text>
               </View>
             ))}
           </View>
-          <Text className="text-center text-xs text-muted">
+          <Text className="text-center text-xs text-muted font-normal">
             Stemmer avsløres ikke før match!
           </Text>
           <View className="flex-row justify-center gap-6">
@@ -283,12 +285,12 @@ export default function GroupSwipeScreen() {
           <Text className="text-center text-3xl font-bold text-ink">
             Dere matcher!
           </Text>
-          <Text className="text-center text-sm text-muted">
+          <Text className="text-center text-sm text-muted font-normal">
             Alle sveipet høyre på {card.title}.
           </Text>
           <View className="flex-row items-center gap-1.5 self-center rounded-full bg-success/15 px-3 py-1">
-            <Ionicons name="checkmark" size={14} color={colors.success} />
-            <Text className="text-xs font-semibold text-success">
+            <Icon name="checkmark" size="sm" tone="success" />
+            <Text className="text-xs font-semibold text-successText">
               Alle er enige
             </Text>
           </View>
@@ -321,7 +323,9 @@ function MemberRow({ person, ready }: { person: MockPerson; ready: boolean }) {
       />
       <View className="flex-1">
         <Text className="text-base font-semibold text-ink">{person.name}</Text>
-        <Text className={`text-xs ${ready ? "text-success" : "text-muted"}`}>
+        <Text
+          className={`font-normal text-xs ${ready ? "text-successText" : "text-muted"}`}
+        >
           {ready ? "Klar ✓" : "Venter …"}
         </Text>
       </View>
@@ -340,6 +344,7 @@ function RoundButton({
   filled?: boolean;
   onPress: () => void;
 }) {
+  const colors = useThemeColors();
   return (
     <Pressable
       accessibilityRole="button"

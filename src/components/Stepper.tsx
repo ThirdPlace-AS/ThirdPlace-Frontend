@@ -1,7 +1,6 @@
-import { Ionicons } from "@expo/vector-icons";
 import { Pressable, Text, View } from "react-native";
 
-import { colors } from "@/theme";
+import { Icon } from "@/components/ui";
 
 // A labelled − value + counter row (used by the filter sheet's "Who?" guests).
 // Clamps to [min, max]. Demo-only where used (no backend).
@@ -34,8 +33,10 @@ export function Stepper({
       }`}
     >
       <View className="flex-1 pr-3">
-        <Text className="text-base text-ink">{label}</Text>
-        {hint ? <Text className="text-xs text-muted">{hint}</Text> : null}
+        <Text className="text-base text-ink font-normal">{label}</Text>
+        {hint ? (
+          <Text className="text-xs text-muted font-normal">{hint}</Text>
+        ) : null}
       </View>
       <View className="flex-row items-center gap-4">
         <Pressable
@@ -48,9 +49,11 @@ export function Stepper({
             atMin ? "opacity-40" : "active:opacity-70"
           }`}
         >
-          <Ionicons name="remove" size={18} color={colors.ink} />
+          <Icon name="remove" size="md" tone="ink" />
         </Pressable>
-        <Text className="w-6 text-center text-base text-ink">{value}</Text>
+        <Text className="w-6 text-center text-base text-ink font-normal">
+          {value}
+        </Text>
         <Pressable
           accessibilityRole="button"
           accessibilityLabel={`Flere ${label}`}
@@ -61,7 +64,7 @@ export function Stepper({
             atMax ? "opacity-40" : "active:opacity-70"
           }`}
         >
-          <Ionicons name="add" size={18} color={colors.ink} />
+          <Icon name="add" size="md" tone="ink" />
         </Pressable>
       </View>
     </View>

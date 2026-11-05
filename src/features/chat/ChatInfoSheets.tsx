@@ -3,6 +3,7 @@ import { Image } from "expo-image";
 import { useState } from "react";
 import { Modal, Pressable, Text, View } from "react-native";
 
+import { Icon } from "@/components/ui";
 import { ReportSheet } from "@/components/actions/ActionSheets";
 import { Button } from "@/components/Button";
 import { DemoNote } from "@/components/DemoNote";
@@ -17,7 +18,7 @@ import {
   type MockChat,
 } from "@/fixtures";
 import { libImage } from "@/fixtures/images";
-import { colors } from "@/theme";
+import { useThemeColors, media } from "@/theme";
 
 // Chat info, Medlemmer and Inviter til chat (DEMO), per the design (PDF
 // p9–p10). BLOCKED_CONTRACT_GAP: no membership, role, invite-link, mute,
@@ -91,7 +92,7 @@ function InfoSheet({
   return (
     <Sheet visible={visible} onClose={onClose} title={chat.name}>
       <View className="gap-4">
-        <Text className="text-sm text-muted">
+        <Text className="text-sm text-muted font-normal">
           {CHAT_TYPE_LABEL[chat.type]} · {CHAT_ACCESS_LABEL[chat.access]}
           {chat.type === "experience" ? " · arkiveres etter kvelden" : ""}
         </Text>
@@ -108,7 +109,7 @@ function InfoSheet({
         <View className="flex-row items-center justify-between">
           <Text className="text-sm font-semibold text-ink">Medlemmer</Text>
           <Pressable accessibilityRole="button" onPress={onMembers} hitSlop={8}>
-            <Text className="text-sm font-semibold text-ember">
+            <Text className="text-sm font-semibold text-emberText">
               Se alle ({chat.members ?? members.length}) →
             </Text>
           </Pressable>
@@ -153,7 +154,7 @@ function InfoSheet({
               }
               className="flex-1 items-center gap-1 rounded-md border border-line bg-surface py-3 active:opacity-80"
             >
-              <Ionicons name={a.icon} size={18} color={colors.ink} />
+              <Icon name={a.icon} size="md" tone="ink" />
               <Text className="text-xs font-medium text-ink">{a.label}</Text>
             </Pressable>
           ))}
@@ -191,7 +192,7 @@ function MembersSheet({
   return (
     <Sheet visible={visible} onClose={onClose} title="Medlemmer">
       <View className="gap-3">
-        <Text className="text-sm text-muted">
+        <Text className="text-sm text-muted font-normal">
           {chat.members ?? all.length} i chatten
         </Text>
         <SearchField
@@ -218,6 +219,7 @@ function InviteSheet({
   visible: boolean;
   onClose: () => void;
 }) {
+  const colors = useThemeColors();
   const [q, setQ] = useState("");
   const [done, setDone] = useState<string[]>([]);
   const slug = chat.name.toLowerCase().replace(/[^a-z0-9]+/g, "-");
@@ -234,12 +236,16 @@ function InviteSheet({
           Del invitasjonslenke
         </Text>
         <View className="gap-0.5 rounded-md border border-line bg-surface p-3">
-          <Text className="text-sm text-ember">thirdplace.app/join/{slug}</Text>
-          <Text className="text-xs font-semibold text-ember">Kopier lenke</Text>
+          <Text className="text-sm text-emberText font-normal">
+            thirdplace.app/join/{slug}
+          </Text>
+          <Text className="text-xs font-semibold text-emberText">
+            Kopier lenke
+          </Text>
         </View>
         <View className="items-center gap-2 rounded-md border border-line bg-surface p-4">
           <Ionicons name="qr-code-outline" size={72} color={colors.muted} />
-          <Text className="text-xs text-muted">QR-kode</Text>
+          <Text className="text-xs text-muted font-normal">QR-kode</Text>
         </View>
         <Text className="text-xs font-semibold uppercase tracking-wide text-muted">
           Foreslåtte
@@ -289,7 +295,7 @@ function MemberRow({
       />
       <View className="flex-1">
         <Text className="text-sm font-semibold text-ink">{person.name}</Text>
-        <Text className="text-xs text-muted">{role}</Text>
+        <Text className="text-xs text-muted font-normal">{role}</Text>
       </View>
     </View>
   );
@@ -322,7 +328,7 @@ function ImageViewer({
             onPress={onClose}
             hitSlop={8}
           >
-            <Ionicons name="close" size={28} color="#FFFFFF" />
+            <Ionicons name="close" size={28} color={media.onMedia} />
           </Pressable>
           <Text className="text-sm font-semibold text-white">
             {index + 1} / {n}
@@ -339,7 +345,7 @@ function ImageViewer({
             <Ionicons
               name="chevron-back"
               size={32}
-              color={index === 0 ? "#666666" : "#FFFFFF"}
+              color={index === 0 ? media.onMediaMuted : media.onMedia}
             />
           </Pressable>
           <Pressable
@@ -351,7 +357,7 @@ function ImageViewer({
             <Ionicons
               name="chevron-forward"
               size={32}
-              color={index === n - 1 ? "#666666" : "#FFFFFF"}
+              color={index === n - 1 ? media.onMediaMuted : media.onMedia}
             />
           </Pressable>
         </View>

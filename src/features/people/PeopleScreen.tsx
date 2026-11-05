@@ -1,11 +1,10 @@
-import { Ionicons } from "@expo/vector-icons";
 import { Image } from "expo-image";
 import { router } from "expo-router";
 import { useState } from "react";
 import { FlatList, Pressable, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-import { Header, IconButton } from "@/components/ui";
+import { Header, Icon, IconButton } from "@/components/ui";
 import { BlockSheet } from "@/components/actions/ActionSheets";
 import { Button } from "@/components/Button";
 import { Chip } from "@/components/Chip";
@@ -15,7 +14,6 @@ import { SignInPrompt } from "@/components/SignInPrompt";
 import { useGuestMode } from "@/components/map/hooks/useGuestMode";
 import { experienceById, people, profile, type MockPerson } from "@/fixtures";
 import { libImage } from "@/fixtures/images";
-import { colors } from "@/theme";
 
 // People discovery (DEMO ONLY). BLOCKED_CONTRACT_GAP: no person entity, social
 // graph, or follow backend. Following is local demo state (reset on reload) and a
@@ -56,13 +54,13 @@ export default function PeopleScreen() {
         keyExtractor={(p) => p.id}
         contentContainerClassName="px-gutter pb-10"
         ListEmptyComponent={
-          <Text className="py-10 text-center text-sm text-muted">
+          <Text className="py-10 text-center text-sm text-muted font-normal">
             Ingen treff — prøv et annet filter.
           </Text>
         }
         ListHeaderComponent={
           <View className="gap-3 pb-3 pt-1">
-            <Text className="text-sm text-muted">
+            <Text className="text-sm text-muted font-normal">
               Mennesker du kanskje vil møte.
             </Text>
             <View className="flex-row flex-wrap items-center gap-2">
@@ -200,7 +198,7 @@ function PersonRow({
           <Text className="text-base font-semibold text-ink" numberOfLines={1}>
             {person.name}
           </Text>
-          <Text className="text-sm text-muted" numberOfLines={1}>
+          <Text className="text-sm text-muted font-normal" numberOfLines={1}>
             {person.area}
             {person.mutuals > 0 ? ` · ${person.mutuals} felles` : ""}
           </Text>
@@ -267,10 +265,10 @@ function PersonDetailSheet({
               accessibilityLabel={person.name}
             />
             <Text className="text-lg font-bold text-ink">{person.name}</Text>
-            <Text className="text-sm text-muted">
+            <Text className="text-sm text-muted font-normal">
               {person.handle} · {person.area}
             </Text>
-            <Text className="px-4 text-center text-sm text-muted">
+            <Text className="px-4 text-center text-sm text-muted font-normal">
               {person.bio}
             </Text>
           </View>
@@ -283,12 +281,11 @@ function PersonDetailSheet({
 
           {hosts ? (
             <View className="flex-row items-center gap-2 rounded-md border border-line bg-surface px-3 py-2.5">
-              <Ionicons
-                name="pricetag-outline"
-                size={16}
-                color={colors.ember}
-              />
-              <Text className="flex-1 text-sm text-ink" numberOfLines={1}>
+              <Icon name="pricetag-outline" size="sm" tone="ember" />
+              <Text
+                className="flex-1 text-sm text-ink font-normal"
+                numberOfLines={1}
+              >
                 Vert for «{hosts.title}»
               </Text>
             </View>

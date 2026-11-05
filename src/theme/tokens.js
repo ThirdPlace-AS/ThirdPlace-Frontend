@@ -35,6 +35,11 @@ const palette = {
     warning: "#B05008", // LOW confidence
     scrim: "#000000", // use with an opacity modifier, e.g. bg-scrim/40
     onMedia: "#FFFFFF", // content over photos/video (with a scrim), any scheme
+    // Status colours as TEXT on surfaces (fills keep the base keys above).
+    emberText: "#D80000",
+    successText: "#387850",
+    dangerText: "#B5342B",
+    warningText: "#B05008",
   },
   dark: {
     background: "#111111",
@@ -53,6 +58,11 @@ const palette = {
     warning: "#B05008",
     scrim: "#000000",
     onMedia: "#FFFFFF",
+    // Brighter on dark surfaces so text stays AA (fills keep the base keys).
+    emberText: "#FF6B61",
+    successText: "#6CC28C",
+    dangerText: "#FF8A80",
+    warningText: "#F3A35E",
   },
 };
 
@@ -127,8 +137,17 @@ const fontSize = {
   micro: ["11px", { lineHeight: "14px", letterSpacing: "0.4px" }],
 };
 
+/** DM Sans family name per weight (loaded in app/_layout via src/theme/fonts.ts). */
+const fontFamily = {
+  regular: "DMSans_400Regular",
+  medium: "DMSans_500Medium",
+  semibold: "DMSans_600SemiBold",
+  bold: "DMSans_700Bold",
+};
+
 module.exports = {
   palette,
+  fontFamily,
   colors,
   themeColors,
   cssVars,

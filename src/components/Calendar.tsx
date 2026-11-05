@@ -165,7 +165,7 @@ export function Calendar({
                       }`}
                     >
                       <Text
-                        className={`text-sm ${
+                        className={`font-normal text-sm ${
                           past
                             ? "text-line line-through"
                             : endpoint
@@ -180,7 +180,7 @@ export function Calendar({
                 );
               })}
             </View>
-            <Text className="text-sm text-ink">
+            <Text className="text-sm text-ink font-normal">
               {MONTHS[month]} {year}
             </Text>
           </View>

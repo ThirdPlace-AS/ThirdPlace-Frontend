@@ -6,7 +6,7 @@ import { Pressable, ScrollView, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { Button } from "@/components/Button";
-import { IconButton } from "@/components/ui";
+import { Icon, IconButton } from "@/components/ui";
 import { DemoBadge } from "@/components/DemoBadge";
 import { DemoNote } from "@/components/DemoNote";
 import { GuestLock } from "@/components/GuestLock";
@@ -17,7 +17,6 @@ import { useGuestMode } from "@/components/map/hooks/useGuestMode";
 import { demoCopy } from "@/copy";
 import { experienceById, placeById, profile } from "@/fixtures";
 import { coverForPlace, libImage } from "@/fixtures/images";
-import { colors } from "@/theme";
 
 type Tab = "experiences" | "places" | "reviews";
 const TABS: { key: Tab; label: string }[] = [
@@ -84,7 +83,9 @@ export default function ProfileScreen() {
                 <Text className="text-2xl font-bold text-ink">
                   {profile.name}, {profile.age}
                 </Text>
-                <Text className="text-sm text-muted">{profile.bio}</Text>
+                <Text className="text-sm text-muted font-normal">
+                  {profile.bio}
+                </Text>
               </View>
             </Pressable>
 
@@ -158,7 +159,7 @@ function Stat({ value, label }: { value: number; label: string }) {
   return (
     <View>
       <Text className="text-lg font-bold text-ink">{value}</Text>
-      <Text className="text-xs text-muted">{label}</Text>
+      <Text className="text-xs text-muted font-normal">{label}</Text>
     </View>
   );
 }
@@ -175,13 +176,13 @@ function CreatorPathCard() {
       className="gap-2 rounded-lg bg-surfaceMuted p-4 active:opacity-80"
     >
       <View className="flex-row items-center gap-2">
-        <Ionicons name="color-palette-outline" size={18} color={colors.ink} />
+        <Icon name="color-palette-outline" size="md" tone="ink" />
         <Text className="flex-1 text-base font-semibold text-ink">
           Veien til Skaper
         </Text>
         <DemoBadge />
       </View>
-      <Text className="text-xs text-muted">
+      <Text className="text-xs text-muted font-normal">
         {hosted} av {required} opplevelser arrangert · ★ {rating} snitt
       </Text>
       <View className="h-1.5 overflow-hidden rounded-full bg-surface">
@@ -210,7 +211,7 @@ function TabBar({ tab, onChange }: { tab: Tab; onChange: (t: Tab) => void }) {
             }`}
           >
             <Text
-              className={`text-sm ${
+              className={`font-normal text-sm ${
                 active ? "font-semibold text-ink" : "font-medium text-muted"
               }`}
             >
@@ -235,13 +236,13 @@ function Row({
   return (
     <View className="flex-row items-center gap-3 rounded-md border border-line bg-surface p-3">
       <View className="h-10 w-10 items-center justify-center rounded-xl bg-surfaceMuted">
-        <Ionicons name={icon} size={18} color={colors.ink} />
+        <Icon name={icon} size="md" tone="ink" />
       </View>
       <View className="flex-1">
         <Text className="text-base font-semibold text-ink" numberOfLines={1}>
           {title}
         </Text>
-        <Text className="text-xs text-muted" numberOfLines={1}>
+        <Text className="text-xs text-muted font-normal" numberOfLines={1}>
           {meta}
         </Text>
       </View>
@@ -294,7 +295,7 @@ function PlacesList() {
               >
                 {place.name}
               </Text>
-              <Text className="text-xs text-muted">
+              <Text className="text-xs text-muted font-normal">
                 {place.category} · {v.when}
               </Text>
             </View>
@@ -320,13 +321,13 @@ function ReviewsList() {
               <Text className="text-base font-semibold text-ink">
                 {place.name}
               </Text>
-              <Text className="text-xs text-muted">{r.when}</Text>
+              <Text className="text-xs text-muted font-normal">{r.when}</Text>
             </View>
-            <Text className="text-xs text-ember">
+            <Text className="text-xs text-emberText font-normal">
               {"★".repeat(r.stars)}
               {"☆".repeat(5 - r.stars)}
             </Text>
-            <Text className="text-sm text-ink">{r.text}</Text>
+            <Text className="text-sm text-ink font-normal">{r.text}</Text>
           </View>
         );
       })}

@@ -43,7 +43,7 @@ export default function MyListingsScreen() {
           ))}
         </View>
         {rows.length === 0 ? (
-          <Text className="py-10 text-center text-sm text-muted">
+          <Text className="py-10 text-center text-sm text-muted font-normal">
             Ingen listings her ennå.
           </Text>
         ) : null}
@@ -74,7 +74,9 @@ export default function MyListingsScreen() {
               }
               hitSlop={8}
             >
-              <Text className="text-sm font-semibold text-ember">Rediger</Text>
+              <Text className="text-sm font-semibold text-emberText">
+                Rediger
+              </Text>
             </Pressable>
           </View>
         ))}
@@ -113,7 +115,7 @@ function ListingEditor({
       title={isNew ? "Ny listing" : "Rediger listing"}
     >
       <View className="gap-3">
-        <Text className="text-sm text-muted">
+        <Text className="text-sm text-muted font-normal">
           Del det du tilbyr med andre skapere og bedrifter.
         </Text>
         <Text className="text-sm font-semibold text-ink">Type</Text>

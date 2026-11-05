@@ -4,10 +4,10 @@ import { useState } from "react";
 import { ScrollView, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
+import { Icon } from "@/components/ui";
 import { Button } from "@/components/Button";
 import { DemoNote } from "@/components/DemoNote";
 import { RouteHeader } from "@/components/RouteHeader";
-import { colors } from "@/theme";
 
 // Inviter venner + Belønninger (DEMO), per the design (PDF p22): a personal
 // code, copy/share, the invite activity and the reward ladder. Master spec
@@ -47,14 +47,14 @@ export default function InviteScreen() {
     <SafeAreaView className="flex-1 bg-background" edges={["top"]}>
       <RouteHeader title="Inviter venner" />
       <ScrollView contentContainerClassName="gap-4 px-gutter py-4 pb-12">
-        <Text className="text-sm text-muted">
+        <Text className="text-sm text-muted font-normal">
           Del ThirdPlace og få belønninger.
         </Text>
         <Text className="text-xs font-semibold uppercase tracking-wide text-muted">
           Din kode
         </Text>
         <View className="items-center rounded-lg border border-line bg-surface py-5">
-          <Text className="text-2xl font-bold tracking-widest text-ember">
+          <Text className="text-2xl font-bold tracking-widest text-emberText">
             OLA-TP2026
           </Text>
         </View>
@@ -93,7 +93,7 @@ export default function InviteScreen() {
               className="flex-1 items-center gap-0.5 rounded-md border border-line bg-surface py-3"
             >
               <Text className="text-xl font-bold text-ink">{a.value}</Text>
-              <Text className="text-xs text-muted">{a.label}</Text>
+              <Text className="text-xs text-muted font-normal">{a.label}</Text>
             </View>
           ))}
         </View>
@@ -107,17 +107,13 @@ export default function InviteScreen() {
             className="flex-row items-center gap-3 rounded-md border border-line bg-surface p-3.5"
           >
             <View className="h-10 w-10 items-center justify-center rounded-full bg-surfaceMuted">
-              <Ionicons name={r.icon} size={18} color={colors.muted} />
+              <Icon name={r.icon} size="md" tone="muted" />
             </View>
             <View className="flex-1">
               <Text className="text-sm font-semibold text-ink">{r.label}</Text>
-              <Text className="text-xs text-muted">{r.hint}</Text>
+              <Text className="text-xs text-muted font-normal">{r.hint}</Text>
             </View>
-            <Ionicons
-              name="lock-closed-outline"
-              size={16}
-              color={colors.muted}
-            />
+            <Icon name="lock-closed-outline" size="sm" tone="muted" />
           </View>
         ))}
         <DemoNote>

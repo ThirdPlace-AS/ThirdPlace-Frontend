@@ -2,6 +2,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { useState } from "react";
 import { Pressable, Text, View } from "react-native";
 
+import { Icon } from "@/components/ui";
 import { DemoNote } from "@/components/DemoNote";
 import { Sheet } from "@/components/Sheet";
 import {
@@ -10,7 +11,6 @@ import {
   visibleNotifications,
   type NotificationType,
 } from "@/fixtures";
-import { colors } from "@/theme";
 
 // type → leading category glyph.
 const TYPE_ICON: Record<NotificationType, keyof typeof Ionicons.glyphMap> = {
@@ -72,22 +72,21 @@ export function NotificationsSheet({
               }`}
             >
               <View className="h-10 w-10 items-center justify-center rounded-full bg-surfaceMuted">
-                <Ionicons
-                  name={TYPE_ICON[n.type]}
-                  size={18}
-                  color={colors.ink}
-                />
+                <Icon name={TYPE_ICON[n.type]} size="md" tone="ink" />
               </View>
               <View className="flex-1 gap-0.5">
                 <Text className="text-sm font-semibold text-ink">
                   {n.actorName}
                 </Text>
-                <Text className="text-xs text-muted" numberOfLines={2}>
+                <Text
+                  className="text-xs text-muted font-normal"
+                  numberOfLines={2}
+                >
                   {n.text}
                 </Text>
               </View>
               <View className="items-end gap-1.5">
-                <Text className="text-xs text-muted">
+                <Text className="text-xs text-muted font-normal">
                   {notificationTimeLabel(n.minutesAgo)}
                 </Text>
                 {!isRead ? (

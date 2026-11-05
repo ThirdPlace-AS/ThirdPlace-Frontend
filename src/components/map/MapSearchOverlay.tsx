@@ -10,10 +10,9 @@ import {
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-import { IconButton } from "@/components/ui";
+import { Icon, IconButton } from "@/components/ui";
 import { Chip } from "@/components/Chip";
 import { SearchBar } from "@/components/SearchBar";
-import { colors } from "@/theme";
 
 import { useRecentSearches } from "./hooks/useRecentSearches";
 import {
@@ -126,11 +125,7 @@ function SearchBody({
                     onPress={() => setQuery("")}
                     hitSlop={8}
                   >
-                    <Ionicons
-                      name="close-circle"
-                      size={18}
-                      color={colors.muted}
-                    />
+                    <Icon name="close-circle" size="md" tone="muted" />
                   </Pressable>
                 ) : undefined
               }
@@ -152,11 +147,11 @@ function SearchBody({
             />
           ) : results.total === 0 ? (
             <View className="items-center gap-2 pt-10">
-              <Ionicons name="search" size={32} color={colors.muted} />
+              <Icon name="search" size="xl" tone="muted" />
               <Text className="text-base font-semibold text-ink">
                 Ingen treff
               </Text>
-              <Text className="text-center text-sm text-muted">
+              <Text className="text-center text-sm text-muted font-normal">
                 Prøv et annet søkeord.
               </Text>
             </View>
@@ -222,8 +217,8 @@ function RecentSearches({
   if (recent.length === 0) {
     return (
       <View className="items-center gap-2 pt-10">
-        <Ionicons name="time-outline" size={32} color={colors.muted} />
-        <Text className="text-center text-sm text-muted">
+        <Icon name="time-outline" size="xl" tone="muted" />
+        <Text className="text-center text-sm text-muted font-normal">
           Søk etter steder, opplevelser og grupper.
         </Text>
       </View>
@@ -238,7 +233,7 @@ function RecentSearches({
           accessibilityLabel="Tøm nylige søk"
           onPress={onClear}
         >
-          <Text className="text-sm text-muted">Tøm</Text>
+          <Text className="text-sm text-muted font-normal">Tøm</Text>
         </Pressable>
       </View>
       {recent.map((q) => (
@@ -252,8 +247,8 @@ function RecentSearches({
             onPress={() => onPick(q)}
             className="flex-1 flex-row items-center gap-3"
           >
-            <Ionicons name="time-outline" size={18} color={colors.muted} />
-            <Text className="text-base text-ink">{q}</Text>
+            <Icon name="time-outline" size="md" tone="muted" />
+            <Text className="text-base text-ink font-normal">{q}</Text>
           </Pressable>
           <Pressable
             accessibilityRole="button"
@@ -261,7 +256,7 @@ function RecentSearches({
             onPress={() => onRemove(q)}
             hitSlop={8}
           >
-            <Ionicons name="close" size={18} color={colors.muted} />
+            <Icon name="close" size="md" tone="muted" />
           </Pressable>
         </View>
       ))}
@@ -293,13 +288,13 @@ function ResultGroup({
           className="flex-row items-center gap-3 rounded-md px-1 py-2"
         >
           <View className="h-9 w-9 items-center justify-center rounded-full bg-surfaceMuted">
-            <Ionicons name={icon} size={18} color={colors.ink} />
+            <Icon name={icon} size="md" tone="ink" />
           </View>
           <View className="flex-1">
-            <Text className="text-base text-ink" numberOfLines={1}>
+            <Text className="text-base text-ink font-normal" numberOfLines={1}>
               {r.title}
             </Text>
-            <Text className="text-sm text-muted" numberOfLines={1}>
+            <Text className="text-sm text-muted font-normal" numberOfLines={1}>
               {r.subtitle}
             </Text>
           </View>

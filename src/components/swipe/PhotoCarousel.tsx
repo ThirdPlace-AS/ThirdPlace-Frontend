@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { media } from "@/theme";
 import {
   Image,
   Pressable,
@@ -54,7 +55,12 @@ export function PhotoCarousel({
     <View className="absolute inset-0">
       {/* Neutral loading backdrop so a card reads as "loading" (not a black
           void) during the brief moment before the photo decodes on mount. */}
-      <View style={[StyleSheet.absoluteFill, { backgroundColor: "#3A3A3A" }]} />
+      <View
+        style={[
+          StyleSheet.absoluteFill,
+          { backgroundColor: media.placeholder },
+        ]}
+      />
       <Image
         source={photos[idx]}
         resizeMode="cover"

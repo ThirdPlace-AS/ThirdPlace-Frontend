@@ -2,6 +2,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { Image } from "expo-image";
 import { Pressable, Text, View } from "react-native";
 
+import { Icon } from "@/components/ui";
 import { Card } from "@/components/Card";
 import { Chip } from "@/components/Chip";
 import {
@@ -11,7 +12,6 @@ import {
   priceBandFor,
 } from "@/fixtures";
 import { coverForPlace, libImage } from "@/fixtures/images";
-import { colors } from "@/theme";
 
 import type { PushFn } from "../sheetTypes";
 import { markerId } from "../types/mapPresentation";
@@ -26,8 +26,8 @@ function InfoRow({
 }) {
   return (
     <View className="flex-row items-center gap-2">
-      <Ionicons name={icon} size={16} color={colors.muted} />
-      <Text className="flex-1 text-sm text-ink">{text}</Text>
+      <Icon name={icon} size="sm" tone="muted" />
+      <Text className="flex-1 text-sm text-ink font-normal">{text}</Text>
     </View>
   );
 }
@@ -35,7 +35,9 @@ function InfoRow({
 export function PlaceContent({ id, push }: { id: string; push: PushFn }) {
   const place = placeById(id);
   if (!place) {
-    return <Text className="text-sm text-muted">Fant ikke stedet.</Text>;
+    return (
+      <Text className="text-sm text-muted font-normal">Fant ikke stedet.</Text>
+    );
   }
   const business = businessForPlace(place.id);
   const exps = experiencesForPlace(place.id);
@@ -45,20 +47,26 @@ export function PlaceContent({ id, push }: { id: string; push: PushFn }) {
       {/* Peek line: rating · distance · open · category */}
       <View className="flex-row flex-wrap items-center gap-x-3 gap-y-1">
         <View className="flex-row items-center gap-1">
-          <Ionicons name="star" size={16} color={colors.ember} />
+          <Icon name="star" size="sm" tone="ember" />
           <Text className="text-sm font-semibold text-ink">
             {place.rating.toFixed(1)}
           </Text>
-          <Text className="text-sm text-muted">({place.reviews})</Text>
+          <Text className="text-sm text-muted font-normal">
+            ({place.reviews})
+          </Text>
         </View>
-        <Text className="text-sm text-muted">· {place.distance}</Text>
+        <Text className="text-sm text-muted font-normal">
+          · {place.distance}
+        </Text>
         <Text
-          className={`text-sm ${place.openNow ? "text-success" : "text-muted"}`}
+          className={`font-normal text-sm ${place.openNow ? "text-successText" : "text-muted"}`}
         >
           · {place.openNow ? "Åpent nå" : "Stengt"}
         </Text>
-        <Text className="text-sm text-muted">· {place.category}</Text>
-        <Text className="text-sm text-muted">
+        <Text className="text-sm text-muted font-normal">
+          · {place.category}
+        </Text>
+        <Text className="text-sm text-muted font-normal">
           · {priceBandFor(place.priceNok)}
         </Text>
       </View>
@@ -78,7 +86,7 @@ export function PlaceContent({ id, push }: { id: string; push: PushFn }) {
         title={place.name}
       />
 
-      <Text className="text-sm text-muted">{place.about}</Text>
+      <Text className="text-sm text-muted font-normal">{place.about}</Text>
 
       {/* Location & opening hours */}
       <Card>
@@ -123,12 +131,10 @@ export function PlaceContent({ id, push }: { id: string; push: PushFn }) {
 
       {/* Source / provenance indicator */}
       <View className="flex-row items-center gap-2">
-        <Ionicons
-          name="shield-checkmark-outline"
-          size={16}
-          color={colors.muted}
-        />
-        <Text className="flex-1 text-xs text-muted">{place.source}</Text>
+        <Icon name="shield-checkmark-outline" size="sm" tone="muted" />
+        <Text className="flex-1 text-xs text-muted font-normal">
+          {place.source}
+        </Text>
       </View>
 
       {business ? (
@@ -139,7 +145,7 @@ export function PlaceContent({ id, push }: { id: string; push: PushFn }) {
           <Card>
             <View className="flex-row items-center justify-between">
               <View className="flex-1">
-                <Text className="text-xs uppercase tracking-wide text-muted">
+                <Text className="text-xs uppercase tracking-wide text-muted font-normal">
                   Drives av
                 </Text>
                 <View className="flex-row items-center gap-1">
@@ -147,15 +153,11 @@ export function PlaceContent({ id, push }: { id: string; push: PushFn }) {
                     {business.name}
                   </Text>
                   {business.verified ? (
-                    <Ionicons
-                      name="checkmark-circle"
-                      size={16}
-                      color={colors.success}
-                    />
+                    <Icon name="checkmark-circle" size="sm" tone="success" />
                   ) : null}
                 </View>
               </View>
-              <Ionicons name="chevron-forward" size={20} color={colors.muted} />
+              <Icon name="chevron-forward" size="md" tone="muted" />
             </View>
           </Card>
         </Pressable>
@@ -168,23 +170,23 @@ export function PlaceContent({ id, push }: { id: string; push: PushFn }) {
         <Card>
           <View className="flex-row items-center justify-between">
             <View className="flex-row items-center gap-1">
-              <Ionicons name="star" size={16} color={colors.ember} />
+              <Icon name="star" size="sm" tone="ember" />
               <Text className="text-base font-semibold text-ink">
                 {place.rating.toFixed(1)}
               </Text>
-              <Text className="text-sm text-muted">
+              <Text className="text-sm text-muted font-normal">
                 · {place.reviews} anmeldelser
               </Text>
             </View>
-            <Ionicons name="chevron-forward" size={20} color={colors.muted} />
+            <Icon name="chevron-forward" size="md" tone="muted" />
           </View>
         </Card>
       </Pressable>
 
       {/* Place chat — no real chat room is opened. */}
       <View className="flex-row items-center gap-2 rounded-md border border-line bg-surface px-3 py-3">
-        <Ionicons name="chatbubbles-outline" size={18} color={colors.ink} />
-        <Text className="flex-1 text-sm text-ink">Stedschat</Text>
+        <Icon name="chatbubbles-outline" size="md" tone="ink" />
+        <Text className="flex-1 text-sm text-ink font-normal">Stedschat</Text>
       </View>
 
       <View className="gap-2">
@@ -192,7 +194,7 @@ export function PlaceContent({ id, push }: { id: string; push: PushFn }) {
           Arrangementer her
         </Text>
         {exps.length === 0 ? (
-          <Text className="text-sm text-muted">
+          <Text className="text-sm text-muted font-normal">
             Ingen kommende arrangementer.
           </Text>
         ) : (
@@ -208,15 +210,11 @@ export function PlaceContent({ id, push }: { id: string; push: PushFn }) {
                     <Text className="text-base font-semibold text-ink">
                       {e.title}
                     </Text>
-                    <Text className="text-sm text-muted">
+                    <Text className="text-sm text-muted font-normal">
                       {e.when} · Vert: {e.host}
                     </Text>
                   </View>
-                  <Ionicons
-                    name="chevron-forward"
-                    size={20}
-                    color={colors.muted}
-                  />
+                  <Icon name="chevron-forward" size="md" tone="muted" />
                 </View>
               </Card>
             </Pressable>

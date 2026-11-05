@@ -1,7 +1,7 @@
 import { Text, View } from "react-native";
 import Svg, { Circle, Path, Rect } from "react-native-svg";
 
-import { colors } from "@/theme";
+import { useThemeColors } from "@/theme";
 
 // ThirdPlace brand mark — a location pin ("a place on the map"), drawn as a
 // crisp vector so it stays sharp at every size. Provisional palette (Ember
@@ -30,6 +30,7 @@ export function LogoMark({
   /** Only used by the "mono" variant. Defaults to ink. */
   color?: string;
 }) {
+  const colors = useThemeColors();
   if (variant === "mono") {
     const tone = color ?? colors.ink;
     return (

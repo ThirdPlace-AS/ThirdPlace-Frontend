@@ -1,10 +1,10 @@
-import { Ionicons } from "@expo/vector-icons";
 import { Image } from "expo-image";
 import { router, type Href } from "expo-router";
 import { useMemo, useState } from "react";
 import { FlatList, Pressable, Text, TextInput, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
+import { Icon } from "@/components/ui";
 import { Button } from "@/components/Button";
 import { Chip } from "@/components/Chip";
 import { DemoNote } from "@/components/DemoNote";
@@ -20,7 +20,7 @@ import {
   type MockListingType,
 } from "@/fixtures";
 import { libImage } from "@/fixtures/images";
-import { colors } from "@/theme";
+import { useThemeColors } from "@/theme";
 
 // Marketplace (DEMO), per the design (PDF p15–p16) and master spec §13: a B2B
 // collaboration space where creators, businesses and enterprises offer
@@ -29,6 +29,7 @@ import { colors } from "@/theme";
 // sheet with "Send forespørsel" / "Lagre". BLOCKED_CONTRACT_GAP: no offers,
 // contracts or payments exist — nothing is sent, saved or signed.
 export default function MarketplaceScreen() {
+  const colors = useThemeColors();
   const { isGuest } = useGuestMode();
   const [query, setQuery] = useState("");
   const [type, setType] = useState<MockListingType | null>(null);
@@ -65,7 +66,7 @@ export default function MarketplaceScreen() {
         keyboardShouldPersistTaps="handled"
         ListHeaderComponent={
           <View className="gap-3 pb-1">
-            <Text className="text-sm text-muted">
+            <Text className="text-sm text-muted font-normal">
               Samarbeid mellom skapere og bedrifter — lokaler, vertskap,
               sponsing og brand.
             </Text>
@@ -74,8 +75,8 @@ export default function MarketplaceScreen() {
               onPress={() => router.push("/my-listings")}
               className="flex-row items-center gap-2 self-start"
             >
-              <Ionicons name="albums-outline" size={16} color={colors.ember} />
-              <Text className="text-sm font-semibold text-ember">
+              <Icon name="albums-outline" size="sm" tone="ember" />
+              <Text className="text-sm font-semibold text-emberText">
                 Mine listings →
               </Text>
             </Pressable>
@@ -85,7 +86,7 @@ export default function MarketplaceScreen() {
                 onPress={() => setFilterOpen(true)}
                 className="flex-row items-center gap-1.5"
               >
-                <Ionicons name="options-outline" size={16} color={colors.ink} />
+                <Icon name="options-outline" size="sm" tone="ink" />
                 <Text className="text-sm font-semibold text-ink">
                   Filtre{freeOnly ? " (1)" : ""}
                 </Text>
@@ -95,22 +96,18 @@ export default function MarketplaceScreen() {
                 onPress={() => router.push("/workspace/analytics" as Href)}
                 className="flex-row items-center gap-1.5"
               >
-                <Ionicons
-                  name="stats-chart-outline"
-                  size={16}
-                  color={colors.ink}
-                />
+                <Icon name="stats-chart-outline" size="sm" tone="ink" />
                 <Text className="text-sm font-semibold text-ink">Analyse</Text>
               </Pressable>
             </View>
             <View className="flex-row items-center gap-2 rounded-full border border-line bg-surface px-4">
-              <Ionicons name="search" size={18} color={colors.muted} />
+              <Icon name="search" size="md" tone="muted" />
               <TextInput
                 value={query}
                 onChangeText={setQuery}
                 placeholder="Søk listings, samarbeid …"
                 placeholderTextColor={colors.muted}
-                className="flex-1 py-3 text-base text-ink"
+                className="flex-1 py-3 text-base text-ink font-normal"
                 accessibilityLabel="Søk i Marketplace"
               />
             </View>
@@ -132,7 +129,7 @@ export default function MarketplaceScreen() {
           </View>
         }
         ListEmptyComponent={
-          <Text className="py-10 text-center text-sm text-muted">
+          <Text className="py-10 text-center text-sm text-muted font-normal">
             Ingen listings matcher søket.
           </Text>
         }
@@ -227,7 +224,7 @@ function ListingCard({
           </Text>
         </View>
         <Text className="text-sm font-semibold text-ink">{listing.terms}</Text>
-        <Text className="text-xs text-muted" numberOfLines={1}>
+        <Text className="text-xs text-muted font-normal" numberOfLines={1}>
           {listing.owner}
         </Text>
       </View>
@@ -270,7 +267,9 @@ function ListingSheet({
               {listing.type}
             </Text>
           </View>
-          <Text className="text-sm text-ink">{listing.description}</Text>
+          <Text className="text-sm text-ink font-normal">
+            {listing.description}
+          </Text>
           <View className="overflow-hidden rounded-md border border-line bg-surface">
             {[{ label: "Pris", value: listing.terms }, ...listing.details].map(
               (d) => (
@@ -278,7 +277,9 @@ function ListingSheet({
                   key={d.label}
                   className="flex-row justify-between border-b border-line px-3.5 py-3"
                 >
-                  <Text className="text-sm text-muted">{d.label}</Text>
+                  <Text className="text-sm text-muted font-normal">
+                    {d.label}
+                  </Text>
                   <Text className="text-sm font-medium text-ink">
                     {d.value}
                   </Text>
@@ -294,12 +295,14 @@ function ListingSheet({
             ))}
           </View>
           <View className="flex-row items-center gap-3 rounded-md border border-line bg-surface p-3">
-            <Ionicons name="storefront-outline" size={18} color={colors.ink} />
+            <Icon name="storefront-outline" size="md" tone="ink" />
             <View className="flex-1">
               <Text className="text-sm font-semibold text-ink">
                 {listing.owner}
               </Text>
-              <Text className="text-xs text-muted">{listing.ownerMeta}</Text>
+              <Text className="text-xs text-muted font-normal">
+                {listing.ownerMeta}
+              </Text>
             </View>
           </View>
           {notice ? <DemoNote>Listingen lagres ikke.</DemoNote> : null}

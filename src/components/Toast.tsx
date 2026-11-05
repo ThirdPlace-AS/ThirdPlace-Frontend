@@ -8,7 +8,8 @@ import Animated, {
 } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-import { colors } from "@/theme";
+import { Icon } from "@/components/ui";
+import { elevation } from "@/theme";
 
 // Flytende varsler (PDF p27): a floating banner at the top of the screen —
 // icon, bold title, one-line body. A tiny module store so any screen can call
@@ -81,18 +82,14 @@ export function ToastHost() {
           onPress={dismissToast}
           className="flex-row items-center gap-3 rounded-lg bg-ink px-4 py-3"
           style={{
-            shadowColor: "#000",
-            shadowOpacity: 0.2,
-            shadowRadius: 12,
-            shadowOffset: { width: 0, height: 4 },
-            elevation: 8,
+            ...elevation.e3,
           }}
         >
           <View className="h-9 w-9 items-center justify-center rounded-full bg-white/10">
-            <Ionicons
+            <Icon
               name={toast.icon ?? "notifications-outline"}
-              size={18}
-              color={colors.onInk}
+              size="md"
+              tone="onInk"
             />
           </View>
           <View className="flex-1">
@@ -100,7 +97,10 @@ export function ToastHost() {
               {toast.title}
             </Text>
             {toast.body ? (
-              <Text className="text-xs text-white/75" numberOfLines={2}>
+              <Text
+                className="text-xs text-white/75 font-normal"
+                numberOfLines={2}
+              >
                 {toast.body}
               </Text>
             ) : null}

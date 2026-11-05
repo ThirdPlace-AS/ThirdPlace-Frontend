@@ -1,12 +1,11 @@
-import { Ionicons } from "@expo/vector-icons";
 import { useState } from "react";
 import { Pressable, ScrollView, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
+import { Icon } from "@/components/ui";
 import { RateSheet } from "@/components/actions/ActionSheets";
 import { DemoNote } from "@/components/DemoNote";
 import { RouteHeader } from "@/components/RouteHeader";
-import { colors } from "@/theme";
 
 // Collaboration extras (DEMO), per the design (PDF p17–p18): Betalingsstatus,
 // Samarbeidshistorikk, Vurder samarbeid and the Marketplace venteliste.
@@ -25,7 +24,7 @@ export function PaymentStatusScreen() {
     <SafeAreaView className="flex-1 bg-background" edges={["top"]}>
       <RouteHeader title="Betalingsstatus" />
       <ScrollView contentContainerClassName="gap-4 px-gutter py-4 pb-12">
-        <Text className="text-sm text-muted">
+        <Text className="text-sm text-muted font-normal">
           Jazz-samarbeid · Oslo Kaffebar
         </Text>
         {PAY_STEPS.map((s) => (
@@ -35,12 +34,10 @@ export function PaymentStatusScreen() {
                 s.done ? "bg-success" : "bg-line"
               }`}
             >
-              {s.done ? (
-                <Ionicons name="checkmark" size={12} color={colors.onInk} />
-              ) : null}
+              {s.done ? <Icon name="checkmark" size="sm" tone="onInk" /> : null}
             </View>
             <Text
-              className={`text-sm ${s.done ? "font-semibold text-ink" : "text-muted"}`}
+              className={`font-normal text-sm ${s.done ? "font-semibold text-ink" : "text-muted"}`}
             >
               {s.label}
             </Text>
@@ -76,11 +73,11 @@ export function CollabHistoryScreen() {
             className="gap-1 rounded-lg border border-line bg-surface p-4"
           >
             <Text className="text-base font-semibold text-ink">{h.title}</Text>
-            <Text className="text-xs text-muted">
+            <Text className="text-xs text-muted font-normal">
               {h.partner} · {h.when}
             </Text>
             {h.rated ? (
-              <Text className="text-xs font-semibold text-success">
+              <Text className="text-xs font-semibold text-successText">
                 ✓ Vurdert
               </Text>
             ) : (
@@ -88,7 +85,7 @@ export function CollabHistoryScreen() {
                 accessibilityRole="button"
                 onPress={() => setRate(h.partner)}
               >
-                <Text className="text-sm font-semibold text-ember">
+                <Text className="text-sm font-semibold text-emberText">
                   Vurder samarbeid →
                 </Text>
               </Pressable>

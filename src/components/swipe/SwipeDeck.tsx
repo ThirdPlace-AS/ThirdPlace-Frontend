@@ -31,6 +31,7 @@ import Animated, {
   type SharedValue,
 } from "react-native-reanimated";
 
+import { Icon } from "@/components/ui";
 import { Button } from "@/components/Button";
 import { DemoBadge } from "@/components/DemoBadge";
 import { DemoNote } from "@/components/DemoNote";
@@ -43,7 +44,7 @@ import { SignInPrompt } from "@/components/SignInPrompt";
 import { EmptyState } from "@/components/states/StateView";
 import { MOCK_NOTIFICATIONS, places, type MockExperience } from "@/fixtures";
 import { haptics } from "@/lib/haptics";
-import { colors, motion } from "@/theme";
+import { motion, useThemeColors, media } from "@/theme";
 
 import { experienceAvailability } from "./availability";
 import { decideCommit, rotationFor, type SwipeAction } from "./deckLogic";
@@ -552,14 +553,14 @@ function TopCard({
           borderRadius: 18,
           alignItems: "center",
           justifyContent: "center",
-          backgroundColor: "rgba(0,0,0,0.6)",
+          backgroundColor: media.scrimStrong,
           // Above the card's info overlay (which lives in the z-10 gesture
           // layer) so the tap lands on the arrow, not the text behind it.
           zIndex: 20,
         }}
       >
         {/* Filled up-arrow in a dark circle, like the reference's expand affordance. */}
-        <Ionicons name="arrow-up" size={18} color="#FFFFFF" />
+        <Ionicons name="arrow-up" size={18} color={media.onMedia} />
       </Pressable>
     </View>
   );
@@ -601,6 +602,7 @@ function Wash({
   w: number;
   h: number;
 }) {
+  const colors = useThemeColors();
   const vDenom = (h > 0 ? h : 480) * G.swipeVertCommitRatio;
   const hDenom = (w > 0 ? w : 360) * G.swipeCommitRatio;
   const likeW = useAnimatedStyle(() => ({
@@ -624,14 +626,14 @@ function Wash({
       <Animated.View
         style={[
           StyleSheet.absoluteFill,
-          { backgroundColor: "#000000", opacity: 0 },
+          { backgroundColor: media.black, opacity: 0 },
           nopeW,
         ]}
       />
       <Animated.View
         style={[
           StyleSheet.absoluteFill,
-          { backgroundColor: "#FFFFFF", opacity: 0 },
+          { backgroundColor: media.onMedia, opacity: 0 },
           saveW,
         ]}
       />
@@ -646,7 +648,7 @@ function Wash({
 // over bright photos.
 const STAMP_SIZE = 132;
 const stampShadow = {
-  textShadowColor: "rgba(0,0,0,0.45)",
+  textShadowColor: media.textShadow,
   textShadowOffset: { width: 0, height: 2 },
   textShadowRadius: 12,
 } as const;
@@ -664,6 +666,7 @@ function Stamps({
   h: number;
   reduced: boolean;
 }) {
+  const colors = useThemeColors();
   const vDenom = (h > 0 ? h : 480) * G.swipeVertCommitRatio;
   const topY = (h > 0 ? h : 760) * 0.13; // stamps sit high, under the top bar
   // Each glyph fades in with the drag ratio and eases up to full size as it
@@ -709,7 +712,7 @@ function Stamps({
         <Ionicons
           name="close"
           size={STAMP_SIZE + 24}
-          color="#FFFFFF"
+          color={media.onMedia}
           style={stampShadow}
         />
       </Animated.View>
@@ -733,7 +736,7 @@ function Stamps({
         <Ionicons
           name="bookmark"
           size={STAMP_SIZE - 20}
-          color="#FFFFFF"
+          color={media.onMedia}
           style={stampShadow}
         />
       </Animated.View>
@@ -751,8 +754,11 @@ function MetaLine({
 }) {
   return (
     <View className="flex-row items-center gap-2">
-      <Ionicons name={icon} size={17} color="#FFFFFF" />
-      <Text className="flex-1 text-[15px] text-white/90" numberOfLines={1}>
+      <Ionicons name={icon} size={17} color={media.onMedia} />
+      <Text
+        className="flex-1 text-[15px] text-white/90 font-normal"
+        numberOfLines={1}
+      >
         {children}
       </Text>
     </View>
@@ -772,6 +778,7 @@ function ExpandDetail({
   exp: MockExperience;
   onClose: () => void;
 }) {
+  const colors = useThemeColors();
   const insets = useSafeAreaInsets();
   const { height: screenH } = useWindowDimensions();
   const heroH = Math.round(screenH * 0.46);
@@ -811,7 +818,7 @@ function ExpandDetail({
       onRequestClose={onClose}
       statusBarTranslucent
     >
-      <View style={[StyleSheet.absoluteFill, { backgroundColor: "#141618" }]}>
+      <View style={[StyleSheet.absoluteFill, { backgroundColor: media.base }]}>
         {/* Light status-bar content over the dark detail surface. */}
         <StatusBar style="light" />
         {/* Header: title + collapse. */}
@@ -830,20 +837,24 @@ function ExpandDetail({
             accessibilityLabel="Flere valg"
             onPress={() => setSafetyOpen(true)}
             hitSlop={8}
-            style={{ backgroundColor: "rgba(255,255,255,0.12)" }}
+            style={{ backgroundColor: media.fillSubtle }}
             className="h-9 w-9 items-center justify-center rounded-full"
           >
-            <Ionicons name="ellipsis-horizontal" size={20} color="#FFFFFF" />
+            <Ionicons
+              name="ellipsis-horizontal"
+              size={20}
+              color={media.onMedia}
+            />
           </Pressable>
           <Pressable
             accessibilityRole="button"
             accessibilityLabel="Lukk detaljer"
             onPress={onClose}
             hitSlop={8}
-            style={{ backgroundColor: "rgba(255,255,255,0.12)" }}
+            style={{ backgroundColor: media.fillSubtle }}
             className="h-9 w-9 items-center justify-center rounded-full"
           >
-            <Ionicons name="arrow-down" size={22} color="#FFFFFF" />
+            <Ionicons name="arrow-down" size={22} color={media.onMedia} />
           </Pressable>
         </View>
 
@@ -860,7 +871,7 @@ function ExpandDetail({
 
           <View className="flex-row items-center gap-2">
             <DemoBadge />
-            <Text className="flex-1 text-xs text-white/60">
+            <Text className="flex-1 text-xs text-white/60 font-normal">
               Demo — ingen reell påmelding eller lagring på server.
             </Text>
           </View>
@@ -880,7 +891,7 @@ function ExpandDetail({
 
           <View className="gap-1">
             <Text className="text-base font-bold text-white">Om</Text>
-            <Text className="text-[15px] leading-6 text-white/85">
+            <Text className="text-[15px] leading-6 text-white/85 font-normal">
               {exp.about}
             </Text>
           </View>
@@ -893,7 +904,7 @@ function ExpandDetail({
                   <View
                     key={t}
                     className="rounded-full px-3.5 py-1.5"
-                    style={{ backgroundColor: "rgba(255,255,255,0.1)" }}
+                    style={{ backgroundColor: media.fillSubtle }}
                   >
                     <Text className="text-[14px] font-medium text-white">
                       {t}
@@ -911,9 +922,9 @@ function ExpandDetail({
           style={{
             paddingTop: 12,
             paddingBottom: Math.max(insets.bottom, 12),
-            backgroundColor: "rgba(14,16,18,0.96)",
+            backgroundColor: media.sheet,
             borderTopWidth: 1,
-            borderColor: "rgba(255,255,255,0.08)",
+            borderColor: media.hairline,
           }}
         >
           <Pressable
@@ -924,7 +935,7 @@ function ExpandDetail({
             style={{ backgroundColor: colors.ember }}
             className="h-12 flex-1 flex-row items-center justify-center gap-2 rounded-full"
           >
-            <Ionicons name="heart" size={20} color={colors.onEmber} />
+            <Icon name="heart" size="md" tone="onEmber" />
             <Text
               className="text-base font-bold"
               style={{ color: colors.onEmber }}
@@ -937,13 +948,13 @@ function ExpandDetail({
             accessibilityLabel={saved ? "Fjern fra lagret" : "Lagre"}
             accessibilityState={{ selected: saved }}
             onPress={() => gate("lagre", () => toggle(savedKey))}
-            style={{ borderColor: "rgba(255,255,255,0.25)", borderWidth: 1 }}
+            style={{ borderColor: media.hairlineStrong, borderWidth: 1 }}
             className="h-12 w-12 items-center justify-center rounded-full"
           >
             <Ionicons
               name={saved ? "bookmark" : "bookmark-outline"}
               size={20}
-              color="#FFFFFF"
+              color={media.onMedia}
             />
           </Pressable>
           <Pressable
@@ -954,10 +965,14 @@ function ExpandDetail({
                 () => {},
               )
             }
-            style={{ borderColor: "rgba(255,255,255,0.25)", borderWidth: 1 }}
+            style={{ borderColor: media.hairlineStrong, borderWidth: 1 }}
             className="h-12 w-12 items-center justify-center rounded-full"
           >
-            <Ionicons name="paper-plane-outline" size={20} color="#FFFFFF" />
+            <Ionicons
+              name="paper-plane-outline"
+              size={20}
+              color={media.onMedia}
+            />
           </Pressable>
         </View>
 
@@ -973,10 +988,7 @@ function ExpandDetail({
             accessibilityRole="button"
             accessibilityLabel="Lukk"
             onPress={() => setSafetyOpen(false)}
-            style={[
-              StyleSheet.absoluteFill,
-              { backgroundColor: "rgba(0,0,0,0.5)" },
-            ]}
+            style={[StyleSheet.absoluteFill, { backgroundColor: media.scrim }]}
           />
           <View
             className="absolute inset-x-0 bottom-0 gap-2 rounded-t-xl bg-surface px-gutter pt-4"
@@ -984,7 +996,7 @@ function ExpandDetail({
           >
             <View className="flex-row items-center gap-2 pb-1">
               <DemoBadge />
-              <Text className="flex-1 text-xs text-muted">
+              <Text className="flex-1 text-xs text-muted font-normal">
                 Demo — ingen rapport sendes og ingen blokkering lagres.
               </Text>
             </View>
@@ -997,7 +1009,7 @@ function ExpandDetail({
               }}
               className="flex-row items-center gap-3 rounded-lg border border-line px-4 py-4"
             >
-              <Ionicons name="flag-outline" size={20} color={colors.ink} />
+              <Icon name="flag-outline" size="md" tone="ink" />
               <Text className="text-base font-semibold text-ink">
                 Rapporter opplevelsen
               </Text>
@@ -1011,7 +1023,7 @@ function ExpandDetail({
               }}
               className="flex-row items-center gap-3 rounded-lg border border-line px-4 py-4"
             >
-              <Ionicons name="ban-outline" size={20} color={colors.ember} />
+              <Icon name="ban-outline" size="md" tone="ember" />
               <Text className="text-base font-semibold text-ink">
                 {`Blokker ${exp.host}`}
               </Text>
@@ -1057,10 +1069,10 @@ function JoinChatSheet({
       {exp ? (
         <View className="gap-3">
           <Text className="text-base font-semibold text-ink">{exp.title}</Text>
-          <Text className="text-sm text-muted">{exp.when}</Text>
+          <Text className="text-sm text-muted font-normal">{exp.when}</Text>
           <View className="flex-row items-center gap-2 rounded-md bg-surfaceMuted p-3">
-            <Ionicons name="chatbubbles-outline" size={16} color={colors.ink} />
-            <Text className="flex-1 text-sm text-ink">
+            <Icon name="chatbubbles-outline" size="sm" tone="ink" />
+            <Text className="flex-1 text-sm text-ink font-normal">
               Chat er gratis — billett kjøper du når du vil.
             </Text>
           </View>

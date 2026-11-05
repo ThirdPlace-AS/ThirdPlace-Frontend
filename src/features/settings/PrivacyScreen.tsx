@@ -99,7 +99,7 @@ export default function PrivacyScreen() {
         title="Blokkerte brukere"
       >
         <View className="gap-2">
-          <Text className="text-sm text-muted">
+          <Text className="text-sm text-muted font-normal">
             Blokkerte brukere kan ikke se profilen din, sende meldinger eller
             finne deg.
           </Text>
@@ -110,11 +110,11 @@ export default function PrivacyScreen() {
             >
               <View className="flex-1">
                 <Text className="text-sm font-semibold text-ink">{b.name}</Text>
-                <Text className="text-xs text-muted">
+                <Text className="text-xs text-muted font-normal">
                   {b.why} · {b.when}
                 </Text>
               </View>
-              <Text className="text-xs font-semibold text-ember">
+              <Text className="text-xs font-semibold text-emberText">
                 Avblokkér
               </Text>
             </View>
@@ -129,7 +129,7 @@ export default function PrivacyScreen() {
         title="Eksporter data"
       >
         <View className="gap-3">
-          <Text className="text-sm text-muted">
+          <Text className="text-sm text-muted font-normal">
             Få en kopi av alt ThirdPlace vet om deg (GDPR). Lenken sendes på
             e-post.
           </Text>
@@ -166,20 +166,20 @@ function DeleteAccountSheet({
   return (
     <Sheet visible={visible} onClose={onClose} title="Slett konto">
       <View className="gap-3">
-        <Text className="text-sm font-semibold text-danger">
+        <Text className="text-sm font-semibold text-dangerText">
           Denne handlingen er permanent og kan ikke angres.
         </Text>
         <View className="gap-1 rounded-md bg-surfaceMuted p-3">
           <Text className="text-sm font-semibold text-ink">
             Når du sletter kontoen din:
           </Text>
-          <Text className="text-xs text-ink">
+          <Text className="text-xs text-ink font-normal">
             • Alle data slettes permanent
           </Text>
-          <Text className="text-xs text-ink">
+          <Text className="text-xs text-ink font-normal">
             • Opplevelser du har opprettet fjernes
           </Text>
-          <Text className="text-xs text-ink">
+          <Text className="text-xs text-ink font-normal">
             • Meldinger kan ikke gjenopprettes
           </Text>
         </View>

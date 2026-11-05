@@ -2,8 +2,8 @@ import { Ionicons } from "@expo/vector-icons";
 import { useState } from "react";
 import { Pressable, Text, View } from "react-native";
 
+import { Icon } from "@/components/ui";
 import { DemoNote } from "@/components/DemoNote";
-import { colors } from "@/theme";
 
 // "ELLER" divider + Google / Apple buttons (PDF p1). The verb follows the
 // screen: "Fortsett med" on register, "Logg inn med" on login. DEMO — no
@@ -33,7 +33,7 @@ export function SocialAuthButtons({ verb }: { verb: string }) {
           onPress={() => setTried(p.name)}
           className="flex-row items-center justify-center gap-2 rounded-full border border-line bg-surface py-3.5 active:opacity-80"
         >
-          <Ionicons name={p.icon} size={18} color={colors.ink} />
+          <Icon name={p.icon} size="md" tone="ink" />
           <Text className="text-base font-medium text-ink">
             {verb} {p.name}
           </Text>

@@ -5,7 +5,7 @@ import { ScrollView, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { Switch } from "@/components/ui/Switch";
-import { StepContent, StepHeader } from "@/components/ui";
+import { Icon, StepContent, StepHeader } from "@/components/ui";
 import { Button } from "@/components/Button";
 import { Chip } from "@/components/Chip";
 import { DemoNote } from "@/components/DemoNote";
@@ -15,7 +15,6 @@ import { OSLO_AREAS } from "@/fixtures";
 import { checkBirthday, formatBirthdayInput } from "@/features/onboarding/age";
 import { UnderageScreen } from "@/features/onboarding/UnderageScreen";
 import { resetTo } from "@/lib/navigation";
-import { colors } from "@/theme";
 
 // Business onboarding (DEMO), per the design (PDF p3–p5). It continues the
 // role step ("1 av 8") with steps 2–8: Personen bak bedriften → Om bedriften →
@@ -127,7 +126,7 @@ export default function BusinessOnboarding() {
           >
             <View className="items-center gap-1">
               <View className="h-20 w-20 items-center justify-center rounded-full bg-surfaceMuted">
-                <Ionicons name="person-outline" size={28} color={colors.ink} />
+                <Icon name="person-outline" size="xl" tone="ink" />
               </View>
               <Text className="text-xs font-semibold text-ink">
                 Legg til bilde
@@ -154,7 +153,7 @@ export default function BusinessOnboarding() {
               onChangeText={(t) => setBirthday(formatBirthdayInput(t))}
               maxLength={10}
             />
-            <Text className="text-xs text-muted">
+            <Text className="text-xs text-muted font-normal">
               Du må være minst 18 år for å administrere en bedrift.
             </Text>
           </Shell>
@@ -262,7 +261,7 @@ export default function BusinessOnboarding() {
               value={menu}
               onChangeText={setMenu}
             />
-            <Text className="text-xs text-muted">
+            <Text className="text-xs text-muted font-normal">
               Alle felt kan endres senere fra dashbordet.
             </Text>
           </Shell>
@@ -330,15 +329,15 @@ export default function BusinessOnboarding() {
           >
             <View className="gap-3 rounded-lg border border-line bg-surface p-4">
               <View className="flex-row items-center gap-1.5 self-start rounded-full border border-ember px-2.5 py-1">
-                <Ionicons name="eye-outline" size={12} color={colors.ember} />
-                <Text className="text-[11px] font-semibold text-ember">
+                <Icon name="eye-outline" size="sm" tone="ember" />
+                <Text className="text-[11px] font-semibold text-emberText">
                   Forhåndsvisning — kun synlig for deg
                 </Text>
               </View>
               <Text className="text-base font-semibold text-ink">
                 {name || "Bedriften din"}
               </Text>
-              <Text className="text-xs text-muted">
+              <Text className="text-xs text-muted font-normal">
                 {[category, street, area].filter(Boolean).join(" · ")}
               </Text>
             </View>
@@ -392,7 +391,7 @@ function Perm({
   return (
     <View className="flex-row items-center gap-3 rounded-lg border border-line bg-surface p-4">
       <View className="h-10 w-10 items-center justify-center rounded-full bg-surfaceMuted">
-        <Ionicons name={icon} size={18} color={colors.ink} />
+        <Icon name={icon} size="md" tone="ink" />
       </View>
       <View className="flex-1 gap-0.5">
         <View className="flex-row items-center gap-2">
@@ -401,7 +400,7 @@ function Perm({
             {tag}
           </Text>
         </View>
-        <Text className="text-xs text-muted">{hint}</Text>
+        <Text className="text-xs text-muted font-normal">{hint}</Text>
       </View>
       <Switch value={value} onValueChange={onChange} label={label} />
     </View>
@@ -424,7 +423,7 @@ function NextStep({
       </View>
       <View className="flex-1">
         <Text className="text-sm font-semibold text-ink">{title}</Text>
-        <Text className="text-xs text-muted">{hint}</Text>
+        <Text className="text-xs text-muted font-normal">{hint}</Text>
       </View>
     </View>
   );

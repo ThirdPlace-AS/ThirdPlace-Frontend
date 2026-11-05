@@ -49,10 +49,10 @@ export default function CreatorProfileScreen() {
           />
           <Text className="text-2xl font-bold text-ink">{person.name}</Text>
           <View className="flex-row items-center gap-2">
-            <Text className="text-sm font-semibold text-ember">Skaper</Text>
+            <Text className="text-sm font-semibold text-emberText">Skaper</Text>
             <DemoBadge />
           </View>
-          <Text className="px-4 text-center text-sm text-muted">
+          <Text className="px-4 text-center text-sm text-muted font-normal">
             {person.bio}
           </Text>
         </View>
@@ -83,17 +83,19 @@ export default function CreatorProfileScreen() {
             <Text className="text-base font-semibold text-ink">
               {hosted.title}
             </Text>
-            <Text className="text-xs text-muted">{hosted.when}</Text>
+            <Text className="text-xs text-muted font-normal">
+              {hosted.when}
+            </Text>
           </View>
         ) : (
-          <Text className="text-sm text-muted">
+          <Text className="text-sm text-muted font-normal">
             Ingen kommende opplevelser.
           </Text>
         )}
         <Text className="text-xs font-semibold uppercase tracking-wide text-muted">
           Tidligere
         </Text>
-        <Text className="text-sm text-muted">
+        <Text className="text-sm text-muted font-normal">
           Tidligere opplevelser vises her når de finnes.
         </Text>
       </ScrollView>

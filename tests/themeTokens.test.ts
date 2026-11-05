@@ -43,6 +43,12 @@ const TEXT_PAIRS: [fg: string, bg: string][] = [
   ["onInk", "ink"],
   ["onEmber", "ember"],
   ["onSuccess", "success"],
+  ["emberText", "background"],
+  ["emberText", "surface"],
+  ["successText", "surface"],
+  ["dangerText", "surface"],
+  ["dangerText", "background"],
+  ["warningText", "surface"],
 ];
 
 describe("theme tokens", () => {

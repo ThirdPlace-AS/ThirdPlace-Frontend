@@ -44,7 +44,7 @@ export function CodeInput({
         maxLength={length}
         autoFocus
         accessibilityLabel={`Kode, ${length} siffer`}
-        className="absolute h-px w-px opacity-0"
+        className="absolute h-px w-px opacity-0 font-normal"
       />
     </Pressable>
   );

@@ -1,8 +1,8 @@
-import { Ionicons } from "@expo/vector-icons";
 import type { ReactNode } from "react";
 import { TextInput, View } from "react-native";
 
-import { colors } from "@/theme";
+import { Icon } from "@/components/ui";
+import { useThemeColors } from "@/theme";
 
 // Visual search field. `onChangeText` drives local UI state only (no network
 // search — that needs an approved contract). `right` renders a trailing control
@@ -26,11 +26,12 @@ export function SearchBar({
   autoFocus?: boolean;
   editable?: boolean;
 }) {
+  const colors = useThemeColors();
   return (
     <View className="flex-row items-center gap-2 rounded-md border border-line bg-surface px-3 py-2.5">
-      <Ionicons name="search" size={18} color={colors.muted} />
+      <Icon name="search" size="md" tone="muted" />
       <TextInput
-        className="flex-1 text-base text-ink"
+        className="flex-1 text-base text-ink font-normal"
         placeholder={placeholder}
         placeholderTextColor={colors.muted}
         value={value}

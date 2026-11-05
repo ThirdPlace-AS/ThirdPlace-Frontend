@@ -1,8 +1,7 @@
-import { Ionicons } from "@expo/vector-icons";
 import { Pressable, Text, View } from "react-native";
 
+import { Icon } from "@/components/ui";
 import { Sheet } from "@/components/Sheet";
-import { colors } from "@/theme";
 
 import { MAP_STYLES, type MapStyleKey } from "./mapStyles";
 
@@ -43,13 +42,11 @@ export function MapLayerSheet({
           }`}
         >
           <Text
-            className={`text-base ${auto ? "font-semibold text-ember" : "text-ink"}`}
+            className={`font-normal text-base ${auto ? "font-semibold text-emberText" : "text-ink"}`}
           >
             Auto (følg tid på døgnet)
           </Text>
-          {auto ? (
-            <Ionicons name="checkmark" size={20} color={colors.ember} />
-          ) : null}
+          {auto ? <Icon name="checkmark" size="md" tone="ember" /> : null}
         </Pressable>
         {MAP_STYLES.map((s) => {
           const selected = !auto && s.key === active;
@@ -67,12 +64,12 @@ export function MapLayerSheet({
               }`}
             >
               <Text
-                className={`text-base ${selected ? "font-semibold text-ember" : "text-ink"}`}
+                className={`font-normal text-base ${selected ? "font-semibold text-emberText" : "text-ink"}`}
               >
                 {s.label}
               </Text>
               {selected ? (
-                <Ionicons name="checkmark" size={20} color={colors.ember} />
+                <Icon name="checkmark" size="md" tone="ember" />
               ) : null}
             </Pressable>
           );

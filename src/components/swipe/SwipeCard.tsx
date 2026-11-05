@@ -5,6 +5,7 @@ import { StyleSheet, Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { DemoBadge } from "@/components/DemoBadge";
+import { media } from "@/theme";
 import { places, type MockExperience } from "@/fixtures";
 
 import { experienceAvailability } from "./availability";
@@ -37,8 +38,8 @@ function InfoRow({
 }) {
   return (
     <View className="flex-row items-center gap-2">
-      <Ionicons name={icon} size={17} color="#FFFFFF" />
-      <Text className="text-[15px] text-white/95" numberOfLines={1}>
+      <Ionicons name={icon} size={17} color={media.onMedia} />
+      <Text className="text-[15px] text-white/95 font-normal" numberOfLines={1}>
         {children}
       </Text>
     </View>
@@ -57,7 +58,7 @@ function TagPills({ tags }: { tags: string[] }) {
         <View
           key={t}
           className="rounded-full px-3.5 py-1.5"
-          style={{ backgroundColor: "rgba(0,0,0,0.6)" }}
+          style={{ backgroundColor: media.scrimStrong }}
         >
           <Text className="text-[15px] font-medium text-white">{t}</Text>
         </View>
@@ -65,7 +66,7 @@ function TagPills({ tags }: { tags: string[] }) {
       {extra > 0 ? (
         <View
           className="rounded-full px-3.5 py-1.5"
-          style={{ backgroundColor: "rgba(0,0,0,0.6)" }}
+          style={{ backgroundColor: media.scrimStrong }}
         >
           <Text className="text-[15px] font-medium text-white">{`+${extra}`}</Text>
         </View>
@@ -110,7 +111,7 @@ export function SwipeCard({
   const idx = interactive ? photo : 0;
   const place = places.find((p) => p.id === exp.placeId) ?? null;
   // Per-photo scrim tint so the bottom gradient blends with the image it covers.
-  const scrim = exp.scrims[idx] ?? "#141719";
+  const scrim = exp.scrims[idx] ?? media.base;
 
   // Occluded peek card — cover image only, no overlays (overdraw saving).
   if (minimal) {
@@ -139,7 +140,7 @@ export function SwipeCard({
 
       {/* Top gradient — dark→transparent, behind the filter bar / progress dots. */}
       <LinearGradient
-        colors={["rgba(14,17,19,0.6)", "rgba(14,17,19,0)"]}
+        colors={media.gradientTop}
         locations={[0, 0.22]}
         style={StyleSheet.absoluteFill}
         pointerEvents="none"
@@ -148,11 +149,7 @@ export function SwipeCard({
           under the tint, so the white info never rides on a bright photo with no
           scrim at all (guarantees contrast independent of the photo). */}
       <LinearGradient
-        colors={[
-          "rgba(10,12,14,0)",
-          "rgba(10,12,14,0.16)",
-          "rgba(10,12,14,0.3)",
-        ]}
+        colors={media.gradientBottom}
         locations={[0.5, 0.78, 1]}
         style={StyleSheet.absoluteFill}
         pointerEvents="none"

@@ -1,12 +1,11 @@
-import { Ionicons } from "@expo/vector-icons";
 import { useState } from "react";
 import { Pressable, ScrollView, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
+import { Icon } from "@/components/ui";
 import { DemoBadge } from "@/components/DemoBadge";
 import { RouteHeader } from "@/components/RouteHeader";
 import { Sheet } from "@/components/Sheet";
-import { colors } from "@/theme";
 import { DemoNote } from "@/components/DemoNote";
 import { demoCopy } from "@/copy";
 
@@ -26,11 +25,11 @@ export default function PaymentsScreen() {
 
         <SettingsSection title="Betalingsmetoder">
           <View className="items-center gap-2 px-4 py-8">
-            <Ionicons name="card-outline" size={32} color={colors.muted} />
+            <Icon name="card-outline" size="xl" tone="muted" />
             <Text className="text-sm font-medium text-ink">
               Ingen betalingsmetoder
             </Text>
-            <Text className="px-4 text-center text-xs text-muted">
+            <Text className="px-4 text-center text-xs text-muted font-normal">
               Her ville betalingsmetodene dine ligget.
             </Text>
           </View>
@@ -39,8 +38,8 @@ export default function PaymentsScreen() {
             onPress={() => setInfoOpen(true)}
             className="flex-row items-center gap-3 border-t border-line px-4 py-3.5 active:bg-surfaceMuted"
           >
-            <Ionicons name="add-circle-outline" size={20} color={colors.ink} />
-            <Text className="flex-1 text-base text-ink">
+            <Icon name="add-circle-outline" size="md" tone="ink" />
+            <Text className="flex-1 text-base text-ink font-normal">
               Legg til betalingsmetode
             </Text>
             <DemoBadge />
@@ -49,17 +48,17 @@ export default function PaymentsScreen() {
 
         <SettingsSection title="Historikk">
           <View className="items-center gap-2 px-4 py-8">
-            <Ionicons name="receipt-outline" size={32} color={colors.muted} />
+            <Icon name="receipt-outline" size="xl" tone="muted" />
             <Text className="text-sm font-medium text-ink">
               Ingen transaksjoner
             </Text>
-            <Text className="px-4 text-center text-xs text-muted">
+            <Text className="px-4 text-center text-xs text-muted font-normal">
               Kvitteringer ville dukket opp her.
             </Text>
           </View>
         </SettingsSection>
 
-        <Text className="px-1 text-[11px] text-muted">
+        <Text className="px-1 text-[11px] text-muted font-normal">
           {/* BLOCKED_CONTRACT_GAP: no payment/billing contract. */}
           Betaling er ikke tilgjengelig i demoen. Denne skjermen viser bare
           oppsettet — ingen kortdata samles inn og ingen betaling skjer.
@@ -73,12 +72,8 @@ export default function PaymentsScreen() {
       >
         <DemoNote>{demoCopy.paymentsDemoScreen}</DemoNote>
         <View className="flex-row items-start gap-3 rounded-lg bg-surfaceMuted p-3">
-          <Ionicons
-            name="shield-checkmark-outline"
-            size={22}
-            color={colors.success}
-          />
-          <Text className="flex-1 text-sm leading-5 text-ink">
+          <Icon name="shield-checkmark-outline" size="lg" tone="success" />
+          <Text className="flex-1 text-sm leading-5 text-ink font-normal">
             Denne demoen samler aldri inn kort-, bank- eller kontoopplysninger,
             og ingen ekte betaling kan skje. Et reelt betalingsskjema vil komme
             når betalingsflyten er fastsatt.

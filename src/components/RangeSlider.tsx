@@ -18,7 +18,7 @@ import Animated, {
   withSpring,
 } from "react-native-reanimated";
 
-import { colors, motion } from "@/theme";
+import { colors, motion, useThemeColors, elevation } from "@/theme";
 
 const THUMB = 28; // thumb diameter (px)
 
@@ -35,11 +35,7 @@ const thumbBase = {
   backgroundColor: colors.surface,
   borderWidth: 1,
   borderColor: colors.line,
-  shadowColor: "#000",
-  shadowOpacity: 0.15,
-  shadowRadius: 3,
-  shadowOffset: { width: 0, height: 1 },
-  elevation: 2,
+  ...elevation.e1,
 };
 
 // Dual-handle range slider for "Pris per gjest". PanResponder-based so it works
@@ -66,6 +62,7 @@ export function RangeSlider({
   onChange: (low: number, high: number) => void;
   minGap?: number;
 }) {
+  const colors = useThemeColors();
   const [trackW, setTrackW] = useState(0);
   const trackWRef = useRef(0);
   const startLow = useRef(low);

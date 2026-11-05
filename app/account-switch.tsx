@@ -2,9 +2,9 @@ import { Ionicons } from "@expo/vector-icons";
 import { router, type Href } from "expo-router";
 import { Pressable, Text, View } from "react-native";
 
+import { Icon } from "@/components/ui";
 import { DemoNote } from "@/components/DemoNote";
 import { businesses, profile } from "@/fixtures";
-import { colors } from "@/theme";
 
 // Account switcher (DEMO), per the design (PDF p27): opened with a long press
 // on the Profil tab. Lists the linked accounts — the personal Utforsker
@@ -56,13 +56,13 @@ export default function AccountSwitch() {
             onPress={r.onPress}
             className="flex-row items-center gap-3 rounded-md p-2.5 active:bg-surfaceMuted"
           >
-            <Ionicons name={r.icon} size={28} color={colors.ink} />
+            <Icon name={r.icon} size="xl" tone="ink" />
             <View className="flex-1">
               <Text className="text-sm font-semibold text-ink">{r.title}</Text>
-              <Text className="text-xs text-muted">{r.hint}</Text>
+              <Text className="text-xs text-muted font-normal">{r.hint}</Text>
             </View>
             {r.active ? (
-              <Text className="text-xs font-semibold text-success">
+              <Text className="text-xs font-semibold text-successText">
                 ✓ Aktiv
               </Text>
             ) : null}

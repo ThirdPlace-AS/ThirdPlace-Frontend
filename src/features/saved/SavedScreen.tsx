@@ -1,10 +1,10 @@
-import { Ionicons } from "@expo/vector-icons";
 import { Image } from "expo-image";
 import { router } from "expo-router";
 import { useMemo, useState } from "react";
 import { FlatList, Pressable, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
+import { Icon } from "@/components/ui";
 import { Chip } from "@/components/Chip";
 import { DemoNote } from "@/components/DemoNote";
 import { RouteHeader } from "@/components/RouteHeader";
@@ -13,7 +13,6 @@ import { EmptyState } from "@/components/states/StateView";
 import { useMapSaved } from "@/components/map/hooks/useMapSaved";
 import { businessById, experienceById, placeById } from "@/fixtures";
 import { coverForPlace, libImage } from "@/fixtures/images";
-import { colors } from "@/theme";
 
 type Kind = "place" | "experience" | "business";
 type Row = {
@@ -147,7 +146,9 @@ export default function SavedScreen() {
                 >
                   {item.title}
                 </Text>
-                <Text className="text-xs text-muted">{item.meta}</Text>
+                <Text className="text-xs text-muted font-normal">
+                  {item.meta}
+                </Text>
               </View>
               <Pressable
                 accessibilityRole="button"
@@ -162,7 +163,7 @@ export default function SavedScreen() {
                   });
                 }}
               >
-                <Ionicons name="bookmark" size={20} color={colors.ink} />
+                <Icon name="bookmark" size="md" tone="ink" />
               </Pressable>
             </View>
           );

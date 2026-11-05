@@ -3,9 +3,9 @@ import { useState } from "react";
 import { Pressable, ScrollView, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
+import { Icon } from "@/components/ui";
 import { DemoNote } from "@/components/DemoNote";
 import { RouteHeader } from "@/components/RouteHeader";
-import { colors } from "@/theme";
 
 // Aldersverifisering (DEMO), per the design (PDF p22): methods BankID /
 // ID-dokument / Vipps and what verification unlocks. The 18+ launch gate
@@ -49,7 +49,7 @@ export default function AgeVerificationScreen() {
     <SafeAreaView className="flex-1 bg-background" edges={["top"]}>
       <RouteHeader title="Aldersverifisering" />
       <ScrollView contentContainerClassName="gap-4 px-gutter py-4 pb-12">
-        <Text className="text-sm text-muted">
+        <Text className="text-sm text-muted font-normal">
           Noen opplevelser krever verifisert alder. Bekreft alderen din for full
           tilgang.
         </Text>
@@ -65,14 +65,14 @@ export default function AgeVerificationScreen() {
               chosen === m.label ? "border-ink" : "border-line"
             }`}
           >
-            <Ionicons name={m.icon} size={20} color={colors.ink} />
+            <Icon name={m.icon} size="md" tone="ink" />
             <View className="flex-1">
               <Text className="text-base font-semibold text-ink">
                 {m.label}
               </Text>
-              <Text className="text-xs text-muted">{m.hint}</Text>
+              <Text className="text-xs text-muted font-normal">{m.hint}</Text>
             </View>
-            <Ionicons name="chevron-forward" size={16} color={colors.muted} />
+            <Icon name="chevron-forward" size="sm" tone="muted" />
           </Pressable>
         ))}
         {chosen ? (
@@ -83,8 +83,8 @@ export default function AgeVerificationScreen() {
         </Text>
         {BENEFITS.map((b) => (
           <View key={b} className="flex-row items-center gap-2">
-            <Ionicons name="checkmark" size={16} color={colors.success} />
-            <Text className="text-sm text-ink">{b}</Text>
+            <Icon name="checkmark" size="sm" tone="success" />
+            <Text className="text-sm text-ink font-normal">{b}</Text>
           </View>
         ))}
       </ScrollView>

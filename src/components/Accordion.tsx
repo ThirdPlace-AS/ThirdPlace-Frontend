@@ -1,9 +1,8 @@
 import type { ReactNode } from "react";
 import { useState } from "react";
-import { Ionicons } from "@expo/vector-icons";
 import { Pressable, Text, View } from "react-native";
 
-import { colors } from "@/theme";
+import { Icon } from "@/components/ui";
 
 // Titled disclosure section (chevron). Collapsed by default. Content mounts only
 // while expanded, so the collapse is instant and reduced-motion-safe by nature
@@ -30,14 +29,16 @@ export function Accordion({
         className="flex-row items-center justify-between py-2"
       >
         <Text className="text-base font-semibold text-ink">{title}</Text>
-        <Ionicons
+        <Icon
           name={open ? "chevron-up" : "chevron-down"}
-          size={20}
-          color={colors.ink}
+          size="md"
+          tone="ink"
         />
       </Pressable>
       {subtitle ? (
-        <Text className="-mt-1 mb-1 text-xs text-muted">{subtitle}</Text>
+        <Text className="-mt-1 mb-1 text-xs text-muted font-normal">
+          {subtitle}
+        </Text>
       ) : null}
       {open ? <View>{children}</View> : null}
     </View>

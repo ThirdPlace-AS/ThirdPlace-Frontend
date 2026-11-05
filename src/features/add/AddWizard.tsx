@@ -6,7 +6,7 @@ import { Pressable, ScrollView, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { Switch } from "@/components/ui/Switch";
-import { StepContent, StepHeader } from "@/components/ui";
+import { Icon, StepContent, StepHeader } from "@/components/ui";
 import { Button } from "@/components/Button";
 import { Chip } from "@/components/Chip";
 import { DemoBadge } from "@/components/DemoBadge";
@@ -14,7 +14,7 @@ import { DemoNote } from "@/components/DemoNote";
 import { Input } from "@/components/Input";
 import { PlacePicker } from "@/components/pickers/Pickers";
 import { experiences, OSLO_AREAS, places } from "@/fixtures";
-import { colors } from "@/theme";
+import { useThemeColors } from "@/theme";
 
 import {
   type AddDraft,
@@ -209,8 +209,8 @@ function KindMenu({ onPick }: { onPick: (k: AddKind) => void }) {
           onPress={() => router.push("/import")}
           className="flex-row items-center gap-2 self-start py-1"
         >
-          <Ionicons name="link-outline" size={16} color={colors.ember} />
-          <Text className="text-sm font-semibold text-ember">
+          <Icon name="link-outline" size="sm" tone="ember" />
+          <Text className="text-sm font-semibold text-emberText">
             Importer fra lenke →
           </Text>
         </Pressable>
@@ -222,15 +222,15 @@ function KindMenu({ onPick }: { onPick: (k: AddKind) => void }) {
             className="flex-row items-center gap-3 rounded-lg border border-line bg-surface p-4 active:opacity-80"
           >
             <View className="h-11 w-11 items-center justify-center rounded-md bg-surfaceMuted">
-              <Ionicons name={r.icon} size={20} color={colors.ink} />
+              <Icon name={r.icon} size="md" tone="ink" />
             </View>
             <View className="flex-1">
               <Text className="text-base font-semibold text-ink">
                 {r.label}
               </Text>
-              <Text className="text-xs text-muted">{r.hint}</Text>
+              <Text className="text-xs text-muted font-normal">{r.hint}</Text>
             </View>
-            <Ionicons name="chevron-forward" size={18} color={colors.muted} />
+            <Icon name="chevron-forward" size="md" tone="muted" />
           </Pressable>
         ))}
       </View>
@@ -302,7 +302,7 @@ function StepBody({
           />
           {draft.area ? (
             <View className="flex-row items-center gap-2">
-              <Ionicons name="location" size={16} color={colors.ink} />
+              <Icon name="location" size="sm" tone="ink" />
               <Text className="text-sm font-medium text-ink">
                 {draft.area}, Oslo
               </Text>
@@ -330,8 +330,8 @@ function StepBody({
             onPress={() => setPicker(true)}
             className="flex-row items-center gap-2 rounded-md border border-line bg-surface p-3.5 active:opacity-80"
           >
-            <Ionicons name="search" size={16} color={colors.muted} />
-            <Text className="flex-1 text-sm text-muted">
+            <Icon name="search" size="sm" tone="muted" />
+            <Text className="flex-1 text-sm text-muted font-normal">
               {draft.area &&
               !HOST_PLACES.some((p) => p.name === draft.area) &&
               !OSLO_AREAS.some((a) => a.name === draft.area)
@@ -409,7 +409,7 @@ function StepBody({
               );
             })}
           </View>
-          <Text className="text-xs text-muted">
+          <Text className="text-xs text-muted font-normal">
             Minst 1 bilde påkrevd · JPG, PNG · maks 10 MB
           </Text>
           <DemoNote>
@@ -430,7 +430,7 @@ function StepBody({
                 key={f}
                 className="flex-row items-center justify-between py-2"
               >
-                <Text className="text-base text-ink">{f}</Text>
+                <Text className="text-base text-ink font-normal">{f}</Text>
                 <Switch
                   value={draft.features.includes(f)}
                   onValueChange={() =>
@@ -508,7 +508,7 @@ function StepBody({
             selected={[draft.access]}
             onPress={(a) => patch({ access: a })}
           />
-          <Text className="text-xs text-muted">
+          <Text className="text-xs text-muted font-normal">
             Alle = hvem som helst kan bli med · Godkjenning = du bestemmer ·
             Invitasjon = kun inviterte
           </Text>
@@ -577,19 +577,21 @@ function ReviewStep({ draft }: { draft: AddDraft }) {
       ) : null}
       <View className="gap-1">
         <Text className="text-lg font-semibold text-ink">{draft.title}</Text>
-        <Text className="text-sm text-muted">
+        <Text className="text-sm text-muted font-normal">
           {isPlace
             ? `${draft.category} · ${draft.area}, Oslo`
             : `${draft.date ? formatDate(draft.date) : ""} · ${draft.startTime} · ${draft.area}`}
         </Text>
         {draft.summary ? (
-          <Text className="pt-1 text-sm text-ink">{draft.summary}</Text>
+          <Text className="pt-1 text-sm text-ink font-normal">
+            {draft.summary}
+          </Text>
         ) : null}
       </View>
       {isPlace ? (
         <View className="flex-row items-start gap-2 rounded-md bg-surfaceMuted p-3">
-          <Ionicons name="hourglass-outline" size={16} color={colors.ink} />
-          <Text className="flex-1 text-sm text-ink">
+          <Icon name="hourglass-outline" size="sm" tone="ink" />
+          <Text className="flex-1 text-sm text-ink font-normal">
             Steder gjennomgås manuelt av ThirdPlace før de blir synlige.
           </Text>
         </View>
@@ -626,7 +628,7 @@ function Fact({
 }) {
   return (
     <View className="flex-1 gap-1 rounded-md border border-line bg-surface p-3">
-      <Ionicons name={icon} size={16} color={colors.ink} />
+      <Icon name={icon} size="sm" tone="ink" />
       <Text className="text-xs font-medium text-ink" numberOfLines={1}>
         {value}
       </Text>
@@ -646,10 +648,10 @@ function SubmittedState({
     <SafeAreaView className="flex-1 bg-background" edges={["top"]}>
       <View className="flex-1 items-center justify-center gap-5 p-gutter">
         <View className="h-16 w-16 items-center justify-center rounded-full bg-surfaceMuted">
-          <Ionicons
+          <Icon
             name={isPlace ? "hourglass-outline" : "eye-off-outline"}
-            size={28}
-            color={colors.ink}
+            size="xl"
+            tone="ink"
           />
         </View>
         <View className="items-center gap-2">
@@ -659,7 +661,7 @@ function SubmittedState({
           <View className="flex-row">
             <DemoBadge label={isPlace ? "IKKE SENDT" : "IKKE PUBLISERT"} />
           </View>
-          <Text className="px-6 text-center text-base text-muted">
+          <Text className="px-6 text-center text-base text-muted font-normal">
             {isPlace
               ? "Demo — stedet ble ikke sendt til vurdering. Innsending krever innlogging og en server, som ikke er aktiv ennå."
               : "Demo — opplevelsen ble ikke publisert, og ingen chat ble opprettet. Publisering krever innlogging og en server, som ikke er aktiv ennå."}
@@ -732,10 +734,10 @@ function SelectRow({
         selected ? "border-ink" : "border-line"
       }`}
     >
-      <Ionicons name={icon} size={18} color={colors.ink} />
+      <Icon name={icon} size="md" tone="ink" />
       <View className="flex-1">
         <Text className="text-base font-semibold text-ink">{title}</Text>
-        <Text className="text-xs text-muted">{hint}</Text>
+        <Text className="text-xs text-muted font-normal">{hint}</Text>
       </View>
       <View
         className={`h-5 w-5 rounded-full border-2 ${
@@ -755,6 +757,7 @@ function MonthPicker({
   value: string | null;
   onChange: (iso: string) => void;
 }) {
+  const colors = useThemeColors();
   const now = new Date();
   const todayIso = isoOf(now.getFullYear(), now.getMonth(), now.getDate());
   const [cursor, setCursor] = useState({
@@ -803,12 +806,15 @@ function MonthPicker({
           hitSlop={8}
           className="h-8 w-8 items-center justify-center"
         >
-          <Ionicons name="chevron-forward" size={18} color={colors.ink} />
+          <Icon name="chevron-forward" size="md" tone="ink" />
         </Pressable>
       </View>
       <View className="flex-row">
         {["Ma", "Ti", "On", "To", "Fr", "Lø", "Sø"].map((d) => (
-          <Text key={d} className="flex-1 text-center text-xs text-muted">
+          <Text
+            key={d}
+            className="flex-1 text-center text-xs text-muted font-normal"
+          >
             {d}
           </Text>
         ))}
@@ -835,7 +841,7 @@ function MonthPicker({
                 }`}
               >
                 <Text
-                  className={`text-sm ${
+                  className={`font-normal text-sm ${
                     selected
                       ? "font-semibold text-onInk"
                       : past

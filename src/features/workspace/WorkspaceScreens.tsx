@@ -4,12 +4,13 @@ import { useState } from "react";
 import { Pressable, ScrollView, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
+import { Icon } from "@/components/ui";
 import { Chip } from "@/components/Chip";
 import { DemoBadge } from "@/components/DemoBadge";
 import { DemoNote } from "@/components/DemoNote";
 import { RouteHeader } from "@/components/RouteHeader";
 import { businesses, experiences, profile } from "@/fixtures";
-import { colors } from "@/theme";
+import { useThemeColors } from "@/theme";
 
 // Business workspace (DEMO), per the design (PDF p13–p15): the business
 // profile hub (Dashbord, Marketplace, linked personal account, "Kom i gang"),
@@ -19,6 +20,7 @@ import { colors } from "@/theme";
 const BIZ = businesses[0];
 
 export function WorkspaceHub() {
+  const colors = useThemeColors();
   return (
     <SafeAreaView className="flex-1 bg-background" edges={["top"]}>
       <RouteHeader title={BIZ?.name ?? "Bedrift"} />
@@ -64,12 +66,14 @@ export function WorkspaceHub() {
           onPress={() => router.push("/marketplace")}
         />
         <View className="flex-row items-center gap-3 rounded-lg bg-surfaceMuted p-4">
-          <Ionicons name="person-circle-outline" size={28} color={colors.ink} />
+          <Icon name="person-circle-outline" size="xl" tone="ink" />
           <View className="flex-1">
             <Text className="text-sm font-semibold text-ink">
               {profile.name}
             </Text>
-            <Text className="text-xs text-muted">Personlig konto</Text>
+            <Text className="text-xs text-muted font-normal">
+              Personlig konto
+            </Text>
           </View>
           <Pressable
             accessibilityRole="button"
@@ -83,7 +87,7 @@ export function WorkspaceHub() {
           <Text className="text-sm font-semibold text-ink">
             Kom i gang: 1 av 2 steg gjenstår
           </Text>
-          <Text className="text-xs text-muted">
+          <Text className="text-xs text-muted font-normal">
             ✓ Verifiser bedriften · Start abonnement
           </Text>
         </View>
@@ -113,13 +117,13 @@ function HubCard({
       className="flex-row items-center gap-3 rounded-lg border border-line bg-surface p-4 active:opacity-80"
     >
       <View className="h-11 w-11 items-center justify-center rounded-md bg-surfaceMuted">
-        <Ionicons name={icon} size={20} color={colors.ink} />
+        <Icon name={icon} size="md" tone="ink" />
       </View>
       <View className="flex-1">
         <Text className="text-base font-semibold text-ink">{title}</Text>
-        <Text className="text-xs text-muted">{hint}</Text>
+        <Text className="text-xs text-muted font-normal">{hint}</Text>
       </View>
-      <Ionicons name="chevron-forward" size={18} color={colors.muted} />
+      <Icon name="chevron-forward" size="md" tone="muted" />
     </Pressable>
   );
 }
@@ -173,7 +177,7 @@ export function WorkspaceAnalytics() {
               className="w-[48%] gap-0.5 rounded-lg bg-surfaceMuted p-4"
             >
               <Text className="text-2xl font-bold text-ink">{v}</Text>
-              <Text className="text-xs text-muted">{l}</Text>
+              <Text className="text-xs text-muted font-normal">{l}</Text>
             </View>
           ))}
         </View>
@@ -217,17 +221,21 @@ export function WorkspaceCalendar() {
             className="flex-row items-center gap-3 rounded-md border-l-4 border-l-ember bg-surface p-3"
           >
             <View className="flex-1">
-              <Text className="text-xs text-muted">{e.when}</Text>
+              <Text className="text-xs text-muted font-normal">{e.when}</Text>
               <Text className="text-base font-semibold text-ink">
                 {e.title}
               </Text>
-              <Text className="text-xs text-muted">{e.capacity} plasser</Text>
+              <Text className="text-xs text-muted font-normal">
+                {e.capacity} plasser
+              </Text>
             </View>
             <Pressable
               accessibilityRole="button"
               onPress={() => router.navigate("/add")}
             >
-              <Text className="text-sm font-semibold text-ember">Rediger</Text>
+              <Text className="text-sm font-semibold text-emberText">
+                Rediger
+              </Text>
             </Pressable>
           </View>
         ))}
@@ -244,7 +252,7 @@ export function WorkspaceLocations() {
     <SafeAreaView className="flex-1 bg-background" edges={["top"]}>
       <RouteHeader title="Lokasjoner" />
       <ScrollView contentContainerClassName="gap-3 px-gutter py-4 pb-12">
-        <Text className="text-sm text-muted">
+        <Text className="text-sm text-muted font-normal">
           {businesses.length} lokasjoner
         </Text>
         {businesses.map((b) => (
@@ -261,14 +269,14 @@ export function WorkspaceLocations() {
               >
                 <Text
                   className={`text-xs font-semibold ${
-                    b.verified ? "text-success" : "text-ink"
+                    b.verified ? "text-successText" : "text-ink"
                   }`}
                 >
                   {b.verified ? "✓ Verifisert" : "Venter på verifisering"}
                 </Text>
               </View>
             </View>
-            <Text className="text-xs text-muted">{b.address}</Text>
+            <Text className="text-xs text-muted font-normal">{b.address}</Text>
           </View>
         ))}
         <View className="items-center rounded-lg border border-dashed border-line py-4">

@@ -9,12 +9,13 @@ import { DMSans_700Bold } from "@expo-google-fonts/dm-sans/700Bold";
 
 export type FontWeight = "regular" | "medium" | "semibold" | "bold";
 
-export const FONT_FAMILY: Record<FontWeight, string> = {
-  regular: "DMSans_400Regular",
-  medium: "DMSans_500Medium",
-  semibold: "DMSans_600SemiBold",
-  bold: "DMSans_700Bold",
-};
+// Family names live in tokens.js (Tailwind font-* utilities use them too).
+// eslint-disable-next-line @typescript-eslint/no-require-imports
+export const FONT_FAMILY = (
+  require("./tokens.js") as {
+    fontFamily: Record<FontWeight, string>;
+  }
+).fontFamily;
 
 /** Font assets for `useFonts` at the root (family name → file). */
 export const fontAssets = {

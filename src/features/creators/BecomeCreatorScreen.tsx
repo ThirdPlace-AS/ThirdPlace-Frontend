@@ -8,7 +8,7 @@ import { Button } from "@/components/Button";
 import { DemoNote } from "@/components/DemoNote";
 import { RouteHeader } from "@/components/RouteHeader";
 import { profile } from "@/fixtures";
-import { colors } from "@/theme";
+import { useThemeColors } from "@/theme";
 
 // Bli Skaper (DEMO), per the design (PDF p14): the requirements to unlock the
 // Skaper role (and with it Dashboard and Marketplace), each with its progress,
@@ -16,6 +16,7 @@ import { colors } from "@/theme";
 // defined, so the three requirements are the design's illustrative copy —
 // nothing is evaluated, and applying sends nothing (BLOCKED_CONTRACT_GAP).
 export default function BecomeCreatorScreen() {
+  const colors = useThemeColors();
   const { hosted, required, rating } = profile.creatorPath;
   const [applied, setApplied] = useState(false);
   const reqs = [
@@ -37,7 +38,7 @@ export default function BecomeCreatorScreen() {
     <SafeAreaView className="flex-1 bg-background" edges={["top"]}>
       <RouteHeader title="Bli Skaper" />
       <ScrollView contentContainerClassName="gap-4 px-gutter py-4 pb-12">
-        <Text className="text-sm text-muted">
+        <Text className="text-sm text-muted font-normal">
           Oppfyll kravene under for å låse opp Skaper-rollen og få tilgang til
           Dashboard og Marketplace.
         </Text>
@@ -66,7 +67,7 @@ export default function BecomeCreatorScreen() {
                     {r.label}
                   </Text>
                   <Text
-                    className={`text-xs ${done ? "text-success" : "text-muted"}`}
+                    className={`font-normal text-xs ${done ? "text-successText" : "text-muted"}`}
                   >
                     {r.meta}
                   </Text>
@@ -96,7 +97,7 @@ export default function BecomeCreatorScreen() {
         {applied ? (
           <View className="items-center gap-2 rounded-lg bg-surfaceMuted p-5">
             <Text className="text-xl font-bold text-ink">Du er nå Skaper!</Text>
-            <Text className="text-center text-sm text-muted">
+            <Text className="text-center text-sm text-muted font-normal">
               Slik ser det ut når søknaden er godkjent: Dashboard og Marketplace
               låses opp.
             </Text>

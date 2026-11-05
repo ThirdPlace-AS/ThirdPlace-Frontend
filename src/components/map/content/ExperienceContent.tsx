@@ -2,13 +2,13 @@ import { Ionicons } from "@expo/vector-icons";
 import { useState } from "react";
 import { Pressable, Text, View } from "react-native";
 
+import { Icon } from "@/components/ui";
 import { Button } from "@/components/Button";
 import { Chip } from "@/components/Chip";
 import { DemoNote } from "@/components/DemoNote";
 import { SignInPrompt } from "@/components/SignInPrompt";
 import { demoCopy } from "@/copy";
 import { experienceById, groupById, type ExperienceStatus } from "@/fixtures";
-import { colors } from "@/theme";
 
 import { useGuestMode } from "../hooks/useGuestMode";
 import type { PushFn } from "../sheetTypes";
@@ -49,9 +49,9 @@ function LinkRow({
       onPress={onPress}
       className="flex-row items-center gap-2 rounded-md border border-line bg-surface px-3 py-3"
     >
-      <Ionicons name={icon} size={18} color={colors.ink} />
-      <Text className="flex-1 text-sm text-ink">{label}</Text>
-      <Ionicons name="chevron-forward" size={18} color={colors.muted} />
+      <Icon name={icon} size="md" tone="ink" />
+      <Text className="flex-1 text-sm text-ink font-normal">{label}</Text>
+      <Icon name="chevron-forward" size="md" tone="muted" />
     </Pressable>
   );
 }
@@ -73,7 +73,11 @@ export function ExperienceContent({ id, push }: { id: string; push: PushFn }) {
     isGuest ? setPromptOpen(true) : run();
 
   if (!experience) {
-    return <Text className="text-sm text-muted">Fant ikke arrangementet.</Text>;
+    return (
+      <Text className="text-sm text-muted font-normal">
+        Fant ikke arrangementet.
+      </Text>
+    );
   }
 
   const meta = statusMeta[experience.status];
@@ -106,14 +110,18 @@ export function ExperienceContent({ id, push }: { id: string; push: PushFn }) {
         <View className={`rounded-full px-3 py-1 ${meta.className}`}>
           <Text className="text-xs font-semibold text-onInk">{meta.label}</Text>
         </View>
-        <Text className="text-sm text-muted">· {experience.when}</Text>
-        <Text className="text-sm text-muted">
+        <Text className="text-sm text-muted font-normal">
+          · {experience.when}
+        </Text>
+        <Text className="text-sm text-muted font-normal">
           · {joinedCount}/{experience.capacity} påmeldt
         </Text>
       </View>
 
-      <Text className="text-sm text-muted">Vert: {experience.host}</Text>
-      <Text className="text-sm text-muted">{experience.about}</Text>
+      <Text className="text-sm text-muted font-normal">
+        Vert: {experience.host}
+      </Text>
+      <Text className="text-sm text-muted font-normal">{experience.about}</Text>
 
       <View className="flex-row flex-wrap gap-2">
         {experience.tags.map((t) => (

@@ -1,4 +1,3 @@
-import { Ionicons } from "@expo/vector-icons";
 import { useCallback, useMemo, useState } from "react";
 import {
   ActivityIndicator,
@@ -10,7 +9,7 @@ import {
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-import { IconButton } from "@/components/ui";
+import { Icon, IconButton } from "@/components/ui";
 import { MapCanvas } from "@/components/map/MapCanvas";
 import { DiscoveryModeTabs } from "@/components/map/DiscoveryModeTabs";
 import { MapDetailSheet } from "@/components/map/MapDetailSheet";
@@ -40,12 +39,13 @@ import {
 } from "@/fixtures";
 import { useMockResource } from "@/hooks/useMockResource";
 import { haptics } from "@/lib/haptics";
-import { colors } from "@/theme";
+import { useThemeColors } from "@/theme";
 
 // Map discovery surface. Thin composition over feature hooks:
 // filters/search, discovery mode, selection (detail sheet), camera, location.
 // Map-only — no list view. All data is MOCK fixtures (no backend).
 export default function MapScreen() {
+  const colors = useThemeColors();
   const insets = useSafeAreaInsets();
   const { height: windowHeight } = useWindowDimensions();
   // Keep the bottom-right map tools clear of the persistent ~12% browse peek.
@@ -227,10 +227,10 @@ export default function MapScreen() {
               onPress={() => setSearchOpen(true)}
               className="flex-row items-center flex-1 h-full gap-2 pl-3"
             >
-              <Ionicons name="search" size={18} color={colors.muted} />
+              <Icon name="search" size="md" tone="muted" />
               <Text
                 numberOfLines={1}
-                className={`flex-1 text-base ${filters.query ? "text-ink" : "text-muted"}`}
+                className={`font-normal flex-1 text-base ${filters.query ? "text-ink" : "text-muted"}`}
               >
                 {filters.query || "Søk steder, opplevelser …"}
               </Text>
@@ -242,7 +242,7 @@ export default function MapScreen() {
               onPress={() => setFilterOpen(true)}
               className="items-center justify-center w-12 h-full"
             >
-              <Ionicons name="options-outline" size={20} color={colors.ink} />
+              <Icon name="options-outline" size="md" tone="ink" />
               {filters.extraCount > 0 ? (
                 <View className="absolute items-center justify-center w-4 h-4 rounded-full right-1 top-1 bg-ember">
                   <Text className="text-[9px] font-bold text-onEmber">
@@ -279,31 +279,25 @@ export default function MapScreen() {
       >
         {location.areaLabel ? (
           <View className="px-2 py-1 border rounded-full border-line bg-surface">
-            <Text className="text-[10px] text-muted">{location.areaLabel}</Text>
+            <Text className="text-[10px] text-muted font-normal">
+              {location.areaLabel}
+            </Text>
           </View>
         ) : null}
-        <Pressable
-          accessibilityRole="button"
-          accessibilityLabel="Kartlag"
+        <IconButton
+          icon="layers-outline"
+          label="Kartlag"
+          variant="floating"
+          size="lg"
           onPress={() => setLayerOpen(true)}
-          style={{ elevation: 4 }}
-          className="items-center justify-center w-12 h-12 border rounded-full shadow-sm border-line bg-surface"
-        >
-          <Ionicons name="layers-outline" size={22} color={colors.ink} />
-        </Pressable>
-        <Pressable
-          accessibilityRole="button"
-          accessibilityLabel="Posisjon"
+        />
+        <IconButton
+          icon={location.status === "granted" ? "locate" : "locate-outline"}
+          label="Posisjon"
+          variant="floating"
+          size="lg"
           onPress={handleLocationPress}
-          style={{ elevation: 4 }}
-          className="items-center justify-center w-12 h-12 border rounded-full shadow-sm border-line bg-surface"
-        >
-          <Ionicons
-            name={location.status === "granted" ? "locate" : "locate-outline"}
-            size={22}
-            color={colors.ink}
-          />
-        </Pressable>
+        />
       </View>
 
       {/* Loading overlay (mock async load) */}
@@ -314,7 +308,9 @@ export default function MapScreen() {
         >
           <View className="flex-row items-center gap-2 px-4 py-2 border rounded-full border-line bg-surface">
             <ActivityIndicator color={colors.ink} />
-            <Text className="text-sm text-muted">Laster steder…</Text>
+            <Text className="text-sm text-muted font-normal">
+              Laster steder…
+            </Text>
           </View>
         </View>
       ) : null}
@@ -326,13 +322,9 @@ export default function MapScreen() {
           className="absolute inset-x-0 top-0 bottom-0 items-center justify-center p-gutter"
         >
           <View className="items-center w-full max-w-sm gap-2 p-5 border rounded-xl border-line bg-surface">
-            <Ionicons
-              name="cloud-offline-outline"
-              size={32}
-              color={colors.muted}
-            />
+            <Icon name="cloud-offline-outline" size="xl" tone="muted" />
             <Text className="text-base font-semibold text-ink">Frakoblet</Text>
-            <Text className="text-sm text-center text-muted">
+            <Text className="text-sm text-center text-muted font-normal">
               Fant ikke steder. Sjekk tilkoblingen og prøv igjen.
             </Text>
             <Pressable
@@ -355,11 +347,11 @@ export default function MapScreen() {
           className="absolute inset-x-0 top-0 bottom-0 items-center justify-center p-gutter"
         >
           <View className="items-center w-full max-w-sm gap-2 p-5 border rounded-xl border-line bg-surface">
-            <Ionicons name="search" size={32} color={colors.muted} />
+            <Icon name="search" size="xl" tone="muted" />
             <Text className="text-base font-semibold text-ink">
               Ingen treff
             </Text>
-            <Text className="text-sm text-center text-muted">
+            <Text className="text-sm text-center text-muted font-normal">
               {discovery.emptyMessage}
             </Text>
             <Pressable

@@ -1,5 +1,4 @@
 import { useEffect, useMemo, useState } from "react";
-import { Ionicons } from "@expo/vector-icons";
 import {
   InteractionManager,
   Pressable,
@@ -8,6 +7,8 @@ import {
   View,
 } from "react-native";
 
+import { Icon } from "@/components/ui";
+import { elevation } from "@/theme";
 import { Button } from "@/components/Button";
 import { Calendar } from "@/components/Calendar";
 import { CheckboxRow } from "@/components/CheckboxRow";
@@ -37,7 +38,6 @@ import {
   VIBE_ICONS,
   VIBES,
 } from "@/fixtures";
-import { colors } from "@/theme";
 
 import {
   applyFilters,
@@ -169,7 +169,7 @@ function Section({
       <View className="gap-0.5">
         <Text className="text-base font-semibold text-ink">{title}</Text>
         {subtitle ? (
-          <Text className="text-xs text-muted">{subtitle}</Text>
+          <Text className="text-xs text-muted font-normal">{subtitle}</Text>
         ) : null}
       </View>
       {children}
@@ -218,10 +218,10 @@ function ChipGroup({
           <Text className="text-base font-semibold text-ink underline">
             {expanded ? "Vis færre" : "Vis flere"}
           </Text>
-          <Ionicons
+          <Icon
             name={expanded ? "chevron-up" : "chevron-down"}
-            size={16}
-            color={colors.ink}
+            size="sm"
+            tone="ink"
           />
         </Pressable>
       ) : null}
@@ -232,11 +232,7 @@ function ChipGroup({
 // Soft card shadow for the Where/When/Who cards (className can't express an
 // arbitrary cross-platform shadow, so it lives in a style object).
 const cardShadow = {
-  shadowColor: "#000",
-  shadowOpacity: 0.06,
-  shadowRadius: 12,
-  shadowOffset: { width: 0, height: 4 },
-  elevation: 2,
+  ...elevation.e1,
 } as const;
 
 // One card of the top Where/When/Who accordion (single-open). Collapsed shows a
@@ -270,7 +266,7 @@ function SearchRow({
           className="flex-row items-center justify-between"
         >
           <Text className="text-xl font-bold text-ink">{title}</Text>
-          <Ionicons name="chevron-up" size={20} color={colors.ink} />
+          <Icon name="chevron-up" size="md" tone="ink" />
         </Pressable>
         {children}
       </View>
@@ -285,7 +281,7 @@ function SearchRow({
       style={cardShadow}
       className="flex-row items-center justify-between gap-2 rounded-lg border border-line bg-surface px-6 py-5"
     >
-      <Text className="shrink-0 text-base text-muted">{label}</Text>
+      <Text className="shrink-0 text-base text-muted font-normal">{label}</Text>
       <View className="flex-1 flex-row items-center justify-end gap-1.5">
         <Text
           numberOfLines={1}
@@ -293,7 +289,7 @@ function SearchRow({
         >
           {value}
         </Text>
-        <Ionicons name="chevron-down" size={18} color={colors.muted} />
+        <Icon name="chevron-down" size="md" tone="muted" />
       </View>
     </Pressable>
   );
@@ -481,7 +477,7 @@ function FilterBody({
                       <Text className="text-sm font-semibold text-ink">
                         {c.label}
                       </Text>
-                      <Text className="text-xs text-muted">
+                      <Text className="text-xs text-muted font-normal">
                         {whenChipSubtitle(c.label)}
                       </Text>
                     </Pressable>
@@ -495,7 +491,7 @@ function FilterBody({
                   setDraft((d) => ({ ...d, dateStart: s, dateEnd: e }))
                 }
               />
-              <Text className="text-xs text-muted">
+              <Text className="text-xs text-muted font-normal">
                 Datoer er kun demo — påvirker ikke resultatene.
               </Text>
             </View>
@@ -641,12 +637,18 @@ function FilterBody({
               />
               <View className="flex-row items-center justify-between">
                 <View className="rounded-md border border-line px-4 py-3">
-                  <Text className="text-[10px] text-muted">Minst</Text>
-                  <Text className="text-sm text-ink">kr {draft.priceMin}</Text>
+                  <Text className="text-[10px] text-muted font-normal">
+                    Minst
+                  </Text>
+                  <Text className="text-sm text-ink font-normal">
+                    kr {draft.priceMin}
+                  </Text>
                 </View>
                 <View className="rounded-md border border-line px-4 py-3">
-                  <Text className="text-[10px] text-muted">Maksimalt</Text>
-                  <Text className="text-sm text-ink">
+                  <Text className="text-[10px] text-muted font-normal">
+                    Maksimalt
+                  </Text>
+                  <Text className="text-sm text-ink font-normal">
                     kr {draft.priceMax}
                     {atCeil ? " +" : ""}
                   </Text>
@@ -732,7 +734,7 @@ function FilterBody({
                       }`}
                     >
                       <RatingStars value={r} size={13} />
-                      <Text className="text-sm text-ink">
+                      <Text className="text-sm text-ink font-normal">
                         {r === 5 ? "5" : `${r.toString().replace(".", ",")}+`}
                       </Text>
                     </Pressable>
@@ -781,10 +783,10 @@ function FilterBody({
                   <Text className="text-base font-semibold text-ink underline">
                     {langExpanded ? "Vis mindre" : "Vis mer"}
                   </Text>
-                  <Ionicons
+                  <Icon
                     name={langExpanded ? "chevron-up" : "chevron-down"}
-                    size={16}
-                    color={colors.ink}
+                    size="sm"
+                    tone="ink"
                   />
                 </Pressable>
               </View>

@@ -1,4 +1,3 @@
-import { Ionicons } from "@expo/vector-icons";
 import { StatusBar } from "expo-status-bar";
 import { useEffect, useState } from "react";
 import {
@@ -17,11 +16,12 @@ import Animated, {
 } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
+import { Icon } from "@/components/ui";
 import { Button } from "@/components/Button";
 import { CheckboxRow } from "@/components/CheckboxRow";
 import { TypeChip } from "@/components/map/TypeChip";
 import { experiences, TIME_WINDOWS } from "@/fixtures";
-import { colors, motion } from "@/theme";
+import { motion } from "@/theme";
 import { DemoNote } from "@/components/DemoNote";
 import { demoCopy } from "@/copy";
 
@@ -67,7 +67,7 @@ function Section({
       <View className="gap-0.5">
         <Text className="text-base font-semibold text-ink">{title}</Text>
         {subtitle ? (
-          <Text className="text-xs text-muted">{subtitle}</Text>
+          <Text className="text-xs text-muted font-normal">{subtitle}</Text>
         ) : null}
       </View>
       {children}
@@ -165,7 +165,7 @@ function FilterBody({
           hitSlop={8}
           className="-ml-1 h-10 w-10 items-center justify-center rounded-full"
         >
-          <Ionicons name="arrow-back" size={24} color={colors.ink} />
+          <Icon name="arrow-back" size="lg" tone="ink" />
         </Pressable>
         <Text className="flex-1 text-lg font-bold text-ink">Filtre</Text>
         <Pressable
@@ -174,7 +174,7 @@ function FilterBody({
           onPress={onClose}
           hitSlop={8}
         >
-          <Ionicons name="close" size={24} color={colors.ink} />
+          <Icon name="close" size="lg" tone="ink" />
         </Pressable>
       </View>
 

@@ -14,7 +14,7 @@ import { showToast } from "@/components/Toast";
 import { EmptyState } from "@/components/states/StateView";
 import { places } from "@/fixtures";
 import { coverForPlace, libImage } from "@/fixtures/images";
-import { colors } from "@/theme";
+import { useThemeColors, media } from "@/theme";
 
 // "Steder" deck in Sveip (PDF p7 tab). Place cards with Hopp over / Lagre /
 // Vis på kartet. Button-driven (no drag) — the experience deck keeps the full
@@ -73,12 +73,12 @@ export function PlaceDeck({
       />
       <View
         className="absolute inset-x-0 bottom-0 gap-3 px-gutter pb-6 pt-24"
-        style={{ backgroundColor: "rgba(0,0,0,0.55)" }}
+        style={{ backgroundColor: media.scrim }}
       >
         <Text className="text-3xl font-bold text-white" numberOfLines={2}>
           {place.name}
         </Text>
-        <Text className="text-base text-white/85">
+        <Text className="text-base text-white/85 font-normal">
           {place.category} · {place.distance} · ★ {place.rating.toFixed(1)}
         </Text>
         <View className="flex-row flex-wrap gap-2">
@@ -132,6 +132,7 @@ function Round({
   big?: boolean;
   onPress: () => void;
 }) {
+  const colors = useThemeColors();
   const size = big ? 64 : 52;
   return (
     <Pressable
@@ -144,7 +145,7 @@ function Round({
       <Ionicons
         name={icon}
         size={big ? 28 : 22}
-        color={big ? colors.ember : "#FFFFFF"}
+        color={big ? colors.ember : media.onMedia}
       />
     </Pressable>
   );

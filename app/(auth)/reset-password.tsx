@@ -39,7 +39,7 @@ export default function ResetPassword() {
               onChangeText={setPw}
             />
             {short ? (
-              <Text className="text-xs text-danger">
+              <Text className="text-xs text-dangerText font-normal">
                 Passordet må ha minst 8 tegn.
               </Text>
             ) : null}
@@ -53,7 +53,7 @@ export default function ResetPassword() {
               onChangeText={setAgain}
             />
             {mismatch ? (
-              <Text className="text-xs text-danger">
+              <Text className="text-xs text-dangerText font-normal">
                 Passordene er ikke like.
               </Text>
             ) : null}

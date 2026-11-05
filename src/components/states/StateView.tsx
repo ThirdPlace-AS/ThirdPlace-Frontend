@@ -2,7 +2,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { Text, View } from "react-native";
 
 import { Button } from "@/components/Button";
-import { colors } from "@/theme";
+import { useThemeColors } from "@/theme";
 
 type IconName = keyof typeof Ionicons.glyphMap;
 
@@ -28,6 +28,7 @@ export function StateView({
   onSecondary?: () => void;
   tone?: "muted" | "danger";
 }) {
+  const colors = useThemeColors();
   const iconColor = tone === "danger" ? colors.danger : colors.muted;
   return (
     <View className="flex-1 items-center justify-center gap-3 p-gutter">
@@ -36,7 +37,7 @@ export function StateView({
         {title}
       </Text>
       {message ? (
-        <Text className="max-w-xs text-center text-sm text-muted">
+        <Text className="max-w-xs text-center text-sm text-muted font-normal">
           {message}
         </Text>
       ) : null}

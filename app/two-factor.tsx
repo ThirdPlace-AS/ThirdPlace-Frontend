@@ -4,11 +4,12 @@ import { useState } from "react";
 import { Pressable, ScrollView, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
+import { Icon } from "@/components/ui";
 import { Switch } from "@/components/ui/Switch";
 import { Button } from "@/components/Button";
 import { DemoNote } from "@/components/DemoNote";
 import { RouteHeader } from "@/components/RouteHeader";
-import { colors } from "@/theme";
+import { useThemeColors } from "@/theme";
 
 type Method = "sms" | "app";
 
@@ -17,6 +18,7 @@ type Method = "sms" | "app";
 // method, then "Aktiver 2FA" → "Bekreft identiteten". DEMO — no secret is
 // generated and nothing is enabled (BLOCKED_CONTRACT_GAP).
 export default function TwoFactor() {
+  const colors = useThemeColors();
   const [on, setOn] = useState(true);
   const [method, setMethod] = useState<Method>("sms");
   const methods: {
@@ -43,7 +45,7 @@ export default function TwoFactor() {
     <SafeAreaView className="flex-1 bg-background" edges={["top"]}>
       <RouteHeader title="Totrinnsbekreftelse" />
       <ScrollView contentContainerClassName="gap-5 px-gutter py-4 pb-12">
-        <Text className="text-sm text-muted">
+        <Text className="text-sm text-muted font-normal">
           Legg til et ekstra sikkerhetslag på kontoen din.
         </Text>
         <View className="flex-row items-center justify-between">
@@ -68,12 +70,14 @@ export default function TwoFactor() {
                     active ? "border-ink" : "border-line"
                   }`}
                 >
-                  <Ionicons name={m.icon} size={20} color={colors.ink} />
+                  <Icon name={m.icon} size="md" tone="ink" />
                   <View className="flex-1">
                     <Text className="text-base font-semibold text-ink">
                       {m.label}
                     </Text>
-                    <Text className="text-xs text-muted">{m.hint}</Text>
+                    <Text className="text-xs text-muted font-normal">
+                      {m.hint}
+                    </Text>
                   </View>
                   <View
                     className={`h-5 w-5 items-center justify-center rounded-full border-2 ${
@@ -81,11 +85,7 @@ export default function TwoFactor() {
                     }`}
                   >
                     {active ? (
-                      <Ionicons
-                        name="checkmark"
-                        size={12}
-                        color={colors.onInk}
-                      />
+                      <Icon name="checkmark" size="sm" tone="onInk" />
                     ) : null}
                   </View>
                 </Pressable>
@@ -108,14 +108,14 @@ export default function TwoFactor() {
                       color={colors.muted}
                     />
                   </View>
-                  <Text className="text-xs text-muted">
+                  <Text className="text-xs text-muted font-normal">
                     Skann med autentiseringsappen
                   </Text>
                 </View>
               </>
             ) : null}
 
-            <Text className="text-xs text-muted">
+            <Text className="text-xs text-muted font-normal">
               Backupkoder lagres etter aktivering.
             </Text>
             <DemoNote>

@@ -1,10 +1,9 @@
-import { Ionicons } from "@expo/vector-icons";
 import { Text, View } from "react-native";
 
+import { Icon } from "@/components/ui";
 import { DemoNote } from "@/components/DemoNote";
 import { GuestLock } from "@/components/GuestLock";
 import { useGuestMode } from "@/components/map/hooks/useGuestMode";
-import { colors } from "@/theme";
 
 // Verifisering (DEMO), per the design (PDF p7): a three-step timeline —
 // Innsendt → Under vurdering → Godkjent — and the submitted documents with
@@ -61,14 +60,14 @@ export function VerificationContent() {
             </View>
             <View className="flex-1 pb-4">
               <Text
-                className={`text-base ${
+                className={`font-normal text-base ${
                   s.state === "todo" ? "text-muted" : "font-semibold text-ink"
                 }`}
               >
                 {s.label}
               </Text>
               {s.meta ? (
-                <Text className="text-xs text-muted">{s.meta}</Text>
+                <Text className="text-xs text-muted font-normal">{s.meta}</Text>
               ) : null}
             </View>
           </View>
@@ -82,8 +81,10 @@ export function VerificationContent() {
             key={d.name}
             className="flex-row items-center gap-3 rounded-md border border-line bg-surface p-3"
           >
-            <Ionicons name="document-outline" size={18} color={colors.ink} />
-            <Text className="flex-1 text-sm text-ink">{d.name}</Text>
+            <Icon name="document-outline" size="md" tone="ink" />
+            <Text className="flex-1 text-sm text-ink font-normal">
+              {d.name}
+            </Text>
             <View
               className={`rounded-full px-2.5 py-1 ${
                 d.status === "Godkjent" ? "bg-success/15" : "bg-warning/20"
@@ -91,7 +92,7 @@ export function VerificationContent() {
             >
               <Text
                 className={`text-xs font-semibold ${
-                  d.status === "Godkjent" ? "text-success" : "text-ink"
+                  d.status === "Godkjent" ? "text-successText" : "text-ink"
                 }`}
               >
                 {d.status}
@@ -102,7 +103,7 @@ export function VerificationContent() {
       </View>
 
       <View className="rounded-md bg-surfaceMuted p-3">
-        <Text className="text-sm text-ink">
+        <Text className="text-sm text-ink font-normal">
           Når verifisering er aktiv, får du beskjed så snart vurderingen er
           klar.
         </Text>

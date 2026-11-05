@@ -22,7 +22,7 @@ export function PayoutsScreen() {
     <SafeAreaView className="flex-1 bg-background" edges={["top"]}>
       <RouteHeader title="Utbetalinger" />
       <ScrollView contentContainerClassName="gap-4 px-gutter py-4 pb-12">
-        <Text className="text-sm text-muted">
+        <Text className="text-sm text-muted font-normal">
           Sett opp hvordan du mottar penger fra opplevelser.
         </Text>
         <Section>Utbetalingsmetode</Section>
@@ -54,12 +54,14 @@ export function PayoutsScreen() {
                 plan === p ? "border-ink bg-ink" : "border-line"
               }`}
             />
-            <Text className="text-sm text-ink">{p}</Text>
+            <Text className="text-sm text-ink font-normal">{p}</Text>
           </Pressable>
         ))}
         <Section>Valuta</Section>
         <View className="rounded-md border border-line bg-surface px-4 py-3.5">
-          <Text className="text-sm text-ink">NOK — Norske kroner</Text>
+          <Text className="text-sm text-ink font-normal">
+            NOK — Norske kroner
+          </Text>
         </View>
         <Section>Utbetalingshistorikk</Section>
         <EmptyState
@@ -102,7 +104,7 @@ export function SubmissionsScreen() {
     <SafeAreaView className="flex-1 bg-background" edges={["top"]}>
       <RouteHeader title="Innleveringer" />
       <ScrollView contentContainerClassName="gap-3 px-gutter py-4 pb-12">
-        <Text className="text-sm text-muted">
+        <Text className="text-sm text-muted font-normal">
           Steder du har foreslått til ThirdPlace.
         </Text>
         <View className="flex-row flex-wrap gap-2">
@@ -133,19 +135,19 @@ export function SubmissionsScreen() {
               <Text
                 className={`text-xs font-semibold ${
                   s.status === "Godkjent"
-                    ? "text-success"
+                    ? "text-successText"
                     : s.status === "Avvist"
-                      ? "text-danger"
+                      ? "text-dangerText"
                       : "text-ink"
                 }`}
               >
                 {s.status}
               </Text>
             </View>
-            <Text className="text-xs text-muted">{s.meta}</Text>
+            <Text className="text-xs text-muted font-normal">{s.meta}</Text>
           </View>
         ))}
-        <Text className="text-xs text-muted">
+        <Text className="text-xs text-muted font-normal">
           Avviste innleveringer kan sendes på nytt med oppdatert informasjon.
         </Text>
         <DemoNote>Eksempelinnleveringer — ingen steder er sendt inn.</DemoNote>

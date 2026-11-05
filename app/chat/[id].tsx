@@ -12,7 +12,7 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-import { IconButton } from "@/components/ui";
+import { Icon, IconButton } from "@/components/ui";
 import { Button } from "@/components/Button";
 import { DemoBadge } from "@/components/DemoBadge";
 import { useGuestMode } from "@/components/map/hooks/useGuestMode";
@@ -26,13 +26,14 @@ import {
   type MockMessage,
 } from "@/fixtures";
 import { ChatInfoSheets } from "@/features/chat/ChatInfoSheets";
-import { colors } from "@/theme";
+import { useThemeColors } from "@/theme";
 
 // Chat conversation (DEMO ONLY). BLOCKED_CONTRACT_GAP: no realtime/messaging
 // backend, no delivery or read receipts. The composer echoes locally so the UI
 // is explorable, but nothing is sent, stored, or delivered — the header carries
 // a DEMO badge and a persistent note says so.
 export default function ChatThreadScreen() {
+  const colors = useThemeColors();
   const { id } = useLocalSearchParams<{ id: string }>();
   const chat = chatById(id ?? "");
   const [messages, setMessages] = useState<MockMessage[]>(() =>
@@ -50,7 +51,9 @@ export default function ChatThreadScreen() {
   if (!chat) {
     return (
       <SafeAreaView className="flex-1 items-center justify-center bg-background">
-        <Text className="text-base text-muted">Samtalen finnes ikke.</Text>
+        <Text className="text-base text-muted font-normal">
+          Samtalen finnes ikke.
+        </Text>
       </SafeAreaView>
     );
   }
@@ -95,7 +98,7 @@ export default function ChatThreadScreen() {
           <Text className="text-base font-semibold text-ink" numberOfLines={1}>
             {chat.name}
           </Text>
-          <Text className="text-xs text-muted">
+          <Text className="text-xs text-muted font-normal">
             {[
               CHAT_TYPE_LABEL[chat.type],
               chat.type === "dm" ? null : CHAT_ACCESS_LABEL[chat.access],
@@ -127,15 +130,14 @@ export default function ChatThreadScreen() {
               // Informational pin (the experience this group organizes). Not a
               // link — experience detail is a map sheet, not reachable here.
               <View className="mb-1 flex-row items-center gap-2 rounded-xl border border-line bg-surface px-3 py-2.5">
-                <Ionicons
-                  name="pricetag-outline"
-                  size={16}
-                  color={colors.ember}
-                />
-                <Text className="flex-1 text-sm text-ink" numberOfLines={1}>
+                <Icon name="pricetag-outline" size="sm" tone="ember" />
+                <Text
+                  className="flex-1 text-sm text-ink font-normal"
+                  numberOfLines={1}
+                >
                   {pinned.title}
                 </Text>
-                <Text className="text-xs text-muted">Festet</Text>
+                <Text className="text-xs text-muted font-normal">Festet</Text>
               </View>
             ) : null
           }
@@ -144,7 +146,7 @@ export default function ChatThreadScreen() {
 
         {chat.status === "archived" ? (
           <View className="border-t border-line px-gutter pb-3 pt-3">
-            <Text className="text-center text-sm text-muted">
+            <Text className="text-center text-sm text-muted font-normal">
               Arkivert — kun lesbart. Du kan ikke sende nye meldinger.
             </Text>
           </View>
@@ -158,12 +160,12 @@ export default function ChatThreadScreen() {
           </View>
         ) : (
           <View className="gap-2 border-t border-line px-gutter pb-2 pt-2.5">
-            <Text className="text-center text-[11px] text-muted">
+            <Text className="text-center text-[11px] text-muted font-normal">
               Demo — meldinger sendes eller lagres ikke
             </Text>
             <View className="flex-row items-end gap-2">
               <TextInput
-                className="max-h-28 flex-1 rounded-lg border border-line bg-surface px-4 py-2.5 text-base text-ink"
+                className="max-h-28 flex-1 rounded-lg border border-line bg-surface px-4 py-2.5 text-base text-ink font-normal"
                 placeholder="Skriv en melding …"
                 placeholderTextColor={colors.muted}
                 value={draft}
@@ -204,8 +206,10 @@ function Bubble({ message }: { message: MockMessage }) {
     return (
       <View className="max-w-[80%] flex-row items-end gap-2 self-end">
         <View className="rounded-lg rounded-br-sm bg-ink px-3.5 py-2.5">
-          <Text className="text-base text-onInk">{message.text}</Text>
-          <Text className="pt-0.5 text-[10px] text-onInk/70">
+          <Text className="text-base text-onInk font-normal">
+            {message.text}
+          </Text>
+          <Text className="pt-0.5 text-[10px] text-onInk/70 font-normal">
             {message.time}
           </Text>
         </View>
@@ -223,8 +227,10 @@ function Bubble({ message }: { message: MockMessage }) {
         <Text className="text-xs font-semibold text-muted">
           {message.author}
         </Text>
-        <Text className="text-base text-ink">{message.text}</Text>
-        <Text className="pt-0.5 text-[10px] text-muted">{message.time}</Text>
+        <Text className="text-base text-ink font-normal">{message.text}</Text>
+        <Text className="pt-0.5 text-[10px] text-muted font-normal">
+          {message.time}
+        </Text>
       </View>
     </View>
   );

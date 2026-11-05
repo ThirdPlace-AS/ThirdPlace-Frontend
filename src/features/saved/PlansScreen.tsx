@@ -78,7 +78,7 @@ export default function PlansScreen() {
               <Text className="text-base font-semibold text-ink">
                 {exp.title}
               </Text>
-              <Text className="text-xs text-muted">
+              <Text className="text-xs text-muted font-normal">
                 {exp.when} · {item.note}
               </Text>
               {item.state === "past" ? (
@@ -127,7 +127,9 @@ function PlanAction({
 }) {
   return (
     <Pressable accessibilityRole="button" onPress={onPress} hitSlop={6}>
-      <Text className="pt-1 text-sm font-semibold text-ember">{label} →</Text>
+      <Text className="pt-1 text-sm font-semibold text-emberText">
+        {label} →
+      </Text>
     </Pressable>
   );
 }

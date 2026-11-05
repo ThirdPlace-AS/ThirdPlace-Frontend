@@ -1,9 +1,8 @@
-import { Ionicons } from "@expo/vector-icons";
 import { Text, View } from "react-native";
 
+import { Icon } from "@/components/ui";
 import { Button } from "@/components/Button";
 import { Sheet } from "@/components/Sheet";
-import { colors } from "@/theme";
 import { DemoNote } from "@/components/DemoNote";
 import { demoCopy } from "@/copy";
 import { resetTo } from "@/lib/navigation";
@@ -25,8 +24,8 @@ export function SignInPrompt({
   return (
     <Sheet visible={visible} onClose={onClose} title="Logg inn">
       <View className="flex-row items-center gap-2">
-        <Ionicons name="lock-closed-outline" size={20} color={colors.muted} />
-        <Text className="flex-1 text-sm text-muted">
+        <Icon name="lock-closed-outline" size="md" tone="muted" />
+        <Text className="flex-1 text-sm text-muted font-normal">
           Du må ha en konto for å {action}. Utforsking er åpent for alle.
         </Text>
       </View>

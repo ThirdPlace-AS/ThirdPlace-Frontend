@@ -7,7 +7,7 @@ import { Button } from "@/components/Button";
 import { DemoNote } from "@/components/DemoNote";
 import { experienceById } from "@/fixtures";
 import { resetTo } from "@/lib/navigation";
-import { colors } from "@/theme";
+import { useThemeColors } from "@/theme";
 
 // System screens (DEMO), per the design (PDF p26–p27): offline, error,
 // maintenance, suspended account, required update, and the invite landing
@@ -64,7 +64,7 @@ export default function SystemState() {
             title="Vi pusser opp!"
             body="ThirdPlace er nede for vedlikehold. Vi er snart tilbake."
           >
-            <Text className="text-center text-sm font-semibold text-ember">
+            <Text className="text-center text-sm font-semibold text-emberText">
               Sjekk status: status.thirdplace.app
             </Text>
           </State>
@@ -79,7 +79,7 @@ export default function SystemState() {
                 Hva kan du gjøre
               </Text>
               <Text className="text-sm font-semibold text-ink">Send klage</Text>
-              <Text className="text-xs text-muted">
+              <Text className="text-xs text-muted font-normal">
                 Vi gjennomgår saken og svarer deg.
               </Text>
             </View>
@@ -127,6 +127,7 @@ function State({
   body: string;
   children?: React.ReactNode;
 }) {
+  const colors = useThemeColors();
   return (
     <View className="gap-5">
       <View className="items-center gap-3">
@@ -134,7 +135,9 @@ function State({
           <Ionicons name={icon} size={36} color={colors.ink} />
         </View>
         <Text className="text-center text-2xl font-bold text-ink">{title}</Text>
-        <Text className="px-4 text-center text-base text-muted">{body}</Text>
+        <Text className="px-4 text-center text-base text-muted font-normal">
+          {body}
+        </Text>
       </View>
       {children}
     </View>
@@ -146,18 +149,20 @@ function Invite() {
   const exp = experienceById("e1");
   return (
     <View className="gap-4">
-      <Text className="text-center text-xs text-muted">
+      <Text className="text-center text-xs text-muted font-normal">
         thirdplace.app/join/{exp?.id ?? "e1"}
       </Text>
       <Text className="text-center text-2xl font-bold text-ink">
         {exp?.title ?? "Opplevelse"}
       </Text>
-      <Text className="text-center text-sm text-muted">{exp?.when}</Text>
+      <Text className="text-center text-sm text-muted font-normal">
+        {exp?.when}
+      </Text>
       <View className="gap-1 rounded-md border border-line bg-surface p-4">
         <Text className="text-center text-base font-semibold text-ink">
           Du er invitert!
         </Text>
-        <Text className="text-center text-sm text-muted">
+        <Text className="text-center text-sm text-muted font-normal">
           Vert: {exp?.host}
         </Text>
       </View>

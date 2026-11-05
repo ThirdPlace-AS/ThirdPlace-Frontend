@@ -8,7 +8,7 @@ export function DemoNote({ children }: { children: string }) {
   return (
     <View className="flex-row items-center gap-2">
       <DemoBadge />
-      <Text className="flex-1 text-xs text-muted">{children}</Text>
+      <Text className="flex-1 text-xs text-muted font-normal">{children}</Text>
     </View>
   );
 }

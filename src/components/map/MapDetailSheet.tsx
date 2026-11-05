@@ -7,7 +7,7 @@ import { useCallback, useEffect, useMemo, useRef } from "react";
 import { Text, View } from "react-native";
 
 import { IconButton } from "@/components/ui";
-import { colors } from "@/theme";
+import { useThemeColors } from "@/theme";
 
 import { DetailContent, titleFor } from "./DetailContentRouter";
 import type { PushFn, SheetTarget } from "./sheetTypes";
@@ -38,6 +38,7 @@ export function MapDetailSheet({
   onBack: () => void;
   onClose: () => void;
 }) {
+  const colors = useThemeColors();
   const snapPoints = useMemo(() => ["35%", "60%", "92%"], []);
 
   const sheetRef = useRef<BottomSheet>(null);

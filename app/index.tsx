@@ -5,12 +5,13 @@ import { Text, View } from "react-native";
 import { useReducedMotion } from "react-native-reanimated";
 
 import { LogoMark } from "@/components/Logo";
-import { colors } from "@/theme";
+import { useThemeColors } from "@/theme";
 
 // Splash (PDF p1): Ember screen with the mark, "ThirdPlace" and "Byen din,
 // laget for deg", then on to Welcome. No session check exists (no backend), so
 // it only holds briefly — shorter when the user prefers reduced motion.
 export default function Splash() {
+  const colors = useThemeColors();
   const reduced = useReducedMotion();
   useEffect(() => {
     const t = setTimeout(
@@ -35,7 +36,9 @@ export default function Splash() {
       >
         ThirdPlace
       </Text>
-      <Text className="text-sm text-white/80">Byen din, laget for deg</Text>
+      <Text className="text-sm text-white/80 font-normal">
+        Byen din, laget for deg
+      </Text>
     </View>
   );
 }

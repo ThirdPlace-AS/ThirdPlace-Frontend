@@ -4,22 +4,27 @@ import { Pressable, Text, View } from "react-native";
 
 import { Button } from "@/components/Button";
 import { experienceById } from "@/fixtures";
-import { colors } from "@/theme";
+import { useThemeColors } from "@/theme";
 
 export function CheckinContent({ id }: { id: string }) {
+  const colors = useThemeColors();
   const exp = experienceById(id);
   const [near, setNear] = useState(true);
   const [checkedIn, setCheckedIn] = useState(false);
 
   if (!exp) {
-    return <Text className="text-sm text-muted">Fant ikke arrangementet.</Text>;
+    return (
+      <Text className="text-sm text-muted font-normal">
+        Fant ikke arrangementet.
+      </Text>
+    );
   }
 
   return (
     <View className="gap-5">
       <View>
         <Text className="text-base font-semibold text-ink">{exp.title}</Text>
-        <Text className="text-sm text-muted">{exp.when}</Text>
+        <Text className="text-sm text-muted font-normal">{exp.when}</Text>
       </View>
 
       <View className="items-center gap-3 rounded-xl border border-line bg-surface p-6">
@@ -41,7 +46,7 @@ export function CheckinContent({ id }: { id: string }) {
               ? "Du er i nærheten (~40 m)"
               : "For langt unna (~1,2 km)"}
         </Text>
-        <Text className="text-center text-sm text-muted">
+        <Text className="text-center text-sm text-muted font-normal">
           {checkedIn
             ? "God tur!"
             : near
@@ -56,7 +61,9 @@ export function CheckinContent({ id }: { id: string }) {
         onPress={() => setNear((n) => !n)}
         className="flex-row items-center justify-between rounded-md border border-line bg-surface px-4 py-3"
       >
-        <Text className="text-sm text-ink">Simuler: i nærheten</Text>
+        <Text className="text-sm text-ink font-normal">
+          Simuler: i nærheten
+        </Text>
         <View
           className={`h-6 w-11 justify-center rounded-full px-0.5 ${
             near ? "bg-ink" : "bg-surfaceMuted"
