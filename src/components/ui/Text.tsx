@@ -25,7 +25,8 @@ export type TextTone =
   | "success"
   | "danger"
   | "warning"
-  | "onEmber";
+  | "onEmber"
+  | "onMedia";
 
 // Literal class names so Tailwind's content scan generates them.
 const VARIANT_CLASS: Record<TextVariant, string> = {
@@ -60,6 +61,7 @@ const TONE_CLASS: Record<TextTone, string> = {
   danger: "text-dangerText",
   warning: "text-warningText",
   onEmber: "text-onEmber",
+  onMedia: "text-onMedia",
 };
 
 /** Headings get the header role by default so screen readers can jump between them. */

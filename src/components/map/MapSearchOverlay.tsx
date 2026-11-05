@@ -117,18 +117,6 @@ function SearchBody({
               onChangeText={setQuery}
               onSubmit={submit}
               autoFocus
-              right={
-                hasQuery ? (
-                  <Pressable
-                    accessibilityRole="button"
-                    accessibilityLabel="Tøm søk"
-                    onPress={() => setQuery("")}
-                    hitSlop={8}
-                  >
-                    <Icon name="close-circle" size="md" tone="muted" />
-                  </Pressable>
-                ) : undefined
-              }
             />
           </View>
         </View>

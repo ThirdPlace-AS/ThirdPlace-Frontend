@@ -26,7 +26,7 @@ export function GroupContent({ id }: { id: string }) {
           <Text className="text-base font-semibold text-ink">Medlemmer</Text>
           <View className="flex-row flex-wrap gap-2">
             {group.members.map((m) => (
-              <Avatar key={m} initials={m} size={36} />
+              <Avatar key={m} initials={m} size="sm" />
             ))}
           </View>
         </View>

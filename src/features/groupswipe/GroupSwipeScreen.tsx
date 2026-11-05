@@ -3,7 +3,7 @@ import { Image } from "expo-image";
 import { router } from "expo-router";
 import { useEffect, useState } from "react";
 import { Pressable, ScrollView, Text, View } from "react-native";
-import { Icon, IconButton, Screen } from "@/components/ui";
+import { Avatar, Icon, IconButton, ListRow, Screen } from "@/components/ui";
 import { Button } from "@/components/Button";
 import { Chip } from "@/components/Chip";
 import { DemoNote } from "@/components/DemoNote";
@@ -313,20 +313,20 @@ export default function GroupSwipeScreen() {
 
 function MemberRow({ person, ready }: { person: MockPerson; ready: boolean }) {
   return (
-    <View className="flex-row items-center gap-3 rounded-lg border border-line bg-surface p-3">
-      <Image
-        source={libImage(person.avatar)}
-        style={{ height: 40, width: 40, borderRadius: 20 }}
-      />
-      <View className="flex-1">
-        <Text className="text-base font-semibold text-ink">{person.name}</Text>
-        <Text
-          className={`font-normal text-xs ${ready ? "text-successText" : "text-muted"}`}
-        >
-          {ready ? "Klar ✓" : "Venter …"}
-        </Text>
-      </View>
-    </View>
+    <ListRow
+      variant="card"
+      title={person.name}
+      subtitle={ready ? "Klar ✓" : "Venter …"}
+      subtitleTone={ready ? "success" : "muted"}
+      leading={
+        <Avatar
+          name={person.name}
+          source={libImage(person.avatar)}
+          size="md"
+          decorative
+        />
+      }
+    />
   );
 }
 

@@ -1,8 +1,7 @@
-import { Ionicons } from "@expo/vector-icons";
 import { Image } from "expo-image";
 import { Pressable, Text, View } from "react-native";
 
-import { Icon } from "@/components/ui";
+import { Icon, MetaRow } from "@/components/ui";
 import { Card } from "@/components/Card";
 import { Chip } from "@/components/Chip";
 import {
@@ -16,21 +15,6 @@ import { coverForPlace, libImage } from "@/fixtures/images";
 import type { PushFn } from "../sheetTypes";
 import { markerId } from "../types/mapPresentation";
 import { DetailActions } from "./DetailActions";
-
-function InfoRow({
-  icon,
-  text,
-}: {
-  icon: keyof typeof Ionicons.glyphMap;
-  text: string;
-}) {
-  return (
-    <View className="flex-row items-center gap-2">
-      <Icon name={icon} size="sm" tone="muted" />
-      <Text className="flex-1 text-sm text-ink font-normal">{text}</Text>
-    </View>
-  );
-}
 
 export function PlaceContent({ id, push }: { id: string; push: PushFn }) {
   const place = placeById(id);
@@ -91,10 +75,10 @@ export function PlaceContent({ id, push }: { id: string; push: PushFn }) {
       {/* Location & opening hours */}
       <Card>
         <View className="gap-2">
-          <InfoRow icon="location-outline" text={place.address} />
-          <InfoRow icon="time-outline" text={place.hours} />
+          <MetaRow icon="location-outline" text={place.address} />
+          <MetaRow icon="time-outline" text={place.hours} />
           {place.specialHours ? (
-            <InfoRow icon="calendar-outline" text={place.specialHours} />
+            <MetaRow icon="calendar-outline" text={place.specialHours} />
           ) : null}
         </View>
       </Card>

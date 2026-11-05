@@ -39,7 +39,7 @@ const MIN_TARGET = 44;
 
 // Literal class names so Tailwind generates them.
 const VARIANT_CLASS: Record<IconButtonVariant, string> = {
-  ghost: "active:bg-surfaceMuted",
+  ghost: "",
   outline: "border border-line bg-surface",
   filled: "bg-surfaceMuted",
   ink: "bg-ink",

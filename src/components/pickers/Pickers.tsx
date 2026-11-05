@@ -1,12 +1,11 @@
 import { Image } from "expo-image";
 import { useState } from "react";
-import { Pressable, Text, TextInput, View } from "react-native";
+import { Pressable, Text, View } from "react-native";
 
-import { Icon } from "@/components/ui";
+import { Icon, SearchBar } from "@/components/ui";
 import { Sheet } from "@/components/Sheet";
 import { people, places, type MockPerson, type MockPlace } from "@/fixtures";
 import { libImage } from "@/fixtures/images";
-import { useThemeColors } from "@/theme";
 
 // Shared pickers (PDF p24–p25): Velg sted, Velg kategori, Søk brukere. Search
 // over fixture data only — no geocoding or user directory exists
@@ -23,19 +22,14 @@ export function SearchField({
   placeholder: string;
   autoFocus?: boolean;
 }) {
-  const colors = useThemeColors();
   return (
-    <View className="flex-row items-center gap-2 rounded-full border border-line bg-surface px-4">
-      <Icon name="search" size="sm" tone="muted" />
-      <TextInput
-        value={value}
-        onChangeText={onChange}
-        placeholder={placeholder}
-        placeholderTextColor={colors.muted}
-        className="flex-1 py-2.5 text-sm text-ink font-normal"
-        autoFocus={autoFocus}
-      />
-    </View>
+    <SearchBar
+      size="sm"
+      value={value}
+      onChangeText={onChange}
+      placeholder={placeholder}
+      autoFocus={autoFocus}
+    />
   );
 }
 

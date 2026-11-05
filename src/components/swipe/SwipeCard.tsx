@@ -4,7 +4,7 @@ import { useState } from "react";
 import { StyleSheet, Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-import { Icon } from "@/components/ui";
+import { MetaRow } from "@/components/ui";
 import { DemoBadge } from "@/components/DemoBadge";
 import { media } from "@/theme";
 import { places, type MockExperience } from "@/fixtures";
@@ -37,14 +37,7 @@ function InfoRow({
   icon: keyof typeof Ionicons.glyphMap;
   children: string;
 }) {
-  return (
-    <View className="flex-row items-center gap-2">
-      <Icon name={icon} size="sm" tone="onMedia" />
-      <Text className="text-[15px] text-white/95 font-normal" numberOfLines={1}>
-        {children}
-      </Text>
-    </View>
-  );
+  return <MetaRow icon={icon} text={children} tone="media" numberOfLines={1} />;
 }
 
 // Interest pills — text-only dark discs with white labels (the reference's

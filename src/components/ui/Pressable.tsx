@@ -52,6 +52,22 @@ export type PressableProps = Omit<RNPressableProps, "children" | "style"> & {
   haptic?: PressHaptic;
 };
 
+// NativeWind turns `active:`/`focus:` classes into press handlers on the
+// element that carries them. On the inner content View that makes it the touch
+// responder and the outer Pressable never fires (seen on device: every ghost
+// IconButton was dead). Strip them; scale is the press state.
+const INTERACTIVE_VARIANT = /(^|\s)(active|focus|hover):\S+/g;
+export function stripInteractive(cls?: string): string | undefined {
+  if (!cls) return cls;
+  const out = cls.replace(INTERACTIVE_VARIANT, " ").replace(/\s+/g, " ").trim();
+  if (__DEV__ && out !== cls.trim()) {
+    console.warn(
+      `Pressable: removed interactive variants from contentClassName ("${cls}") — they block presses.`,
+    );
+  }
+  return out;
+}
+
 export const Pressable = forwardRef<View, PressableProps>(function Pressable(
   {
     children,
@@ -114,7 +130,10 @@ export const Pressable = forwardRef<View, PressableProps>(function Pressable(
       {...rest}
     >
       <Animated.View style={[animated, disabled ? { opacity: 0.4 } : null]}>
-        <View className={contentClassName} style={contentStyle}>
+        <View
+          className={stripInteractive(contentClassName)}
+          style={contentStyle}
+        >
           {children}
         </View>
       </Animated.View>

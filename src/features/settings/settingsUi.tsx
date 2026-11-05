@@ -1,7 +1,7 @@
 import { Ionicons } from "@expo/vector-icons";
 import type { ReactNode } from "react";
-import { Pressable, Text, View } from "react-native";
-import { Icon } from "@/components/ui";
+import { Text, View } from "react-native";
+import { Icon, ListRow } from "@/components/ui";
 import { Switch } from "@/components/ui/Switch";
 
 // Shared building blocks for the Settings + Privacy routes. All inert/demo:
@@ -41,22 +41,15 @@ export function NavRow({
   danger?: boolean;
 }) {
   return (
-    <Pressable
-      accessibilityRole="button"
-      onPress={onPress}
-      className="flex-row items-center gap-3 border-b border-line px-4 py-3.5 active:bg-surfaceMuted"
-    >
-      <Icon name={icon} size="md" tone={danger ? "ember" : "ink"} />
-      <Text
-        className={`font-normal flex-1 text-base ${danger ? "text-emberText" : "text-ink"}`}
-      >
-        {label}
-      </Text>
-      {value ? (
-        <Text className="text-sm text-muted font-normal">{value}</Text>
-      ) : null}
-      <Icon name="chevron-forward" size="md" tone="muted" />
-    </Pressable>
+    <View className="border-b border-line">
+      <ListRow
+        icon={icon}
+        title={label}
+        value={value}
+        onPress={onPress}
+        danger={danger}
+      />
+    </View>
   );
 }
 

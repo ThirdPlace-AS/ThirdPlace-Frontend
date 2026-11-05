@@ -2,7 +2,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { Image } from "expo-image";
 import { useState } from "react";
 import { Modal, Pressable, Text, View } from "react-native";
-import { Icon } from "@/components/ui";
+import { Avatar, Icon, ListRow } from "@/components/ui";
 import { ReportSheet } from "@/components/actions/ActionSheets";
 import { Button } from "@/components/Button";
 import { DemoNote } from "@/components/DemoNote";
@@ -286,16 +286,19 @@ function MemberRow({
   role: string;
 }) {
   return (
-    <View className="flex-row items-center gap-3 rounded-md border border-line bg-surface p-3">
-      <Image
-        source={libImage(person.avatar)}
-        style={{ height: 36, width: 36, borderRadius: 18 }}
-      />
-      <View className="flex-1">
-        <Text className="text-sm font-semibold text-ink">{person.name}</Text>
-        <Text className="text-xs text-muted font-normal">{role}</Text>
-      </View>
-    </View>
+    <ListRow
+      variant="card"
+      title={person.name}
+      subtitle={role}
+      leading={
+        <Avatar
+          name={person.name}
+          source={libImage(person.avatar)}
+          size="sm"
+          decorative
+        />
+      }
+    />
   );
 }
 

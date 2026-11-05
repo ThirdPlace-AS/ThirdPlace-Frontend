@@ -1,9 +1,9 @@
 import { router } from "expo-router";
 import { useMemo, useState } from "react";
-import { Pressable, ScrollView, Text, TextInput, View } from "react-native";
+import { Pressable, ScrollView, Text, View } from "react-native";
 
 import { Button } from "@/components/Button";
-import { Header, Icon, IconButton, Screen } from "@/components/ui";
+import { Header, Icon, IconButton, Screen, SearchBar } from "@/components/ui";
 import { Chip } from "@/components/Chip";
 import { DemoNote } from "@/components/DemoNote";
 import { Input } from "@/components/Input";
@@ -16,7 +16,6 @@ import {
   type MockChat,
   type MockChatAccess,
 } from "@/fixtures";
-import { useThemeColors } from "@/theme";
 
 // Chat tab, laid out per the design (PDF p9): search, "Aktive samtaler", then
 // collapsible Opplevelser / Steder groups, a pencil FAB for "Ny chat" (p10) and
@@ -24,7 +23,6 @@ import { useThemeColors } from "@/theme";
 // messaging backend; chat types / access modes are display labels
 // (BLOCKED_CONTRACT_GAP).
 export default function ChatScreen() {
-  const colors = useThemeColors();
   const [query, setQuery] = useState("");
   const [open, setOpen] = useState<Record<string, boolean>>({});
   const [newOpen, setNewOpen] = useState(false);
@@ -87,17 +85,12 @@ export default function ChatScreen() {
           }
         />
 
-        <View className="flex-row items-center gap-2 rounded-full border border-line bg-surface px-4">
-          <Icon name="search" size="md" tone="muted" />
-          <TextInput
-            value={query}
-            onChangeText={setQuery}
-            placeholder="Søk i samtaler eller personer …"
-            placeholderTextColor={colors.muted}
-            className="flex-1 py-3 text-base text-ink font-normal"
-            accessibilityLabel="Søk i samtaler"
-          />
-        </View>
+        <SearchBar
+          value={query}
+          onChangeText={setQuery}
+          placeholder="Søk i samtaler eller personer …"
+          accessibilityLabel="Søk i samtaler"
+        />
 
         {active.length > 0 ? (
           <View className="gap-2">
