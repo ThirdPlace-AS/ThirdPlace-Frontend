@@ -2,7 +2,11 @@ import { Ionicons } from "@expo/vector-icons";
 import { useState } from "react";
 import { Pressable, Text, View } from "react-native";
 
+import { router } from "expo-router";
+
+import { CancelSheet } from "@/components/actions/ActionSheets";
 import { Button } from "@/components/Button";
+import { DemoNote } from "@/components/DemoNote";
 import { Card } from "@/components/Card";
 import {
   attendeesForExperience,
@@ -26,6 +30,7 @@ export function HostContent({ id, push }: { id: string; push: PushFn }) {
   const [status, setStatus] = useState<ExperienceStatus | null>(
     exp?.status ?? null,
   );
+  const [cancelOpen, setCancelOpen] = useState(false);
 
   if (!exp) {
     return <Text className="text-sm text-muted">Fant ikke arrangementet.</Text>;
@@ -59,22 +64,35 @@ export function HostContent({ id, push }: { id: string; push: PushFn }) {
         </Card>
       </Pressable>
 
+      {/* Host actions (PDF p6): Rediger opens the Add flow; Avlys confirms in
+          a sheet first. The earlier "Marker som fullført" / "Gjenåpne"
+          controls were invented and are removed. */}
       <View className="gap-3">
-        <Button label="Rediger arrangement" variant="secondary" />
         <Button
-          label="Marker som fullført"
-          variant="ink"
-          disabled={status === "cancelled"}
-          onPress={() => setStatus("joined")}
-        />
-        <Button
-          label={status === "cancelled" ? "Gjenåpne" : "Avlys arrangement"}
+          label="Rediger"
           variant="secondary"
-          onPress={() =>
-            setStatus(status === "cancelled" ? exp.status : "cancelled")
-          }
+          onPress={() => router.navigate("/add")}
         />
+        {status === "cancelled" ? (
+          <DemoNote>
+            Avlyst i demoen — ingen ble varslet eller refundert.
+          </DemoNote>
+        ) : (
+          <Button
+            label="Avlys"
+            variant="secondary"
+            onPress={() => setCancelOpen(true)}
+          />
+        )}
       </View>
+      {cancelOpen ? (
+        <CancelSheet
+          title={exp.title}
+          going={exp.going}
+          onClose={() => setCancelOpen(false)}
+          onConfirm={() => setStatus("cancelled")}
+        />
+      ) : null}
     </View>
   );
 }

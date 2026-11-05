@@ -3,7 +3,9 @@ import { useState } from "react";
 import { Pressable, Text, View } from "react-native";
 
 import { Button } from "@/components/Button";
+import { Chip } from "@/components/Chip";
 import { DemoNote } from "@/components/DemoNote";
+import { Input } from "@/components/Input";
 import { Sheet } from "@/components/Sheet";
 import { colors } from "@/theme";
 
@@ -233,6 +235,181 @@ export function PaySheet({
           }}
         />
         <Button label="Avbryt" variant="secondary" onPress={onClose} />
+      </View>
+    </Sheet>
+  );
+}
+
+// Avlyse opplevelsen (host, PDF p24–p25): reason + confirm. DEMO — no one is
+// notified and no refund happens; the confirm only flips local state.
+export function CancelSheet({
+  title,
+  going,
+  onClose,
+  onConfirm,
+}: Base & { title: string; going: number; onConfirm: () => void }) {
+  const [reason, setReason] = useState("");
+  return (
+    <Sheet visible onClose={onClose} title={`Avlyse ${title}?`}>
+      <View className="gap-3">
+        <Text className="text-sm text-muted">
+          {going} deltakere får beskjed med årsaken din.
+        </Text>
+        <Input
+          label="Årsak (vises for deltakerne)"
+          placeholder="F.eks. sykdom i bandet …"
+          value={reason}
+          onChangeText={setReason}
+          multiline
+          maxLength={200}
+        />
+        <DemoNote>
+          Ingen blir varslet, og ingen refusjon skjer i demoen.
+        </DemoNote>
+        <Button
+          label="Avlys"
+          variant="secondary"
+          disabled={reason.trim().length === 0}
+          onPress={() => {
+            onConfirm();
+            onClose();
+          }}
+        />
+        <Button label="Behold opplevelsen" variant="ink" onPress={onClose} />
+      </View>
+    </Sheet>
+  );
+}
+
+// "En plass åpnet seg!" (PDF p24): a waitlist offer with a response window.
+export function SpotOfferSheet({ title, onClose }: Base & { title: string }) {
+  const [choice, setChoice] = useState<string | null>(null);
+  return (
+    <Sheet visible onClose={onClose} title="En plass åpnet seg!">
+      <View className="gap-3">
+        <View className="gap-0.5 rounded-xl border border-line bg-surface p-3">
+          <Text className="text-sm font-semibold text-ink">{title}</Text>
+        </View>
+        <Text className="text-sm text-muted">
+          Svarer du ikke innen fristen, går plassen videre til neste.
+        </Text>
+        {choice ? (
+          <DemoNote>{`«${choice}» gjør ingenting — ingen venteliste er aktiv.`}</DemoNote>
+        ) : null}
+        <Button
+          label="Ta plassen"
+          variant="ember"
+          onPress={() => setChoice("Ta plassen")}
+        />
+        <Button
+          label="Gi den videre"
+          variant="secondary"
+          onPress={() => setChoice("Gi den videre")}
+        />
+      </View>
+    </Sheet>
+  );
+}
+
+const PRAISE = ["Stemningen", "Verten", "Stedet", "Folkene"];
+
+// "Hvordan var det?" (PDF p25): post-experience rating prompt.
+export function RateSheet({ title, onClose }: Base & { title: string }) {
+  const [stars, setStars] = useState(0);
+  const [liked, setLiked] = useState<string[]>([]);
+  const [sent, setSent] = useState(false);
+  return (
+    <Sheet visible onClose={onClose} title="Hvordan var det?">
+      <View className="gap-3">
+        <Text className="text-sm text-muted">{title}</Text>
+        <View className="flex-row gap-1">
+          {[1, 2, 3, 4, 5].map((n) => (
+            <Pressable
+              key={n}
+              accessibilityRole="button"
+              accessibilityLabel={`${n} av 5 stjerner`}
+              onPress={() => setStars(n)}
+            >
+              <Ionicons
+                name={n <= stars ? "star" : "star-outline"}
+                size={32}
+                color={n <= stars ? colors.ember : colors.muted}
+              />
+            </Pressable>
+          ))}
+        </View>
+        <Text className="text-sm font-semibold text-ink">Hva var bra?</Text>
+        <View className="flex-row flex-wrap gap-2">
+          {PRAISE.map((p) => (
+            <Chip
+              key={p}
+              label={p}
+              selected={liked.includes(p)}
+              onPress={() =>
+                setLiked((s) =>
+                  s.includes(p) ? s.filter((x) => x !== p) : [...s, p],
+                )
+              }
+            />
+          ))}
+        </View>
+        {sent ? <DemoNote>Vurderingen ble ikke lagret.</DemoNote> : null}
+        <Button
+          label="Send vurdering"
+          variant="ink"
+          disabled={stars === 0}
+          onPress={() => setSent(true)}
+        />
+        <Button label="Hopp over" variant="secondary" onPress={onClose} />
+      </View>
+    </Sheet>
+  );
+}
+
+// "Del regningen" (PDF p25) — STRUCTURE ONLY: how a shared bill would split
+// between participants. No amounts are collected or requested.
+export function SplitBillSheet({
+  title,
+  names,
+  onClose,
+}: Base & { title: string; names: string[] }) {
+  const [mode, setMode] = useState("Likt");
+  const [reminded, setReminded] = useState(false);
+  return (
+    <Sheet visible onClose={onClose} title="Del regningen">
+      <View className="gap-3">
+        <Text className="text-sm text-muted">{title}</Text>
+        <View className="flex-row gap-2">
+          {["Likt", "Egendefinert"].map((m) => (
+            <Chip
+              key={m}
+              label={m}
+              selected={mode === m}
+              onPress={() => setMode(m)}
+            />
+          ))}
+        </View>
+        {names.map((n) => (
+          <View
+            key={n}
+            className="flex-row items-center justify-between rounded-xl border border-line bg-surface px-4 py-3"
+          >
+            <Text className="text-sm font-semibold text-ink">{n}</Text>
+            <Text className="text-xs text-muted">
+              {mode === "Likt" ? `1/${names.length}` : "—"}
+            </Text>
+          </View>
+        ))}
+        <DemoNote>
+          {reminded
+            ? "Ingen påminnelse ble sendt."
+            : "Regningsdeling er ikke aktiv — ingen beløp kreves inn."}
+        </DemoNote>
+        <Button
+          label="Send påminnelse"
+          variant="ink"
+          onPress={() => setReminded(true)}
+        />
       </View>
     </Sheet>
   );
