@@ -12,7 +12,10 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
+import { Button } from "@/components/Button";
 import { DemoBadge } from "@/components/DemoBadge";
+import { useGuestMode } from "@/components/map/hooks/useGuestMode";
+import { SignInPrompt } from "@/components/SignInPrompt";
 import {
   chatById,
   experienceById,
@@ -32,6 +35,10 @@ export default function ChatThreadScreen() {
     messagesForChat(id ?? ""),
   );
   const [draft, setDraft] = useState("");
+  // Guests may read but not send (master spec §4: guests cannot send
+  // messages). The composer is replaced by a sign-in entry point.
+  const { isGuest } = useGuestMode();
+  const [promptOpen, setPromptOpen] = useState(false);
 
   if (!chat) {
     return (
@@ -121,38 +128,54 @@ export default function ChatThreadScreen() {
           renderItem={({ item }) => <Bubble message={item} />}
         />
 
-        {/* Composer */}
-        <View className="gap-2 border-t border-line px-gutter pb-2 pt-2.5">
-          <Text className="text-center text-[11px] text-muted">
-            Demo — meldinger sendes eller lagres ikke
-          </Text>
-          <View className="flex-row items-end gap-2">
-            <TextInput
-              className="max-h-28 flex-1 rounded-2xl border border-line bg-surface px-4 py-2.5 text-base text-ink"
-              placeholder="Skriv en melding …"
-              placeholderTextColor={colors.muted}
-              value={draft}
-              onChangeText={setDraft}
-              multiline
+        {isGuest ? (
+          <View className="border-t border-line px-gutter pb-2 pt-2.5">
+            <Button
+              label="Logg inn for å skrive"
+              variant="ink"
+              onPress={() => setPromptOpen(true)}
             />
-            <Pressable
-              accessibilityRole="button"
-              accessibilityLabel="Send"
-              disabled={!draft.trim()}
-              onPress={send}
-              className={`h-11 w-11 items-center justify-center rounded-full ${
-                draft.trim() ? "bg-ember active:opacity-80" : "bg-surfaceMuted"
-              }`}
-            >
-              <Ionicons
-                name="arrow-up"
-                size={20}
-                color={draft.trim() ? colors.onEmber : colors.muted}
-              />
-            </Pressable>
           </View>
-        </View>
+        ) : (
+          <View className="gap-2 border-t border-line px-gutter pb-2 pt-2.5">
+            <Text className="text-center text-[11px] text-muted">
+              Demo — meldinger sendes eller lagres ikke
+            </Text>
+            <View className="flex-row items-end gap-2">
+              <TextInput
+                className="max-h-28 flex-1 rounded-2xl border border-line bg-surface px-4 py-2.5 text-base text-ink"
+                placeholder="Skriv en melding …"
+                placeholderTextColor={colors.muted}
+                value={draft}
+                onChangeText={setDraft}
+                multiline
+              />
+              <Pressable
+                accessibilityRole="button"
+                accessibilityLabel="Send"
+                disabled={!draft.trim()}
+                onPress={send}
+                className={`h-11 w-11 items-center justify-center rounded-full ${
+                  draft.trim()
+                    ? "bg-ember active:opacity-80"
+                    : "bg-surfaceMuted"
+                }`}
+              >
+                <Ionicons
+                  name="arrow-up"
+                  size={20}
+                  color={draft.trim() ? colors.onEmber : colors.muted}
+                />
+              </Pressable>
+            </View>
+          </View>
+        )}
       </KeyboardAvoidingView>
+      <SignInPrompt
+        visible={promptOpen}
+        onClose={() => setPromptOpen(false)}
+        action="skrive i chatten"
+      />
     </SafeAreaView>
   );
 }
