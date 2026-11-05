@@ -43,7 +43,8 @@ describe("experienceAvailability", () => {
     expect(a.isWaitlist).toBe(false);
     expect(a.label).toBe("Fullt");
     expect(a.statusText).toBe("Fullt");
-    expect(a.joinLabel).toBe("Bli med");
+    // A full experience offers the waitlist, matching the map detail.
+    expect(a.joinLabel).toBe("Meld på venteliste");
   });
 
   it("explicit full status → Fullt", () => {
@@ -55,6 +56,18 @@ describe("experienceAvailability", () => {
     });
     expect(a.isFull).toBe(true);
     expect(a.label).toBe("Fullt");
+    expect(a.joinLabel).toBe("Meld på venteliste");
+  });
+
+  it("explicit full status wins even with seats on paper", () => {
+    const a = experienceAvailability({
+      ...base,
+      status: "full",
+      capacity: 12,
+      going: 9,
+    });
+    expect(a.isFull).toBe(true);
+    expect(a.joinLabel).toBe("Meld på venteliste");
   });
 
   it("waitlist → Venteliste + waitlist CTA (even at capacity)", () => {

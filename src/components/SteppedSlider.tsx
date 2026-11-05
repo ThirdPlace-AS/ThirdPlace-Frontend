@@ -58,34 +58,40 @@ export function SteppedSlider({
     setTrackW(w);
   };
 
-  const xToIndex = (x: number) => {
-    const w = trackWRef.current || 1;
-    const ratio = Math.min(1, Math.max(0, x / w));
-    return Math.round(ratio * last);
-  };
+  // Created once; callbacks read the latest props via `latest`. A responder
+  // rebuilt per render (onChange re-renders the parent on every move) loses its
+  // accumulated gestureState, so g.dx would only be the latest move delta.
+  const latest = useRef({ index, last, onChange, reduced });
+  latest.current = { index, last, onChange, reduced };
 
-  const pan = PanResponder.create({
-    onStartShouldSetPanResponder: () => true,
-    onMoveShouldSetPanResponder: () => true,
-    onPanResponderGrant: () => {
-      dragging.current = true;
-      startIdx.current = index;
-      scale.value = reduced ? 1 : withSpring(1.2, motion.spring.snappy);
-    },
-    onPanResponderMove: (_e, g) => {
-      const w = trackWRef.current || 1;
-      const startX = (startIdx.current / last) * w;
-      const x = Math.max(0, Math.min(w, startX + g.dx));
-      thumbX.value = x; // follow the finger continuously
-      onChange(xToIndex(startX + g.dx));
-    },
-    onPanResponderRelease: () => {
-      dragging.current = false;
-      scale.value = reduced ? 1 : withSpring(1, motion.spring.snappy);
-      const x = xForIndex(index);
-      thumbX.value = reduced ? x : withSpring(x, motion.spring.snappy);
-    },
-  });
+  const pan = useRef(
+    PanResponder.create({
+      onStartShouldSetPanResponder: () => true,
+      onMoveShouldSetPanResponder: () => true,
+      onPanResponderGrant: () => {
+        dragging.current = true;
+        startIdx.current = latest.current.index;
+        scale.value = latest.current.reduced
+          ? 1
+          : withSpring(1.2, motion.spring.snappy);
+      },
+      onPanResponderMove: (_e, g) => {
+        const p = latest.current;
+        const w = trackWRef.current || 1;
+        const startX = (startIdx.current / p.last) * w;
+        thumbX.value = Math.max(0, Math.min(w, startX + g.dx)); // follow finger
+        const ratio = Math.min(1, Math.max(0, (startX + g.dx) / w));
+        p.onChange(Math.round(ratio * p.last));
+      },
+      onPanResponderRelease: () => {
+        dragging.current = false;
+        const p = latest.current;
+        scale.value = p.reduced ? 1 : withSpring(1, motion.spring.snappy);
+        const x = (p.index / p.last) * (trackWRef.current || 0);
+        thumbX.value = p.reduced ? x : withSpring(x, motion.spring.snappy);
+      },
+    }),
+  ).current;
 
   const fillStyle = useAnimatedStyle(() => ({ width: thumbX.value }));
   const thumbStyle = useAnimatedStyle(() => ({

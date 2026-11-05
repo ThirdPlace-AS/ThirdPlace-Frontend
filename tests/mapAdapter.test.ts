@@ -82,4 +82,19 @@ describe("resultForMode", () => {
     expect(weekday.items.some((i) => i.id === "e2")).toBe(false);
     expect(weekday.items.some((i) => i.id === "e3")).toBe(false); // full → not live
   });
+
+  it("saved shows every saved item, ignoring filters, search and status", () => {
+    const r = resultForMode({
+      ...base,
+      mode: "saved",
+      places: [], // the screen's filtered place list is empty
+      query: "finnes-ikke",
+      time: "Helg",
+      hasSpots: true,
+      savedIds: ["experience:e3", `place:${places[0]!.id}`],
+    });
+    const ids = r.items.map((i) => i.id);
+    expect(ids).toContain("e3"); // status "full", day/spots don't match
+    expect(ids).toContain(places[0]!.id);
+  });
 });

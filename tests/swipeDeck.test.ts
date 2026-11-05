@@ -1,6 +1,7 @@
 import { describe, expect, it } from "@jest/globals";
 import { act, renderHook } from "@testing-library/react-native";
 
+import { useMapSaved } from "@/components/map/hooks/useMapSaved";
 import { markerId } from "@/components/map/types/mapPresentation";
 import {
   applyAction,
@@ -81,5 +82,23 @@ describe("useSwipeDeck save wiring", () => {
     act(() => result.current.undo());
     expect(result.current.index).toBe(0);
     expect(result.current.isSaved(key)).toBe(false);
+  });
+
+  it("undo keeps an item that was already saved before the swipe", () => {
+    const saved = renderHook(() => useMapSaved());
+    const { result } = renderHook(() => useSwipeDeck());
+    const first = result.current.current!;
+    const key = markerId("experience", first.id);
+
+    // Saved earlier (e.g. from the map detail).
+    act(() => saved.result.current.toggle(key));
+    expect(result.current.isSaved(key)).toBe(true);
+
+    act(() => result.current.commit("save"));
+    act(() => result.current.undo());
+    expect(result.current.index).toBe(0);
+    expect(result.current.isSaved(key)).toBe(true);
+
+    act(() => saved.result.current.toggle(key)); // clean the shared store
   });
 });

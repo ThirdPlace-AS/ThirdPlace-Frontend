@@ -80,8 +80,6 @@ export function RangeSlider({
 
   const span = max - min || 1;
   const toX = (v: number) => ((v - min) / span) * trackW;
-  const valFrom = (start: number, dx: number) =>
-    start + (dx / (trackWRef.current || 1)) * span;
 
   // Keep the thumbs in sync with props whenever we're NOT mid-drag (keyboard /
   // a11y adjustments, external resets, initial layout).
@@ -100,61 +98,101 @@ export function RangeSlider({
     setTrackW(w);
   };
 
+  // Latest props for the gesture callbacks. The PanResponders are created ONCE
+  // (below): a responder rebuilt on every render — and onChange re-renders the
+  // parent on every move — loses its accumulated gestureState, so g.dx would be
+  // only the latest move delta and the thumb would stutter back to the start.
+  const latest = useRef({
+    low,
+    high,
+    min,
+    max,
+    step,
+    minGap,
+    onChange,
+    reduced,
+  });
+  latest.current = { low, high, min, max, step, minGap, onChange, reduced };
+  const xOf = (v: number) => {
+    const p = latest.current;
+    return ((v - p.min) / (p.max - p.min || 1)) * trackWRef.current;
+  };
+  const rawFrom = (start: number, dx: number) => {
+    const p = latest.current;
+    return start + (dx / (trackWRef.current || 1)) * (p.max - p.min || 1);
+  };
+  const settle = (sv: typeof lowX, x: number) => {
+    sv.value = latest.current.reduced ? x : withSpring(x, motion.spring.snappy);
+  };
+
   const press = (s: typeof lowScale) => {
-    s.value = reduced ? 1 : withSpring(1.2, motion.spring.snappy);
+    s.value = latest.current.reduced
+      ? 1
+      : withSpring(1.2, motion.spring.snappy);
   };
   const release = (s: typeof lowScale) => {
-    s.value = reduced ? 1 : withSpring(1, motion.spring.snappy);
+    s.value = latest.current.reduced ? 1 : withSpring(1, motion.spring.snappy);
   };
 
-  const lowPan = PanResponder.create({
-    onStartShouldSetPanResponder: () => true,
-    onMoveShouldSetPanResponder: () => true,
-    onPanResponderGrant: () => {
-      dragging.current = true;
-      startLow.current = low;
-      press(lowScale);
-    },
-    onPanResponderMove: (_e, g) => {
-      const raw = valFrom(startLow.current, g.dx);
-      const committed = Math.min(snap(raw, min, max, step), high - minGap);
-      onChange(committed, high);
-      // Follow the finger continuously (clamped), independent of the snap.
-      const maxX = toX(high - minGap);
-      lowX.value = Math.max(0, Math.min(toX(raw), maxX));
-    },
-    onPanResponderRelease: () => {
-      dragging.current = false;
-      release(lowScale);
-      lowX.value = reduced
-        ? toX(Math.min(low, high - minGap))
-        : withSpring(toX(Math.min(low, high - minGap)), motion.spring.snappy);
-    },
-  });
+  const lowPan = useRef(
+    PanResponder.create({
+      onStartShouldSetPanResponder: () => true,
+      onMoveShouldSetPanResponder: () => true,
+      onPanResponderGrant: () => {
+        dragging.current = true;
+        startLow.current = latest.current.low;
+        press(lowScale);
+      },
+      onPanResponderMove: (_e, g) => {
+        const p = latest.current;
+        const raw = rawFrom(startLow.current, g.dx);
+        const committed = Math.min(
+          snap(raw, p.min, p.max, p.step),
+          p.high - p.minGap,
+        );
+        p.onChange(committed, p.high);
+        // Follow the finger continuously (clamped), independent of the snap.
+        lowX.value = Math.max(0, Math.min(xOf(raw), xOf(p.high - p.minGap)));
+      },
+      onPanResponderRelease: () => {
+        dragging.current = false;
+        release(lowScale);
+        const p = latest.current;
+        settle(lowX, xOf(Math.min(p.low, p.high - p.minGap)));
+      },
+    }),
+  ).current;
 
-  const highPan = PanResponder.create({
-    onStartShouldSetPanResponder: () => true,
-    onMoveShouldSetPanResponder: () => true,
-    onPanResponderGrant: () => {
-      dragging.current = true;
-      startHigh.current = high;
-      press(highScale);
-    },
-    onPanResponderMove: (_e, g) => {
-      const raw = valFrom(startHigh.current, g.dx);
-      const committed = Math.max(snap(raw, min, max, step), low + minGap);
-      onChange(low, committed);
-      const minX = toX(low + minGap);
-      highX.value = Math.max(minX, Math.min(toX(raw), trackWRef.current));
-    },
-    onPanResponderRelease: () => {
-      dragging.current = false;
-      release(highScale);
-      highX.value = reduced
-        ? toX(Math.max(high, low + minGap))
-        : withSpring(toX(Math.max(high, low + minGap)), motion.spring.snappy);
-    },
-  });
+  const highPan = useRef(
+    PanResponder.create({
+      onStartShouldSetPanResponder: () => true,
+      onMoveShouldSetPanResponder: () => true,
+      onPanResponderGrant: () => {
+        dragging.current = true;
+        startHigh.current = latest.current.high;
+        press(highScale);
+      },
+      onPanResponderMove: (_e, g) => {
+        const p = latest.current;
+        const raw = rawFrom(startHigh.current, g.dx);
+        const committed = Math.max(
+          snap(raw, p.min, p.max, p.step),
+          p.low + p.minGap,
+        );
+        p.onChange(p.low, committed);
+        highX.value = Math.max(
+          xOf(p.low + p.minGap),
+          Math.min(xOf(raw), trackWRef.current),
+        );
+      },
+      onPanResponderRelease: () => {
+        dragging.current = false;
+        release(highScale);
+        const p = latest.current;
+        settle(highX, xOf(Math.max(p.high, p.low + p.minGap)));
+      },
+    }),
+  ).current;
 
   const lowStyle = useAnimatedStyle(() => ({
     transform: [{ translateX: lowX.value }, { scale: lowScale.value }],

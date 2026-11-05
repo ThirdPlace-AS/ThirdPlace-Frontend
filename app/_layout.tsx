@@ -17,7 +17,9 @@ export default function RootLayout() {
   // font loads lazily on web and every icon renders blank (tofu) for a frame —
   // most visible on the full-screen swipe card. Gate the app on it so no screen
   // flashes empty glyphs; the holder uses the theme background to avoid a flash.
-  const [fontsLoaded] = useFonts(Ionicons.font);
+  // If the font fails, still render — a blank-forever screen is worse than
+  // briefly missing glyphs.
+  const [fontsLoaded, fontError] = useFonts(Ionicons.font);
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
@@ -25,7 +27,7 @@ export default function RootLayout() {
         <QueryClientProvider client={queryClient}>
           {/* Dark status-bar content: visible on the light theme background. */}
           <StatusBar style="dark" />
-          {fontsLoaded ? (
+          {fontsLoaded || fontError ? (
             <Stack screenOptions={{ headerShown: false }} />
           ) : (
             <View style={{ flex: 1, backgroundColor: colors.background }} />

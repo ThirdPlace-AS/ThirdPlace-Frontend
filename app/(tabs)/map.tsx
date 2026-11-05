@@ -169,8 +169,11 @@ export default function MapScreen() {
   };
 
   const handleLocationPress = () => {
-    if (location.status === "granted") {
+    if (location.status === "granted" && location.coord) {
       camera.recenter();
+    } else if (location.status === "granted") {
+      // A manual area replaced the GPS fix — go back to the real position.
+      void handleRequestLocation();
     } else {
       setLocationOpen(true);
     }

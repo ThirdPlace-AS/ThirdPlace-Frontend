@@ -32,6 +32,8 @@ import Animated, {
 
 import { DemoBadge } from "@/components/DemoBadge";
 import { useGuestMode } from "@/components/map/hooks/useGuestMode";
+import { useMapSaved } from "@/components/map/hooks/useMapSaved";
+import { markerId } from "@/components/map/types/mapPresentation";
 import { NotificationsSheet } from "@/components/NotificationsSheet";
 import { SignInPrompt } from "@/components/SignInPrompt";
 import { EmptyState } from "@/components/states/StateView";
@@ -748,7 +750,14 @@ function ExpandDetail({
   // Single source of truth for status wording + CTA (F14).
   const { statusText, joinLabel } = experienceAvailability(exp);
 
-  // Account-gate join/save for guests; otherwise it is a local demo no-op.
+  // Save uses the shared demo Saved store (same as a swipe-up and the map's
+  // Lagret); join flips local demo state only (BLOCKED_CONTRACT_GAP).
+  const { isSaved, toggle } = useMapSaved();
+  const savedKey = markerId("experience", exp.id);
+  const saved = isSaved(savedKey);
+  const [joined, setJoined] = useState(false);
+
+  // Account-gate join/save for guests.
   const gate = (label: string, run?: () => void) => {
     if (isGuest) {
       setSignInFor(label);
@@ -874,8 +883,9 @@ function ExpandDetail({
         >
           <Pressable
             accessibilityRole="button"
-            accessibilityLabel={joinLabel}
-            onPress={() => gate(joinLabel)}
+            accessibilityLabel={joined ? "Meld av (demo)" : joinLabel}
+            accessibilityState={{ selected: joined }}
+            onPress={() => gate(joinLabel, () => setJoined((j) => !j))}
             style={{ backgroundColor: colors.ember }}
             className="h-12 flex-1 flex-row items-center justify-center gap-2 rounded-full"
           >
@@ -884,17 +894,22 @@ function ExpandDetail({
               className="text-base font-bold"
               style={{ color: colors.onEmber }}
             >
-              {joinLabel}
+              {joined ? "Du er med · demo" : joinLabel}
             </Text>
           </Pressable>
           <Pressable
             accessibilityRole="button"
-            accessibilityLabel="Lagre"
-            onPress={() => gate("lagre")}
+            accessibilityLabel={saved ? "Fjern fra lagret" : "Lagre"}
+            accessibilityState={{ selected: saved }}
+            onPress={() => gate("lagre", () => toggle(savedKey))}
             style={{ borderColor: "rgba(255,255,255,0.25)", borderWidth: 1 }}
             className="h-12 w-12 items-center justify-center rounded-full"
           >
-            <Ionicons name="bookmark-outline" size={20} color="#FFFFFF" />
+            <Ionicons
+              name={saved ? "bookmark" : "bookmark-outline"}
+              size={20}
+              color="#FFFFFF"
+            />
           </Pressable>
           <Pressable
             accessibilityRole="button"

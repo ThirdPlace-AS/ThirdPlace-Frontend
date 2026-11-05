@@ -2,7 +2,9 @@ import { Ionicons } from "@expo/vector-icons";
 import { useState } from "react";
 import { Pressable, Text, View } from "react-native";
 
+import { DemoNote } from "@/components/DemoNote";
 import { SignInPrompt } from "@/components/SignInPrompt";
+import { demoCopy } from "@/copy";
 import { colors } from "@/theme";
 
 import { useGuestMode } from "../hooks/useGuestMode";
@@ -10,13 +12,13 @@ import { useMapSaved } from "../hooks/useMapSaved";
 
 // Save / Share / Report action row shared by detail content. Save toggles the
 // in-memory demo store (persistence CONTRACT-BLOCKED CB-5) — or, for a guest,
-// prompts sign-in. Share and Report are DEMO no-ops — no real share sheet is
-// invoked and no report is submitted.
+// prompts sign-in. Share and Report are DEMO: tapping them only reveals a note
+// saying nothing was shared or reported (never a fake "Rapportert" state).
 export function DetailActions({ markerId }: { markerId: string }) {
   const { isSaved, toggle } = useMapSaved();
   const { isGuest } = useGuestMode();
   const [promptOpen, setPromptOpen] = useState(false);
-  const [reported, setReported] = useState(false);
+  const [notice, setNotice] = useState<"share" | "report" | null>(null);
   const saved = isSaved(markerId);
 
   const onSave = () => {
@@ -51,9 +53,7 @@ export function DetailActions({ markerId }: { markerId: string }) {
         <Pressable
           accessibilityRole="button"
           accessibilityLabel="Del"
-          onPress={() => {
-            /* DEMO — no real share sheet. */
-          }}
+          onPress={() => setNotice("share")}
           className="flex-1 flex-row items-center justify-center gap-2 rounded-md border border-line bg-surface px-3 py-2.5"
         >
           <Ionicons name="share-outline" size={18} color={colors.ink} />
@@ -63,22 +63,19 @@ export function DetailActions({ markerId }: { markerId: string }) {
         <Pressable
           accessibilityRole="button"
           accessibilityLabel="Rapporter"
-          accessibilityState={{ selected: reported }}
-          onPress={() => setReported(true)}
+          onPress={() => setNotice("report")}
           className="flex-1 flex-row items-center justify-center gap-2 rounded-md border border-line bg-surface px-3 py-2.5"
         >
-          <Ionicons
-            name={reported ? "flag" : "flag-outline"}
-            size={18}
-            color={reported ? colors.ember : colors.ink}
-          />
-          <Text
-            className={`text-sm font-semibold ${reported ? "text-ember" : "text-ink"}`}
-          >
-            {reported ? "Rapportert" : "Rapporter"}
-          </Text>
+          <Ionicons name="flag-outline" size={18} color={colors.ink} />
+          <Text className="text-sm font-semibold text-ink">Rapporter</Text>
         </Pressable>
       </View>
+
+      {notice ? (
+        <DemoNote>
+          {notice === "share" ? demoCopy.shareInactive : demoCopy.reportNotSent}
+        </DemoNote>
+      ) : null}
 
       <SignInPrompt
         visible={promptOpen}

@@ -34,8 +34,12 @@ export function useMapLocation() {
 
   const posSub = useRef<Subscription | null>(null);
   const headSub = useRef<Subscription | null>(null);
+  // Bumped by stop(): a watch that resolves after stop() (area picked, or
+  // unmount, during the await) belongs to a dead request and is removed at once.
+  const gen = useRef(0);
 
   const stop = useCallback(() => {
+    gen.current += 1;
     posSub.current?.remove();
     headSub.current?.remove();
     posSub.current = null;
@@ -64,18 +68,32 @@ export function useMapLocation() {
       // any prior watches. Failures here are non-fatal — the one-shot fix above
       // already made the puck visible.
       stop();
+      const mine = gen.current;
+      const live = () => gen.current === mine;
       try {
-        posSub.current = await Location.watchPositionAsync(
+        const ps = await Location.watchPositionAsync(
           { accuracy: Location.Accuracy.Balanced, distanceInterval: 10 },
           (p) => {
+            if (!live()) return;
             setCoord([p.coords.longitude, p.coords.latitude]);
             setPrecise(p.coords.accuracy != null && p.coords.accuracy <= 100);
           },
         );
-        headSub.current = await Location.watchHeadingAsync((h) => {
+        if (!live()) {
+          ps.remove();
+          return;
+        }
+        posSub.current = ps;
+        const hs = await Location.watchHeadingAsync((h) => {
+          if (!live()) return;
           const deg = h.trueHeading >= 0 ? h.trueHeading : h.magHeading;
           setHeading(deg >= 0 ? deg : null);
         });
+        if (!live()) {
+          hs.remove();
+          return;
+        }
+        headSub.current = hs;
       } catch {
         // Watching unsupported (e.g. web, no magnetometer) — keep the fix.
       }

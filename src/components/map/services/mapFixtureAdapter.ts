@@ -7,6 +7,7 @@ import {
   experiences,
   MAP_CENTER,
   placeById,
+  places as allPlaces,
   type MockExperience,
   type MockPlace,
   type TimeWindow,
@@ -132,9 +133,15 @@ export function resultForMode({
       };
 
     case "saved": {
-      const saved = [...placeItems, ...liveItems].filter((i) =>
-        savedIds.includes(i.markerId),
-      );
+      // Everything the user saved, regardless of the active filters/search or
+      // an experience's status — hiding a saved item behind a filter reads as
+      // "not saved". Cancelled experiences still drop out.
+      const saved = [
+        ...allPlaces.map(placeToItem),
+        ...experiences
+          .filter((e) => e.status !== "cancelled")
+          .map(experienceToItem),
+      ].filter((i) => savedIds.includes(i.markerId));
       return {
         items: saved,
         demo: false,

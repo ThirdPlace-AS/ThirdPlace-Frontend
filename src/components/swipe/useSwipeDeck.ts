@@ -51,11 +51,17 @@ export function useSwipeDeck(opts?: {
 
   const savedKey = (e: MockExperience) => markerId("experience", e.id);
 
+  // Whether the last committed swipe actually added to Saved. Undo only removes
+  // what this swipe added — an item saved earlier (e.g. from the map) stays.
+  const lastAddedSave = useRef(false);
+
   const commit = useCallback(
     (action: SwipeAction) => {
       const card = deck[state.index];
+      lastAddedSave.current = false;
       if (card && action === "save" && !isSaved(savedKey(card))) {
         toggle(savedKey(card));
+        lastAddedSave.current = true;
       }
       setState((s) => applyAction(s, action));
     },
@@ -63,16 +69,16 @@ export function useSwipeDeck(opts?: {
   );
 
   const undo = useCallback(() => {
-    setState((s) => {
-      if (!s.last) return s;
-      // Reverse a save when the undone step was a save.
-      const card = deck[s.last.index];
-      if (card && s.last.action === "save" && isSaved(savedKey(card))) {
-        toggle(savedKey(card));
-      }
-      return applyUndo(s);
-    });
-  }, [deck, isSaved, toggle]);
+    const last = state.last;
+    if (!last) return;
+    // Side effects stay outside the state updater (updaters may be replayed).
+    const card = deck[last.index];
+    if (card && last.action === "save" && lastAddedSave.current) {
+      if (isSaved(savedKey(card))) toggle(savedKey(card));
+    }
+    lastAddedSave.current = false;
+    setState(applyUndo);
+  }, [deck, state.last, isSaved, toggle]);
 
   const restart = useCallback(() => setState(initialDeck), []);
 

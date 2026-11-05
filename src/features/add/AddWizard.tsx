@@ -145,7 +145,9 @@ export function AddWizard() {
                   label={k.label}
                   hint={k.hint}
                   selected={draft.kind === k.kind}
-                  onPress={() => patch({ kind: k.kind, category: null })}
+                  onPress={() =>
+                    patch({ kind: k.kind, category: null, when: null })
+                  }
                 />
               ))}
             </View>

@@ -20,7 +20,7 @@ export type Availability = {
 export function experienceAvailability(exp: MockExperience): Availability {
   const spotsLeft = Math.max(0, exp.capacity - exp.going);
   const isWaitlist = exp.status === "waitlist";
-  const isFull = !isWaitlist && spotsLeft <= 0;
+  const isFull = !isWaitlist && (exp.status === "full" || spotsLeft <= 0);
   const statusText = isWaitlist
     ? "Venteliste"
     : isFull
@@ -31,6 +31,6 @@ export function experienceAvailability(exp: MockExperience): Availability {
     : isFull
       ? "Fullt"
       : `${spotsLeft} plasser igjen · ${exp.going}/${exp.capacity}`;
-  const joinLabel = isWaitlist ? "Meld på venteliste" : "Bli med";
+  const joinLabel = isWaitlist || isFull ? "Meld på venteliste" : "Bli med";
   return { isWaitlist, isFull, spotsLeft, label, statusText, joinLabel };
 }

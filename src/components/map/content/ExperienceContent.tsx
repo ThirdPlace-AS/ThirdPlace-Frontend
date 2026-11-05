@@ -4,9 +4,13 @@ import { Pressable, Text, View } from "react-native";
 
 import { Button } from "@/components/Button";
 import { Chip } from "@/components/Chip";
+import { DemoNote } from "@/components/DemoNote";
+import { SignInPrompt } from "@/components/SignInPrompt";
+import { demoCopy } from "@/copy";
 import { experienceById, groupById, type ExperienceStatus } from "@/fixtures";
 import { colors } from "@/theme";
 
+import { useGuestMode } from "../hooks/useGuestMode";
 import type { PushFn } from "../sheetTypes";
 import { markerId } from "../types/mapPresentation";
 import { DetailActions } from "./DetailActions";
@@ -51,6 +55,12 @@ export function ExperienceContent({ id, push }: { id: string; push: PushFn }) {
   const [user, setUser] = useState<UserState>(
     experience?.status === "joined" ? "joined" : "none",
   );
+  const { isGuest } = useGuestMode();
+  const [promptOpen, setPromptOpen] = useState(false);
+  // Join / waitlist are account actions: guests get the sign-in prompt, the
+  // signed-in demo flips local state only (BLOCKED_CONTRACT_GAP).
+  const gated = (run: () => void) => () =>
+    isGuest ? setPromptOpen(true) : run();
 
   if (!experience) {
     return <Text className="text-sm text-muted">Fant ikke arrangementet.</Text>;
@@ -69,10 +79,10 @@ export function ExperienceContent({ id, push }: { id: string; push: PushFn }) {
       return { label: "Avlyst", action: undefined, disabled: true };
     if (experience.status === "full" || experience.status === "waitlist")
       return {
-        label: "Sett meg på venteliste",
-        action: () => setUser("waitlisted"),
+        label: "Meld på venteliste",
+        action: gated(() => setUser("waitlisted")),
       };
-    return { label: "Bli med", action: () => setUser("joined") };
+    return { label: "Bli med", action: gated(() => setUser("joined")) };
   })();
 
   return (
@@ -124,14 +134,11 @@ export function ExperienceContent({ id, push }: { id: string; push: PushFn }) {
       </View>
 
       {user !== "none" ? (
-        <View className="flex-row items-center gap-2 rounded-md border border-line bg-surfaceMuted px-3 py-2">
-          <Ionicons name="chatbubbles-outline" size={18} color={colors.ink} />
-          <Text className="flex-1 text-sm text-ink">
-            {user === "joined"
-              ? "Du er med — gruppechatten er åpnet."
-              : "Du står på venteliste — vi varsler deg ved ledig plass."}
-          </Text>
-        </View>
+        <DemoNote>
+          {user === "joined"
+            ? demoCopy.joinedNoBackend
+            : demoCopy.waitlistedNoBackend}
+        </DemoNote>
       ) : null}
 
       <Button
@@ -139,6 +146,12 @@ export function ExperienceContent({ id, push }: { id: string; push: PushFn }) {
         variant={user === "none" ? "ember" : "secondary"}
         disabled={primary.disabled}
         onPress={primary.action}
+      />
+
+      <SignInPrompt
+        visible={promptOpen}
+        onClose={() => setPromptOpen(false)}
+        action={primary.label.toLowerCase()}
       />
     </View>
   );
