@@ -103,7 +103,10 @@ export default function TwoFactor() {
                   QR-kode
                 </Text>
                 <View className="items-center gap-2 rounded-2xl border border-line bg-surface p-5">
-                  <View className="h-32 w-32 items-center justify-center rounded-xl bg-surfaceMuted">
+                  <View
+                    className="items-center justify-center rounded-xl bg-surfaceMuted"
+                    style={{ height: 128, width: 128 }}
+                  >
                     <Ionicons
                       name="qr-code-outline"
                       size={64}

@@ -28,7 +28,16 @@ export default function RootLayout() {
           {/* Dark status-bar content: visible on the light theme background. */}
           <StatusBar style="dark" />
           {fontsLoaded || fontError ? (
-            <Stack screenOptions={{ headerShown: false }} />
+            <Stack screenOptions={{ headerShown: false }}>
+              {/* Account switcher (PDF p27) floats over the current screen. */}
+              <Stack.Screen
+                name="account-switch"
+                options={{
+                  presentation: "transparentModal",
+                  animation: "fade",
+                }}
+              />
+            </Stack>
           ) : (
             <View style={{ flex: 1, backgroundColor: colors.background }} />
           )}

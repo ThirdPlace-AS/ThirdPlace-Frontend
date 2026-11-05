@@ -1,4 +1,5 @@
 import { Ionicons } from "@expo/vector-icons";
+import { router } from "expo-router";
 import { Tabs } from "expo-router/js-tabs";
 import { View, type ColorValue } from "react-native";
 
@@ -75,6 +76,8 @@ export default function TabsLayout() {
       />
       <Tabs.Screen
         name="profile"
+        // PDF p27: a long press on Profil opens the account switcher.
+        listeners={{ tabLongPress: () => router.push("/account-switch") }}
         options={{
           title: "Profil",
           tabBarIcon: icon("person-outline", "person"),

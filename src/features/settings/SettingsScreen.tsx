@@ -1,5 +1,5 @@
 import { Ionicons } from "@expo/vector-icons";
-import { router } from "expo-router";
+import { router, type Href } from "expo-router";
 import { useState } from "react";
 import { Pressable, ScrollView, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -258,11 +258,30 @@ function LinkedSheet({ visible, onClose }: SheetProps) {
           name={profile.name}
           meta="Utforsker · aktiv nå"
         />
+        <Pressable
+          accessibilityRole="button"
+          onPress={() => {
+            onClose();
+            router.push("/workspace" as Href);
+          }}
+          className="flex-row items-center gap-3 rounded-xl border border-line bg-surface p-3 active:opacity-80"
+        >
+          <Ionicons name="storefront-outline" size={20} color={colors.ink} />
+          <View className="flex-1">
+            <Text className="text-sm font-semibold text-ink">
+              Oslo Kaffebar AS
+            </Text>
+            <Text className="text-xs text-muted">Bedrift · eksempel</Text>
+          </View>
+          <Text className="text-xs font-semibold text-ink">Bytt til</Text>
+        </Pressable>
         <Text className="text-xs text-muted">
           Har du en bedrift eller er skaper, kan kontoene kobles her og byttes
           med langt trykk på Profil-fanen.
         </Text>
-        <DemoNote>Ingen andre kontoer er koblet i demoen.</DemoNote>
+        <DemoNote>
+          Bedriftskontoen er et eksempel — ingen kontoer er koblet.
+        </DemoNote>
         <Button label="Lukk" variant="secondary" onPress={onClose} />
       </View>
     </Sheet>
