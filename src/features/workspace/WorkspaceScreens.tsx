@@ -48,6 +48,12 @@ export function WorkspaceHub() {
           onPress={() => router.push("/workspace/locations")}
         />
         <HubCard
+          icon="wallet-outline"
+          title="Utbetalinger"
+          hint="Utbetalingsmetode og -plan"
+          onPress={() => router.push("/payouts")}
+        />
+        <HubCard
           icon="people-outline"
           title="Marketplace"
           hint="Samarbeid med skapere og bedrifter"

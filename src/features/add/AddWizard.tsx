@@ -1,5 +1,6 @@
 import { Ionicons } from "@expo/vector-icons";
 import { Image } from "expo-image";
+import { router } from "expo-router";
 import { useState } from "react";
 import { Pressable, ScrollView, Switch, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -651,8 +652,15 @@ function SubmittedState({
               : "Demo — opplevelsen ble ikke publisert, og ingen chat ble opprettet. Publisering krever innlogging og en server, som ikke er aktiv ennå."}
           </Text>
         </View>
-        <View className="w-full pt-2">
+        <View className="w-full gap-3 pt-2">
           <Button label="Legg til noe nytt" variant="ink" onPress={onReset} />
+          {isPlace ? (
+            <Button
+              label="Se innleveringer"
+              variant="secondary"
+              onPress={() => router.push("/submissions")}
+            />
+          ) : null}
         </View>
       </View>
     </SafeAreaView>
