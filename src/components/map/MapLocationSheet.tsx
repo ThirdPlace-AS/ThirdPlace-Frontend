@@ -1,6 +1,6 @@
 import { Pressable, Text, View } from "react-native";
 
-import { Icon } from "@/components/ui";
+import { Icon, Switch } from "@/components/ui";
 import { Button } from "@/components/Button";
 import { Chip } from "@/components/Chip";
 import { Sheet } from "@/components/Sheet";
@@ -109,15 +109,15 @@ export function MapLocationSheet({
             Simuler frakoblet
           </Text>
         </View>
+        {/* Display-only: the whole row is the switch (role="switch" above). */}
         <View
-          className={`h-6 w-11 justify-center rounded-full px-0.5 ${
-            offline ? "bg-ink" : "bg-surfaceMuted"
-          }`}
+          pointerEvents="none"
+          importantForAccessibility="no-hide-descendants"
         >
-          <View
-            className={`h-5 w-5 rounded-full bg-surface ${
-              offline ? "self-end" : "self-start"
-            }`}
+          <Switch
+            value={offline}
+            onValueChange={() => {}}
+            label="Simuler frakoblet"
           />
         </View>
       </Pressable>

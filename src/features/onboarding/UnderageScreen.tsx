@@ -1,7 +1,6 @@
 import { Text, View } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
 
-import { Icon } from "@/components/ui";
+import { Icon, Screen } from "@/components/ui";
 import { Button } from "@/components/Button";
 import { resetTo } from "@/lib/navigation";
 
@@ -9,7 +8,7 @@ import { resetTo } from "@/lib/navigation";
 // is back to the start.
 export function UnderageScreen() {
   return (
-    <SafeAreaView className="flex-1 bg-background">
+    <Screen>
       <View className="flex-1 items-center justify-center gap-4 p-gutter">
         <View className="h-16 w-16 items-center justify-center rounded-full bg-surfaceMuted">
           <Icon name="hand-left-outline" size="xl" tone="ink" />
@@ -29,6 +28,6 @@ export function UnderageScreen() {
           />
         </View>
       </View>
-    </SafeAreaView>
+    </Screen>
   );
 }

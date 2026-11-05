@@ -1,9 +1,8 @@
 import { Ionicons } from "@expo/vector-icons";
 import { useState } from "react";
 import { Pressable, ScrollView, Text, View } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
 
-import { Icon } from "@/components/ui";
+import { Icon, Screen } from "@/components/ui";
 import { DemoNote } from "@/components/DemoNote";
 import { RouteHeader } from "@/components/RouteHeader";
 
@@ -46,7 +45,7 @@ const BENEFITS = [
 export default function AgeVerificationScreen() {
   const [chosen, setChosen] = useState<string | null>(null);
   return (
-    <SafeAreaView className="flex-1 bg-background" edges={["top"]}>
+    <Screen edges={["top"]}>
       <RouteHeader title="Aldersverifisering" />
       <ScrollView contentContainerClassName="gap-4 px-gutter py-4 pb-12">
         <Text className="text-sm text-muted font-normal">
@@ -88,6 +87,6 @@ export default function AgeVerificationScreen() {
           </View>
         ))}
       </ScrollView>
-    </SafeAreaView>
+    </Screen>
   );
 }

@@ -1,5 +1,4 @@
 import { Pressable, ScrollView, Text, View } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
 
 import {
   elevation,
@@ -10,7 +9,7 @@ import {
   useSchemePreference,
   type SchemePreference,
 } from "@/theme";
-import { Text as UIText } from "@/components/ui";
+import { Screen, Text as UIText } from "@/components/ui";
 
 const SAMPLE_BODY =
   "Oppdag nabolagets lune møteplasser. Finn din neste third place — der byen faktisk skjer.";
@@ -90,7 +89,7 @@ export default function ThemeSandbox() {
   const hex = palette[scheme];
 
   return (
-    <SafeAreaView className="flex-1 bg-background">
+    <Screen>
       <ScrollView contentContainerClassName="gap-section p-gutter pb-20">
         <View className="gap-sm">
           <Text className="text-h1 font-bold text-ink">Designsystem</Text>
@@ -214,7 +213,7 @@ export default function ThemeSandbox() {
           </View>
         </Section>
       </ScrollView>
-    </SafeAreaView>
+    </Screen>
   );
 }
 

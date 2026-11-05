@@ -2,9 +2,8 @@ import { Ionicons } from "@expo/vector-icons";
 import { router, type Href } from "expo-router";
 import { useState } from "react";
 import { Pressable, ScrollView, Text, View } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
 
-import { Icon } from "@/components/ui";
+import { Icon, Screen } from "@/components/ui";
 import { Button } from "@/components/Button";
 import { DemoNote } from "@/components/DemoNote";
 import { Input } from "@/components/Input";
@@ -45,7 +44,7 @@ export default function SettingsScreen() {
     guest.isGuest ? setSignIn(action) : setPanel(p);
 
   return (
-    <SafeAreaView className="flex-1 bg-background" edges={["top"]}>
+    <Screen edges={["top"]}>
       <RouteHeader title="Innstillinger" />
       <ScrollView contentContainerClassName="gap-5 px-gutter py-4 pb-12">
         <DemoNote>{demoCopy.settingsNotSaved}</DemoNote>
@@ -161,7 +160,7 @@ export default function SettingsScreen() {
         onClose={() => setSignIn(null)}
         action={signIn ?? ""}
       />
-    </SafeAreaView>
+    </Screen>
   );
 }
 

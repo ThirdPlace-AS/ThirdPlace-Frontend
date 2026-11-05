@@ -17,27 +17,36 @@ const goBack = () => router.back();
 export function Header({
   title,
   onBack = goBack,
-  back = true,
+  back,
   trailing,
-  border = true,
+  border,
+  size = "default",
+  inset = true,
 }: {
   title: string;
   /** Defaults to router.back(). */
   onBack?: () => void;
-  /** Hide the back button (root screens). */
+  /** Show the back button (default: on for "default", off for "large"). */
   back?: boolean;
   /** Right-aligned actions, usually IconButtons. */
   trailing?: ReactNode;
-  /** Hairline under the header (default on). */
+  /** Hairline under the header (default: on for "default", off for "large"). */
   border?: boolean;
+  /** "large" = tab-root title (h1), e.g. Chat, Profil. */
+  size?: "default" | "large";
+  /** Apply the screen gutter (off when the parent is already padded). */
+  inset?: boolean;
 }) {
+  const large = size === "large";
+  const showBack = back ?? !large;
+  const showBorder = border ?? !large;
   return (
     <View
-      className={`min-h-12 flex-row items-center gap-md px-gutter pb-md ${
-        border ? "border-b border-line" : ""
+      className={`min-h-12 flex-row items-center gap-md ${inset ? "px-gutter" : ""} ${
+        showBorder ? "border-b border-line pb-md" : ""
       }`}
     >
-      {back ? (
+      {showBack ? (
         <IconButton
           icon="chevron-back"
           label="Tilbake"
@@ -45,7 +54,7 @@ export function Header({
           onPress={onBack}
         />
       ) : null}
-      <Text variant="h2" numberOfLines={1} className="flex-1">
+      <Text variant={large ? "h1" : "h2"} numberOfLines={1} className="flex-1">
         {title}
       </Text>
       {trailing ? (

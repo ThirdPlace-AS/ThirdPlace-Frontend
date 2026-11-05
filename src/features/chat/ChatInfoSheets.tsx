@@ -2,7 +2,6 @@ import { Ionicons } from "@expo/vector-icons";
 import { Image } from "expo-image";
 import { useState } from "react";
 import { Modal, Pressable, Text, View } from "react-native";
-
 import { Icon } from "@/components/ui";
 import { ReportSheet } from "@/components/actions/ActionSheets";
 import { Button } from "@/components/Button";
@@ -18,7 +17,7 @@ import {
   type MockChat,
 } from "@/fixtures";
 import { libImage } from "@/fixtures/images";
-import { useThemeColors, media } from "@/theme";
+import { media } from "@/theme";
 
 // Chat info, Medlemmer and Inviter til chat (DEMO), per the design (PDF
 // p9–p10). BLOCKED_CONTRACT_GAP: no membership, role, invite-link, mute,
@@ -219,7 +218,6 @@ function InviteSheet({
   visible: boolean;
   onClose: () => void;
 }) {
-  const colors = useThemeColors();
   const [q, setQ] = useState("");
   const [done, setDone] = useState<string[]>([]);
   const slug = chat.name.toLowerCase().replace(/[^a-z0-9]+/g, "-");
@@ -244,7 +242,7 @@ function InviteSheet({
           </Text>
         </View>
         <View className="items-center gap-2 rounded-md border border-line bg-surface p-4">
-          <Ionicons name="qr-code-outline" size={72} color={colors.muted} />
+          <Icon name="qr-code-outline" size="3xl" tone="muted" />
           <Text className="text-xs text-muted font-normal">QR-kode</Text>
         </View>
         <Text className="text-xs font-semibold uppercase tracking-wide text-muted">
@@ -328,7 +326,7 @@ function ImageViewer({
             onPress={onClose}
             hitSlop={8}
           >
-            <Ionicons name="close" size={28} color={media.onMedia} />
+            <Icon name="close" size="xl" tone="onMedia" />
           </Pressable>
           <Text className="text-sm font-semibold text-white">
             {index + 1} / {n}

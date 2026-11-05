@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { ScrollView, Text, View } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
 
+import { Screen } from "@/components/ui";
 import { Button } from "@/components/Button";
 import { Chip } from "@/components/Chip";
 import { DemoNote } from "@/components/DemoNote";
@@ -43,7 +43,7 @@ export default function PrivacyScreen() {
     isGuest ? setSignIn(true) : setPanel(p);
 
   return (
-    <SafeAreaView className="flex-1 bg-background" edges={["top"]}>
+    <Screen edges={["top"]}>
       <RouteHeader title="Personvern" />
       <ScrollView contentContainerClassName="gap-5 px-gutter py-4 pb-12">
         <DemoNote>{demoCopy.privacyNotSaved}</DemoNote>
@@ -147,7 +147,7 @@ export default function PrivacyScreen() {
         onClose={() => setSignIn(false)}
         action="administrere dataene dine"
       />
-    </SafeAreaView>
+    </Screen>
   );
 }
 

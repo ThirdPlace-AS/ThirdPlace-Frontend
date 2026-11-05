@@ -2,9 +2,8 @@ import { Image } from "expo-image";
 import { router } from "expo-router";
 import { useMemo, useState } from "react";
 import { FlatList, Pressable, Text, View } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
 
-import { Icon } from "@/components/ui";
+import { Icon, Screen } from "@/components/ui";
 import { Chip } from "@/components/Chip";
 import { DemoNote } from "@/components/DemoNote";
 import { RouteHeader } from "@/components/RouteHeader";
@@ -91,7 +90,7 @@ export default function SavedScreen() {
   const visible = filter ? rows.filter((r) => r.kind === filter) : rows;
 
   return (
-    <SafeAreaView className="flex-1 bg-background" edges={["top"]}>
+    <Screen edges={["top"]}>
       <RouteHeader title="Lagret" />
       <FlatList
         data={visible}
@@ -169,6 +168,6 @@ export default function SavedScreen() {
           );
         }}
       />
-    </SafeAreaView>
+    </Screen>
   );
 }

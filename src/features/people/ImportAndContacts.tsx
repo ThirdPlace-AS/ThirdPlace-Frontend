@@ -1,8 +1,7 @@
 import { useState } from "react";
 import { ScrollView, Text, View } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
 
-import { Icon } from "@/components/ui";
+import { Icon, Screen } from "@/components/ui";
 import { Button } from "@/components/Button";
 import { DemoNote } from "@/components/DemoNote";
 import { Input } from "@/components/Input";
@@ -16,7 +15,7 @@ export function ImportContentScreen() {
   const [tried, setTried] = useState(false);
   const valid = /^https?:\/\/\S+\.\S+/.test(url.trim());
   return (
-    <SafeAreaView className="flex-1 bg-background" edges={["top"]}>
+    <Screen edges={["top"]}>
       <RouteHeader title="Importer innhold" />
       <ScrollView
         contentContainerClassName="gap-4 px-gutter py-4 pb-12"
@@ -60,7 +59,7 @@ export function ImportContentScreen() {
           onPress={() => setTried(true)}
         />
       </ScrollView>
-    </SafeAreaView>
+    </Screen>
   );
 }
 
@@ -70,7 +69,7 @@ export function ImportContentScreen() {
 export function InviteContactsScreen() {
   const [tried, setTried] = useState(false);
   return (
-    <SafeAreaView className="flex-1 bg-background" edges={["top"]}>
+    <Screen edges={["top"]}>
       <RouteHeader title="Inviter kontakter" />
       <ScrollView contentContainerClassName="gap-4 px-gutter py-6 pb-12">
         <View className="items-center gap-3">
@@ -95,6 +94,6 @@ export function InviteContactsScreen() {
           onPress={() => setTried(true)}
         />
       </ScrollView>
-    </SafeAreaView>
+    </Screen>
   );
 }

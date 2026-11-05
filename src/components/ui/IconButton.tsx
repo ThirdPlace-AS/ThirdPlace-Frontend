@@ -17,7 +17,9 @@ export type IconButtonVariant =
   | "ink" // primary round action (FAB)
   | "ember" // brand round action
   | "floating" // raised surface over map/photos (e2 shadow)
-  | "media"; // translucent dark disc over photos, light glyph
+  | "media" // translucent dark disc over photos, light glyph
+  | "mediaSubtle" // faint light disc on dark media surfaces (expanded card)
+  | "mediaOutline"; // hairline ring on dark media surfaces
 
 export type IconButtonSize = "sm" | "md" | "lg" | "xl";
 
@@ -44,6 +46,8 @@ const VARIANT_CLASS: Record<IconButtonVariant, string> = {
   ember: "bg-ember",
   floating: "bg-surfaceRaised",
   media: "bg-scrim/40",
+  mediaSubtle: "bg-onMedia/10",
+  mediaOutline: "border border-onMedia/25",
 };
 const VARIANT_TONE: Record<IconButtonVariant, IconTone> = {
   ghost: "ink",
@@ -53,6 +57,8 @@ const VARIANT_TONE: Record<IconButtonVariant, IconTone> = {
   ember: "onEmber",
   floating: "ink",
   media: "onMedia",
+  mediaSubtle: "onMedia",
+  mediaOutline: "onMedia",
 };
 
 export type IconButtonProps = {

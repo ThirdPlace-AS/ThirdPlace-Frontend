@@ -11,11 +11,10 @@ export type FontWeight = "regular" | "medium" | "semibold" | "bold";
 
 // Family names live in tokens.js (Tailwind font-* utilities use them too).
 // eslint-disable-next-line @typescript-eslint/no-require-imports
-export const FONT_FAMILY = (
-  require("./tokens.js") as {
-    fontFamily: Record<FontWeight, string>;
-  }
-).fontFamily;
+const tokens = require("./tokens.js") as {
+  fontFamily: Record<FontWeight, string>;
+};
+export const FONT_FAMILY = tokens.fontFamily;
 
 /** Font assets for `useFonts` at the root (family name → file). */
 export const fontAssets = {

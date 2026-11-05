@@ -1,14 +1,12 @@
 import { Ionicons } from "@expo/vector-icons";
 import { useState } from "react";
 import { Pressable, Text, View } from "react-native";
-
 import { Icon } from "@/components/ui";
 import { Button } from "@/components/Button";
 import { Chip } from "@/components/Chip";
 import { DemoNote } from "@/components/DemoNote";
 import { Input } from "@/components/Input";
 import { Sheet } from "@/components/Sheet";
-import { useThemeColors } from "@/theme";
 
 // Shared action sheets (DEMO), per the design (PDF p23): Del, Rapporter,
 // Blokkere, Forlate opplevelsen, Bli med på ventelisten. BLOCKED_CONTRACT_GAP:
@@ -330,7 +328,6 @@ export function RateSheet({
   chips?: string[];
   chipsLabel?: string;
 }) {
-  const colors = useThemeColors();
   const [stars, setStars] = useState(0);
   const [liked, setLiked] = useState<string[]>([]);
   const [sent, setSent] = useState(false);
@@ -346,10 +343,10 @@ export function RateSheet({
               accessibilityLabel={`${n} av 5 stjerner`}
               onPress={() => setStars(n)}
             >
-              <Ionicons
+              <Icon
                 name={n <= stars ? "star" : "star-outline"}
-                size={32}
-                color={n <= stars ? colors.ember : colors.muted}
+                size="xl"
+                tone={n <= stars ? "ember" : "muted"}
               />
             </Pressable>
           ))}

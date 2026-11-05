@@ -1,4 +1,3 @@
-import { Ionicons } from "@expo/vector-icons";
 import { router, useLocalSearchParams } from "expo-router";
 import { useState } from "react";
 import {
@@ -12,7 +11,7 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-import { Icon, IconButton } from "@/components/ui";
+import { Icon, IconButton, Screen } from "@/components/ui";
 import { Button } from "@/components/Button";
 import { DemoBadge } from "@/components/DemoBadge";
 import { useGuestMode } from "@/components/map/hooks/useGuestMode";
@@ -80,7 +79,7 @@ export default function ChatThreadScreen() {
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-background" edges={["top", "bottom"]}>
+    <Screen edges={["top", "bottom"]}>
       {/* Header */}
       <View className="flex-row items-center gap-3 border-b border-line px-gutter pb-3">
         <IconButton
@@ -181,10 +180,10 @@ export default function ChatThreadScreen() {
                   draft.trim() ? "bg-ink active:opacity-80" : "bg-surfaceMuted"
                 }`}
               >
-                <Ionicons
+                <Icon
                   name="arrow-up"
-                  size={20}
-                  color={draft.trim() ? colors.onInk : colors.muted}
+                  size="md"
+                  tone={draft.trim() ? "onInk" : "muted"}
                 />
               </Pressable>
             </View>
@@ -197,7 +196,7 @@ export default function ChatThreadScreen() {
         onClose={() => setPromptOpen(false)}
         action="skrive i chatten"
       />
-    </SafeAreaView>
+    </Screen>
   );
 }
 

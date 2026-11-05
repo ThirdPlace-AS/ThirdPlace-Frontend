@@ -1,13 +1,11 @@
 import { Ionicons } from "@expo/vector-icons";
 import { router, useLocalSearchParams } from "expo-router";
 import { ScrollView, Text, View } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
-
+import { Icon, Screen } from "@/components/ui";
 import { Button } from "@/components/Button";
 import { DemoNote } from "@/components/DemoNote";
 import { experienceById } from "@/fixtures";
 import { resetTo } from "@/lib/navigation";
-import { useThemeColors } from "@/theme";
 
 // System screens (DEMO), per the design (PDF p26–p27): offline, error,
 // maintenance, suspended account, required update, and the invite landing
@@ -27,7 +25,7 @@ export default function SystemState() {
   const { kind } = useLocalSearchParams<{ kind: Kind }>();
 
   return (
-    <SafeAreaView className="flex-1 bg-background">
+    <Screen>
       <ScrollView contentContainerClassName="flex-grow justify-center gap-5 p-gutter">
         {kind === "offline" ? (
           <State
@@ -112,7 +110,7 @@ export default function SystemState() {
           Systemskjerm vist for gjennomgang — ingen reell status er sjekket.
         </DemoNote>
       </ScrollView>
-    </SafeAreaView>
+    </Screen>
   );
 }
 
@@ -127,12 +125,11 @@ function State({
   body: string;
   children?: React.ReactNode;
 }) {
-  const colors = useThemeColors();
   return (
     <View className="gap-5">
       <View className="items-center gap-3">
         <View className="h-20 w-20 items-center justify-center rounded-full bg-surfaceMuted">
-          <Ionicons name={icon} size={36} color={colors.ink} />
+          <Icon name={icon} size="2xl" tone="ink" />
         </View>
         <Text className="text-center text-2xl font-bold text-ink">{title}</Text>
         <Text className="px-4 text-center text-base text-muted font-normal">

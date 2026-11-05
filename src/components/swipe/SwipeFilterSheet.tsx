@@ -15,8 +15,7 @@ import Animated, {
   withTiming,
 } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-
-import { Icon } from "@/components/ui";
+import { IconButton } from "@/components/ui";
 import { Button } from "@/components/Button";
 import { CheckboxRow } from "@/components/CheckboxRow";
 import { TypeChip } from "@/components/map/TypeChip";
@@ -24,7 +23,6 @@ import { experiences, TIME_WINDOWS } from "@/fixtures";
 import { motion } from "@/theme";
 import { DemoNote } from "@/components/DemoNote";
 import { demoCopy } from "@/copy";
-
 import { tagIcon } from "./SwipeCard";
 import {
   activeSwipeFilterCount,
@@ -158,24 +156,15 @@ function FilterBody({
 
       {/* Header: back + title + close, like the notifications screen. */}
       <View className="flex-row items-center gap-2 border-b border-line pb-3">
-        <Pressable
-          accessibilityRole="button"
-          accessibilityLabel="Tilbake"
+        <IconButton
+          icon="chevron-back"
+          label="Tilbake"
+          size="sm"
           onPress={onClose}
-          hitSlop={8}
-          className="-ml-1 h-10 w-10 items-center justify-center rounded-full"
-        >
-          <Icon name="arrow-back" size="lg" tone="ink" />
-        </Pressable>
+          className="-ml-xs"
+        />
         <Text className="flex-1 text-lg font-bold text-ink">Filtre</Text>
-        <Pressable
-          accessibilityRole="button"
-          accessibilityLabel="Lukk"
-          onPress={onClose}
-          hitSlop={8}
-        >
-          <Icon name="close" size="lg" tone="ink" />
-        </Pressable>
+        <IconButton icon="close" label="Lukk" size="sm" onPress={onClose} />
       </View>
 
       <ScrollView

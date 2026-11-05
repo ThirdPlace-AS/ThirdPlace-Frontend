@@ -1,8 +1,6 @@
 import type { ReactNode } from "react";
-import { Ionicons } from "@expo/vector-icons";
 import { Modal, Pressable, Text, View } from "react-native";
-
-import { useThemeColors } from "@/theme";
+import { IconButton } from "@/components/ui";
 
 // Lightweight bottom sheet (Modal-based) for filters and detail panels.
 // No external sheet lib — keeps the dependency surface small for Phase 1.
@@ -33,7 +31,6 @@ export function Sheet({
   fullHeight?: boolean;
   children: ReactNode;
 }) {
-  const colors = useThemeColors();
   const dark = tone === "dark";
   const lightBg = surfaceTone === "muted" ? "bg-surfaceMuted" : "bg-surface";
   return (
@@ -62,18 +59,14 @@ export function Sheet({
               >
                 {title}
               </Text>
-              <Pressable
-                accessibilityRole="button"
-                accessibilityLabel="Lukk"
+              <IconButton
+                icon="close"
+                label="Lukk"
+                size="sm"
+                variant={dark ? "mediaSubtle" : "ghost"}
                 onPress={onClose}
-                hitSlop={8}
-              >
-                <Ionicons
-                  name="close"
-                  size={24}
-                  color={dark ? colors.onInk : colors.ink}
-                />
-              </Pressable>
+                className="-mr-xs"
+              />
             </View>
           ) : (
             <>

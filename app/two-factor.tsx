@@ -2,14 +2,11 @@ import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
 import { useState } from "react";
 import { Pressable, ScrollView, Text, View } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
-
-import { Icon } from "@/components/ui";
+import { Icon, Screen } from "@/components/ui";
 import { Switch } from "@/components/ui/Switch";
 import { Button } from "@/components/Button";
 import { DemoNote } from "@/components/DemoNote";
 import { RouteHeader } from "@/components/RouteHeader";
-import { useThemeColors } from "@/theme";
 
 type Method = "sms" | "app";
 
@@ -18,7 +15,6 @@ type Method = "sms" | "app";
 // method, then "Aktiver 2FA" → "Bekreft identiteten". DEMO — no secret is
 // generated and nothing is enabled (BLOCKED_CONTRACT_GAP).
 export default function TwoFactor() {
-  const colors = useThemeColors();
   const [on, setOn] = useState(true);
   const [method, setMethod] = useState<Method>("sms");
   const methods: {
@@ -42,7 +38,7 @@ export default function TwoFactor() {
   ];
 
   return (
-    <SafeAreaView className="flex-1 bg-background" edges={["top"]}>
+    <Screen edges={["top"]}>
       <RouteHeader title="Totrinnsbekreftelse" />
       <ScrollView contentContainerClassName="gap-5 px-gutter py-4 pb-12">
         <Text className="text-sm text-muted font-normal">
@@ -102,11 +98,7 @@ export default function TwoFactor() {
                     className="items-center justify-center rounded-md bg-surfaceMuted"
                     style={{ height: 128, width: 128 }}
                   >
-                    <Ionicons
-                      name="qr-code-outline"
-                      size={64}
-                      color={colors.muted}
-                    />
+                    <Icon name="qr-code-outline" size="3xl" tone="muted" />
                   </View>
                   <Text className="text-xs text-muted font-normal">
                     Skann med autentiseringsappen
@@ -134,6 +126,6 @@ export default function TwoFactor() {
           </>
         ) : null}
       </ScrollView>
-    </SafeAreaView>
+    </Screen>
   );
 }

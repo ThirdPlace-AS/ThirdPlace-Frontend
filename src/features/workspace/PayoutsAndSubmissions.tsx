@@ -1,8 +1,8 @@
 import { router } from "expo-router";
 import { useState } from "react";
 import { Pressable, ScrollView, Text, View } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
 
+import { Screen } from "@/components/ui";
 import { Button } from "@/components/Button";
 import { Chip } from "@/components/Chip";
 import { DemoNote } from "@/components/DemoNote";
@@ -19,7 +19,7 @@ export function PayoutsScreen() {
   const [plan, setPlan] = useState(PLANS[0] ?? "");
   const [tried, setTried] = useState(false);
   return (
-    <SafeAreaView className="flex-1 bg-background" edges={["top"]}>
+    <Screen edges={["top"]}>
       <RouteHeader title="Utbetalinger" />
       <ScrollView contentContainerClassName="gap-4 px-gutter py-4 pb-12">
         <Text className="text-sm text-muted font-normal">
@@ -70,7 +70,7 @@ export function PayoutsScreen() {
           message="Når du arrangerer betalte opplevelser, vises utbetalingene her."
         />
       </ScrollView>
-    </SafeAreaView>
+    </Screen>
   );
 }
 
@@ -101,7 +101,7 @@ export function SubmissionsScreen() {
   const [tab, setTab] = useState<(typeof TABS)[number]>("Alle");
   const list = tab === "Alle" ? SUBS : SUBS.filter((s) => s.status === tab);
   return (
-    <SafeAreaView className="flex-1 bg-background" edges={["top"]}>
+    <Screen edges={["top"]}>
       <RouteHeader title="Innleveringer" />
       <ScrollView contentContainerClassName="gap-3 px-gutter py-4 pb-12">
         <Text className="text-sm text-muted font-normal">
@@ -157,7 +157,7 @@ export function SubmissionsScreen() {
           onPress={() => router.navigate("/add")}
         />
       </ScrollView>
-    </SafeAreaView>
+    </Screen>
   );
 }
 

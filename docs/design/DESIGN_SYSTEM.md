@@ -46,7 +46,7 @@ The design system **restyles the PDF's layouts**. It never adds screens, section
 | `danger`        | `#B5342B` | Destructive (value still provisional)          |
 | `warning`       | `#B05008` | Warning (value still provisional)              |
 
-Dark values are defined in S2 and must pass the contrast test (`tests/themeContrast.test.ts`). Never write a hex literal outside `src/theme/`; read native colour props from the theme hook.
+Opacity modifiers (`bg-scrim/40`, `bg-danger/15`) work on every token but only in Tailwind steps of 5 — `/12` generates nothing. Dark values are defined in S2 and must pass the contrast test (`tests/themeContrast.test.ts`). Never write a hex literal outside `src/theme/`; read native colour props from the theme hook.
 
 ### Typography
 

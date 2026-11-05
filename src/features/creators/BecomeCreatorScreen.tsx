@@ -1,14 +1,11 @@
-import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
 import { useState } from "react";
 import { ScrollView, Text, View } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
-
+import { Icon, Screen } from "@/components/ui";
 import { Button } from "@/components/Button";
 import { DemoNote } from "@/components/DemoNote";
 import { RouteHeader } from "@/components/RouteHeader";
 import { profile } from "@/fixtures";
-import { useThemeColors } from "@/theme";
 
 // Bli Skaper (DEMO), per the design (PDF p14): the requirements to unlock the
 // Skaper role (and with it Dashboard and Marketplace), each with its progress,
@@ -16,7 +13,6 @@ import { useThemeColors } from "@/theme";
 // defined, so the three requirements are the design's illustrative copy —
 // nothing is evaluated, and applying sends nothing (BLOCKED_CONTRACT_GAP).
 export default function BecomeCreatorScreen() {
-  const colors = useThemeColors();
   const { hosted, required, rating } = profile.creatorPath;
   const [applied, setApplied] = useState(false);
   const reqs = [
@@ -35,7 +31,7 @@ export default function BecomeCreatorScreen() {
   const met = reqs.filter((r) => r.progress >= 1).length;
 
   return (
-    <SafeAreaView className="flex-1 bg-background" edges={["top"]}>
+    <Screen edges={["top"]}>
       <RouteHeader title="Bli Skaper" />
       <ScrollView contentContainerClassName="gap-4 px-gutter py-4 pb-12">
         <Text className="text-sm text-muted font-normal">
@@ -56,10 +52,10 @@ export default function BecomeCreatorScreen() {
                     done ? "bg-success" : "bg-surfaceMuted"
                   }`}
                 >
-                  <Ionicons
+                  <Icon
                     name={done ? "checkmark" : "ellipse-outline"}
-                    size={18}
-                    color={done ? colors.onInk : colors.muted}
+                    size="md"
+                    tone={done ? "onInk" : "muted"}
                   />
                 </View>
                 <View className="flex-1">
@@ -125,6 +121,6 @@ export default function BecomeCreatorScreen() {
           onPress={() => router.push("/marketplace")}
         />
       </ScrollView>
-    </SafeAreaView>
+    </Screen>
   );
 }

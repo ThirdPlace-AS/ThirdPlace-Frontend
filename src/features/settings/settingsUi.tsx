@@ -1,10 +1,8 @@
 import { Ionicons } from "@expo/vector-icons";
 import type { ReactNode } from "react";
 import { Pressable, Text, View } from "react-native";
-
 import { Icon } from "@/components/ui";
 import { Switch } from "@/components/ui/Switch";
-import { useThemeColors } from "@/theme";
 
 // Shared building blocks for the Settings + Privacy routes. All inert/demo:
 // toggles keep local state only and persist nothing (BLOCKED_CONTRACT_GAP — no
@@ -42,18 +40,13 @@ export function NavRow({
   onPress: () => void;
   danger?: boolean;
 }) {
-  const colors = useThemeColors();
   return (
     <Pressable
       accessibilityRole="button"
       onPress={onPress}
       className="flex-row items-center gap-3 border-b border-line px-4 py-3.5 active:bg-surfaceMuted"
     >
-      <Ionicons
-        name={icon}
-        size={20}
-        color={danger ? colors.ember : colors.ink}
-      />
+      <Icon name={icon} size="md" tone={danger ? "ember" : "ink"} />
       <Text
         className={`font-normal flex-1 text-base ${danger ? "text-emberText" : "text-ink"}`}
       >

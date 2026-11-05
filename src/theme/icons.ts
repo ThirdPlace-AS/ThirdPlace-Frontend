@@ -5,6 +5,9 @@ export const iconSize = {
   md: 20,
   lg: 24,
   xl: 32,
+  /** Display glyphs (empty states, hero icons). */
+  "2xl": 44,
+  "3xl": 64,
 } as const;
 
 export type IconSize = keyof typeof iconSize;

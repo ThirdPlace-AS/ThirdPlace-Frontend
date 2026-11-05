@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { ScrollView, Text, View } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
 
+import { Screen } from "@/components/ui";
 import { Button } from "@/components/Button";
 import { DemoNote } from "@/components/DemoNote";
 import { Input } from "@/components/Input";
@@ -19,7 +19,7 @@ export default function ResetPassword() {
   const ok = pw.length >= 8 && again === pw;
 
   return (
-    <SafeAreaView className="flex-1 bg-background">
+    <Screen>
       <ScrollView
         contentContainerClassName="gap-6 p-gutter"
         keyboardShouldPersistTaps="handled"
@@ -69,6 +69,6 @@ export default function ResetPassword() {
           </DemoNote>
         </View>
       </ScrollView>
-    </SafeAreaView>
+    </Screen>
   );
 }

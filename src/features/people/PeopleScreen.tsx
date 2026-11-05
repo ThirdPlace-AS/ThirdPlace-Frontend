@@ -2,9 +2,8 @@ import { Image } from "expo-image";
 import { router } from "expo-router";
 import { useState } from "react";
 import { FlatList, Pressable, Text, View } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
 
-import { Header, Icon, IconButton } from "@/components/ui";
+import { Header, Icon, IconButton, Screen } from "@/components/ui";
 import { BlockSheet } from "@/components/actions/ActionSheets";
 import { Button } from "@/components/Button";
 import { Chip } from "@/components/Chip";
@@ -47,7 +46,7 @@ export default function PeopleScreen() {
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-background" edges={["top"]}>
+    <Screen edges={["top"]}>
       <Header title="Oppdag folk" />
       <FlatList
         data={list}
@@ -162,7 +161,7 @@ export default function PeopleScreen() {
         onClose={() => setSignIn(false)}
         action="følge folk"
       />
-    </SafeAreaView>
+    </Screen>
   );
 }
 

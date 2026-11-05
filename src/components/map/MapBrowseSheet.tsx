@@ -9,11 +9,9 @@ import Animated, {
   useAnimatedReaction,
   useAnimatedStyle,
 } from "react-native-reanimated";
-
 import { Icon } from "@/components/ui";
 import { MAP_CITY, type MockWeather } from "@/fixtures";
 import { useThemeColors } from "@/theme";
-
 import { browseAnimatedIndex } from "./browseSheetProgress";
 import type { DiscoveryItem } from "./types/mapPresentation";
 
@@ -240,7 +238,6 @@ const BrowseCard = memo(function BrowseCard({
   onSelect: (item: DiscoveryItem) => void;
   onToggleSave: (item: DiscoveryItem) => void;
 }) {
-  const colors = useThemeColors();
   return (
     // Card wrapper is a View; the save heart is a SIBLING of the
     // select Pressable (never nested) — nested <button> is invalid
@@ -259,7 +256,7 @@ const BrowseCard = memo(function BrowseCard({
             selected ? "border-2 border-ink" : ""
           }`}
         >
-          <Ionicons name="image-outline" size={40} color={colors.muted} />
+          <Icon name="image-outline" size="2xl" tone="muted" />
 
           {/* Top-left: category chip. */}
           <View className="absolute left-3 top-3">
@@ -328,10 +325,10 @@ const BrowseCard = memo(function BrowseCard({
         hitSlop={8}
         className="absolute items-center justify-center rounded-full right-3 top-3 h-9 w-9 bg-surface/90"
       >
-        <Ionicons
+        <Icon
           name={saved ? "heart" : "heart-outline"}
-          size={22}
-          color={saved ? colors.ember : colors.ink}
+          size="lg"
+          tone={saved ? "ember" : "ink"}
         />
       </Pressable>
     </View>

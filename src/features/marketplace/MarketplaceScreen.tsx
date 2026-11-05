@@ -2,9 +2,8 @@ import { Image } from "expo-image";
 import { router, type Href } from "expo-router";
 import { useMemo, useState } from "react";
 import { FlatList, Pressable, Text, TextInput, View } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
 
-import { Icon } from "@/components/ui";
+import { Icon, Screen } from "@/components/ui";
 import { Button } from "@/components/Button";
 import { Chip } from "@/components/Chip";
 import { DemoNote } from "@/components/DemoNote";
@@ -57,7 +56,7 @@ export default function MarketplaceScreen() {
   );
 
   return (
-    <SafeAreaView className="flex-1 bg-background" edges={["top"]}>
+    <Screen edges={["top"]}>
       <RouteHeader title="Marketplace" />
       <FlatList
         data={data}
@@ -189,7 +188,7 @@ export default function MarketplaceScreen() {
         onClose={() => setSignIn(false)}
         action="sende forespørsler i Marketplace"
       />
-    </SafeAreaView>
+    </Screen>
   );
 }
 

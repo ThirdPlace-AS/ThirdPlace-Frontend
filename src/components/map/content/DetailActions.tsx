@@ -1,12 +1,8 @@
-import { Ionicons } from "@expo/vector-icons";
 import { useState } from "react";
 import { Pressable, Text, View } from "react-native";
-
 import { Icon } from "@/components/ui";
 import { ReportSheet, ShareSheet } from "@/components/actions/ActionSheets";
 import { SignInPrompt } from "@/components/SignInPrompt";
-import { useThemeColors } from "@/theme";
-
 import { useGuestMode } from "../hooks/useGuestMode";
 import { useMapSaved } from "../hooks/useMapSaved";
 
@@ -21,7 +17,6 @@ export function DetailActions({
   markerId: string;
   title: string;
 }) {
-  const colors = useThemeColors();
   const { isSaved, toggle } = useMapSaved();
   const { isGuest } = useGuestMode();
   const [promptOpen, setPromptOpen] = useState(false);
@@ -45,10 +40,10 @@ export function DetailActions({
             saved ? "border-ember bg-ember/10" : "border-line bg-surface"
           }`}
         >
-          <Ionicons
+          <Icon
             name={saved ? "heart" : "heart-outline"}
-            size={18}
-            color={saved ? colors.ember : colors.ink}
+            size="md"
+            tone={saved ? "ember" : "ink"}
           />
           <Text
             className={`text-sm font-semibold ${saved ? "text-emberText" : "text-ink"}`}

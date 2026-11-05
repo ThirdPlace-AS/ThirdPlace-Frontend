@@ -1,7 +1,7 @@
 import { Link } from "expo-router";
 import { ScrollView, Text, View } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
 
+import { Screen } from "@/components/ui";
 import { SocialAuthButtons } from "@/components/auth/SocialAuthButtons";
 import { Button } from "@/components/Button";
 import { DemoBadge } from "@/components/DemoBadge";
@@ -15,7 +15,7 @@ import { resetTo } from "@/lib/navigation";
 export default function Login() {
   const { setGuest } = useGuestMode();
   return (
-    <SafeAreaView className="flex-1 bg-background">
+    <Screen>
       <ScrollView contentContainerClassName="gap-6 p-gutter">
         <View className="items-center">
           <Logo size={48} />
@@ -60,6 +60,6 @@ export default function Login() {
           </Link>
         </Text>
       </ScrollView>
-    </SafeAreaView>
+    </Screen>
   );
 }

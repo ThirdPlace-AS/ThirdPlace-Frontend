@@ -2,15 +2,12 @@ import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
 import { useState } from "react";
 import { Pressable, ScrollView, Text, View } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
-
-import { Icon } from "@/components/ui";
+import { Icon, Screen } from "@/components/ui";
 import { Chip } from "@/components/Chip";
 import { DemoBadge } from "@/components/DemoBadge";
 import { DemoNote } from "@/components/DemoNote";
 import { RouteHeader } from "@/components/RouteHeader";
 import { businesses, experiences, profile } from "@/fixtures";
-import { useThemeColors } from "@/theme";
 
 // Business workspace (DEMO), per the design (PDF p13–p15): the business
 // profile hub (Dashbord, Marketplace, linked personal account, "Kom i gang"),
@@ -20,16 +17,15 @@ import { useThemeColors } from "@/theme";
 const BIZ = businesses[0];
 
 export function WorkspaceHub() {
-  const colors = useThemeColors();
   return (
-    <SafeAreaView className="flex-1 bg-background" edges={["top"]}>
+    <Screen edges={["top"]}>
       <RouteHeader title={BIZ?.name ?? "Bedrift"} />
       <ScrollView contentContainerClassName="gap-3 px-gutter py-4 pb-12">
         <View className="flex-row items-center gap-1.5">
-          <Ionicons
+          <Icon
             name={BIZ?.verified ? "checkmark-circle" : "time-outline"}
-            size={16}
-            color={BIZ?.verified ? colors.success : colors.muted}
+            size="sm"
+            tone={BIZ?.verified ? "success" : "muted"}
           />
           <Text className="text-sm font-semibold text-ink">
             {BIZ?.verified ? "Verifisert bedrift" : "Ikke verifisert"}
@@ -95,7 +91,7 @@ export function WorkspaceHub() {
           Bedriftsarbeidsflaten er et eksempel — ingen bedriftskonto finnes.
         </DemoNote>
       </ScrollView>
-    </SafeAreaView>
+    </Screen>
   );
 }
 
@@ -154,7 +150,7 @@ const BARS = [42, 55, 48, 62, 58, 70, 66, 74, 69, 80, 77, 88];
 export function WorkspaceAnalytics() {
   const [range, setRange] = useState<(typeof RANGES)[number]>("Måned");
   return (
-    <SafeAreaView className="flex-1 bg-background" edges={["top"]}>
+    <Screen edges={["top"]}>
       <RouteHeader title="Analyse" />
       <ScrollView contentContainerClassName="gap-4 px-gutter py-4 pb-12">
         <View className="flex-row items-center gap-2">
@@ -202,14 +198,14 @@ export function WorkspaceAnalytics() {
           Tallene er eksempler — ingen analyse eller sporing er aktiv.
         </DemoNote>
       </ScrollView>
-    </SafeAreaView>
+    </Screen>
   );
 }
 
 export function WorkspaceCalendar() {
   const upcoming = experiences.filter((e) => e.status !== "cancelled");
   return (
-    <SafeAreaView className="flex-1 bg-background" edges={["top"]}>
+    <Screen edges={["top"]}>
       <RouteHeader title="Kalender" />
       <ScrollView contentContainerClassName="gap-3 px-gutter py-4 pb-12">
         <Text className="text-xs font-semibold uppercase tracking-wide text-muted">
@@ -243,13 +239,13 @@ export function WorkspaceCalendar() {
           Eksempelopplevelser — kalenderen er ikke koblet til en bedrift.
         </DemoNote>
       </ScrollView>
-    </SafeAreaView>
+    </Screen>
   );
 }
 
 export function WorkspaceLocations() {
   return (
-    <SafeAreaView className="flex-1 bg-background" edges={["top"]}>
+    <Screen edges={["top"]}>
       <RouteHeader title="Lokasjoner" />
       <ScrollView contentContainerClassName="gap-3 px-gutter py-4 pb-12">
         <Text className="text-sm text-muted font-normal">
@@ -288,6 +284,6 @@ export function WorkspaceLocations() {
           Lokasjoner og priser er ikke aktive — ingenting faktureres.
         </DemoNote>
       </ScrollView>
-    </SafeAreaView>
+    </Screen>
   );
 }

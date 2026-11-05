@@ -1,8 +1,7 @@
 import { useState } from "react";
 import { Pressable, ScrollView, Text, View } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
 
-import { Icon } from "@/components/ui";
+import { Icon, Screen } from "@/components/ui";
 import { RateSheet } from "@/components/actions/ActionSheets";
 import { DemoNote } from "@/components/DemoNote";
 import { RouteHeader } from "@/components/RouteHeader";
@@ -21,7 +20,7 @@ const PAY_STEPS: { label: string; done: boolean }[] = [
 
 export function PaymentStatusScreen() {
   return (
-    <SafeAreaView className="flex-1 bg-background" edges={["top"]}>
+    <Screen edges={["top"]}>
       <RouteHeader title="Betalingsstatus" />
       <ScrollView contentContainerClassName="gap-4 px-gutter py-4 pb-12">
         <Text className="text-sm text-muted font-normal">
@@ -47,7 +46,7 @@ export function PaymentStatusScreen() {
           Strukturen er et eksempel — ingen beløp beregnes eller utbetales.
         </DemoNote>
       </ScrollView>
-    </SafeAreaView>
+    </Screen>
   );
 }
 
@@ -64,7 +63,7 @@ const HISTORY = [
 export function CollabHistoryScreen() {
   const [rate, setRate] = useState<string | null>(null);
   return (
-    <SafeAreaView className="flex-1 bg-background" edges={["top"]}>
+    <Screen edges={["top"]}>
       <RouteHeader title="Samarbeidshistorikk" />
       <ScrollView contentContainerClassName="gap-3 px-gutter py-4 pb-12">
         {HISTORY.map((h) => (
@@ -103,7 +102,7 @@ export function CollabHistoryScreen() {
           onClose={() => setRate(null)}
         />
       ) : null}
-    </SafeAreaView>
+    </Screen>
   );
 }
 

@@ -1,13 +1,13 @@
 import { router } from "expo-router";
 import { useState } from "react";
 import { FlatList, Pressable, Text, View } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
 
 import {
   RateSheet,
   SplitBillSheet,
   SpotOfferSheet,
 } from "@/components/actions/ActionSheets";
+import { Screen } from "@/components/ui";
 import { Chip } from "@/components/Chip";
 import { DemoNote } from "@/components/DemoNote";
 import { RouteHeader } from "@/components/RouteHeader";
@@ -40,7 +40,7 @@ export default function PlansScreen() {
   } | null>(null);
 
   return (
-    <SafeAreaView className="flex-1 bg-background" edges={["top"]}>
+    <Screen edges={["top"]}>
       <RouteHeader title="Mine planer" />
       <FlatList
         data={rows}
@@ -114,7 +114,7 @@ export default function PlansScreen() {
           onClose={() => setSheet(null)}
         />
       ) : null}
-    </SafeAreaView>
+    </Screen>
   );
 }
 

@@ -2,10 +2,9 @@ import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
 import { useState } from "react";
 import { ScrollView, Text, View } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
 
 import { Switch } from "@/components/ui/Switch";
-import { Icon, StepContent, StepHeader } from "@/components/ui";
+import { Icon, Screen, StepContent, StepHeader } from "@/components/ui";
 import { Button } from "@/components/Button";
 import { Chip } from "@/components/Chip";
 import { DemoNote } from "@/components/DemoNote";
@@ -112,7 +111,7 @@ export default function BusinessOnboarding() {
   if (blocked) return <UnderageScreen />;
 
   return (
-    <SafeAreaView className="flex-1 bg-background">
+    <Screen>
       <StepHeader current={step - 1} total={TOTAL} onBack={back} />
 
       <ScrollView
@@ -362,7 +361,7 @@ export default function BusinessOnboarding() {
       <View className="px-gutter pb-3 pt-2">
         <Button label={cta} variant="ink" disabled={!can} onPress={next} />
       </View>
-    </SafeAreaView>
+    </Screen>
   );
 }
 

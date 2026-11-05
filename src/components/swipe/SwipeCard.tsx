@@ -4,6 +4,7 @@ import { useState } from "react";
 import { StyleSheet, Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
+import { Icon } from "@/components/ui";
 import { DemoBadge } from "@/components/DemoBadge";
 import { media } from "@/theme";
 import { places, type MockExperience } from "@/fixtures";
@@ -38,7 +39,7 @@ function InfoRow({
 }) {
   return (
     <View className="flex-row items-center gap-2">
-      <Ionicons name={icon} size={17} color={media.onMedia} />
+      <Icon name={icon} size="sm" tone="onMedia" />
       <Text className="text-[15px] text-white/95 font-normal" numberOfLines={1}>
         {children}
       </Text>

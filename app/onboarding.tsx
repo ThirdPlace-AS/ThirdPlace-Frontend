@@ -2,10 +2,9 @@ import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
 import { useState } from "react";
 import { Pressable, ScrollView, Text, View } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
 
 import { Switch } from "@/components/ui/Switch";
-import { Icon, StepContent, StepHeader } from "@/components/ui";
+import { Icon, Screen, StepContent, StepHeader } from "@/components/ui";
 import { Button } from "@/components/Button";
 import { Chip } from "@/components/Chip";
 import { DemoNote } from "@/components/DemoNote";
@@ -175,7 +174,7 @@ export default function Onboarding() {
         : "Fortsett";
 
   return (
-    <SafeAreaView className="flex-1 bg-background">
+    <Screen>
       <StepHeader
         current={step}
         total={STEP_COUNT}
@@ -490,7 +489,7 @@ export default function Onboarding() {
           onPress={next}
         />
       </View>
-    </SafeAreaView>
+    </Screen>
   );
 }
 

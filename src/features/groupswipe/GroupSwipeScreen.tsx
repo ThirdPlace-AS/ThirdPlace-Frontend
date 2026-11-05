@@ -3,16 +3,13 @@ import { Image } from "expo-image";
 import { router } from "expo-router";
 import { useEffect, useState } from "react";
 import { Pressable, ScrollView, Text, View } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
-
-import { Icon, IconButton } from "@/components/ui";
+import { Icon, IconButton, Screen } from "@/components/ui";
 import { Button } from "@/components/Button";
 import { Chip } from "@/components/Chip";
 import { DemoNote } from "@/components/DemoNote";
 import { Input } from "@/components/Input";
 import { experiences, people, type MockPerson } from "@/fixtures";
 import { libImage } from "@/fixtures/images";
-import { useThemeColors } from "@/theme";
 
 type Phase = "setup" | "lobby" | "swipe" | "match";
 
@@ -57,7 +54,7 @@ export default function GroupSwipeScreen() {
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-background">
+    <Screen>
       <View className="flex-row items-center justify-between px-gutter pb-2 pt-1">
         <IconButton
           icon="chevron-back"
@@ -310,7 +307,7 @@ export default function GroupSwipeScreen() {
           />
         </View>
       ) : null}
-    </SafeAreaView>
+    </Screen>
   );
 }
 
@@ -344,7 +341,6 @@ function RoundButton({
   filled?: boolean;
   onPress: () => void;
 }) {
-  const colors = useThemeColors();
   return (
     <Pressable
       accessibilityRole="button"
@@ -354,11 +350,7 @@ function RoundButton({
         filled ? "bg-ink" : "border border-line bg-surface"
       } active:opacity-80`}
     >
-      <Ionicons
-        name={icon}
-        size={28}
-        color={filled ? colors.ember : colors.ink}
-      />
+      <Icon name={icon} size="xl" tone={filled ? "ember" : "ink"} />
     </Pressable>
   );
 }

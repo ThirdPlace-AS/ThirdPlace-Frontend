@@ -6,9 +6,14 @@ import { Pressable, ScrollView, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { Switch } from "@/components/ui/Switch";
-import { Icon, StepContent, StepHeader } from "@/components/ui";
+import {
+  ChipGroup,
+  Icon,
+  Screen,
+  StepContent,
+  StepHeader,
+} from "@/components/ui";
 import { Button } from "@/components/Button";
-import { Chip } from "@/components/Chip";
 import { DemoBadge } from "@/components/DemoBadge";
 import { DemoNote } from "@/components/DemoNote";
 import { Input } from "@/components/Input";
@@ -145,7 +150,7 @@ export function AddWizard() {
   const next = () => (isLast ? setSubmitted(true) : setStepIndex((i) => i + 1));
 
   return (
-    <SafeAreaView className="flex-1 bg-background" edges={["top"]}>
+    <Screen edges={["top"]}>
       <StepHeader
         current={stepIndex}
         total={steps.length}
@@ -174,7 +179,7 @@ export function AddWizard() {
           onPress={next}
         />
       </View>
-    </SafeAreaView>
+    </Screen>
   );
 }
 
@@ -645,7 +650,7 @@ function SubmittedState({
 }) {
   const isPlace = draft.kind === "place";
   return (
-    <SafeAreaView className="flex-1 bg-background" edges={["top"]}>
+    <Screen edges={["top"]}>
       <View className="flex-1 items-center justify-center gap-5 p-gutter">
         <View className="h-16 w-16 items-center justify-center rounded-full bg-surfaceMuted">
           <Icon
@@ -678,7 +683,7 @@ function SubmittedState({
           ) : null}
         </View>
       </View>
-    </SafeAreaView>
+    </Screen>
   );
 }
 
@@ -699,16 +704,7 @@ function ChipRow({
   onPress: (v: string) => void;
 }) {
   return (
-    <View className="flex-row flex-wrap gap-2">
-      {options.map((o) => (
-        <Chip
-          key={o}
-          label={o}
-          selected={selected.includes(o)}
-          onPress={() => onPress(o)}
-        />
-      ))}
-    </View>
+    <ChipGroup multiple options={options} value={selected} onChange={onPress} />
   );
 }
 

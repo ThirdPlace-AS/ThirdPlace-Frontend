@@ -1,10 +1,9 @@
 import { router } from "expo-router";
 import { useMemo, useState } from "react";
 import { Pressable, ScrollView, Text, TextInput, View } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
 
 import { Button } from "@/components/Button";
-import { Icon, IconButton } from "@/components/ui";
+import { Header, Icon, IconButton, Screen } from "@/components/ui";
 import { Chip } from "@/components/Chip";
 import { DemoNote } from "@/components/DemoNote";
 import { Input } from "@/components/Input";
@@ -70,19 +69,23 @@ export default function ChatScreen() {
     router.push({ pathname: "/chat/[id]", params: { id: c.id } });
 
   return (
-    <SafeAreaView className="flex-1 bg-background" edges={["top"]}>
+    <Screen edges={["top"]}>
       <ScrollView
         contentContainerClassName="gap-4 px-gutter pb-28"
         keyboardShouldPersistTaps="handled"
       >
-        <View className="flex-row items-center justify-between pt-1">
-          <Text className="text-2xl font-bold text-ink">Chat</Text>
-          <IconButton
-            icon="notifications-outline"
-            label="Varsler"
-            onPress={() => setNotifOpen(true)}
-          />
-        </View>
+        <Header
+          title="Chat"
+          size="large"
+          inset={false}
+          trailing={
+            <IconButton
+              icon="notifications-outline"
+              label="Varsler"
+              onPress={() => setNotifOpen(true)}
+            />
+          }
+        />
 
         <View className="flex-row items-center gap-2 rounded-full border border-line bg-surface px-4">
           <Icon name="search" size="md" tone="muted" />
@@ -203,7 +206,7 @@ export default function ChatScreen() {
         visible={notifOpen}
         onClose={() => setNotifOpen(false)}
       />
-    </SafeAreaView>
+    </Screen>
   );
 }
 

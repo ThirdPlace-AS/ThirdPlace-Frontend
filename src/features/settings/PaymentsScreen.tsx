@@ -1,8 +1,7 @@
 import { useState } from "react";
 import { Pressable, ScrollView, Text, View } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
 
-import { Icon } from "@/components/ui";
+import { Icon, Screen } from "@/components/ui";
 import { DemoBadge } from "@/components/DemoBadge";
 import { RouteHeader } from "@/components/RouteHeader";
 import { Sheet } from "@/components/Sheet";
@@ -18,7 +17,7 @@ import { SettingsSection } from "./settingsUi";
 export default function PaymentsScreen() {
   const [infoOpen, setInfoOpen] = useState(false);
   return (
-    <SafeAreaView className="flex-1 bg-background" edges={["top"]}>
+    <Screen edges={["top"]}>
       <RouteHeader title="Betaling" />
       <ScrollView contentContainerClassName="gap-5 px-gutter py-4 pb-12">
         <DemoNote>{demoCopy.paymentsStructureOnly}</DemoNote>
@@ -80,6 +79,6 @@ export default function PaymentsScreen() {
           </Text>
         </View>
       </Sheet>
-    </SafeAreaView>
+    </Screen>
   );
 }

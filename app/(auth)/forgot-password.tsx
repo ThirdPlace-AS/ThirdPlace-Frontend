@@ -1,8 +1,8 @@
 import { Link, router } from "expo-router";
 import { useState } from "react";
 import { ScrollView, View } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
 
+import { Screen } from "@/components/ui";
 import { Button } from "@/components/Button";
 import { DemoNote } from "@/components/DemoNote";
 import { Input } from "@/components/Input";
@@ -13,7 +13,7 @@ import { ScreenHeader } from "@/components/ScreenHeader";
 export default function ForgotPassword() {
   const [sent, setSent] = useState(false);
   return (
-    <SafeAreaView className="flex-1 bg-background">
+    <Screen>
       <ScrollView contentContainerClassName="gap-6 p-gutter">
         <ScreenHeader
           title="Glemt passord?"
@@ -48,6 +48,6 @@ export default function ForgotPassword() {
           Tilbake til innlogging
         </Link>
       </ScrollView>
-    </SafeAreaView>
+    </Screen>
   );
 }

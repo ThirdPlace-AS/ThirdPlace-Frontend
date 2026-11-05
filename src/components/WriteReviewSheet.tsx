@@ -1,7 +1,7 @@
-import { Ionicons } from "@expo/vector-icons";
 import { useState } from "react";
 import { Pressable, TextInput, View } from "react-native";
 
+import { Icon } from "@/components/ui";
 import { Button } from "@/components/Button";
 import { Sheet } from "@/components/Sheet";
 import { useThemeColors } from "@/theme";
@@ -39,10 +39,10 @@ function Body({ onClose }: { onClose: () => void }) {
             accessibilityLabel={`${n} stjerner`}
             onPress={() => setRating(n)}
           >
-            <Ionicons
+            <Icon
               name={n <= rating ? "star" : "star-outline"}
-              size={32}
-              color={n <= rating ? colors.ember : colors.muted}
+              size="xl"
+              tone={n <= rating ? "ember" : "muted"}
             />
           </Pressable>
         ))}

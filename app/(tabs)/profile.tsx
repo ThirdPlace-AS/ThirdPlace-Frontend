@@ -3,10 +3,9 @@ import { Image } from "expo-image";
 import { router } from "expo-router";
 import { useState } from "react";
 import { Pressable, ScrollView, Text, View } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
 
 import { Button } from "@/components/Button";
-import { Icon, IconButton } from "@/components/ui";
+import { Header, Icon, IconButton, Screen } from "@/components/ui";
 import { DemoBadge } from "@/components/DemoBadge";
 import { DemoNote } from "@/components/DemoNote";
 import { GuestLock } from "@/components/GuestLock";
@@ -37,28 +36,32 @@ export default function ProfileScreen() {
   const [signIn, setSignIn] = useState(false);
 
   return (
-    <SafeAreaView className="flex-1 bg-background" edges={["top"]}>
+    <Screen edges={["top"]}>
       <ScrollView contentContainerClassName="gap-5 p-gutter pb-10">
-        <View className="flex-row items-center justify-between">
-          <Text className="text-2xl font-bold text-ink">Profil</Text>
-          <View className="flex-row items-center gap-1">
-            <HeaderIcon
-              icon="calendar-outline"
-              label="Mine planer"
-              onPress={() => router.push("/plans")}
-            />
-            <HeaderIcon
-              icon="bookmark-outline"
-              label="Lagret"
-              onPress={() => router.push("/saved")}
-            />
-            <HeaderIcon
-              icon="settings-outline"
-              label="Innstillinger"
-              onPress={() => router.push("/settings")}
-            />
-          </View>
-        </View>
+        <Header
+          title="Profil"
+          size="large"
+          inset={false}
+          trailing={
+            <>
+              <HeaderIcon
+                icon="calendar-outline"
+                label="Mine planer"
+                onPress={() => router.push("/plans")}
+              />
+              <HeaderIcon
+                icon="bookmark-outline"
+                label="Lagret"
+                onPress={() => router.push("/saved")}
+              />
+              <HeaderIcon
+                icon="settings-outline"
+                label="Innstillinger"
+                onPress={() => router.push("/settings")}
+              />
+            </>
+          }
+        />
 
         {isGuest ? (
           <GuestProfile onSignIn={() => setSignIn(true)} />
@@ -130,7 +133,7 @@ export default function ProfileScreen() {
         onClose={() => setSignIn(false)}
         action="se profilen din"
       />
-    </SafeAreaView>
+    </Screen>
   );
 }
 

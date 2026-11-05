@@ -2,9 +2,8 @@ import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
 import { useState } from "react";
 import { ScrollView, Text, View } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
 
-import { Icon } from "@/components/ui";
+import { Icon, Screen } from "@/components/ui";
 import { Button } from "@/components/Button";
 import { DemoNote } from "@/components/DemoNote";
 import { RouteHeader } from "@/components/RouteHeader";
@@ -44,7 +43,7 @@ const REWARDS: {
 export default function InviteScreen() {
   const [notice, setNotice] = useState(false);
   return (
-    <SafeAreaView className="flex-1 bg-background" edges={["top"]}>
+    <Screen edges={["top"]}>
       <RouteHeader title="Inviter venner" />
       <ScrollView contentContainerClassName="gap-4 px-gutter py-4 pb-12">
         <Text className="text-sm text-muted font-normal">
@@ -121,6 +120,6 @@ export default function InviteScreen() {
           eller opptjent.
         </DemoNote>
       </ScrollView>
-    </SafeAreaView>
+    </Screen>
   );
 }

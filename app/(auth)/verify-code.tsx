@@ -1,8 +1,8 @@
 import { router, useLocalSearchParams } from "expo-router";
 import { useEffect, useState } from "react";
 import { ScrollView, Text, View } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
 
+import { Screen } from "@/components/ui";
 import { CodeInput } from "@/components/auth/CodeInput";
 import { Button } from "@/components/Button";
 import { DemoNote } from "@/components/DemoNote";
@@ -31,7 +31,7 @@ export default function VerifyCode() {
     identity ? router.back() : router.replace("/onboarding");
 
   return (
-    <SafeAreaView className="flex-1 bg-background">
+    <Screen>
       <ScrollView
         contentContainerClassName="gap-6 p-gutter"
         keyboardShouldPersistTaps="handled"
@@ -91,6 +91,6 @@ export default function VerifyCode() {
             : "Ingen kode er sendt — alle 6 siffer godtas i demoen."}
         </DemoNote>
       </ScrollView>
-    </SafeAreaView>
+    </Screen>
   );
 }

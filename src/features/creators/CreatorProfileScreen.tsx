@@ -2,8 +2,8 @@ import { Image } from "expo-image";
 import { useLocalSearchParams } from "expo-router";
 import { useState } from "react";
 import { ScrollView, Text, View } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
 
+import { Screen } from "@/components/ui";
 import { Button } from "@/components/Button";
 import { DemoBadge } from "@/components/DemoBadge";
 import { DemoNote } from "@/components/DemoNote";
@@ -23,14 +23,14 @@ export default function CreatorProfileScreen() {
   const [notice, setNotice] = useState<string | null>(null);
   if (!person) {
     return (
-      <SafeAreaView className="flex-1 bg-background" edges={["top"]}>
+      <Screen edges={["top"]}>
         <RouteHeader title="Skaper" />
         <EmptyState
           icon="person-outline"
           title="Fant ikke skaperen"
           message="Profilen finnes ikke eller er fjernet."
         />
-      </SafeAreaView>
+      </Screen>
     );
   }
   const hosted = person.hostsExperienceId
@@ -38,7 +38,7 @@ export default function CreatorProfileScreen() {
     : undefined;
 
   return (
-    <SafeAreaView className="flex-1 bg-background" edges={["top"]}>
+    <Screen edges={["top"]}>
       <RouteHeader title="Skaper" />
       <ScrollView contentContainerClassName="gap-4 px-gutter py-4 pb-12">
         <View className="items-center gap-2">
@@ -99,6 +99,6 @@ export default function CreatorProfileScreen() {
           Tidligere opplevelser vises her når de finnes.
         </Text>
       </ScrollView>
-    </SafeAreaView>
+    </Screen>
   );
 }

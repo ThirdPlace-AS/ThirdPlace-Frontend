@@ -1,8 +1,7 @@
 import { useState } from "react";
 import { Pressable, ScrollView, Text, View } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
 
-import { IconButton } from "@/components/ui";
+import { IconButton, Screen } from "@/components/ui";
 import { Button } from "@/components/Button";
 import { Chip } from "@/components/Chip";
 import { DemoNote } from "@/components/DemoNote";
@@ -29,7 +28,7 @@ export default function MyListingsScreen() {
   const [editing, setEditing] = useState<Draft | null>(null);
   const rows = MINE.filter((l) => l.state === tab);
   return (
-    <SafeAreaView className="flex-1 bg-background" edges={["top"]}>
+    <Screen edges={["top"]}>
       <RouteHeader title="Mine listings" />
       <ScrollView contentContainerClassName="gap-3 px-gutter py-4 pb-28">
         <View className="flex-row flex-wrap gap-2">
@@ -94,7 +93,7 @@ export default function MyListingsScreen() {
       {editing ? (
         <ListingEditor initial={editing} onClose={() => setEditing(null)} />
       ) : null}
-    </SafeAreaView>
+    </Screen>
   );
 }
 

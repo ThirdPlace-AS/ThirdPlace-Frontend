@@ -31,7 +31,7 @@ import Animated, {
   type SharedValue,
 } from "react-native-reanimated";
 
-import { Icon } from "@/components/ui";
+import { Icon, IconButton } from "@/components/ui";
 import { Button } from "@/components/Button";
 import { DemoBadge } from "@/components/DemoBadge";
 import { DemoNote } from "@/components/DemoNote";
@@ -560,7 +560,7 @@ function TopCard({
         }}
       >
         {/* Filled up-arrow in a dark circle, like the reference's expand affordance. */}
-        <Ionicons name="arrow-up" size={18} color={media.onMedia} />
+        <Icon name="arrow-up" size="md" tone="onMedia" />
       </Pressable>
     </View>
   );
@@ -754,7 +754,7 @@ function MetaLine({
 }) {
   return (
     <View className="flex-row items-center gap-2">
-      <Ionicons name={icon} size={17} color={media.onMedia} />
+      <Icon name={icon} size="sm" tone="onMedia" />
       <Text
         className="flex-1 text-[15px] text-white/90 font-normal"
         numberOfLines={1}
@@ -832,30 +832,20 @@ function ExpandDetail({
           >
             {exp.title}
           </Text>
-          <Pressable
-            accessibilityRole="button"
-            accessibilityLabel="Flere valg"
+          <IconButton
+            icon="ellipsis-horizontal"
+            label="Flere valg"
+            variant="mediaSubtle"
+            size="sm"
             onPress={() => setSafetyOpen(true)}
-            hitSlop={8}
-            style={{ backgroundColor: media.fillSubtle }}
-            className="h-9 w-9 items-center justify-center rounded-full"
-          >
-            <Ionicons
-              name="ellipsis-horizontal"
-              size={20}
-              color={media.onMedia}
-            />
-          </Pressable>
-          <Pressable
-            accessibilityRole="button"
-            accessibilityLabel="Lukk detaljer"
+          />
+          <IconButton
+            icon="arrow-down"
+            label="Lukk detaljer"
+            variant="mediaSubtle"
+            size="sm"
             onPress={onClose}
-            hitSlop={8}
-            style={{ backgroundColor: media.fillSubtle }}
-            className="h-9 w-9 items-center justify-center rounded-full"
-          >
-            <Ionicons name="arrow-down" size={22} color={media.onMedia} />
-          </Pressable>
+          />
         </View>
 
         <ScrollView
@@ -943,37 +933,25 @@ function ExpandDetail({
               {joined ? "Du er med · demo" : joinLabel}
             </Text>
           </Pressable>
-          <Pressable
-            accessibilityRole="button"
-            accessibilityLabel={saved ? "Fjern fra lagret" : "Lagre"}
-            accessibilityState={{ selected: saved }}
+          <IconButton
+            icon={saved ? "bookmark" : "bookmark-outline"}
+            label={saved ? "Fjern fra lagret" : "Lagre"}
+            variant="mediaOutline"
+            size="lg"
+            selected={saved}
             onPress={() => gate("lagre", () => toggle(savedKey))}
-            style={{ borderColor: media.hairlineStrong, borderWidth: 1 }}
-            className="h-12 w-12 items-center justify-center rounded-full"
-          >
-            <Ionicons
-              name={saved ? "bookmark" : "bookmark-outline"}
-              size={20}
-              color={media.onMedia}
-            />
-          </Pressable>
-          <Pressable
-            accessibilityRole="button"
-            accessibilityLabel="Del"
+          />
+          <IconButton
+            icon="paper-plane-outline"
+            label="Del"
+            variant="mediaOutline"
+            size="lg"
             onPress={() =>
               void Share.share({ message: `${exp.title} — ThirdPlace` }).catch(
                 () => {},
               )
             }
-            style={{ borderColor: media.hairlineStrong, borderWidth: 1 }}
-            className="h-12 w-12 items-center justify-center rounded-full"
-          >
-            <Ionicons
-              name="paper-plane-outline"
-              size={20}
-              color={media.onMedia}
-            />
-          </Pressable>
+          />
         </View>
 
         {/* Safety action sheet (Master §7 report/block) — local demo, no report

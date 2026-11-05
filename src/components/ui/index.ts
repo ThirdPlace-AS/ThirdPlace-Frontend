@@ -24,3 +24,5 @@ export {
 export { Switch } from "./Switch";
 export { Text, type TextProps, type TextTone, type TextVariant } from "./Text";
 export { Header, StepContent, StepHeader, TitleBlock } from "./Header";
+export { ChipGroup, type ChipGroupProps } from "./ChipGroup";
+export { Screen } from "./Screen";

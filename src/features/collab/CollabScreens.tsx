@@ -1,11 +1,9 @@
 import { router, useLocalSearchParams, type Href } from "expo-router";
 import { useState } from "react";
 import { Pressable, ScrollView, Text, View } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
 
-import { Icon } from "@/components/ui";
+import { ChipGroup, Icon, Screen } from "@/components/ui";
 import { Button } from "@/components/Button";
-import { Chip } from "@/components/Chip";
 import { DemoNote } from "@/components/DemoNote";
 import { Input } from "@/components/Input";
 import { RouteHeader } from "@/components/RouteHeader";
@@ -30,7 +28,7 @@ export function NewCollabScreen() {
   const [msg, setMsg] = useState("");
   const [sent, setSent] = useState(false);
   return (
-    <SafeAreaView className="flex-1 bg-background" edges={["top"]}>
+    <Screen edges={["top"]}>
       <RouteHeader title="Nytt samarbeid" />
       <ScrollView
         contentContainerClassName="gap-4 px-gutter py-4 pb-12"
@@ -79,7 +77,7 @@ export function NewCollabScreen() {
           onPress={() => router.push("/collab" as Href)}
         />
       </ScrollView>
-    </SafeAreaView>
+    </Screen>
   );
 }
 
@@ -93,7 +91,7 @@ const TIMELINE: { label: string; meta: string; done: boolean }[] = [
 export function CollabDetailScreen() {
   const [panel, setPanel] = useState<"offer" | "contract" | null>(null);
   return (
-    <SafeAreaView className="flex-1 bg-background" edges={["top"]}>
+    <Screen edges={["top"]}>
       <RouteHeader title="Jazz-samarbeid" />
       <ScrollView contentContainerClassName="gap-4 px-gutter py-4 pb-12">
         <DemoNote>Et eksempel på et samarbeid — ingen avtale finnes.</DemoNote>
@@ -170,7 +168,7 @@ export function CollabDetailScreen() {
       {panel === "contract" ? (
         <ContractSheet onClose={() => setPanel(null)} />
       ) : null}
-    </SafeAreaView>
+    </Screen>
   );
 }
 
@@ -303,16 +301,5 @@ function ChipRow({
   value: string;
   onChange: (v: string) => void;
 }) {
-  return (
-    <View className="flex-row flex-wrap gap-2">
-      {options.map((o) => (
-        <Chip
-          key={o}
-          label={o}
-          selected={value === o}
-          onPress={() => onChange(o)}
-        />
-      ))}
-    </View>
-  );
+  return <ChipGroup options={options} value={value} onChange={onChange} />;
 }
