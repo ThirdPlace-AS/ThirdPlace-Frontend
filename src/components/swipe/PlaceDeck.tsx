@@ -1,7 +1,8 @@
 import { Ionicons } from "@expo/vector-icons";
 import { Image } from "expo-image";
 import { router } from "expo-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { StatusBar } from "expo-status-bar";
 import { Pressable, Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
@@ -20,13 +21,21 @@ import { colors } from "@/theme";
 // gesture engine. Saving writes the shared demo Saved store, so the place
 // shows up in Lagret and the map's Lagret mode. No ranking or interest
 // signal is recorded (BLOCKED_CONTRACT_GAP).
-export function PlaceDeck() {
+export function PlaceDeck({
+  onExhausted,
+}: {
+  onExhausted?: (done: boolean) => void;
+}) {
   const insets = useSafeAreaInsets();
   const [index, setIndex] = useState(0);
   const { isSaved, toggle } = useMapSaved();
   const { isGuest } = useGuestMode();
   const [signIn, setSignIn] = useState(false);
   const place = places[index];
+  const done = !place;
+  useEffect(() => {
+    onExhausted?.(done);
+  }, [done, onExhausted]);
 
   if (!place) {
     return (
@@ -34,6 +43,7 @@ export function PlaceDeck() {
         className="flex-1 justify-center bg-background"
         style={{ paddingTop: insets.top }}
       >
+        <StatusBar style="dark" />
         <EmptyState
           icon="storefront-outline"
           title="Du har sett alle stedene"
@@ -53,6 +63,7 @@ export function PlaceDeck() {
 
   return (
     <View className="flex-1 bg-ink">
+      <StatusBar style="light" />
       <Image
         source={libImage(coverForPlace(place))}
         contentFit="cover"

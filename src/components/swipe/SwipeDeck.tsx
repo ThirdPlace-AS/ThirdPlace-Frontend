@@ -99,6 +99,7 @@ export function SwipeDeck() {
   // prompt instead of committing. `nope` (pass), share and undo stay open.
   const [signInFor, setSignInFor] = useState<string | null>(null);
   const [joinChatFor, setJoinChatFor] = useState<MockExperience | null>(null);
+  const [placesDone, setPlacesDone] = useState(false);
   // Guards a second commit while a card is still flying off (F3) — without it a
   // rapid second drag clobbers the in-flight exit and strands/double-advances.
   const [busy, setBusy] = useState(false);
@@ -298,7 +299,7 @@ export function SwipeDeck() {
   return (
     <View className="flex-1 bg-ink">
       {mode === "places" ? (
-        <PlaceDeck />
+        <PlaceDeck onExhausted={setPlacesDone} />
       ) : deck.done ? (
         // PDF p8 "Du har sett alt for nå" — light screen, two actions.
         <View
@@ -423,7 +424,7 @@ export function SwipeDeck() {
           }
           onOpenNotifications={() => setNotifOpen(true)}
           unreadCount={unreadNotifs}
-          onLight={mode !== "places" && deck.done}
+          onLight={mode === "places" ? placesDone : deck.done}
           onOpenGroup={() => router.push("/group-swipe")}
         />
 

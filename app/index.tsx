@@ -1,4 +1,5 @@
 import { router } from "expo-router";
+import { StatusBar } from "expo-status-bar";
 import { useEffect } from "react";
 import { Text, View } from "react-native";
 import { useReducedMotion } from "react-native-reanimated";
@@ -24,6 +25,7 @@ export default function Splash() {
       className="flex-1 items-center justify-center gap-3"
       style={{ backgroundColor: colors.ember }}
     >
+      <StatusBar style="light" />
       <View className="rounded-2xl bg-white p-2">
         <LogoMark size={56} variant="mark" />
       </View>

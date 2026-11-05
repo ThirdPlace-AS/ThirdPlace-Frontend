@@ -349,7 +349,11 @@ function StepBody({
           >
             <Ionicons name="search" size={16} color={colors.muted} />
             <Text className="flex-1 text-sm text-muted">
-              Søk etter et annet sted …
+              {draft.area &&
+              !HOST_PLACES.some((p) => p.name === draft.area) &&
+              !OSLO_AREAS.some((a) => a.name === draft.area)
+                ? `Valgt: ${draft.area}`
+                : "Søk etter et annet sted …"}
             </Text>
           </Pressable>
           {picker ? (

@@ -12,14 +12,16 @@ import { colors } from "@/theme";
 // over fixture data only — no geocoding or user directory exists
 // (BLOCKED_CONTRACT_GAP). Mount each only while open.
 
-function SearchField({
+export function SearchField({
   value,
   onChange,
   placeholder,
+  autoFocus = true,
 }: {
   value: string;
   onChange: (v: string) => void;
   placeholder: string;
+  autoFocus?: boolean;
 }) {
   return (
     <View className="flex-row items-center gap-2 rounded-full border border-line bg-surface px-4">
@@ -30,7 +32,7 @@ function SearchField({
         placeholder={placeholder}
         placeholderTextColor={colors.muted}
         className="flex-1 py-2.5 text-sm text-ink"
-        autoFocus
+        autoFocus={autoFocus}
       />
     </View>
   );

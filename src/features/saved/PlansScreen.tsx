@@ -12,7 +12,12 @@ import { Chip } from "@/components/Chip";
 import { DemoNote } from "@/components/DemoNote";
 import { RouteHeader } from "@/components/RouteHeader";
 import { EmptyState } from "@/components/states/StateView";
-import { experienceById, profile, type MockPlanState } from "@/fixtures";
+import {
+  experienceById,
+  people,
+  profile,
+  type MockPlanState,
+} from "@/fixtures";
 
 const TABS: { key: MockPlanState; label: string }[] = [
   { key: "upcoming", label: "Kommende" },
@@ -105,7 +110,7 @@ export default function PlansScreen() {
       {sheet?.kind === "split" ? (
         <SplitBillSheet
           title={sheet.title}
-          names={["Du", "Maria", "Jonas", "Åse"]}
+          names={["Du", ...people.slice(0, 3).map((p) => p.name)]}
           onClose={() => setSheet(null)}
         />
       ) : null}

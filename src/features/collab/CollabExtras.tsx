@@ -3,11 +3,9 @@ import { useState } from "react";
 import { Pressable, ScrollView, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-import { Button } from "@/components/Button";
-import { Chip } from "@/components/Chip";
+import { RateSheet } from "@/components/actions/ActionSheets";
 import { DemoNote } from "@/components/DemoNote";
 import { RouteHeader } from "@/components/RouteHeader";
-import { Sheet } from "@/components/Sheet";
 import { colors } from "@/theme";
 
 // Collaboration extras (DEMO), per the design (PDF p17–p18): Betalingsstatus,
@@ -100,66 +98,16 @@ export function CollabHistoryScreen() {
         <DemoNote>Eksempelhistorikk — ingen samarbeid er gjennomført.</DemoNote>
       </ScrollView>
       {rate ? (
-        <RateCollabSheet partner={rate} onClose={() => setRate(null)} />
+        <RateSheet
+          title={rate}
+          heading="Vurder samarbeid"
+          chips={TRAITS}
+          chipsLabel="Hva fungerte?"
+          onClose={() => setRate(null)}
+        />
       ) : null}
     </SafeAreaView>
   );
 }
 
 const TRAITS = ["Kommunikasjon", "Pålitelighet", "Profesjonalitet", "Resultat"];
-
-function RateCollabSheet({
-  partner,
-  onClose,
-}: {
-  partner: string;
-  onClose: () => void;
-}) {
-  const [stars, setStars] = useState(0);
-  const [traits, setTraits] = useState<string[]>([]);
-  const [sent, setSent] = useState(false);
-  return (
-    <Sheet visible onClose={onClose} title="Vurder samarbeid">
-      <View className="gap-3">
-        <Text className="text-sm text-muted">{partner}</Text>
-        <View className="flex-row gap-1">
-          {[1, 2, 3, 4, 5].map((n) => (
-            <Pressable
-              key={n}
-              accessibilityRole="button"
-              accessibilityLabel={`${n} av 5 stjerner`}
-              onPress={() => setStars(n)}
-            >
-              <Ionicons
-                name={n <= stars ? "star" : "star-outline"}
-                size={30}
-                color={n <= stars ? colors.ember : colors.muted}
-              />
-            </Pressable>
-          ))}
-        </View>
-        <View className="flex-row flex-wrap gap-2">
-          {TRAITS.map((t) => (
-            <Chip
-              key={t}
-              label={t}
-              selected={traits.includes(t)}
-              onPress={() =>
-                setTraits((s) =>
-                  s.includes(t) ? s.filter((x) => x !== t) : [...s, t],
-                )
-              }
-            />
-          ))}
-        </View>
-        {sent ? <DemoNote>Vurderingen ble ikke lagret.</DemoNote> : null}
-        <Button
-          label="Send vurdering"
-          variant="ink"
-          disabled={stars === 0}
-          onPress={() => setSent(true)}
-        />
-      </View>
-    </Sheet>
-  );
-}

@@ -253,7 +253,7 @@ export function CancelSheet({
     <Sheet visible onClose={onClose} title={`Avlyse ${title}?`}>
       <View className="gap-3">
         <Text className="text-sm text-muted">
-          {going} deltakere får beskjed med årsaken din.
+          {going} er påmeldt. Du kan skrive en årsak (valgfritt).
         </Text>
         <Input
           label="Årsak (vises for deltakerne)"
@@ -269,7 +269,6 @@ export function CancelSheet({
         <Button
           label="Avlys"
           variant="secondary"
-          disabled={reason.trim().length === 0}
           onPress={() => {
             onConfirm();
             onClose();
@@ -290,9 +289,7 @@ export function SpotOfferSheet({ title, onClose }: Base & { title: string }) {
         <View className="gap-0.5 rounded-xl border border-line bg-surface p-3">
           <Text className="text-sm font-semibold text-ink">{title}</Text>
         </View>
-        <Text className="text-sm text-muted">
-          Svarer du ikke innen fristen, går plassen videre til neste.
-        </Text>
+        <Text className="text-sm text-muted">Vil du ta plassen?</Text>
         {choice ? (
           <DemoNote>{`«${choice}» gjør ingenting — ingen venteliste er aktiv.`}</DemoNote>
         ) : null}
@@ -314,12 +311,23 @@ export function SpotOfferSheet({ title, onClose }: Base & { title: string }) {
 const PRAISE = ["Stemningen", "Verten", "Stedet", "Folkene"];
 
 // "Hvordan var det?" (PDF p25): post-experience rating prompt.
-export function RateSheet({ title, onClose }: Base & { title: string }) {
+export function RateSheet({
+  title,
+  onClose,
+  heading = "Hvordan var det?",
+  chips = PRAISE,
+  chipsLabel = "Hva var bra?",
+}: Base & {
+  title: string;
+  heading?: string;
+  chips?: string[];
+  chipsLabel?: string;
+}) {
   const [stars, setStars] = useState(0);
   const [liked, setLiked] = useState<string[]>([]);
   const [sent, setSent] = useState(false);
   return (
-    <Sheet visible onClose={onClose} title="Hvordan var det?">
+    <Sheet visible onClose={onClose} title={heading}>
       <View className="gap-3">
         <Text className="text-sm text-muted">{title}</Text>
         <View className="flex-row gap-1">
@@ -338,9 +346,9 @@ export function RateSheet({ title, onClose }: Base & { title: string }) {
             </Pressable>
           ))}
         </View>
-        <Text className="text-sm font-semibold text-ink">Hva var bra?</Text>
+        <Text className="text-sm font-semibold text-ink">{chipsLabel}</Text>
         <View className="flex-row flex-wrap gap-2">
-          {PRAISE.map((p) => (
+          {chips.map((p) => (
             <Chip
               key={p}
               label={p}
@@ -395,15 +403,13 @@ export function SplitBillSheet({
             className="flex-row items-center justify-between rounded-xl border border-line bg-surface px-4 py-3"
           >
             <Text className="text-sm font-semibold text-ink">{n}</Text>
-            <Text className="text-xs text-muted">
-              {mode === "Likt" ? `1/${names.length}` : "—"}
-            </Text>
+            <Text className="text-xs text-muted">—</Text>
           </View>
         ))}
         <DemoNote>
           {reminded
             ? "Ingen påminnelse ble sendt."
-            : "Regningsdeling er ikke aktiv — ingen beløp kreves inn."}
+            : "Regningsdeling er ikke aktiv — fordeling og beløp er ikke definert."}
         </DemoNote>
         <Button
           label="Send påminnelse"

@@ -26,7 +26,7 @@ export function UnderageScreen() {
           <Button
             label="Tilbake til start"
             variant="ink"
-            onPress={() => resetTo("/")}
+            onPress={() => resetTo("/welcome")}
           />
         </View>
       </View>

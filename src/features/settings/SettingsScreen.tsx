@@ -143,7 +143,7 @@ export default function SettingsScreen() {
             label="Logg ut"
             onPress={() => {
               setLogoutOpen(false);
-              resetTo("/");
+              resetTo("/welcome");
             }}
           />
           <Button

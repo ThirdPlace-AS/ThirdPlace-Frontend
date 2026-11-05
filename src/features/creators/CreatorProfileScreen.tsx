@@ -8,7 +8,8 @@ import { Button } from "@/components/Button";
 import { DemoBadge } from "@/components/DemoBadge";
 import { DemoNote } from "@/components/DemoNote";
 import { RouteHeader } from "@/components/RouteHeader";
-import { experienceById, people, personById } from "@/fixtures";
+import { EmptyState } from "@/components/states/StateView";
+import { experienceById, personById } from "@/fixtures";
 import { libImage } from "@/fixtures/images";
 
 // Creator profile (DEMO), per the design (PDF p14): avatar, name, "Skaper"
@@ -17,10 +18,21 @@ import { libImage } from "@/fixtures/images";
 // the person and counts are fixture examples and are badged as such.
 export default function CreatorProfileScreen() {
   const { id } = useLocalSearchParams<{ id?: string }>();
-  const person = personById(id ?? "") ?? people[0];
+  const person = personById(id ?? "");
   const [follow, setFollow] = useState(false);
   const [notice, setNotice] = useState<string | null>(null);
-  if (!person) return null;
+  if (!person) {
+    return (
+      <SafeAreaView className="flex-1 bg-background" edges={["top"]}>
+        <RouteHeader title="Skaper" />
+        <EmptyState
+          icon="person-outline"
+          title="Fant ikke skaperen"
+          message="Profilen finnes ikke eller er fjernet."
+        />
+      </SafeAreaView>
+    );
+  }
   const hosted = person.hostsExperienceId
     ? experienceById(person.hostsExperienceId)
     : undefined;

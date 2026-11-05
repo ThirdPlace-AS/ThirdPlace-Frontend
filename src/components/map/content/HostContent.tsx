@@ -2,8 +2,6 @@ import { Ionicons } from "@expo/vector-icons";
 import { useState } from "react";
 import { Pressable, Text, View } from "react-native";
 
-import { router } from "expo-router";
-
 import { CancelSheet } from "@/components/actions/ActionSheets";
 import { Button } from "@/components/Button";
 import { DemoNote } from "@/components/DemoNote";
@@ -31,6 +29,7 @@ export function HostContent({ id, push }: { id: string; push: PushFn }) {
     exp?.status ?? null,
   );
   const [cancelOpen, setCancelOpen] = useState(false);
+  const [editNote, setEditNote] = useState(false);
 
   if (!exp) {
     return <Text className="text-sm text-muted">Fant ikke arrangementet.</Text>;
@@ -71,8 +70,11 @@ export function HostContent({ id, push }: { id: string; push: PushFn }) {
         <Button
           label="Rediger"
           variant="secondary"
-          onPress={() => router.navigate("/add")}
+          onPress={() => setEditNote(true)}
         />
+        {editNote ? (
+          <DemoNote>Redigering av opplevelser er ikke aktiv i demoen.</DemoNote>
+        ) : null}
         {status === "cancelled" ? (
           <DemoNote>
             Avlyst i demoen — ingen ble varslet eller refundert.

@@ -15,6 +15,10 @@ import { colors } from "@/theme";
 // `showToast(...)`; <ToastHost /> is mounted once in the root layout. Toasts
 // are local UI feedback only — they never claim a backend success
 // (callers pass demo-honest copy).
+//
+// Limitation: the host renders in the root layer, so RN Modal-based Sheets
+// draw over it — only call showToast() from screen-level actions, not from
+// inside a Sheet.
 export type ToastInput = {
   title: string;
   body?: string;

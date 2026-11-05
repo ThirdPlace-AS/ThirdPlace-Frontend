@@ -1,11 +1,12 @@
 import { Ionicons } from "@expo/vector-icons";
 import { Image } from "expo-image";
 import { useState } from "react";
-import { Modal, Pressable, Text, TextInput, View } from "react-native";
+import { Modal, Pressable, Text, View } from "react-native";
 
 import { ReportSheet } from "@/components/actions/ActionSheets";
 import { Button } from "@/components/Button";
 import { DemoNote } from "@/components/DemoNote";
+import { SearchField } from "@/components/pickers/Pickers";
 import { Sheet } from "@/components/Sheet";
 import {
   CHAT_ACCESS_LABEL,
@@ -193,7 +194,12 @@ function MembersSheet({
         <Text className="text-sm text-muted">
           {chat.members ?? all.length} i chatten
         </Text>
-        <SearchField value={q} onChange={setQ} placeholder="Søk medlemmer …" />
+        <SearchField
+          autoFocus={false}
+          value={q}
+          onChange={setQ}
+          placeholder="Søk medlemmer …"
+        />
         {list.map((m) => (
           <MemberRow key={m.person.id} {...m} />
         ))}
@@ -218,7 +224,12 @@ function InviteSheet({
   return (
     <Sheet visible={visible} onClose={onClose} title="Inviter til chat">
       <View className="gap-3">
-        <SearchField value={q} onChange={setQ} placeholder="Søk brukere …" />
+        <SearchField
+          autoFocus={false}
+          value={q}
+          onChange={setQ}
+          placeholder="Søk brukere …"
+        />
         <Text className="text-xs font-semibold uppercase tracking-wide text-muted">
           Del invitasjonslenke
         </Text>
@@ -280,29 +291,6 @@ function MemberRow({
         <Text className="text-sm font-semibold text-ink">{person.name}</Text>
         <Text className="text-xs text-muted">{role}</Text>
       </View>
-    </View>
-  );
-}
-
-function SearchField({
-  value,
-  onChange,
-  placeholder,
-}: {
-  value: string;
-  onChange: (v: string) => void;
-  placeholder: string;
-}) {
-  return (
-    <View className="flex-row items-center gap-2 rounded-full border border-line bg-surface px-4">
-      <Ionicons name="search" size={16} color={colors.muted} />
-      <TextInput
-        value={value}
-        onChangeText={onChange}
-        placeholder={placeholder}
-        placeholderTextColor={colors.muted}
-        className="flex-1 py-2.5 text-sm text-ink"
-      />
     </View>
   );
 }
