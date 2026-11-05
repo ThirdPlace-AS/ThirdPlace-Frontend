@@ -1,38 +1,48 @@
+import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
 import { useState } from "react";
-import { ScrollView, Text, View } from "react-native";
+import { Pressable, ScrollView, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { Button } from "@/components/Button";
-import { DemoBadge } from "@/components/DemoBadge";
+import { DemoNote } from "@/components/DemoNote";
+import { Input } from "@/components/Input";
 import { RouteHeader } from "@/components/RouteHeader";
 import { Sheet } from "@/components/Sheet";
 import { SignInPrompt } from "@/components/SignInPrompt";
 import { useGuestMode } from "@/components/map/hooks/useGuestMode";
+import { demoCopy } from "@/copy";
 import { profile } from "@/fixtures";
 import { resetTo } from "@/lib/navigation";
-import { DemoNote } from "@/components/DemoNote";
-import { demoCopy } from "@/copy";
+import { colors } from "@/theme";
 
 import { NavRow, SettingsSection, ToggleRow } from "./settingsUi";
 
-// Settings route (DEMO). Reached from Profile → gear. Every toggle is local and
-// persists nothing; account actions gate guests to the demo SignInPrompt.
-// BLOCKED_CONTRACT_GAP: no account, session, preferences or notification backend.
+type Panel =
+  | "account"
+  | "linked"
+  | "notifications"
+  | "language"
+  | "accessibility"
+  | "export"
+  | "help"
+  | null;
+
+// Innstillinger (DEMO), grouped as in the design (PDF p19): KONTO
+// (Kontoinformasjon, Koblede kontoer) · APP (Varsler, Personvern, Språk og
+// region, Tilgjengelighet) · DATA (Eksporter data, Hjelp og støtte) · Logg ut.
+// Each row opens its PDF sub-screen (p19–p20, p28) as a sheet. Every toggle is
+// local and persists nothing; nothing is exported, sent or deleted
+// (BLOCKED_CONTRACT_GAP — no account, session, preference or support backend).
 export default function SettingsScreen() {
   const guest = useGuestMode();
-  const [push, setPush] = useState(true);
-  const [email, setEmail] = useState(false);
-  const [nearby, setNearby] = useState(true);
+  const [panel, setPanel] = useState<Panel>(null);
   const [logoutOpen, setLogoutOpen] = useState(false);
   const [signIn, setSignIn] = useState<string | null>(null);
-  const [info, setInfo] = useState<{ title: string; body: string } | null>(
-    null,
-  );
-  const show = (title: string, body: string) => () => setInfo({ title, body });
+  const close = () => setPanel(null);
 
-  const gated = (action: string, run: () => void) => () =>
-    guest.isGuest ? setSignIn(action) : run();
+  const gated = (action: string, p: Panel) => () =>
+    guest.isGuest ? setSignIn(action) : setPanel(p);
 
   return (
     <SafeAreaView className="flex-1 bg-background" edges={["top"]}>
@@ -42,27 +52,14 @@ export default function SettingsScreen() {
 
         <SettingsSection title="Konto">
           <NavRow
-            icon="mail-outline"
-            label="E-post"
-            value={guest.isGuest ? "—" : "ola@eksempel.no"}
-            onPress={gated(
-              "endre e-post",
-              show(
-                "E-post",
-                "Endring av e-post er ikke koblet til en konto ennå. Ingenting lagres.",
-              ),
-            )}
+            icon="person-outline"
+            label="Kontoinformasjon"
+            onPress={gated("se kontoinformasjon", "account")}
           />
           <NavRow
             icon="link-outline"
             label="Koblede kontoer"
-            onPress={gated(
-              "koble kontoer",
-              show(
-                "Koblede kontoer",
-                "Ingen kontoer er koblet. Innlogging med andre tjenester kommer senere.",
-              ),
-            )}
+            onPress={gated("koble kontoer", "linked")}
           />
           <NavRow
             icon="card-outline"
@@ -71,103 +68,75 @@ export default function SettingsScreen() {
           />
         </SettingsSection>
 
-        <SettingsSection title="Varsler">
-          <ToggleRow
+        <SettingsSection title="App">
+          <NavRow
             icon="notifications-outline"
-            label="Push-varsler"
-            hint="Nye invitasjoner, meldinger og svar"
-            value={push}
-            onValueChange={setPush}
+            label="Varsler"
+            value="På"
+            onPress={() => setPanel("notifications")}
           />
-          <ToggleRow
-            icon="mail-unread-outline"
-            label="E-postvarsler"
-            value={email}
-            onValueChange={setEmail}
-          />
-          <ToggleRow
-            icon="location-outline"
-            label="I nærheten av meg"
-            hint="Opplevelser som dukker opp i nabolaget"
-            value={nearby}
-            onValueChange={setNearby}
-          />
-        </SettingsSection>
-
-        <SettingsSection title="Personvern og sikkerhet">
           <NavRow
             icon="lock-closed-outline"
             label="Personvern"
             onPress={() => router.push("/privacy")}
           />
           <NavRow
-            icon="eye-off-outline"
-            label="Blokkerte"
-            value="0"
-            onPress={show("Blokkerte", "Du har ikke blokkert noen.")}
-          />
-        </SettingsSection>
-
-        <SettingsSection title="App">
-          <NavRow
-            icon="language-outline"
-            label="Språk"
+            icon="globe-outline"
+            label="Språk og region"
             value="Norsk"
-            onPress={show(
-              "Språk",
-              "ThirdPlace er foreløpig bare på norsk. Flere språk kommer.",
-            )}
+            onPress={() => setPanel("language")}
           />
           <NavRow
-            icon="document-text-outline"
-            label="Vilkår"
-            onPress={show(
-              "Vilkår",
-              "Brukervilkårene er ikke publisert ennå. De kommer før lansering.",
-            )}
-          />
-          <NavRow
-            icon="shield-outline"
-            label="Personvernerklæring"
-            onPress={show(
-              "Personvernerklæring",
-              "Personvernerklæringen er ikke publisert ennå. Den kommer før lansering.",
-            )}
-          />
-          <NavRow
-            icon="information-circle-outline"
-            label="Om ThirdPlace"
-            value="v0 · demo"
-            onPress={show(
-              "Om ThirdPlace",
-              "ThirdPlace hjelper deg å finne møteplasser i nabolaget. Dette er en demoversjon med eksempeldata.",
-            )}
+            icon="accessibility-outline"
+            label="Tilgjengelighet"
+            onPress={() => setPanel("accessibility")}
           />
         </SettingsSection>
 
-        <SettingsSection>
+        <SettingsSection title="Data">
           <NavRow
-            icon={guest.isGuest ? "log-in-outline" : "log-out-outline"}
-            label={guest.isGuest ? "Logg inn" : "Logg ut"}
-            danger={!guest.isGuest}
-            onPress={() =>
-              guest.isGuest ? setSignIn("logge inn") : setLogoutOpen(true)
-            }
+            icon="download-outline"
+            label="Eksporter data"
+            onPress={gated("eksportere data", "export")}
+          />
+          <NavRow
+            icon="help-buoy-outline"
+            label="Hjelp og støtte"
+            onPress={() => setPanel("help")}
           />
         </SettingsSection>
+
+        <Button
+          label={guest.isGuest ? "Logg inn" : "Logg ut"}
+          variant="secondary"
+          onPress={() =>
+            guest.isGuest ? setSignIn("logge inn") : setLogoutOpen(true)
+          }
+        />
 
         <Text className="px-1 text-center text-[11px] text-muted">
           {profile.memberSince} · demoversjon
         </Text>
       </ScrollView>
 
+      <AccountSheet visible={panel === "account"} onClose={close} />
+      <LinkedSheet visible={panel === "linked"} onClose={close} />
+      <NotificationPrefsSheet
+        visible={panel === "notifications"}
+        onClose={close}
+      />
+      <LanguageSheet visible={panel === "language"} onClose={close} />
+      <AccessibilitySheet visible={panel === "accessibility"} onClose={close} />
+      <ExportSheet visible={panel === "export"} onClose={close} />
+      <HelpSheet visible={panel === "help"} onClose={close} />
+
       <Sheet
         visible={logoutOpen}
         onClose={() => setLogoutOpen(false)}
         title="Logg ut"
       >
-        <DemoNote>{demoCopy.logoutNoSession}</DemoNote>
         <Text className="text-sm text-ink">Vil du logge ut av ThirdPlace?</Text>
+        <DemoNote>{demoCopy.logoutNoSession}</DemoNote>
         <View className="mt-1 gap-2">
           <Button
             variant="ink"
@@ -185,25 +154,326 @@ export default function SettingsScreen() {
         </View>
       </Sheet>
 
-      <Sheet
-        visible={info !== null}
-        onClose={() => setInfo(null)}
-        title={info?.title ?? ""}
-      >
-        <DemoBadge />
-        <Text className="text-sm text-ink">{info?.body}</Text>
-        <Button
-          variant="secondary"
-          label="Lukk"
-          onPress={() => setInfo(null)}
-        />
-      </Sheet>
-
       <SignInPrompt
         visible={signIn !== null}
         onClose={() => setSignIn(null)}
         action={signIn ?? ""}
       />
     </SafeAreaView>
+  );
+}
+
+type SheetProps = { visible: boolean; onClose: () => void };
+
+// Kontoinformasjon (PDF p19): E-post, Telefon, Passord, Aktive økter.
+function AccountSheet({ visible, onClose }: SheetProps) {
+  const [email, setEmail] = useState("ola@eksempel.no");
+  const [phone, setPhone] = useState("+47 912 34 567");
+  return (
+    <Sheet visible={visible} onClose={onClose} title="Kontoinformasjon">
+      <View className="gap-3">
+        <Input label="E-post" value={email} onChangeText={setEmail} />
+        <Input label="Telefon" value={phone} onChangeText={setPhone} />
+        <Text className="pt-1 text-xs font-semibold uppercase tracking-wide text-muted">
+          Aktive økter
+        </Text>
+        <Session
+          icon="phone-portrait-outline"
+          name="Denne enheten"
+          meta="Oslo · nå"
+        />
+        <Session
+          icon="laptop-outline"
+          name="Chrome · Windows"
+          meta="Sist aktiv for 2 dager siden"
+        />
+        <DemoNote>
+          Eksempeldata — endringer lagres ikke, og ingen økter logges ut.
+        </DemoNote>
+        <Button label="Lagre endringer" variant="ink" onPress={onClose} />
+      </View>
+    </Sheet>
+  );
+}
+
+function Session({
+  icon,
+  name,
+  meta,
+}: {
+  icon: keyof typeof Ionicons.glyphMap;
+  name: string;
+  meta: string;
+}) {
+  return (
+    <View className="flex-row items-center gap-3 rounded-xl border border-line bg-surface p-3">
+      <Ionicons name={icon} size={20} color={colors.ink} />
+      <View className="flex-1">
+        <Text className="text-sm font-semibold text-ink">{name}</Text>
+        <Text className="text-xs text-muted">{meta}</Text>
+      </View>
+    </View>
+  );
+}
+
+// Koblede kontoer (PDF p20).
+function LinkedSheet({ visible, onClose }: SheetProps) {
+  return (
+    <Sheet visible={visible} onClose={onClose} title="Koblede kontoer">
+      <View className="gap-3">
+        <Session
+          icon="person-circle-outline"
+          name={profile.name}
+          meta="Utforsker · aktiv nå"
+        />
+        <Text className="text-xs text-muted">
+          Har du en bedrift eller er skaper, kan kontoene kobles her og byttes
+          med langt trykk på Profil-fanen.
+        </Text>
+        <DemoNote>Ingen andre kontoer er koblet i demoen.</DemoNote>
+        <Button label="Lukk" variant="secondary" onPress={onClose} />
+      </View>
+    </Sheet>
+  );
+}
+
+function ToggleList({
+  items,
+  initial,
+}: {
+  items: {
+    label: string;
+    hint?: string;
+    icon: keyof typeof Ionicons.glyphMap;
+  }[];
+  initial: Record<string, boolean>;
+}) {
+  const [state, setState] = useState(initial);
+  return (
+    <View className="overflow-hidden rounded-2xl bg-surface">
+      {items.map((i) => (
+        <ToggleRow
+          key={i.label}
+          icon={i.icon}
+          label={i.label}
+          hint={i.hint}
+          value={!!state[i.label]}
+          onValueChange={(v) => setState((s) => ({ ...s, [i.label]: v }))}
+        />
+      ))}
+    </View>
+  );
+}
+
+// Varsler (PDF p19): PUSH categories + STILLE TIMER.
+function NotificationPrefsSheet({ visible, onClose }: SheetProps) {
+  return (
+    <Sheet visible={visible} onClose={onClose} title="Varsler">
+      <View className="gap-3">
+        <Text className="text-xs font-semibold uppercase tracking-wide text-muted">
+          Push
+        </Text>
+        <ToggleList
+          initial={{
+            Opplevelser: true,
+            Venteliste: true,
+            Venner: true,
+            Chat: true,
+          }}
+          items={[
+            {
+              label: "Opplevelser",
+              hint: "24t og 1t før, «skjer nå»",
+              icon: "sparkles-outline",
+            },
+            {
+              label: "Venteliste",
+              hint: "Når plass åpner seg",
+              icon: "time-outline",
+            },
+            {
+              label: "Venner",
+              hint: "Betydelige handlinger fra venner",
+              icon: "people-outline",
+            },
+            {
+              label: "Chat",
+              hint: "Nye meldinger",
+              icon: "chatbubble-outline",
+            },
+            {
+              label: "Anbefalinger",
+              hint: "Nye matcher i nærheten",
+              icon: "star-outline",
+            },
+          ]}
+        />
+        <Text className="text-xs font-semibold uppercase tracking-wide text-muted">
+          Stille timer
+        </Text>
+        <ToggleList
+          initial={{ "Ikke forstyrr 23–08": true }}
+          items={[
+            {
+              label: "Ikke forstyrr 23–08",
+              hint: "Push holdes til morgenen",
+              icon: "moon-outline",
+            },
+          ]}
+        />
+        <DemoNote>Ingen push-varsler sendes i demoen.</DemoNote>
+      </View>
+    </Sheet>
+  );
+}
+
+// Språk og region (PDF p19).
+function LanguageSheet({ visible, onClose }: SheetProps) {
+  const langs = ["Norsk (bokmål)", "English", "Svenska", "Dansk"];
+  const [lang, setLang] = useState(langs[0]);
+  return (
+    <Sheet visible={visible} onClose={onClose} title="Språk og region">
+      <View className="gap-2">
+        {langs.map((l) => (
+          <Pressable
+            key={l}
+            accessibilityRole="radio"
+            accessibilityState={{ selected: lang === l }}
+            onPress={() => setLang(l)}
+            className="flex-row items-center justify-between rounded-xl border border-line bg-surface px-4 py-3.5"
+          >
+            <Text className="text-base text-ink">{l}</Text>
+            {lang === l ? (
+              <View className="h-4 w-4 rounded-full bg-ink" />
+            ) : null}
+          </Pressable>
+        ))}
+        <Text className="pt-2 text-xs font-semibold uppercase tracking-wide text-muted">
+          Region
+        </Text>
+        <View className="overflow-hidden rounded-2xl bg-surface">
+          <NavRow
+            icon="cash-outline"
+            label="Valuta"
+            value="NOK (kr)"
+            onPress={() => {}}
+          />
+          <NavRow
+            icon="time-outline"
+            label="Tidssone"
+            value="Oslo (CET)"
+            onPress={() => {}}
+          />
+        </View>
+        <DemoNote>
+          Appen er bare på norsk i demoen — valget endrer ingenting.
+        </DemoNote>
+      </View>
+    </Sheet>
+  );
+}
+
+// Tilgjengelighet (PDF p19).
+function AccessibilitySheet({ visible, onClose }: SheetProps) {
+  return (
+    <Sheet visible={visible} onClose={onClose} title="Tilgjengelighet">
+      <View className="gap-3">
+        <ToggleList
+          initial={{ "Reduser bevegelse": false }}
+          items={[
+            { label: "Større tekst", icon: "text-outline" },
+            { label: "Høy kontrast", icon: "contrast-outline" },
+            {
+              label: "Reduser bevegelse",
+              hint: "Demper animasjoner",
+              icon: "pause-circle-outline",
+            },
+            { label: "Skjermleser-optimalisert", icon: "ear-outline" },
+          ]}
+        />
+        <Text className="text-xs font-semibold uppercase tracking-wide text-muted">
+          Kart
+        </Text>
+        <ToggleList
+          initial={{}}
+          items={[
+            {
+              label: "Vis kun rullestolvennlige",
+              hint: "Filtrerer steder automatisk",
+              icon: "accessibility-outline",
+            },
+          ]}
+        />
+        <DemoNote>
+          Valgene her lagres ikke. Appen følger allerede systemets «Reduser
+          bevegelse».
+        </DemoNote>
+      </View>
+    </Sheet>
+  );
+}
+
+// Eksporter data (PDF p28, GDPR).
+function ExportSheet({ visible, onClose }: SheetProps) {
+  return (
+    <Sheet visible={visible} onClose={onClose} title="Eksporter data">
+      <View className="gap-3">
+        <Text className="text-sm text-muted">
+          Få en kopi av alt ThirdPlace vet om deg (GDPR).
+        </Text>
+        <ToggleList
+          initial={{
+            "Profil og preferanser": true,
+            Chathistorikk: true,
+            "Opplevelser og påmeldinger": true,
+            Anmeldelser: true,
+          }}
+          items={[
+            { label: "Profil og preferanser", icon: "person-outline" },
+            { label: "Chathistorikk", icon: "chatbubble-outline" },
+            { label: "Opplevelser og påmeldinger", icon: "sparkles-outline" },
+            { label: "Anmeldelser", icon: "star-outline" },
+            { label: "Betalingshistorikk", icon: "card-outline" },
+          ]}
+        />
+        <DemoNote>Demo — ingen eksport lages, og ingen e-post sendes.</DemoNote>
+        <Button label="Be om eksport" variant="ink" onPress={onClose} />
+      </View>
+    </Sheet>
+  );
+}
+
+// Hjelp og støtte (PDF p20). Kept separate from safety reports and payment
+// disputes (master spec §11).
+function HelpSheet({ visible, onClose }: SheetProps) {
+  const faq = [
+    "Hvordan fungerer GPS-verifisering?",
+    "Hva skjer når en opplevelse avlyses?",
+    "Hvordan blir jeg Skaper?",
+    "Refusjon og avbestilling",
+  ];
+  return (
+    <Sheet visible={visible} onClose={onClose} title="Hjelp og støtte">
+      <View className="gap-3">
+        <Text className="text-xs font-semibold uppercase tracking-wide text-muted">
+          Vanlige spørsmål
+        </Text>
+        <View className="overflow-hidden rounded-2xl bg-surface">
+          {faq.map((q) => (
+            <NavRow
+              key={q}
+              icon="help-circle-outline"
+              label={q}
+              onPress={() => {}}
+            />
+          ))}
+        </View>
+        <DemoNote>
+          Svarene og supportsaker er ikke koblet til en tjeneste ennå — ingen
+          sak opprettes.
+        </DemoNote>
+        <Button label="Opprett supportsak" variant="ink" onPress={onClose} />
+      </View>
+    </Sheet>
   );
 }
