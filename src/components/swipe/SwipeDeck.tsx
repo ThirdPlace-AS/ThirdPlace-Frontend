@@ -48,6 +48,7 @@ import { colors, motion } from "@/theme";
 import { experienceAvailability } from "./availability";
 import { decideCommit, rotationFor, type SwipeAction } from "./deckLogic";
 import { PhotoCarousel } from "./PhotoCarousel";
+import { PlaceDeck } from "./PlaceDeck";
 import { SwipeActions } from "./SwipeActions";
 import { SwipeCard, SWIPE_CONTENT_BOTTOM } from "./SwipeCard";
 import { SwipeFilterBar, type SwipeMode } from "./SwipeFilterBar";
@@ -297,18 +298,7 @@ export function SwipeDeck() {
   return (
     <View className="flex-1 bg-ink">
       {mode === "places" ? (
-        <View
-          className="flex-1 justify-center bg-background"
-          style={{ paddingTop: insets.top }}
-        >
-          <EmptyState
-            icon="storefront-outline"
-            title="Steder i sveip kommer"
-            message="Stedskort er ikke klare i demoen ennå. Utforsk steder på kartet i mellomtiden."
-            actionLabel="Utforsk kartet"
-            onAction={() => router.navigate("/map")}
-          />
-        </View>
+        <PlaceDeck />
       ) : deck.done ? (
         // PDF p8 "Du har sett alt for nå" — light screen, two actions.
         <View
@@ -433,7 +423,7 @@ export function SwipeDeck() {
           }
           onOpenNotifications={() => setNotifOpen(true)}
           unreadCount={unreadNotifs}
-          onLight={mode === "places" || deck.done}
+          onLight={mode !== "places" && deck.done}
           onOpenGroup={() => router.push("/group-swipe")}
         />
 
