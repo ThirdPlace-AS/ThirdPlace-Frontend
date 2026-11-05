@@ -2,6 +2,7 @@ import { Link } from "expo-router";
 import { ScrollView, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
+import { SocialAuthButtons } from "@/components/auth/SocialAuthButtons";
 import { Button } from "@/components/Button";
 import { DemoBadge } from "@/components/DemoBadge";
 import { Input } from "@/components/Input";
@@ -36,6 +37,7 @@ export default function Login() {
           >
             Glemt passord?
           </Link>
+          <SocialAuthButtons verb="Logg inn med" />
           <Button
             label="Logg inn"
             variant="ink"
@@ -47,7 +49,7 @@ export default function Login() {
           <View className="flex-row items-center justify-center gap-2">
             <DemoBadge />
             <Text className="text-xs text-muted">
-              Demo — ingen reell innlogging; feltene lagrer ingenting.
+              Ingen reell innlogging; feltene lagrer ingenting.
             </Text>
           </View>
         </View>
