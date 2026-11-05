@@ -221,6 +221,16 @@ function KindMenu({ onPick }: { onPick: (k: AddKind) => void }) {
         <Text className="pb-1 text-2xl font-bold text-ink">
           Hva vil du legge til?
         </Text>
+        <Pressable
+          accessibilityRole="button"
+          onPress={() => router.push("/import")}
+          className="flex-row items-center gap-2 self-start py-1"
+        >
+          <Ionicons name="link-outline" size={16} color={colors.ember} />
+          <Text className="text-sm font-semibold text-ember">
+            Importer fra lenke →
+          </Text>
+        </Pressable>
         {rows.map((r) => (
           <Pressable
             key={r.kind}

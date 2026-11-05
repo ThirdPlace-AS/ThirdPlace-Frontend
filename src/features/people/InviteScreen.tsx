@@ -1,4 +1,5 @@
 import { Ionicons } from "@expo/vector-icons";
+import { router } from "expo-router";
 import { useState } from "react";
 import { ScrollView, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -76,6 +77,11 @@ export default function InviteScreen() {
         {notice ? (
           <DemoNote>Koden er et eksempel — ingenting ble delt.</DemoNote>
         ) : null}
+        <Button
+          label="Inviter kontakter"
+          variant="secondary"
+          onPress={() => router.push("/invite-contacts")}
+        />
 
         <Text className="text-xs font-semibold uppercase tracking-wide text-muted">
           Aktivitet
