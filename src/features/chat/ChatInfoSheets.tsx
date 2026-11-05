@@ -1,7 +1,7 @@
 import { Ionicons } from "@expo/vector-icons";
 import { Image } from "expo-image";
 import { useState } from "react";
-import { Pressable, Text, TextInput, View } from "react-native";
+import { Modal, Pressable, Text, TextInput, View } from "react-native";
 
 import { ReportSheet } from "@/components/actions/ActionSheets";
 import { Button } from "@/components/Button";
@@ -11,6 +11,7 @@ import {
   CHAT_ACCESS_LABEL,
   CHAT_TYPE_LABEL,
   experienceById,
+  experiences,
   people,
   type MockChat,
 } from "@/fixtures";
@@ -31,6 +32,9 @@ const membersOf = (chat: MockChat) =>
     }));
 
 type Panel = "info" | "members" | "invite" | null;
+
+// Sample photos standing in for images shared in the chat (bundled art).
+const SHARED = experiences.flatMap((e) => e.photos).slice(0, 4);
 
 export function ChatInfoSheets({
   chat,
@@ -78,6 +82,7 @@ function InfoSheet({
 }) {
   const [notice, setNotice] = useState<string | null>(null);
   const [report, setReport] = useState(false);
+  const [viewer, setViewer] = useState<number | null>(null);
   const exp = chat.pinnedExperienceId
     ? experienceById(chat.pinnedExperienceId)
     : undefined;
@@ -110,6 +115,24 @@ function InfoSheet({
         {members.slice(0, 3).map((m) => (
           <MemberRow key={m.person.id} {...m} />
         ))}
+        <Text className="text-sm font-semibold text-ink">Delte bilder</Text>
+        <View className="flex-row gap-2">
+          {SHARED.map((src, i) => (
+            <Pressable
+              key={i}
+              accessibilityRole="imagebutton"
+              accessibilityLabel={`Delt bilde ${i + 1}`}
+              onPress={() => setViewer(i)}
+              className="flex-1"
+            >
+              <Image
+                source={src}
+                contentFit="cover"
+                style={{ aspectRatio: 1, width: "100%", borderRadius: 10 }}
+              />
+            </Pressable>
+          ))}
+        </View>
         <View className="flex-row gap-2">
           {[
             { icon: "notifications-off-outline" as const, label: "Demp" },
@@ -138,6 +161,13 @@ function InfoSheet({
           <DemoNote>{`«${notice}» gjør ingenting i demoen.`}</DemoNote>
         ) : null}
         {report ? <ReportSheet onClose={() => setReport(false)} /> : null}
+        {viewer !== null ? (
+          <ImageViewer
+            index={viewer}
+            onIndex={setViewer}
+            onClose={() => setViewer(null)}
+          />
+        ) : null}
       </View>
     </Sheet>
   );
@@ -274,5 +304,70 @@ function SearchField({
         className="flex-1 py-2.5 text-sm text-ink"
       />
     </View>
+  );
+}
+
+// Bildeviser (PDF p24): full-screen photo with ‹ › and "N / M". Swipe-free,
+// button-driven. Bundled sample art — no media contract.
+function ImageViewer({
+  index,
+  onIndex,
+  onClose,
+}: {
+  index: number;
+  onIndex: (i: number) => void;
+  onClose: () => void;
+}) {
+  const n = SHARED.length;
+  return (
+    <Modal visible animationType="fade" onRequestClose={onClose}>
+      <View className="flex-1 justify-center bg-black">
+        <Image
+          source={SHARED[index]}
+          contentFit="contain"
+          style={{ width: "100%", height: "70%" }}
+        />
+        <View className="absolute inset-x-0 top-12 flex-row items-center justify-between px-gutter">
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel="Lukk"
+            onPress={onClose}
+            hitSlop={8}
+          >
+            <Ionicons name="close" size={28} color="#FFFFFF" />
+          </Pressable>
+          <Text className="text-sm font-semibold text-white">
+            {index + 1} / {n}
+          </Text>
+          <View className="w-7" />
+        </View>
+        <View className="absolute inset-x-0 bottom-16 flex-row justify-center gap-10">
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel="Forrige bilde"
+            disabled={index === 0}
+            onPress={() => onIndex(index - 1)}
+          >
+            <Ionicons
+              name="chevron-back"
+              size={32}
+              color={index === 0 ? "#666666" : "#FFFFFF"}
+            />
+          </Pressable>
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel="Neste bilde"
+            disabled={index === n - 1}
+            onPress={() => onIndex(index + 1)}
+          >
+            <Ionicons
+              name="chevron-forward"
+              size={32}
+              color={index === n - 1 ? "#666666" : "#FFFFFF"}
+            />
+          </Pressable>
+        </View>
+      </View>
+    </Modal>
   );
 }

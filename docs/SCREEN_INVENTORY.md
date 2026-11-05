@@ -106,8 +106,6 @@ Lokasjoner + account switcher (p13–p15, p27), collaboration flow (p16–p18),
 structure-only paid join (p23), Utbetalinger (p21), Innleveringer (p12).
 
 **Still missing:** creator "Du er nå Skaper!" and
-creator profile (p14); Delte bilder (p9); Mine listings / Ny listing /
-marketplace filters / Betalingsstatus / Marketplace-analyse / historikk /
-vurdering / venteliste (p16–p18); Inviter kontakter (p22); bildeviser,
-Velg sted, Velg kategori, Søk brukere (p24–p25); Importer innhold (p26);
+creator profile (p14); marketplace filters / Betalingsstatus / Marketplace-analyse / historikk /
+vurdering / venteliste (p16–p18); Inviter kontakter (p22); Velg sted, Velg kategori, Søk brukere (p24–p25); Importer innhold (p26);
 flytende varsler (p27); Utbetalingshistorikk rows (p21).
