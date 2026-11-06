@@ -1,8 +1,20 @@
 import { router, useLocalSearchParams, type Href } from "expo-router";
 import { useState } from "react";
-import { Pressable, ScrollView, View } from "react-native";
+import {
+  KeyboardAvoidingView,
+  Pressable,
+  ScrollView,
+  View,
+} from "react-native";
 
-import { ChipGroup, Icon, Screen, Text, type IconName } from "@/components/ui";
+import {
+  ChipGroup,
+  Icon,
+  Screen,
+  StickyFooter,
+  Text,
+  type IconName,
+} from "@/components/ui";
 import { Button } from "@/components/Button";
 import { DemoNote } from "@/components/DemoNote";
 import { Input } from "@/components/Input";
@@ -32,61 +44,65 @@ export function NewCollabScreen() {
   return (
     <Screen edges={["top"]}>
       <RouteHeader title="Nytt samarbeid" />
-      <ScrollView
-        contentContainerClassName="gap-4 px-gutter py-4 pb-12"
-        keyboardShouldPersistTaps="handled"
-      >
-        <Text variant="caption" tone="muted">
-          Foreslå et samarbeid basert på en listing.
-        </Text>
-        <Label>Knyttet listing</Label>
-        <View className="gap-0.5 rounded-md border border-line bg-surface p-3">
-          <Text variant="label" weight="semibold">
-            {listing?.title}
-          </Text>
+      <KeyboardAvoidingView behavior="padding" className="flex-1">
+        <ScrollView
+          contentContainerClassName="gap-4 px-gutter py-4 pb-12"
+          keyboardShouldPersistTaps="handled"
+        >
           <Text variant="caption" tone="muted">
-            {listing?.owner} · {listing?.type}
+            Foreslå et samarbeid basert på en listing.
           </Text>
-        </View>
-        <Label>Samarbeidstype</Label>
-        <ChipRow options={TYPES} value={type} onChange={setType} />
-        <Label>Hosting-type</Label>
-        <ChipRow options={HOSTING} value={hosting} onChange={setHosting} />
-        <Label>Inntektsdeling (du / partner)</Label>
-        <ChipRow options={SPLITS} value={split} onChange={setSplit} />
-        <DemoNote>
-          Delingen er bare et valg i skjemaet. Ingenting regnes ut.
-        </DemoNote>
-        <Input
-          label="Melding"
-          placeholder="Fortell kort hva du foreslår …"
-          value={msg}
-          onChangeText={setMsg}
-          multiline
-          maxLength={400}
-        />
-        {sent ? (
+          <Label>Knyttet listing</Label>
+          <View className="gap-0.5 rounded-md border border-line bg-surface p-3">
+            <Text variant="label" weight="semibold">
+              {listing?.title}
+            </Text>
+            <Text variant="caption" tone="muted">
+              {listing?.owner} · {listing?.type}
+            </Text>
+          </View>
+          <Label>Samarbeidstype</Label>
+          <ChipRow options={TYPES} value={type} onChange={setType} />
+          <Label>Hosting-type</Label>
+          <ChipRow options={HOSTING} value={hosting} onChange={setHosting} />
+          <Label>Inntektsdeling (du / partner)</Label>
+          <ChipRow options={SPLITS} value={split} onChange={setSplit} />
           <DemoNote>
-            Forespørselen ble ikke sendt, og det finnes ingen avtale.
+            Delingen er bare et valg i skjemaet. Ingenting regnes ut.
           </DemoNote>
-        ) : null}
-        <Button
-          label="Send forespørsel →"
-          variant="ink"
-          disabled={msg.trim().length === 0}
-          onPress={() => setSent(true)}
-        />
-        {msg.trim().length === 0 ? (
-          <Text variant="caption" tone="muted" className="text-center">
-            Skriv en melding først.
-          </Text>
-        ) : null}
-        <Button
-          label="Se et eksempel på samarbeid"
-          variant="secondary"
-          onPress={() => router.push("/collab" as Href)}
-        />
-      </ScrollView>
+          <Input
+            label="Melding"
+            placeholder="Fortell kort hva du foreslår …"
+            value={msg}
+            onChangeText={setMsg}
+            multiline
+            maxLength={400}
+          />
+          <Button
+            label="Se et eksempel på samarbeid"
+            variant="secondary"
+            onPress={() => router.push("/collab" as Href)}
+          />
+        </ScrollView>
+        <StickyFooter safeBottom>
+          {sent ? (
+            <DemoNote>
+              Forespørselen ble ikke sendt, og det finnes ingen avtale.
+            </DemoNote>
+          ) : null}
+          <Button
+            label="Send forespørsel →"
+            variant="ink"
+            disabled={msg.trim().length === 0}
+            onPress={() => setSent(true)}
+          />
+          {msg.trim().length === 0 ? (
+            <Text variant="caption" tone="muted" className="text-center">
+              Skriv en melding først.
+            </Text>
+          ) : null}
+        </StickyFooter>
+      </KeyboardAvoidingView>
     </Screen>
   );
 }

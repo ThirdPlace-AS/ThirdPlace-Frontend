@@ -16,6 +16,7 @@ import {
   Screen,
   StepContent,
   StepHeader,
+  StickyFooter,
   type IconName,
   Pressable as UIPressable,
   Text,
@@ -204,7 +205,7 @@ export function AddWizard() {
           <StepBody step={step} draft={draft} patch={patch} />
         </ScrollView>
 
-        <View className="border-t border-line bg-background px-gutter pb-3 pt-3">
+        <StickyFooter>
           <Button
             label={
               !isLast
@@ -220,11 +221,11 @@ export function AddWizard() {
             onPress={next}
           />
           {advanceHint(step, draft) ? (
-            <Text variant="caption" tone="muted" className="pt-2 text-center">
+            <Text variant="caption" tone="muted" className="text-center">
               {advanceHint(step, draft)}
             </Text>
           ) : null}
-        </View>
+        </StickyFooter>
       </KeyboardAvoidingView>
     </Screen>
   );

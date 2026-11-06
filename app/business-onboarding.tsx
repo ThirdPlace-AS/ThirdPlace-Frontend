@@ -4,7 +4,14 @@ import { useState } from "react";
 import { KeyboardAvoidingView, ScrollView, View } from "react-native";
 
 import { Switch } from "@/components/ui/Switch";
-import { Icon, Screen, StepContent, StepHeader, Text } from "@/components/ui";
+import {
+  Icon,
+  Screen,
+  StepContent,
+  StepHeader,
+  StickyFooter,
+  Text,
+} from "@/components/ui";
 import { Button } from "@/components/Button";
 import { Chip } from "@/components/Chip";
 import { DemoNote } from "@/components/DemoNote";
@@ -363,9 +370,9 @@ export default function BusinessOnboarding() {
           ) : null}
         </ScrollView>
 
-        <View className="border-t border-line bg-background px-gutter pb-3 pt-3">
+        <StickyFooter>
           <Button label={cta} variant="ink" disabled={!can} onPress={next} />
-        </View>
+        </StickyFooter>
       </KeyboardAvoidingView>
     </Screen>
   );

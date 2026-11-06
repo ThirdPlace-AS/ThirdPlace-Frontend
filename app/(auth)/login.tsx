@@ -1,5 +1,5 @@
 import { Link } from "expo-router";
-import { Pressable, ScrollView, View } from "react-native";
+import { Pressable, ScrollView, useWindowDimensions, View } from "react-native";
 
 import { Screen, Text } from "@/components/ui";
 import { SocialAuthButtons } from "@/components/auth/SocialAuthButtons";
@@ -14,15 +14,20 @@ import { resetTo } from "@/lib/navigation";
 // Visual-only sign-in. Inputs are inert; no auth is performed (no backend).
 export default function Login() {
   const { setGuest } = useGuestMode();
+  // Short phones (< 700 dp): tighter rhythm and a smaller mark, so "Logg
+  // inn" clears the fold without changing the PDF order (social first).
+  const short = useWindowDimensions().height < 700;
   return (
     <Screen>
       <ScrollView
-        contentContainerClassName="gap-6 p-gutter"
+        contentContainerClassName={
+          short ? "gap-4 px-gutter pb-gutter pt-1" : "gap-6 p-gutter"
+        }
         // The first tap on a button lands while the keyboard is open.
         keyboardShouldPersistTaps="handled"
       >
         <View className="items-center">
-          <Logo size={48} />
+          <Logo size={short ? 36 : 48} />
         </View>
         <ScreenHeader
           title="Velkommen tilbake"

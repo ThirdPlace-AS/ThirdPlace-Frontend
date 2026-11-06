@@ -3,7 +3,14 @@ import { ScrollView, View } from "react-native";
 
 import { Button } from "@/components/Button";
 import { DemoNote } from "@/components/DemoNote";
-import { Icon, ListRow, Pressable, Screen, Text } from "@/components/ui";
+import {
+  Icon,
+  ListRow,
+  Pressable,
+  Screen,
+  StickyFooter,
+  Text,
+} from "@/components/ui";
 
 // "Du er nå Skaper!" (DEMO), per the design (PDF p14, bottom left): the
 // success screen after an approved Skaper application. Applications are not
@@ -43,7 +50,7 @@ export default function CreatorWelcomeScreen() {
     router.canGoBack() ? router.back() : router.replace("/profile");
   return (
     <Screen>
-      <ScrollView contentContainerClassName="flex-grow gap-6 px-gutter pb-8 pt-12">
+      <ScrollView contentContainerClassName="gap-6 px-gutter pb-8 pt-12">
         <View className="items-center gap-4">
           <View
             accessible
@@ -81,25 +88,25 @@ export default function CreatorWelcomeScreen() {
           Dette er en forhåndsvisning. Ingen søknad er sendt, og hva
           Skaper-rollen gir tilgang til er ikke bestemt ennå.
         </DemoNote>
-
-        <View className="mt-auto gap-3">
-          <Button
-            label="Utforsk ditt nye hjem →"
-            variant="ink"
-            onPress={() => router.replace("/marketplace")}
-          />
-          <Pressable
-            hitSlop={{ top: 6, bottom: 6, left: 8, right: 8 }}
-            accessibilityRole="button"
-            onPress={leave}
-            className="items-center py-2"
-          >
-            <Text variant="label" weight="semibold" tone="muted">
-              Hopp over for nå
-            </Text>
-          </Pressable>
-        </View>
       </ScrollView>
+      {/* Pinned: on a 640 dp phone the CTA used to sit under the fold. */}
+      <StickyFooter>
+        <Button
+          label="Utforsk ditt nye hjem →"
+          variant="ink"
+          onPress={() => router.replace("/marketplace")}
+        />
+        <Pressable
+          hitSlop={{ top: 6, bottom: 6, left: 8, right: 8 }}
+          accessibilityRole="button"
+          onPress={leave}
+          className="items-center py-2"
+        >
+          <Text variant="label" weight="semibold" tone="muted">
+            Hopp over for nå
+          </Text>
+        </Pressable>
+      </StickyFooter>
     </Screen>
   );
 }

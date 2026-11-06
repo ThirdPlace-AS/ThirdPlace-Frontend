@@ -2,13 +2,20 @@ import { Ionicons } from "@expo/vector-icons";
 import { Image } from "expo-image";
 import { type Href, router } from "expo-router";
 import { useEffect, useState } from "react";
-import { Pressable, ScrollView, View } from "react-native";
+import {
+  KeyboardAvoidingView,
+  Pressable,
+  ScrollView,
+  useWindowDimensions,
+  View,
+} from "react-native";
 import {
   Avatar,
   Icon,
   IconButton,
   ListRow,
   Screen,
+  StickyFooter,
   Text,
 } from "@/components/ui";
 import { Button } from "@/components/Button";
@@ -42,6 +49,11 @@ export default function GroupSwipeScreen() {
   const friends = people.filter((p) => invited.includes(p.id));
   const deck = experiences.filter((e) => e.status !== "cancelled");
   const card = deck[index % deck.length];
+  // Photos scale with the screen so the vote buttons stay in view on a
+  // 640 dp phone (fixed 300 / 200 pushed them below the fold).
+  const { height: winH } = useWindowDimensions();
+  const cardImgH = Math.round(Math.min(300, winH * 0.3));
+  const matchImgH = Math.round(Math.min(200, winH * 0.24));
   // The example chat pinned to the matched experience, if one exists.
   const matchChat = card
     ? chats.find((c) => c.pinnedExperienceId === card.id)
@@ -82,99 +94,108 @@ export default function GroupSwipeScreen() {
       </View>
 
       {phase === "setup" ? (
-        <ScrollView
-          contentContainerClassName="gap-4 p-gutter pb-8"
-          keyboardShouldPersistTaps="handled"
-        >
-          <Text variant="display">Start gruppe-sveip</Text>
-          <Text variant="caption" tone="muted">
-            Sveip sammen med venner og finn noe alle har lyst til.
-          </Text>
-          <Input
-            label="Navn på økten"
-            placeholder="F.eks. «Lørdagsplanlegging»"
-            value={name}
-            onChangeText={setName}
-            maxLength={40}
-          />
-          <Text variant="label" weight="semibold">
-            Inviter venner
-          </Text>
-          <View className="flex-row flex-wrap gap-3">
-            {people.map((p) => {
-              const on = invited.includes(p.id);
-              return (
-                <Pressable
-                  key={p.id}
-                  accessibilityRole="checkbox"
-                  accessibilityState={{ checked: on }}
-                  accessibilityLabel={p.name}
+        <KeyboardAvoidingView behavior="padding" className="flex-1">
+          <ScrollView
+            contentContainerClassName="gap-4 p-gutter pb-8"
+            keyboardShouldPersistTaps="handled"
+          >
+            <Text variant="display">Start gruppe-sveip</Text>
+            <Text variant="caption" tone="muted">
+              Sveip sammen med venner og finn noe alle har lyst til.
+            </Text>
+            <Input
+              label="Navn på økten"
+              placeholder="F.eks. «Lørdagsplanlegging»"
+              value={name}
+              onChangeText={setName}
+              maxLength={40}
+            />
+            <Text variant="label" weight="semibold">
+              Inviter venner
+            </Text>
+            <View className="flex-row flex-wrap gap-3">
+              {people.map((p) => {
+                const on = invited.includes(p.id);
+                return (
+                  <Pressable
+                    key={p.id}
+                    accessibilityRole="checkbox"
+                    accessibilityState={{ checked: on }}
+                    accessibilityLabel={p.name}
+                    onPress={() =>
+                      setInvited((s) =>
+                        on ? s.filter((x) => x !== p.id) : [...s, p.id],
+                      )
+                    }
+                    className="items-center gap-1"
+                  >
+                    <View
+                      className={`rounded-full border-2 p-0.5 ${on ? "border-ink" : "border-transparent"}`}
+                    >
+                      <Image
+                        source={libImage(p.avatar)}
+                        style={{ height: 48, width: 48, borderRadius: 24 }}
+                      />
+                    </View>
+                    <Text variant="caption">{p.name.split(" ")[0]}</Text>
+                  </Pressable>
+                );
+              })}
+            </View>
+            <Text variant="label" weight="semibold">
+              Filtre for gruppen
+            </Text>
+            <View className="flex-row flex-wrap gap-2">
+              {FILTERS.map((f) => (
+                <Chip
+                  key={f}
+                  label={f}
+                  selected={filters.includes(f)}
                   onPress={() =>
-                    setInvited((s) =>
-                      on ? s.filter((x) => x !== p.id) : [...s, p.id],
+                    setFilters((s) =>
+                      s.includes(f) ? s.filter((x) => x !== f) : [...s, f],
                     )
                   }
-                  className="items-center gap-1"
-                >
-                  <View
-                    className={`rounded-full border-2 p-0.5 ${on ? "border-ink" : "border-transparent"}`}
-                  >
-                    <Image
-                      source={libImage(p.avatar)}
-                      style={{ height: 48, width: 48, borderRadius: 24 }}
-                    />
-                  </View>
-                  <Text variant="caption">{p.name.split(" ")[0]}</Text>
-                </Pressable>
-              );
-            })}
-          </View>
-          <Text variant="label" weight="semibold">
-            Filtre for gruppen
-          </Text>
-          <View className="flex-row flex-wrap gap-2">
-            {FILTERS.map((f) => (
-              <Chip
-                key={f}
-                label={f}
-                selected={filters.includes(f)}
-                onPress={() =>
-                  setFilters((s) =>
-                    s.includes(f) ? s.filter((x) => x !== f) : [...s, f],
-                  )
-                }
-              />
-            ))}
-          </View>
-          <Text variant="label" weight="semibold">
-            Tid tilgjengelig
-          </Text>
-          <View className="flex-row flex-wrap gap-2">
-            {TIMES.map((t) => (
-              <Chip
-                key={t}
-                label={t}
-                selected={time === t}
-                onPress={() => setTime(t)}
-              />
-            ))}
-          </View>
-          <View className="rounded-md bg-surfaceMuted p-3">
-            <Text variant="label" weight="regular">
-              Alle ser de samme kortene. Det blir match når alle sveiper til
-              høyre.
+                />
+              ))}
+            </View>
+            <Text variant="label" weight="semibold">
+              Tid tilgjengelig
             </Text>
-          </View>
-          <Button
-            label="Start gruppe-sveip →"
-            variant="ink"
-            disabled={invited.length === 0}
-            onPress={() => {
-              setReady([]);
-              setPhase("lobby");
-            }}
-          />
-        </ScrollView>
+            <View className="flex-row flex-wrap gap-2">
+              {TIMES.map((t) => (
+                <Chip
+                  key={t}
+                  label={t}
+                  selected={time === t}
+                  onPress={() => setTime(t)}
+                />
+              ))}
+            </View>
+            <View className="rounded-md bg-surfaceMuted p-3">
+              <Text variant="label" weight="regular">
+                Alle ser de samme kortene. Det blir match når alle sveiper til
+                høyre.
+              </Text>
+            </View>
+          </ScrollView>
+          <StickyFooter>
+            <Button
+              label="Start gruppe-sveip →"
+              variant="ink"
+              disabled={invited.length === 0}
+              onPress={() => {
+                setReady([]);
+                setPhase("lobby");
+              }}
+            />
+            {invited.length === 0 ? (
+              <Text variant="caption" tone="muted" className="text-center">
+                Velg minst én venn.
+              </Text>
+            ) : null}
+          </StickyFooter>
+        </KeyboardAvoidingView>
       ) : null}
 
       {phase === "lobby" ? (
@@ -232,7 +253,7 @@ export default function GroupSwipeScreen() {
             <Image
               source={card.photos[0]}
               contentFit="cover"
-              style={{ height: 300, width: "100%" }}
+              style={{ height: cardImgH, width: "100%" }}
             />
           </View>
           <View className="gap-1">
@@ -291,11 +312,11 @@ export default function GroupSwipeScreen() {
       ) : null}
 
       {phase === "match" && card ? (
-        <View className="flex-1 justify-center gap-5 p-gutter">
+        <ScrollView contentContainerClassName="flex-grow justify-center gap-5 p-gutter">
           <Image
             source={card.photos[0]}
             contentFit="cover"
-            style={{ height: 200, width: "100%", borderRadius: 20 }}
+            style={{ height: matchImgH, width: "100%", borderRadius: 20 }}
           />
           <Text variant="display" className="text-center">
             Dere matcher!
@@ -331,7 +352,7 @@ export default function GroupSwipeScreen() {
               setPhase("swipe");
             }}
           />
-        </View>
+        </ScrollView>
       ) : null}
     </Screen>
   );

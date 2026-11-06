@@ -14,6 +14,7 @@ import {
   Screen,
   StepContent,
   StepHeader,
+  StickyFooter,
   type IconName,
   Text,
 } from "@/components/ui";
@@ -515,14 +516,14 @@ export default function Onboarding() {
           ) : null}
         </ScrollView>
 
-        <View className="border-t border-line bg-background px-gutter pb-3 pt-3">
+        <StickyFooter>
           <Button
             label={cta}
             variant="ink"
             disabled={!canContinue}
             onPress={next}
           />
-        </View>
+        </StickyFooter>
       </KeyboardAvoidingView>
     </Screen>
   );

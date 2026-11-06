@@ -125,6 +125,7 @@ Touch targets are at least 44×44 (use `hitSlop` to reach it on small visuals).
 | Loading list        | `<SkeletonList variant="row"                                                                                                                                                                                                          | "card"                                                                                                                 | "mediaCard">` — one busy element for screen readers. |
 | Empty / error       | `<EmptyState>` / `<ErrorState>` (icon in a soft disc, or an `illustration`).                                                                                                                                                          |
 | Toast               | `showToast()` — ink surface, polite live region, fades in/out. Demo-honest copy only. A demo confirm inside a sheet closes the sheet, then calls `showToastAfterSheet(demoToast.x)` (waits for the exit; the host sits under Modals). |
+| StickyFooter        | Primary action of a flow or single-goal screen, pinned after the scroll area (hairline, page background, `safeBottom` on stack routes). Wizards, Du er nå Skaper!, gruppe-sveip setup, Nytt samarbeid.                                |
 
 ### Sheets & overlays
 
