@@ -178,7 +178,7 @@ export default function ChatScreen() {
       >
         <View className="gap-2">
           <Text variant="caption" tone="muted">
-            Kun lesbart — du kan ikke sende nye meldinger.
+            Bare lesing. Du kan ikke sende nye meldinger.
           </Text>
           {archived.map((c) => (
             <ChatRow

@@ -2,7 +2,7 @@
 
 **Status:** Phase 1 (foundations) in progress — started 2026-11-05.
 **Supersedes:** the token tables in [DESIGN_TOKENS_PROVISIONAL.md](DESIGN_TOKENS_PROVISIONAL.md) once Phase 1 slice S2 lands (palette values stay the same; the structure changes).
-**Authority order:** `ThirdPlace_All_Screens.pdf` (layout, order, Norwegian copy) → this document (how things look, move and respond) → code.
+**Authority order:** `ThirdPlace_All_Screens.pdf` (layout, order, Norwegian copy) → this document (how things look, move and respond) → code. Exception: the founder-approved copy rewrites listed in `docs/SCREEN_INVENTORY.md` ("Founder copy decisions", 2026-11-06) replace the PDF wording on those lines.
 
 The design system **restyles the PDF's layouts**. It never adds screens, sections, rails, rules or copy that the PDF and the master spec don't have.
 

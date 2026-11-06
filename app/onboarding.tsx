@@ -293,7 +293,7 @@ export default function Onboarding() {
         {step === 2 ? (
           <Shell
             title="Hvem er du?"
-            subtitle="Dette hjelper oss å forstå deg — aldri synlig for andre uten samtykke."
+            subtitle="Fortell litt om deg selv. Alt er valgfritt."
           >
             {IDENTITY.map((g) => (
               <Group key={g.label} label={g.label}>
@@ -326,10 +326,7 @@ export default function Onboarding() {
         ) : null}
 
         {step === 3 ? (
-          <Shell
-            title="Hva ser du etter?"
-            subtitle="Velg alt som passer, så skreddersyr vi byen etter deg."
-          >
+          <Shell title="Hva ser du etter?" subtitle="Velg alt som passer deg.">
             <View className="flex-row flex-wrap gap-2">
               {INTENTS.map((i) => (
                 <Chip
@@ -378,7 +375,7 @@ export default function Onboarding() {
         {step === 5 ? (
           <Shell
             title="Dine preferanser"
-            subtitle="Finjuster hvordan vi matcher deg."
+            subtitle="Velg det som betyr noe for deg."
           >
             {PREFERENCES.map((g) => (
               <Group key={g.label} label={g.label}>

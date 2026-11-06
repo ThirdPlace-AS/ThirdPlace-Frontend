@@ -43,8 +43,7 @@ export default function Welcome() {
             Velkommen hjem
           </Text>
           <Text variant="body" tone="muted" className="text-center">
-            Oppdag nabolagets lune møteplasser. Finn din neste third place — der
-            byen faktisk skjer.
+            Finn ditt neste stamsted i nabolaget.
           </Text>
           <Button
             label="Kom i gang"

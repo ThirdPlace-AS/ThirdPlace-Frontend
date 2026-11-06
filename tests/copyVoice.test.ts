@@ -1,7 +1,7 @@
 // Copy voice guard (docs/reviews, P6 "human-made check"). Every string the app
 // owns is extracted by scripts/extract-copy.js; this test keeps it sounding
-// like a person wrote it. PDF copy is the authority and is listed explicitly —
-// the founder decides on those lines, the app does not rewrite them.
+// like a person wrote it. A PDF line keeps an em dash only if the founder
+// signs it off (PDF_EM_DASH below).
 import { describe, expect, it } from "@jest/globals";
 
 // eslint-disable-next-line @typescript-eslint/no-require-imports
@@ -11,19 +11,10 @@ const { extract } = require("../scripts/extract-copy.js") as {
 
 const COPY = extract();
 
-// Lines from ThirdPlace_All_Screens.pdf that use an em dash. Kept as designed.
-const PDF_EM_DASH = new Set([
-  "Alle får se kortene — match når alle sveiper høyre.",
-  "Chat er gratis — billett kjøper du når du vil.",
-  "Dette er admin-identiteten din — kundene ser bedriften, ikke deg.",
-  "Dette hjelper oss å forstå deg — aldri synlig for andre uten samtykke.",
-  "Forhåndsvisning — kun synlig for deg",
-  "Kun lesbart — du kan ikke sende nye meldinger.",
-  "Oppdag nabolagets lune møteplasser. Finn din neste third place — der byen faktisk skjer.",
-  "Samarbeid mellom skapere og bedrifter — lokaler, vertskap, sponsing og brand.",
-  "Slik vil kundene se dere — når dere er verifisert.",
-  "Sveip sammen med venner — finn noe dere alle vil.",
-]);
+// PDF lines that may keep an em dash. Empty since the founder approved plain
+// rewrites of every such line (2026-11-06, docs/SCREEN_INVENTORY.md "Founder
+// copy decisions"). Add a line here only with founder sign-off.
+const PDF_EM_DASH = new Set<string>([]);
 
 // Phrases that read as machine-written marketing in Norwegian UI.
 const BANNED = [

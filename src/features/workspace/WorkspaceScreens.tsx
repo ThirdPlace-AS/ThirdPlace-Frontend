@@ -161,20 +161,20 @@ const STATS: Record<(typeof RANGES)[number], [string, string][]> = {
   Uke: [
     ["812", "Visninger"],
     ["74", "Følgere"],
-    ["31", "Chat-joins"],
-    ["4.7", "Rating"],
+    ["31", "Ble med i chat"],
+    ["4.7", "Vurdering"],
   ],
   Måned: [
     ["3 420", "Visninger"],
     ["312", "Følgere"],
-    ["145", "Chat-joins"],
-    ["4.7", "Rating"],
+    ["145", "Ble med i chat"],
+    ["4.7", "Vurdering"],
   ],
   Total: [
     ["18 900", "Visninger"],
     ["1 204", "Følgere"],
-    ["690", "Chat-joins"],
-    ["4.6", "Rating"],
+    ["690", "Ble med i chat"],
+    ["4.6", "Vurdering"],
   ],
 };
 const BARS = [42, 55, 48, 62, 58, 70, 66, 74, 69, 80, 77, 88];

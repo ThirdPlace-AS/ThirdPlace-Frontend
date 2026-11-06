@@ -8,8 +8,8 @@ import { LogoMark } from "@/components/Logo";
 import { useThemeColors } from "@/theme";
 import { Text } from "@/components/ui";
 
-// Splash (PDF p1): Ember screen with the mark, "ThirdPlace" and "Byen din,
-// laget for deg", then on to Welcome. No session check exists (no backend), so
+// Splash (PDF p1): Ember screen with the mark, "ThirdPlace" and "Finn folk og
+// steder i byen din" (founder copy, 2026-11-06), then on to Welcome. No session check exists (no backend), so
 // it only holds briefly — shorter when the user prefers reduced motion.
 export default function Splash() {
   const colors = useThemeColors();
@@ -40,7 +40,7 @@ export default function Splash() {
         tone="onMedia"
         className="opacity-80"
       >
-        Byen din, laget for deg
+        Finn folk og steder i byen din
       </Text>
     </View>
   );

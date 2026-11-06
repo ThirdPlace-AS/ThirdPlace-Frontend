@@ -19,7 +19,7 @@ export default function Register() {
         </View>
         <ScreenHeader
           title="Bli med i ThirdPlace"
-          subtitle="Byen din, laget for deg."
+          subtitle="Finn folk og steder i byen din."
         />
         <View className="gap-4">
           <Input

@@ -44,8 +44,7 @@ const ILLUSTRATIONS: IllustrationName[] = [
   "emptyPlans",
 ];
 
-const SAMPLE_BODY =
-  "Oppdag nabolagets lune møteplasser. Finn din neste third place — der byen faktisk skjer.";
+const SAMPLE_BODY = "Finn ditt neste stamsted i nabolaget.";
 
 function SpecimenLines() {
   return (

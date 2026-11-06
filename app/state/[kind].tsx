@@ -36,7 +36,7 @@ export default function SystemState() {
             icon="cloud-offline-outline"
             art="offline"
             title="Du er offline"
-            body="Kartet bruker mellomlagrede fliser. Meldinger og handlinger sendes automatisk når du er på nett igjen."
+            body="Du ser kartet slik det var sist du hadde nett. Prøv igjen når du er tilkoblet."
           >
             <Button
               label="Prøv igjen"
@@ -68,21 +68,14 @@ export default function SystemState() {
             art="maintenance"
             title="Vi pusser opp!"
             body="ThirdPlace er nede for vedlikehold. Vi er snart tilbake."
-          >
-            <Text
-              variant="label"
-              weight="semibold"
-              tone="ember"
-              className="text-center"
-            >
-              Sjekk status: status.thirdplace.app
-            </Text>
-          </State>
-        ) : kind === "suspended" ? (
+          />
+        ) : // PDF p27 "Sjekk status: status.thirdplace.app" is left out: no
+        // status page exists.
+        kind === "suspended" ? (
           <State
             icon="ban-outline"
             title="Kontoen er suspendert"
-            body="Kontoen din er midlertidig suspendert på grunn av brudd på retningslinjene våre."
+            body="Kontoen din er stengt midlertidig fordi du har brutt retningslinjene våre."
           >
             <View className="gap-1 rounded-md border border-line bg-surface p-3">
               <Text variant="micro" weight="semibold" tone="muted">
@@ -102,7 +95,7 @@ export default function SystemState() {
             icon="rocket-outline"
             art="update"
             title="Oppdatering kreves"
-            body="En ny versjon av ThirdPlace er tilgjengelig med viktige forbedringer og sikkerhetsfikser."
+            body="Denne versjonen er for gammel. Oppdater appen for å fortsette."
           >
             <Button
               label="Oppdater nå"

@@ -121,7 +121,7 @@ export default function BusinessOnboarding() {
         {step === 2 ? (
           <Shell
             title="Personen bak bedriften"
-            subtitle="Dette er admin-identiteten din — kundene ser bedriften, ikke deg."
+            subtitle="Dette er deg som styrer bedriften. Kundene ser bare bedriften."
           >
             <View className="items-center gap-1">
               <View className="h-20 w-20 items-center justify-center rounded-full bg-surfaceMuted">
@@ -233,7 +233,7 @@ export default function BusinessOnboarding() {
         {step === 5 ? (
           <Shell
             title="Kontakt og sosialt"
-            subtitle="Gjør det lett for kunder å finne dere overalt."
+            subtitle="Hvordan kan kundene nå dere?"
           >
             <Input
               label="Kontakt-e-post"
@@ -269,7 +269,7 @@ export default function BusinessOnboarding() {
         {step === 6 ? (
           <Shell
             title="Tillatelser"
-            subtitle="To ting trengs for at bedriften skal fungere på kartet."
+            subtitle="Bedriften trenger to tillatelser for å vises på kartet."
           >
             <Perm
               icon="location-outline"
@@ -294,9 +294,9 @@ export default function BusinessOnboarding() {
         {step === 7 ? (
           <Shell
             title="Hva vil dere oppnå?"
-            subtitle="Vi tilpasser kartet og feeden til målene deres."
+            subtitle="Velg det som passer best for dere."
           >
-            <Label>Bedriftsintensjoner</Label>
+            <Label>Mål</Label>
             <View className="flex-row flex-wrap gap-2">
               {GOALS.map((g) => (
                 <Chip
@@ -307,7 +307,7 @@ export default function BusinessOnboarding() {
                 />
               ))}
             </View>
-            <Label>Interesse-tagger</Label>
+            <Label>Stikkord</Label>
             <View className="flex-row flex-wrap gap-2">
               {TAGS.map((t) => (
                 <Chip
@@ -324,13 +324,13 @@ export default function BusinessOnboarding() {
         {step === 8 ? (
           <Shell
             title="Se bedriften på kartet"
-            subtitle="Slik vil kundene se dere — når dere er verifisert."
+            subtitle="Slik ser kundene dere når bedriften er verifisert."
           >
             <View className="gap-3 rounded-lg border border-line bg-surface p-4">
               <View className="flex-row items-center gap-1.5 self-start rounded-full border border-ember px-2.5 py-1">
                 <Icon name="eye-outline" size="sm" tone="ember" />
                 <Text variant="caption" weight="semibold" tone="ember">
-                  Forhåndsvisning — kun synlig for deg
+                  Forhåndsvisning. Bare du ser den.
                 </Text>
               </View>
               <Text variant="body" weight="semibold">

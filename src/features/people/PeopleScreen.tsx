@@ -68,7 +68,7 @@ export default function PeopleScreen() {
         ListHeaderComponent={
           <View className="gap-3 pb-3 pt-1">
             <Text variant="caption" tone="muted">
-              Mennesker du kanskje vil møte.
+              Folk du kanskje vil bli kjent med.
             </Text>
             <View className="flex-row flex-wrap items-center gap-2">
               <Chip

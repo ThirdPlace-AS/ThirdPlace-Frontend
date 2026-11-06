@@ -22,7 +22,7 @@ export default function Login() {
         </View>
         <ScreenHeader
           title="Velkommen tilbake"
-          subtitle="Finn veien tilbake til ditt lokale fellesskap."
+          subtitle="Godt å se deg igjen."
         />
         <View className="gap-4">
           <Input

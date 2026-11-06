@@ -72,8 +72,7 @@ export default function MarketplaceScreen() {
         ListHeaderComponent={
           <View className="gap-3 pb-1">
             <Text variant="caption" tone="muted">
-              Samarbeid mellom skapere og bedrifter — lokaler, vertskap,
-              sponsing og brand.
+              Her finner skapere og bedrifter hverandre.
             </Text>
             <DemoNote>
               Annonsene, prisene og navnene er eksempler. Ingenting kan

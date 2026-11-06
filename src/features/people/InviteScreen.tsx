@@ -47,7 +47,7 @@ export default function InviteScreen() {
       <RouteHeader title="Inviter venner" />
       <ScrollView contentContainerClassName="gap-4 px-gutter py-4 pb-12">
         <Text variant="caption" tone="muted">
-          Del ThirdPlace og få belønninger.
+          Del ThirdPlace med vennene dine.
         </Text>
         <Text variant="micro" weight="semibold" tone="muted">
           Din kode

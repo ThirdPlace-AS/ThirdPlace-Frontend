@@ -84,7 +84,7 @@ export default function GroupSwipeScreen() {
         >
           <Text variant="display">Start gruppe-sveip</Text>
           <Text variant="caption" tone="muted">
-            Sveip sammen med venner — finn noe dere alle vil.
+            Sveip sammen med venner og finn noe alle har lyst til.
           </Text>
           <Input
             label="Navn på økten"
@@ -157,7 +157,8 @@ export default function GroupSwipeScreen() {
           </View>
           <View className="rounded-md bg-surfaceMuted p-3">
             <Text variant="label" weight="regular">
-              Alle får se kortene — match når alle sveiper høyre.
+              Alle ser de samme kortene. Det blir match når alle sveiper til
+              høyre.
             </Text>
           </View>
           <Button
@@ -262,7 +263,7 @@ export default function GroupSwipeScreen() {
             ))}
           </View>
           <Text variant="caption" tone="muted" className="text-center">
-            Stemmer avsløres ikke før match!
+            Ingen ser hva du stemte før dere har en match.
           </Text>
           <View className="flex-row justify-center gap-6">
             <RoundButton

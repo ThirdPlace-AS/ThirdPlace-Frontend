@@ -1361,26 +1361,26 @@ export const PERSONAS: {
   {
     key: "explorer",
     label: "Utforsker",
-    hint: "Oppdag steder, opplevelser og folk",
+    hint: "Finn steder og folk i nærheten",
     icon: "compass-outline",
   },
   {
     key: "creator",
     label: "Skaper",
-    hint: "Arranger opplevelser — låses opp etter hvert",
+    hint: "Arranger opplevelser. Åpnes senere.",
     icon: "color-palette-outline",
     locked: true,
   },
   {
     key: "business",
     label: "Bedrift",
-    hint: "Vis frem stedet ditt og nå nye kunder",
+    hint: "Vis fram stedet ditt",
     icon: "tp-business",
   },
   {
     key: "enterprise",
     label: "Enterprise",
-    hint: "Flere lokasjoner og skreddersydd oppsett",
+    hint: "For bedrifter med flere steder",
     icon: "business-outline",
   },
 ];

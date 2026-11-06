@@ -8,7 +8,7 @@ import { RouteHeader } from "@/components/RouteHeader";
 import { profile } from "@/fixtures";
 
 // Bli Skaper (DEMO), per the design (PDF p14): the requirements to unlock the
-// Skaper role (and with it Dashboard and Marketplace), each with its progress,
+// Skaper role (and with it Dashbord and Marketplace), each with its progress,
 // and "Søk om Skaper-rolle". Master spec §10: the real creator criteria are not
 // defined, so the three requirements are the design's illustrative copy —
 // nothing is evaluated, and applying sends nothing (BLOCKED_CONTRACT_GAP).
@@ -23,7 +23,7 @@ export default function BecomeCreatorScreen() {
     },
     {
       label: "Gjennomsnittlig vurdering 4.0+",
-      meta: `${rating} — oppfylt`,
+      meta: `${rating} · oppfylt`,
       progress: 1,
     },
     { label: "Verifisert identitet", meta: "Ikke startet", progress: 0 },
@@ -35,8 +35,7 @@ export default function BecomeCreatorScreen() {
       <RouteHeader title="Bli Skaper" />
       <ScrollView contentContainerClassName="gap-4 px-gutter py-4 pb-12">
         <Text variant="caption" tone="muted">
-          Oppfyll kravene under for å låse opp Skaper-rollen og få tilgang til
-          Dashboard og Marketplace.
+          Kravene under viser veien til Skaper-rollen.
         </Text>
 
         {reqs.map((r) => {

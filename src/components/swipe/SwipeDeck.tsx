@@ -331,7 +331,7 @@ export function SwipeDeck() {
                 icon="albums-outline"
                 illustration={<Illustration name="emptyDeck" />}
                 title="Du har sett alt for nå"
-                message="Nye anbefalinger dukker opp gjennom dagen. Prøv andre filtre, eller utforsk kartet i mellomtiden."
+                message="Prøv andre filtre, eller se på kartet."
                 actionLabel="Endre filtre"
                 onAction={() => setFiltersOpen(true)}
                 secondaryLabel="Se kortene igjen"
@@ -1068,12 +1068,8 @@ function JoinChatSheet({
           <Text variant="caption" tone="muted">
             {exp.when}
           </Text>
-          <View className="flex-row items-center gap-2 rounded-md bg-surfaceMuted p-3">
-            <Icon name="chatbubbles-outline" size="sm" tone="ink" />
-            <Text variant="label" weight="regular" className="flex-1">
-              Chat er gratis — billett kjøper du når du vil.
-            </Text>
-          </View>
+          {/* PDF p8 line "Chat er gratis — billett kjøper du når du vil." is
+              left out: it states a payment rule (CLAUDE.md governance). */}
           {tried ? (
             <DemoNote>Du ble ikke lagt til i noen chat i demoen.</DemoNote>
           ) : null}
