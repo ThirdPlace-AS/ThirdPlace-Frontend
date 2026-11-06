@@ -2,7 +2,7 @@
 // concepts Ionicons has no honest glyph for. Drawn on the 24 px grid with the
 // shared stroke (iconStroke 1.75, round caps/joins) so they sit next to
 // Ionicons outline icons. Rendered through <Icon name="tp-…">, never directly.
-import Svg, { Path, Rect } from "react-native-svg";
+import Svg, { Circle, G, Path, Rect } from "react-native-svg";
 
 import { iconStroke } from "@/theme";
 
@@ -50,36 +50,53 @@ function Experience({ size, color }: GlyphProps) {
   );
 }
 
-/** Sveip — a card with another tilted behind it. */
+/** Sveip — the founder's icon (sveip.svg, 2026-11-06): a stack of three
+ * cards tilted -18°, the front one with a dot. Geometry as supplied; the stroke
+ * follows the shared token (1.75) like every other glyph (the file says 2). */
+const SWIPE_TILT = { rotation: -18, origin: "13.8, 11.5" } as const;
+const SWIPE_BACK =
+  "M5.1 7.3H4.6a1.6 1.6 0 0 0-1.6 1.6v9.3a1.6 1.6 0 0 0 1.6 1.6h.5";
+const SWIPE_MIDDLE =
+  "M7.6 5.2h-.7a1.7 1.7 0 0 0-1.7 1.7v11.2a1.7 1.7 0 0 0 1.7 1.7h.7";
+
 function Swipe({ size, color }: GlyphProps) {
   return (
     <Frame size={size}>
-      <Path
-        d="M7.5 6.7 5.3 7.3a1.5 1.5 0 0 0-1.06 1.84l2.33 8.7a1.5 1.5 0 0 0 .93 1.02"
-        {...line(color)}
-      />
-      <Rect x={7.5} y={4} width={12.5} height={16} rx={2.4} {...line(color)} />
-      <Path d="M10.75 15.75h6" {...line(color)} />
+      <G {...SWIPE_TILT}>
+        <Path d={SWIPE_BACK} {...line(color)} />
+        <Path d={SWIPE_MIDDLE} {...line(color)} />
+        <Rect
+          x={8}
+          y={2.4}
+          width={11.4}
+          height={17.2}
+          rx={1.4}
+          {...line(color)}
+        />
+        <Circle cx={11.1} cy={5.9} r={0.65} fill={color} />
+      </G>
     </Frame>
   );
 }
 
+/** Active tab: the front card filled (the dot would need a background colour,
+ * which a glyph does not get, so it is left out — as before). */
 function SwipeFilled({ size, color }: GlyphProps) {
   return (
     <Frame size={size}>
-      <Path
-        d="M7.5 6.7 5.3 7.3a1.5 1.5 0 0 0-1.06 1.84l2.33 8.7a1.5 1.5 0 0 0 .93 1.02"
-        {...line(color)}
-      />
-      <Rect
-        x={7.5}
-        y={4}
-        width={12.5}
-        height={16}
-        rx={2.4}
-        fill={color}
-        {...line(color)}
-      />
+      <G {...SWIPE_TILT}>
+        <Path d={SWIPE_BACK} {...line(color)} />
+        <Path d={SWIPE_MIDDLE} {...line(color)} />
+        <Rect
+          x={8}
+          y={2.4}
+          width={11.4}
+          height={17.2}
+          rx={1.4}
+          fill={color}
+          {...line(color)}
+        />
+      </G>
     </Frame>
   );
 }
