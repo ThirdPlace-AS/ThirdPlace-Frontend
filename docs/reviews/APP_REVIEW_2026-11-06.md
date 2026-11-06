@@ -54,33 +54,33 @@ Status: **Fixed** (ledger id) · **Kept (PDF)** = drawn or written that way in t
 
 ### Medium
 
-| #   | Finding                                                                       | Status                                                                                                                                     |
-| --- | ----------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------ |
-| M1  | Primary colour inconsistent (ember vs ink CTAs, FABs)                         | Kept (PDF): ember for acquisition CTAs (Kom i gang, Opprett konto, Del via) and FABs on Kalender/Marketplace/Mine listings, ink elsewhere. |
-| M2  | Ember overloaded (toggles, Rediger, chart bar, invite code)                   | Kept (PDF p2, p14, p15, p19, p22). Listed for the founder.                                                                                 |
-| M3  | Logg inn button separated from its form by social buttons                     | Kept (PDF p1 order).                                                                                                                       |
-| M4  | Decimal full stops (4.8) vs nb-NO (4,8)                                       | Kept (PDF writes full stops throughout). Founder decision.                                                                                 |
-| M5  | Norwegian/English term mix (Dashboard, Chat-joins, Rating, listings, Venue …) | Kept (PDF terms).                                                                                                                          |
-| M6  | Swipe: dashes through the pill, second DEMO badge, flat placeholder           | Fixed 0175 (dashes below pill, one badge); the placeholder colour already exists.                                                          |
-| M7  | Profile icons don't match content                                             | Fixed 0175.                                                                                                                                |
-| M8  | 2FA toggle ON plus "Aktiver 2FA" button                                       | Kept (PDF p2).                                                                                                                             |
-| M9  | Bli Skaper invites an application that cannot qualify                         | Fixed 0174 (CTA muted until requirements are met, as in PDF p14).                                                                          |
-| M10 | One row pattern, three treatments (card stacks)                               | Kept (PDF draws Kalender and hub rows as cards).                                                                                           |
-| M11 | Lokasjoner pill crowds the name                                               | Fixed 0175.                                                                                                                                |
-| M12 | Chat header subtitle truncated by DEMO badge                                  | Fixed 0174.                                                                                                                                |
-| M13 | Chips wrap with orphans                                                       | Fixed 0175 (scrolling rows).                                                                                                               |
-| M14 | Uneven top spacing under headers                                              | Fixed 0174/0175 (Marketplace, Mine planer).                                                                                                |
-| M15 | Honesty markers uneven                                                        | Fixed 0174 (Utbetalinger, Marketplace, Nytt samarbeid, map weather) and 0171 (Betaling down to one note, Aldersverifisering).              |
-| M16 | Aldersverifisering perks stated as fact                                       | Fixed 0171 (marked as examples; PDF list kept).                                                                                            |
-| M17 | "Del ThirdPlace og få belønninger" promises rewards                           | Kept (PDF p22); the screen's note says the rewards are examples.                                                                           |
-| M18 | Workspace checklist ✓ ambiguous                                               | Fixed 0175.                                                                                                                                |
-| M19 | Analyse chart without axis labels                                             | Kept (PDF p14 chart has none). Recommended once real data exists.                                                                          |
-| M20 | Map pins compete with basemap POIs                                            | Recommended: needs a Mapbox style change (custom ThirdPlace styles).                                                                       |
-| M21 | Chat list avatar sizes differ                                                 | Fixed 0175 (`Avatar icon`).                                                                                                                |
-| M22 | Nytt samarbeid defaults contradict                                            | Fixed 0173.                                                                                                                                |
-| M23 | Kontrakt/Avtale state mismatch                                                | Fixed 0173.                                                                                                                                |
-| M24 | "Oppdater nå" looks disabled                                                  | Fixed 0174.                                                                                                                                |
-| M25 | Bekreft kode contradicts itself                                               | Demo line fixed 0171; subtitle and active "Send på nytt" kept (PDF p2).                                                                    |
+| #   | Finding                                                                       | Status                                                                                                                                       |
+| --- | ----------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
+| M1  | Primary colour inconsistent (ember vs ink CTAs, FABs)                         | Kept (PDF): ember for acquisition CTAs (Kom i gang, Opprett konto, Del via) and FABs on Kalender/Marketplace/Mine listings, ink elsewhere.   |
+| M2  | Ember overloaded (toggles, Rediger, chart bar, invite code)                   | Fixed 0180: toggles, checkboxes, edit links, invite code and the current chart bar are ink; Kalender accent bars removed (founder decision). |
+| M3  | Logg inn button separated from its form by social buttons                     | Kept (PDF p1 order).                                                                                                                         |
+| M4  | Decimal full stops (4.8) vs nb-NO (4,8)                                       | Fixed 0180: decimals use the Norwegian comma (4,8 · 1,1 km) through `src/lib/format.ts` (founder decision).                                  |
+| M5  | Norwegian/English term mix (Dashboard, Chat-joins, Rating, listings, Venue …) | Fixed 0179: Dashbord, “Ble med i chat”, “Vurdering”. Marketplace terms (listings, Venue, Brand, Co-hosting) stay as designed.                |
+| M6  | Swipe: dashes through the pill, second DEMO badge, flat placeholder           | Fixed 0175 (dashes below pill, one badge); the placeholder colour already exists.                                                            |
+| M7  | Profile icons don't match content                                             | Fixed 0175.                                                                                                                                  |
+| M8  | 2FA toggle ON plus "Aktiver 2FA" button                                       | Kept (PDF p2).                                                                                                                               |
+| M9  | Bli Skaper invites an application that cannot qualify                         | Fixed 0174 (CTA muted until requirements are met, as in PDF p14).                                                                            |
+| M10 | One row pattern, three treatments (card stacks)                               | Fixed 0180/0186: Kalender bars removed, Filtre flat. The workspace hub keeps the PDF's cards.                                                |
+| M11 | Lokasjoner pill crowds the name                                               | Fixed 0175.                                                                                                                                  |
+| M12 | Chat header subtitle truncated by DEMO badge                                  | Fixed 0174.                                                                                                                                  |
+| M13 | Chips wrap with orphans                                                       | Fixed 0175 (scrolling rows).                                                                                                                 |
+| M14 | Uneven top spacing under headers                                              | Fixed 0174/0175 (Marketplace, Mine planer).                                                                                                  |
+| M15 | Honesty markers uneven                                                        | Fixed 0174 (Utbetalinger, Marketplace, Nytt samarbeid, map weather) and 0171 (Betaling down to one note, Aldersverifisering).                |
+| M16 | Aldersverifisering perks stated as fact                                       | Fixed 0171 (marked as examples; PDF list kept).                                                                                              |
+| M17 | "Del ThirdPlace og få belønninger" promises rewards                           | Fixed 0179: “Del ThirdPlace med vennene dine.” (founder decision).                                                                           |
+| M18 | Workspace checklist ✓ ambiguous                                               | Fixed 0175.                                                                                                                                  |
+| M19 | Analyse chart without axis labels                                             | Kept (PDF p14 chart has none). Recommended once real data exists.                                                                            |
+| M20 | Map pins compete with basemap POIs                                            | Fixed 0182: white place pins / ink experience pins, basemap POIs hidden (config repeats the light preset).                                   |
+| M21 | Chat list avatar sizes differ                                                 | Fixed 0175 (`Avatar icon`).                                                                                                                  |
+| M22 | Nytt samarbeid defaults contradict                                            | Fixed 0173.                                                                                                                                  |
+| M23 | Kontrakt/Avtale state mismatch                                                | Fixed 0173.                                                                                                                                  |
+| M24 | "Oppdater nå" looks disabled                                                  | Fixed 0174.                                                                                                                                  |
+| M25 | Bekreft kode contradicts itself                                               | Demo line fixed 0171; subtitle and active "Send på nytt" kept (PDF p2).                                                                      |
 
 ### Low
 
@@ -96,7 +96,7 @@ Status: **Fixed** (ledger id) · **Kept (PDF)** = drawn or written that way in t
 | L8  | Visibility settings default ON                                 | Kept (PDF p19). Privacy default is a founder decision.        |
 | L9  | Hjelp og støtte under DATA                                     | Kept (PDF p19).                                               |
 | L10 | Two names for export / Oppdag folk                             | Kept (PDF p19, p21).                                          |
-| L11 | Map peek shows a sliver of photo                               | Recommended (snap height tuning).                             |
+| L11 | Map peek shows a sliver of photo                               | Fixed 0182: peek height measured from its header.             |
 | L12 | Innleveringer link-looking line, Ventende vs Under gjennomgang | Em dash fixed 0173; labels kept (PDF p12).                    |
 | L13 | Collab button grid, same party icon                            | Fixed 0176.                                                   |
 | L14 | Swipe tab contrast                                             | Fixed 0176.                                                   |
@@ -105,7 +105,7 @@ Status: **Fixed** (ledger id) · **Kept (PDF)** = drawn or written that way in t
 | L17 | Two back-button styles                                         | Fixed 0176 (circled back everywhere, as in the PDF).          |
 | L18 | Two "Hvem er du?" steps                                        | Kept (PDF p2).                                                |
 | L19 | Terms sentence without links                                   | Kept: no terms page exists in the PDF or spec.                |
-| L20 | Invented status page link                                      | Kept (PDF p27). Listed for the founder.                       |
+| L20 | Invented status page link                                      | Fixed 0179: status line left out (no status page exists).     |
 
 ## 5. Benchmark and retention recommendations
 
@@ -139,7 +139,7 @@ Recommendations, in order:
 
 ## 6. For the founder: PDF lines and styling kept as designed
 
-Copy that reads machine-made or states a rule, unchanged because the PDF is the copy authority:
+**Decided 6 November 2026 (Phase 7):** the founder approved plain rewrites of every line below, a calmer ink styling and Norwegian decimals. The rule lines are left out. The PDF line → app line table is in `docs/SCREEN_INVENTORY.md` ("Founder copy decisions"), and §9 lists the slices. The list is kept as it was reviewed:
 
 - Welcome: "Oppdag nabolagets lune møteplasser. Finn din neste third place — der byen faktisk skjer." (suggestion: "Finn ditt neste stamsted i nabolaget.")
 - Splash/Registrer: "Byen din, laget for deg." · Logg inn: "Finn veien tilbake til ditt lokale fellesskap."
@@ -171,9 +171,36 @@ Left out by this run because CLAUDE.md bans stating them as product behaviour: "
 
 - **iOS** not run (Windows host; Android-only by decision).
 - **Contract markers** (`BLOCKED_NOT_V22_CERTIFIED`, `BLOCKED_CONTRACT_GAP`) stay; nothing in this run touches backend, counts, rules or payments.
-- **H1** reproduced once and fixed by construction; not reproducible on demand afterwards, so the root cause is a reading, not a proof. **H5** never reproduced on a clean run.
-- **M20** (map POIs and pin colours) and **L11** (peek height) need Mapbox style / snap tuning; recommended.
-- **"Du er nå Skaper!"** inline preview is unreachable in the demo now that the CTA is muted until requirements are met.
-- **TalkBack** pass and a full **dark-mode screenshot pass** were not repeated in P6 (dark verified on settings, map, invite, payouts, chat with `adb shell cmd uimode night yes`).
+- **H1** reproduced once and fixed by construction. It did not return in the Phase 7 dark pass (48 routes), but the root cause is still a reading, not a proof. **H5** never reproduced on a clean run.
+- **TalkBack:** labels and roles were checked through UI dumps (0 unlabeled controls), not with a spoken pass. Sheets and overlays (Modal windows) were checked by screenshot only.
+- **Price totals, price pins, sort explanations, guest-favourite tags** from the reference recordings stay out: they need price, ranking or policy contracts.
 - **Mobbin** blocks the built-in browser (403); Airbnb mobile references came via Firecrawl screenshots instead.
 - **Real 3D renders** remain an optional upgrade; hand-built SVG category art ships now.
+
+## 9. Addendum: Phases 7 and 8 (6 November 2026)
+
+**Phase 7** acted on §6 and §8 after the founder's decisions:
+
+- plain rewrites of the PDF copy
+- calmer ink styling with Norwegian decimals
+- map polish
+- the "Du er nå Skaper!" screen, reachable by deep link
+- a dark-mode and accessibility pass
+
+**Phase 8** compared the browse sheet and Filtre with three reference recordings from the founder ([BROWSE_FILTER_BENCHMARK_2026-11-06.md](BROWSE_FILTER_BENCHMARK_2026-11-06.md)), built the gaps that fit the PDF, and replaced the Sveip icon with the founder's SVG.
+
+![Filtre: reference top row, ThirdPlace before Phase 8 bottom row](img/bench_filter.png)
+
+| Ledger | Commit    | Slice                                                                                                                                                           |
+| ------ | --------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 0179   | `700772a` | Founder copy: plain rewrites of the PDF lines; rule lines left out; PDF em-dash allowlist emptied                                                               |
+| 0180   | `0c48d16` | Ink accents (toggles, checkboxes, edit links, invite code, chart bar), Kalender bars removed, nb-NO decimals via `src/lib/format.ts`; status-bar guard restored |
+| 0181   | `8e1e899` | "Du er nå Skaper!" as its own deep-link-only route                                                                                                              |
+| 0182   | `aa8c67d` | Map: white place / ink experience pins, basemap POIs hidden (config repeats the light preset), measured peek                                                    |
+| 0183   | `a9f1f2c` | Sveip tab icon from the founder's `sveip.svg`                                                                                                                   |
+| 0184   | `221ce81` | Benchmark report: browse sheet, Filtre and Hvor / Når / Hvem against the recordings                                                                             |
+| 0185   | `a603896` | Browse cards: near-square swipeable photos, result count, pill search bar                                                                                       |
+| 0186   | `35214a4` | Filtre: flat sections, title handover, ink sliders and CTA, grouped accessibility, inactive "Fjern alt"                                                         |
+| 0187   | `c433804` | Filtre count = list count (it counted places only); badge counts Opplevelsestype                                                                                |
+| 0188   | `02bca9f` | Hvor / Når / Hvem steps (Hopp over / Neste); calendar month names above their grids (bug); neutral range band                                                   |
+| 0189   | `f92138c` | Dark pass of 48 routes clean, 0 unlabeled controls, 44 dp targets for text links and small rows                                                                 |
