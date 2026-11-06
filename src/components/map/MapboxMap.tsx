@@ -1,4 +1,3 @@
-import { Ionicons } from "@expo/vector-icons";
 import Mapbox, {
   Camera,
   CircleLayer,
@@ -15,6 +14,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { Dimensions, View } from "react-native";
 
 import { MAP_CENTER } from "@/fixtures";
+import { Icon } from "@/components/ui";
 import { motion, palette } from "@/theme";
 
 import { periodForUrl } from "./mapStyles";
@@ -175,9 +175,9 @@ export function MapboxMap({
                 justifyContent: "center",
               }}
             >
-              <Ionicons
+              <Icon
                 name={g.glyph}
-                size={15}
+                size="sm"
                 color={g.dark ? pin.onInk : pin.ink}
               />
             </View>
