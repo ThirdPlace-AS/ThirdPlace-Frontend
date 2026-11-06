@@ -112,7 +112,7 @@ export function SteppedSlider({
                 height: i === index ? 10 : 6,
                 marginTop: i === index ? -4 : -2,
                 borderRadius: 1,
-                backgroundColor: i <= index ? colors.ember : colors.line,
+                backgroundColor: i <= index ? colors.ink : colors.line,
               }}
             />
           ))}
@@ -135,7 +135,7 @@ export function SteppedSlider({
                 left: THUMB / 2,
                 height: 2,
                 borderRadius: 1,
-                backgroundColor: colors.ember,
+                backgroundColor: colors.ink,
               },
               fillStyle,
             ]}

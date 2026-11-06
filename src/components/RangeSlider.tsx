@@ -216,7 +216,7 @@ export function RangeSlider({
               position: "absolute",
               height: 4,
               borderRadius: 2,
-              backgroundColor: colors.ember,
+              backgroundColor: colors.ink,
             },
             fillStyle,
           ]}

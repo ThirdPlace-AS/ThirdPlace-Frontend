@@ -1,7 +1,7 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Pressable, ScrollView, View } from "react-native";
 
-import { Icon, Text } from "@/components/ui";
+import { Accordion, Icon, Text } from "@/components/ui";
 import { elevation, presentation } from "@/theme";
 import { Button } from "@/components/Button";
 import { Calendar } from "@/components/Calendar";
@@ -17,7 +17,7 @@ import { Stepper } from "@/components/Stepper";
 import { WhereField } from "./WhereField";
 import {
   ACCESSIBILITY_ICONS,
-  ACCESSIBILITY_OPTIONS,
+  type AccessibilityOption,
   AUDIENCES,
   DEFAULT_CHIP_ICON,
   DURATION_STEPS,
@@ -148,8 +148,8 @@ function whenChipSubtitle(label: string): string {
   return r.end ? `${fmtDate(r.start)} – ${fmtDate(r.end)}` : fmtDate(r.start);
 }
 
-// A titled block, rendered as a white card so the whole Filtre sheet reads as a
-// stack of cards on the muted sheet backdrop (matches the reference design).
+// A titled block on the flat sheet, split from the one above by a hairline
+// (benchmark F1: PDF p5 and the reference draw flat sections, not cards).
 function Section({
   title,
   subtitle,
@@ -160,7 +160,7 @@ function Section({
   children: React.ReactNode;
 }) {
   return (
-    <View className="gap-3 rounded-lg border border-line bg-surface px-5 py-5">
+    <View className="gap-3 border-t border-line py-6">
       <View className="gap-0.5">
         <Text variant="body" weight="semibold">
           {title}
@@ -177,7 +177,7 @@ function Section({
 }
 
 // Unified icon-chip group: wraps chips and hides the overflow behind a "Vis
-// flere" expander — the single paradigm for every taxonomy group (Opplevelsestype
+// mer" expander — the single paradigm for every taxonomy group (Opplevelsestype
 // / Passer for / Vibe / Fasiliteter) so they behave consistently and never hide
 // chips off-screen.
 type ChipItem = { label: string; icon: string };
@@ -215,7 +215,7 @@ function ChipGroup({
           className="flex-row items-center gap-1 py-1"
         >
           <Text variant="body" weight="semibold" className="underline">
-            {expanded ? "Vis færre" : "Vis flere"}
+            {expanded ? "Vis mindre" : "Vis mer"}
           </Text>
           <Icon
             name={expanded ? "chevron-up" : "chevron-down"}
@@ -227,6 +227,28 @@ function ChipGroup({
     </View>
   );
 }
+
+// Tilgjengelighetsfunksjoner in three groups (benchmark F7: chunked, so eight
+// rows read as three short lists). Every option appears exactly once.
+const ACCESSIBILITY_GROUPS: { title: string; items: AccessibilityOption[] }[] =
+  [
+    {
+      title: "Mobilitet",
+      items: ["Trinnfri inngang", "Rullestol-WC", "Heis"],
+    },
+    {
+      title: "Syn og hørsel",
+      items: [
+        "Syns- og hørselshjelpemidler",
+        "Alternativer for tegnspråk",
+        "Ledsager for synshemmede",
+      ],
+    },
+    {
+      title: "Sansepåvirkning",
+      items: ["Sensoriske stimuli", "Ingen ekstreme sensoriske stimuli"],
+    },
+  ];
 
 // Soft card shadow for the Where/When/Who cards (className can't express an
 // arbitrary cross-platform shadow, so it lives in a style object).
@@ -313,13 +335,15 @@ export function MapFilterSheet({
   onClose: () => void;
   onApply: (f: MapFilters) => void;
 }) {
+  // Large "Filtre" at the top of the content; the header takes the title
+  // once it has scrolled away (benchmark F2).
+  const [headerTitle, setHeaderTitle] = useState(false);
   return (
     <Sheet
       visible={visible}
       onClose={onClose}
-      title="Filtre"
+      title={headerTitle ? "Filtre" : undefined}
       fullHeight
-      surfaceTone="muted"
     >
       {/* Mount the body only while open so its draft seeds fresh from `filters`
           on each open (no setState-in-effect). */}
@@ -329,6 +353,7 @@ export function MapFilterSheet({
           query={query}
           onClose={onClose}
           onApply={onApply}
+          onTitleScrolledAway={setHeaderTitle}
         />
       ) : null}
     </Sheet>
@@ -342,12 +367,15 @@ function FilterBody({
   query,
   onClose,
   onApply,
+  onTitleScrolledAway,
 }: {
   filters: MapFilters;
   query: string;
   onClose: () => void;
   onApply: (f: MapFilters) => void;
+  onTitleScrolledAway: (away: boolean) => void;
 }) {
+  const titleAway = useRef(false);
   // The lower sections mount just after the sheet has slid in, so the open
   // stays quick (all sections at once took ~2.5 s to mount on the dev build).
   const [ready, setReady] = useState(false);
@@ -398,6 +426,9 @@ function FilterBody({
         ? fmtDate(draft.dateStart)
         : (draft.time ?? "Legg til datoer");
 
+  // Something to clear? (benchmark F9: "Fjern alt" is inactive otherwise)
+  const canClear = JSON.stringify(draft) !== JSON.stringify(DEFAULT_FILTERS);
+
   const footerLabel =
     resultCount === 0
       ? "Ingen tilgjengelige resultater"
@@ -414,7 +445,18 @@ function FilterBody({
         contentContainerStyle={{ gap: 16, paddingBottom: 8 }}
         showsVerticalScrollIndicator={false}
         keyboardShouldPersistTaps="handled"
+        scrollEventThrottle={32}
+        onScroll={(e) => {
+          const away = e.nativeEvent.contentOffset.y > 36;
+          if (away !== titleAway.current) {
+            titleAway.current = away;
+            onTitleScrolledAway(away);
+          }
+        }}
       >
+        <Text variant="h1" accessibilityRole="header">
+          Filtre
+        </Text>
         {/* Where / When / Who (single-open accordion) */}
         <View className="gap-4">
           <SearchRow
@@ -789,29 +831,38 @@ function FilterBody({
                 </Pressable>
               </View>
             </Section>
-            {/* Tilgjengelighetsfunksjoner — icon rows */}
-            <Section
-              title="Tilgjengelighetsfunksjoner"
-              subtitle="Oppgitt av stedet, ikke sjekket (demo)"
-            >
-              <View>
-                {ACCESSIBILITY_OPTIONS.map((a, i) => (
-                  <CheckboxRow
-                    key={a}
-                    label={a}
-                    icon={ACCESSIBILITY_ICONS[a] ?? DEFAULT_CHIP_ICON}
-                    divider={i < ACCESSIBILITY_OPTIONS.length - 1}
-                    checked={draft.accessibility.includes(a)}
-                    onToggle={() =>
-                      setDraft((d) => ({
-                        ...d,
-                        accessibility: toggleIn(d.accessibility, a),
-                      }))
-                    }
-                  />
-                ))}
-              </View>
-            </Section>
+            {/* Tilgjengelighetsfunksjoner — collapsed, grouped (benchmark F7) */}
+            <View className="border-t border-line py-2">
+              <Accordion
+                title="Tilgjengelighetsfunksjoner"
+                subtitle="Oppgitt av stedet, ikke sjekket (demo)"
+              >
+                <View className="gap-4">
+                  {ACCESSIBILITY_GROUPS.map((g) => (
+                    <View key={g.title}>
+                      <Text variant="label" weight="semibold">
+                        {g.title}
+                      </Text>
+                      {g.items.map((a, i) => (
+                        <CheckboxRow
+                          key={a}
+                          label={a}
+                          icon={ACCESSIBILITY_ICONS[a] ?? DEFAULT_CHIP_ICON}
+                          divider={i < g.items.length - 1}
+                          checked={draft.accessibility.includes(a)}
+                          onToggle={() =>
+                            setDraft((d) => ({
+                              ...d,
+                              accessibility: toggleIn(d.accessibility, a),
+                            }))
+                          }
+                        />
+                      ))}
+                    </View>
+                  ))}
+                </View>
+              </Accordion>
+            </View>
             {/* Tilgjengelighet (availability) */}
             <Section title="Tilgjengelighet">
               <View>
@@ -841,6 +892,8 @@ function FilterBody({
       <View className="flex-row items-center gap-2 border-t border-line pt-3">
         <Pressable
           accessibilityRole="button"
+          accessibilityState={{ disabled: !canClear }}
+          disabled={!canClear}
           onPress={() => {
             setDraft(DEFAULT_FILTERS);
             setLangExpanded(false);
@@ -848,16 +901,20 @@ function FilterBody({
           }}
           className="px-2 py-3"
         >
-          <Text variant="body" weight="semibold" className="underline">
+          <Text
+            variant="body"
+            weight="semibold"
+            tone={canClear ? "ink" : "muted"}
+            className={canClear ? "underline" : undefined}
+          >
             Fjern alt
           </Text>
         </Pressable>
         <View className="flex-1">
           <Button
             label={footerLabel}
-            variant="ember"
+            variant="ink"
             rounded="full"
-            icon="search"
             disabled={resultCount === 0}
             onPress={() => {
               onApply(draft);
