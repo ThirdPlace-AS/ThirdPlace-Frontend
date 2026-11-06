@@ -1,6 +1,6 @@
-import { Text, View } from "react-native";
+import { View } from "react-native";
 
-import { Icon, Text as UIText, Badge } from "@/components/ui";
+import { Icon, Text, Badge } from "@/components/ui";
 import { DemoNote } from "@/components/DemoNote";
 import { GuestLock } from "@/components/GuestLock";
 import { useGuestMode } from "@/components/map/hooks/useGuestMode";
@@ -60,16 +60,16 @@ export function VerificationContent() {
             </View>
             <View className="flex-1 pb-4">
               <Text
-                className={`font-normal text-base ${
-                  s.state === "todo" ? "text-muted" : "font-semibold text-ink"
-                }`}
+                variant="body"
+                weight={s.state === "todo" ? "regular" : "semibold"}
+                tone={s.state === "todo" ? "muted" : "ink"}
               >
                 {s.label}
               </Text>
               {s.meta ? (
-                <UIText variant="caption" tone="muted">
+                <Text variant="caption" tone="muted">
                   {s.meta}
-                </UIText>
+                </Text>
               ) : null}
             </View>
           </View>
@@ -77,18 +77,18 @@ export function VerificationContent() {
       </View>
 
       <View className="gap-2">
-        <UIText variant="label" weight="semibold">
+        <Text variant="label" weight="semibold">
           Dokumenter
-        </UIText>
+        </Text>
         {DOCS.map((d) => (
           <View
             key={d.name}
             className="flex-row items-center gap-3 rounded-md border border-line bg-surface p-3"
           >
             <Icon name="document-outline" size="md" tone="ink" />
-            <UIText variant="label" weight="regular" className="flex-1">
+            <Text variant="label" weight="regular" className="flex-1">
               {d.name}
-            </UIText>
+            </Text>
             <Badge
               kind="status"
               label={d.status}
@@ -99,10 +99,10 @@ export function VerificationContent() {
       </View>
 
       <View className="rounded-md bg-surfaceMuted p-3">
-        <UIText variant="label" weight="regular">
+        <Text variant="label" weight="regular">
           Når verifisering er aktiv, får du beskjed så snart vurderingen er
           klar.
-        </UIText>
+        </Text>
       </View>
     </View>
   );

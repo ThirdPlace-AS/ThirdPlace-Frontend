@@ -1,6 +1,6 @@
 import { router, useLocalSearchParams } from "expo-router";
-import { ScrollView, Text, View } from "react-native";
-import { Icon, Screen, Text as UIText, type IconName } from "@/components/ui";
+import { ScrollView, View } from "react-native";
+import { Icon, Screen, Text, type IconName } from "@/components/ui";
 import {
   Illustration,
   type IllustrationName,
@@ -68,7 +68,12 @@ export default function SystemState() {
             title="Vi pusser opp!"
             body="ThirdPlace er nede for vedlikehold. Vi er snart tilbake."
           >
-            <Text className="text-center text-sm font-semibold text-emberText">
+            <Text
+              variant="label"
+              weight="semibold"
+              tone="ember"
+              className="text-center"
+            >
               Sjekk status: status.thirdplace.app
             </Text>
           </State>
@@ -79,11 +84,13 @@ export default function SystemState() {
             body="Kontoen din er midlertidig suspendert på grunn av brudd på retningslinjene våre."
           >
             <View className="gap-1 rounded-md border border-line bg-surface p-3">
-              <Text className="text-xs font-semibold uppercase tracking-wide text-muted">
+              <Text variant="micro" weight="semibold" tone="muted">
                 Hva kan du gjøre
               </Text>
-              <Text className="text-sm font-semibold text-ink">Send klage</Text>
-              <Text className="text-xs text-muted font-normal">
+              <Text variant="label" weight="semibold">
+                Send klage
+              </Text>
+              <Text variant="caption" tone="muted">
                 Vi gjennomgår saken og svarer deg.
               </Text>
             </View>
@@ -145,12 +152,12 @@ function State({
             <Icon name={icon} size="2xl" tone="ink" />
           </View>
         )}
-        <UIText variant="h1" weight="bold" className="text-center">
+        <Text variant="h1" weight="bold" className="text-center">
           {title}
-        </UIText>
-        <UIText variant="body" tone="muted" className="px-4 text-center">
+        </Text>
+        <Text variant="body" tone="muted" className="px-4 text-center">
           {body}
-        </UIText>
+        </Text>
       </View>
       {children}
     </View>
@@ -162,20 +169,20 @@ function Invite() {
   const exp = experienceById("e1");
   return (
     <View className="gap-4">
-      <Text className="text-center text-xs text-muted font-normal">
+      <Text variant="caption" tone="muted" className="text-center">
         thirdplace.app/join/{exp?.id ?? "e1"}
       </Text>
-      <Text className="text-center text-2xl font-bold text-ink">
+      <Text variant="h1" className="text-center" accessibilityRole="text">
         {exp?.title ?? "Opplevelse"}
       </Text>
-      <Text className="text-center text-sm text-muted font-normal">
+      <Text variant="caption" tone="muted" className="text-center">
         {exp?.when}
       </Text>
       <View className="gap-1 rounded-md border border-line bg-surface p-4">
-        <Text className="text-center text-base font-semibold text-ink">
+        <Text variant="body" weight="semibold" className="text-center">
           Du er invitert!
         </Text>
-        <Text className="text-center text-sm text-muted font-normal">
+        <Text variant="caption" tone="muted" className="text-center">
           Vert: {exp?.host}
         </Text>
       </View>

@@ -3,7 +3,6 @@ import {
   ActivityIndicator,
   Keyboard,
   Pressable,
-  Text,
   useWindowDimensions,
   View,
 } from "react-native";
@@ -14,7 +13,7 @@ import {
   ErrorState,
   Icon,
   IconButton,
-  Text as UIText,
+  Text,
 } from "@/components/ui";
 import { Illustration } from "@/components/illustrations/Illustration";
 import { MapCanvas } from "@/components/map/MapCanvas";
@@ -237,7 +236,9 @@ export default function MapScreen() {
               <Icon name="search" size="md" tone="muted" />
               <Text
                 numberOfLines={1}
-                className={`font-normal flex-1 text-base ${filters.query ? "text-ink" : "text-muted"}`}
+                variant="body"
+                tone={filters.query ? "ink" : "muted"}
+                className="flex-1"
               >
                 {filters.query || "Søk steder, opplevelser …"}
               </Text>
@@ -252,9 +253,9 @@ export default function MapScreen() {
               <Icon name="options-outline" size="md" tone="ink" />
               {filters.extraCount > 0 ? (
                 <View className="absolute items-center justify-center w-4 h-4 rounded-full right-1 top-1 bg-ember">
-                  <UIText variant="caption" weight="bold" tone="onEmber">
+                  <Text variant="caption" weight="bold" tone="onEmber">
                     {filters.extraCount}
-                  </UIText>
+                  </Text>
                 </View>
               ) : null}
             </Pressable>
@@ -286,9 +287,9 @@ export default function MapScreen() {
       >
         {location.areaLabel ? (
           <View className="px-2 py-1 border rounded-full border-line bg-surface">
-            <UIText variant="caption" tone="muted">
+            <Text variant="caption" tone="muted">
               {location.areaLabel}
-            </UIText>
+            </Text>
           </View>
         ) : null}
         <IconButton
@@ -315,9 +316,9 @@ export default function MapScreen() {
         >
           <View className="flex-row items-center gap-2 px-4 py-2 border rounded-full border-line bg-surface">
             <ActivityIndicator color={colors.ink} />
-            <UIText variant="caption" tone="muted">
+            <Text variant="caption" tone="muted">
               Laster steder…
-            </UIText>
+            </Text>
           </View>
         </View>
       ) : null}

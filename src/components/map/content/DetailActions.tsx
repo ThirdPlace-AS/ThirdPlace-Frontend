@@ -1,6 +1,6 @@
 import { useState } from "react";
-import { Pressable, Text, View } from "react-native";
-import { Icon, PopIcon, Text as UIText } from "@/components/ui";
+import { Pressable, View } from "react-native";
+import { Icon, PopIcon, Text } from "@/components/ui";
 import { haptics } from "@/lib/haptics";
 import { ReportSheet, ShareSheet } from "@/components/actions/ActionSheets";
 import { SignInPrompt } from "@/components/SignInPrompt";
@@ -51,7 +51,9 @@ export function DetailActions({
             tone={saved ? "ember" : "ink"}
           />
           <Text
-            className={`text-sm font-semibold ${saved ? "text-emberText" : "text-ink"}`}
+            variant="label"
+            weight="semibold"
+            tone={saved ? "ember" : "ink"}
           >
             {saved ? "Lagret" : "Lagre"}
           </Text>
@@ -64,9 +66,9 @@ export function DetailActions({
           className="flex-1 flex-row items-center justify-center gap-2 rounded-md border border-line bg-surface px-3 py-2.5"
         >
           <Icon name="share-outline" size="md" tone="ink" />
-          <UIText variant="label" weight="semibold">
+          <Text variant="label" weight="semibold">
             Del
-          </UIText>
+          </Text>
         </Pressable>
 
         <Pressable
@@ -76,9 +78,9 @@ export function DetailActions({
           className="flex-1 flex-row items-center justify-center gap-2 rounded-md border border-line bg-surface px-3 py-2.5"
         >
           <Icon name="flag-outline" size="md" tone="ink" />
-          <UIText variant="label" weight="semibold">
+          <Text variant="label" weight="semibold">
             Rapporter
-          </UIText>
+          </Text>
         </Pressable>
       </View>
 

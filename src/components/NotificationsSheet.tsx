@@ -1,8 +1,8 @@
 import { Ionicons } from "@expo/vector-icons";
 import { useState } from "react";
-import { Pressable, Text, View } from "react-native";
+import { Pressable, View } from "react-native";
 
-import { Icon, Text as UIText } from "@/components/ui";
+import { Icon, Text } from "@/components/ui";
 import { DemoNote } from "@/components/DemoNote";
 import { Sheet } from "@/components/Sheet";
 import {
@@ -50,9 +50,9 @@ export function NotificationsSheet({
             hitSlop={8}
           >
             <Text
-              className={`text-sm font-semibold ${
-                unread === 0 ? "text-muted" : "text-ink"
-              }`}
+              variant="label"
+              weight="semibold"
+              tone={unread === 0 ? "muted" : "ink"}
             >
               Merk alle lest
             </Text>
@@ -75,17 +75,17 @@ export function NotificationsSheet({
                 <Icon name={TYPE_ICON[n.type]} size="md" tone="ink" />
               </View>
               <View className="flex-1 gap-0.5">
-                <UIText variant="label" weight="semibold">
+                <Text variant="label" weight="semibold">
                   {n.actorName}
-                </UIText>
-                <UIText variant="caption" tone="muted" numberOfLines={2}>
+                </Text>
+                <Text variant="caption" tone="muted" numberOfLines={2}>
                   {n.text}
-                </UIText>
+                </Text>
               </View>
               <View className="items-end gap-1.5">
-                <UIText variant="caption" tone="muted">
+                <Text variant="caption" tone="muted">
                   {notificationTimeLabel(n.minutesAgo)}
-                </UIText>
+                </Text>
                 {!isRead ? (
                   <View className="h-2 w-2 rounded-full bg-ember" />
                 ) : null}

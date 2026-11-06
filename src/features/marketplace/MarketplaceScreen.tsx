@@ -114,7 +114,8 @@ export default function MarketplaceScreen() {
                 onChangeText={setQuery}
                 placeholder="Søk listings, samarbeid …"
                 placeholderTextColor={colors.muted}
-                className="flex-1 py-3 text-base text-ink font-normal"
+                className="flex-1 py-3 text-ink font-normal"
+                style={{ fontSize: 16 }}
                 accessibilityLabel="Søk i Marketplace"
               />
             </View>

@@ -2,7 +2,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { Image } from "expo-image";
 import { router } from "expo-router";
 import { useState } from "react";
-import { Pressable, ScrollView, Text, View } from "react-native";
+import { Pressable, ScrollView, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { Switch } from "@/components/ui/Switch";
@@ -14,7 +14,7 @@ import {
   StepHeader,
   type IconName,
   Pressable as UIPressable,
-  Text as UIText,
+  Text,
 } from "@/components/ui";
 import { Button } from "@/components/Button";
 import {
@@ -213,18 +213,18 @@ function KindMenu({ onPick }: { onPick: (k: AddKind) => void }) {
   return (
     <SafeAreaView className="flex-1 justify-end bg-background" edges={["top"]}>
       <View className="gap-3 p-gutter pb-6">
-        <UIText variant="h1" className="pb-1">
+        <Text variant="h1" className="pb-1">
           Hva vil du legge til?
-        </UIText>
+        </Text>
         <Pressable
           accessibilityRole="button"
           onPress={() => router.push("/import")}
           className="flex-row items-center gap-2 self-start py-1"
         >
           <Icon name="link-outline" size="sm" tone="ember" />
-          <UIText variant="label" weight="semibold" tone="ember">
+          <Text variant="label" weight="semibold" tone="ember">
             Importer fra lenke →
-          </UIText>
+          </Text>
         </Pressable>
         {rows.map((r) => (
           <UIPressable
@@ -238,12 +238,12 @@ function KindMenu({ onPick }: { onPick: (k: AddKind) => void }) {
               <CategoryArt name={r.label} size={48} />
             </View>
             <View className="flex-1">
-              <UIText variant="body" weight="semibold">
+              <Text variant="body" weight="semibold">
                 {r.label}
-              </UIText>
-              <UIText variant="caption" tone="muted">
+              </Text>
+              <Text variant="caption" tone="muted">
                 {r.hint}
-              </UIText>
+              </Text>
             </View>
             <Icon name="chevron-forward" size="md" tone="muted" />
           </UIPressable>
@@ -317,7 +317,7 @@ function StepBody({
           {draft.area ? (
             <View className="flex-row items-center gap-2">
               <Icon name="location" size="sm" tone="ink" />
-              <UIText variant="label">{draft.area}, Oslo</UIText>
+              <Text variant="label">{draft.area}, Oslo</Text>
             </View>
           ) : null}
           <DemoNote>Kartpinne og adressesøk er ikke aktive i demoen.</DemoNote>
@@ -344,13 +344,13 @@ function StepBody({
             pressedScale={0.99}
           >
             <Icon name="search" size="sm" tone="muted" />
-            <UIText variant="caption" tone="muted" className="flex-1">
+            <Text variant="caption" tone="muted" className="flex-1">
               {draft.area &&
               !HOST_PLACES.some((p) => p.name === draft.area) &&
               !OSLO_AREAS.some((a) => a.name === draft.area)
                 ? `Valgt: ${draft.area}`
                 : "Søk etter et annet sted …"}
-            </UIText>
+            </Text>
           </UIPressable>
           {picker ? (
             <PlacePicker
@@ -406,25 +406,25 @@ function StepBody({
                   />
                   {pos >= 0 ? (
                     <View className="absolute right-1.5 top-1.5 h-6 min-w-6 items-center justify-center rounded-full bg-ink px-1.5">
-                      <UIText variant="caption" weight="bold" tone="onInk">
+                      <Text variant="caption" weight="bold" tone="onInk">
                         {pos + 1}
-                      </UIText>
+                      </Text>
                     </View>
                   ) : null}
                   {pos === 0 ? (
                     <View className="absolute bottom-1.5 left-1.5 rounded-full bg-ink px-2 py-0.5">
-                      <UIText variant="caption" weight="semibold" tone="onInk">
+                      <Text variant="caption" weight="semibold" tone="onInk">
                         Hovedbilde
-                      </UIText>
+                      </Text>
                     </View>
                   ) : null}
                 </Pressable>
               );
             })}
           </View>
-          <UIText variant="caption" tone="muted">
+          <Text variant="caption" tone="muted">
             Minst 1 bilde påkrevd · JPG, PNG · maks 10 MB
-          </UIText>
+          </Text>
           <DemoNote>
             Eksempelbilder — opplasting er ikke aktiv i demoen.
           </DemoNote>
@@ -443,7 +443,7 @@ function StepBody({
                 key={f}
                 className="flex-row items-center justify-between py-2"
               >
-                <UIText variant="body">{f}</UIText>
+                <Text variant="body">{f}</Text>
                 <Switch
                   value={draft.features.includes(f)}
                   onValueChange={() =>
@@ -477,9 +477,9 @@ function StepBody({
             onPress={(t) => patch({ startTime: t })}
           />
           {draft.date && draft.startTime ? (
-            <UIText variant="label">
+            <Text variant="label">
               {formatDate(draft.date)} · {draft.startTime}
-            </UIText>
+            </Text>
           ) : null}
           <Label>Varighet</Label>
           <ChipRow
@@ -521,10 +521,10 @@ function StepBody({
             selected={[draft.access]}
             onPress={(a) => patch({ access: a })}
           />
-          <UIText variant="caption" tone="muted">
+          <Text variant="caption" tone="muted">
             Alle = hvem som helst kan bli med · Godkjenning = du bestemmer ·
             Invitasjon = kun inviterte
-          </UIText>
+          </Text>
           <Label>Avbestilling</Label>
           <ChipRow
             options={CANCELLATION}
@@ -589,24 +589,24 @@ function ReviewStep({ draft }: { draft: AddDraft }) {
         />
       ) : null}
       <View className="gap-1">
-        <UIText variant="title">{draft.title}</UIText>
-        <UIText variant="caption" tone="muted">
+        <Text variant="title">{draft.title}</Text>
+        <Text variant="caption" tone="muted">
           {isPlace
             ? `${draft.category} · ${draft.area}, Oslo`
             : `${draft.date ? formatDate(draft.date) : ""} · ${draft.startTime} · ${draft.area}`}
-        </UIText>
+        </Text>
         {draft.summary ? (
-          <UIText variant="label" weight="regular" className="pt-1">
+          <Text variant="label" weight="regular" className="pt-1">
             {draft.summary}
-          </UIText>
+          </Text>
         ) : null}
       </View>
       {isPlace ? (
         <View className="flex-row items-start gap-2 rounded-md bg-surfaceMuted p-3">
           <Icon name="hourglass-outline" size="sm" tone="ink" />
-          <UIText variant="label" weight="regular" className="flex-1">
+          <Text variant="label" weight="regular" className="flex-1">
             Steder gjennomgås manuelt av ThirdPlace før de blir synlige.
-          </UIText>
+          </Text>
         </View>
       ) : (
         <>
@@ -618,9 +618,9 @@ function ReviewStep({ draft }: { draft: AddDraft }) {
           <View className="flex-row flex-wrap gap-2">
             {draft.vibes.map((v) => (
               <View key={v} className="rounded-full bg-surfaceMuted px-3 py-1">
-                <UIText variant="caption" weight="medium">
+                <Text variant="caption" weight="medium">
                   {v}
-                </UIText>
+                </Text>
               </View>
             ))}
           </View>
@@ -638,9 +638,9 @@ function Fact({ icon, value }: { icon: IconName; value: string }) {
   return (
     <View className="flex-1 gap-1 rounded-md border border-line bg-surface p-3">
       <Icon name={icon} size="sm" tone="ink" />
-      <UIText variant="caption" weight="medium" numberOfLines={1}>
+      <Text variant="caption" weight="medium" numberOfLines={1}>
         {value}
-      </UIText>
+      </Text>
     </View>
   );
 }
@@ -664,22 +664,22 @@ function SubmittedState({
           />
         </View>
         <View className="items-center gap-2">
-          <UIText
+          <Text
             variant="h2"
             weight="bold"
             className="text-center"
             accessibilityRole="text"
           >
             {draft.title}
-          </UIText>
+          </Text>
           <View className="flex-row">
             <DemoBadge label={isPlace ? "IKKE SENDT" : "IKKE PUBLISERT"} />
           </View>
-          <UIText variant="body" tone="muted" className="px-6 text-center">
+          <Text variant="body" tone="muted" className="px-6 text-center">
             {isPlace
               ? "Demo — stedet ble ikke sendt til vurdering. Innsending krever innlogging og en server, som ikke er aktiv ennå."
               : "Demo — opplevelsen ble ikke publisert, og ingen chat ble opprettet. Publisering krever innlogging og en server, som ikke er aktiv ennå."}
-          </UIText>
+          </Text>
         </View>
         <View className="w-full gap-3 pt-2">
           <Button label="Legg til noe nytt" variant="ink" onPress={onReset} />
@@ -713,7 +713,7 @@ function CategoryField({
   const [open, setOpen] = useState(false);
   return (
     <View className="gap-1.5">
-      <UIText variant="label">Kategori</UIText>
+      <Text variant="label">Kategori</Text>
       <UIPressable
         accessibilityRole="button"
         accessibilityLabel={`Kategori, ${value ?? "ikke valgt"}`}
@@ -727,13 +727,9 @@ function CategoryField({
         ) : (
           <Icon name="pricetags-outline" size="md" tone="muted" />
         )}
-        <UIText
-          variant="body"
-          tone={value ? "ink" : "muted"}
-          className="flex-1"
-        >
+        <Text variant="body" tone={value ? "ink" : "muted"} className="flex-1">
           {value ?? "Velg kategori"}
-        </UIText>
+        </Text>
         <Icon name="chevron-down" size="md" tone="muted" />
       </UIPressable>
       {open ? (
@@ -750,9 +746,9 @@ function CategoryField({
 
 function Label({ children }: { children: string }) {
   return (
-    <UIText variant="label" weight="semibold">
+    <Text variant="label" weight="semibold">
       {children}
-    </UIText>
+    </Text>
   );
 }
 
@@ -794,12 +790,12 @@ function SelectRow({
     >
       <Icon name={icon} size="md" tone="ink" />
       <View className="flex-1">
-        <UIText variant="body" weight="semibold">
+        <Text variant="body" weight="semibold">
           {title}
-        </UIText>
-        <UIText variant="caption" tone="muted">
+        </Text>
+        <Text variant="caption" tone="muted">
           {hint}
-        </UIText>
+        </Text>
       </View>
       <View
         className={`h-5 w-5 rounded-full border-2 ${
@@ -858,9 +854,9 @@ function MonthPicker({
             color={atStart ? colors.line : colors.ink}
           />
         </Pressable>
-        <UIText variant="label" weight="semibold" className="capitalize">
+        <Text variant="label" weight="semibold" className="capitalize">
           {label}
-        </UIText>
+        </Text>
         <Pressable
           accessibilityRole="button"
           accessibilityLabel="Neste måned"
@@ -873,14 +869,14 @@ function MonthPicker({
       </View>
       <View className="flex-row">
         {["Ma", "Ti", "On", "To", "Fr", "Lø", "Sø"].map((d) => (
-          <UIText
+          <Text
             key={d}
             variant="caption"
             tone="muted"
             className="flex-1 text-center"
           >
             {d}
-          </UIText>
+          </Text>
         ))}
       </View>
       <View className="flex-row flex-wrap">
@@ -905,13 +901,10 @@ function MonthPicker({
                 }`}
               >
                 <Text
-                  className={`font-normal text-sm ${
-                    selected
-                      ? "font-semibold text-onInk"
-                      : past
-                        ? "text-line"
-                        : "text-ink"
-                  }`}
+                  variant="label"
+                  weight={selected ? "semibold" : "regular"}
+                  tone={selected ? "onInk" : past ? "muted" : "ink"}
+                  className={past && !selected ? "opacity-50" : undefined}
                 >
                   {d}
                 </Text>

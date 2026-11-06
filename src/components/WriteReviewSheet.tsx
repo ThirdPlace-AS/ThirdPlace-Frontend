@@ -54,7 +54,8 @@ function Body({ onClose }: { onClose: () => void }) {
         value={text}
         onChangeText={setText}
         multiline
-        className="min-h-24 rounded-md border border-line bg-surface p-3 text-base text-ink font-normal"
+        className="min-h-24 rounded-md border border-line bg-surface p-3 text-ink font-normal"
+        style={{ fontSize: 16 }}
         textAlignVertical="top"
       />
 

@@ -1,7 +1,7 @@
 import { useState } from "react";
-import { Pressable, Text, TextInput, View } from "react-native";
+import { Pressable, TextInput, View } from "react-native";
 
-import { Icon, Text as UIText } from "@/components/ui";
+import { Icon, Text } from "@/components/ui";
 import { OSLO_AREAS } from "@/fixtures";
 import { useThemeColors } from "@/theme";
 
@@ -45,7 +45,9 @@ export function WhereField({
           <Icon name="location-outline" size="md" tone="ink" />
         </View>
         <Text
-          className={`font-normal flex-1 text-base ${selected ? "font-semibold text-ink" : "text-ink"}`}
+          variant="body"
+          weight={selected ? "semibold" : "regular"}
+          className="flex-1"
         >
           {name}
         </Text>
@@ -63,7 +65,8 @@ export function WhereField({
           onChangeText={setText}
           placeholder="Søk etter sted eller landemerke"
           placeholderTextColor={colors.muted}
-          className="flex-1 text-base text-ink font-normal"
+          className="flex-1 text-ink font-normal"
+          style={{ fontSize: 16 }}
         />
         {text || value ? (
           <Pressable
@@ -83,9 +86,9 @@ export function WhereField({
 
       {!q && recent.length > 0 ? (
         <View className="gap-1">
-          <UIText variant="micro" weight="semibold" tone="muted">
+          <Text variant="micro" weight="semibold" tone="muted">
             Nylige søk
-          </UIText>
+          </Text>
           <View>
             {recent.map((name) => (
               <Row key={`recent-${name}`} name={name} />
@@ -95,9 +98,9 @@ export function WhereField({
       ) : null}
 
       <View className="gap-1">
-        <UIText variant="micro" weight="semibold" tone="muted">
+        <Text variant="micro" weight="semibold" tone="muted">
           Foreslåtte steder
-        </UIText>
+        </Text>
         <View>
           {matches.map((a) => (
             <Row key={a.name} name={a.name} />

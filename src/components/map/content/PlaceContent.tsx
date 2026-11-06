@@ -1,7 +1,7 @@
 import { Image } from "expo-image";
-import { Pressable, Text, View } from "react-native";
+import { Pressable, View } from "react-native";
 
-import { Icon, MetaRow, Text as UIText } from "@/components/ui";
+import { Icon, MetaRow, Text } from "@/components/ui";
 import { Card } from "@/components/Card";
 import { Chip } from "@/components/Chip";
 import {
@@ -20,9 +20,9 @@ export function PlaceContent({ id, push }: { id: string; push: PushFn }) {
   const place = placeById(id);
   if (!place) {
     return (
-      <UIText variant="caption" tone="muted">
+      <Text variant="caption" tone="muted">
         Fant ikke stedet.
-      </UIText>
+      </Text>
     );
   }
   const business = businessForPlace(place.id);
@@ -34,27 +34,29 @@ export function PlaceContent({ id, push }: { id: string; push: PushFn }) {
       <View className="flex-row flex-wrap items-center gap-x-3 gap-y-1">
         <View className="flex-row items-center gap-1">
           <Icon name="star" size="sm" tone="ember" />
-          <UIText variant="label" weight="semibold">
+          <Text variant="label" weight="semibold">
             {place.rating.toFixed(1)}
-          </UIText>
-          <UIText variant="caption" tone="muted">
+          </Text>
+          <Text variant="caption" tone="muted">
             ({place.reviews})
-          </UIText>
+          </Text>
         </View>
-        <UIText variant="caption" tone="muted">
+        <Text variant="caption" tone="muted">
           · {place.distance}
-        </UIText>
+        </Text>
         <Text
-          className={`font-normal text-sm ${place.openNow ? "text-successText" : "text-muted"}`}
+          variant="label"
+          weight="regular"
+          tone={place.openNow ? "success" : "muted"}
         >
           · {place.openNow ? "Åpent nå" : "Stengt"}
         </Text>
-        <UIText variant="caption" tone="muted">
+        <Text variant="caption" tone="muted">
           · {place.category}
-        </UIText>
-        <UIText variant="caption" tone="muted">
+        </Text>
+        <Text variant="caption" tone="muted">
           · {priceBandFor(place.priceNok)}
-        </UIText>
+        </Text>
       </View>
 
       {/* Cover — illustrative library photo (MOCK; not of this venue). */}
@@ -72,9 +74,9 @@ export function PlaceContent({ id, push }: { id: string; push: PushFn }) {
         title={place.name}
       />
 
-      <UIText variant="caption" tone="muted">
+      <Text variant="caption" tone="muted">
         {place.about}
-      </UIText>
+      </Text>
 
       {/* Location & opening hours */}
       <Card>
@@ -89,9 +91,9 @@ export function PlaceContent({ id, push }: { id: string; push: PushFn }) {
 
       {/* Vibe tags */}
       <View className="gap-1">
-        <UIText variant="label" weight="semibold">
+        <Text variant="label" weight="semibold">
           Vibe
-        </UIText>
+        </Text>
         <View className="flex-row flex-wrap gap-2">
           {place.vibes.map((v) => (
             <Chip key={v} label={v} />
@@ -108,9 +110,9 @@ export function PlaceContent({ id, push }: { id: string; push: PushFn }) {
       {/* Accessibility */}
       {place.accessibility.length > 0 ? (
         <View className="gap-1">
-          <UIText variant="label" weight="semibold">
+          <Text variant="label" weight="semibold">
             Tilgjengelighet
-          </UIText>
+          </Text>
           <View className="flex-row flex-wrap gap-2">
             {place.accessibility.map((a) => (
               <Chip key={a} label={a} />
@@ -122,9 +124,9 @@ export function PlaceContent({ id, push }: { id: string; push: PushFn }) {
       {/* Source / provenance indicator */}
       <View className="flex-row items-center gap-2">
         <Icon name="shield-checkmark-outline" size="sm" tone="muted" />
-        <UIText variant="caption" tone="muted" className="flex-1">
+        <Text variant="caption" tone="muted" className="flex-1">
           {place.source}
-        </UIText>
+        </Text>
       </View>
 
       {business ? (
@@ -135,13 +137,13 @@ export function PlaceContent({ id, push }: { id: string; push: PushFn }) {
           <Card>
             <View className="flex-row items-center justify-between">
               <View className="flex-1">
-                <UIText variant="micro" weight="regular" tone="muted">
+                <Text variant="micro" weight="regular" tone="muted">
                   Drives av
-                </UIText>
+                </Text>
                 <View className="flex-row items-center gap-1">
-                  <UIText variant="body" weight="semibold">
+                  <Text variant="body" weight="semibold">
                     {business.name}
-                  </UIText>
+                  </Text>
                   {business.verified ? (
                     <Icon name="checkmark-circle" size="sm" tone="success" />
                   ) : null}
@@ -161,12 +163,12 @@ export function PlaceContent({ id, push }: { id: string; push: PushFn }) {
           <View className="flex-row items-center justify-between">
             <View className="flex-row items-center gap-1">
               <Icon name="star" size="sm" tone="ember" />
-              <UIText variant="body" weight="semibold">
+              <Text variant="body" weight="semibold">
                 {place.rating.toFixed(1)}
-              </UIText>
-              <UIText variant="caption" tone="muted">
+              </Text>
+              <Text variant="caption" tone="muted">
                 · {place.reviews} anmeldelser
-              </UIText>
+              </Text>
             </View>
             <Icon name="chevron-forward" size="md" tone="muted" />
           </View>
@@ -176,19 +178,19 @@ export function PlaceContent({ id, push }: { id: string; push: PushFn }) {
       {/* Place chat — no real chat room is opened. */}
       <View className="flex-row items-center gap-2 rounded-md border border-line bg-surface px-3 py-3">
         <Icon name="chatbubbles-outline" size="md" tone="ink" />
-        <UIText variant="label" weight="regular" className="flex-1">
+        <Text variant="label" weight="regular" className="flex-1">
           Stedschat
-        </UIText>
+        </Text>
       </View>
 
       <View className="gap-2">
-        <UIText variant="body" weight="semibold">
+        <Text variant="body" weight="semibold">
           Arrangementer her
-        </UIText>
+        </Text>
         {exps.length === 0 ? (
-          <UIText variant="caption" tone="muted">
+          <Text variant="caption" tone="muted">
             Ingen kommende arrangementer.
-          </UIText>
+          </Text>
         ) : (
           exps.map((e) => (
             <Pressable
@@ -199,12 +201,12 @@ export function PlaceContent({ id, push }: { id: string; push: PushFn }) {
               <Card>
                 <View className="flex-row items-center justify-between">
                   <View className="flex-1">
-                    <UIText variant="body" weight="semibold">
+                    <Text variant="body" weight="semibold">
                       {e.title}
-                    </UIText>
-                    <UIText variant="caption" tone="muted">
+                    </Text>
+                    <Text variant="caption" tone="muted">
                       {e.when} · Vert: {e.host}
-                    </UIText>
+                    </Text>
                   </View>
                   <Icon name="chevron-forward" size="md" tone="muted" />
                 </View>

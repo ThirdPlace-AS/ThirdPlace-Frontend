@@ -1,12 +1,13 @@
 import { memo } from "react";
 import { elevation } from "@/theme";
-import { Pressable, ScrollView, Text } from "react-native";
+import { Pressable, ScrollView } from "react-native";
 
 import {
   DISCOVERY_MODE_LABELS,
   DISCOVERY_MODES,
   type DiscoveryMode,
 } from "./types/mapPresentation";
+import { Text } from "@/components/ui";
 
 // Horizontal discovery-mode selector styled as Google-Maps-style floating chips:
 // each mode is its own rounded pill with a shadow (so it reads as floating over
@@ -42,9 +43,9 @@ export const DiscoveryModeTabs = memo(function DiscoveryModeTabs({
             }`}
           >
             <Text
-              className={`font-normal text-sm ${
-                selected ? "font-semibold text-onInk" : "font-medium text-ink"
-              }`}
+              variant="label"
+              weight={selected ? "semibold" : "medium"}
+              tone={selected ? "onInk" : "ink"}
             >
               {DISCOVERY_MODE_LABELS[m]}
             </Text>

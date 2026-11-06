@@ -4,10 +4,9 @@ import {
   type NativeSyntheticEvent,
   Pressable,
   ScrollView,
-  Text,
   View,
 } from "react-native";
-import { Text as UIText } from "@/components/ui";
+import { Text } from "@/components/ui";
 
 const WEEKDAYS = ["M", "T", "O", "T", "F", "L", "S"]; // Norwegian, Monday-first
 const MONTHS = [
@@ -123,7 +122,7 @@ export function Calendar({
       {/* Pinned weekday header */}
       <View className="flex-row justify-between">
         {WEEKDAYS.map((w, i) => (
-          <UIText
+          <Text
             key={i}
             variant="caption"
             weight="medium"
@@ -131,7 +130,7 @@ export function Calendar({
             className="w-9 text-center"
           >
             {w}
-          </UIText>
+          </Text>
         ))}
       </View>
       <ScrollView
@@ -169,13 +168,10 @@ export function Calendar({
                       }`}
                     >
                       <Text
-                        className={`font-normal text-sm ${
-                          past
-                            ? "text-line line-through"
-                            : endpoint
-                              ? "font-semibold text-onInk"
-                              : "text-ink"
-                        }`}
+                        variant="label"
+                        weight={endpoint ? "semibold" : "regular"}
+                        tone={endpoint ? "onInk" : past ? "muted" : "ink"}
+                        className={past ? "line-through opacity-50" : undefined}
                       >
                         {c.day}
                       </Text>
@@ -184,9 +180,9 @@ export function Calendar({
                 );
               })}
             </View>
-            <UIText variant="label" weight="regular">
+            <Text variant="label" weight="regular">
               {MONTHS[month]} {year}
-            </UIText>
+            </Text>
           </View>
         ))}
       </ScrollView>

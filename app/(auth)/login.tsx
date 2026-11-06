@@ -33,7 +33,7 @@ export default function Login() {
           <Input label="Passord" placeholder="••••••••" secureTextEntry />
           <Link
             href="/forgot-password"
-            className="text-right text-sm font-semibold text-emberText"
+            className="text-right text-label font-semibold text-emberText"
           >
             Glemt passord?
           </Link>

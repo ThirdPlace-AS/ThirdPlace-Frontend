@@ -1,7 +1,7 @@
 import { router } from "expo-router";
 import { useState } from "react";
-import { ScrollView, Text, View } from "react-native";
-import { Icon, Screen, Text as UIText } from "@/components/ui";
+import { ScrollView, View } from "react-native";
+import { Icon, Screen, Text } from "@/components/ui";
 import { Button } from "@/components/Button";
 import { DemoNote } from "@/components/DemoNote";
 import { RouteHeader } from "@/components/RouteHeader";
@@ -34,10 +34,10 @@ export default function BecomeCreatorScreen() {
     <Screen edges={["top"]}>
       <RouteHeader title="Bli Skaper" />
       <ScrollView contentContainerClassName="gap-4 px-gutter py-4 pb-12">
-        <UIText variant="caption" tone="muted">
+        <Text variant="caption" tone="muted">
           Oppfyll kravene under for å låse opp Skaper-rollen og få tilgang til
           Dashboard og Marketplace.
-        </UIText>
+        </Text>
 
         {reqs.map((r) => {
           const done = r.progress >= 1;
@@ -59,12 +59,10 @@ export default function BecomeCreatorScreen() {
                   />
                 </View>
                 <View className="flex-1">
-                  <UIText variant="body" weight="semibold">
+                  <Text variant="body" weight="semibold">
                     {r.label}
-                  </UIText>
-                  <Text
-                    className={`font-normal text-xs ${done ? "text-successText" : "text-muted"}`}
-                  >
+                  </Text>
+                  <Text variant="caption" tone={done ? "success" : "muted"}>
                     {r.meta}
                   </Text>
                 </View>
@@ -80,9 +78,9 @@ export default function BecomeCreatorScreen() {
         })}
 
         <View className="rounded-md bg-surfaceMuted p-3">
-          <UIText variant="label">
+          <Text variant="label">
             {met} av {reqs.length} krav oppfylt
-          </UIText>
+          </Text>
         </View>
 
         <DemoNote>
@@ -92,13 +90,13 @@ export default function BecomeCreatorScreen() {
 
         {applied ? (
           <View className="items-center gap-2 rounded-lg bg-surfaceMuted p-5">
-            <UIText variant="h2" weight="bold">
+            <Text variant="h2" weight="bold">
               Du er nå Skaper!
-            </UIText>
-            <UIText variant="caption" tone="muted" className="text-center">
+            </Text>
+            <Text variant="caption" tone="muted" className="text-center">
               Slik ser det ut når søknaden er godkjent: Dashboard og Marketplace
               låses opp.
-            </UIText>
+            </Text>
             <DemoNote>
               Forhåndsvisning — ingen søknad er sendt eller godkjent.
             </DemoNote>

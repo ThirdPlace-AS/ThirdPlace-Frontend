@@ -1,7 +1,7 @@
 import { useState } from "react";
-import { Pressable, ScrollView, Text, View } from "react-native";
+import { Pressable, ScrollView, View } from "react-native";
 
-import { Icon, Screen, Text as UIText } from "@/components/ui";
+import { Icon, Screen, Text } from "@/components/ui";
 import { RateSheet } from "@/components/actions/ActionSheets";
 import { DemoNote } from "@/components/DemoNote";
 import { RouteHeader } from "@/components/RouteHeader";
@@ -23,9 +23,9 @@ export function PaymentStatusScreen() {
     <Screen edges={["top"]}>
       <RouteHeader title="Betalingsstatus" />
       <ScrollView contentContainerClassName="gap-4 px-gutter py-4 pb-12">
-        <UIText variant="caption" tone="muted">
+        <Text variant="caption" tone="muted">
           Jazz-samarbeid · Oslo Kaffebar
-        </UIText>
+        </Text>
         {PAY_STEPS.map((s) => (
           <View key={s.label} className="flex-row items-center gap-3">
             <View
@@ -36,7 +36,9 @@ export function PaymentStatusScreen() {
               {s.done ? <Icon name="checkmark" size="sm" tone="onInk" /> : null}
             </View>
             <Text
-              className={`font-normal text-sm ${s.done ? "font-semibold text-ink" : "text-muted"}`}
+              variant="label"
+              weight={s.done ? "semibold" : "regular"}
+              tone={s.done ? "ink" : "muted"}
             >
               {s.label}
             </Text>
@@ -71,24 +73,24 @@ export function CollabHistoryScreen() {
             key={h.title}
             className="gap-1 rounded-lg border border-line bg-surface p-4"
           >
-            <UIText variant="body" weight="semibold">
+            <Text variant="body" weight="semibold">
               {h.title}
-            </UIText>
-            <UIText variant="caption" tone="muted">
+            </Text>
+            <Text variant="caption" tone="muted">
               {h.partner} · {h.when}
-            </UIText>
+            </Text>
             {h.rated ? (
-              <UIText variant="caption" weight="semibold" tone="success">
+              <Text variant="caption" weight="semibold" tone="success">
                 ✓ Vurdert
-              </UIText>
+              </Text>
             ) : (
               <Pressable
                 accessibilityRole="button"
                 onPress={() => setRate(h.partner)}
               >
-                <UIText variant="label" weight="semibold" tone="ember">
+                <Text variant="label" weight="semibold" tone="ember">
                   Vurder samarbeid →
-                </UIText>
+                </Text>
               </Pressable>
             )}
           </View>

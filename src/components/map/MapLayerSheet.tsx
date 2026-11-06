@@ -1,6 +1,6 @@
-import { Pressable, Text, View } from "react-native";
+import { Pressable, View } from "react-native";
 
-import { Icon } from "@/components/ui";
+import { Icon, Text } from "@/components/ui";
 import { Sheet } from "@/components/Sheet";
 
 import { MAP_STYLES, type MapStyleKey } from "./mapStyles";
@@ -42,7 +42,9 @@ export function MapLayerSheet({
           }`}
         >
           <Text
-            className={`font-normal text-base ${auto ? "font-semibold text-emberText" : "text-ink"}`}
+            variant="body"
+            weight={auto ? "semibold" : "regular"}
+            tone={auto ? "ember" : "ink"}
           >
             Auto (følg tid på døgnet)
           </Text>
@@ -64,7 +66,9 @@ export function MapLayerSheet({
               }`}
             >
               <Text
-                className={`font-normal text-base ${selected ? "font-semibold text-emberText" : "text-ink"}`}
+                variant="body"
+                weight={selected ? "semibold" : "regular"}
+                tone={selected ? "ember" : "ink"}
               >
                 {s.label}
               </Text>

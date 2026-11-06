@@ -6,7 +6,7 @@
 // guarded by the `dragging` ref — a valid Reanimated pattern the rule can't model.
 /* eslint-disable react-hooks/refs, react-hooks/immutability */
 import { useEffect, useRef, useState } from "react";
-import { type LayoutChangeEvent, PanResponder, Text, View } from "react-native";
+import { type LayoutChangeEvent, PanResponder, View } from "react-native";
 import Animated, {
   useAnimatedStyle,
   useReducedMotion,
@@ -15,6 +15,7 @@ import Animated, {
 } from "react-native-reanimated";
 
 import { motion, useThemeColors, elevation } from "@/theme";
+import { Text } from "@/components/ui";
 
 const THUMB = 28;
 
@@ -168,10 +169,7 @@ export function SteppedSlider({
       </View>
       <View className="flex-row justify-between pt-1">
         {labels.map((l, i) => (
-          <Text
-            key={l}
-            className={`font-normal text-[10px] ${i === index ? "text-ink" : "text-muted"}`}
-          >
+          <Text key={l} variant="caption" tone={i === index ? "ink" : "muted"}>
             {l}
           </Text>
         ))}

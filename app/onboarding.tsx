@@ -1,6 +1,6 @@
 import { router } from "expo-router";
 import { useState } from "react";
-import { Pressable, ScrollView, Text, View } from "react-native";
+import { Pressable, ScrollView, View } from "react-native";
 
 import { Switch } from "@/components/ui/Switch";
 import {
@@ -9,7 +9,7 @@ import {
   StepContent,
   StepHeader,
   type IconName,
-  Text as UIText,
+  Text,
 } from "@/components/ui";
 import { Button } from "@/components/Button";
 import { Chip } from "@/components/Chip";
@@ -217,19 +217,19 @@ export default function Onboarding() {
                     <Icon name={p.icon as IconName} size="md" tone="ink" />
                   </View>
                   <View className="flex-1">
-                    <UIText variant="body" weight="semibold">
+                    <Text variant="body" weight="semibold">
                       {p.label}
-                    </UIText>
-                    <UIText variant="caption" tone="muted">
+                    </Text>
+                    <Text variant="caption" tone="muted">
                       {p.hint}
-                    </UIText>
+                    </Text>
                   </View>
                   {p.locked ? (
                     <View className="flex-row items-center gap-1 rounded-full bg-surfaceMuted px-2 py-0.5">
                       <Icon name="lock-closed" size="sm" tone="muted" />
-                      <UIText variant="caption" weight="semibold" tone="muted">
+                      <Text variant="caption" weight="semibold" tone="muted">
                         LÅST
-                      </UIText>
+                      </Text>
                     </View>
                   ) : active ? (
                     <Icon name="checkmark-circle" size="lg" tone="ink" />
@@ -249,9 +249,9 @@ export default function Onboarding() {
               <View className="h-24 w-24 items-center justify-center rounded-full bg-surfaceMuted">
                 <Icon name="camera-outline" size="lg" tone="ink" />
               </View>
-              <UIText variant="label" weight="semibold" tone="ember">
+              <Text variant="label" weight="semibold" tone="ember">
                 Legg til profilbilde
-              </UIText>
+              </Text>
             </View>
             <Input
               label="Navn"
@@ -270,13 +270,13 @@ export default function Onboarding() {
                 maxLength={10}
               />
               {age.status === "invalid" && birthday.length === 10 ? (
-                <UIText variant="caption" tone="danger">
+                <Text variant="caption" tone="danger">
                   Sjekk datoen — bruk formatet dd.mm.åååå.
-                </UIText>
+                </Text>
               ) : (
-                <UIText variant="caption" tone="muted">
+                <Text variant="caption" tone="muted">
                   Du må være minst 18 år for å bruke ThirdPlace.
-                </UIText>
+                </Text>
               )}
             </View>
             <Input
@@ -319,9 +319,9 @@ export default function Onboarding() {
               onChangeText={setNationality}
               maxLength={40}
             />
-            <UIText variant="caption" tone="muted">
+            <Text variant="caption" tone="muted">
               Alt her er valgfritt — trykk på et valg igjen for å fjerne det.
-            </UIText>
+            </Text>
           </Shell>
         ) : null}
 
@@ -363,9 +363,9 @@ export default function Onboarding() {
               }`}
             >
               <Text
-                className={`text-xs font-semibold ${
-                  interests.length >= MIN_INTERESTS ? "text-white" : "text-ink"
-                }`}
+                variant="caption"
+                weight="semibold"
+                tone={interests.length >= MIN_INTERESTS ? "onMedia" : "ink"}
               >
                 {Math.min(interests.length, MIN_INTERESTS)} av {MIN_INTERESTS}{" "}
                 valgt
@@ -425,21 +425,21 @@ export default function Onboarding() {
                 </View>
                 <View className="flex-1 gap-0.5">
                   <View className="flex-row items-center gap-2">
-                    <UIText variant="body" weight="semibold">
+                    <Text variant="body" weight="semibold">
                       {p.label}
-                    </UIText>
-                    <UIText
+                    </Text>
+                    <Text
                       variant="caption"
                       weight="bold"
                       tone="muted"
                       className="rounded bg-surfaceMuted px-1.5 py-0.5"
                     >
                       {p.tag}
-                    </UIText>
+                    </Text>
                   </View>
-                  <UIText variant="caption" tone="muted">
+                  <Text variant="caption" tone="muted">
                     {p.hint}
-                  </UIText>
+                  </Text>
                 </View>
                 <Switch
                   value={!!perms[p.key]}
@@ -466,22 +466,18 @@ export default function Onboarding() {
                   <Icon name="tp-experience" size="md" tone="ink" />
                 </View>
                 <View className="flex-1">
-                  <UIText variant="body" weight="semibold" numberOfLines={1}>
+                  <Text variant="body" weight="semibold" numberOfLines={1}>
                     {e.title}
-                  </UIText>
-                  <UIText variant="caption" tone="muted">
+                  </Text>
+                  <Text variant="caption" tone="muted">
                     {e.when}
-                  </UIText>
+                  </Text>
                 </View>
               </View>
             ))}
-            <UIText
-              variant="body"
-              tone="muted"
-              className="px-4 pt-2 text-center"
-            >
+            <Text variant="body" tone="muted" className="px-4 pt-2 text-center">
               Her er noen ting som skjer i byen din.
-            </UIText>
+            </Text>
             <DemoNote>
               Eksempler fra demoen — feeden er ikke personalisert ennå.
             </DemoNote>
@@ -513,9 +509,9 @@ function Group({
 }) {
   return (
     <View className="gap-2">
-      <UIText variant="label" weight="semibold">
+      <Text variant="label" weight="semibold">
         {label}
-      </UIText>
+      </Text>
       <View className="flex-row flex-wrap gap-2">{children}</View>
     </View>
   );
