@@ -1,7 +1,14 @@
 import { describe, expect, it } from "@jest/globals";
 
-import { resultForMode } from "@/components/map/services/mapFixtureAdapter";
-import { places } from "@/fixtures";
+import {
+  applyFilters,
+  DEFAULT_FILTERS,
+} from "@/components/map/services/mapFilters";
+import {
+  countResults,
+  resultForMode,
+} from "@/components/map/services/mapFixtureAdapter";
+import { experiences, places } from "@/fixtures";
 
 const base = { places, query: "", savedIds: [] as string[] };
 
@@ -96,5 +103,58 @@ describe("resultForMode", () => {
     const ids = r.items.map((i) => i.id);
     expect(ids).toContain("e3"); // status "full", day/spots don't match
     expect(ids).toContain(places[0]!.id);
+  });
+});
+
+describe("countResults (Filtre footer = list, benchmark F11)", () => {
+  const base = { allPlaces: places, query: "", savedIds: [] as string[] };
+
+  it("Live follows Ledige plasser, which the old places-only count ignored", () => {
+    const all = countResults({
+      ...base,
+      mode: "live",
+      filters: DEFAULT_FILTERS,
+    });
+    const withSpots = countResults({
+      ...base,
+      mode: "live",
+      filters: { ...DEFAULT_FILTERS, hasSpots: true },
+    });
+    const expected = experiences.filter(
+      (e) =>
+        (e.status === "open" || e.status === "waitlist") &&
+        e.capacity - e.going > 0,
+    ).length;
+    expect(withSpots).toBe(expected);
+    expect(withSpots).toBeLessThanOrEqual(all);
+  });
+
+  it("place modes count the filtered places", () => {
+    const filters = { ...DEFAULT_FILTERS, minRating: 4.5 };
+    expect(countResults({ ...base, mode: "forYou", filters })).toBe(
+      applyFilters(places, "", filters).length,
+    );
+  });
+
+  it("equals the list the screen renders for every mode", () => {
+    const filters = { ...DEFAULT_FILTERS, time: "I dag" as const };
+    for (const mode of [
+      "forYou",
+      "trending",
+      "live",
+      "explore",
+      "saved",
+      "friends",
+    ] as const) {
+      const list = resultForMode({
+        mode,
+        places: applyFilters(places, "", filters),
+        query: "",
+        savedIds: [],
+        time: filters.time,
+        hasSpots: filters.hasSpots,
+      }).items.length;
+      expect(countResults({ ...base, mode, filters })).toBe(list);
+    }
   });
 });

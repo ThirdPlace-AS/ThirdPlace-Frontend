@@ -34,8 +34,8 @@ import {
 } from "@/fixtures";
 import { formatThreshold } from "@/lib/format";
 
+import { countResults } from "./services/mapFixtureAdapter";
 import {
-  applyFilters,
   DEFAULT_FILTERS,
   DURATION_NO_CAP,
   type MapFilters,
@@ -45,6 +45,7 @@ import {
   type RatingSort,
 } from "./services/mapFilters";
 import { TypeChip } from "./TypeChip";
+import type { DiscoveryMode } from "./types/mapPresentation";
 
 // Re-export the pure filter model/logic so existing importers (useMapFilters,
 // tests) keep working through this module too.
@@ -326,12 +327,17 @@ export function MapFilterSheet({
   visible,
   filters,
   query = "",
+  mode,
+  savedIds,
   onClose,
   onApply,
 }: {
   visible: boolean;
   filters: MapFilters;
   query?: string;
+  /** Active discovery mode + saved ids: the count runs the list's pipeline. */
+  mode: DiscoveryMode;
+  savedIds: readonly string[];
   onClose: () => void;
   onApply: (f: MapFilters) => void;
 }) {
@@ -351,6 +357,8 @@ export function MapFilterSheet({
         <FilterBody
           filters={filters}
           query={query}
+          mode={mode}
+          savedIds={savedIds}
           onClose={onClose}
           onApply={onApply}
           onTitleScrolledAway={setHeaderTitle}
@@ -365,12 +373,16 @@ type OpenSection = "where" | "when" | "who" | null;
 function FilterBody({
   filters,
   query,
+  mode,
+  savedIds,
   onClose,
   onApply,
   onTitleScrolledAway,
 }: {
   filters: MapFilters;
   query: string;
+  mode: DiscoveryMode;
+  savedIds: readonly string[];
   onClose: () => void;
   onApply: (f: MapFilters) => void;
   onTitleScrolledAway: (away: boolean) => void;
@@ -390,11 +402,18 @@ function FilterBody({
   const toggleIn = (list: string[], value: string): string[] =>
     list.includes(value) ? list.filter((x) => x !== value) : [...list, value];
 
-  // Live "show N results" count — instant, no artificial delay. Memoized so it
-  // is not recomputed over all places on every unrelated render (e.g. slider drag).
+  // Live "show N results" count — instant, no artificial delay, and the same
+  // pipeline as the list (countResults), so N is what the list will show.
   const resultCount = useMemo(
-    () => applyFilters(places, query, draft).length,
-    [query, draft],
+    () =>
+      countResults({
+        mode,
+        allPlaces: places,
+        query,
+        filters: draft,
+        savedIds,
+      }),
+    [mode, query, draft, savedIds],
   );
 
   const durationIndex = Math.max(

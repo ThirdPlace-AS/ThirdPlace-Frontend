@@ -20,6 +20,7 @@ import {
   type ModeResult,
 } from "../types/mapPresentation";
 
+import { applyFilters, type MapFilters } from "./mapFilters";
 import { experienceMatchesQuery } from "./mapSearch";
 
 function placeToItem(p: MockPlace): DiscoveryItem {
@@ -149,4 +150,34 @@ export function resultForMode({
       };
     }
   }
+}
+
+/**
+ * How many items the list will show for `mode` once `filters` are applied —
+ * the same pipeline the map screen runs (filters → mode rules), so the Filtre
+ * footer's "Vis N resultater" always equals the list (benchmark F11). Before,
+ * the footer counted places only, so Når / Ledige plasser and the experience
+ * modes never changed N.
+ */
+export function countResults({
+  mode,
+  allPlaces,
+  query,
+  filters,
+  savedIds,
+}: {
+  mode: DiscoveryMode;
+  allPlaces: MockPlace[];
+  query: string;
+  filters: MapFilters;
+  savedIds: readonly string[];
+}): number {
+  return resultForMode({
+    mode,
+    places: applyFilters(allPlaces, query, filters),
+    query,
+    savedIds,
+    time: filters.time,
+    hasSpots: filters.hasSpots,
+  }).items.length;
 }

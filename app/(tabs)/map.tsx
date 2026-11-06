@@ -363,6 +363,8 @@ export default function MapScreen() {
         visible={filterOpen}
         filters={filters.filters}
         query={filters.query}
+        mode={discovery.mode}
+        savedIds={saved.savedIds}
         onClose={() => setFilterOpen(false)}
         onApply={handleApplyFilters}
       />

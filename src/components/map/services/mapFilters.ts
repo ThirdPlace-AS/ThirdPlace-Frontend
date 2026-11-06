@@ -147,11 +147,13 @@ export function applyFilters(
   });
 }
 
-// Count of filters active beyond "Opplevelsestype" (drives the overlay badge).
+// Count of active filters, Opplevelsestype included (drives the filter badge;
+// nothing else on the map shows the chosen types).
 // Demo-only axes (whereArea / date range / guests) are NOT counted — they don't
 // narrow results, so they must not inflate the badge.
 export function activeExtraFilterCount(f: MapFilters): number {
   return (
+    (f.types.length > 0 ? 1 : 0) +
     (f.maxDistanceM !== null ? 1 : 0) +
     (f.priceMin > PRICE_FLOOR || f.priceMax < PRICE_CEIL ? 1 : 0) +
     (f.durationMaxMin < DURATION_NO_CAP ? 1 : 0) +

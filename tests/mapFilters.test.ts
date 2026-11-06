@@ -139,6 +139,12 @@ describe("activeExtraFilterCount", () => {
     expect(activeExtraFilterCount(DEFAULT_FILTERS)).toBe(0);
   });
 
+  it("counts Opplevelsestype too (nothing else on the map shows it)", () => {
+    expect(
+      activeExtraFilterCount({ ...DEFAULT_FILTERS, types: ["Gallerier"] }),
+    ).toBe(1);
+  });
+
   it("counts each active non-type filter once", () => {
     expect(
       activeExtraFilterCount({
