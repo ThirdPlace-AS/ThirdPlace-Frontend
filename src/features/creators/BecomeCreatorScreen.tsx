@@ -1,5 +1,4 @@
-import { router } from "expo-router";
-import { useState } from "react";
+import { router, type Href } from "expo-router";
 import { ScrollView, View } from "react-native";
 import { Icon, Screen, Text } from "@/components/ui";
 import { Button } from "@/components/Button";
@@ -14,7 +13,6 @@ import { profile } from "@/fixtures";
 // nothing is evaluated, and applying sends nothing (BLOCKED_CONTRACT_GAP).
 export default function BecomeCreatorScreen() {
   const { hosted, required, rating } = profile.creatorPath;
-  const [applied, setApplied] = useState(false);
   const reqs = [
     {
       label: `Arranger ${required} opplevelser`,
@@ -87,20 +85,6 @@ export default function BecomeCreatorScreen() {
           ingenting blir vurdert.
         </DemoNote>
 
-        {applied ? (
-          <View className="items-center gap-2 rounded-lg bg-surfaceMuted p-5">
-            <Text variant="h2" weight="bold">
-              Du er nå Skaper!
-            </Text>
-            <Text variant="caption" tone="muted" className="text-center">
-              Slik ser det ut når søknaden er godkjent: Dashboard og Marketplace
-              låses opp.
-            </Text>
-            <DemoNote>
-              Dette er en forhåndsvisning. Ingen søknad er sendt.
-            </DemoNote>
-          </View>
-        ) : null}
 
         {/* Muted until every requirement is met, as in the design (PDF p14):
             the button never invites an application that cannot qualify. */}
@@ -108,7 +92,7 @@ export default function BecomeCreatorScreen() {
           label="Søk om Skaper-rolle"
           variant="ink"
           disabled={met < reqs.length}
-          onPress={() => setApplied(true)}
+          onPress={() => router.push("/creator-welcome" as Href)}
         />
         <Button
           label="Se en skaperprofil"
