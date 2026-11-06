@@ -1,8 +1,8 @@
 import { Ionicons } from "@expo/vector-icons";
 import { useState } from "react";
-import { Pressable, Text, View } from "react-native";
+import { Pressable, View } from "react-native";
 
-import { Icon } from "@/components/ui";
+import { Icon, Text } from "@/components/ui";
 import { Button } from "@/components/Button";
 import { Chip } from "@/components/Chip";
 import { DemoNote } from "@/components/DemoNote";
@@ -50,7 +50,9 @@ function LinkRow({
       className="flex-row items-center gap-2 rounded-md border border-line bg-surface px-3 py-3"
     >
       <Icon name={icon} size="md" tone="ink" />
-      <Text className="flex-1 text-sm text-ink font-normal">{label}</Text>
+      <Text variant="label" weight="regular" className="flex-1">
+        {label}
+      </Text>
       <Icon name="chevron-forward" size="md" tone="muted" />
     </Pressable>
   );
@@ -74,7 +76,7 @@ export function ExperienceContent({ id, push }: { id: string; push: PushFn }) {
 
   if (!experience) {
     return (
-      <Text className="text-sm text-muted font-normal">
+      <Text variant="caption" tone="muted">
         Fant ikke arrangementet.
       </Text>
     );
@@ -108,20 +110,24 @@ export function ExperienceContent({ id, push }: { id: string; push: PushFn }) {
     <View className="gap-4">
       <View className="flex-row items-center gap-2">
         <View className={`rounded-full px-3 py-1 ${meta.className}`}>
-          <Text className="text-xs font-semibold text-onInk">{meta.label}</Text>
+          <Text variant="caption" weight="semibold" tone="onInk">
+            {meta.label}
+          </Text>
         </View>
-        <Text className="text-sm text-muted font-normal">
+        <Text variant="caption" tone="muted">
           · {experience.when}
         </Text>
-        <Text className="text-sm text-muted font-normal">
+        <Text variant="caption" tone="muted">
           · {joinedCount}/{experience.capacity} påmeldt
         </Text>
       </View>
 
-      <Text className="text-sm text-muted font-normal">
+      <Text variant="caption" tone="muted">
         Vert: {experience.host}
       </Text>
-      <Text className="text-sm text-muted font-normal">{experience.about}</Text>
+      <Text variant="caption" tone="muted">
+        {experience.about}
+      </Text>
 
       <View className="flex-row flex-wrap gap-2">
         {experience.tags.map((t) => (

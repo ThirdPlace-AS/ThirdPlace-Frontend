@@ -1,8 +1,14 @@
 import { useMemo, useState } from "react";
-import { Keyboard, Pressable, ScrollView, Text, View } from "react-native";
+import { Keyboard, Pressable, ScrollView, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-import { Icon, IconButton, Overlay, type IconName } from "@/components/ui";
+import {
+  Icon,
+  IconButton,
+  Overlay,
+  type IconName,
+  Text,
+} from "@/components/ui";
 import { Chip } from "@/components/Chip";
 import { SearchBar } from "@/components/SearchBar";
 
@@ -126,10 +132,10 @@ function SearchBody({
           ) : results.total === 0 ? (
             <View className="items-center gap-2 pt-10">
               <Icon name="search" size="xl" tone="muted" />
-              <Text className="text-base font-semibold text-ink">
+              <Text variant="body" weight="semibold">
                 Ingen treff
               </Text>
-              <Text className="text-center text-sm text-muted font-normal">
+              <Text variant="caption" tone="muted" className="text-center">
                 Prøv et annet søkeord.
               </Text>
             </View>
@@ -196,7 +202,7 @@ function RecentSearches({
     return (
       <View className="items-center gap-2 pt-10">
         <Icon name="time-outline" size="xl" tone="muted" />
-        <Text className="text-center text-sm text-muted font-normal">
+        <Text variant="caption" tone="muted" className="text-center">
           Søk etter steder, opplevelser og grupper.
         </Text>
       </View>
@@ -205,13 +211,17 @@ function RecentSearches({
   return (
     <View className="gap-1">
       <View className="flex-row items-center justify-between">
-        <Text className="text-sm font-semibold text-ink">Nylige søk</Text>
+        <Text variant="label" weight="semibold">
+          Nylige søk
+        </Text>
         <Pressable
           accessibilityRole="button"
           accessibilityLabel="Tøm nylige søk"
           onPress={onClear}
         >
-          <Text className="text-sm text-muted font-normal">Tøm</Text>
+          <Text variant="caption" tone="muted">
+            Tøm
+          </Text>
         </Pressable>
       </View>
       {recent.map((q) => (
@@ -226,7 +236,7 @@ function RecentSearches({
             className="flex-1 flex-row items-center gap-3"
           >
             <Icon name="time-outline" size="md" tone="muted" />
-            <Text className="text-base text-ink font-normal">{q}</Text>
+            <Text variant="body">{q}</Text>
           </Pressable>
           <Pressable
             accessibilityRole="button"
@@ -256,7 +266,9 @@ function ResultGroup({
   if (items.length === 0) return null;
   return (
     <View className="gap-1">
-      <Text className="text-sm font-semibold text-ink">{title}</Text>
+      <Text variant="label" weight="semibold">
+        {title}
+      </Text>
       {items.map((r) => (
         <Pressable
           key={`${r.kind}:${r.id}`}
@@ -269,10 +281,10 @@ function ResultGroup({
             <Icon name={icon} size="md" tone="ink" />
           </View>
           <View className="flex-1">
-            <Text className="text-base text-ink font-normal" numberOfLines={1}>
+            <Text variant="body" numberOfLines={1}>
               {r.title}
             </Text>
-            <Text className="text-sm text-muted font-normal" numberOfLines={1}>
+            <Text variant="caption" tone="muted" numberOfLines={1}>
               {r.subtitle}
             </Text>
           </View>

@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Pressable, Text, TextInput, View } from "react-native";
 
-import { Icon } from "@/components/ui";
+import { Icon, Text as UIText } from "@/components/ui";
 import { OSLO_AREAS } from "@/fixtures";
 import { useThemeColors } from "@/theme";
 
@@ -83,9 +83,9 @@ export function WhereField({
 
       {!q && recent.length > 0 ? (
         <View className="gap-1">
-          <Text className="text-xs font-semibold uppercase tracking-wide text-muted">
+          <UIText variant="micro" weight="semibold" tone="muted">
             Nylige søk
-          </Text>
+          </UIText>
           <View>
             {recent.map((name) => (
               <Row key={`recent-${name}`} name={name} />
@@ -95,9 +95,9 @@ export function WhereField({
       ) : null}
 
       <View className="gap-1">
-        <Text className="text-xs font-semibold uppercase tracking-wide text-muted">
+        <UIText variant="micro" weight="semibold" tone="muted">
           Foreslåtte steder
-        </Text>
+        </UIText>
         <View>
           {matches.map((a) => (
             <Row key={a.name} name={a.name} />

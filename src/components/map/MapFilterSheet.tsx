@@ -1,13 +1,7 @@
-import { useEffect, useMemo, useState } from "react";
-import {
-  InteractionManager,
-  Pressable,
-  ScrollView,
-  Text,
-  View,
-} from "react-native";
+import { useMemo, useState } from "react";
+import { Pressable, ScrollView, View } from "react-native";
 
-import { Icon } from "@/components/ui";
+import { Icon, Text } from "@/components/ui";
 import { elevation } from "@/theme";
 import { Button } from "@/components/Button";
 import { Calendar } from "@/components/Calendar";
@@ -167,9 +161,13 @@ function Section({
   return (
     <View className="gap-3 rounded-lg border border-line bg-surface px-5 py-5">
       <View className="gap-0.5">
-        <Text className="text-base font-semibold text-ink">{title}</Text>
+        <Text variant="body" weight="semibold">
+          {title}
+        </Text>
         {subtitle ? (
-          <Text className="text-xs text-muted font-normal">{subtitle}</Text>
+          <Text variant="caption" tone="muted">
+            {subtitle}
+          </Text>
         ) : null}
       </View>
       {children}
@@ -215,7 +213,7 @@ function ChipGroup({
           onPress={() => setExpanded((e) => !e)}
           className="flex-row items-center gap-1 py-1"
         >
-          <Text className="text-base font-semibold text-ink underline">
+          <Text variant="body" weight="semibold" className="underline">
             {expanded ? "Vis færre" : "Vis flere"}
           </Text>
           <Icon
@@ -265,7 +263,9 @@ function SearchRow({
           onPress={onToggle}
           className="flex-row items-center justify-between"
         >
-          <Text className="text-xl font-bold text-ink">{title}</Text>
+          <Text variant="h2" weight="bold" accessibilityRole="text">
+            {title}
+          </Text>
           <Icon name="chevron-up" size="md" tone="ink" />
         </Pressable>
         {children}
@@ -281,11 +281,15 @@ function SearchRow({
       style={cardShadow}
       className="flex-row items-center justify-between gap-2 rounded-lg border border-line bg-surface px-6 py-5"
     >
-      <Text className="shrink-0 text-base text-muted font-normal">{label}</Text>
+      <Text variant="body" tone="muted" className="shrink-0">
+        {label}
+      </Text>
       <View className="flex-1 flex-row items-center justify-end gap-1.5">
         <Text
           numberOfLines={1}
-          className="shrink text-right text-base font-semibold text-ink"
+          variant="body"
+          weight="semibold"
+          className="shrink text-right"
         >
           {value}
         </Text>
@@ -346,17 +350,6 @@ function FilterBody({
   const [draft, setDraft] = useState<MapFilters>(filters);
   const [openSection, setOpenSection] = useState<OpenSection>(null);
   const [langExpanded, setLangExpanded] = useState(false);
-
-  // Defer the below-the-fold sections until after the sheet's open animation so
-  // the slide renders only the three top cards (smooth open); the rest of the
-  // sheet mounts a frame later. Reduces the synchronous mount cost on open.
-  const [ready, setReady] = useState(false);
-  useEffect(() => {
-    const handle = InteractionManager.runAfterInteractions(() =>
-      setReady(true),
-    );
-    return () => handle.cancel();
-  }, []);
 
   const toggleIn = (list: string[], value: string): string[] =>
     list.includes(value) ? list.filter((x) => x !== value) : [...list, value];
@@ -474,10 +467,10 @@ function FilterBody({
                         selected ? "border-2 border-ink" : "border border-line"
                       }`}
                     >
-                      <Text className="text-sm font-semibold text-ink">
+                      <Text variant="label" weight="semibold">
                         {c.label}
                       </Text>
-                      <Text className="text-xs text-muted font-normal">
+                      <Text variant="caption" tone="muted">
                         {whenChipSubtitle(c.label)}
                       </Text>
                     </Pressable>
@@ -491,7 +484,7 @@ function FilterBody({
                   setDraft((d) => ({ ...d, dateStart: s, dateEnd: e }))
                 }
               />
-              <Text className="text-xs text-muted font-normal">
+              <Text variant="caption" tone="muted">
                 Datoer er kun demo — påvirker ikke resultatene.
               </Text>
             </View>
@@ -566,279 +559,277 @@ function FilterBody({
           </SearchRow>
         </View>
 
-        {/* Below-the-fold sections mount after the open animation (smooth slide). */}
-        {ready ? (
-          <>
-            {/* Tid på dagen (moved out of the "Når?" card) */}
-            <Section title="Tid på dagen">
-              <View>
-                {TIME_OF_DAY.map((t, i) => (
-                  <CheckboxRow
-                    key={t.key}
-                    label={t.label}
-                    hint={t.hint}
-                    divider={i < TIME_OF_DAY.length - 1}
-                    checked={draft.timeOfDay.includes(t.key)}
-                    onToggle={() =>
-                      setDraft((d) => ({
-                        ...d,
-                        timeOfDay: toggleIn(d.timeOfDay, t.key),
-                      }))
-                    }
-                  />
-                ))}
-              </View>
-            </Section>
-            {/* Opplevelsestype */}
-            <Section title="Opplevelsestype">
-              <ChipGroup
-                items={EXPERIENCE_TYPES}
-                selected={(l) => draft.types.includes(l)}
-                onToggle={(l) =>
-                  setDraft((d) => ({ ...d, types: toggleIn(d.types, l) }))
-                }
-              />
-            </Section>
-            {/* Passer for */}
-            <Section title="Passer for">
-              <ChipGroup
-                items={AUDIENCES}
-                selected={(l) => draft.audiences.includes(l)}
-                onToggle={(l) =>
-                  setDraft((d) => ({
-                    ...d,
-                    audiences: toggleIn(d.audiences, l),
-                  }))
-                }
-              />
-            </Section>
-            {/* Pris per gjest */}
-            <Section
-              title="Pris per gjest"
-              subtitle="Priser før gebyrer og skatt"
-            >
-              <PriceHistogram
-                values={PRICE_VALUES}
-                min={PRICE_FLOOR}
-                max={PRICE_CEIL}
-                low={draft.priceMin}
-                high={draft.priceMax}
-              />
-              <RangeSlider
-                min={PRICE_FLOOR}
-                max={PRICE_CEIL}
-                step={PRICE_STEP}
-                minGap={PRICE_STEP}
-                low={draft.priceMin}
-                high={draft.priceMax}
-                onChange={(lo, hi) =>
-                  setDraft((d) => ({ ...d, priceMin: lo, priceMax: hi }))
-                }
-              />
-              <View className="flex-row items-center justify-between">
-                <View className="rounded-md border border-line px-4 py-3">
-                  <Text className="text-[10px] text-muted font-normal">
-                    Minst
-                  </Text>
-                  <Text className="text-sm text-ink font-normal">
-                    kr {draft.priceMin}
-                  </Text>
-                </View>
-                <View className="rounded-md border border-line px-4 py-3">
-                  <Text className="text-[10px] text-muted font-normal">
-                    Maksimalt
-                  </Text>
-                  <Text className="text-sm text-ink font-normal">
-                    kr {draft.priceMax}
-                    {atCeil ? " +" : ""}
-                  </Text>
-                </View>
-              </View>
-            </Section>
-            {/* Varighet */}
-            <Section title="Varighet">
-              <SteppedSlider
-                labels={DURATION_LABELS}
-                index={durationIndex}
-                onChange={(i) =>
-                  setDraft((d) => ({
-                    ...d,
-                    durationMaxMin: DURATION_STEPS[i]?.min ?? DURATION_NO_CAP,
-                  }))
-                }
-              />
-            </Section>
-            {/* Avstand — smart slider (canonical: distance/travel feasibility) */}
-            <Section
-              title="Avstand"
-              subtitle={`Innen ${DISTANCE_STEPS[distanceIndex]?.label ?? "Alle"}`}
-            >
-              <SteppedSlider
-                labels={DISTANCE_LABELS}
-                index={distanceIndex}
-                onChange={(i) =>
-                  setDraft((d) => ({
-                    ...d,
-                    maxDistanceM: DISTANCE_STEPS[i]?.m ?? null,
-                  }))
-                }
-              />
-            </Section>
-            {/* Interesser: Vibe + Fasiliteter (icon chips) */}
-            <Section title="Vibe">
-              <ChipGroup
-                items={VIBE_ITEMS}
-                selected={(l) =>
-                  draft.vibes.includes(l as (typeof VIBES)[number])
-                }
-                onToggle={(l) =>
-                  setDraft((d) => ({
-                    ...d,
-                    vibes: d.vibes.includes(l as (typeof VIBES)[number])
-                      ? d.vibes.filter((x) => x !== l)
-                      : [...d.vibes, l as (typeof VIBES)[number]],
-                  }))
-                }
-              />
-            </Section>
-
-            <Section title="Fasiliteter">
-              <ChipGroup
-                items={TAG_ITEMS}
-                selected={(l) => draft.tags.includes(l)}
-                onToggle={(l) =>
-                  setDraft((d) => ({ ...d, tags: toggleIn(d.tags, l) }))
-                }
-              />
-            </Section>
-
-            {/* Vurdering — star thresholds + sort */}
-            <Section title="Vurdering">
-              <View className="flex-row flex-wrap gap-2">
-                <Chip
-                  label="Alle"
-                  selected={draft.minRating === null}
-                  onPress={() => setDraft((d) => ({ ...d, minRating: null }))}
-                />
-                {RATING_THRESHOLDS.map((r) => {
-                  const selected = draft.minRating === r;
-                  return (
-                    <Pressable
-                      key={r}
-                      accessibilityRole="button"
-                      accessibilityState={{ selected }}
-                      accessibilityLabel={`${r} stjerner og over`}
-                      onPress={() => setDraft((d) => ({ ...d, minRating: r }))}
-                      className={`flex-row items-center gap-1.5 rounded-full border bg-surface px-3 py-2 ${
-                        selected ? "border-2 border-ink" : "border border-line"
-                      }`}
-                    >
-                      <RatingStars value={r} size={13} />
-                      <Text className="text-sm text-ink font-normal">
-                        {r === 5 ? "5" : `${r.toString().replace(".", ",")}+`}
-                      </Text>
-                    </Pressable>
-                  );
-                })}
-              </View>
-              <Text className="text-sm font-semibold text-ink">
-                Sorter etter
-              </Text>
-              <View className="flex-row flex-wrap gap-2">
-                <Chip
-                  label="Høyest vurdert"
-                  selected={draft.ratingSort === "best"}
-                  onPress={() => setRatingSort("best")}
-                />
-                <Chip
-                  label="Flest anmeldelser"
-                  selected={draft.ratingSort === "most"}
-                  onPress={() => setRatingSort("most")}
-                />
-              </View>
-            </Section>
-            {/* Språk som tilbys — "Vis mer/mindre" anchored at the BOTTOM */}
-            <Section title="Språk som tilbys">
-              <View>
-                {visibleLangs.map((l, i) => (
-                  <CheckboxRow
-                    key={l}
-                    label={l}
-                    divider={i < visibleLangs.length - 1}
-                    checked={draft.languages.includes(l)}
-                    onToggle={() =>
-                      setDraft((d) => ({
-                        ...d,
-                        languages: toggleIn(d.languages, l),
-                      }))
-                    }
-                  />
-                ))}
-                <Pressable
-                  accessibilityRole="button"
-                  accessibilityState={{ expanded: langExpanded }}
-                  onPress={() => setLangExpanded((e) => !e)}
-                  className="flex-row items-center gap-1 py-3"
-                >
-                  <Text className="text-base font-semibold text-ink underline">
-                    {langExpanded ? "Vis mindre" : "Vis mer"}
-                  </Text>
-                  <Icon
-                    name={langExpanded ? "chevron-up" : "chevron-down"}
-                    size="sm"
-                    tone="ink"
-                  />
-                </Pressable>
-              </View>
-            </Section>
-            {/* Tilgjengelighetsfunksjoner — icon rows */}
-            <Section
-              title="Tilgjengelighetsfunksjoner"
-              subtitle="Oppgitt av stedet — DEMO, ikke verifisert"
-            >
-              <View>
-                {ACCESSIBILITY_OPTIONS.map((a, i) => (
-                  <CheckboxRow
-                    key={a}
-                    label={a}
-                    icon={ACCESSIBILITY_ICONS[a] ?? DEFAULT_CHIP_ICON}
-                    divider={i < ACCESSIBILITY_OPTIONS.length - 1}
-                    checked={draft.accessibility.includes(a)}
-                    onToggle={() =>
-                      setDraft((d) => ({
-                        ...d,
-                        accessibility: toggleIn(d.accessibility, a),
-                      }))
-                    }
-                  />
-                ))}
-              </View>
-            </Section>
-            {/* Tilgjengelighet (availability) */}
-            <Section title="Tilgjengelighet">
-              <View>
+        {/* Below-the-fold sections render with the sheet. (They used to mount
+            after a timer, but a timer-driven update inside a Modal did not paint
+            on Android until the next touch, so the sections never showed.) */}
+        <>
+          {/* Tid på dagen (moved out of the "Når?" card) */}
+          <Section title="Tid på dagen">
+            <View>
+              {TIME_OF_DAY.map((t, i) => (
                 <CheckboxRow
-                  label="Åpent nå"
-                  divider
-                  checked={draft.openNowOnly}
+                  key={t.key}
+                  label={t.label}
+                  hint={t.hint}
+                  divider={i < TIME_OF_DAY.length - 1}
+                  checked={draft.timeOfDay.includes(t.key)}
                   onToggle={() =>
-                    setDraft((d) => ({ ...d, openNowOnly: !d.openNowOnly }))
+                    setDraft((d) => ({
+                      ...d,
+                      timeOfDay: toggleIn(d.timeOfDay, t.key),
+                    }))
                   }
                 />
+              ))}
+            </View>
+          </Section>
+          {/* Opplevelsestype */}
+          <Section title="Opplevelsestype">
+            <ChipGroup
+              items={EXPERIENCE_TYPES}
+              selected={(l) => draft.types.includes(l)}
+              onToggle={(l) =>
+                setDraft((d) => ({ ...d, types: toggleIn(d.types, l) }))
+              }
+            />
+          </Section>
+          {/* Passer for */}
+          <Section title="Passer for">
+            <ChipGroup
+              items={AUDIENCES}
+              selected={(l) => draft.audiences.includes(l)}
+              onToggle={(l) =>
+                setDraft((d) => ({
+                  ...d,
+                  audiences: toggleIn(d.audiences, l),
+                }))
+              }
+            />
+          </Section>
+          {/* Pris per gjest */}
+          <Section
+            title="Pris per gjest"
+            subtitle="Priser før gebyrer og skatt"
+          >
+            <PriceHistogram
+              values={PRICE_VALUES}
+              min={PRICE_FLOOR}
+              max={PRICE_CEIL}
+              low={draft.priceMin}
+              high={draft.priceMax}
+            />
+            <RangeSlider
+              min={PRICE_FLOOR}
+              max={PRICE_CEIL}
+              step={PRICE_STEP}
+              minGap={PRICE_STEP}
+              low={draft.priceMin}
+              high={draft.priceMax}
+              onChange={(lo, hi) =>
+                setDraft((d) => ({ ...d, priceMin: lo, priceMax: hi }))
+              }
+            />
+            <View className="flex-row items-center justify-between">
+              <View className="rounded-md border border-line px-4 py-3">
+                <Text variant="caption" tone="muted">
+                  Minst
+                </Text>
+                <Text variant="label" weight="regular">
+                  kr {draft.priceMin}
+                </Text>
+              </View>
+              <View className="rounded-md border border-line px-4 py-3">
+                <Text variant="caption" tone="muted">
+                  Maksimalt
+                </Text>
+                <Text variant="label" weight="regular">
+                  kr {draft.priceMax}
+                  {atCeil ? " +" : ""}
+                </Text>
+              </View>
+            </View>
+          </Section>
+          {/* Varighet */}
+          <Section title="Varighet">
+            <SteppedSlider
+              labels={DURATION_LABELS}
+              index={durationIndex}
+              onChange={(i) =>
+                setDraft((d) => ({
+                  ...d,
+                  durationMaxMin: DURATION_STEPS[i]?.min ?? DURATION_NO_CAP,
+                }))
+              }
+            />
+          </Section>
+          {/* Avstand — smart slider (canonical: distance/travel feasibility) */}
+          <Section
+            title="Avstand"
+            subtitle={`Innen ${DISTANCE_STEPS[distanceIndex]?.label ?? "Alle"}`}
+          >
+            <SteppedSlider
+              labels={DISTANCE_LABELS}
+              index={distanceIndex}
+              onChange={(i) =>
+                setDraft((d) => ({
+                  ...d,
+                  maxDistanceM: DISTANCE_STEPS[i]?.m ?? null,
+                }))
+              }
+            />
+          </Section>
+          {/* Interesser: Vibe + Fasiliteter (icon chips) */}
+          <Section title="Vibe">
+            <ChipGroup
+              items={VIBE_ITEMS}
+              selected={(l) =>
+                draft.vibes.includes(l as (typeof VIBES)[number])
+              }
+              onToggle={(l) =>
+                setDraft((d) => ({
+                  ...d,
+                  vibes: d.vibes.includes(l as (typeof VIBES)[number])
+                    ? d.vibes.filter((x) => x !== l)
+                    : [...d.vibes, l as (typeof VIBES)[number]],
+                }))
+              }
+            />
+          </Section>
+
+          <Section title="Fasiliteter">
+            <ChipGroup
+              items={TAG_ITEMS}
+              selected={(l) => draft.tags.includes(l)}
+              onToggle={(l) =>
+                setDraft((d) => ({ ...d, tags: toggleIn(d.tags, l) }))
+              }
+            />
+          </Section>
+
+          {/* Vurdering — star thresholds + sort */}
+          <Section title="Vurdering">
+            <View className="flex-row flex-wrap gap-2">
+              <Chip
+                label="Alle"
+                selected={draft.minRating === null}
+                onPress={() => setDraft((d) => ({ ...d, minRating: null }))}
+              />
+              {RATING_THRESHOLDS.map((r) => {
+                const selected = draft.minRating === r;
+                return (
+                  <Pressable
+                    key={r}
+                    accessibilityRole="button"
+                    accessibilityState={{ selected }}
+                    accessibilityLabel={`${r} stjerner og over`}
+                    onPress={() => setDraft((d) => ({ ...d, minRating: r }))}
+                    className={`flex-row items-center gap-1.5 rounded-full border bg-surface px-3 py-2 ${
+                      selected ? "border-2 border-ink" : "border border-line"
+                    }`}
+                  >
+                    <RatingStars value={r} size={13} />
+                    <Text variant="label" weight="regular">
+                      {r === 5 ? "5" : `${r.toString().replace(".", ",")}+`}
+                    </Text>
+                  </Pressable>
+                );
+              })}
+            </View>
+            <Text variant="label" weight="semibold">
+              Sorter etter
+            </Text>
+            <View className="flex-row flex-wrap gap-2">
+              <Chip
+                label="Høyest vurdert"
+                selected={draft.ratingSort === "best"}
+                onPress={() => setRatingSort("best")}
+              />
+              <Chip
+                label="Flest anmeldelser"
+                selected={draft.ratingSort === "most"}
+                onPress={() => setRatingSort("most")}
+              />
+            </View>
+          </Section>
+          {/* Språk som tilbys — "Vis mer/mindre" anchored at the BOTTOM */}
+          <Section title="Språk som tilbys">
+            <View>
+              {visibleLangs.map((l, i) => (
                 <CheckboxRow
-                  label="Ledige plasser"
-                  hint="Gjelder opplevelser"
-                  checked={draft.hasSpots}
+                  key={l}
+                  label={l}
+                  divider={i < visibleLangs.length - 1}
+                  checked={draft.languages.includes(l)}
                   onToggle={() =>
-                    setDraft((d) => ({ ...d, hasSpots: !d.hasSpots }))
+                    setDraft((d) => ({
+                      ...d,
+                      languages: toggleIn(d.languages, l),
+                    }))
                   }
                 />
-              </View>
-            </Section>
-          </>
-        ) : (
-          <View style={{ height: 480 }} />
-        )}
+              ))}
+              <Pressable
+                accessibilityRole="button"
+                accessibilityState={{ expanded: langExpanded }}
+                onPress={() => setLangExpanded((e) => !e)}
+                className="flex-row items-center gap-1 py-3"
+              >
+                <Text variant="body" weight="semibold" className="underline">
+                  {langExpanded ? "Vis mindre" : "Vis mer"}
+                </Text>
+                <Icon
+                  name={langExpanded ? "chevron-up" : "chevron-down"}
+                  size="sm"
+                  tone="ink"
+                />
+              </Pressable>
+            </View>
+          </Section>
+          {/* Tilgjengelighetsfunksjoner — icon rows */}
+          <Section
+            title="Tilgjengelighetsfunksjoner"
+            subtitle="Oppgitt av stedet — DEMO, ikke verifisert"
+          >
+            <View>
+              {ACCESSIBILITY_OPTIONS.map((a, i) => (
+                <CheckboxRow
+                  key={a}
+                  label={a}
+                  icon={ACCESSIBILITY_ICONS[a] ?? DEFAULT_CHIP_ICON}
+                  divider={i < ACCESSIBILITY_OPTIONS.length - 1}
+                  checked={draft.accessibility.includes(a)}
+                  onToggle={() =>
+                    setDraft((d) => ({
+                      ...d,
+                      accessibility: toggleIn(d.accessibility, a),
+                    }))
+                  }
+                />
+              ))}
+            </View>
+          </Section>
+          {/* Tilgjengelighet (availability) */}
+          <Section title="Tilgjengelighet">
+            <View>
+              <CheckboxRow
+                label="Åpent nå"
+                divider
+                checked={draft.openNowOnly}
+                onToggle={() =>
+                  setDraft((d) => ({ ...d, openNowOnly: !d.openNowOnly }))
+                }
+              />
+              <CheckboxRow
+                label="Ledige plasser"
+                hint="Gjelder opplevelser"
+                checked={draft.hasSpots}
+                onToggle={() =>
+                  setDraft((d) => ({ ...d, hasSpots: !d.hasSpots }))
+                }
+              />
+            </View>
+          </Section>
+        </>
       </ScrollView>
 
       {/* Sticky footer — compact reset link + wide primary button */}
@@ -852,7 +843,7 @@ function FilterBody({
           }}
           className="px-2 py-3"
         >
-          <Text className="text-base font-semibold text-ink underline">
+          <Text variant="body" weight="semibold" className="underline">
             Fjern alt
           </Text>
         </Pressable>

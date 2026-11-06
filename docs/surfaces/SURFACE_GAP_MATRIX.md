@@ -20,13 +20,13 @@ rule was invented.
 
 ## Tabs (exactly 5, locked)
 
-| Surface                     | Route / entry                          | Main code                               | Status                               | Markers                                 | Blocked on (contract)                       | Verified        | Ledger           |
-| --------------------------- | -------------------------------------- | --------------------------------------- | ------------------------------------ | --------------------------------------- | ------------------------------------------- | --------------- | ---------------- |
-| Kart (Map)                  | `app/(tabs)/map.tsx`                   | `src/components/map/*`                  | demo-complete                        | DemoNote, SignInPrompt, DEMO modes      | see Map matrix                              | emulator, tests | ≤ 0083, 0108     |
-| Sveip (Swipe)               | `app/(tabs)/swipe.tsx`                 | `src/components/swipe/*`                | demo-complete (Steder cards pending) | DemoNote, SignInPrompt, join-chat sheet | ranking/personalization, join, report/block | emulator, tests | 0104, 0110, 0120 |
-| Legg til (Add) — center CTA | `app/(tabs)/add.tsx`                   | `src/features/add/AddWizard.tsx`        | demo-complete                        | IKKE SENDT / IKKE PUBLISERT end states  | publish, moderation, capacity/pricing       | emulator, tests | 0111, 0113       |
-| Chat                        | `app/(tabs)/chat.tsx`, `app/chat/[id]` | chat list + thread                      | demo-complete (info/members pending) | guests read-only; archived read-only    | chat types, access modes, delivery/receipts | emulator        | 0109, 0115       |
-| Profil                      | `app/(tabs)/profile.tsx`               | profile (PDF p12) + Lagret, Mine planer | demo-complete                        | DemoBadge on counts + Veien til Skaper  | identity, follow graph, creator criteria    | emulator        | 0112, 0119       |
+| Surface                     | Route / entry                          | Main code                               | Status                               | Markers                                 | Blocked on (contract)                       | Verified        | Ledger                             |
+| --------------------------- | -------------------------------------- | --------------------------------------- | ------------------------------------ | --------------------------------------- | ------------------------------------------- | --------------- | ---------------------------------- |
+| Kart (Map)                  | `app/(tabs)/map.tsx`                   | `src/components/map/*`                  | demo-complete                        | DemoNote, SignInPrompt, DEMO modes      | see Map matrix                              | emulator, tests | ≤ 0083, 0108, 0161 (design system) |
+| Sveip (Swipe)               | `app/(tabs)/swipe.tsx`                 | `src/components/swipe/*`                | demo-complete (Steder cards pending) | DemoNote, SignInPrompt, join-chat sheet | ranking/personalization, join, report/block | emulator, tests | 0104, 0110, 0120                   |
+| Legg til (Add) — center CTA | `app/(tabs)/add.tsx`                   | `src/features/add/AddWizard.tsx`        | demo-complete                        | IKKE SENDT / IKKE PUBLISERT end states  | publish, moderation, capacity/pricing       | emulator, tests | 0111, 0113                         |
+| Chat                        | `app/(tabs)/chat.tsx`, `app/chat/[id]` | chat list + thread                      | demo-complete (info/members pending) | guests read-only; archived read-only    | chat types, access modes, delivery/receipts | emulator        | 0109, 0115                         |
+| Profil                      | `app/(tabs)/profile.tsx`               | profile (PDF p12) + Lagret, Mine planer | demo-complete                        | DemoBadge on counts + Veien til Skaper  | identity, follow graph, creator criteria    | emulator        | 0112, 0119                         |
 
 ## Nested routes (realigned to the PDF, 2026-11-05)
 

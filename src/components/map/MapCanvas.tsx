@@ -1,12 +1,13 @@
 import Constants, { ExecutionEnvironment } from "expo-constants";
 import type { ComponentType } from "react";
-import { Platform, Pressable, Text, View } from "react-native";
+import { Platform, Pressable, View } from "react-native";
 
 import { env } from "@/lib/env";
 import { useThemeColors, elevation } from "@/theme";
 
 import { clusterByGrid, projectToUnit } from "./services/softClustering";
 import type { DiscoveryItem } from "./types/mapPresentation";
+import { Text } from "@/components/ui";
 
 type MapProps = {
   markers: DiscoveryItem[];
@@ -173,7 +174,7 @@ function SoftMap({
               }}
             >
               <View className="h-8 w-8 items-center justify-center rounded-full border-2 border-surface bg-ink">
-                <Text className="text-xs font-bold text-onInk">
+                <Text variant="caption" weight="bold" tone="onInk">
                   {c.items.length}
                 </Text>
               </View>
@@ -219,10 +220,7 @@ function SoftMap({
                 style={elevation.e1}
                 className="max-w-full rounded-md border border-line bg-surface px-1.5 py-0.5"
               >
-                <Text
-                  numberOfLines={1}
-                  className="text-[10px] font-semibold text-ink"
-                >
+                <Text numberOfLines={1} variant="caption" weight="semibold">
                   {item.title}
                 </Text>
               </View>

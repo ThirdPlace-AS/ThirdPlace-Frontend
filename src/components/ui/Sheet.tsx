@@ -172,6 +172,7 @@ export function Sheet({
 
   const pan = Gesture.Pan()
     .activeOffsetY(8)
+    .failOffsetY(-8)
     .onUpdate((e) => {
       drag.value = Math.max(0, e.translationY);
     })

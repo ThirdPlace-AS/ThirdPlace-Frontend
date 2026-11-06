@@ -1,7 +1,8 @@
 import { Ionicons } from "@expo/vector-icons";
 import BottomSheet, { BottomSheetFlatList } from "@gorhom/bottom-sheet";
+import { Image } from "expo-image";
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { Pressable, Text, View } from "react-native";
+import { Pressable, View } from "react-native";
 import Animated, {
   Extrapolation,
   interpolate,
@@ -12,11 +13,15 @@ import Animated, {
 import {
   HeartToggle,
   Icon,
+  Pressable as UIPressable,
   SkeletonList,
+  Text,
   useSheetChrome,
 } from "@/components/ui";
+import { elevation } from "@/theme";
 import { MAP_CITY, type MockWeather } from "@/fixtures";
 import { browseAnimatedIndex } from "./browseSheetProgress";
+import { coverForItem } from "./services/itemCover";
 import type { DiscoveryItem } from "./types/mapPresentation";
 
 // Airbnb-style persistent "browse" sheet. Always peeks (~9%) when no marker
@@ -164,10 +169,7 @@ export function MapBrowseSheet({
         <View className="flex-row items-center justify-between pb-3 px-gutter">
           <View className="flex-row items-center flex-1 gap-2">
             <Icon name="location" size="md" tone="ember" />
-            <Text
-              className="text-base font-semibold text-ink"
-              numberOfLines={1}
-            >
+            <Text variant="body" weight="semibold" numberOfLines={1}>
               {cityLine}
             </Text>
           </View>
@@ -178,7 +180,7 @@ export function MapBrowseSheet({
                 size="md"
                 tone="ink"
               />
-              <Text className="text-sm font-semibold text-ink">
+              <Text variant="label" weight="semibold">
                 {weather.tempC}°
               </Text>
             </View>
@@ -200,7 +202,7 @@ export function MapBrowseSheet({
             ) : (
               <View className="items-center gap-2 p-gutter">
                 <Icon name="compass-outline" size="xl" tone="muted" />
-                <Text className="text-sm text-center text-muted font-normal">
+                <Text variant="caption" tone="muted" className="text-center">
                   {emptyMessage}
                 </Text>
               </View>
@@ -217,21 +219,29 @@ export function MapBrowseSheet({
           extent (mirroring the tab bar fading out); tapping it collapses the
           list back to the map. */}
       {showMapPill ? (
-        <Animated.View
+        // Positioned by a plain View; the animated wrapper only carries the
+        // fade/slide style (className on Animated views is lost on a cold
+        // start — CLAUDE.md).
+        <View
           pointerEvents={pillInteractive ? "box-none" : "none"}
-          style={pillStyle}
-          className="absolute inset-x-0 items-center bottom-8"
+          className="absolute inset-x-0 bottom-8 items-center"
         >
-          <Pressable
-            accessibilityRole="button"
-            accessibilityLabel="Vis kart"
-            onPress={() => sheetRef.current?.snapToIndex(0)}
-            className="flex-row items-center gap-2 px-5 py-3 rounded-full bg-ink"
-          >
-            <Text className="text-sm font-semibold text-onInk">Kart</Text>
-            <Icon name="map" size="sm" tone="onInk" />
-          </Pressable>
-        </Animated.View>
+          <Animated.View style={pillStyle}>
+            <UIPressable
+              accessibilityRole="button"
+              accessibilityLabel="Vis kart"
+              haptic="selection"
+              onPress={() => sheetRef.current?.snapToIndex(0)}
+              contentClassName="flex-row items-center gap-sm rounded-full bg-ink px-lg py-md"
+              contentStyle={elevation.e2}
+            >
+              <Text variant="label" weight="semibold" tone="onInk">
+                Kart
+              </Text>
+              <Icon name="map" size="sm" tone="onInk" />
+            </UIPressable>
+          </Animated.View>
+        </View>
       ) : null}
     </>
   );
@@ -252,6 +262,7 @@ const BrowseCard = memo(function BrowseCard({
   onSelect: (item: DiscoveryItem) => void;
   onToggleSave: (item: DiscoveryItem) => void;
 }) {
+  const cover = coverForItem(item);
   return (
     // Card wrapper is a View; the save heart is a SIBLING of the
     // select Pressable (never nested) — nested <button> is invalid
@@ -264,18 +275,28 @@ const BrowseCard = memo(function BrowseCard({
         onPress={() => onSelect(item)}
         className="gap-3"
       >
-        {/* Hero — full-width placeholder image block with overlays. */}
+        {/* Hero — bundled demo photo (placeholder when an item has none). */}
         <View
-          className={`h-52 w-full items-center justify-center overflow-hidden rounded-xl bg-surfaceMuted ${
+          className={`h-52 w-full items-center justify-center overflow-hidden rounded-lg bg-surfaceMuted ${
             selected ? "border-2 border-ink" : ""
           }`}
         >
-          <Icon name="image-outline" size="2xl" tone="muted" />
+          {cover ? (
+            <Image
+              source={cover}
+              contentFit="cover"
+              transition={150}
+              style={{ position: "absolute", inset: 0 }}
+              accessible={false}
+            />
+          ) : (
+            <Icon name="image-outline" size="2xl" tone="muted" />
+          )}
 
           {/* Top-left: category chip. */}
           <View className="absolute left-3 top-3">
             <View className="px-3 py-1 rounded-full bg-surface">
-              <Text className="text-xs font-semibold text-ink">
+              <Text variant="caption" weight="semibold">
                 {item.category}
               </Text>
             </View>
@@ -286,7 +307,9 @@ const BrowseCard = memo(function BrowseCard({
         <View className="gap-1">
           <View className="flex-row items-center gap-2">
             <Text
-              className="flex-1 text-base font-semibold text-ink"
+              variant="body"
+              weight="semibold"
+              className="flex-1"
               numberOfLines={1}
             >
               {item.title}
@@ -294,22 +317,22 @@ const BrowseCard = memo(function BrowseCard({
             {item.rating != null ? (
               <View className="flex-row items-center gap-1">
                 <Icon name="star" size="sm" tone="ink" />
-                <Text className="text-sm font-semibold text-ink">
+                <Text variant="label" weight="semibold">
                   {item.rating.toFixed(1).replace(".", ",")}
                 </Text>
                 {item.reviewCount != null ? (
-                  <Text className="text-sm text-muted font-normal">
+                  <Text variant="caption" tone="muted">
                     ({item.reviewCount})
                   </Text>
                 ) : null}
               </View>
             ) : null}
           </View>
-          <Text className="text-sm text-muted font-normal" numberOfLines={1}>
+          <Text variant="caption" tone="muted" numberOfLines={1}>
             {item.category} · {item.subtitle}
           </Text>
           {item.meta ? (
-            <Text className="text-sm font-semibold text-ink" numberOfLines={1}>
+            <Text variant="label" weight="semibold" numberOfLines={1}>
               {item.meta}
             </Text>
           ) : null}
@@ -320,7 +343,7 @@ const BrowseCard = memo(function BrowseCard({
                   key={t}
                   className="px-2 py-0.5 rounded-full bg-surfaceMuted"
                 >
-                  <Text className="text-[11px] text-muted font-normal">
+                  <Text variant="caption" tone="muted">
                     {t}
                   </Text>
                 </View>

@@ -24,6 +24,8 @@ export type StateViewProps = {
   secondaryLabel?: string;
   onSecondary?: () => void;
   tone?: StateTone;
+  /** Fill the screen (default) or size to content (inside a card). */
+  fill?: boolean;
 };
 
 export function StateView({
@@ -36,10 +38,13 @@ export function StateView({
   secondaryLabel,
   onSecondary,
   tone = "muted",
+  fill = true,
 }: StateViewProps) {
   const danger = tone === "danger";
   return (
-    <View className="flex-1 items-center justify-center gap-lg p-gutter">
+    <View
+      className={`items-center justify-center gap-lg p-gutter ${fill ? "flex-1" : ""}`}
+    >
       {illustration ?? (
         <View
           className={`h-20 w-20 items-center justify-center rounded-full ${
@@ -83,7 +88,7 @@ export function StateView({
         <View className="w-48">
           <Button
             label={actionLabel}
-            variant="secondary"
+            variant={danger ? "ink" : "secondary"}
             fullWidth
             onPress={onAction}
           />

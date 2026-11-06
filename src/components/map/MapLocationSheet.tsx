@@ -1,6 +1,6 @@
-import { Pressable, Text, View } from "react-native";
+import { Pressable, View } from "react-native";
 
-import { Icon, Switch } from "@/components/ui";
+import { Icon, Switch, Text } from "@/components/ui";
 import { Button } from "@/components/Button";
 import { CategoryArt } from "@/components/illustrations/CategoryArt";
 import { Chip } from "@/components/Chip";
@@ -41,7 +41,7 @@ export function MapLocationSheet({
       <View className="items-center">
         <CategoryArt name="location" size={96} />
       </View>
-      <Text className="text-sm text-muted font-normal">
+      <Text variant="caption" tone="muted">
         Vi bruker posisjonen din bare til å vise steder og opplevelser i
         nærheten. Du kan også velge et område manuelt.
       </Text>
@@ -49,7 +49,7 @@ export function MapLocationSheet({
       {denied ? (
         <View className="flex-row items-start gap-2 rounded-md border border-line bg-surfaceMuted px-3 py-2">
           <Icon name="information-circle-outline" size="md" tone="muted" />
-          <Text className="flex-1 text-sm text-muted font-normal">
+          <Text variant="caption" tone="muted" className="flex-1">
             Posisjon er avslått. Du kan slå den på i innstillinger, eller velge
             et område under.
           </Text>
@@ -59,7 +59,7 @@ export function MapLocationSheet({
       {unavailable ? (
         <View className="flex-row items-start gap-2 rounded-md border border-line bg-surfaceMuted px-3 py-2">
           <Icon name="warning-outline" size="md" tone="muted" />
-          <Text className="flex-1 text-sm text-muted font-normal">
+          <Text variant="caption" tone="muted" className="flex-1">
             Posisjon er ikke tilgjengelig her. Velg et område under for å
             fortsette.
           </Text>
@@ -69,7 +69,7 @@ export function MapLocationSheet({
       {granted && areaLabel ? (
         <View className="flex-row items-center gap-2 rounded-md border border-success bg-success/10 px-3 py-2">
           <Icon name="location" size="md" tone="success" />
-          <Text className="flex-1 text-sm text-ink font-normal">
+          <Text variant="label" weight="regular" className="flex-1">
             {areaLabel}
           </Text>
         </View>
@@ -87,7 +87,9 @@ export function MapLocationSheet({
       ) : null}
 
       <View className="gap-2">
-        <Text className="text-sm font-semibold text-ink">Velg område</Text>
+        <Text variant="label" weight="semibold">
+          Velg område
+        </Text>
         <View className="flex-row flex-wrap gap-2">
           {OSLO_AREAS.map((a) => (
             <Chip
@@ -109,9 +111,7 @@ export function MapLocationSheet({
         className="flex-row items-center justify-between rounded-md border border-line bg-surface px-4 py-3"
       >
         <View className="flex-1 flex-row items-center gap-2">
-          <Text className="text-base text-ink font-normal">
-            Simuler frakoblet
-          </Text>
+          <Text variant="body">Simuler frakoblet</Text>
         </View>
         {/* Display-only: the whole row is the switch (role="switch" above). */}
         <View

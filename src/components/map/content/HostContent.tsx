@@ -1,7 +1,7 @@
 import { useState } from "react";
-import { Pressable, Text, View } from "react-native";
+import { Pressable, View } from "react-native";
 
-import { Icon } from "@/components/ui";
+import { Icon, Text } from "@/components/ui";
 import { CancelSheet } from "@/components/actions/ActionSheets";
 import { Button } from "@/components/Button";
 import { DemoNote } from "@/components/DemoNote";
@@ -32,7 +32,7 @@ export function HostContent({ id, push }: { id: string; push: PushFn }) {
 
   if (!exp) {
     return (
-      <Text className="text-sm text-muted font-normal">
+      <Text variant="caption" tone="muted">
         Fant ikke arrangementet.
       </Text>
     );
@@ -43,8 +43,10 @@ export function HostContent({ id, push }: { id: string; push: PushFn }) {
   return (
     <View className="gap-4">
       <View>
-        <Text className="text-base font-semibold text-ink">{exp.title}</Text>
-        <Text className="text-sm text-muted font-normal">
+        <Text variant="body" weight="semibold">
+          {exp.title}
+        </Text>
+        <Text variant="caption" tone="muted">
           {exp.when} · Status: {status ? statusLabel[status] : "—"}
         </Text>
       </View>
@@ -57,7 +59,7 @@ export function HostContent({ id, push }: { id: string; push: PushFn }) {
           <View className="flex-row items-center justify-between">
             <View className="flex-row items-center gap-2">
               <Icon name="people-outline" size="md" tone="ink" />
-              <Text className="text-base text-ink font-normal">
+              <Text variant="body">
                 Deltakere ({attendees.length}/{exp.capacity})
               </Text>
             </View>

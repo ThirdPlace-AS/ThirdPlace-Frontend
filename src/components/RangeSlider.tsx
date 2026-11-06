@@ -18,7 +18,7 @@ import Animated, {
   withSpring,
 } from "react-native-reanimated";
 
-import { colors, motion, useThemeColors, elevation } from "@/theme";
+import { motion, useThemeColors, elevation } from "@/theme";
 
 const THUMB = 28; // thumb diameter (px)
 
@@ -27,14 +27,13 @@ function snap(value: number, min: number, max: number, step: number): number {
   return Math.min(max, Math.max(min, stepped));
 }
 
-const thumbBase = {
+// Thumb geometry; colours come from the theme inside the component.
+const thumbShape = {
   position: "absolute" as const,
   width: THUMB,
   height: THUMB,
   borderRadius: THUMB / 2,
-  backgroundColor: colors.surface,
   borderWidth: 1,
-  borderColor: colors.line,
   ...elevation.e1,
 };
 
@@ -63,6 +62,11 @@ export function RangeSlider({
   minGap?: number;
 }) {
   const colors = useThemeColors();
+  const thumbBase = {
+    ...thumbShape,
+    backgroundColor: colors.surfaceRaised,
+    borderColor: colors.line,
+  };
   const [trackW, setTrackW] = useState(0);
   const trackWRef = useRef(0);
   const startLow = useRef(low);

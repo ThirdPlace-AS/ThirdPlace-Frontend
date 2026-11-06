@@ -11,7 +11,7 @@ import { useEffect, useMemo, useRef } from "react";
 import { Dimensions } from "react-native";
 
 import { MAP_CENTER } from "@/fixtures";
-import { colors, motion, useThemeColors } from "@/theme";
+import { motion, palette } from "@/theme";
 
 import type { DiscoveryItem } from "./types/mapPresentation";
 
@@ -26,21 +26,29 @@ function env_token(): string | undefined {
   return process.env.EXPO_PUBLIC_MAPBOX_TOKEN;
 }
 
+// Map pins sit on the basemap, not on the app surface, so they keep the light
+// palette in every app theme (dark ink pins with a white ring, as in the PDF);
+// the basemap itself follows the time of day.
+const pin = palette.light as unknown as Record<
+  "ink" | "surface" | "onInk" | "ember" | "success" | "warning",
+  string
+>;
+
 // Category → pin color (hex, since Mapbox style expressions can't use classes).
 const PIN_COLOR = [
   "match",
   ["get", "category"],
   "Kafé",
-  colors.warning,
+  pin.warning,
   "Bokcafé",
-  colors.success,
+  pin.success,
   "Vinbar",
-  colors.ember,
+  pin.ember,
   "Verksted",
-  colors.ink,
+  pin.ink,
   "Opplevelse",
-  colors.ember,
-  colors.ink, // default
+  pin.ember,
+  pin.ink, // default
 ] as unknown as string;
 
 export function MapboxMap({
@@ -62,7 +70,6 @@ export function MapboxMap({
   focusCoord?: [number, number] | null;
   styleURL?: string;
 }) {
-  const colors = useThemeColors();
   const cameraRef = useRef<Camera>(null);
 
   useEffect(() => {
@@ -160,10 +167,10 @@ export function MapboxMap({
           id="clusters"
           filter={["has", "point_count"]}
           style={{
-            circleColor: colors.ink,
+            circleColor: pin.ink,
             circleRadius: ["step", ["get", "point_count"], 16, 5, 20, 10, 26],
             circleStrokeWidth: 3,
-            circleStrokeColor: colors.surface,
+            circleStrokeColor: pin.surface,
             // Fully self-emissive so the Mapbox Standard light preset
             // (day/dusk/night) never dims the bubble — see `points` below.
             circleEmissiveStrength: 1,
@@ -175,7 +182,7 @@ export function MapboxMap({
           style={{
             textField: ["get", "point_count_abbreviated"],
             textSize: 12,
-            textColor: colors.onInk,
+            textColor: pin.onInk,
           }}
         />
         {/* Invisible enlarged hit target for unclustered points so taps NEAR a
@@ -185,7 +192,7 @@ export function MapboxMap({
           id="points-hit"
           filter={["!", ["has", "point_count"]]}
           style={{
-            circleColor: colors.ink,
+            circleColor: pin.ink,
             circleRadius: 20,
             circleOpacity: 0,
           }}
@@ -204,7 +211,7 @@ export function MapboxMap({
             circleColor: PIN_COLOR,
             circleRadius: 8,
             circleStrokeWidth: 3,
-            circleStrokeColor: colors.surface,
+            circleStrokeColor: pin.surface,
             circleEmissiveStrength: 1,
           }}
         />
@@ -216,7 +223,7 @@ export function MapboxMap({
             circleColor: "transparent",
             circleRadius: 13,
             circleStrokeWidth: 3,
-            circleStrokeColor: colors.ember,
+            circleStrokeColor: pin.ember,
             circleEmissiveStrength: 1,
           }}
         />
@@ -231,8 +238,8 @@ export function MapboxMap({
             // Dark ink text inside a thick white halo stays readable on ANY
             // basemap — including a dark/night map, where the halo forms a bright
             // outline around every glyph.
-            textColor: colors.ink,
-            textHaloColor: colors.surface,
+            textColor: pin.ink,
+            textHaloColor: pin.surface,
             textHaloWidth: 2,
             textHaloBlur: 0.5,
             textAnchor: "top",

@@ -114,3 +114,14 @@ innhold, Inviter kontakter, Marketplace-filtre + Analyse.
 needs the contract); Utbetalingshistorikk rows (no payment data may be shown);
 CategoryPicker is built but not wired. Everything else in the PDF has a demo
 screen.
+
+## Design-system rollout (2026-11, branch `feat/design-system`)
+
+Screen-by-screen upgrade to the design system (docs/design/DESIGN_SYSTEM.md):
+text on `Text` variants, primitives for rows/avatars/chips/sheets, real
+loading/empty/error states where the PDF has them. Layout, order and copy stay
+per the PDF.
+
+| Surface                                                               | PDF   | Upgrade                                                                                                  | Ledger |
+| --------------------------------------------------------------------- | ----- | -------------------------------------------------------------------------------------------------------- | ------ |
+| Map: browse sheet, detail content, Filtre, search, location, overlays | p5–p6 | done — photo browse cards, state cards with illustration, theme-aware slider, all Filtre sections render | 0161   |

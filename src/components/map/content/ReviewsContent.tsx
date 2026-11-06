@@ -1,7 +1,7 @@
 import { useState } from "react";
-import { Text, View } from "react-native";
+import { View } from "react-native";
 
-import { Icon } from "@/components/ui";
+import { Icon, Text } from "@/components/ui";
 import { Button } from "@/components/Button";
 import { Card } from "@/components/Card";
 import { WriteReviewSheet } from "@/components/WriteReviewSheet";
@@ -17,37 +17,37 @@ export function ReviewsContent({ id }: { id: string }) {
       {place ? (
         <View className="flex-row items-center gap-1">
           <Icon name="star" size="md" tone="ember" />
-          <Text className="text-base font-semibold text-ink">
+          <Text variant="body" weight="semibold">
             {place.rating.toFixed(1)}
           </Text>
-          <Text className="text-sm text-muted font-normal">
+          <Text variant="caption" tone="muted">
             · {place.reviews} anmeldelser · {place.name}
           </Text>
         </View>
       ) : null}
 
       {list.length === 0 ? (
-        <Text className="text-sm text-muted font-normal">
+        <Text variant="caption" tone="muted">
           Ingen anmeldelser ennå.
         </Text>
       ) : (
         list.map((item) => (
           <Card key={item.id}>
             <View className="flex-row items-center justify-between">
-              <Text className="text-base font-semibold text-ink">
+              <Text variant="body" weight="semibold">
                 {item.author}
               </Text>
               <View className="flex-row items-center gap-1">
                 <Icon name="star" size="sm" tone="ember" />
-                <Text className="text-sm font-semibold text-ink">
+                <Text variant="label" weight="semibold">
                   {item.rating}
                 </Text>
               </View>
             </View>
-            <Text className="mt-0.5 text-xs text-muted font-normal">
+            <Text variant="caption" tone="muted" className="mt-0.5">
               {item.when}
             </Text>
-            <Text className="mt-1 text-sm text-muted font-normal">
+            <Text variant="caption" tone="muted" className="mt-1">
               {item.text}
             </Text>
           </Card>

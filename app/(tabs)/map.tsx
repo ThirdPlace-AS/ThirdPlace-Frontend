@@ -9,7 +9,14 @@ import {
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-import { Icon, IconButton } from "@/components/ui";
+import {
+  EmptyState,
+  ErrorState,
+  Icon,
+  IconButton,
+  Text as UIText,
+} from "@/components/ui";
+import { Illustration } from "@/components/illustrations/Illustration";
 import { MapCanvas } from "@/components/map/MapCanvas";
 import { DiscoveryModeTabs } from "@/components/map/DiscoveryModeTabs";
 import { MapDetailSheet } from "@/components/map/MapDetailSheet";
@@ -39,7 +46,7 @@ import {
 } from "@/fixtures";
 import { useMockResource } from "@/hooks/useMockResource";
 import { haptics } from "@/lib/haptics";
-import { useThemeColors } from "@/theme";
+import { elevation, useThemeColors } from "@/theme";
 
 // Map discovery surface. Thin composition over feature hooks:
 // filters/search, discovery mode, selection (detail sheet), camera, location.
@@ -245,9 +252,9 @@ export default function MapScreen() {
               <Icon name="options-outline" size="md" tone="ink" />
               {filters.extraCount > 0 ? (
                 <View className="absolute items-center justify-center w-4 h-4 rounded-full right-1 top-1 bg-ember">
-                  <Text className="text-[9px] font-bold text-onEmber">
+                  <UIText variant="caption" weight="bold" tone="onEmber">
                     {filters.extraCount}
-                  </Text>
+                  </UIText>
                 </View>
               ) : null}
             </Pressable>
@@ -279,9 +286,9 @@ export default function MapScreen() {
       >
         {location.areaLabel ? (
           <View className="px-2 py-1 border rounded-full border-line bg-surface">
-            <Text className="text-[10px] text-muted font-normal">
+            <UIText variant="caption" tone="muted">
               {location.areaLabel}
-            </Text>
+            </UIText>
           </View>
         ) : null}
         <IconButton
@@ -308,61 +315,39 @@ export default function MapScreen() {
         >
           <View className="flex-row items-center gap-2 px-4 py-2 border rounded-full border-line bg-surface">
             <ActivityIndicator color={colors.ink} />
-            <Text className="text-sm text-muted font-normal">
+            <UIText variant="caption" tone="muted">
               Laster steder…
-            </Text>
+            </UIText>
           </View>
         </View>
       ) : null}
 
       {/* Error / offline overlay — recoverable via retry */}
       {errored ? (
-        <View
-          pointerEvents="box-none"
-          className="absolute inset-x-0 top-0 bottom-0 items-center justify-center p-gutter"
-        >
-          <View className="items-center w-full max-w-sm gap-2 p-5 border rounded-xl border-line bg-surface">
-            <Icon name="cloud-offline-outline" size="xl" tone="muted" />
-            <Text className="text-base font-semibold text-ink">Frakoblet</Text>
-            <Text className="text-sm text-center text-muted font-normal">
-              Fant ikke steder. Sjekk tilkoblingen og prøv igjen.
-            </Text>
-            <Pressable
-              accessibilityRole="button"
-              onPress={retry}
-              className="px-4 py-2 mt-1 rounded-md bg-ink"
-            >
-              <Text className="text-sm font-semibold text-onInk">
-                Prøv igjen
-              </Text>
-            </Pressable>
-          </View>
-        </View>
+        <MapStateCard>
+          <ErrorState
+            fill={false}
+            illustration={<Illustration name="offline" width={128} />}
+            title="Frakoblet"
+            message="Fant ikke steder. Sjekk tilkoblingen og prøv igjen."
+            actionLabel="Prøv igjen"
+            onAction={retry}
+          />
+        </MapStateCard>
       ) : null}
 
       {/* Empty overlay — no results for the current mode/filters */}
       {noResults ? (
-        <View
-          pointerEvents="box-none"
-          className="absolute inset-x-0 top-0 bottom-0 items-center justify-center p-gutter"
-        >
-          <View className="items-center w-full max-w-sm gap-2 p-5 border rounded-xl border-line bg-surface">
-            <Icon name="search" size="xl" tone="muted" />
-            <Text className="text-base font-semibold text-ink">
-              Ingen treff
-            </Text>
-            <Text className="text-sm text-center text-muted font-normal">
-              {discovery.emptyMessage}
-            </Text>
-            <Pressable
-              accessibilityRole="button"
-              onPress={filters.reset}
-              className="px-4 py-2 mt-1 rounded-md bg-surfaceMuted"
-            >
-              <Text className="text-sm font-semibold text-ink">Nullstill</Text>
-            </Pressable>
-          </View>
-        </View>
+        <MapStateCard>
+          <EmptyState
+            fill={false}
+            icon="search"
+            title="Ingen treff"
+            message={discovery.emptyMessage}
+            actionLabel="Nullstill"
+            onAction={filters.reset}
+          />
+        </MapStateCard>
       ) : null}
 
       <MapFilterSheet
@@ -434,6 +419,24 @@ export default function MapScreen() {
           onClose={selection.close}
         />
       ) : null}
+    </View>
+  );
+}
+
+// A floating card over the map for the empty/error states (taps outside it
+// still reach the map).
+function MapStateCard({ children }: { children: React.ReactNode }) {
+  return (
+    <View
+      pointerEvents="box-none"
+      className="absolute inset-0 items-center justify-center p-gutter"
+    >
+      <View
+        className="w-full max-w-sm rounded-lg bg-surface"
+        style={elevation.e2}
+      >
+        {children}
+      </View>
     </View>
   );
 }

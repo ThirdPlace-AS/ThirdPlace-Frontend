@@ -1,6 +1,6 @@
 import { Text, View } from "react-native";
 
-import { Icon } from "@/components/ui";
+import { Icon, Text as UIText } from "@/components/ui";
 import { DemoNote } from "@/components/DemoNote";
 import { GuestLock } from "@/components/GuestLock";
 import { useGuestMode } from "@/components/map/hooks/useGuestMode";
@@ -67,7 +67,9 @@ export function VerificationContent() {
                 {s.label}
               </Text>
               {s.meta ? (
-                <Text className="text-xs text-muted font-normal">{s.meta}</Text>
+                <UIText variant="caption" tone="muted">
+                  {s.meta}
+                </UIText>
               ) : null}
             </View>
           </View>
@@ -75,16 +77,18 @@ export function VerificationContent() {
       </View>
 
       <View className="gap-2">
-        <Text className="text-sm font-semibold text-ink">Dokumenter</Text>
+        <UIText variant="label" weight="semibold">
+          Dokumenter
+        </UIText>
         {DOCS.map((d) => (
           <View
             key={d.name}
             className="flex-row items-center gap-3 rounded-md border border-line bg-surface p-3"
           >
             <Icon name="document-outline" size="md" tone="ink" />
-            <Text className="flex-1 text-sm text-ink font-normal">
+            <UIText variant="label" weight="regular" className="flex-1">
               {d.name}
-            </Text>
+            </UIText>
             <View
               className={`rounded-full px-2.5 py-1 ${
                 d.status === "Godkjent" ? "bg-success/15" : "bg-warning/20"
@@ -103,10 +107,10 @@ export function VerificationContent() {
       </View>
 
       <View className="rounded-md bg-surfaceMuted p-3">
-        <Text className="text-sm text-ink font-normal">
+        <UIText variant="label" weight="regular">
           Når verifisering er aktiv, får du beskjed så snart vurderingen er
           klar.
-        </Text>
+        </UIText>
       </View>
     </View>
   );

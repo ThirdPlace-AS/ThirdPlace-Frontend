@@ -1,6 +1,6 @@
 import { useState } from "react";
-import { Pressable, Text, View } from "react-native";
-import { Icon, Switch } from "@/components/ui";
+import { Pressable, View } from "react-native";
+import { Icon, Switch, Text } from "@/components/ui";
 import { Button } from "@/components/Button";
 import { experienceById } from "@/fixtures";
 
@@ -11,7 +11,7 @@ export function CheckinContent({ id }: { id: string }) {
 
   if (!exp) {
     return (
-      <Text className="text-sm text-muted font-normal">
+      <Text variant="caption" tone="muted">
         Fant ikke arrangementet.
       </Text>
     );
@@ -20,8 +20,12 @@ export function CheckinContent({ id }: { id: string }) {
   return (
     <View className="gap-5">
       <View>
-        <Text className="text-base font-semibold text-ink">{exp.title}</Text>
-        <Text className="text-sm text-muted font-normal">{exp.when}</Text>
+        <Text variant="body" weight="semibold">
+          {exp.title}
+        </Text>
+        <Text variant="caption" tone="muted">
+          {exp.when}
+        </Text>
       </View>
 
       <View className="items-center gap-3 rounded-xl border border-line bg-surface p-6">
@@ -36,14 +40,14 @@ export function CheckinContent({ id }: { id: string }) {
             tone={checkedIn || near ? "onEmber" : "muted"}
           />
         </View>
-        <Text className="text-center text-base font-semibold text-ink">
+        <Text variant="body" weight="semibold" className="text-center">
           {checkedIn
             ? "Du er sjekket inn"
             : near
               ? "Du er i nærheten (~40 m)"
               : "For langt unna (~1,2 km)"}
         </Text>
-        <Text className="text-center text-sm text-muted font-normal">
+        <Text variant="caption" tone="muted" className="text-center">
           {checkedIn
             ? "God tur!"
             : near
@@ -58,7 +62,7 @@ export function CheckinContent({ id }: { id: string }) {
         onPress={() => setNear((n) => !n)}
         className="flex-row items-center justify-between rounded-md border border-line bg-surface px-4 py-3"
       >
-        <Text className="text-sm text-ink font-normal">
+        <Text variant="label" weight="regular">
           Simuler: i nærheten
         </Text>
         {/* Display-only: the whole row is the switch (role="switch" above). */}
