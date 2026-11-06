@@ -51,8 +51,10 @@ function Experience({ size, color }: GlyphProps) {
 }
 
 /** Sveip — the founder's icon (sveip.svg, 2026-11-06): a stack of three
- * cards tilted -18°, the front one with a dot. Geometry as supplied; the stroke
- * follows the shared token (1.75) like every other glyph (the file says 2). */
+ * cards tilted -18°, the front one with a dot. Geometry and stroke (2) as
+ * supplied; the other glyphs keep the shared 1.75. */
+const swipeLine = (color: string) =>
+  ({ ...line(color), strokeWidth: 2 }) as const;
 const SWIPE_TILT = { rotation: -18, origin: "13.8, 11.5" } as const;
 const SWIPE_BACK =
   "M5.1 7.3H4.6a1.6 1.6 0 0 0-1.6 1.6v9.3a1.6 1.6 0 0 0 1.6 1.6h.5";
@@ -63,15 +65,15 @@ function Swipe({ size, color }: GlyphProps) {
   return (
     <Frame size={size}>
       <G {...SWIPE_TILT}>
-        <Path d={SWIPE_BACK} {...line(color)} />
-        <Path d={SWIPE_MIDDLE} {...line(color)} />
+        <Path d={SWIPE_BACK} {...swipeLine(color)} />
+        <Path d={SWIPE_MIDDLE} {...swipeLine(color)} />
         <Rect
           x={8}
           y={2.4}
           width={11.4}
           height={17.2}
           rx={1.4}
-          {...line(color)}
+          {...swipeLine(color)}
         />
         <Circle cx={11.1} cy={5.9} r={0.65} fill={color} />
       </G>
@@ -85,8 +87,8 @@ function SwipeFilled({ size, color }: GlyphProps) {
   return (
     <Frame size={size}>
       <G {...SWIPE_TILT}>
-        <Path d={SWIPE_BACK} {...line(color)} />
-        <Path d={SWIPE_MIDDLE} {...line(color)} />
+        <Path d={SWIPE_BACK} {...swipeLine(color)} />
+        <Path d={SWIPE_MIDDLE} {...swipeLine(color)} />
         <Rect
           x={8}
           y={2.4}
@@ -94,7 +96,7 @@ function SwipeFilled({ size, color }: GlyphProps) {
           height={17.2}
           rx={1.4}
           fill={color}
-          {...line(color)}
+          {...swipeLine(color)}
         />
       </G>
     </Frame>
