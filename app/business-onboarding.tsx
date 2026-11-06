@@ -405,7 +405,7 @@ function Perm({
             variant="caption"
             weight="bold"
             tone="muted"
-            className="rounded bg-surfaceMuted px-1.5 py-0.5"
+            className="rounded-xs bg-surfaceMuted px-1.5 py-0.5"
           >
             {tag}
           </Text>

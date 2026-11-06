@@ -27,6 +27,7 @@ export function RatingStars({
         const filled = i + 1 <= value;
         const half = !filled && i + 0.5 <= value;
         const name = filled ? "star" : half ? "star-half" : "star-outline";
+        // raw-icon: caller-sized stars with a caller tint
         return <Ionicons key={i} name={name} size={size} color={tint} />;
       })}
     </View>

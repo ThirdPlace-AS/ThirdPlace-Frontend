@@ -179,6 +179,10 @@ Motion explains a change (where something came from, what it became); it never d
 4. Tokens only — no hex, no arbitrary sizes, no hand-written shadows, no raw `Modal`.
 5. Verify on the Android emulator in light and dark; add a ledger line.
 
+`tests/designGuard.test.ts` enforces the mechanical rules in CI: no raw hex outside `src/theme`/fixtures/sandbox (escape: a `hex-ok:` comment with the reason), no legacy `text-xs…text-4xl`/`text-[Npx]` classes, no `rounded-3xl`/bare `rounded`/`rounded-[…]`, no raw `Modal` outside `Sheet`/`Overlay`, `Ionicons` only through `<Icon>` (escape: a `raw-icon:` comment saying why — animated colours, stamps with text shadows, caller-sized stars), no `active:/focus:/hover:` in `contentClassName`, and no `InteractionManager`.
+
+Animated surfaces inside a Modal render a plain style once settled (`usePresence().settled`): on Android a React commit inside a Modal dropped Reanimated's animated style.
+
 ## 8. Rollout
 
 Phases (see the implementation ledger for progress): 1 Foundations (docs, tokens, font) → 2 Primitives → 3 Icons, illustrations, 3D pipeline → 4 Screen upgrades → 5 Consistency guard and cleanup → 6 Full-app review.

@@ -1,6 +1,6 @@
-import { Pressable, View } from "react-native";
+import { View } from "react-native";
 
-import { Icon, Text } from "@/components/ui";
+import { IconButton, Text } from "@/components/ui";
 
 // A labelled − value + counter row (used by the filter sheet's "Who?" guests).
 // Clamps to [min, max]. Demo-only where used (no backend).
@@ -41,33 +41,25 @@ export function Stepper({
         ) : null}
       </View>
       <View className="flex-row items-center gap-4">
-        <Pressable
-          accessibilityRole="button"
-          accessibilityLabel={`Færre ${label}`}
+        <IconButton
+          icon="remove"
+          label={`Færre ${label}`}
+          variant="filled"
+          size="sm"
           disabled={atMin}
           onPress={dec}
-          hitSlop={6}
-          className={`h-8 w-8 items-center justify-center rounded-full border border-line bg-surfaceMuted ${
-            atMin ? "opacity-40" : "active:opacity-70"
-          }`}
-        >
-          <Icon name="remove" size="md" tone="ink" />
-        </Pressable>
+        />
         <Text variant="body" className="w-6 text-center">
           {value}
         </Text>
-        <Pressable
-          accessibilityRole="button"
-          accessibilityLabel={`Flere ${label}`}
+        <IconButton
+          icon="add"
+          label={`Flere ${label}`}
+          variant="filled"
+          size="sm"
           disabled={atMax}
           onPress={inc}
-          hitSlop={6}
-          className={`h-8 w-8 items-center justify-center rounded-full border border-line bg-surfaceMuted ${
-            atMax ? "opacity-40" : "active:opacity-70"
-          }`}
-        >
-          <Icon name="add" size="md" tone="ink" />
-        </Pressable>
+        />
       </View>
     </View>
   );

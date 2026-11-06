@@ -707,6 +707,7 @@ function Stamps({
           like,
         ]}
       >
+        {/* raw-icon: swipe stamp at display size with a text shadow */}
         <Ionicons
           name="heart"
           size={STAMP_SIZE}
@@ -721,6 +722,7 @@ function Stamps({
           nope,
         ]}
       >
+        {/* raw-icon: swipe stamp at display size with a text shadow */}
         <Ionicons
           name="close"
           size={STAMP_SIZE + 24}
@@ -745,6 +747,7 @@ function Stamps({
           save,
         ]}
       >
+        {/* raw-icon: swipe stamp at display size with a text shadow */}
         <Ionicons
           name="bookmark"
           size={STAMP_SIZE - 20}

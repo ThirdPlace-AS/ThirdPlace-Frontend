@@ -146,17 +146,17 @@ export default function ChatScreen() {
         ) : null}
 
         {archived.length > 0 && !q ? (
-          <Pressable
+          <UIPressable
             accessibilityRole="button"
             onPress={() => setArchOpen(true)}
-            className="flex-row items-center gap-3 px-1 py-2 active:opacity-70"
+            contentClassName="flex-row items-center gap-3 px-1 py-2"
           >
             <Icon name="archive-outline" size="md" tone="muted" />
             <Text variant="caption" tone="muted" className="flex-1">
               Arkiverte chatter ({archived.length})
             </Text>
             <Icon name="chevron-forward" size="sm" tone="muted" />
-          </Pressable>
+          </UIPressable>
         ) : null}
       </ScrollView>
 

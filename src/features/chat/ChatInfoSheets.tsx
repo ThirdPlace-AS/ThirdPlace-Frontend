@@ -9,6 +9,7 @@ import {
   ListRow,
   Overlay,
   Text,
+  Pressable as UIPressable,
 } from "@/components/ui";
 import { ReportSheet } from "@/components/actions/ActionSheets";
 import { Button } from "@/components/Button";
@@ -152,7 +153,7 @@ function InfoSheet({
             { icon: "exit-outline" as const, label: "Forlat" },
             { icon: "flag-outline" as const, label: "Rapporter" },
           ].map((a) => (
-            <Pressable
+            <UIPressable
               key={a.label}
               accessibilityRole="button"
               onPress={() =>
@@ -162,13 +163,15 @@ function InfoSheet({
                     ? setReport(true)
                     : setNotice(a.label)
               }
-              className="flex-1 items-center gap-1 rounded-md border border-line bg-surface py-3 active:opacity-80"
+              className="flex-1"
+              contentClassName="items-center gap-1 rounded-md border border-line bg-surface py-3"
+              pressedScale={0.99}
             >
               <Icon name={a.icon} size="md" tone="ink" />
               <Text variant="caption" weight="medium">
                 {a.label}
               </Text>
-            </Pressable>
+            </UIPressable>
           ))}
         </View>
         {notice ? (

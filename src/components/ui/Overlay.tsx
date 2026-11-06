@@ -41,7 +41,7 @@ export function Overlay({
   accessibilityLabel?: string;
   children: ReactNode;
 }) {
-  const { mounted, progress, reduced } = usePresence(visible);
+  const { mounted, progress, reduced, settled } = usePresence(visible);
   const { width, height } = useWindowDimensions();
 
   // Layered per the className + Reanimated rule (CLAUDE.md): the animated
@@ -63,7 +63,9 @@ export function Overlay({
       statusBarTranslucent={statusBarTranslucent}
     >
       <GestureHandlerRootView style={{ flex: 1 }}>
-        <Animated.View style={[{ flex: 1 }, anim]}>
+        {/* Static once settled: React commits inside a Modal dropped the
+            animated style on Android (see usePresence). */}
+        <Animated.View style={[{ flex: 1 }, settled ? null : anim]}>
           <View
             className={`flex-1 ${className ?? ""}`}
             style={style}

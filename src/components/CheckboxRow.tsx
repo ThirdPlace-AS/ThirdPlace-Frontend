@@ -51,7 +51,7 @@ export const CheckboxRow = memo(function CheckboxRow({
         </View>
       </View>
       <View
-        className={`h-6 w-6 items-center justify-center rounded border ${
+        className={`h-6 w-6 items-center justify-center rounded-xs border ${
           checked ? "border-ember bg-ember" : "border-line bg-surface"
         }`}
       >

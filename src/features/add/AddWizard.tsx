@@ -1,4 +1,3 @@
-import { Ionicons } from "@expo/vector-icons";
 import { Image } from "expo-image";
 import { router } from "expo-router";
 import { useState } from "react";
@@ -15,6 +14,7 @@ import {
   type IconName,
   Pressable as UIPressable,
   Text,
+  IconButton,
 } from "@/components/ui";
 import { Button } from "@/components/Button";
 import {
@@ -26,7 +26,6 @@ import { DemoNote } from "@/components/DemoNote";
 import { Input } from "@/components/Input";
 import { CategoryPicker, PlacePicker } from "@/components/pickers/Pickers";
 import { experiences, OSLO_AREAS, places } from "@/fixtures";
-import { useThemeColors } from "@/theme";
 
 import {
   type AddDraft,
@@ -815,7 +814,6 @@ function MonthPicker({
   value: string | null;
   onChange: (iso: string) => void;
 }) {
-  const colors = useThemeColors();
   const now = new Date();
   const todayIso = isoOf(now.getFullYear(), now.getMonth(), now.getDate());
   const [cursor, setCursor] = useState({
@@ -840,32 +838,22 @@ function MonthPicker({
   return (
     <View className="gap-2 rounded-lg border border-line bg-surface p-3">
       <View className="flex-row items-center justify-between">
-        <Pressable
-          accessibilityRole="button"
-          accessibilityLabel="Forrige måned"
+        <IconButton
+          icon="chevron-back"
+          label="Forrige måned"
+          size="sm"
           disabled={atStart}
           onPress={() => shift(-1)}
-          hitSlop={8}
-          className="h-8 w-8 items-center justify-center"
-        >
-          <Ionicons
-            name="chevron-back"
-            size={18}
-            color={atStart ? colors.line : colors.ink}
-          />
-        </Pressable>
+        />
         <Text variant="label" weight="semibold" className="capitalize">
           {label}
         </Text>
-        <Pressable
-          accessibilityRole="button"
-          accessibilityLabel="Neste måned"
+        <IconButton
+          icon="chevron-forward"
+          label="Neste måned"
+          size="sm"
           onPress={() => shift(1)}
-          hitSlop={8}
-          className="h-8 w-8 items-center justify-center"
-        >
-          <Icon name="chevron-forward" size="md" tone="ink" />
-        </Pressable>
+        />
       </View>
       <View className="flex-row">
         {["Ma", "Ti", "On", "To", "Fr", "Lø", "Sø"].map((d) => (

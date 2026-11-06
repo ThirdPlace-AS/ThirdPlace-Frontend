@@ -10,7 +10,7 @@
 //
 // The scrim is a SIBLING behind the card, never its ancestor, so the card's
 // buttons are never nested inside a <button> on web (CLAUDE.md "Sheets").
-import type { ReactNode } from "react";
+import { useState, type ReactNode } from "react";
 import {
   type LayoutChangeEvent,
   Modal,
@@ -166,13 +166,20 @@ export function Sheet({
   const dark = tone === "dark";
   const c = useThemeColors();
   const { height: winH } = useWindowDimensions();
-  const { mounted, progress, reduced } = usePresence(visible);
+  const { mounted, progress, reduced, settled } = usePresence(visible);
   const cardH = useSharedValue(winH);
   const drag = useSharedValue(0);
+  // While a drag is live the card needs the animated style again (see
+  // usePresence on why it is static at rest).
+  const [dragging, setDragging] = useState(false);
+  if (!mounted && dragging) setDragging(false);
 
   const pan = Gesture.Pan()
     .activeOffsetY(8)
     .failOffsetY(-8)
+    .onStart(() => {
+      runOnJS(setDragging)(true);
+    })
     .onUpdate((e) => {
       drag.value = Math.max(0, e.translationY);
     })
@@ -181,9 +188,12 @@ export function Sheet({
       if (far || e.velocityY > presentation.dismissVelocity) {
         runOnJS(onClose)();
       } else {
-        drag.value = withSpring(0, spring.snappy);
+        drag.value = withSpring(0, spring.snappy, (finished) => {
+          if (finished) runOnJS(setDragging)(false);
+        });
       }
     });
+  const animate = !settled || dragging;
 
   // The Modal remounts the card on every open, so this also resets a drag left
   // over from a swipe-to-close.
@@ -220,7 +230,9 @@ export function Sheet({
     >
       <GestureHandlerRootView style={{ flex: 1 }}>
         <View className="flex-1 justify-end">
-          <Animated.View style={[StyleSheet.absoluteFill, scrimStyle]}>
+          <Animated.View
+            style={[StyleSheet.absoluteFill, animate ? scrimStyle : null]}
+          >
             <RNPressable
               accessibilityLabel="Lukk"
               accessibilityRole="button"
@@ -233,7 +245,10 @@ export function Sheet({
             />
           </Animated.View>
           <Animated.View
-            style={[cardStyle, fullHeight ? { height: "92%" } : null]}
+            style={[
+              animate ? cardStyle : null,
+              fullHeight ? { height: "92%" } : null,
+            ]}
             onLayout={onCardLayout}
           >
             <View

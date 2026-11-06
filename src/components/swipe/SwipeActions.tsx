@@ -102,8 +102,10 @@ function ReactiveButton({
       onPress={onPress}
       style={[disc(size), discStyle]}
     >
+      {/* raw-icon: animated colour cross-fade between two glyphs (Reanimated) */}
       <Ionicons name={icon} size={iconSize} color={baseColor} />
       <Animated.View style={[{ position: "absolute" }, over]}>
+        {/* raw-icon: overlay glyph of the cross-fade */}
         <Ionicons name={overIcon} size={iconSize} color={overColor} />
       </Animated.View>
     </AnimatedPressable>
@@ -147,6 +149,7 @@ function FlashButton({
       // discs always read, as in the reference.
       style={[disc(size), { backgroundColor: pressed ? PRESS : REST }]}
     >
+      {/* raw-icon: pressed-state colour from the press callback */}
       <Ionicons
         name={icon}
         size={iconSize}

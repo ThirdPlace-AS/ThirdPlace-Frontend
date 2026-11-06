@@ -41,6 +41,7 @@ export function LogoMark({
           cx={PIN_HEAD.cx}
           cy={PIN_HEAD.cy}
           r={PIN_HEAD.r}
+          // hex-ok: the brand mark's white pin head is fixed in every theme
           fill="#FFFFFF"
         />
       </Svg>
