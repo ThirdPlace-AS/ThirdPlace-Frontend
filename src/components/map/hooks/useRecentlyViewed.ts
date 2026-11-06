@@ -1,6 +1,6 @@
 import { useCallback, useSyncExternalStore } from "react";
 
-// "Nylig sett" (DEMO): places and experiences whose DETAIL was opened in this
+// "Nylig sett": places and experiences whose DETAIL was opened in this
 // session, newest first, de-duplicated, capped (master spec §4 Account
 // "history"). In-memory only, never sent anywhere; a reload clears it (CB-8,
 // like useRecentSearches). Not a ranking signal and not wired to one.

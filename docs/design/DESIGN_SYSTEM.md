@@ -11,7 +11,7 @@ The design system **restyles the PDF's layouts**. It never adds screens, section
 1. **Calm ink canvas, ember as a spark.** Ink (`#202020`) carries primary actions and selection, as in the PDF. Ember (`#D80000`) is reserved for brand moments: like/heart, acquisition CTAs ("Opprett konto", "Kom i gang"), live/unread badges, the active tab, FABs and the map selection ring. Toggles, checkboxes, edit links, codes and the current chart bar are ink (founder decision 2026-11-06). Success green is for nature, map and local completion.
 2. **Soft, round, tactile.** Pill actions and chips, 16 px cards, 28 px sheet tops, three soft elevation levels, press-scale feedback on everything tappable.
 3. **Photo-first.** Imagery runs full-bleed with a tokenised scrim; controls over imagery are round white floating buttons.
-4. **Honest feedback.** Every action responds immediately (motion, haptic, state change) but never pretends a backend answered. No delivery ticks, no "processing → success", no invented counts. Demo markers stay.
+4. **Clear feedback.** Every action responds immediately (motion, haptic, state change) and confirms in product voice (`confirmToast`). No demo markers (founder decision 2026-11-06). Still no delivery ticks, no "processing → success" sequences, no invented counts, and payments stay structure only.
 5. **One way to do each thing.** One button, one chip, one header, one sheet API, one icon entry point. If a screen needs something new, it becomes a primitive first.
 6. **Accessible by default.** 44×44 touch targets, AA contrast in light and dark, every control has a role, label and state; all motion has a reduced-motion fallback.
 
@@ -117,16 +117,16 @@ Touch targets are at least 44×44 (use `hitSlop` to reach it on small visuals).
 
 ### Feedback & states
 
-| Need                | Use                                                                                                                                                                                                                                   |
-| ------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------- |
-| Like / save         | `<HeartToggle kind="heart"                                                                                                                                                                                                            | "bookmark">`(pop + ember + light haptic on save; quiet on unsave). Inside a custom button, use`<PopIcon pop={saved}>`. |
-| Follow              | `<FollowButton>` — "Følg" ink pill → "Følger" muted pill, label cross-fades, selection haptic.                                                                                                                                        |
-| Collapsible section | `<Accordion>` (animated height + rotating chevron; `variant="card"` for grouped lists).                                                                                                                                               |
-| Loading list        | `<SkeletonList variant="row"                                                                                                                                                                                                          | "card"                                                                                                                 | "mediaCard">` — one busy element for screen readers. |
-| Empty / error       | `<EmptyState>` / `<ErrorState>` (icon in a soft disc, or an `illustration`).                                                                                                                                                          |
-| Toast               | `showToast()` — ink surface, polite live region, fades in/out. Demo-honest copy only. A demo confirm inside a sheet closes the sheet, then calls `showToastAfterSheet(demoToast.x)` (waits for the exit; the host sits under Modals). |
-| StickyFooter        | Primary action of a flow or single-goal screen, pinned after the scroll area (hairline, page background, `safeBottom` on stack routes). Wizards, Du er nå Skaper!, gruppe-sveip setup, Nytt samarbeid.                                |
-| ScrollRow           | One line of chips or avatars that scrolls sideways and bleeds to the screen edges, instead of wrapping an orphan at 360 dp (tab chips, group-swipe friends and filters).                                                              |
+| Need                | Use                                                                                                                                                                                                                                                  |
+| ------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------- |
+| Like / save         | `<HeartToggle kind="heart"                                                                                                                                                                                                                           | "bookmark">`(pop + ember + light haptic on save; quiet on unsave). Inside a custom button, use`<PopIcon pop={saved}>`. |
+| Follow              | `<FollowButton>` — "Følg" ink pill → "Følger" muted pill, label cross-fades, selection haptic.                                                                                                                                                       |
+| Collapsible section | `<Accordion>` (animated height + rotating chevron; `variant="card"` for grouped lists).                                                                                                                                                              |
+| Loading list        | `<SkeletonList variant="row"                                                                                                                                                                                                                         | "card"                                                                                                                 | "mediaCard">` — one busy element for screen readers. |
+| Empty / error       | `<EmptyState>` / `<ErrorState>` (icon in a soft disc, or an `illustration`).                                                                                                                                                                         |
+| Toast               | `showToast()` — ink surface, polite live region, fades in/out. Product-voice copy from `confirmToast`. A confirm inside a sheet closes the sheet, then calls `showToastAfterSheet(confirmToast.x)` (waits for the exit; the host sits under Modals). |
+| StickyFooter        | Primary action of a flow or single-goal screen, pinned after the scroll area (hairline, page background, `safeBottom` on stack routes). Wizards, Du er nå Skaper!, gruppe-sveip setup, Nytt samarbeid.                                               |
+| ScrollRow           | One line of chips or avatars that scrolls sideways and bleeds to the screen edges, instead of wrapping an orphan at 360 dp (tab chips, group-swipe friends and filters).                                                                             |
 
 ### Sheets & overlays
 
@@ -161,7 +161,7 @@ Easing curves (`easing.*`, cubic-bezier): `standard` 0.2, 0, 0, 1 · `enter` 0.0
 
 - Content that replaces content in place (wizard steps, the in-sheet detail stack, the next Steder or group-swipe card) fades in through `<FadeSwap swapKey>` over `base`; nothing under reduced motion. Style only on the animated view.
 - The swipe card glides off in 340–460 ms (fling to tap) and comes back on undo in 400 ms; longer glides held the deck for ~0.9 s and dropped taps.
-- No fake waits: a demo screen with nothing to load shows its content at once (`useMockResource({ immediate })`); loading states appear only on a real reload.
+- No fake waits: a screen with nothing to load shows its content at once (`useMockResource({ immediate })`); loading states appear only on a real reload.
 
 Motion explains a change (where something came from, what it became); it never delays navigation. Every animated hook checks `useReducedMotion()` and falls back to an opacity change or none.
 
@@ -169,7 +169,7 @@ Motion explains a change (where something came from, what it became); it never d
 
 - **Like / save:** heart pops 1 → 1.25 → 1, fills ember, `haptics.light()`.
 - **Follow:** pill morphs "Følg" → "Følger" (ink → outline).
-- **Join:** button morphs to the joined state locally; the existing demo note stays.
+- **Join:** button morphs to the joined state locally.
 - **Send message:** bubble slides in from the composer, `haptics.light()`. No delivered/read ticks (contract-blocked).
 - **Filter / chip select:** fill crossfade (`fast`).
 - `haptics.success()` only for purely local completions (e.g. save). Never for join, pay or anything that implies a server result.

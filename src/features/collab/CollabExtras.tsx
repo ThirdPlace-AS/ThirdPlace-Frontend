@@ -3,10 +3,9 @@ import { Pressable, ScrollView, View } from "react-native";
 
 import { Icon, Screen, Text } from "@/components/ui";
 import { RateSheet } from "@/components/actions/ActionSheets";
-import { DemoNote } from "@/components/DemoNote";
 import { RouteHeader } from "@/components/RouteHeader";
 
-// Collaboration extras (DEMO), per the design (PDF p17–p18): Betalingsstatus,
+// Collaboration extras, per the design (PDF p17–p18): Betalingsstatus,
 // Samarbeidshistorikk, Vurder samarbeid and the Marketplace venteliste.
 // STRUCTURE ONLY for money: no amounts, payouts or invoices are shown or
 // moved; history and ratings are fixture examples (BLOCKED_CONTRACT_GAP).
@@ -46,9 +45,6 @@ export function PaymentStatusScreen() {
             </Text>
           </View>
         ))}
-        <DemoNote>
-          Oppsettet er et eksempel. Ingen beløp regnes ut eller betales ut.
-        </DemoNote>
       </ScrollView>
     </Screen>
   );
@@ -100,9 +96,6 @@ export function CollabHistoryScreen() {
             )}
           </View>
         ))}
-        <DemoNote>
-          Historikken er et eksempel. Ingen samarbeid er gjennomført.
-        </DemoNote>
       </ScrollView>
       {rate ? (
         <RateSheet

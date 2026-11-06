@@ -9,7 +9,6 @@ import {
 } from "@/components/actions/ActionSheets";
 import { Pressable as UIPressable, Screen, Text } from "@/components/ui";
 import { Chip } from "@/components/Chip";
-import { DemoNote } from "@/components/DemoNote";
 import { RouteHeader } from "@/components/RouteHeader";
 import { EmptyState } from "@/components/states/StateView";
 import {
@@ -29,7 +28,7 @@ const TABS: { key: MockPlanState; label: string }[] = [
   { key: "cancelled", label: "Avlyst" },
 ];
 
-// Mine planer (DEMO) — REQUIRED_V1 (master spec §11, REG §4): upcoming, past,
+// Mine planer — REQUIRED_V1 (master spec §11, REG §4): upcoming, past,
 // cancelled and waitlisted plans. No PDF page of its own; it follows the
 // Lagret layout (p14). BLOCKED_CONTRACT_GAP: there is no attendance or join
 // lifecycle — the plans are fixture examples.
@@ -72,7 +71,6 @@ export default function PlansScreen() {
                 />
               ))}
             </ScrollView>
-            <DemoNote>Planene er eksempler. Du er ikke påmeldt noe.</DemoNote>
           </View>
         }
         ListEmptyComponent={

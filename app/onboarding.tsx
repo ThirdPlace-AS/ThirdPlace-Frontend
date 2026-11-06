@@ -1,3 +1,4 @@
+import { Image } from "expo-image";
 import { router } from "expo-router";
 import { useState } from "react";
 import {
@@ -21,15 +22,17 @@ import {
 } from "@/components/ui";
 import { Button } from "@/components/Button";
 import { Chip } from "@/components/Chip";
-import { DemoNote } from "@/components/DemoNote";
 import { Input } from "@/components/Input";
 import { useGuestMode } from "@/components/map/hooks/useGuestMode";
 import { experiences, PERSONAS, type MockPersonaKey } from "@/fixtures";
 import { checkBirthday, formatBirthdayInput } from "@/features/onboarding/age";
 import { UnderageScreen } from "@/features/onboarding/UnderageScreen";
 import { resetTo } from "@/lib/navigation";
+import { libImage } from "@/fixtures/images";
+import { showToast } from "@/components/Toast";
+import { confirmToast } from "@/copy";
 
-// Onboarding (DEMO), 8 steps per the design (PDF p2–p3): role → "Dette er
+// Onboarding, 8 steps per the design (PDF p2–p3): role → "Dette er
 // deg" (with the 18+ birthday gate, TP-D-001) → "Hvem er du?" → "Hva ser du
 // etter?" → "Hva liker du?" (min 5) → "Dine preferanser" → "Nesten i mål"
 // (permissions) → feed preview. Reached after the (inert) register form.
@@ -128,7 +131,9 @@ export default function Onboarding() {
   const [role, setRole] = useState<MockPersonaKey>("explorer");
   const [name, setName] = useState("");
   // Photo upload is not wired (no picker in the demo): the tap answers inline.
-  const [photoTried, setPhotoTried] = useState(false);
+  // "Legg til profilbilde" sets the profile portrait from the bundled
+  // library (BLOCKED_CONTRACT_GAP: no media upload contract).
+  const [photo, setPhoto] = useState(false);
   const [birthday, setBirthday] = useState("");
   const [bio, setBio] = useState("");
   const [identity, setIdentity] = useState<Record<string, string>>({});
@@ -266,23 +271,31 @@ export default function Onboarding() {
               >
                 <UIPressable
                   accessibilityRole="button"
-                  accessibilityLabel="Legg til profilbilde"
+                  accessibilityLabel={
+                    photo ? "Bytt profilbilde" : "Legg til profilbilde"
+                  }
                   haptic="selection"
-                  onPress={() => setPhotoTried(true)}
+                  onPress={() => {
+                    if (!photo) showToast(confirmToast.photoAdded);
+                    setPhoto(true);
+                  }}
                   className="items-center gap-2 self-center"
                 >
-                  <View className="h-24 w-24 items-center justify-center rounded-full bg-surfaceMuted">
-                    <Icon name="camera-outline" size="lg" tone="ink" />
+                  <View className="h-24 w-24 items-center justify-center overflow-hidden rounded-full bg-surfaceMuted">
+                    {photo ? (
+                      <Image
+                        source={libImage("person-ola")}
+                        contentFit="cover"
+                        style={{ width: 96, height: 96 }}
+                      />
+                    ) : (
+                      <Icon name="camera-outline" size="lg" tone="ink" />
+                    )}
                   </View>
                   <Text variant="label" weight="semibold" tone="ember">
-                    Legg til profilbilde
+                    {photo ? "Bytt profilbilde" : "Legg til profilbilde"}
                   </Text>
                 </UIPressable>
-                {photoTried ? (
-                  <Text variant="caption" tone="muted" className="text-center">
-                    Bildeopplasting er ikke aktiv i demoen.
-                  </Text>
-                ) : null}
                 <Input
                   label="Navn"
                   placeholder="Fornavn Etternavn"
@@ -480,10 +493,6 @@ export default function Onboarding() {
                     />
                   </View>
                 ))}
-                <DemoNote>
-                  Ingen tillatelser blir spurt om i demoen. Posisjon kan du dele
-                  fra kartet.
-                </DemoNote>
               </Shell>
             ) : null}
 
@@ -514,9 +523,6 @@ export default function Onboarding() {
                 >
                   Her er noen ting som skjer i byen din.
                 </Text>
-                <DemoNote>
-                  Dette er eksempler. Feeden er ikke tilpasset deg ennå.
-                </DemoNote>
               </View>
             ) : null}
           </ScrollView>

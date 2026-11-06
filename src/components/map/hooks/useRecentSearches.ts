@@ -1,6 +1,6 @@
 import { useCallback, useSyncExternalStore } from "react";
 
-// In-memory recent searches (DEMO). Persistence + private search history are
+// In-memory recent searches. Persistence + private search history are
 // CONTRACT-BLOCKED (CB-8) — this clears on reload and is never sent anywhere.
 // Most-recent first, de-duplicated, capped.
 

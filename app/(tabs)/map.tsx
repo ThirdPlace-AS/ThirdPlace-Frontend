@@ -49,6 +49,7 @@ import { MOCK_WEATHER, OSLO_AREAS, places } from "@/fixtures";
 import { useMockResource } from "@/hooks/useMockResource";
 import { useNotificationReads } from "@/hooks/useNotificationReads";
 import { haptics } from "@/lib/haptics";
+import { setDevSimulation, useDevSimulation } from "@/lib/devSimulation";
 import { elevation, useThemeColors } from "@/theme";
 
 // Map discovery surface. Thin composition over feature hooks:
@@ -129,12 +130,12 @@ export default function MapScreen() {
   );
 
   // Mock async load so the surface can show loading/error states (no backend).
-  // `offline` is a demo toggle (from the location sheet) that forces an error.
-  const [offline, setOffline] = useState(false);
+  // `mapOffline` is a dev switch (app/_sandbox/simulate) that forces an error.
+  const { mapOffline: offline } = useDevSimulation();
   const { status, reload } = useMockResource(places, {
     delayMs: 500,
     // No fake wait on open: the fixtures are already here. "Prøv igjen" and
-    // the offline toggle still show the loading / error states.
+    // the dev offline switch still show the loading / error states.
     immediate: true,
     simulate: offline ? "error" : "success",
   });
@@ -142,7 +143,7 @@ export default function MapScreen() {
   const errored = status === "error";
 
   const retry = () => {
-    setOffline(false);
+    setDevSimulation({ mapOffline: false });
     reload();
   };
 
@@ -439,8 +440,6 @@ export default function MapScreen() {
         selectedAreaName={location.area?.name ?? null}
         onRequest={handleRequestLocation}
         onSelectArea={handleSelectArea}
-        offline={offline}
-        onToggleOffline={() => setOffline((v) => !v)}
       />
       <MapSearchOverlay
         visible={searchOpen}

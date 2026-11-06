@@ -2,7 +2,6 @@ import { Ionicons } from "@expo/vector-icons";
 import { Pressable, View } from "react-native";
 
 import { Icon, Text } from "@/components/ui";
-import { DemoNote } from "@/components/DemoNote";
 import { Sheet } from "@/components/Sheet";
 import { notificationTimeLabel, type NotificationType } from "@/fixtures";
 import { useNotificationReads } from "@/hooks/useNotificationReads";
@@ -16,7 +15,7 @@ const TYPE_ICON: Record<NotificationType, keyof typeof Ionicons.glyphMap> = {
   invite: "mail-outline",
 };
 
-// Varsler (DEMO), per the design (PDF p20): a light list of cards — category
+// Varsler, per the design (PDF p20): a light list of cards — category
 // glyph, bold title, one-line detail, time and an unread dot — with "Merk alle
 // lest". Read state is a shared in-memory store (useNotificationReads), so
 // the bell badges drop as items are read. BLOCKED_CONTRACT_GAP: no push, inbox
@@ -85,10 +84,6 @@ export function NotificationsSheet({
             </Pressable>
           );
         })}
-
-        <DemoNote>
-          Dette er eksempelvarsler. Push og innboks er ikke slått på.
-        </DemoNote>
       </View>
     </Sheet>
   );

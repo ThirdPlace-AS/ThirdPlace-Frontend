@@ -3,8 +3,6 @@ import { View } from "react-native";
 
 import { Icon, Text, Pressable as UIPressable } from "@/components/ui";
 import { Chip } from "@/components/Chip";
-import { DemoNote } from "@/components/DemoNote";
-import { demoCopy } from "@/copy";
 import { experienceById, groupById, type ExperienceStatus } from "@/fixtures";
 
 import { useExperienceJoin } from "../hooks/useExperienceJoin";
@@ -102,14 +100,6 @@ export function ExperienceContent({ id, push }: { id: string; push: PushFn }) {
         markerId={markerId("experience", experience.id)}
         title={experience.title}
       />
-
-      {user !== "none" ? (
-        <DemoNote>
-          {user === "joined"
-            ? demoCopy.joinedNoBackend
-            : demoCopy.waitlistedNoBackend}
-        </DemoNote>
-      ) : null}
 
       <View className="gap-2">
         <LinkRow

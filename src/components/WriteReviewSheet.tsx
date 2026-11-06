@@ -5,9 +5,8 @@ import { Icon } from "@/components/ui";
 import { Button } from "@/components/Button";
 import { Sheet } from "@/components/Sheet";
 import { useThemeColors } from "@/theme";
-import { DemoNote } from "@/components/DemoNote";
 import { showToastAfterSheet } from "@/components/Toast";
-import { demoCopy, demoToast } from "@/copy";
+import { confirmToast } from "@/copy";
 
 export function WriteReviewSheet({
   placeName,
@@ -60,15 +59,13 @@ function Body({ onClose }: { onClose: () => void }) {
         textAlignVertical="top"
       />
 
-      <DemoNote>{demoCopy.reviewNotSent}</DemoNote>
-
       <Button
         label="Send anmeldelse"
         variant="ember"
         disabled={rating === 0}
         onPress={() => {
           onClose();
-          showToastAfterSheet(demoToast.reviewNotSent);
+          showToastAfterSheet(confirmToast.reviewSent);
         }}
       />
     </>

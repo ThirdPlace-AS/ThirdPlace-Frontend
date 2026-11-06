@@ -18,17 +18,22 @@ import {
 } from "@/components/ui";
 import { Button } from "@/components/Button";
 import { haptics } from "@/lib/haptics";
-import { DemoNote } from "@/components/DemoNote";
+import {
+  showToast,
+  showToastAfterSheet,
+  type ToastInput,
+} from "@/components/Toast";
+import { confirmToast } from "@/copy";
 import { Input } from "@/components/Input";
 import { RouteHeader } from "@/components/RouteHeader";
 import { Sheet } from "@/components/Sheet";
 import { listingById, listings } from "@/fixtures";
 
-// Collaboration flow (DEMO), per the design (PDF p16–p18): Nytt samarbeid →
+// Collaboration flow, per the design (PDF p16–p18): Nytt samarbeid →
 // Innkommende tilbud (Godta / Avslå / Mottilbud) → Samarbeid (parter,
 // vilkår, tidslinje) → Kontrakt → Signer kontrakt. BLOCKED_CONTRACT_GAP: no
-// offer, negotiation, contract, signature, revenue-split or payout model —
-// every step says plainly that nothing was sent, agreed or signed.
+// offer, negotiation, contract, signature, revenue-split or payout model;
+// each step confirms locally.
 const TYPES = ["Co-hosting", "Sponsing", "Brand"];
 const HOSTING = ["Likeverdig 50/50", "Primær / sekundær"];
 const SPLITS = ["50 / 50", "60 / 40", "70 / 30"];
@@ -42,7 +47,6 @@ export function NewCollabScreen() {
   const [hosting, setHosting] = useState(HOSTING[1] ?? "");
   const [split, setSplit] = useState("70 / 30");
   const [msg, setMsg] = useState("");
-  const [sent, setSent] = useState(false);
   return (
     <Screen edges={["top"]}>
       <RouteHeader title="Nytt samarbeid" />
@@ -69,9 +73,7 @@ export function NewCollabScreen() {
           <ChipRow options={HOSTING} value={hosting} onChange={setHosting} />
           <Label>Inntektsdeling (du / partner)</Label>
           <ChipRow options={SPLITS} value={split} onChange={setSplit} />
-          <DemoNote>
-            Delingen er bare et valg i skjemaet. Ingenting regnes ut.
-          </DemoNote>
+
           <Input
             label="Melding"
             placeholder="Fortell kort hva du foreslår …"
@@ -81,22 +83,21 @@ export function NewCollabScreen() {
             maxLength={400}
           />
           <Button
-            label="Se et eksempel på samarbeid"
+            label="Se pågående samarbeid"
             variant="secondary"
             onPress={() => router.push("/collab" as Href)}
           />
         </ScrollView>
         <StickyFooter safeBottom>
-          {sent ? (
-            <DemoNote>
-              Forespørselen ble ikke sendt, og det finnes ingen avtale.
-            </DemoNote>
-          ) : null}
           <Button
             label="Send forespørsel →"
             variant="ink"
             disabled={msg.trim().length === 0}
-            onPress={() => setSent(true)}
+            onPress={() => {
+              haptics.light();
+              router.back();
+              showToast(confirmToast.requestSent);
+            }}
           />
           {msg.trim().length === 0 ? (
             <Text variant="caption" tone="muted" className="text-center">
@@ -122,7 +123,6 @@ export function CollabDetailScreen() {
     <Screen edges={["top"]}>
       <RouteHeader title="Jazz-samarbeid" />
       <ScrollView contentContainerClassName="gap-4 px-gutter py-4 pb-12">
-        <DemoNote>Dette er et eksempel. Det finnes ingen avtale.</DemoNote>
         <Label>Parter</Label>
         <View className="flex-row gap-3">
           <Party name="Maria Movik" role="Skaper · Primærvert" />
@@ -213,7 +213,10 @@ export function CollabDetailScreen() {
 function OfferSheet({ onClose }: { onClose: () => void }) {
   const [counter, setCounter] = useState(false);
   const [split, setSplit] = useState("50 / 50");
-  const [done, setDone] = useState<string | null>(null);
+  const finish = (t: ToastInput) => {
+    onClose();
+    showToastAfterSheet(t);
+  };
   return (
     <Sheet
       visible
@@ -236,7 +239,7 @@ function OfferSheet({ onClose }: { onClose: () => void }) {
             <Button
               label="Send mottilbud →"
               variant="ink"
-              onPress={() => setDone("Mottilbudet")}
+              onPress={() => finish(confirmToast.counterSent)}
             />
           </>
         ) : (
@@ -245,14 +248,14 @@ function OfferSheet({ onClose }: { onClose: () => void }) {
               <Button
                 label="Avslå"
                 variant="secondary"
-                onPress={() => setDone("Avslaget")}
+                onPress={() => finish(confirmToast.offerDeclined)}
               />
             </View>
             <View className="flex-1">
               <Button
                 label="Godta tilbud"
                 variant="ink"
-                onPress={() => setDone("Godkjenningen")}
+                onPress={() => finish(confirmToast.offerAccepted)}
               />
             </View>
           </View>
@@ -272,7 +275,6 @@ function OfferSheet({ onClose }: { onClose: () => void }) {
             </Text>
           </Pressable>
         ) : null}
-        {done ? <DemoNote>{`${done} ble ikke sendt.`}</DemoNote> : null}
       </View>
     </Sheet>
   );
@@ -313,13 +315,10 @@ function ContractSheet({ onClose }: { onClose: () => void }) {
           pressedScale={0.99}
         >
           <Text variant="caption" tone="muted">
-            {signed ? "✓ Signert (demo)" : "Trykk for å signere"}
+            {signed ? "✓ Signert" : "Trykk for å signere"}
           </Text>
         </UIPressable>
-        <DemoNote>
-          Kontrakten er et eksempel. Ingen signatur lagres, og ingenting er
-          bindende.
-        </DemoNote>
+
         <Button label="Lukk" variant="secondary" onPress={onClose} />
       </View>
     </Sheet>

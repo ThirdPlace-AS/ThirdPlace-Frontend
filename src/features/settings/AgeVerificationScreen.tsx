@@ -3,10 +3,9 @@ import { useState } from "react";
 import { Pressable, ScrollView, View } from "react-native";
 
 import { Icon, Screen, Text } from "@/components/ui";
-import { DemoNote } from "@/components/DemoNote";
 import { RouteHeader } from "@/components/RouteHeader";
 
-// Aldersverifisering (DEMO), per the design (PDF p22): methods BankID /
+// Aldersverifisering, per the design (PDF p22): methods BankID /
 // ID-dokument / Vipps and what verification unlocks. The 18+ launch gate
 // itself is the birthday step in onboarding (TP-D-001); this screen is the
 // stronger, optional check. BLOCKED_CONTRACT_GAP: no identity provider is
@@ -52,9 +51,7 @@ export default function AgeVerificationScreen() {
           Noen opplevelser krever verifisert alder. Bekreft alderen din for
           tilgang.
         </Text>
-        <DemoNote>
-          Metodene er ikke koblet til, og fordelene under er bare eksempler.
-        </DemoNote>
+
         <Text variant="micro" weight="semibold" tone="muted">
           Verifiseringsmetode
         </Text>
@@ -79,9 +76,7 @@ export default function AgeVerificationScreen() {
             <Icon name="chevron-forward" size="sm" tone="muted" />
           </Pressable>
         ))}
-        {chosen ? (
-          <DemoNote>{`${chosen} er ikke koblet til i demoen. Ingenting ble verifisert.`}</DemoNote>
-        ) : null}
+
         <Text variant="micro" weight="semibold" tone="muted">
           Fordeler
         </Text>

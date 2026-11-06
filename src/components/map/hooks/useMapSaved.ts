@@ -1,6 +1,6 @@
 import { useCallback, useSyncExternalStore } from "react";
 
-// In-memory saved-items store (DEMO). Persistence is CONTRACT-BLOCKED (CB-5): a
+// In-memory saved-items store. Persistence is CONTRACT-BLOCKED (CB-5): a
 // reload clears this. Keyed by DiscoveryItem.markerId. Shared across all hook
 // consumers (preview card toggle + Saved mode) via a tiny external store.
 

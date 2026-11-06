@@ -17,7 +17,6 @@ import {
   Text,
   useSheetChrome,
 } from "@/components/ui";
-import { DemoBadge } from "@/components/DemoBadge";
 import { elevation } from "@/theme";
 import { MAP_CITY, type MockWeather } from "@/fixtures";
 import { formatRating } from "@/lib/format";
@@ -205,10 +204,10 @@ export function MapBrowseSheet({
           </View>
           <View className="flex-row items-center gap-2">
             {/* Fixture weather (MockWeather), not a live reading. */}
-            <DemoBadge />
+
             <View
               accessible
-              accessibilityLabel={`Eksempelvær: ${weather.tempC} grader`}
+              accessibilityLabel={`Vær: ${weather.tempC} grader`}
               className="flex-row items-center gap-1.5 rounded-full border border-line bg-surface px-3 py-1"
             >
               <Icon
@@ -311,7 +310,7 @@ const BrowseCard = memo(function BrowseCard({
         onPress={() => onSelect(item)}
         contentClassName="gap-3"
       >
-        {/* Hero — bundled demo photo (placeholder when an item has none). */}
+        {/* Hero: bundled photo (placeholder when an item has none). */}
         {/* Near-square photo (benchmark B2), swipeable when the item has
             several (B3). */}
         <View

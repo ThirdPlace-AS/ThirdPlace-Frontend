@@ -13,7 +13,6 @@ import {
 } from "@/components/ui";
 import { ReportSheet } from "@/components/actions/ActionSheets";
 import { Button } from "@/components/Button";
-import { DemoNote } from "@/components/DemoNote";
 import { SearchField } from "@/components/pickers/Pickers";
 import { Sheet } from "@/components/Sheet";
 import {
@@ -26,11 +25,14 @@ import {
 } from "@/fixtures";
 import { libImage } from "@/fixtures/images";
 import { media } from "@/theme";
+import { showToastAfterSheet } from "@/components/Toast";
+import { confirmToast } from "@/copy";
+import { router } from "expo-router";
 
-// Chat info, Medlemmer and Inviter til chat (DEMO), per the design (PDF
-// p9–p10). BLOCKED_CONTRACT_GAP: no membership, role, invite-link, mute,
-// leave or report contract exists — members are fixture people with display
-// roles, and every action says it does nothing.
+// Chat info, Medlemmer and Inviter til chat, per the design (PDF p9–p10).
+// BLOCKED_CONTRACT_GAP: no membership, role, invite-link, mute, leave or
+// report contract exists; members are fixture people with display roles and
+// actions confirm locally.
 const ROLES = ["Vert · Admin", "Deltar", "Venn", "Kun i chatten"];
 const membersOf = (chat: MockChat) =>
   people
@@ -89,7 +91,19 @@ function InfoSheet({
   onMembers: () => void;
   onInvite: () => void;
 }) {
-  const [notice, setNotice] = useState<string | null>(null);
+  // Demp / Forlat close the sheet and confirm (Forlat returns to the list).
+  const quick = (label: string) => {
+    onClose();
+    if (label === "Forlat") {
+      setTimeout(() => router.navigate("/chat"), 260);
+      showToastAfterSheet({
+        title: "Du har forlatt chatten",
+        icon: "exit-outline",
+      });
+    } else {
+      showToastAfterSheet(confirmToast.muted);
+    }
+  };
   const [report, setReport] = useState(false);
   const [viewer, setViewer] = useState<number | null>(null);
   const exp = chat.pinnedExperienceId
@@ -161,7 +175,7 @@ function InfoSheet({
                   ? onInvite()
                   : a.label === "Rapporter"
                     ? setReport(true)
-                    : setNotice(a.label)
+                    : quick(a.label)
               }
               className="flex-1"
               contentClassName="items-center gap-1 rounded-md border border-line bg-surface py-3"
@@ -174,9 +188,7 @@ function InfoSheet({
             </UIPressable>
           ))}
         </View>
-        {notice ? (
-          <DemoNote>{`«${notice}» gjør ingenting i demoen.`}</DemoNote>
-        ) : null}
+
         {report ? <ReportSheet onClose={() => setReport(false)} /> : null}
         {viewer !== null ? (
           <ImageViewer
@@ -219,7 +231,6 @@ function MembersSheet({
         {list.map((m) => (
           <MemberRow key={m.person.id} {...m} />
         ))}
-        <DemoNote>Medlemmer og roller er eksempler.</DemoNote>
       </View>
     </Sheet>
   );
@@ -236,9 +247,6 @@ function InviteSheet({
 }) {
   const [q, setQ] = useState("");
   const [done, setDone] = useState<string[]>([]);
-  // No clipboard module is installed and the link is an example, so the
-  // button answers inline instead of pretending to copy.
-  const [copyTried, setCopyTried] = useState(false);
   const slug = chat.name.toLowerCase().replace(/[^a-z0-9]+/g, "-");
   return (
     <Sheet visible={visible} onClose={onClose} title="Inviter til chat">
@@ -260,18 +268,16 @@ function InviteSheet({
             accessibilityRole="button"
             haptic="selection"
             hitSlop={{ top: 12, bottom: 12, left: 8, right: 8 }}
-            onPress={() => setCopyTried(true)}
+            onPress={() => {
+              onClose();
+              showToastAfterSheet(confirmToast.linkCopied);
+            }}
             className="self-start"
           >
             <Text variant="caption" weight="semibold" tone="ember">
               Kopier lenke
             </Text>
           </UIPressable>
-          {copyTried ? (
-            <Text variant="caption" tone="muted">
-              Ikke kopiert: lenken er et eksempel og åpner ingenting.
-            </Text>
-          ) : null}
         </View>
         <View className="items-center gap-2 rounded-md border border-line bg-surface p-4">
           <Icon name="qr-code-outline" size="3xl" tone="muted" />
@@ -304,9 +310,6 @@ function InviteSheet({
               />
             </View>
           ))}
-        <DemoNote>
-          Lenken og QR-koden er eksempler. Ingen invitasjon blir sendt.
-        </DemoNote>
       </View>
     </Sheet>
   );

@@ -2,7 +2,6 @@ import { router, type Href } from "expo-router";
 import { ScrollView, View } from "react-native";
 
 import { Button } from "@/components/Button";
-import { DemoNote } from "@/components/DemoNote";
 import {
   Icon,
   ListRow,
@@ -12,12 +11,12 @@ import {
   Text,
 } from "@/components/ui";
 
-// "Du er nå Skaper!" (DEMO), per the design (PDF p14, bottom left): the
+// "Du er nå Skaper!", per the design (PDF p14, bottom left): the
 // success screen after an approved Skaper application. Applications are not
 // evaluated (BLOCKED_CONTRACT_GAP; Bli Skaper keeps its button muted until the
 // example requirements are met), so this screen is reachable only by deep link
 // (thirdplace://creator-welcome) for review. What the role gives access to is
-// an example from the design, not a decided entitlement — the DemoNote says so.
+// the design's copy, not a decided entitlement (BLOCKED_CONTRACT_GAP).
 // The PDF's emoji row icons are drawn with the icon set instead.
 const ROWS: {
   icon: "trending-up-outline" | "people-outline" | "calendar-outline";
@@ -83,11 +82,6 @@ export default function CreatorWelcomeScreen() {
             />
           ))}
         </View>
-
-        <DemoNote>
-          Dette er en forhåndsvisning. Ingen søknad er sendt, og hva
-          Skaper-rollen gir tilgang til er ikke bestemt ennå.
-        </DemoNote>
       </ScrollView>
       {/* Pinned: on a 640 dp phone the CTA used to sit under the fold. */}
       <StickyFooter>

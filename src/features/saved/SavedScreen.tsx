@@ -5,7 +5,6 @@ import { FlatList, View } from "react-native";
 
 import { HeartToggle, ListRow, Screen } from "@/components/ui";
 import { Chip } from "@/components/Chip";
-import { DemoNote } from "@/components/DemoNote";
 import { RouteHeader } from "@/components/RouteHeader";
 import { showToast } from "@/components/Toast";
 import { EmptyState } from "@/components/states/StateView";
@@ -31,7 +30,7 @@ const FILTERS: { key: Kind | null; label: string }[] = [
   { key: "business", label: "Bedrifter" },
 ];
 
-// Lagret (DEMO), per the design (PDF p14) — the one unified Saved surface
+// Lagret, per the design (PDF p14) — the one unified Saved surface
 // (REQUIRED_V1, master spec §11). Reads the same in-memory store the map's
 // "Lagret" mode and the swipe deck write to, so a save anywhere shows here.
 // BLOCKED_CONTRACT_GAP: persistence is contract-blocked (CB-5) — the list
@@ -148,13 +147,7 @@ export default function SavedScreen() {
             onAction={() => router.navigate("/map")}
           />
         }
-        ListFooterComponent={
-          rows.length > 0 ? (
-            <View className="pt-3">
-              <DemoNote>Lagret tømmes når appen startes på nytt.</DemoNote>
-            </View>
-          ) : null
-        }
+        ListFooterComponent={null}
         renderItem={({ item }) => {
           const place = item.placeId ? placeById(item.placeId) : undefined;
           return (

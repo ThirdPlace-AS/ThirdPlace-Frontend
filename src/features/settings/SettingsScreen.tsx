@@ -10,14 +10,13 @@ import {
   Text,
 } from "@/components/ui";
 import { Button } from "@/components/Button";
-import { DemoNote } from "@/components/DemoNote";
 import { Input } from "@/components/Input";
 import { RouteHeader } from "@/components/RouteHeader";
 import { Sheet } from "@/components/Sheet";
 import { SignInPrompt } from "@/components/SignInPrompt";
 import { useGuestMode } from "@/components/map/hooks/useGuestMode";
 import { showToastAfterSheet } from "@/components/Toast";
-import { demoCopy, demoToast } from "@/copy";
+import { confirmToast } from "@/copy";
 import { profile } from "@/fixtures";
 import { resetTo } from "@/lib/navigation";
 
@@ -33,7 +32,7 @@ type Panel =
   | "help"
   | null;
 
-// Innstillinger (DEMO), grouped as in the design (PDF p19): KONTO
+// Innstillinger, grouped as in the design (PDF p19): KONTO
 // (Kontoinformasjon, Koblede kontoer) · APP (Varsler, Personvern, Språk og
 // region, Tilgjengelighet) · DATA (Eksporter data, Hjelp og støtte) · Logg ut.
 // Each row opens its PDF sub-screen (p19–p20, p28) as a sheet. Every toggle is
@@ -53,8 +52,6 @@ export default function SettingsScreen() {
     <Screen edges={["top"]}>
       <RouteHeader title="Innstillinger" />
       <ScrollView contentContainerClassName="gap-5 px-gutter py-4 pb-12">
-        <DemoNote>{demoCopy.settingsNotSaved}</DemoNote>
-
         <SettingsSection title="Konto">
           <NavRow
             icon="person-outline"
@@ -120,7 +117,7 @@ export default function SettingsScreen() {
         />
 
         <Text variant="caption" tone="muted" className="px-1 text-center">
-          {profile.memberSince} · demoversjon
+          {profile.memberSince}
         </Text>
       </ScrollView>
 
@@ -143,7 +140,7 @@ export default function SettingsScreen() {
         <Text variant="label" weight="regular">
           Vil du logge ut av ThirdPlace?
         </Text>
-        <DemoNote>{demoCopy.logoutNoSession}</DemoNote>
+
         <View className="mt-1 gap-2">
           <Button
             variant="ink"
@@ -174,7 +171,7 @@ type SheetProps = { visible: boolean; onClose: () => void };
 
 // Kontoinformasjon (PDF p19): E-post, Telefon, Passord, Aktive økter.
 function AccountSheet({ visible, onClose }: SheetProps) {
-  const [email, setEmail] = useState("ola@eksempel.no");
+  const [email, setEmail] = useState("ola@epost.no");
   const [phone, setPhone] = useState("+47 912 34 567");
   return (
     <Sheet visible={visible} onClose={onClose} title="Kontoinformasjon">
@@ -224,16 +221,13 @@ function AccountSheet({ visible, onClose }: SheetProps) {
           name="Chrome · Windows"
           meta="Sist aktiv for 2 dager siden"
         />
-        <DemoNote>
-          Dette er eksempeldata. Endringer lagres ikke, og ingen økter logges
-          ut.
-        </DemoNote>
+
         <Button
           label="Lagre endringer"
           variant="ink"
           onPress={() => {
             onClose();
-            showToastAfterSheet(demoToast.accountNotSaved);
+            showToastAfterSheet(confirmToast.accountSaved);
           }}
         />
       </View>
@@ -291,7 +285,7 @@ function LinkedSheet({ visible, onClose }: SheetProps) {
               Oslo Kaffebar AS
             </Text>
             <Text variant="caption" tone="muted">
-              Bedrift · eksempel
+              Bedrift
             </Text>
           </View>
           <Text variant="caption" weight="semibold">
@@ -302,9 +296,7 @@ function LinkedSheet({ visible, onClose }: SheetProps) {
           Har du en bedrift eller er Skaper, kan du koble kontoene her. Hold
           inne Profil-fanen for å bytte.
         </Text>
-        <DemoNote>
-          Bedriftskontoen er et eksempel. Ingen kontoer er koblet.
-        </DemoNote>
+
         <Button label="Lukk" variant="secondary" onPress={onClose} />
       </View>
     </Sheet>
@@ -395,7 +387,6 @@ function NotificationPrefsSheet({ visible, onClose }: SheetProps) {
             },
           ]}
         />
-        <DemoNote>Ingen push-varsler sendes i demoen.</DemoNote>
       </View>
     </Sheet>
   );
@@ -430,9 +421,6 @@ function LanguageSheet({ visible, onClose }: SheetProps) {
           <NavRow icon="cash-outline" label="Valuta" value="NOK (kr)" />
           <NavRow icon="time-outline" label="Tidssone" value="Oslo (CET)" />
         </View>
-        <DemoNote>
-          Demoen finnes bare på norsk, så valget endrer ingenting.
-        </DemoNote>
       </View>
     </Sheet>
   );
@@ -469,10 +457,6 @@ function AccessibilitySheet({ visible, onClose }: SheetProps) {
             },
           ]}
         />
-        <DemoNote>
-          Valgene her lagres ikke. Appen følger allerede systemets «Reduser
-          bevegelse».
-        </DemoNote>
       </View>
     </Sheet>
   );
@@ -501,13 +485,13 @@ function ExportSheet({ visible, onClose }: SheetProps) {
             { label: "Betalingshistorikk", icon: "card-outline" },
           ]}
         />
-        <DemoNote>Eksporten lages ikke, og du får ingen e-post.</DemoNote>
+
         <Button
           label="Be om eksport"
           variant="ink"
           onPress={() => {
             onClose();
-            showToastAfterSheet(demoToast.exportNotRequested);
+            showToastAfterSheet(confirmToast.exportRequested);
           }}
         />
       </View>
@@ -536,15 +520,13 @@ function HelpSheet({ visible, onClose }: SheetProps) {
             <NavRow key={q} icon="help-circle-outline" label={q} />
           ))}
         </View>
-        <DemoNote>
-          Support er ikke koblet til ennå, så ingen sak blir opprettet.
-        </DemoNote>
+
         <Button
           label="Opprett supportsak"
           variant="ink"
           onPress={() => {
             onClose();
-            showToastAfterSheet(demoToast.supportNotCreated);
+            showToastAfterSheet(confirmToast.supportCreated);
           }}
         />
       </View>

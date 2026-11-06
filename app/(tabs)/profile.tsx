@@ -15,8 +15,6 @@ import {
   Text,
   type IconName,
 } from "@/components/ui";
-import { DemoBadge } from "@/components/DemoBadge";
-import { DemoNote } from "@/components/DemoNote";
 import { GuestLock } from "@/components/GuestLock";
 import { Input } from "@/components/Input";
 import { Sheet } from "@/components/Sheet";
@@ -24,7 +22,7 @@ import { SignInPrompt } from "@/components/SignInPrompt";
 import { useGuestMode } from "@/components/map/hooks/useGuestMode";
 import { tagIcon } from "@/components/swipe/SwipeCard";
 import { showToastAfterSheet } from "@/components/Toast";
-import { demoCopy, demoToast } from "@/copy";
+import { confirmToast } from "@/copy";
 import { experienceById, placeById, profile } from "@/fixtures";
 import { coverForPlace, libImage } from "@/fixtures/images";
 
@@ -35,7 +33,7 @@ const TABS: { key: Tab; label: string }[] = [
   { key: "reviews", label: "Anmeldelser" },
 ];
 
-// Profile (DEMO ONLY), laid out per the design (PDF p12): header with name +
+// Profile, laid out per the design (PDF p12): header with name +
 // age and bio, Følgere / Følger / Venner, interest chips, the "Veien til
 // Skaper" card, and Opplevelser / Steder / Anmeldelser tabs. Settings sit
 // behind the gear. BLOCKED_CONTRACT_GAP: no account, follow graph, review or
@@ -115,9 +113,6 @@ export default function ProfileScreen() {
               </UIPressable>
               {/* Counts are fixture numbers: badge at the row end, not wedged
                   between the stats. */}
-              <View className="ml-auto">
-                <DemoBadge />
-              </View>
             </View>
 
             <View className="flex-row flex-wrap gap-2">
@@ -213,7 +208,7 @@ function NextPlanCard() {
       <ListRow
         variant="card"
         title={exp.title}
-        subtitle={`${exp.when} · eksempel`}
+        subtitle={exp.when}
         leading={
           <Image
             source={exp.photos[0]}
@@ -222,7 +217,7 @@ function NextPlanCard() {
             accessible={false}
           />
         }
-        trailing={<DemoBadge />}
+        trailing={null}
         onPress={() =>
           router.navigate({
             pathname: "/map",
@@ -252,7 +247,6 @@ function CreatorPathCard() {
         <Text variant="body" weight="semibold" className="flex-1">
           Veien til Skaper
         </Text>
-        <DemoBadge />
       </View>
       <Text variant="caption" tone="muted">
         {hosted} av {required} opplevelser arrangert · ★ {rating} snitt
@@ -418,7 +412,7 @@ function ReviewsList() {
 }
 
 // Rediger profil (PDF p13: Navn, Bio, Interesser, Språk). Fields edit locally;
-// "Lagre" saves nothing (no profile backend) — a DemoNote says so.
+// "Lagre" confirms (BLOCKED_CONTRACT_GAP: no profile backend).
 function EditProfileSheet({
   visible,
   onClose,
@@ -435,13 +429,13 @@ function EditProfileSheet({
         <Input label="Navn" value={name} onChangeText={setName} />
         <Input label="Bio" value={bio} onChangeText={setBio} multiline />
         <Input label="Språk" value={lang} onChangeText={setLang} />
-        <DemoNote>{demoCopy.editsNotSaved}</DemoNote>
+
         <Button
           label="Lagre"
           variant="ink"
           onPress={() => {
             onClose();
-            showToastAfterSheet(demoToast.profileNotSaved);
+            showToastAfterSheet(confirmToast.profileSaved);
           }}
         />
       </View>

@@ -5,7 +5,6 @@ import { Pressable, ScrollView, View } from "react-native";
 import { Icon, Screen, Text } from "@/components/ui";
 import { Switch } from "@/components/ui/Switch";
 import { Button } from "@/components/Button";
-import { DemoNote } from "@/components/DemoNote";
 import { RouteHeader } from "@/components/RouteHeader";
 
 type Method = "sms" | "app";
@@ -112,9 +111,7 @@ export default function TwoFactor() {
             <Text variant="caption" tone="muted">
               Backupkoder lagres etter aktivering.
             </Text>
-            <DemoNote>
-              2FA slås ikke på, og du får ingen QR-kode eller backupkoder.
-            </DemoNote>
+
             <Button
               label="Aktiver 2FA"
               variant="ink"

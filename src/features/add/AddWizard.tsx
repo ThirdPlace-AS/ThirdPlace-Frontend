@@ -29,8 +29,6 @@ import {
   CategoryArt,
   hasCategoryArt,
 } from "@/components/illustrations/CategoryArt";
-import { DemoBadge } from "@/components/DemoBadge";
-import { DemoNote } from "@/components/DemoNote";
 import { Input } from "@/components/Input";
 import { CategoryPicker, PlacePicker } from "@/components/pickers/Pickers";
 import { experienceById, experiences, OSLO_AREAS, places } from "@/fixtures";
@@ -128,8 +126,8 @@ function formatDate(iso: string) {
 // The Add flows, per the design (PDF p10–p12). "Hva vil du legge til?" offers
 // Sted or Opplevelse. A place takes 5 steps and ends in "Send inn til
 // vurdering" (places are reviewed manually); an experience takes 7 steps and
-// ends in "Publiser opplevelsen". DEMO: nothing is sent or published — the end
-// state says so plainly (BLOCKED_CONTRACT_GAP).
+// ends in "Publiser opplevelsen". The end state confirms in product voice
+// (founder decision 2026-11-06); BLOCKED_CONTRACT_GAP: nothing is persisted.
 export function AddWizard() {
   const [draft, setDraft] = useState<AddDraft>(EMPTY_DRAFT);
   const [stepIndex, setStepIndex] = useState(0);
@@ -374,7 +372,6 @@ function StepBody({
               <Text variant="label">{draft.area}, Oslo</Text>
             </View>
           ) : null}
-          <DemoNote>Kartpinne og adressesøk er ikke aktive i demoen.</DemoNote>
         </Shell>
       ) : (
         <Shell
@@ -441,7 +438,7 @@ function StepBody({
                 <Pressable
                   key={i}
                   accessibilityRole="button"
-                  accessibilityLabel={`Eksempelbilde ${i + 1}`}
+                  accessibilityLabel={`Bilde ${i + 1}`}
                   accessibilityState={{ selected: pos >= 0 }}
                   onPress={() =>
                     patch({
@@ -479,9 +476,6 @@ function StepBody({
           <Text variant="caption" tone="muted">
             Minst 1 bilde påkrevd · JPG, PNG · maks 10 MB
           </Text>
-          <DemoNote>
-            Dette er eksempelbilder. Opplasting er ikke slått på.
-          </DemoNote>
         </Shell>
       );
 
@@ -586,10 +580,6 @@ function StepBody({
             selected={[draft.cancellation]}
             onPress={(c) => patch({ cancellation: c })}
           />
-          <DemoNote>
-            Pris og avbestilling vises bare. Ingen betaling eller refusjon er
-            slått på.
-          </DemoNote>
         </Shell>
       );
 
@@ -656,9 +646,7 @@ function ReviewStep({ draft }: { draft: AddDraft }) {
           </Text>
         ) : null}
       </View>
-      {isPlace ? (
-        <DemoNote>Stedet sendes ikke inn, og ingen andre ser det.</DemoNote>
-      ) : (
+      {isPlace ? null : (
         <>
           <View className="flex-row gap-2">
             <Fact icon="pricetag-outline" value={price} />
@@ -674,10 +662,6 @@ function ReviewStep({ draft }: { draft: AddDraft }) {
               </View>
             ))}
           </View>
-          <DemoNote>
-            Publisering er ikke aktiv. Ingenting blir synlig, og ingen chat
-            opprettes.
-          </DemoNote>
         </>
       )}
     </Shell>
@@ -708,14 +692,17 @@ function SubmittedState({
   return (
     <Screen edges={["top"]}>
       <View className="flex-1 items-center justify-center gap-5 p-gutter">
-        <View className="h-16 w-16 items-center justify-center rounded-full bg-surfaceMuted">
-          <Icon
-            name={isPlace ? "hourglass-outline" : "eye-off-outline"}
-            size="xl"
-            tone="ink"
-          />
+        <View className="h-16 w-16 items-center justify-center rounded-full bg-success/15">
+          <Icon name="checkmark" size="xl" tone="success" />
         </View>
         <View className="items-center gap-2">
+          <Text variant="label" weight="semibold" tone="success">
+            {editing
+              ? "Endringene er lagret"
+              : isPlace
+                ? "Stedet er sendt inn"
+                : "Opplevelsen er publisert"}
+          </Text>
           <Text
             variant="h2"
             weight="bold"
@@ -724,23 +711,13 @@ function SubmittedState({
           >
             {draft.title}
           </Text>
-          <View className="flex-row">
-            <DemoBadge
-              label={
-                isPlace
-                  ? "IKKE SENDT"
-                  : editing
-                    ? "IKKE LAGRET"
-                    : "IKKE PUBLISERT"
-              }
-            />
-          </View>
+
           <Text variant="body" tone="muted" className="px-6 text-center">
             {editing
-              ? "Endringene ble ikke lagret. Det krever innlogging og en server, og ingen av delene er på plass ennå."
+              ? "Deltakerne ser den oppdaterte opplevelsen."
               : isPlace
-                ? "Stedet ble ikke sendt inn. Det krever innlogging og en server, og ingen av delene er på plass ennå."
-                : "Opplevelsen ble ikke publisert, og ingen chat ble opprettet. Det krever innlogging og en server, og ingen av delene er på plass ennå."}
+                ? "Du kan følge stedet under Innleveringer."
+                : "Del den med folk du vil ha med."}
           </Text>
         </View>
         <View className="w-full gap-3 pt-2">

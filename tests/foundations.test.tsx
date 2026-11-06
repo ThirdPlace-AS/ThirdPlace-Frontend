@@ -1,17 +1,11 @@
 import { describe, expect, it, jest } from "@jest/globals";
 import { fireEvent, render, screen } from "@testing-library/react-native";
 
-import { DemoBadge } from "@/components/DemoBadge";
 import { GuestLock } from "@/components/GuestLock";
 import { SearchBar } from "@/components/SearchBar";
 import { EmptyState } from "@/components/states/StateView";
 
 describe("foundation components", () => {
-  it("DemoBadge renders its label", () => {
-    render(<DemoBadge />);
-    expect(screen.getByText("DEMO")).toBeTruthy();
-  });
-
   it("GuestLock shows the message", () => {
     render(<GuestLock message="Logg inn for å bli med" />);
     expect(screen.getByText("Logg inn for å bli med")).toBeTruthy();

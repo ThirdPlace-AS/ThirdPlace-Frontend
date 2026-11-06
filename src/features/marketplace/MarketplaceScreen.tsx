@@ -13,7 +13,6 @@ import {
 } from "@/components/ui";
 import { Button } from "@/components/Button";
 import { Chip } from "@/components/Chip";
-import { DemoNote } from "@/components/DemoNote";
 import { RouteHeader } from "@/components/RouteHeader";
 import { Sheet } from "@/components/Sheet";
 import { SignInPrompt } from "@/components/SignInPrompt";
@@ -28,7 +27,7 @@ import {
 import { libImage } from "@/fixtures/images";
 import { gutterPx, useThemeColors } from "@/theme";
 
-// Marketplace (DEMO), per the design (PDF p15–p16) and master spec §13: a B2B
+// Marketplace, per the design (PDF p15–p16) and master spec §13: a B2B
 // collaboration space where creators, businesses and enterprises offer
 // venues, hosting, sponsorships and brand deals. Search + type chips (Alle /
 // Venue / Skaper / Sponsing / Co-hosting / Brand), listing cards, and a detail
@@ -75,10 +74,7 @@ export default function MarketplaceScreen() {
             <Text variant="caption" tone="muted">
               Her finner skapere og bedrifter hverandre.
             </Text>
-            <DemoNote>
-              Annonsene, prisene og navnene er eksempler. Ingenting kan
-              bestilles.
-            </DemoNote>
+
             <UIPressable
               hitSlop={{ top: 12, bottom: 12, left: 8, right: 8 }}
               accessibilityRole="button"
@@ -333,9 +329,7 @@ function ListingSheet({
               </Text>
             </View>
           </View>
-          {notice ? (
-            <DemoNote>Lagret bare her. Listingen lagres ikke.</DemoNote>
-          ) : null}
+
           <View className="flex-row gap-3">
             <View className="flex-1">
               <Button

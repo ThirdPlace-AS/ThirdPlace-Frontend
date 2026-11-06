@@ -1,20 +1,20 @@
 import { Ionicons } from "@expo/vector-icons";
 import { useState } from "react";
-import { Pressable, View } from "react-native";
+import { Pressable, Share, View } from "react-native";
 import { Icon, Text, Pressable as UIPressable } from "@/components/ui";
 import { Button } from "@/components/Button";
 import { Chip } from "@/components/Chip";
-import { DemoNote } from "@/components/DemoNote";
 import { Input } from "@/components/Input";
 import { Sheet } from "@/components/Sheet";
 import { showToastAfterSheet } from "@/components/Toast";
-import { demoToast } from "@/copy";
+import { blockedToast, confirmToast } from "@/copy";
 
-// Shared action sheets (DEMO), per the design (PDF p23): Del, Rapporter,
-// Blokkere, Forlate opplevelsen, Bli med på ventelisten. BLOCKED_CONTRACT_GAP:
-// no share link, moderation, block, attendance or waitlist contract exists —
-// every confirm says plainly that nothing happened. Mount each sheet only
-// while open so its local state never leaks between uses.
+// Shared action sheets, per the design (PDF p23): Del, Rapporter, Blokkere,
+// Forlate opplevelsen, Bli med på ventelisten. BLOCKED_CONTRACT_GAP: no share
+// link, moderation, block, attendance or waitlist contract exists; each
+// confirm closes the sheet with a product confirmation (founder decision
+// 2026-11-06). Mount each sheet only while open so its local state never
+// leaks between uses.
 
 type Base = { onClose: () => void };
 
@@ -24,7 +24,6 @@ export function ShareSheet({
   slug,
   onClose,
 }: Base & { title: string; slug: string }) {
-  const [done, setDone] = useState<string | null>(null);
   const actions: { label: string; icon: keyof typeof Ionicons.glyphMap }[] = [
     { label: "DM", icon: "chatbubble-outline" },
     { label: "Kopier", icon: "copy-outline" },
@@ -46,7 +45,23 @@ export function ShareSheet({
             <UIPressable
               key={a.label}
               accessibilityRole="button"
-              onPress={() => setDone(a.label)}
+              onPress={() => {
+                onClose();
+                if (a.label === "Mer") {
+                  // The system share sheet, with the item link.
+                  setTimeout(
+                    () =>
+                      void Share.share({ message: `thirdplace.app/${slug}` }),
+                    240,
+                  );
+                  return;
+                }
+                showToastAfterSheet(
+                  a.label === "Kopier"
+                    ? confirmToast.linkCopied
+                    : confirmToast.sharedInMessage,
+                );
+              }}
               contentClassName="items-center gap-1"
             >
               <View className="h-12 w-12 items-center justify-center rounded-full bg-surfaceMuted">
@@ -56,9 +71,6 @@ export function ShareSheet({
             </UIPressable>
           ))}
         </View>
-        {done ? (
-          <DemoNote>Ingenting ble delt. Lenken er bare et eksempel.</DemoNote>
-        ) : null}
       </View>
     </Sheet>
   );
@@ -75,7 +87,6 @@ const REASONS = [
 // Rapporter (p23): anonymous reason picker.
 export function ReportSheet({ onClose }: Base) {
   const [reason, setReason] = useState<string | null>(null);
-  const [sent, setSent] = useState(false);
   return (
     <Sheet visible onClose={onClose} title="Rapporter">
       <View className="gap-3">
@@ -99,16 +110,15 @@ export function ReportSheet({ onClose }: Base) {
             />
           </UIPressable>
         ))}
-        {sent ? (
-          <DemoNote>
-            Rapporten ble ikke sendt. Moderering er ikke på plass ennå.
-          </DemoNote>
-        ) : null}
+
         <Button
           label="Send rapport"
           variant="ink"
           disabled={!reason}
-          onPress={() => setSent(true)}
+          onPress={() => {
+            onClose();
+            showToastAfterSheet(confirmToast.reportSent);
+          }}
         />
       </View>
     </Sheet>
@@ -117,7 +127,6 @@ export function ReportSheet({ onClose }: Base) {
 
 // Blokkere (p23).
 export function BlockSheet({ name, onClose }: Base & { name: string }) {
-  const [done, setDone] = useState(false);
   const first = name.split(" ")[0];
   return (
     <Sheet visible onClose={onClose} title={`Blokkere ${first}?`}>
@@ -126,11 +135,14 @@ export function BlockSheet({ name, onClose }: Base & { name: string }) {
           {first} kan ikke lenger se profilen din, sende meldinger eller finne
           deg i søk. Dere fjernes fra felles chatter.
         </Text>
-        {done ? <DemoNote>Ingen blokkering er lagret.</DemoNote> : null}
+
         <Button
           label="Blokker"
           variant="secondary"
-          onPress={() => setDone(true)}
+          onPress={() => {
+            onClose();
+            showToastAfterSheet(blockedToast(first ?? name));
+          }}
         />
         <Button label="Avbryt" variant="ink" onPress={onClose} />
       </View>
@@ -146,9 +158,6 @@ export function LeaveSheet({
   return (
     <Sheet visible onClose={onClose} title="Forlate opplevelsen?">
       <View className="gap-3">
-        <DemoNote>
-          Påmeldingen din endres ikke, og ingenting refunderes.
-        </DemoNote>
         <Button
           label="Forlat"
           variant="secondary"
@@ -185,9 +194,7 @@ export function WaitlistSheet({
             </Text>
           </View>
         </View>
-        <DemoNote>
-          Køplassen er bare et eksempel. Det finnes ingen venteliste ennå.
-        </DemoNote>
+
         <Button
           label="Sett meg på ventelisten"
           variant="ink"
@@ -202,10 +209,10 @@ export function WaitlistSheet({
   );
 }
 
-// Betal (PDF p23) — STRUCTURE ONLY. Shows the ticket line, but there is no
-// processing step and no success screen: no card is used, nothing is
-// charged, and "Bli med uten betaling" only flips the local demo state,
-// saying so (master spec: no invented payment rules).
+// Betal (PDF p23): STRUCTURE ONLY. Shows the ticket line, but there is no
+// processing step and no success screen: no card is used and nothing is
+// charged. "Reserver plass" joins locally (master spec: no invented payment
+// rules).
 export function PaySheet({
   title,
   when,
@@ -231,18 +238,15 @@ export function PaySheet({
         </View>
         <View className="flex-row justify-between px-1">
           <Text variant="caption" tone="muted">
-            Billett (eksempelpris)
+            Billett
           </Text>
           <Text variant="label" weight="semibold">
             {priceNok} kr
           </Text>
         </View>
-        <DemoNote>
-          Betaling er ikke slått på, så ingenting belastes og ingen plass holdes
-          av.
-        </DemoNote>
+
         <Button
-          label="Bli med uten betaling (demo)"
+          label="Reserver plass"
           variant="ink"
           onPress={() => {
             onJoined();
@@ -255,8 +259,9 @@ export function PaySheet({
   );
 }
 
-// Avlyse opplevelsen (host, PDF p24–p25): reason + confirm. DEMO — no one is
-// notified and no refund happens; the confirm only flips local state.
+// Avlyse opplevelsen (host, PDF p24–p25): reason + confirm.
+// BLOCKED_CONTRACT_GAP: no one is notified and no refund happens; the
+// confirm flips local state.
 export function CancelSheet({
   title,
   going,
@@ -278,9 +283,7 @@ export function CancelSheet({
           multiline
           maxLength={200}
         />
-        <DemoNote>
-          Ingen får beskjed, og ingenting refunderes i demoen.
-        </DemoNote>
+
         <Button
           label="Avlys"
           variant="secondary"
@@ -297,7 +300,6 @@ export function CancelSheet({
 
 // "En plass åpnet seg!" (PDF p24): a waitlist offer with a response window.
 export function SpotOfferSheet({ title, onClose }: Base & { title: string }) {
-  const [choice, setChoice] = useState<string | null>(null);
   return (
     <Sheet visible onClose={onClose} title="En plass åpnet seg!">
       <View className="gap-3">
@@ -309,18 +311,22 @@ export function SpotOfferSheet({ title, onClose }: Base & { title: string }) {
         <Text variant="caption" tone="muted">
           Vil du ta plassen?
         </Text>
-        {choice ? (
-          <DemoNote>{`«${choice}» gjør ingenting i demoen. Det finnes ingen venteliste ennå.`}</DemoNote>
-        ) : null}
+
         <Button
           label="Ta plassen"
           variant="ember"
-          onPress={() => setChoice("Ta plassen")}
+          onPress={() => {
+            onClose();
+            showToastAfterSheet(confirmToast.spotTaken);
+          }}
         />
         <Button
           label="Gi den videre"
           variant="secondary"
-          onPress={() => setChoice("Gi den videre")}
+          onPress={() => {
+            onClose();
+            showToastAfterSheet(confirmToast.spotPassed);
+          }}
         />
       </View>
     </Sheet>
@@ -393,7 +399,7 @@ export function RateSheet({
           onPress={() => {
             onSent?.();
             onClose();
-            showToastAfterSheet(demoToast.ratingNotSaved);
+            showToastAfterSheet(confirmToast.ratingSent);
           }}
         />
         <Button label="Hopp over" variant="secondary" onPress={onClose} />
@@ -410,7 +416,6 @@ export function SplitBillSheet({
   onClose,
 }: Base & { title: string; names: string[] }) {
   const [mode, setMode] = useState("Likt");
-  const [reminded, setReminded] = useState(false);
   return (
     <Sheet visible onClose={onClose} title="Del regningen">
       <View className="gap-3">
@@ -440,15 +445,14 @@ export function SplitBillSheet({
             </Text>
           </View>
         ))}
-        <DemoNote>
-          {reminded
-            ? "Ingen påminnelse ble sendt."
-            : "Regningsdeling er ikke på plass ennå, og ingen beløp er bestemt."}
-        </DemoNote>
+
         <Button
           label="Send påminnelse"
           variant="ink"
-          onPress={() => setReminded(true)}
+          onPress={() => {
+            onClose();
+            showToastAfterSheet(confirmToast.reminderSent);
+          }}
         />
       </View>
     </Sheet>

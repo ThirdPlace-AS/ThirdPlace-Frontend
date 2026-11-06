@@ -1,6 +1,6 @@
 import { View } from "react-native";
 
-import { Icon, Switch, Text, Pressable as UIPressable } from "@/components/ui";
+import { Icon, Text } from "@/components/ui";
 import { Button } from "@/components/Button";
 import { CategoryArt } from "@/components/illustrations/CategoryArt";
 import { Chip } from "@/components/Chip";
@@ -19,8 +19,6 @@ export function MapLocationSheet({
   selectedAreaName,
   onRequest,
   onSelectArea,
-  offline,
-  onToggleOffline,
 }: {
   visible: boolean;
   onClose: () => void;
@@ -29,8 +27,6 @@ export function MapLocationSheet({
   selectedAreaName: string | null;
   onRequest: () => void;
   onSelectArea: (a: MockArea) => void;
-  offline: boolean;
-  onToggleOffline: () => void;
 }) {
   const denied = status === "denied";
   const unavailable = status === "unavailable";
@@ -101,32 +97,6 @@ export function MapLocationSheet({
           ))}
         </View>
       </View>
-
-      {/* Simulate an offline/error state to exercise recovery. */}
-      <UIPressable
-        accessibilityRole="switch"
-        accessibilityLabel="Simuler frakoblet"
-        accessibilityState={{ checked: offline }}
-        haptic="selection"
-        onPress={onToggleOffline}
-        contentClassName="flex-row items-center justify-between rounded-md border border-line bg-surface px-4 py-3"
-        pressedScale={0.99}
-      >
-        <View className="flex-1 flex-row items-center gap-2">
-          <Text variant="body">Simuler frakoblet</Text>
-        </View>
-        {/* Display-only: the whole row is the switch (role="switch" above). */}
-        <View
-          pointerEvents="none"
-          importantForAccessibility="no-hide-descendants"
-        >
-          <Switch
-            value={offline}
-            onValueChange={() => {}}
-            label="Simuler frakoblet"
-          />
-        </View>
-      </UIPressable>
     </Sheet>
   );
 }

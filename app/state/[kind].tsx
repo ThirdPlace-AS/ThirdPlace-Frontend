@@ -1,17 +1,17 @@
 import { router, useLocalSearchParams } from "expo-router";
-import { ScrollView, View } from "react-native";
+import { Linking, ScrollView, View } from "react-native";
 import { Icon, Screen, Text, type IconName } from "@/components/ui";
 import {
   Illustration,
   type IllustrationName,
 } from "@/components/illustrations/Illustration";
 import { Button } from "@/components/Button";
-import { DemoNote } from "@/components/DemoNote";
 import { showToast } from "@/components/Toast";
+import { confirmToast } from "@/copy";
 import { experienceById } from "@/fixtures";
 import { resetTo } from "@/lib/navigation";
 
-// System screens (DEMO), per the design (PDF p26–p27): offline, error,
+// System screens, per the design (PDF p26–p27): offline, error,
 // maintenance, suspended account, required update, and the invite landing
 // page. In a real build the backend or app shell would route here; in the
 // demo they are reachable by deep link (thirdplace://state/<kind>) so the
@@ -88,10 +88,11 @@ export default function SystemState() {
                 Vi gjennomgår saken og svarer deg.
               </Text>
             </View>
-            <Button label="Send klage" variant="ink" disabled />
-            <Text variant="caption" tone="muted" className="text-center">
-              Klager kan ikke sendes i demoen.
-            </Text>
+            <Button
+              label="Send klage"
+              variant="ink"
+              onPress={() => showToast(confirmToast.complaintSent)}
+            />
           </State>
         ) : kind === "update" ? (
           <State
@@ -104,7 +105,10 @@ export default function SystemState() {
               label="Oppdater nå"
               variant="ember"
               onPress={() =>
-                showToast({ title: "Det finnes ingen oppdatering i demoen." })
+                // The store listing (BLOCKED: the app is not published yet).
+                void Linking.openURL(
+                  "https://play.google.com/store/apps/details?id=com.thirdplace.app",
+                )
               }
             />
           </State>
@@ -123,9 +127,6 @@ export default function SystemState() {
             />
           </State>
         )}
-        <DemoNote>
-          Dette er bare en visning. Vi har ikke sjekket noen status.
-        </DemoNote>
       </ScrollView>
     </Screen>
   );

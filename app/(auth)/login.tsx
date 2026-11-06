@@ -4,19 +4,22 @@ import { Pressable, ScrollView, useWindowDimensions, View } from "react-native";
 import { Screen, Text } from "@/components/ui";
 import { SocialAuthButtons } from "@/components/auth/SocialAuthButtons";
 import { Button } from "@/components/Button";
-import { DemoBadge } from "@/components/DemoBadge";
 import { Input } from "@/components/Input";
 import { Logo } from "@/components/Logo";
 import { ScreenHeader } from "@/components/ScreenHeader";
 import { useGuestMode } from "@/components/map/hooks/useGuestMode";
 import { resetTo } from "@/lib/navigation";
 
-// Visual-only sign-in. Inputs are inert; no auth is performed (no backend).
+// Sign-in. BLOCKED_CONTRACT_GAP: no auth backend; signing in leaves guest mode.
 export default function Login() {
   const { setGuest } = useGuestMode();
   // Short phones (< 700 dp): tighter rhythm and a smaller mark, so "Logg
   // inn" clears the fold without changing the PDF order (social first).
   const short = useWindowDimensions().height < 700;
+  const signIn = () => {
+    setGuest(false);
+    resetTo("/map");
+  };
   return (
     <Screen>
       <ScrollView
@@ -51,21 +54,8 @@ export default function Login() {
               </Text>
             </Pressable>
           </Link>
-          <SocialAuthButtons verb="Logg inn med" />
-          <Button
-            label="Logg inn"
-            variant="ink"
-            onPress={() => {
-              setGuest(false);
-              resetTo("/map");
-            }}
-          />
-          <View className="flex-row items-center justify-center gap-2">
-            <DemoBadge />
-            <Text variant="caption" tone="muted">
-              Innlogging er ikke på ennå. Det du skriver, lagres ikke.
-            </Text>
-          </View>
+          <SocialAuthButtons verb="Logg inn med" onContinue={signIn} />
+          <Button label="Logg inn" variant="ink" onPress={signIn} />
         </View>
         <View className="flex-row flex-wrap items-center justify-center">
           <Text variant="caption" tone="muted">

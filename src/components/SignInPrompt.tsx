@@ -3,8 +3,6 @@ import { View } from "react-native";
 import { Icon, Text } from "@/components/ui";
 import { Button } from "@/components/Button";
 import { Sheet } from "@/components/Sheet";
-import { DemoNote } from "@/components/DemoNote";
-import { demoCopy } from "@/copy";
 import { resetTo } from "@/lib/navigation";
 
 // Respectful sign-in prompt shown when a guest tries an account-only action
@@ -50,8 +48,6 @@ export function SignInPrompt({
           resetTo("/register");
         }}
       />
-
-      <DemoNote>{demoCopy.signInInactive}</DemoNote>
     </Sheet>
   );
 }

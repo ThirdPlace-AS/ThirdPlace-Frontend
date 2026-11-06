@@ -11,7 +11,6 @@ import {
 } from "@/components/ui";
 import { Button } from "@/components/Button";
 import { Chip } from "@/components/Chip";
-import { DemoNote } from "@/components/DemoNote";
 import { RouteHeader } from "@/components/RouteHeader";
 import { EmptyState } from "@/components/states/StateView";
 
@@ -30,10 +29,7 @@ export function PayoutsScreen() {
         <Text variant="caption" tone="muted">
           Sett opp hvordan du mottar penger fra opplevelser.
         </Text>
-        <DemoNote>
-          Utbetalinger er ikke slått på. Vi tar ikke imot kontoopplysninger, og
-          valgene her lagres ikke.
-        </DemoNote>
+
         <Section>Utbetalingsmetode</Section>
         <Pressable
           accessibilityRole="button"
@@ -153,9 +149,7 @@ export function SubmissionsScreen() {
         <Text variant="caption" tone="muted">
           Avviste innleveringer kan sendes på nytt med oppdatert informasjon.
         </Text>
-        <DemoNote>
-          Innleveringene er eksempler. Ingen steder er sendt inn.
-        </DemoNote>
+
         <Button
           label="Send inn nytt sted"
           variant="ink"

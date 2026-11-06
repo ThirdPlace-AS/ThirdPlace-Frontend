@@ -11,13 +11,14 @@ import {
 } from "@/components/ui";
 import { Button } from "@/components/Button";
 import { Chip } from "@/components/Chip";
-import { DemoNote } from "@/components/DemoNote";
 import { Input } from "@/components/Input";
 import { RouteHeader } from "@/components/RouteHeader";
 import { Sheet } from "@/components/Sheet";
+import { showToastAfterSheet } from "@/components/Toast";
+import { confirmToast } from "@/copy";
 import { LISTING_TYPES, listings, type MockListingType } from "@/fixtures";
 
-// Mine listings + Ny / Rediger listing (DEMO), per the design (PDF p16).
+// Mine listings + Ny / Rediger listing, per the design (PDF p16).
 // Tabs Aktive / Utkast / Avsluttede over the user's example listings, a
 // pencil per row to edit, and a "+" for a new listing. BLOCKED_CONTRACT_GAP:
 // no listing entity, publishing or pricing contract — nothing is published or
@@ -86,7 +87,6 @@ export default function MyListingsScreen() {
             </Pressable>
           </View>
         ))}
-        <DemoNote>Listingene er eksempler. Ingenting er publisert.</DemoNote>
       </ScrollView>
       <IconButton
         icon="add"
@@ -113,7 +113,6 @@ function ListingEditor({
 }) {
   const isNew = initial.title === "";
   const [d, setD] = useState(initial);
-  const [done, setDone] = useState(false);
   return (
     <Sheet
       visible
@@ -152,18 +151,17 @@ function ListingEditor({
           multiline
           maxLength={400}
         />
-        {done ? (
-          <DemoNote>
-            {isNew
-              ? "Listingen ble ikke publisert."
-              : "Endringene ble ikke lagret."}
-          </DemoNote>
-        ) : null}
+
         <Button
           label={isNew ? "Publiser listing →" : "Lagre endringer"}
           variant="ink"
           disabled={d.title.trim().length < 3}
-          onPress={() => setDone(true)}
+          onPress={() => {
+            onClose();
+            showToastAfterSheet(
+              isNew ? confirmToast.listingPublished : confirmToast.listingSaved,
+            );
+          }}
         />
         {d.title.trim().length < 3 ? (
           <Text variant="caption" tone="muted" className="text-center">

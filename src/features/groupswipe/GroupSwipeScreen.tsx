@@ -24,7 +24,6 @@ import {
 import { Button } from "@/components/Button";
 import { haptics } from "@/lib/haptics";
 import { Chip } from "@/components/Chip";
-import { DemoNote } from "@/components/DemoNote";
 import { Input } from "@/components/Input";
 import { showToast } from "@/components/Toast";
 import { SignInPrompt } from "@/components/SignInPrompt";
@@ -48,7 +47,7 @@ const TIMES = ["1–2 timer", "Hele kvelden", "Hele dagen"];
 const AGREED_ID = "e3";
 const LOBBY_STEP_MS = 500;
 
-// Gruppe-sveip (DEMO), per the design (PDF p8–p9): Start gruppe-sveip →
+// Gruppe-sveip, per the design (PDF p8–p9): Start gruppe-sveip →
 // lobby (who is ready) → shared deck ("Hvem har sveipet?") → "Dere matcher!".
 // BLOCKED_CONTRACT_GAP: there is no group-swipe session, invite or matching
 // contract. Friends are fixture people and their readiness and votes are
@@ -291,10 +290,7 @@ export default function GroupSwipeScreen() {
           <Text variant="caption" tone="muted" className="text-center">
             {ready.length} av {friends.length} klare
           </Text>
-          <DemoNote>
-            Vennene er eksempler, og appen later som de blir klare. Ingen
-            invitasjon er sendt.
-          </DemoNote>
+
           <Button
             label="Start når alle er klare"
             variant="ink"
@@ -397,7 +393,6 @@ export default function GroupSwipeScreen() {
               }}
             />
           </View>
-          <DemoNote>Stemmene til vennene er simulert i demoen.</DemoNote>
         </ScrollView>
       ) : null}
 
@@ -420,11 +415,7 @@ export default function GroupSwipeScreen() {
               Alle er enige
             </Text>
           </View>
-          <DemoNote>
-            {matchChat
-              ? "Ingen ny gruppechat ble opprettet. Knappen åpner eksempelchatten for opplevelsen."
-              : "Ingen gruppechat ble opprettet i demoen."}
-          </DemoNote>
+
           <Button
             label="Åpne chatten →"
             variant="ink"

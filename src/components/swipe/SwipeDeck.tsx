@@ -40,8 +40,6 @@ import {
 } from "@/components/ui";
 import { StatusBarStyle } from "@/components/ui/StatusBarStyle";
 import { Button } from "@/components/Button";
-import { DemoBadge } from "@/components/DemoBadge";
-import { DemoNote } from "@/components/DemoNote";
 import { Sheet } from "@/components/Sheet";
 import { useGuestMode } from "@/components/map/hooks/useGuestMode";
 import { useMapSaved } from "@/components/map/hooks/useMapSaved";
@@ -49,7 +47,9 @@ import { markerId } from "@/components/map/types/mapPresentation";
 import { NotificationsSheet } from "@/components/NotificationsSheet";
 import { SignInPrompt } from "@/components/SignInPrompt";
 import { EmptyState } from "@/components/states/StateView";
-import { places, type MockExperience } from "@/fixtures";
+import { chats, places, type MockExperience } from "@/fixtures";
+import { showToastAfterSheet } from "@/components/Toast";
+import { confirmToast } from "@/copy";
 import { useNotificationReads } from "@/hooks/useNotificationReads";
 import { markViewed } from "@/components/map/hooks/useRecentlyViewed";
 import { haptics } from "@/lib/haptics";
@@ -60,7 +60,7 @@ import { decideCommit, rotationFor, type SwipeAction } from "./deckLogic";
 import { PhotoCarousel } from "./PhotoCarousel";
 import { PlaceDeck } from "./PlaceDeck";
 import { SwipeActions } from "./SwipeActions";
-import { SwipeCard, SwipeDemoPill, SWIPE_CONTENT_BOTTOM } from "./SwipeCard";
+import { SwipeCard, SWIPE_CONTENT_BOTTOM } from "./SwipeCard";
 import { SwipeFilterBar, type SwipeMode } from "./SwipeFilterBar";
 import {
   applySwipeFilters,
@@ -77,15 +77,15 @@ const G = motion.gesture;
 // committing pan, clamped swing rotation, drag stamps, haptics, one-level undo,
 // a top filter bar and an in-place scroll detail (reusing the map's detail
 // rendering). Left = Hopp over, right = Bli med, up = Lagre (save). All local
-// demo state (BLOCKED_CONTRACT_GAP); every card carries a DemoBadge.
+// state (BLOCKED_CONTRACT_GAP).
 export function SwipeDeck() {
   const insets = useSafeAreaInsets();
   const { width: screenW, height: screenH } = useWindowDimensions();
 
   // ── Audience mode tabs ──
   // PDF p7: For deg · Opplevelser · Steder. "For deg" is a non-personalized
-  // demo shell (DEMO_MODES rule) over the experience deck — marked with a demo
-  // note, no invented ranking (BLOCKED_CONTRACT_GAP). "Steder" (place cards) is
+  // shell (DEMO_MODES rule) over the experience deck: no invented ranking
+  // (BLOCKED_CONTRACT_GAP). "Steder" (place cards) is
   // not built yet and shows an honest empty state. Local filtering
   // (tags/when/availability) lives in the Filtre sheet.
   const [filters, setFilters] = useState<SwipeFilters>(DEFAULT_SWIPE_FILTERS);
@@ -309,7 +309,7 @@ export function SwipeDeck() {
   const slots = deck.window.map((exp, n) => ({ exp, n })).reverse();
 
   return (
-    <SwipeDemoPill.Provider value={mode === "forYou"}>
+    <>
       <View className="flex-1 bg-ink">
         {mode === "places" ? (
           <PlaceDeck onExhausted={setPlacesDone} />
@@ -450,22 +450,6 @@ export function SwipeDeck() {
             onLight={mode === "places" ? placesDone : deck.done}
             onOpenGroup={() => router.push("/group-swipe")}
           />
-
-          {/* Honest demo note: "For deg" is not personalized yet — it shows the
-            same deck as "Opplevelser". */}
-          {mode === "forYou" ? (
-            <View className="mx-gutter mt-2 flex-row items-center gap-2 self-start rounded-full bg-black/55 px-3 py-1.5">
-              <DemoBadge />
-              <Text
-                variant="caption"
-                weight="medium"
-                tone="onMedia"
-                className="opacity-80"
-              >
-                Ikke personalisert ennå
-              </Text>
-            </View>
-          ) : null}
         </View>
 
         {/* Filtre — looks like the map's Filtre sheet (muted sheet, white Section
@@ -497,7 +481,7 @@ export function SwipeDeck() {
           onClose={() => setSignInFor(null)}
         />
       </View>
-    </SwipeDemoPill.Provider>
+    </>
   );
 }
 
@@ -801,8 +785,8 @@ function MetaLine({
 // compact body straight from the fixture (hero + status/when/host/about/interests
 // + attendees count) instead of the shared (light) map DetailContent, so the map's
 // detail is untouched. A sticky bottom bar carries the primary join CTA. Join/save
-// are account-gated for guests; everything here is local demo state
-// (BLOCKED_CONTRACT_GAP) and carries a DemoBadge.
+// are account-gated for guests; everything here is local state
+// (BLOCKED_CONTRACT_GAP).
 function ExpandDetail({
   exp,
   onClose,
@@ -912,7 +896,6 @@ function ExpandBody({
         </View>
 
         <View className="flex-row items-center gap-2">
-          <DemoBadge />
           <Text variant="caption" tone="onMedia" className="flex-1 opacity-60">
             Du blir ikke påmeldt, og ingenting lagres.
           </Text>
@@ -980,7 +963,7 @@ function ExpandBody({
       >
         <UIPressable
           accessibilityRole="button"
-          accessibilityLabel={joined ? "Meld av (demo)" : joinLabel}
+          accessibilityLabel={joined ? "Meld av" : joinLabel}
           accessibilityState={{ selected: joined }}
           onPress={() => gate("bli med", () => setJoined((j) => !j))}
           className="flex-1"
@@ -988,7 +971,7 @@ function ExpandBody({
         >
           <PopIcon pop={joined} name="heart" size="md" tone="onEmber" />
           <Text variant="body" weight="bold" tone="onEmber">
-            {joined ? "Du er med · demo" : joinLabel}
+            {joined ? "Du er med" : joinLabel}
           </Text>
         </UIPressable>
         <HeartToggle
@@ -1015,7 +998,6 @@ function ExpandBody({
       {/* Safety action sheet (Master §7 report/block) — local demo, no report
             is sent; account-gated for guests. */}
       <Sheet visible={safetyOpen} onClose={() => setSafetyOpen(false)}>
-        <DemoNote>Rapporten sendes ikke, og blokkeringen lagres ikke.</DemoNote>
         <ListRow
           variant="card"
           icon="flag-outline"
@@ -1054,8 +1036,9 @@ function ExpandBody({
 }
 
 // "Bli med i samtalen" (PDF p8): after a like, offer the experience's chat.
-// DEMO — "Bli med i chatten" joins nothing; the note says so. The PDF's
-// "N personer snakker …" count is left out (no real social proof).
+// "Bli med i chatten" opens the experience chat when the fixtures have one,
+// else confirms. The PDF's "N personer snakker …" count is left out (no real
+// social proof). BLOCKED_CONTRACT_GAP: no chat membership contract.
 function JoinChatSheet({
   exp,
   onClose,
@@ -1063,10 +1046,17 @@ function JoinChatSheet({
   exp: MockExperience | null;
   onClose: () => void;
 }) {
-  const [tried, setTried] = useState(false);
-  const close = () => {
-    setTried(false);
+  const close = onClose;
+  const join = () => {
+    if (!exp) return;
+    const chat = chats.find((c) => c.pinnedExperienceId === exp.id);
     onClose();
+    haptics.light();
+    if (chat) {
+      setTimeout(() => router.push(`/chat/${chat.id}`), 260);
+    } else {
+      showToastAfterSheet(confirmToast.joinedChat);
+    }
   };
   return (
     <Sheet visible={exp !== null} onClose={close} title="Bli med i samtalen">
@@ -1080,14 +1070,8 @@ function JoinChatSheet({
           </Text>
           {/* PDF p8 line "Chat er gratis — billett kjøper du når du vil." is
               left out: it states a payment rule (CLAUDE.md governance). */}
-          {tried ? (
-            <DemoNote>Du ble ikke lagt til i noen chat i demoen.</DemoNote>
-          ) : null}
-          <Button
-            label="Bli med i chatten"
-            variant="ink"
-            onPress={() => setTried(true)}
-          />
+
+          <Button label="Bli med i chatten" variant="ink" onPress={join} />
           <Button label="Avbryt" variant="secondary" onPress={close} />
         </View>
       ) : null}

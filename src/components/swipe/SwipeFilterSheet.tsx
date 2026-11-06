@@ -12,8 +12,6 @@ import { Button } from "@/components/Button";
 import { CheckboxRow } from "@/components/CheckboxRow";
 import { TypeChip } from "@/components/map/TypeChip";
 import { experiences, TIME_WINDOWS } from "@/fixtures";
-import { DemoNote } from "@/components/DemoNote";
-import { demoCopy } from "@/copy";
 import { tagIcon } from "./SwipeCard";
 import {
   activeSwipeFilterCount,
@@ -154,7 +152,6 @@ function FilterBody({
         keyboardShouldPersistTaps="handled"
       >
         {/* Honesty marker — local-only filtering, no server request. */}
-        <DemoNote>{demoCopy.filterLocalOnly}</DemoNote>
 
         {/* Interesser — real local filter on the fixture's tags. */}
         <Section title="Interesser">

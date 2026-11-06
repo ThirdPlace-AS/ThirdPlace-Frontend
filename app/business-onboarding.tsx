@@ -15,7 +15,6 @@ import {
 } from "@/components/ui";
 import { Button } from "@/components/Button";
 import { Chip } from "@/components/Chip";
-import { DemoNote } from "@/components/DemoNote";
 import { Input } from "@/components/Input";
 import { useGuestMode } from "@/components/map/hooks/useGuestMode";
 import { OSLO_AREAS } from "@/fixtures";
@@ -23,7 +22,7 @@ import { checkBirthday, formatBirthdayInput } from "@/features/onboarding/age";
 import { UnderageScreen } from "@/features/onboarding/UnderageScreen";
 import { resetTo } from "@/lib/navigation";
 
-// Business onboarding (DEMO), per the design (PDF p3–p5). It continues the
+// Business onboarding, per the design (PDF p3–p5). It continues the
 // role step ("1 av 8") with steps 2–8: Personen bak bedriften → Om bedriften →
 // Hvor ligger dere? → Kontakt og sosialt → Tillatelser → Hva vil dere oppnå? →
 // Se bedriften på kartet. Nothing is created, verified, charged or stored
@@ -237,9 +236,6 @@ export default function BusinessOnboarding() {
                   value={street}
                   onChangeText={setStreet}
                 />
-                <DemoNote>
-                  Kartpinne og adressesøk er ikke aktive i demoen.
-                </DemoNote>
               </Shell>
             ) : null}
 
@@ -300,7 +296,6 @@ export default function BusinessOnboarding() {
                   value={notif}
                   onChange={setNotif}
                 />
-                <DemoNote>Ingen tillatelser blir spurt om i demoen.</DemoNote>
               </Shell>
             ) : null}
 
@@ -361,12 +356,8 @@ export default function BusinessOnboarding() {
                 <NextStep
                   n={2}
                   title="Start abonnement"
-                  hint="Betaling er ikke aktiv i demoen"
+                  hint="Velg abonnement"
                 />
-                <DemoNote>
-                  Bedriften opprettes ikke, og ingen verifisering eller betaling
-                  starter.
-                </DemoNote>
               </Shell>
             ) : null}
           </ScrollView>

@@ -12,7 +12,6 @@ import {
   Pressable as UIPressable,
 } from "@/components/ui";
 import { Chip } from "@/components/Chip";
-import { DemoNote } from "@/components/DemoNote";
 import { experienceById, placeById } from "@/fixtures";
 import { coverForPlace, libImage } from "@/fixtures/images";
 import { SearchBar } from "@/components/SearchBar";
@@ -337,7 +336,6 @@ function RecentlyViewed({
           </UIPressable>
         );
       })}
-      <DemoNote>Nylig sett tømmes når appen startes på nytt.</DemoNote>
     </View>
   );
 }

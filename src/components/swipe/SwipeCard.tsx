@@ -1,11 +1,10 @@
 import { Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
-import { createContext, useContext, useState } from "react";
+import { useState } from "react";
 import { StyleSheet, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { MetaRow, Text } from "@/components/ui";
-import { DemoBadge } from "@/components/DemoBadge";
 import { media } from "@/theme";
 import { places, type MockExperience } from "@/fixtures";
 
@@ -82,17 +81,13 @@ export const SWIPE_CONTENT_BOTTOM = 120;
 // The photo fills the whole card edge-to-edge; a top + bottom gradient keep the
 // overlaid filter bar and the white info legible. Drag stamps + expand/action
 // overlays live in SwipeDeck (outside the gesture so taps work on web).
-// DemoBadge stays on every card — joining/saving is local demo state
-// (BLOCKED_CONTRACT_GAP). The "Om" blurb + host live in the expanded detail.
+// Joining/saving is local state (BLOCKED_CONTRACT_GAP). The "Om" blurb + host
+// live in the expanded detail.
 //
 // `minimal` renders only the cover photo (no gradients/overlays/badge/info): used
 // for the behind-the-top-card peek, which is fully occluded, so the extra layers
 // would be pure overdraw. `onInfoTop` reports the measured top Y of the info block
 // so the deck can align the expand arrow to the actual title row.
-// True while the deck shows its "Ikke personalisert ennå" pill (For deg): the
-// photo dashes then sit below the pill instead of running through it, and the
-// pill's DEMO badge is the card's marker (no second badge).
-export const SwipeDemoPill = createContext(false);
 
 export function SwipeCard({
   exp,
@@ -106,7 +101,6 @@ export function SwipeCard({
   onInfoTop?: (y: number) => void;
 }) {
   const insets = useSafeAreaInsets();
-  const pillShown = useContext(SwipeDemoPill);
   // Track the shown photo ONLY to tint the footer scrim to it; the info block no
   // longer changes per photo. Behind/exiting cards rest on photo 0.
   const [photo, setPhoto] = useState(0);
@@ -136,7 +130,7 @@ export function SwipeCard({
         photos={exp.photos}
         interactive={interactive}
         onIndexChange={setPhoto}
-        indicatorTop={insets.top + (pillShown ? 100 : 52)}
+        indicatorTop={insets.top + 52}
         variant="card"
       />
 
@@ -168,11 +162,6 @@ export function SwipeCard({
       />
 
       {/* Honesty marker — stays on every card, below the top bar. */}
-      {pillShown ? null : (
-        <View className="absolute right-gutter top-28">
-          <DemoBadge />
-        </View>
-      )}
 
       {/* ─── Bottom info overlay — one consolidated block, bottom-anchored ─────
           name → location · distance → when → spots/status → interest pills.

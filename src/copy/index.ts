@@ -1,1 +1,1 @@
-export { demoCopy, demoToast, type DemoCopyKey } from "./demo";
+export { blockedToast, confirmToast } from "./confirm";

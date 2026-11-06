@@ -4,10 +4,8 @@ import { View } from "react-native";
 import { Avatar } from "@/components/Avatar";
 import { Button } from "@/components/Button";
 import { Card } from "@/components/Card";
-import { DemoNote } from "@/components/DemoNote";
 import { GuestLock } from "@/components/GuestLock";
 import { SignInPrompt } from "@/components/SignInPrompt";
-import { demoCopy } from "@/copy";
 import { groupById } from "@/fixtures";
 import { haptics } from "@/lib/haptics";
 import { Text } from "@/components/ui";
@@ -61,8 +59,6 @@ export function GroupContent({ id }: { id: string }) {
       {isGuest ? (
         <GuestLock message="Logg inn for å bli medlem og se gruppechatten." />
       ) : null}
-
-      {member ? <DemoNote>{demoCopy.groupJoinedNoBackend}</DemoNote> : null}
 
       <Button
         label={member ? "Forlat gruppen" : "Bli medlem"}

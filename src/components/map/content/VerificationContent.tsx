@@ -1,11 +1,10 @@
 import { View } from "react-native";
 
 import { Icon, Text, Badge } from "@/components/ui";
-import { DemoNote } from "@/components/DemoNote";
 import { GuestLock } from "@/components/GuestLock";
 import { useGuestMode } from "@/components/map/hooks/useGuestMode";
 
-// Verifisering (DEMO), per the design (PDF p7): a three-step timeline —
+// Verifisering, per the design (PDF p7): a three-step timeline —
 // Innsendt → Under vurdering → Godkjent — and the submitted documents with
 // their own status. Shown in a static "under vurdering" example state; there is
 // no claim/verification backend and nothing can be submitted or approved here
@@ -34,9 +33,7 @@ export function VerificationContent() {
   return (
     <View className="gap-5">
       {/* Honesty first: everything below is an example, not a real claim. */}
-      <DemoNote>
-        Statusen er et eksempel. Ingen dokumenter er sendt inn.
-      </DemoNote>
+
       <View className="gap-0">
         {STEPS.map((s, i) => (
           <View key={s.label} className="flex-row gap-3">

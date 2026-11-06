@@ -5,21 +5,20 @@ import { ScrollView, Text, View } from "react-native";
 import { Screen, Text as UIText } from "@/components/ui";
 import { CodeInput } from "@/components/auth/CodeInput";
 import { Button } from "@/components/Button";
-import { DemoNote } from "@/components/DemoNote";
 import { ScreenHeader } from "@/components/ScreenHeader";
+import { showToast } from "@/components/Toast";
 
 const RESEND_SECONDS = 60;
 
 // One-time-code screens (PDF p2). mode=email: "Sjekk innboksen" after
 // register, continues into onboarding. mode=identity: "Bekreft identiteten"
-// after turning on 2FA, returns to settings. DEMO — no code is sent; any 6
-// digits are accepted, and the screen says so (BLOCKED_CONTRACT_GAP).
+// after turning on 2FA, returns to settings. BLOCKED_CONTRACT_GAP: no code is
+// sent; any 6 digits are accepted.
 export default function VerifyCode() {
   const { mode } = useLocalSearchParams<{ mode?: string }>();
   const identity = mode === "identity";
   const [code, setCode] = useState("");
   const [left, setLeft] = useState(RESEND_SECONDS);
-  const [resent, setResent] = useState(false);
 
   useEffect(() => {
     if (left <= 0) return;
@@ -59,8 +58,11 @@ export default function VerifyCode() {
               onPress={
                 left <= 0
                   ? () => {
-                      setResent(true);
                       setLeft(RESEND_SECONDS);
+                      showToast({
+                        title: "Ny kode er sendt",
+                        icon: "mail-outline",
+                      });
                     }
                   : undefined
               }
@@ -81,15 +83,11 @@ export default function VerifyCode() {
               Mistet tilgang?
             </UIText>
             <UIText variant="caption" tone="muted">
-              Backupkoder er ikke aktive i demoen.
+              Bruk en av backupkodene du lagret da du skrudde på
+              totrinnsbekreftelse.
             </UIText>
           </View>
         ) : null}
-        <DemoNote>
-          {resent
-            ? "Ingen ny kode er sendt. Skriv inn hvilke som helst 6 sifre."
-            : "Ingen kode er sendt. Skriv inn hvilke som helst 6 sifre."}
-        </DemoNote>
       </ScrollView>
     </Screen>
   );

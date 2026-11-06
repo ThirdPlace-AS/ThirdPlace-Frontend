@@ -4,12 +4,13 @@ import { Pressable, ScrollView, View } from "react-native";
 import { Screen, Text } from "@/components/ui";
 import { SocialAuthButtons } from "@/components/auth/SocialAuthButtons";
 import { Button } from "@/components/Button";
-import { DemoBadge } from "@/components/DemoBadge";
 import { Input } from "@/components/Input";
 import { Logo } from "@/components/Logo";
 import { ScreenHeader } from "@/components/ScreenHeader";
+import { resetTo } from "@/lib/navigation";
 
-// Visual-only sign-up. Inert; no account is created (no backend).
+// Sign-up. BLOCKED_CONTRACT_GAP: no auth backend; the flow continues to
+// code verification and onboarding.
 export default function Register() {
   return (
     <Screen>
@@ -42,13 +43,10 @@ export default function Register() {
               })
             }
           />
-          <View className="flex-row items-center justify-center gap-2">
-            <DemoBadge />
-            <Text variant="caption" tone="muted">
-              Du får ingen konto, og det du skriver lagres ikke.
-            </Text>
-          </View>
-          <SocialAuthButtons verb="Fortsett med" />
+          <SocialAuthButtons
+            verb="Fortsett med"
+            onContinue={() => resetTo("/onboarding")}
+          />
         </View>
         <Text variant="caption" tone="muted" className="px-4 text-center">
           Ved å fortsette godtar du våre vilkår og personvernerklæring.

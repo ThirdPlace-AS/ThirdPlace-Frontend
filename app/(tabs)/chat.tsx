@@ -16,14 +16,13 @@ import {
   EmptyState,
 } from "@/components/ui";
 import { Chip } from "@/components/Chip";
-import { DemoNote } from "@/components/DemoNote";
 import { Input } from "@/components/Input";
 import { UserSearch } from "@/components/pickers/Pickers";
 import { NotificationsSheet } from "@/components/NotificationsSheet";
 import { useNotificationReads } from "@/hooks/useNotificationReads";
 import { Sheet } from "@/components/Sheet";
 import { showToastAfterSheet } from "@/components/Toast";
-import { demoToast } from "@/copy";
+import { confirmToast } from "@/copy";
 import {
   CHAT_ACCESS_LABEL,
   chats,
@@ -277,8 +276,8 @@ function ChatRow({ chat, onPress }: { chat: MockChat; onPress: () => void }) {
   );
 }
 
-// "Ny chat" (PDF p10): Navn, Type (Åpen / Lukket / Kun invitasjon). DEMO —
-// "Opprett chat" creates nothing; a DemoNote says so.
+// "Ny chat" (PDF p10): Navn, Type (Åpen / Lukket / Kun invitasjon).
+// "Opprett chat" confirms (BLOCKED_CONTRACT_GAP: no chat creation contract).
 function NewChatSheet({
   visible,
   onClose,
@@ -343,14 +342,14 @@ function NewChatSheet({
             onClose={() => setSearch(false)}
           />
         ) : null}
-        <DemoNote>Chatten blir ikke laget, og ingen får invitasjon.</DemoNote>
+
         <Button
           label="Opprett chat"
           variant="ink"
           disabled={name.trim().length === 0}
           onPress={() => {
             onClose();
-            showToastAfterSheet(demoToast.chatNotCreated);
+            showToastAfterSheet(confirmToast.chatCreated);
           }}
         />
       </View>

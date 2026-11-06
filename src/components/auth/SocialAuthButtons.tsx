@@ -1,15 +1,19 @@
 import { Ionicons } from "@expo/vector-icons";
-import { useState } from "react";
 import { View } from "react-native";
 
 import { Icon, Text, Pressable as UIPressable } from "@/components/ui";
-import { DemoNote } from "@/components/DemoNote";
 
 // "ELLER" divider + Google / Apple buttons (PDF p1). The verb follows the
-// screen: "Fortsett med" on register, "Logg inn med" on login. DEMO — no
-// identity provider is wired (BLOCKED_CONTRACT_GAP); tapping only says so.
-export function SocialAuthButtons({ verb }: { verb: string }) {
-  const [tried, setTried] = useState<string | null>(null);
+// screen: "Fortsett med" on register, "Logg inn med" on login. Tapping
+// continues the same way as the main button on that screen
+// (BLOCKED_CONTRACT_GAP: no identity provider is wired).
+export function SocialAuthButtons({
+  verb,
+  onContinue,
+}: {
+  verb: string;
+  onContinue: () => void;
+}) {
   const providers: {
     name: string;
     icon: keyof typeof Ionicons.glyphMap;
@@ -35,7 +39,7 @@ export function SocialAuthButtons({ verb }: { verb: string }) {
         <UIPressable
           key={p.name}
           accessibilityRole="button"
-          onPress={() => setTried(p.name)}
+          onPress={onContinue}
           contentClassName="flex-row items-center justify-center gap-2 rounded-full border border-line bg-surface py-3.5"
           pressedScale={0.99}
         >
@@ -45,9 +49,6 @@ export function SocialAuthButtons({ verb }: { verb: string }) {
           </Text>
         </UIPressable>
       ))}
-      {tried ? (
-        <DemoNote>{`Innlogging med ${tried} er ikke aktiv i demoen.`}</DemoNote>
-      ) : null}
     </View>
   );
 }

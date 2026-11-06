@@ -30,10 +30,9 @@ import { duration, useThemeColors } from "@/theme";
 import { fontFamilyFor } from "@/theme/fonts";
 import { haptics } from "@/lib/haptics";
 
-// Chat conversation (DEMO ONLY). BLOCKED_CONTRACT_GAP: no realtime/messaging
+// Chat conversation. BLOCKED_CONTRACT_GAP: no realtime/messaging
 // backend, no delivery or read receipts. The composer echoes locally so the UI
-// is explorable, but nothing is sent, stored, or delivered — the header carries
-// a DEMO badge and a persistent note says so.
+// is explorable; nothing is stored or delivered.
 export default function ChatThreadScreen() {
   const colors = useThemeColors();
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -189,9 +188,6 @@ export default function ChatThreadScreen() {
           </View>
         ) : (
           <View className="gap-2 border-t border-line px-gutter pb-2 pt-2.5">
-            <Text variant="caption" tone="muted" className="text-center">
-              Meldinger sendes ikke og lagres ikke i demoen.
-            </Text>
             <View className="flex-row items-end gap-2">
               <TextInput
                 accessibilityLabel="Melding"

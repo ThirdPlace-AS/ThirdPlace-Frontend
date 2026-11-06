@@ -11,12 +11,10 @@ import {
 } from "@/components/ui";
 import { byStart } from "@/features/workspace/calendarOrder";
 import { Chip } from "@/components/Chip";
-import { DemoBadge } from "@/components/DemoBadge";
-import { DemoNote } from "@/components/DemoNote";
 import { RouteHeader } from "@/components/RouteHeader";
 import { businesses, experiences, profile } from "@/fixtures";
 
-// Business workspace (DEMO), per the design (PDF p13–p15): the business
+// Business workspace, per the design (PDF p13–p15): the business
 // profile hub (Dashbord, Marketplace, linked personal account, "Kom i gang"),
 // Analyse, Kalender and Lokasjoner. BLOCKED_CONTRACT_GAP: no business
 // account, analytics, scheduling, location billing or subscription contract —
@@ -116,9 +114,6 @@ export function WorkspaceHub() {
             </View>
           ))}
         </View>
-        <DemoNote>
-          Arbeidsflaten er et eksempel. Det finnes ingen bedriftskonto.
-        </DemoNote>
       </ScrollView>
     </Screen>
   );
@@ -202,9 +197,6 @@ export function WorkspaceAnalytics() {
               onPress={() => setRange(r)}
             />
           ))}
-          <View className="ml-auto">
-            <DemoBadge label="EKSEMPELTALL" />
-          </View>
         </View>
         <View className="flex-row flex-wrap gap-3">
           {STATS[range].map(([v, l]) => (
@@ -238,9 +230,6 @@ export function WorkspaceAnalytics() {
             />
           ))}
         </View>
-        <DemoNote>
-          Tallene er eksempler. Ingen analyse eller sporing er slått på.
-        </DemoNote>
       </ScrollView>
     </Screen>
   );
@@ -288,9 +277,6 @@ export function WorkspaceCalendar() {
             </Pressable>
           </View>
         ))}
-        <DemoNote>
-          Opplevelsene er eksempler. Kalenderen er ikke koblet til en bedrift.
-        </DemoNote>
       </ScrollView>
     </Screen>
   );
@@ -333,9 +319,6 @@ export function WorkspaceLocations() {
             + Legg til lokasjon
           </Text>
         </View>
-        <DemoNote>
-          Du kan ikke legge til lokasjoner ennå, og ingenting blir fakturert.
-        </DemoNote>
       </ScrollView>
     </Screen>
   );

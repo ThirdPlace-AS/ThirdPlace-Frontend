@@ -4,7 +4,6 @@ import { Pressable, ScrollView, View } from "react-native";
 
 import { Screen, Text } from "@/components/ui";
 import { Button } from "@/components/Button";
-import { DemoNote } from "@/components/DemoNote";
 import { Input } from "@/components/Input";
 import { ScreenHeader } from "@/components/ScreenHeader";
 
@@ -37,9 +36,6 @@ export default function ForgotPassword() {
           />
           {sent ? (
             <>
-              <DemoNote>
-                Ingen e-post ble sendt. I demoen kan du åpne lenken direkte.
-              </DemoNote>
               <Button
                 label="Åpne lenken"
                 variant="secondary"

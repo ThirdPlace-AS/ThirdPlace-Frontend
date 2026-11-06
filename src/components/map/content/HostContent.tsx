@@ -1,10 +1,10 @@
+import { router } from "expo-router";
 import { useState } from "react";
 import { Pressable, View } from "react-native";
 
 import { Icon, Text } from "@/components/ui";
 import { CancelSheet } from "@/components/actions/ActionSheets";
 import { Button } from "@/components/Button";
-import { DemoNote } from "@/components/DemoNote";
 import { Card } from "@/components/Card";
 import {
   attendeesForExperience,
@@ -28,7 +28,6 @@ export function HostContent({ id, push }: { id: string; push: PushFn }) {
     exp?.status ?? null,
   );
   const [cancelOpen, setCancelOpen] = useState(false);
-  const [editNote, setEditNote] = useState(false);
 
   if (!exp) {
     return (
@@ -75,16 +74,15 @@ export function HostContent({ id, push }: { id: string; push: PushFn }) {
         <Button
           label="Rediger"
           variant="secondary"
-          onPress={() => setEditNote(true)}
+          onPress={() =>
+            router.navigate({
+              pathname: "/add",
+              params: { edit: exp.id, at: String(Date.now()) },
+            })
+          }
         />
-        {editNote ? (
-          <DemoNote>Redigering av opplevelser er ikke aktiv i demoen.</DemoNote>
-        ) : null}
-        {status === "cancelled" ? (
-          <DemoNote>
-            Avlyst i demoen. Ingen ble varslet, og ingenting ble refundert.
-          </DemoNote>
-        ) : (
+
+        {status === "cancelled" ? null : (
           <Button
             label="Avlys"
             variant="secondary"

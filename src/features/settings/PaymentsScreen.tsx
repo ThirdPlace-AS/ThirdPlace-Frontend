@@ -2,11 +2,8 @@ import { useState } from "react";
 import { ScrollView, View } from "react-native";
 
 import { Icon, Screen, Pressable as UIPressable, Text } from "@/components/ui";
-import { DemoBadge } from "@/components/DemoBadge";
 import { RouteHeader } from "@/components/RouteHeader";
 import { Sheet } from "@/components/Sheet";
-import { DemoNote } from "@/components/DemoNote";
-import { demoCopy } from "@/copy";
 
 import { SettingsSection } from "./settingsUi";
 
@@ -20,8 +17,6 @@ export default function PaymentsScreen() {
     <Screen edges={["top"]}>
       <RouteHeader title="Betaling" />
       <ScrollView contentContainerClassName="gap-5 px-gutter py-4 pb-12">
-        <DemoNote>{demoCopy.paymentsStructureOnly}</DemoNote>
-
         <SettingsSection title="Betalingsmetoder">
           <View className="items-center gap-2 px-4 py-8">
             <Icon name="card-outline" size="xl" tone="muted" />
@@ -40,7 +35,6 @@ export default function PaymentsScreen() {
             <Text variant="body" className="flex-1">
               Legg til betalingsmetode
             </Text>
-            <DemoBadge />
           </UIPressable>
         </SettingsSection>
 
@@ -54,8 +48,8 @@ export default function PaymentsScreen() {
           </View>
         </SettingsSection>
 
-        {/* BLOCKED_CONTRACT_GAP: no payment/billing contract. The DemoNote at
-            the top is the one honesty line for this screen. */}
+        {/* BLOCKED_CONTRACT_GAP: no payment/billing contract. Structure only:
+            no card or bank inputs, nothing is charged. */}
       </ScrollView>
 
       <Sheet
@@ -63,7 +57,6 @@ export default function PaymentsScreen() {
         onClose={() => setInfoOpen(false)}
         title="Betalingsmetode"
       >
-        <DemoNote>{demoCopy.paymentsDemoScreen}</DemoNote>
         <View className="flex-row items-start gap-3 rounded-lg bg-surfaceMuted p-3">
           <Icon name="shield-checkmark-outline" size="lg" tone="success" />
           <Text variant="label" weight="regular" className="flex-1 leading-5">

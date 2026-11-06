@@ -18,6 +18,8 @@ rule was invented.
 **Markers** — `DemoNote` (DEMO badge + line, copy from `@/copy`),
 `SignInPrompt` / `GuestLock` (account-gated for guests), `structure-only`.
 
+> **Phase 11 (founder decision 2026-11-06, ledger 0215):** every `DemoNote` / DEMO marker is removed app-wide; actions confirm in product voice (`confirmToast`). `DemoNote` entries in the Markers columns below are historical. `SignInPrompt` / `GuestLock` and `structure-only` (payments) still apply. Network/GPS states are switched from `thirdplace://_sandbox/simulate`.
+
 ## Tabs (exactly 5, locked)
 
 | Surface                     | Route / entry                          | Main code                               | Status                               | Markers                                 | Blocked on (contract)                       | Verified        | Ledger                                 |

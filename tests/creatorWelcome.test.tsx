@@ -1,5 +1,5 @@
-// "Du er nå Skaper!" (PDF p14): a review-only success screen. It must say it is
-// a preview and that the role's access is not decided, and its rows navigate.
+// "Du er nå Skaper!" (PDF p14): the success screen (deep link only); its rows
+// navigate. No demo marker since the founder decision of 2026-11-06.
 import { describe, expect, it, jest } from "@jest/globals";
 import { fireEvent, render, screen } from "@testing-library/react-native";
 
@@ -29,11 +29,10 @@ jest.mock("expo-router", () => ({
 }));
 
 describe("CreatorWelcomeScreen", () => {
-  it("shows the success title with honest demo copy", () => {
+  it("shows the success title without demo markers", () => {
     renderScreen();
     expect(screen.getByText("Du er nå Skaper!")).toBeTruthy();
-    expect(screen.getByText(/Ingen søknad er sendt/)).toBeTruthy();
-    expect(screen.getByText(/ikke bestemt ennå/)).toBeTruthy();
+    expect(screen.queryByText(/DEMO|Ingen søknad er sendt/)).toBeNull();
   });
 
   it("rows are buttons that open the matching screens", () => {

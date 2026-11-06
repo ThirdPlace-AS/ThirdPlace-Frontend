@@ -4,18 +4,17 @@ import { ScrollView, View } from "react-native";
 import { Pressable, Screen, Text } from "@/components/ui";
 import { Button } from "@/components/Button";
 import { Chip } from "@/components/Chip";
-import { DemoNote } from "@/components/DemoNote";
 import { Input } from "@/components/Input";
 import { RouteHeader } from "@/components/RouteHeader";
 import { Sheet } from "@/components/Sheet";
 import { SignInPrompt } from "@/components/SignInPrompt";
 import { useGuestMode } from "@/components/map/hooks/useGuestMode";
 import { showToastAfterSheet } from "@/components/Toast";
-import { demoCopy, demoToast } from "@/copy";
+import { confirmToast } from "@/copy";
 
 import { NavRow, SettingsSection, ToggleRow } from "./settingsUi";
 
-// Personvern (DEMO), per the design (PDF p19, p21): SYNLIGHET toggles, then
+// Personvern, per the design (PDF p19, p21): SYNLIGHET toggles, then
 // DATA — Blokkerte brukere, GDPR: Last ned dine data, Slett konto. Every
 // control is local and writes nothing; nothing is exported or deleted.
 // BLOCKED_CONTRACT_GAP: no consent store, visibility gate, export or deletion
@@ -56,8 +55,6 @@ export default function PrivacyScreen() {
     <Screen edges={["top"]}>
       <RouteHeader title="Personvern" />
       <ScrollView contentContainerClassName="gap-5 px-gutter py-4 pb-12">
-        <DemoNote>{demoCopy.privacyNotSaved}</DemoNote>
-
         <SettingsSection title="Synlighet">
           <ToggleRow
             icon="map-outline"
@@ -149,9 +146,6 @@ export default function PrivacyScreen() {
               </Pressable>
             </View>
           ))}
-          <DemoNote>
-            Dette er eksempeldata. Endringen vises bare her og lagres ikke.
-          </DemoNote>
         </View>
       </Sheet>
 
@@ -165,13 +159,13 @@ export default function PrivacyScreen() {
             Få en kopi av alt ThirdPlace vet om deg (GDPR). Lenken sendes på
             e-post.
           </Text>
-          <DemoNote>Eksporten lages ikke, og du får ingen e-post.</DemoNote>
+
           <Button
             label="Be om eksport"
             variant="ink"
             onPress={() => {
               close();
-              showToastAfterSheet(demoToast.exportNotRequested);
+              showToastAfterSheet(confirmToast.exportRequested);
             }}
           />
         </View>
@@ -190,8 +184,8 @@ export default function PrivacyScreen() {
   );
 }
 
-// Slett konto (PDF p21/p27): reason chips + type «SLETT» to confirm. DEMO —
-// nothing is deleted; the confirm button only closes the sheet.
+// Slett konto (PDF p21/p27): reason chips + type «SLETT» to confirm.
+// BLOCKED_CONTRACT_GAP: nothing is deleted; the confirm closes and confirms.
 function DeleteAccountSheet({
   visible,
   onClose,
@@ -235,14 +229,14 @@ function DeleteAccountSheet({
           onChangeText={setConfirm}
           maxLength={10}
         />
-        <DemoNote>Ingen konto eller data blir slettet.</DemoNote>
+
         <Button
           label="Slett kontoen min"
           variant="secondary"
           disabled={confirm.trim() !== "SLETT"}
           onPress={() => {
             onClose();
-            showToastAfterSheet(demoToast.accountNotDeleted);
+            showToastAfterSheet(confirmToast.accountDeleted);
           }}
         />
         <Button label="Avbryt" variant="ink" onPress={onClose} />

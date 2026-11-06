@@ -26,9 +26,9 @@ export const DISCOVERY_MODE_LABELS: Record<DiscoveryMode, string> = {
   saved: "Lagret",
 };
 
-// Modes that are NON-PERSONALIZED demo shells pending a V2.2 contract. The UI
-// must mark these (DemoBadge + note) and never present invented personalization
-// or real friend data. See docs/map/MAP_BLOCKERS.md (CB-1, CB-2).
+// Modes that are NON-PERSONALIZED shells pending a V2.2 contract. They never
+// present invented personalization or real friend data (no UI marker since the
+// founder decision of 2026-11-06). See docs/map/MAP_BLOCKERS.md (CB-1, CB-2).
 export const DEMO_MODES: readonly DiscoveryMode[] = ["forYou", "friends"];
 
 // A single discoverable item projected onto the map. `kind` + `id` decide which
@@ -52,8 +52,8 @@ export type DiscoveryItem = {
 // Result of resolving a discovery mode over the fixtures.
 export type ModeResult = {
   items: DiscoveryItem[];
-  demo: boolean; // show DemoBadge + note (For You / Friends)
-  note?: string; // e.g. "Ikke personalisert (demo)"
+  demo: boolean; // non-personalized shell (DEMO_MODES); no UI marker (2026-11-06)
+  note?: string;
   emptyMessage: string;
 };
 

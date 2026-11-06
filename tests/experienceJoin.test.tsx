@@ -1,5 +1,5 @@
 // The experience detail's pinned join bar and its content read one local
-// join state (PDF p6 bar + DemoNote/count in the body).
+// join state (PDF p6 bar + count in the body).
 import { afterEach, describe, expect, it } from "@jest/globals";
 import { act, renderHook } from "@testing-library/react-native";
 

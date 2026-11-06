@@ -3,7 +3,6 @@ import { ScrollView, View } from "react-native";
 
 import { Screen, Text } from "@/components/ui";
 import { Button } from "@/components/Button";
-import { DemoNote } from "@/components/DemoNote";
 import { Input } from "@/components/Input";
 import { ScreenHeader } from "@/components/ScreenHeader";
 import { resetTo } from "@/lib/navigation";
@@ -64,7 +63,6 @@ export default function ResetPassword() {
             disabled={!ok}
             onPress={() => resetTo("/login")}
           />
-          <DemoNote>Passordet lagres ikke. Demoen har ingen kontoer.</DemoNote>
         </View>
       </ScrollView>
     </Screen>

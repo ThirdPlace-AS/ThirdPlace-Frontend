@@ -16,14 +16,13 @@ import {
 import { BlockSheet } from "@/components/actions/ActionSheets";
 import { Button } from "@/components/Button";
 import { Chip } from "@/components/Chip";
-import { DemoNote } from "@/components/DemoNote";
 import { Sheet } from "@/components/Sheet";
 import { SignInPrompt } from "@/components/SignInPrompt";
 import { useGuestMode } from "@/components/map/hooks/useGuestMode";
 import { experienceById, people, profile, type MockPerson } from "@/fixtures";
 import { libImage } from "@/fixtures/images";
 
-// People discovery (DEMO ONLY). BLOCKED_CONTRACT_GAP: no person entity, social
+// People discovery. BLOCKED_CONTRACT_GAP: no person entity, social
 // graph, or follow backend. Following is local demo state (reset on reload) and a
 // guest is sent to the demo sign-in prompt instead of a fake follow success.
 export default function PeopleScreen() {
@@ -81,9 +80,7 @@ export default function PeopleScreen() {
             </Text>
             {/* The list shows example people with "felles" counts and Følg:
                 say so here, not only inside the person sheet. */}
-            <DemoNote>
-              Personene og «felles» er eksempler. Å følge lagrer ingenting.
-            </DemoNote>
+
             <View className="flex-row flex-wrap items-center gap-2">
               <Chip
                 label="Alle"
@@ -307,7 +304,7 @@ function PersonDetailSheet({
             variant="secondary"
             onPress={() => setBlock(true)}
           />
-          <DemoNote>Å følge lagrer eller sender ingenting.</DemoNote>
+
           {block ? (
             <BlockSheet name={person.name} onClose={() => setBlock(false)} />
           ) : null}

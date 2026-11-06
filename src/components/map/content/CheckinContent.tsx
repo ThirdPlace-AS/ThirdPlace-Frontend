@@ -1,13 +1,16 @@
 import { useState } from "react";
 import { View } from "react-native";
-import { Icon, Switch, Text, Pressable as UIPressable } from "@/components/ui";
+import { Icon, Text } from "@/components/ui";
 import { Button } from "@/components/Button";
 import { haptics } from "@/lib/haptics";
 import { experienceById } from "@/fixtures";
+import { useDevSimulation } from "@/lib/devSimulation";
 
 export function CheckinContent({ id }: { id: string }) {
   const exp = experienceById(id);
-  const [near, setNear] = useState(true);
+  // In range unless the dev switch says otherwise (app/_sandbox/simulate).
+  // BLOCKED_CONTRACT_GAP: no GPS arrival check is wired.
+  const near = !useDevSimulation().checkinFar;
   const [checkedIn, setCheckedIn] = useState(false);
 
   if (!exp) {
@@ -56,30 +59,6 @@ export function CheckinContent({ id }: { id: string }) {
               : "Kom nærmere stedet for å sjekke inn."}
         </Text>
       </View>
-
-      <UIPressable
-        accessibilityRole="switch"
-        accessibilityState={{ checked: near }}
-        haptic="selection"
-        onPress={() => setNear((n) => !n)}
-        contentClassName="flex-row items-center justify-between rounded-md border border-line bg-surface px-4 py-3"
-        pressedScale={0.99}
-      >
-        <Text variant="label" weight="regular">
-          Simuler: i nærheten
-        </Text>
-        {/* Display-only: the whole row is the switch (role="switch" above). */}
-        <View
-          pointerEvents="none"
-          importantForAccessibility="no-hide-descendants"
-        >
-          <Switch
-            value={near}
-            onValueChange={() => {}}
-            label="Simuler: i nærheten"
-          />
-        </View>
-      </UIPressable>
 
       <Button
         label={checkedIn ? "Angre innsjekk" : "Sjekk inn"}

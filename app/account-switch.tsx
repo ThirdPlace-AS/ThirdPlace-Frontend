@@ -7,10 +7,9 @@ import {
   Pressable as UIPressable,
   Text,
 } from "@/components/ui";
-import { DemoNote } from "@/components/DemoNote";
 import { businesses, profile } from "@/fixtures";
 
-// Account switcher (DEMO), per the design (PDF p27): opened with a long press
+// Account switcher, per the design (PDF p27): opened with a long press
 // on the Profil tab. Lists the linked accounts — the personal Utforsker
 // profile and the business workspace — plus "Administrer kontoer".
 // BLOCKED_CONTRACT_GAP: no linked-account or session model; switching only
@@ -85,7 +84,6 @@ export default function AccountSwitch() {
             Administrer kontoer
           </Text>
         </UIPressable>
-        <DemoNote>Kontobytte er bare navigasjon i demoen.</DemoNote>
       </View>
     </View>
   );

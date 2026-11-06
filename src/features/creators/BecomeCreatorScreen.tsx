@@ -2,11 +2,10 @@ import { router, type Href } from "expo-router";
 import { ScrollView, View } from "react-native";
 import { Icon, Screen, Text } from "@/components/ui";
 import { Button } from "@/components/Button";
-import { DemoNote } from "@/components/DemoNote";
 import { RouteHeader } from "@/components/RouteHeader";
 import { profile } from "@/fixtures";
 
-// Bli Skaper (DEMO), per the design (PDF p14): the requirements to unlock the
+// Bli Skaper, per the design (PDF p14): the requirements to unlock the
 // Skaper role (and with it Dashbord and Marketplace), each with its progress,
 // and "Søk om Skaper-rolle". Master spec §10: the real creator criteria are not
 // defined, so the three requirements are the design's illustrative copy —
@@ -80,11 +79,6 @@ export default function BecomeCreatorScreen() {
           </Text>
         </View>
 
-        <DemoNote>
-          Kravene er eksempler. Kriteriene for Skaper er ikke bestemt, og
-          ingenting blir vurdert.
-        </DemoNote>
-
         {/* Muted until every requirement is met, as in the design (PDF p14):
             the button never invites an application that cannot qualify. */}
         <Button
@@ -101,7 +95,7 @@ export default function BecomeCreatorScreen() {
           }
         />
         <Button
-          label="Se Marketplace (forhåndsvisning)"
+          label="Se Marketplace"
           variant="secondary"
           onPress={() => router.push("/marketplace")}
         />

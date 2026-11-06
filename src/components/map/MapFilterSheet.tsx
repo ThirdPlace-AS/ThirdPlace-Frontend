@@ -12,7 +12,6 @@ import { Button } from "@/components/Button";
 import { Calendar } from "@/components/Calendar";
 import { CheckboxRow } from "@/components/CheckboxRow";
 import { Chip } from "@/components/Chip";
-import { DemoBadge } from "@/components/DemoBadge";
 import { PriceHistogram } from "./PriceHistogram";
 import { RangeSlider } from "@/components/RangeSlider";
 import { RatingStars } from "@/components/RatingStars";
@@ -566,9 +565,6 @@ function FilterBody({
                   }))
                 }
               />
-              <Text variant="caption" tone="muted">
-                Datoene påvirker ikke resultatene i demoen.
-              </Text>
             </View>
           </SearchRow>
 
@@ -582,7 +578,6 @@ function FilterBody({
             onToggle={() => toggleSection("who")}
           >
             <View>
-              <DemoBadge label="Demo · telles ikke med" />
               <Stepper
                 label="Voksne"
                 divider
@@ -868,7 +863,7 @@ function FilterBody({
           <View className="border-t border-line py-2">
             <Accordion
               title="Tilgjengelighetsfunksjoner"
-              subtitle="Oppgitt av stedet, ikke sjekket (demo)"
+              subtitle="Oppgitt av stedet"
             >
               <View className="gap-4">
                 {ACCESSIBILITY_GROUPS.map((g) => (

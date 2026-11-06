@@ -59,6 +59,10 @@ CLAUDE.md governance.
 | p27 | Kontoen er suspendert     | … midlertidig suspendert på grunn av gjentatte brudd på retningslinjene våre.                                                                                        | Kontoen din er stengt midlertidig fordi du har brutt retningslinjene våre.                                                                                                      |
 | p27 | Oppdatering kreves        | En ny versjon av ThirdPlace er tilgjengelig med viktige forbedringer og sikkerhetsfikser.                                                                            | Denne versjonen er for gammel. Oppdater appen for å fortsette.                                                                                                                  |
 
+## Founder decision: no demo markers (2026-11-06, Phase 11)
+
+Every DEMO pill, DemoNote line, "(demo)" / "eksempel" label and "nothing was saved/sent" toast is removed; actions confirm in product voice (`src/copy/confirm.ts`). The Add end screen reads "Opplevelsen er publisert" / "Stedet er sendt inn"; the pay sheet reserves a place (structure only, nothing charged). "Simuler frakoblet" (p5 Posisjon sheet) and "Simuler: i nærheten" (check-in) moved to the dev-only `_sandbox/simulate` screen. Ledger 0215.
+
 ## Founder-approved additions without a PDF slot (2026-11-06)
 
 Approved by the founder in the Phase 10 review (AskUserQuestion). Each is local demo state that clears on restart and carries a DemoNote; none adds counts, ranking or notification policy.
