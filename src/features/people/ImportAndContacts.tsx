@@ -1,7 +1,7 @@
 import { useState } from "react";
-import { ScrollView, Text, View } from "react-native";
+import { ScrollView, View } from "react-native";
 
-import { Icon, Screen } from "@/components/ui";
+import { Icon, Screen, Text } from "@/components/ui";
 import { Button } from "@/components/Button";
 import { DemoNote } from "@/components/DemoNote";
 import { Input } from "@/components/Input";
@@ -21,7 +21,7 @@ export function ImportContentScreen() {
         contentContainerClassName="gap-4 px-gutter py-4 pb-12"
         keyboardShouldPersistTaps="handled"
       >
-        <Text className="text-sm text-muted font-normal">
+        <Text variant="caption" tone="muted">
           Lim inn en lenke til et arrangement eller et innlegg, så fyller vi ut
           det vi kan.
         </Text>
@@ -33,7 +33,7 @@ export function ImportContentScreen() {
           keyboardType="default"
         />
         {url.length > 0 && !valid ? (
-          <Text className="text-xs text-dangerText font-normal">
+          <Text variant="caption" tone="danger">
             Skriv inn en hel lenke som starter med https://
           </Text>
         ) : null}
@@ -45,7 +45,9 @@ export function ImportContentScreen() {
           ].map((s) => (
             <View key={s} className="flex-row items-center gap-2">
               <Icon name="link-outline" size="sm" tone="ink" />
-              <Text className="text-sm text-ink font-normal">{s}</Text>
+              <Text variant="label" weight="regular">
+                {s}
+              </Text>
             </View>
           ))}
         </View>
@@ -76,10 +78,10 @@ export function InviteContactsScreen() {
           <View className="h-16 w-16 items-center justify-center rounded-full bg-surfaceMuted">
             <Icon name="people-outline" size="xl" tone="ink" />
           </View>
-          <Text className="text-center text-xl font-bold text-ink">
+          <Text variant="h2" weight="bold" className="text-center">
             Finn venner som allerede er her
           </Text>
-          <Text className="px-4 text-center text-sm text-muted font-normal">
+          <Text variant="caption" tone="muted" className="px-4 text-center">
             Se hvem av kontaktene dine som bruker ThirdPlace, og inviter resten.
           </Text>
         </View>

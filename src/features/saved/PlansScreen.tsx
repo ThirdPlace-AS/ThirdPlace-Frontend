@@ -1,13 +1,13 @@
 import { router } from "expo-router";
 import { useState } from "react";
-import { FlatList, Pressable, Text, View } from "react-native";
+import { FlatList, Pressable, View } from "react-native";
 
 import {
   RateSheet,
   SplitBillSheet,
   SpotOfferSheet,
 } from "@/components/actions/ActionSheets";
-import { Screen } from "@/components/ui";
+import { Screen, Text } from "@/components/ui";
 import { Chip } from "@/components/Chip";
 import { DemoNote } from "@/components/DemoNote";
 import { RouteHeader } from "@/components/RouteHeader";
@@ -77,10 +77,10 @@ export default function PlansScreen() {
           if (!exp) return null;
           return (
             <View className="gap-0.5 rounded-lg border border-line bg-surface p-3.5">
-              <Text className="text-base font-semibold text-ink">
+              <Text variant="body" weight="semibold">
                 {exp.title}
               </Text>
-              <Text className="text-xs text-muted font-normal">
+              <Text variant="caption" tone="muted">
                 {exp.when} · {item.note}
               </Text>
               {item.state === "past" ? (
@@ -129,7 +129,7 @@ function PlanAction({
 }) {
   return (
     <Pressable accessibilityRole="button" onPress={onPress} hitSlop={6}>
-      <Text className="pt-1 text-sm font-semibold text-emberText">
+      <Text variant="label" weight="semibold" tone="ember" className="pt-1">
         {label} →
       </Text>
     </Pressable>

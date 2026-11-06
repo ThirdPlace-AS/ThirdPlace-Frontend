@@ -1,7 +1,6 @@
-import { Image } from "expo-image";
 import { router } from "expo-router";
 import { useState } from "react";
-import { FlatList, Pressable, Text, View } from "react-native";
+import { FlatList, View } from "react-native";
 
 import {
   FollowButton,
@@ -9,6 +8,9 @@ import {
   Icon,
   IconButton,
   Screen,
+  Avatar,
+  Pressable as UIPressable,
+  Text,
 } from "@/components/ui";
 import { BlockSheet } from "@/components/actions/ActionSheets";
 import { Button } from "@/components/Button";
@@ -59,13 +61,13 @@ export default function PeopleScreen() {
         keyExtractor={(p) => p.id}
         contentContainerClassName="px-gutter pb-10"
         ListEmptyComponent={
-          <Text className="py-10 text-center text-sm text-muted font-normal">
+          <Text variant="caption" tone="muted" className="py-10 text-center">
             Ingen treff — prøv et annet filter.
           </Text>
         }
         ListHeaderComponent={
           <View className="gap-3 pb-3 pt-1">
-            <Text className="text-sm text-muted font-normal">
+            <Text variant="caption" tone="muted">
               Mennesker du kanskje vil møte.
             </Text>
             <View className="flex-row flex-wrap items-center gap-2">
@@ -133,7 +135,9 @@ export default function PeopleScreen() {
         title="Filter folk"
       >
         <View className="gap-3">
-          <Text className="text-sm font-semibold text-ink">Interesser</Text>
+          <Text variant="label" weight="semibold">
+            Interesser
+          </Text>
           <View className="flex-row flex-wrap gap-2">
             {allTags.map((t) => (
               <Chip
@@ -186,29 +190,32 @@ function PersonRow({
   // nested Pressable — nested pressables are invalid DOM in the CI web bundle.
   return (
     <View className="flex-row items-center gap-3 rounded-md bg-surface px-3 py-3">
-      <Pressable
+      <UIPressable
         accessibilityRole="button"
+        accessibilityLabel={`${person.name}, ${person.area}${
+          person.mutuals > 0 ? `, ${person.mutuals} felles` : ""
+        }`}
         onPress={onPress}
-        className="flex-1 flex-row items-center gap-3 active:opacity-80"
+        pressedScale={0.99}
+        className="flex-1"
+        contentClassName="flex-row items-center gap-3"
       >
-        <Image
+        <Avatar
+          name={person.name}
           source={libImage(person.avatar)}
-          contentFit="cover"
-          transition={150}
-          style={{ height: 52, width: 52, borderRadius: 26 }}
-          className="bg-surfaceMuted"
-          accessibilityLabel={person.name}
+          size="lg"
+          decorative
         />
         <View className="flex-1">
-          <Text className="text-base font-semibold text-ink" numberOfLines={1}>
+          <Text variant="body" weight="semibold" numberOfLines={1}>
             {person.name}
           </Text>
-          <Text className="text-sm text-muted font-normal" numberOfLines={1}>
+          <Text variant="caption" tone="muted" numberOfLines={1}>
             {person.area}
             {person.mutuals > 0 ? ` · ${person.mutuals} felles` : ""}
           </Text>
         </View>
-      </Pressable>
+      </UIPressable>
       <FollowButton
         following={following}
         onPress={onFollow}
@@ -238,19 +245,18 @@ function PersonDetailSheet({
       {person ? (
         <View className="gap-4">
           <View className="items-center gap-2">
-            <Image
+            <Avatar
+              name={person.name}
               source={libImage(person.avatar)}
-              contentFit="cover"
-              transition={200}
-              style={{ height: 88, width: 88, borderRadius: 44 }}
-              className="bg-surfaceMuted"
-              accessibilityLabel={person.name}
+              size="xl"
             />
-            <Text className="text-lg font-bold text-ink">{person.name}</Text>
-            <Text className="text-sm text-muted font-normal">
+            <Text variant="title" weight="bold">
+              {person.name}
+            </Text>
+            <Text variant="caption" tone="muted">
               {person.handle} · {person.area}
             </Text>
-            <Text className="px-4 text-center text-sm text-muted font-normal">
+            <Text variant="caption" tone="muted" className="px-4 text-center">
               {person.bio}
             </Text>
           </View>
@@ -265,7 +271,9 @@ function PersonDetailSheet({
             <View className="flex-row items-center gap-2 rounded-md border border-line bg-surface px-3 py-2.5">
               <Icon name="pricetag-outline" size="sm" tone="ember" />
               <Text
-                className="flex-1 text-sm text-ink font-normal"
+                variant="label"
+                weight="regular"
+                className="flex-1"
                 numberOfLines={1}
               >
                 Vert for «{hosts.title}»

@@ -1,11 +1,20 @@
-import { Ionicons } from "@expo/vector-icons";
 import { Image } from "expo-image";
 import { router } from "expo-router";
 import { useState } from "react";
-import { Pressable, ScrollView, Text, View } from "react-native";
+import { ScrollView, View } from "react-native";
 
 import { Button } from "@/components/Button";
-import { Header, Icon, IconButton, Screen } from "@/components/ui";
+import {
+  Header,
+  Icon,
+  IconButton,
+  Screen,
+  Avatar,
+  ListRow,
+  Pressable as UIPressable,
+  Text,
+  type IconName,
+} from "@/components/ui";
 import { DemoBadge } from "@/components/DemoBadge";
 import { DemoNote } from "@/components/DemoNote";
 import { GuestLock } from "@/components/GuestLock";
@@ -68,41 +77,40 @@ export default function ProfileScreen() {
         ) : (
           <>
             {/* Header — tapping it opens Rediger profil (PDF p13). */}
-            <Pressable
+            <UIPressable
               accessibilityRole="button"
               accessibilityLabel="Rediger profil"
+              accessibilityHint={`${profile.name}, ${profile.age}`}
               onPress={() => setEditOpen(true)}
-              className="flex-row items-center gap-4 active:opacity-80"
+              pressedScale={0.99}
+              contentClassName="flex-row items-center gap-4"
             >
-              <Image
+              <Avatar
+                name={profile.name}
                 source={libImage(profile.avatar)}
-                contentFit="cover"
-                transition={200}
-                style={{ height: 84, width: 84, borderRadius: 42 }}
-                className="bg-surfaceMuted"
-                accessibilityLabel={`Profilbilde av ${profile.name}`}
+                size="xl"
+                decorative
               />
               <View className="flex-1 gap-1">
-                <Text className="text-2xl font-bold text-ink">
+                <Text variant="h1" accessibilityRole="text">
                   {profile.name}, {profile.age}
                 </Text>
-                <Text className="text-sm text-muted font-normal">
+                <Text variant="caption" tone="muted">
                   {profile.bio}
                 </Text>
               </View>
-            </Pressable>
+            </UIPressable>
 
             <View className="flex-row items-center gap-8">
               <Stat value={profile.stats.followers} label="Følgere" />
               <Stat value={profile.stats.following} label="Følger" />
-              <Pressable
+              <UIPressable
                 accessibilityRole="button"
-                accessibilityLabel="Venner — oppdag folk"
+                accessibilityLabel={`${profile.stats.friends} venner, oppdag folk`}
                 onPress={() => router.push("/people")}
-                className="active:opacity-70"
               >
                 <Stat value={profile.stats.friends} label="Venner" />
-              </Pressable>
+              </UIPressable>
               <DemoBadge />
             </View>
 
@@ -112,7 +120,7 @@ export default function ProfileScreen() {
                   key={i}
                   className="rounded-full border border-line bg-surface px-3.5 py-1.5"
                 >
-                  <Text className="text-sm font-medium text-ink">{i}</Text>
+                  <Text variant="label">{i}</Text>
                 </View>
               ))}
             </View>
@@ -142,7 +150,7 @@ function HeaderIcon({
   label,
   onPress,
 }: {
-  icon: keyof typeof Ionicons.glyphMap;
+  icon: IconName;
   label: string;
   onPress: () => void;
 }) {
@@ -160,9 +168,13 @@ function GuestProfile({ onSignIn }: { onSignIn: () => void }) {
 
 function Stat({ value, label }: { value: number; label: string }) {
   return (
-    <View>
-      <Text className="text-lg font-bold text-ink">{value}</Text>
-      <Text className="text-xs text-muted font-normal">{label}</Text>
+    <View accessible accessibilityLabel={`${value} ${label.toLowerCase()}`}>
+      <Text variant="title" weight="bold">
+        {value}
+      </Text>
+      <Text variant="caption" tone="muted">
+        {label}
+      </Text>
     </View>
   );
 }
@@ -172,20 +184,22 @@ function Stat({ value, label }: { value: number; label: string }) {
 function CreatorPathCard() {
   const { hosted, required, rating } = profile.creatorPath;
   return (
-    <Pressable
+    <UIPressable
       accessibilityRole="button"
-      accessibilityLabel="Veien til Skaper — se kravene"
+      accessibilityLabel="Veien til Skaper, se kravene"
+      accessibilityValue={{ min: 0, max: required, now: hosted }}
       onPress={() => router.push("/become-creator")}
-      className="gap-2 rounded-lg bg-surfaceMuted p-4 active:opacity-80"
+      pressedScale={0.99}
+      contentClassName="gap-2 rounded-lg bg-surfaceMuted p-4"
     >
       <View className="flex-row items-center gap-2">
         <Icon name="color-palette-outline" size="md" tone="ink" />
-        <Text className="flex-1 text-base font-semibold text-ink">
+        <Text variant="body" weight="semibold" className="flex-1">
           Veien til Skaper
         </Text>
         <DemoBadge />
       </View>
-      <Text className="text-xs text-muted font-normal">
+      <Text variant="caption" tone="muted">
         {hosted} av {required} opplevelser arrangert · ★ {rating} snitt
       </Text>
       <View className="h-1.5 overflow-hidden rounded-full bg-surface">
@@ -194,33 +208,36 @@ function CreatorPathCard() {
           style={{ width: `${(hosted / required) * 100}%` }}
         />
       </View>
-    </Pressable>
+    </UIPressable>
   );
 }
 
 function TabBar({ tab, onChange }: { tab: Tab; onChange: (t: Tab) => void }) {
   return (
-    <View className="flex-row border-b border-line">
+    <View accessibilityRole="tablist" className="flex-row border-b border-line">
       {TABS.map((t) => {
         const active = t.key === tab;
         return (
-          <Pressable
+          <UIPressable
             key={t.key}
             accessibilityRole="tab"
             accessibilityState={{ selected: active }}
             onPress={() => onChange(t.key)}
-            className={`flex-1 items-center pb-2.5 ${
+            haptic="selection"
+            feedback="none"
+            className="flex-1"
+            contentClassName={`items-center pb-2.5 ${
               active ? "border-b-2 border-ink" : ""
             }`}
           >
             <Text
-              className={`font-normal text-sm ${
-                active ? "font-semibold text-ink" : "font-medium text-muted"
-              }`}
+              variant="label"
+              weight={active ? "semibold" : "medium"}
+              tone={active ? "ink" : "muted"}
             >
               {t.label}
             </Text>
-          </Pressable>
+          </UIPressable>
         );
       })}
     </View>
@@ -232,24 +249,21 @@ function Row({
   title,
   meta,
 }: {
-  icon: keyof typeof Ionicons.glyphMap;
+  icon: IconName;
   title: string;
   meta: string;
 }) {
   return (
-    <View className="flex-row items-center gap-3 rounded-md border border-line bg-surface p-3">
-      <View className="h-10 w-10 items-center justify-center rounded-xl bg-surfaceMuted">
-        <Icon name={icon} size="md" tone="ink" />
-      </View>
-      <View className="flex-1">
-        <Text className="text-base font-semibold text-ink" numberOfLines={1}>
-          {title}
-        </Text>
-        <Text className="text-xs text-muted font-normal" numberOfLines={1}>
-          {meta}
-        </Text>
-      </View>
-    </View>
+    <ListRow
+      variant="card"
+      title={title}
+      subtitle={meta}
+      leading={
+        <View className="h-10 w-10 items-center justify-center rounded-md bg-surfaceMuted">
+          <Icon name={icon} size="md" tone="ink" />
+        </View>
+      }
+    />
   );
 }
 
@@ -279,30 +293,21 @@ function PlacesList() {
         const place = placeById(v.placeId);
         if (!place) return null;
         return (
-          <View
+          <ListRow
             key={v.placeId}
-            className="flex-row items-center gap-3 rounded-md border border-line bg-surface p-3"
-          >
-            <Image
-              source={libImage(coverForPlace(place))}
-              contentFit="cover"
-              transition={150}
-              style={{ height: 40, width: 40, borderRadius: 8 }}
-              className="bg-surfaceMuted"
-              accessibilityLabel={place.name}
-            />
-            <View className="flex-1">
-              <Text
-                className="text-base font-semibold text-ink"
-                numberOfLines={1}
-              >
-                {place.name}
-              </Text>
-              <Text className="text-xs text-muted font-normal">
-                {place.category} · {v.when}
-              </Text>
-            </View>
-          </View>
+            variant="card"
+            title={place.name}
+            subtitle={`${place.category} · ${v.when}`}
+            leading={
+              <Image
+                source={libImage(coverForPlace(place))}
+                contentFit="cover"
+                transition={150}
+                style={{ height: 40, width: 40, borderRadius: 8 }}
+                accessible={false}
+              />
+            }
+          />
         );
       })}
     </View>
@@ -321,16 +326,24 @@ function ReviewsList() {
             className="gap-1 rounded-md border border-line bg-surface p-3"
           >
             <View className="flex-row items-center justify-between">
-              <Text className="text-base font-semibold text-ink">
+              <Text variant="body" weight="semibold">
                 {place.name}
               </Text>
-              <Text className="text-xs text-muted font-normal">{r.when}</Text>
+              <Text variant="caption" tone="muted">
+                {r.when}
+              </Text>
             </View>
-            <Text className="text-xs text-emberText font-normal">
+            <Text
+              variant="caption"
+              tone="ember"
+              accessibilityLabel={`${r.stars} av 5 stjerner`}
+            >
               {"★".repeat(r.stars)}
               {"☆".repeat(5 - r.stars)}
             </Text>
-            <Text className="text-sm text-ink font-normal">{r.text}</Text>
+            <Text variant="label" weight="regular">
+              {r.text}
+            </Text>
           </View>
         );
       })}

@@ -1,9 +1,9 @@
 import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
 import { useState } from "react";
-import { ScrollView, Text, View } from "react-native";
+import { ScrollView, View } from "react-native";
 
-import { Icon, Screen } from "@/components/ui";
+import { Icon, Screen, Text } from "@/components/ui";
 import { Button } from "@/components/Button";
 import { DemoNote } from "@/components/DemoNote";
 import { RouteHeader } from "@/components/RouteHeader";
@@ -46,14 +46,14 @@ export default function InviteScreen() {
     <Screen edges={["top"]}>
       <RouteHeader title="Inviter venner" />
       <ScrollView contentContainerClassName="gap-4 px-gutter py-4 pb-12">
-        <Text className="text-sm text-muted font-normal">
+        <Text variant="caption" tone="muted">
           Del ThirdPlace og få belønninger.
         </Text>
-        <Text className="text-xs font-semibold uppercase tracking-wide text-muted">
+        <Text variant="micro" weight="semibold" tone="muted">
           Din kode
         </Text>
         <View className="items-center rounded-lg border border-line bg-surface py-5">
-          <Text className="text-2xl font-bold tracking-widest text-emberText">
+          <Text variant="h1" tone="ember" className="tracking-widest">
             OLA-TP2026
           </Text>
         </View>
@@ -82,7 +82,7 @@ export default function InviteScreen() {
           onPress={() => router.push("/invite-contacts")}
         />
 
-        <Text className="text-xs font-semibold uppercase tracking-wide text-muted">
+        <Text variant="micro" weight="semibold" tone="muted">
           Aktivitet
         </Text>
         <View className="flex-row gap-2">
@@ -91,13 +91,17 @@ export default function InviteScreen() {
               key={a.label}
               className="flex-1 items-center gap-0.5 rounded-md border border-line bg-surface py-3"
             >
-              <Text className="text-xl font-bold text-ink">{a.value}</Text>
-              <Text className="text-xs text-muted font-normal">{a.label}</Text>
+              <Text variant="h2" weight="bold" accessibilityRole="text">
+                {a.value}
+              </Text>
+              <Text variant="caption" tone="muted">
+                {a.label}
+              </Text>
             </View>
           ))}
         </View>
 
-        <Text className="text-xs font-semibold uppercase tracking-wide text-muted">
+        <Text variant="micro" weight="semibold" tone="muted">
           Belønninger
         </Text>
         {REWARDS.map((r) => (
@@ -109,8 +113,12 @@ export default function InviteScreen() {
               <Icon name={r.icon} size="md" tone="muted" />
             </View>
             <View className="flex-1">
-              <Text className="text-sm font-semibold text-ink">{r.label}</Text>
-              <Text className="text-xs text-muted font-normal">{r.hint}</Text>
+              <Text variant="label" weight="semibold">
+                {r.label}
+              </Text>
+              <Text variant="caption" tone="muted">
+                {r.hint}
+              </Text>
             </View>
             <Icon name="lock-closed-outline" size="sm" tone="muted" />
           </View>

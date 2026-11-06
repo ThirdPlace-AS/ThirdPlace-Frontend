@@ -1,9 +1,9 @@
 import { Image } from "expo-image";
 import { router } from "expo-router";
 import { useMemo, useState } from "react";
-import { FlatList, Pressable, Text, View } from "react-native";
+import { FlatList, View } from "react-native";
 
-import { Icon, Screen } from "@/components/ui";
+import { HeartToggle, ListRow, Screen } from "@/components/ui";
 import { Chip } from "@/components/Chip";
 import { DemoNote } from "@/components/DemoNote";
 import { RouteHeader } from "@/components/RouteHeader";
@@ -98,11 +98,16 @@ export default function SavedScreen() {
         keyExtractor={(r) => r.key}
         contentContainerClassName="gap-2 px-gutter pb-10 flex-grow"
         ListHeaderComponent={
-          <View className="flex-row flex-wrap gap-2 pb-2">
+          <View
+            accessibilityRole="radiogroup"
+            className="flex-row flex-wrap gap-2 pb-2"
+          >
             {FILTERS.map((f) => (
               <Chip
                 key={f.label}
                 label={f.label}
+                size="sm"
+                role="radio"
                 selected={filter === f.key}
                 onPress={() => setFilter(f.key)}
               />
@@ -129,44 +134,40 @@ export default function SavedScreen() {
         renderItem={({ item }) => {
           const place = item.placeId ? placeById(item.placeId) : undefined;
           return (
-            <View className="flex-row items-center gap-3 rounded-lg border border-line bg-surface p-3">
-              {place ? (
-                <Image
-                  source={libImage(coverForPlace(place))}
-                  contentFit="cover"
-                  style={{ height: 48, width: 48, borderRadius: 10 }}
-                  className="bg-surfaceMuted"
+            <ListRow
+              variant="card"
+              title={item.title}
+              subtitle={item.meta}
+              leading={
+                place ? (
+                  <Image
+                    source={libImage(coverForPlace(place))}
+                    contentFit="cover"
+                    style={{ height: 48, width: 48, borderRadius: 10 }}
+                    accessible={false}
+                  />
+                ) : (
+                  <View className="h-12 w-12 rounded-md bg-surfaceMuted" />
+                )
+              }
+              trailing={
+                <HeartToggle
+                  kind="bookmark"
+                  selected
+                  variant="ghost"
+                  size="sm"
+                  label={`Fjern ${item.title} fra lagret`}
+                  onToggle={() => {
+                    toggle(item.key);
+                    showToast({
+                      title: "Fjernet fra Lagret",
+                      body: item.title,
+                      icon: "bookmark-outline",
+                    });
+                  }}
                 />
-              ) : (
-                <View className="h-12 w-12 rounded-md bg-surfaceMuted" />
-              )}
-              <View className="flex-1">
-                <Text
-                  className="text-base font-semibold text-ink"
-                  numberOfLines={1}
-                >
-                  {item.title}
-                </Text>
-                <Text className="text-xs text-muted font-normal">
-                  {item.meta}
-                </Text>
-              </View>
-              <Pressable
-                accessibilityRole="button"
-                accessibilityLabel={`Fjern ${item.title} fra lagret`}
-                hitSlop={8}
-                onPress={() => {
-                  toggle(item.key);
-                  showToast({
-                    title: "Fjernet fra Lagret",
-                    body: item.title,
-                    icon: "bookmark-outline",
-                  });
-                }}
-              >
-                <Icon name="bookmark" size="md" tone="ink" />
-              </Pressable>
-            </View>
+              }
+            />
           );
         }}
       />

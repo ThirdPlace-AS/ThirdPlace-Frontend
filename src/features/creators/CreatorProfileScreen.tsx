@@ -1,9 +1,8 @@
-import { Image } from "expo-image";
 import { useLocalSearchParams } from "expo-router";
 import { useState } from "react";
-import { ScrollView, Text, View } from "react-native";
+import { ScrollView, View } from "react-native";
 
-import { FollowButton, Screen } from "@/components/ui";
+import { FollowButton, Screen, Avatar, Text } from "@/components/ui";
 import { Button } from "@/components/Button";
 import { DemoBadge } from "@/components/DemoBadge";
 import { DemoNote } from "@/components/DemoNote";
@@ -42,17 +41,21 @@ export default function CreatorProfileScreen() {
       <RouteHeader title="Skaper" />
       <ScrollView contentContainerClassName="gap-4 px-gutter py-4 pb-12">
         <View className="items-center gap-2">
-          <Image
+          <Avatar
+            name={person.name}
             source={libImage(person.avatar)}
-            style={{ height: 88, width: 88, borderRadius: 44 }}
-            accessibilityLabel={person.name}
+            size="xl"
           />
-          <Text className="text-2xl font-bold text-ink">{person.name}</Text>
+          <Text variant="h1" accessibilityRole="text">
+            {person.name}
+          </Text>
           <View className="flex-row items-center gap-2">
-            <Text className="text-sm font-semibold text-emberText">Skaper</Text>
+            <Text variant="label" weight="semibold" tone="ember">
+              Skaper
+            </Text>
             <DemoBadge />
           </View>
-          <Text className="px-4 text-center text-sm text-muted font-normal">
+          <Text variant="caption" tone="muted" className="px-4 text-center">
             {person.bio}
           </Text>
         </View>
@@ -70,6 +73,7 @@ export default function CreatorProfileScreen() {
             <Button
               label="Melding"
               variant="secondary"
+              rounded="full"
               onPress={() => setNotice("Meldinger sendes ikke i demoen.")}
             />
           </View>
@@ -77,27 +81,27 @@ export default function CreatorProfileScreen() {
         {follow || notice ? (
           <DemoNote>{notice ?? "Å følge lagrer ingenting."}</DemoNote>
         ) : null}
-        <Text className="text-xs font-semibold uppercase tracking-wide text-muted">
+        <Text variant="micro" weight="semibold" tone="muted">
           Kommende
         </Text>
         {hosted ? (
           <View className="gap-0.5 rounded-lg border border-line bg-surface p-4">
-            <Text className="text-base font-semibold text-ink">
+            <Text variant="body" weight="semibold">
               {hosted.title}
             </Text>
-            <Text className="text-xs text-muted font-normal">
+            <Text variant="caption" tone="muted">
               {hosted.when}
             </Text>
           </View>
         ) : (
-          <Text className="text-sm text-muted font-normal">
+          <Text variant="caption" tone="muted">
             Ingen kommende opplevelser.
           </Text>
         )}
-        <Text className="text-xs font-semibold uppercase tracking-wide text-muted">
+        <Text variant="micro" weight="semibold" tone="muted">
           Tidligere
         </Text>
-        <Text className="text-sm text-muted font-normal">
+        <Text variant="caption" tone="muted">
           Tidligere opplevelser vises her når de finnes.
         </Text>
       </ScrollView>
