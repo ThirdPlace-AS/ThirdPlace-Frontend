@@ -1,4 +1,4 @@
-import { router } from "expo-router";
+import { type Href, router } from "expo-router";
 import { useState } from "react";
 import { FlatList, Pressable, ScrollView, View } from "react-native";
 
@@ -13,6 +13,7 @@ import { DemoNote } from "@/components/DemoNote";
 import { RouteHeader } from "@/components/RouteHeader";
 import { EmptyState } from "@/components/states/StateView";
 import {
+  chats,
   experienceById,
   people,
   profile,
@@ -129,6 +130,22 @@ export default function PlansScreen() {
                   onPress={() => setSheet({ kind: "split", title: exp.title })}
                 />
               ) : null}
+              {/* Approved addition (2026-11-06): a plan links to the example
+                  chat pinned to its experience, where one exists. A link only:
+                  joining does not grant chat membership (spec §12). */}
+              {item.state === "upcoming"
+                ? (() => {
+                    const chat = chats.find(
+                      (c) => c.pinnedExperienceId === exp.id,
+                    );
+                    return chat ? (
+                      <PlanAction
+                        label="Til samtalen"
+                        onPress={() => router.push(`/chat/${chat.id}` as Href)}
+                      />
+                    ) : null;
+                  })()
+                : null}
             </View>
           );
         }}

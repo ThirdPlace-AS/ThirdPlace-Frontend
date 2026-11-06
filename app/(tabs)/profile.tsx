@@ -131,6 +131,8 @@ export default function ProfileScreen() {
               ))}
             </View>
 
+            <NextPlanCard />
+
             <CreatorPathCard />
 
             <TabBar tab={tab} onChange={setTab} />
@@ -181,6 +183,53 @@ function Stat({ value, label }: { value: number; label: string }) {
       <Text variant="caption" tone="muted">
         {label}
       </Text>
+    </View>
+  );
+}
+
+// "Neste plan" (approved addition, 2026-11-06): the first upcoming plan from
+// the same fixture Mine planer reads (no second attendance truth, spec §11),
+// with its "when" label as written: no countdown, no reminder copy.
+function NextPlanCard() {
+  const next = profile.plans.find((p) => p.state === "upcoming");
+  const exp = next ? experienceById(next.experienceId) : undefined;
+  if (!exp) return null;
+  return (
+    <View className="gap-2">
+      <View className="flex-row items-center justify-between">
+        <Text variant="label" weight="semibold">
+          Neste plan
+        </Text>
+        <UIPressable
+          accessibilityRole="link"
+          hitSlop={{ top: 12, bottom: 12, left: 8, right: 8 }}
+          onPress={() => router.push("/plans")}
+        >
+          <Text variant="label" weight="semibold" tone="ember">
+            Alle planer →
+          </Text>
+        </UIPressable>
+      </View>
+      <ListRow
+        variant="card"
+        title={exp.title}
+        subtitle={`${exp.when} · eksempel`}
+        leading={
+          <Image
+            source={exp.photos[0]}
+            contentFit="cover"
+            style={{ height: 44, width: 44, borderRadius: 10 }}
+            accessible={false}
+          />
+        }
+        trailing={<DemoBadge />}
+        onPress={() =>
+          router.navigate({
+            pathname: "/map",
+            params: { focus: `experience:${exp.id}`, at: String(Date.now()) },
+          })
+        }
+      />
     </View>
   );
 }
