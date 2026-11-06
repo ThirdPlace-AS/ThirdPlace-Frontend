@@ -154,6 +154,11 @@ function ListingEditor({
           disabled={d.title.trim().length < 3}
           onPress={() => setDone(true)}
         />
+        {d.title.trim().length < 3 ? (
+          <Text variant="caption" tone="muted" className="text-center">
+            Tittelen trenger minst 3 tegn.
+          </Text>
+        ) : null}
       </View>
     </Sheet>
   );

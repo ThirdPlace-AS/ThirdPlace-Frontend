@@ -31,6 +31,12 @@ describe("Chip", () => {
     expect(onPress).toHaveBeenCalledTimes(1);
   });
 
+  it("renders a chip without an action as a label, not a button", () => {
+    render(<Chip label="Kaffe" />);
+    expect(screen.getByLabelText("Kaffe")).toBeTruthy();
+    expect(screen.queryByRole("button", { name: "Kaffe" })).toBeNull();
+  });
+
   it("uses checked state for radio chips", () => {
     render(<Chip label="Åpen" role="radio" selected />);
     expect(

@@ -76,6 +76,11 @@ export function NewCollabScreen() {
           disabled={msg.trim().length === 0}
           onPress={() => setSent(true)}
         />
+        {msg.trim().length === 0 ? (
+          <Text variant="caption" tone="muted" className="text-center">
+            Skriv en melding først.
+          </Text>
+        ) : null}
         <Button
           label="Se et eksempel på samarbeid"
           variant="secondary"

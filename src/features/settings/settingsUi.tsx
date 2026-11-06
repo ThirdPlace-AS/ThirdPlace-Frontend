@@ -36,7 +36,8 @@ export function NavRow({
   icon: IconName;
   label: string;
   value?: string;
-  onPress: () => void;
+  /** Without onPress the row is plain text (no chevron, no press). */
+  onPress?: () => void;
   danger?: boolean;
 }) {
   return (

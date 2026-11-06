@@ -89,6 +89,9 @@ export default function SystemState() {
               </Text>
             </View>
             <Button label="Send klage" variant="ink" disabled />
+            <Text variant="caption" tone="muted" className="text-center">
+              Klager kan ikke sendes i demoen.
+            </Text>
           </State>
         ) : kind === "update" ? (
           <State

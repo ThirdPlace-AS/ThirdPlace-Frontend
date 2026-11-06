@@ -418,18 +418,8 @@ function LanguageSheet({ visible, onClose }: SheetProps) {
           Region
         </Text>
         <View className="overflow-hidden rounded-lg bg-surface">
-          <NavRow
-            icon="cash-outline"
-            label="Valuta"
-            value="NOK (kr)"
-            onPress={() => {}}
-          />
-          <NavRow
-            icon="time-outline"
-            label="Tidssone"
-            value="Oslo (CET)"
-            onPress={() => {}}
-          />
+          <NavRow icon="cash-outline" label="Valuta" value="NOK (kr)" />
+          <NavRow icon="time-outline" label="Tidssone" value="Oslo (CET)" />
         </View>
         <DemoNote>
           Demoen finnes bare på norsk, så valget endrer ingenting.
@@ -526,12 +516,8 @@ function HelpSheet({ visible, onClose }: SheetProps) {
         </Text>
         <View className="overflow-hidden rounded-lg bg-surface">
           {faq.map((q) => (
-            <NavRow
-              key={q}
-              icon="help-circle-outline"
-              label={q}
-              onPress={() => {}}
-            />
+            // Topics only: no answers exist yet, so the rows are not links.
+            <NavRow key={q} icon="help-circle-outline" label={q} />
           ))}
         </View>
         <DemoNote>

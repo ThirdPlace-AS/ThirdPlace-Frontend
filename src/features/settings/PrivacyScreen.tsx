@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { ScrollView, View } from "react-native";
 
-import { Screen, Text } from "@/components/ui";
+import { Pressable, Screen, Text } from "@/components/ui";
 import { Button } from "@/components/Button";
 import { Chip } from "@/components/Chip";
 import { DemoNote } from "@/components/DemoNote";
@@ -36,6 +36,15 @@ export default function PrivacyScreen() {
     null,
   );
   const close = () => setPanel(null);
+  // Avblokkér flips the row locally (nothing is sent or stored).
+  const [unblocked, setUnblocked] = useState<ReadonlySet<string>>(new Set());
+  const toggleBlocked = (name: string) =>
+    setUnblocked((s) => {
+      const next = new Set(s);
+      if (next.has(name)) next.delete(name);
+      else next.add(name);
+      return next;
+    });
   // Data actions are account-only; guests get the sign-in prompt instead.
   const { isGuest } = useGuestMode();
   const [signIn, setSignIn] = useState(false);
@@ -113,15 +122,35 @@ export default function PrivacyScreen() {
                   {b.name}
                 </Text>
                 <Text variant="caption" tone="muted">
-                  {b.why} · {b.when}
+                  {unblocked.has(b.name)
+                    ? "Ikke blokkert"
+                    : `${b.why} · ${b.when}`}
                 </Text>
               </View>
-              <Text variant="caption" weight="semibold" tone="ember">
-                Avblokkér
-              </Text>
+              <Pressable
+                accessibilityRole="button"
+                accessibilityLabel={
+                  unblocked.has(b.name)
+                    ? `Blokker ${b.name} igjen`
+                    : `Avblokkér ${b.name}`
+                }
+                haptic="selection"
+                hitSlop={{ top: 14, bottom: 14, left: 10, right: 10 }}
+                onPress={() => toggleBlocked(b.name)}
+              >
+                <Text
+                  variant="caption"
+                  weight="semibold"
+                  tone={unblocked.has(b.name) ? "ink" : "ember"}
+                >
+                  {unblocked.has(b.name) ? "Angre" : "Avblokkér"}
+                </Text>
+              </Pressable>
             </View>
           ))}
-          <DemoNote>Dette er eksempeldata. Ingen blokkering endres.</DemoNote>
+          <DemoNote>
+            Dette er eksempeldata. Endringen vises bare her og lagres ikke.
+          </DemoNote>
         </View>
       </Sheet>
 

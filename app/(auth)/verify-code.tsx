@@ -80,8 +80,8 @@ export default function VerifyCode() {
             <UIText variant="label" weight="semibold">
               Mistet tilgang?
             </UIText>
-            <UIText variant="label" weight="semibold" tone="ember">
-              Backupkoder er ikke aktive i demoen
+            <UIText variant="caption" tone="muted">
+              Backupkoder er ikke aktive i demoen.
             </UIText>
           </View>
         ) : null}

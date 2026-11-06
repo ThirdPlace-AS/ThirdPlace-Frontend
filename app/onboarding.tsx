@@ -5,6 +5,7 @@ import { Pressable, ScrollView, View } from "react-native";
 import { Switch } from "@/components/ui/Switch";
 import {
   Icon,
+  Pressable as UIPressable,
   Screen,
   StepContent,
   StepHeader,
@@ -119,6 +120,8 @@ export default function Onboarding() {
   const [step, setStep] = useState(0);
   const [role, setRole] = useState<MockPersonaKey>("explorer");
   const [name, setName] = useState("");
+  // Photo upload is not wired (no picker in the demo): the tap answers inline.
+  const [photoTried, setPhotoTried] = useState(false);
   const [birthday, setBirthday] = useState("");
   const [bio, setBio] = useState("");
   const [identity, setIdentity] = useState<Record<string, string>>({});
@@ -245,14 +248,25 @@ export default function Onboarding() {
             title="Dette er deg"
             subtitle="Slik vil andre se deg på ThirdPlace."
           >
-            <View className="items-center gap-2">
+            <UIPressable
+              accessibilityRole="button"
+              accessibilityLabel="Legg til profilbilde"
+              haptic="selection"
+              onPress={() => setPhotoTried(true)}
+              className="items-center gap-2 self-center"
+            >
               <View className="h-24 w-24 items-center justify-center rounded-full bg-surfaceMuted">
                 <Icon name="camera-outline" size="lg" tone="ink" />
               </View>
               <Text variant="label" weight="semibold" tone="ember">
                 Legg til profilbilde
               </Text>
-            </View>
+            </UIPressable>
+            {photoTried ? (
+              <Text variant="caption" tone="muted" className="text-center">
+                Bildeopplasting er ikke aktiv i demoen.
+              </Text>
+            ) : null}
             <Input
               label="Navn"
               placeholder="Fornavn Etternavn"

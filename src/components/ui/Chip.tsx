@@ -3,6 +3,7 @@
 // "outline": selected = 2 px ink ring, optional icon (map "Filtre" type grids,
 // per the PDF video). Replaces <Chip>, <TypeChip> and inline pills.
 import { memo } from "react";
+import { View } from "react-native";
 
 import { Icon, type IconName } from "./Icon";
 import { Pressable } from "./Pressable";
@@ -51,25 +52,11 @@ export const Chip = memo(function Chip({
   testID,
 }: ChipProps) {
   const filledOn = variant === "filled" && selected;
-  return (
-    <Pressable
-      testID={testID}
-      accessibilityRole={role}
-      accessibilityLabel={label}
-      accessibilityState={
-        role === "button" ? { selected } : { checked: selected }
-      }
-      onPress={onPress}
-      disabled={disabled}
-      haptic="selection"
-      pressedScale={0.95}
-      // A 32 px chip still gets a 44 pt target vertically.
-      hitSlop={size === "sm" ? 6 : 2}
-      contentClassName={`flex-row items-center gap-sm rounded-full ${PAD[size]} ${
-        selected ? SHELL[variant].on : SHELL[variant].off
-      }`}
-      contentStyle={{ minHeight: HEIGHT[size] }}
-    >
+  const shell = `flex-row items-center gap-sm rounded-full ${PAD[size]} ${
+    selected ? SHELL[variant].on : SHELL[variant].off
+  }`;
+  const body = (
+    <>
       {icon ? (
         <Icon
           name={icon}
@@ -84,6 +71,42 @@ export const Chip = memo(function Chip({
       >
         {label}
       </Text>
+    </>
+  );
+  // A plain chip without an action is a label (tags, vibes, interests): no
+  // press scale, no haptic, not announced as a button. Radio/checkbox chips
+  // stay controls.
+  if (!onPress && role === "button") {
+    return (
+      <View
+        testID={testID}
+        accessible
+        accessibilityLabel={label}
+        className={shell}
+        style={{ minHeight: HEIGHT[size] }}
+      >
+        {body}
+      </View>
+    );
+  }
+  return (
+    <Pressable
+      testID={testID}
+      accessibilityRole={role}
+      accessibilityLabel={label}
+      accessibilityState={
+        role === "button" ? { selected } : { checked: selected }
+      }
+      onPress={onPress}
+      disabled={disabled}
+      haptic="selection"
+      pressedScale={0.95}
+      // A 32 px chip still gets a 44 pt target vertically.
+      hitSlop={size === "sm" ? 6 : 2}
+      contentClassName={shell}
+      contentStyle={{ minHeight: HEIGHT[size] }}
+    >
+      {body}
     </Pressable>
   );
 });

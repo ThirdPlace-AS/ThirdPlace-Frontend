@@ -30,6 +30,7 @@ import { experiences, OSLO_AREAS, places } from "@/fixtures";
 import {
   type AddDraft,
   type AddKind,
+  advanceHint,
   canAdvance,
   EMPTY_DRAFT,
   type StepKey,
@@ -184,6 +185,11 @@ export function AddWizard() {
           disabled={!canAdvance(step, draft)}
           onPress={next}
         />
+        {advanceHint(step, draft) ? (
+          <Text variant="caption" tone="muted" className="pt-2 text-center">
+            {advanceHint(step, draft)}
+          </Text>
+        ) : null}
       </View>
     </Screen>
   );

@@ -1,6 +1,11 @@
 import { describe, expect, it } from "@jest/globals";
 
-import { canAdvance, EMPTY_DRAFT, stepsFor } from "@/features/add/types";
+import {
+  advanceHint,
+  canAdvance,
+  EMPTY_DRAFT,
+  stepsFor,
+} from "@/features/add/types";
 
 // Step order follows the design (PDF p10–p12).
 describe("Add flow steps", () => {
@@ -24,6 +29,20 @@ describe("Add flow steps", () => {
     expect(s[0]).toBe("about");
     expect(s[1]).toBe("when");
     expect(s[s.length - 1]).toBe("review");
+  });
+});
+
+describe("Add flow hints", () => {
+  it("says why Neste is off, and nothing once the step is filled", () => {
+    expect(advanceHint("about", EMPTY_DRAFT)).toBe(
+      "Navnet trenger minst 3 tegn.",
+    );
+    expect(advanceHint("about", { ...EMPTY_DRAFT, title: "Kaffe" })).toBe(
+      "Velg en kategori.",
+    );
+    const filled = { ...EMPTY_DRAFT, title: "Kaffe", category: "Kafé" };
+    expect(canAdvance("about", filled as typeof EMPTY_DRAFT)).toBe(true);
+    expect(advanceHint("about", filled as typeof EMPTY_DRAFT)).toBeNull();
   });
 });
 

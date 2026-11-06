@@ -236,6 +236,9 @@ function InviteSheet({
 }) {
   const [q, setQ] = useState("");
   const [done, setDone] = useState<string[]>([]);
+  // No clipboard module is installed and the link is an example, so the
+  // button answers inline instead of pretending to copy.
+  const [copyTried, setCopyTried] = useState(false);
   const slug = chat.name.toLowerCase().replace(/[^a-z0-9]+/g, "-");
   return (
     <Sheet visible={visible} onClose={onClose} title="Inviter til chat">
@@ -253,9 +256,22 @@ function InviteSheet({
           <Text variant="label" weight="regular" tone="ember">
             thirdplace.app/join/{slug}
           </Text>
-          <Text variant="caption" weight="semibold" tone="ember">
-            Kopier lenke
-          </Text>
+          <UIPressable
+            accessibilityRole="button"
+            haptic="selection"
+            hitSlop={{ top: 12, bottom: 12, left: 8, right: 8 }}
+            onPress={() => setCopyTried(true)}
+            className="self-start"
+          >
+            <Text variant="caption" weight="semibold" tone="ember">
+              Kopier lenke
+            </Text>
+          </UIPressable>
+          {copyTried ? (
+            <Text variant="caption" tone="muted">
+              Ikke kopiert: lenken er et eksempel og åpner ingenting.
+            </Text>
+          ) : null}
         </View>
         <View className="items-center gap-2 rounded-md border border-line bg-surface p-4">
           <Icon name="qr-code-outline" size="3xl" tone="muted" />

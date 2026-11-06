@@ -18,6 +18,8 @@ export const demoCopy = {
   joinedNoBackend:
     "Påmeldingen vises bare her. Ingenting er sendt, og ingen chat er åpnet.",
   waitlistedNoBackend: "Du står på venteliste i demoen. Du får ingen varsler.",
+  groupJoinedNoBackend:
+    "Medlemskapet vises bare her. Ingenting er sendt, og ingen gruppechat er åpnet.",
 
   // Standalone (no badge next to them)
 } as const;

@@ -99,3 +99,29 @@ export function canAdvance(step: StepKey, d: AddDraft): boolean {
       return true;
   }
 }
+
+// Why "Neste" is off, in one line (same checks as canAdvance), so a disabled
+// button never leaves the user guessing. Null when the step can advance.
+export function advanceHint(step: StepKey, d: AddDraft): string | null {
+  if (canAdvance(step, d)) return null;
+  switch (step) {
+    case "kind":
+      return "Velg hva du vil legge til.";
+    case "about":
+      return d.title.trim().length < 3
+        ? "Navnet trenger minst 3 tegn."
+        : "Velg en kategori.";
+    case "where":
+      return "Velg et område.";
+    case "photos":
+      return "Legg til minst ett bilde.";
+    case "when":
+      return "Velg dato og starttid.";
+    case "frame":
+      return "Skriv antall plasser som et tall.";
+    case "mood":
+      return "Velg minst én stemning.";
+    default:
+      return null;
+  }
+}
