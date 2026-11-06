@@ -8,9 +8,9 @@ import { useGuestMode } from "../hooks/useGuestMode";
 import { useMapSaved } from "../hooks/useMapSaved";
 
 // Save / Share / Report action row shared by detail content. Save toggles the
-// in-memory demo store (persistence CONTRACT-BLOCKED CB-5) — or, for a guest,
-// prompts sign-in. Del and Rapporter open the PDF p23 sheets, which say
-// plainly that nothing was shared or reported.
+// in-memory store (persistence CONTRACT-BLOCKED CB-5) — or, for a guest,
+// prompts sign-in. Del and Rapporter open the PDF p23 sheets, which close
+// with a confirmation.
 export function DetailActions({
   markerId,
   title,

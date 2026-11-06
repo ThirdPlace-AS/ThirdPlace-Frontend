@@ -1,7 +1,7 @@
-import { router } from "expo-router";
+import { router, type Href } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import { Asset } from "expo-asset";
-import { useEffect, useLayoutEffect, useMemo, useState } from "react";
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import {
   Platform,
   Pressable,
@@ -28,16 +28,7 @@ import Animated, {
   type SharedValue,
 } from "react-native-reanimated";
 
-import {
-  HeartToggle,
-  Icon,
-  IconButton,
-  ListRow,
-  Overlay,
-  PopIcon,
-  Pressable as UIPressable,
-  Text,
-} from "@/components/ui";
+import { HeartToggle, Icon, IconButton, Overlay, Text } from "@/components/ui";
 import { StatusBarStyle } from "@/components/ui/StatusBarStyle";
 import { Button } from "@/components/Button";
 import { Sheet } from "@/components/Sheet";
@@ -47,17 +38,20 @@ import { markerId } from "@/components/map/types/mapPresentation";
 import { NotificationsSheet } from "@/components/NotificationsSheet";
 import { SignInPrompt } from "@/components/SignInPrompt";
 import { EmptyState } from "@/components/states/StateView";
-import { chats, places, type MockExperience } from "@/fixtures";
+import { chats, experienceById, type MockExperience } from "@/fixtures";
+import { ExperiencePage } from "@/components/experience/ExperiencePage";
+import { experienceCaption } from "@/components/experience/experienceMeta";
+import { ExperienceJoinBar } from "@/components/map/content/ExperienceJoinBar";
+import { DetailContent, titleFor } from "@/components/map/DetailContentRouter";
+import type { SheetTarget } from "@/components/map/sheetTypes";
 import { showToastAfterSheet } from "@/components/Toast";
 import { confirmToast } from "@/copy";
 import { useNotificationReads } from "@/hooks/useNotificationReads";
 import { markViewed } from "@/components/map/hooks/useRecentlyViewed";
 import { haptics } from "@/lib/haptics";
-import { motion, useThemeColors, media } from "@/theme";
+import { elevation, motion, useThemeColors, media } from "@/theme";
 
-import { experienceAvailability } from "./availability";
 import { decideCommit, rotationFor, type SwipeAction } from "./deckLogic";
-import { PhotoCarousel } from "./PhotoCarousel";
 import { PlaceDeck } from "./PlaceDeck";
 import { SwipeActions } from "./SwipeActions";
 import { SwipeCard, SWIPE_CONTENT_BOTTOM } from "./SwipeCard";
@@ -757,36 +751,13 @@ function Stamps({
   );
 }
 
-// One icon + text meta row on the dark detail.
-function MetaLine({
-  icon,
-  children,
-}: {
-  icon: keyof typeof Ionicons.glyphMap;
-  children: string;
-}) {
-  return (
-    <View className="flex-row items-center gap-2">
-      <Icon name={icon} size="sm" tone="onMedia" />
-      <Text
-        variant="label"
-        weight="regular"
-        tone="onMedia"
-        className="flex-1 opacity-90"
-        numberOfLines={1}
-      >
-        {children}
-      </Text>
-    </View>
-  );
-}
-
-// Full-screen in-place detail — a swipe-LOCAL dark experience sheet. It renders a
-// compact body straight from the fixture (hero + status/when/host/about/interests
-// + attendees count) instead of the shared (light) map DetailContent, so the map's
-// detail is untouched. A sticky bottom bar carries the primary join CTA. Join/save
-// are account-gated for guests; everything here is local state
-// (BLOCKED_CONTRACT_GAP).
+// Full-screen in-place detail (Phase 11 G5): the shared ExperiencePage in an
+// Overlay, laid out as the reference video's page — white top bar (back,
+// caption, share, save), the page body, and the join action as a floating
+// card. Sub-views (deltakere, gruppe, sjekk inn, vert) open in a sheet over
+// the page; place, host profile and chat leave the overlay first (a route
+// would render under the Modal). Join/save use the shared stores, so the map
+// and Sveip agree; guests get the sign-in prompt (BLOCKED_CONTRACT_GAP).
 function ExpandDetail({
   exp,
   onClose,
@@ -794,19 +765,27 @@ function ExpandDetail({
   exp: MockExperience | null;
   onClose: () => void;
 }) {
-  // Keep the last experience on screen while the overlay animates out.
+  const c = useThemeColors();
+  // Keep the last experience on screen while the overlay animates out, and
+  // let "Flere opplevelser i området" swap it in place.
   const [shown, setShown] = useState(exp);
-  if (exp && exp !== shown) setShown(exp);
+  const [opened, setOpened] = useState(exp);
+  if (exp !== opened) {
+    setOpened(exp);
+    if (exp) setShown(exp);
+  }
   return (
     <Overlay
       visible={exp !== null}
       onClose={onClose}
       enter="up"
       statusBarTranslucent
-      style={{ backgroundColor: media.base }}
+      style={{ backgroundColor: c.background }}
       accessibilityLabel={shown?.title}
     >
-      {shown ? <ExpandBody exp={shown} onClose={onClose} /> : null}
+      {shown ? (
+        <ExpandBody exp={shown} onClose={onClose} onSwap={setShown} />
+      ) : null}
     </Overlay>
   );
 }
@@ -814,211 +793,112 @@ function ExpandDetail({
 function ExpandBody({
   exp,
   onClose,
+  onSwap,
 }: {
   exp: MockExperience;
   onClose: () => void;
+  onSwap: (e: MockExperience) => void;
 }) {
   const insets = useSafeAreaInsets();
-  const { height: screenH } = useWindowDimensions();
-  const heroH = Math.round(screenH * 0.46);
+  const scrollRef = useRef<ScrollView>(null);
   const { isGuest } = useGuestMode();
   const [signInFor, setSignInFor] = useState<string | null>(null);
-  // Safety actions (Master §7 report/block). Local demo only — opening a small
-  // action sheet; the actions are account-gated for guests and send nothing.
-  const [safetyOpen, setSafetyOpen] = useState(false);
-
-  const place = places.find((p) => p.id === exp.placeId) ?? null;
-  // Single source of truth for status wording + CTA (F14).
-  const { statusText, joinLabel } = experienceAvailability(exp);
-
-  // Save uses the shared demo Saved store (same as a swipe-up and the map's
-  // Lagret); join flips local demo state only (BLOCKED_CONTRACT_GAP).
+  const [sub, setSub] = useState<SheetTarget[]>([]);
   const { isSaved, toggle } = useMapSaved();
   const savedKey = markerId("experience", exp.id);
   const saved = isSaved(savedKey);
-  const [joined, setJoined] = useState(false);
 
-  // Account-gate join/save for guests.
-  const gate = (label: string, run?: () => void) => {
-    if (isGuest) {
-      setSignInFor(label);
-      return;
-    }
-    run?.();
+  // Leave the overlay before navigating: a route would open under the Modal.
+  const leaveTo = (href: Href) => {
+    onClose();
+    setTimeout(() => router.push(href), 260);
   };
+  const top = sub[sub.length - 1];
 
   return (
-    // Inside an Overlay (Modal engine): Android back closes the detail and
-    // focus is contained to it (F2/F7), not the deck behind it.
     <View className="flex-1">
-      {/* Light status-bar content over the dark detail surface. */}
-      <StatusBarStyle style="light" />
-      {/* Header: title + collapse. */}
+      <StatusBarStyle style="auto" />
+      {/* Page top bar (reference: back, small centred caption, share, heart). */}
       <View
-        className="flex-row items-center gap-2 px-gutter pb-2"
+        className="flex-row items-center gap-1 border-b border-line bg-background px-2 pb-1"
         style={{ paddingTop: insets.top + 4 }}
       >
+        <IconButton icon="arrow-back" label="Tilbake" onPress={onClose} />
         <Text
-          variant="h2"
-          weight="bold"
-          tone="onMedia"
-          className="flex-1"
-          accessibilityRole="text"
+          variant="caption"
+          weight="semibold"
+          tone="muted"
+          className="flex-1 text-center"
           numberOfLines={1}
         >
-          {exp.title}
+          {experienceCaption(exp)}
         </Text>
         <IconButton
-          icon="ellipsis-horizontal"
-          label="Flere valg"
-          variant="mediaSubtle"
-          size="sm"
-          onPress={() => setSafetyOpen(true)}
+          icon="share-outline"
+          label="Del"
+          onPress={() =>
+            void Share.share({
+              message: `${exp.title} på ThirdPlace: thirdplace.app/experience/${exp.id}`,
+            }).catch(() => {})
+          }
         />
-        <IconButton
-          icon="arrow-down"
-          label="Lukk detaljer"
-          variant="mediaSubtle"
-          size="sm"
-          onPress={onClose}
+        <HeartToggle
+          selected={saved}
+          variant="ghost"
+          haptic={!isGuest}
+          label={saved ? "Fjern fra lagret" : "Lagre"}
+          onToggle={() => (isGuest ? setSignInFor("lagre") : toggle(savedKey))}
         />
       </View>
 
       <ScrollView
-        contentContainerClassName="gap-5 px-gutter pb-28 pt-1"
+        ref={scrollRef}
+        contentContainerClassName="px-gutter pb-40 pt-4"
         keyboardShouldPersistTaps="handled"
       >
-        <View
-          className="overflow-hidden rounded-lg bg-ink"
-          style={{ height: heroH }}
-        >
-          <PhotoCarousel photos={exp.photos} interactive />
-        </View>
-
-        <View className="gap-2">
-          <MetaLine icon="people-outline">
-            {`${statusText} · ${exp.going}/${exp.capacity} påmeldt`}
-          </MetaLine>
-          <MetaLine icon="calendar-outline">{exp.when}</MetaLine>
-          {place ? (
-            <MetaLine icon="location-outline">
-              {`${place.name} · ${place.distance}`}
-            </MetaLine>
-          ) : null}
-          <MetaLine icon="person-outline">{`Vert: ${exp.host}`}</MetaLine>
-        </View>
-
-        <View className="gap-1">
-          <Text variant="body" weight="bold" tone="onMedia">
-            Om
-          </Text>
-          <Text
-            variant="label"
-            weight="regular"
-            tone="onMedia"
-            className="leading-6 opacity-85"
-          >
-            {exp.about}
-          </Text>
-        </View>
-
-        {exp.tags.length > 0 ? (
-          <View className="gap-2">
-            <Text variant="body" weight="bold" tone="onMedia">
-              Interesser
-            </Text>
-            <View className="flex-row flex-wrap gap-2">
-              {exp.tags.map((t) => (
-                <View
-                  key={t}
-                  className="rounded-full px-3.5 py-1.5"
-                  style={{ backgroundColor: media.fillSubtle }}
-                >
-                  <Text variant="label" tone="onMedia">
-                    {t}
-                  </Text>
-                </View>
-              ))}
-            </View>
-          </View>
-        ) : null}
+        <ExperiencePage
+          exp={exp}
+          onOpen={(t) =>
+            t.kind === "place"
+              ? leaveTo(`/map?focus=place:${t.id}&at=${Date.now()}` as Href)
+              : setSub([t])
+          }
+          onOpenExperience={(id) => {
+            const next = experienceById(id);
+            if (!next) return;
+            onSwap(next);
+            scrollRef.current?.scrollTo({ y: 0, animated: false });
+          }}
+          onNavigate={leaveTo}
+        />
       </ScrollView>
 
-      {/* Sticky bottom bar — primary join CTA + save + share. */}
+      {/* Join action as the reference's floating card. */}
       <View
-        className="absolute inset-x-0 bottom-0 flex-row items-center gap-3 px-gutter"
-        style={{
-          paddingTop: 12,
-          paddingBottom: Math.max(insets.bottom, 12),
-          backgroundColor: media.sheet,
-          borderTopWidth: 1,
-          borderColor: media.hairline,
-        }}
+        pointerEvents="box-none"
+        className="absolute inset-x-0 bottom-0 px-gutter"
+        style={{ paddingBottom: Math.max(insets.bottom, 12) + 4 }}
       >
-        <UIPressable
-          accessibilityRole="button"
-          accessibilityLabel={joined ? "Meld av" : joinLabel}
-          accessibilityState={{ selected: joined }}
-          onPress={() => gate("bli med", () => setJoined((j) => !j))}
-          className="flex-1"
-          contentClassName="h-12 flex-row items-center justify-center gap-sm rounded-full bg-ember"
+        <View
+          className="rounded-lg border border-line bg-surface px-4 py-3"
+          style={elevation.e2}
         >
-          <PopIcon pop={joined} name="heart" size="md" tone="onEmber" />
-          <Text variant="body" weight="bold" tone="onEmber">
-            {joined ? "Du er med" : joinLabel}
-          </Text>
-        </UIPressable>
-        <HeartToggle
-          kind="bookmark"
-          selected={saved}
-          variant="mediaOutline"
-          size="lg"
-          haptic={!isGuest}
-          onToggle={() => gate("lagre", () => toggle(savedKey))}
-        />
-        <IconButton
-          icon="paper-plane-outline"
-          label="Del"
-          variant="mediaOutline"
-          size="lg"
-          onPress={() =>
-            void Share.share({ message: `${exp.title} — ThirdPlace` }).catch(
-              () => {},
-            )
-          }
-        />
+          <ExperienceJoinBar id={exp.id} />
+        </View>
       </View>
 
-      {/* Safety action sheet (Master §7 report/block) — local demo, no report
-            is sent; account-gated for guests. */}
-      <Sheet visible={safetyOpen} onClose={() => setSafetyOpen(false)}>
-        <ListRow
-          variant="card"
-          icon="flag-outline"
-          title="Rapporter opplevelsen"
-          chevron={false}
-          onPress={() => {
-            setSafetyOpen(false);
-            gate("rapportere");
-          }}
-        />
-        <ListRow
-          variant="card"
-          icon="ban-outline"
-          danger
-          title={`Blokker ${exp.host}`}
-          chevron={false}
-          onPress={() => {
-            setSafetyOpen(false);
-            gate("blokkere");
-          }}
-        />
-        <Button
-          label="Avbryt"
-          variant="ghost"
-          onPress={() => setSafetyOpen(false)}
-        />
-      </Sheet>
+      {top ? (
+        <Sheet
+          visible
+          onClose={() => setSub([])}
+          title={titleFor(top)}
+          onBack={
+            sub.length > 1 ? () => setSub((s) => s.slice(0, -1)) : undefined
+          }
+        >
+          <DetailContent target={top} push={(t) => setSub((s) => [...s, t])} />
+        </Sheet>
+      ) : null}
 
       <SignInPrompt
         visible={signInFor !== null}

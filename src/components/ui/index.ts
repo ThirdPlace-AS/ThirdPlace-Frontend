@@ -34,6 +34,7 @@ export { Input, type InputProps } from "./Input";
 export { ListRow, MetaRow, type ListRowVariant } from "./ListRow";
 export { SearchBar } from "./SearchBar";
 export { Overlay, type OverlayEnter } from "./Overlay";
+export { PhotoViewer } from "./PhotoViewer";
 export {
   Sheet,
   SheetHandle,

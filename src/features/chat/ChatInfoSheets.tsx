@@ -1,13 +1,11 @@
 import { Image } from "expo-image";
 import { useState } from "react";
 import { Pressable, View } from "react-native";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
 import {
   Avatar,
   Icon,
-  IconButton,
   ListRow,
-  Overlay,
+  PhotoViewer,
   Text,
   Pressable as UIPressable,
 } from "@/components/ui";
@@ -24,7 +22,6 @@ import {
   type MockChat,
 } from "@/fixtures";
 import { libImage } from "@/fixtures/images";
-import { media } from "@/theme";
 import { showToastAfterSheet } from "@/components/Toast";
 import { confirmToast } from "@/copy";
 import { router } from "expo-router";
@@ -190,13 +187,12 @@ function InfoSheet({
         </View>
 
         {report ? <ReportSheet onClose={() => setReport(false)} /> : null}
-        {viewer !== null ? (
-          <ImageViewer
-            index={viewer}
-            onIndex={setViewer}
-            onClose={() => setViewer(null)}
-          />
-        ) : null}
+        <PhotoViewer
+          photos={SHARED}
+          index={viewer}
+          onClose={() => setViewer(null)}
+          label="Delte bilder"
+        />
       </View>
     </Sheet>
   );
@@ -336,74 +332,5 @@ function MemberRow({
         />
       }
     />
-  );
-}
-
-// Bildeviser (PDF p24): full-screen photo with ‹ › and "N / M". Swipe-free,
-// button-driven. Bundled sample art — no media contract.
-function ImageViewer({
-  index,
-  onIndex,
-  onClose,
-}: {
-  index: number;
-  onIndex: (i: number) => void;
-  onClose: () => void;
-}) {
-  const insets = useSafeAreaInsets();
-  const n = SHARED.length;
-  return (
-    <Overlay
-      visible
-      onClose={onClose}
-      enter="fade"
-      statusBarTranslucent
-      style={{ backgroundColor: media.black }}
-      accessibilityLabel={`Bilde ${index + 1} av ${n}`}
-    >
-      <View className="flex-1 justify-center">
-        <Image
-          source={SHARED[index]}
-          contentFit="contain"
-          style={{ width: "100%", height: "70%" }}
-        />
-        <View
-          className="absolute inset-x-0 flex-row items-center justify-between px-gutter"
-          style={{ top: insets.top + 8 }}
-        >
-          <IconButton
-            icon="close"
-            label="Lukk"
-            variant="mediaSubtle"
-            onPress={onClose}
-          />
-          <Text variant="label" weight="semibold" tone="onMedia">
-            {`${index + 1} / ${n}`}
-          </Text>
-          <View className="w-10" />
-        </View>
-        <View
-          className="absolute inset-x-0 flex-row justify-center gap-10"
-          style={{ bottom: insets.bottom + 48 }}
-        >
-          <IconButton
-            icon="chevron-back"
-            label="Forrige bilde"
-            variant="mediaSubtle"
-            size="lg"
-            disabled={index === 0}
-            onPress={() => onIndex(index - 1)}
-          />
-          <IconButton
-            icon="chevron-forward"
-            label="Neste bilde"
-            variant="mediaSubtle"
-            size="lg"
-            disabled={index === n - 1}
-            onPress={() => onIndex(index + 1)}
-          />
-        </View>
-      </View>
-    </Overlay>
   );
 }

@@ -13,11 +13,21 @@ import {
 // browse sheet's gesture handler, so photos never paged.
 import { ScrollView } from "react-native-gesture-handler";
 
-export function PhotoPager({ photos }: { photos: ImageSourcePropType[] }) {
+export function PhotoPager({
+  photos,
+  onIndexChange,
+}: {
+  photos: ImageSourcePropType[];
+  /** Reports the page after each swipe (e.g. to open the viewer there). */
+  onIndexChange?: (index: number) => void;
+}) {
   const [width, setWidth] = useState(0);
   const [index, setIndex] = useState(0);
   const onEnd = (e: NativeSyntheticEvent<NativeScrollEvent>) => {
-    if (width > 0) setIndex(Math.round(e.nativeEvent.contentOffset.x / width));
+    if (width <= 0) return;
+    const i = Math.round(e.nativeEvent.contentOffset.x / width);
+    setIndex(i);
+    onIndexChange?.(i);
   };
   return (
     <View

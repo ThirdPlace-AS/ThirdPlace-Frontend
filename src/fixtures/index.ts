@@ -963,7 +963,7 @@ export type MockAttendee = {
 // Keyed by experience id.
 export const attendeesByExperience: Record<string, MockAttendee[]> = {
   e1: [
-    { id: "a1", name: "Maria Monsen", initials: "MM", isHost: true },
+    { id: "a1", name: "Maria Movik", initials: "MM", isHost: true },
     { id: "a2", name: "Tom Tangen", initials: "TT", isHost: false },
     { id: "a3", name: "Åse Kvam", initials: "ÅK", isHost: false },
     { id: "a4", name: "Jonas Berg", initials: "JB", isHost: false },
@@ -1683,7 +1683,7 @@ export const MOCK_NOTIFICATIONS: MockNotification[] = [
   {
     id: "n2",
     type: "join",
-    actorName: "Maria Monsen",
+    actorName: "Maria Movik",
     actorInitials: "MM",
     text: "ble med på «Morgenkaffe & prat».",
     minutesAgo: 120,
