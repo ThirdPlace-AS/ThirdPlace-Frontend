@@ -16,6 +16,7 @@ import {
   useRef,
   useState,
 } from "react";
+import { useFocusEffect } from "expo-router";
 import { Share, View } from "react-native";
 import Animated, {
   Extrapolation,
@@ -99,6 +100,17 @@ export const MapDetailSheet = forwardRef<
 ) {
   const chrome = useSheetChrome();
   const insets = useSafeAreaInsets();
+  // The experience sheet renders at the app root (above the tab bar), so it
+  // must leave with the map: a route opened from the page (host profile,
+  // chat, Rediger) or another tab would otherwise sit under it. Published
+  // only while the map screen is focused; it remounts at openIndex on return.
+  const [focused, setFocused] = useState(true);
+  useFocusEffect(
+    useCallback(() => {
+      setFocused(true);
+      return () => setFocused(false);
+    }, []),
+  );
   const root = stack[0];
   const pageCapable = root?.kind === "experience";
   const snapPoints = useMemo(
@@ -285,8 +297,10 @@ export const MapDetailSheet = forwardRef<
       </BottomSheet>
     </>
   );
-  // Experiences: a modal sheet at the app root, above the tab bar.
-  return pageCapable ? <RootPortal>{sheet}</RootPortal> : sheet;
+  // Experiences: a modal sheet at the app root, above the tab bar, only while
+  // the map is the focused screen.
+  if (!pageCapable) return sheet;
+  return focused ? <RootPortal>{sheet}</RootPortal> : null;
 });
 
 // Sheet background whose top corners square off on the way to the page snap.

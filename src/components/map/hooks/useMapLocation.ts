@@ -107,6 +107,18 @@ export function useMapLocation() {
     return ok;
   }, [stop]);
 
+  /** True when the OS already granted location (no prompt is shown). */
+  const hasPermission = useCallback(async (): Promise<boolean> => {
+    try {
+      // eslint-disable-next-line @typescript-eslint/no-require-imports
+      const Location: LocationModule = require("expo-location");
+      const perm = await Location.getForegroundPermissionsAsync();
+      return perm.status === "granted";
+    } catch {
+      return false;
+    }
+  }, []);
+
   // Manual fallback: pick a known area so public content stays browsable without
   // precise GPS. Clears any GPS fix + watches; leaves permission status as-is.
   const selectArea = useCallback(
@@ -143,5 +155,6 @@ export function useMapLocation() {
     areaLabel,
     request,
     selectArea,
+    hasPermission,
   };
 }

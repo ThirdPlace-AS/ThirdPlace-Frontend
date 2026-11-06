@@ -1,12 +1,15 @@
 import { useState } from "react";
 import { media } from "@/theme";
 import {
+  ActivityIndicator,
   Image,
   Pressable,
   StyleSheet,
   View,
   type ImageSourcePropType,
 } from "react-native";
+
+import { useLoadPhase } from "@/hooks/useLoadPhase";
 
 // Full-bleed photo carousel for a swipe card. Tinder-style: segmented progress
 // dots at the top, tap the left/right 30% of the UPPER area to step photos (the
@@ -37,6 +40,9 @@ export function PhotoCarousel({
   variant?: "card" | "hero";
 }) {
   const [i, setI] = useState(0);
+  // Loading rule (DESIGN_SYSTEM §5): the neutral block below is the skeleton
+  // while a photo decodes; past 2 s a spinner joins it.
+  const [loaded, setLoaded] = useState<ImageSourcePropType | null>(null);
   const count = photos.length;
   const idx = Math.min(i, count - 1);
   // Called from an onPress handler (not render), so computing `next` from the
@@ -50,6 +56,7 @@ export function PhotoCarousel({
     }
   };
   const multi = interactive && count > 1;
+  const phase = useLoadPhase(loaded !== photos[idx]);
 
   return (
     <View className="absolute inset-0">
@@ -61,11 +68,21 @@ export function PhotoCarousel({
           { backgroundColor: media.placeholder },
         ]}
       />
+      {phase === "loader" ? (
+        <View
+          style={StyleSheet.absoluteFill}
+          className="items-center justify-center"
+          pointerEvents="none"
+        >
+          <ActivityIndicator color={media.onMedia} />
+        </View>
+      ) : null}
       <Image
         source={photos[idx]}
         resizeMode="cover"
         className="w-full h-full"
         accessibilityIgnoresInvertColors
+        onLoad={() => setLoaded(photos[idx] ?? null)}
       />
 
       {multi ? (

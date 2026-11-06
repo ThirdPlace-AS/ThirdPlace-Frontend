@@ -248,11 +248,14 @@ export default function MapScreen() {
 
   // "Posisjon": fly to the user and zoom in (street level); without a fix,
   // ask for it, or fall back to the manual-area sheet.
-  const handleLocationPress = () => {
+  const handleLocationPress = async () => {
     if (location.status === "granted" && location.coord) {
       camera.recenter(USER_PUCK.locateZoom);
     } else if (location.status === "granted") {
       // A manual area replaced the GPS fix — go back to the real position.
+      void handleRequestLocation();
+    } else if (await location.hasPermission()) {
+      // OS permission already given: fly straight to the user, no explainer.
       void handleRequestLocation();
     } else {
       setLocationOpen(true);
