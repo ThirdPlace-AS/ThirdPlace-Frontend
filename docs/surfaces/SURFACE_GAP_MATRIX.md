@@ -94,3 +94,18 @@ Directory routes with no PDF page (`experiences`, `places`, `groups`,
 - **Native verification outstanding** for real GPS/heading and haptics on a
   physical device (see `docs/map/MAP_BLOCKERS.md`, NV register).
 - **PDF screens still missing** — see the list at the end of `docs/SCREEN_INVENTORY.md`.
+
+## Phase 6 review (2026-11-06)
+
+| Surface                                             | Change                                                                    | Ledger                 |
+| --------------------------------------------------- | ------------------------------------------------------------------------- | ---------------------- |
+| All stack routes (`Screen`)                         | Pads from seeded safe-area insets; status bar via `StatusBarStyle`        | 0172                   |
+| Auth (welcome, login, register, forgot, verify)     | Demo notes rewritten; links ember via `Link asChild`                      | 0171, 0174             |
+| Map                                                 | Weather pill badged as example; dusk/night basemap → light status icons   | 0172, 0174             |
+| Swipe                                               | Dashes below the For deg pill, one DEMO badge, readable selected tab      | 0175, 0176             |
+| Chat list / thread                                  | One avatar size; header badge removed; circled back                       | 0174, 0175, 0176       |
+| Profile, Mine planer                                | Icons follow the experience; chips scroll; badge at row end               | 0175, 0176             |
+| Settings, Betaling, Aldersverifisering              | One note each; perks marked as examples                                   | 0171                   |
+| Marketplace, collab                                 | DemoNotes, chips scroll, defaults/contract state agree, fictional sponsor | 0173, 0174, 0175, 0176 |
+| Workspace (hub, Kalender, Lokasjoner, Utbetalinger) | Calendar order, checklist per step, pill spacing, payouts note            | 0171, 0173, 0174, 0175 |
+| System states                                       | Update button full ember with demo toast; state note rewritten            | 0171, 0174             |
