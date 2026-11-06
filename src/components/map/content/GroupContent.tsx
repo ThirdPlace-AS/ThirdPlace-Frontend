@@ -7,9 +7,11 @@ import { Card } from "@/components/Card";
 import { GuestLock } from "@/components/GuestLock";
 import { SignInPrompt } from "@/components/SignInPrompt";
 import { groupById } from "@/fixtures";
+import { libImage } from "@/fixtures/images";
 import { haptics } from "@/lib/haptics";
 import { Text } from "@/components/ui";
 
+import { Gallery } from "../Gallery";
 import { useGuestMode } from "../hooks/useGuestMode";
 
 export function GroupContent({ id }: { id: string }) {
@@ -36,6 +38,11 @@ export function GroupContent({ id }: { id: string }) {
 
   return (
     <View className="gap-4">
+      <Gallery
+        photos={group.photos.map(libImage)}
+        height={200}
+        label={group.name}
+      />
       <Text variant="caption" tone="muted">
         {group.about}
       </Text>

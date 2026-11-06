@@ -1027,6 +1027,7 @@ export type MockGroup = {
   memberCount: number;
   members: string[]; // initials
   cover: LibraryKey; // MOCK demo cover photo (bundled LIBRARY key)
+  photos: LibraryKey[]; // MOCK gallery, cover first (at least two)
 };
 
 export const groups: MockGroup[] = [
@@ -1036,7 +1037,8 @@ export const groups: MockGroup[] = [
     about: "Folk som møtes til kaffe i helgene.",
     memberCount: 34,
     members: ["MM", "TT", "ÅK", "JB", "ND"],
-    cover: "venue-cafe",
+    cover: "group-coffee",
+    photos: ["group-coffee", "venue-cafe"],
   },
   {
     id: "g2",
@@ -1044,7 +1046,8 @@ export const groups: MockGroup[] = [
     about: "Månedlig lesesirkel på Grünerløkka.",
     memberCount: 18,
     members: ["ÅK", "PO", "IS"],
-    cover: "venue-books",
+    cover: "group-books",
+    photos: ["group-books", "venue-books"],
   },
   {
     id: "g3",
@@ -1053,6 +1056,7 @@ export const groups: MockGroup[] = [
     memberCount: 52,
     members: ["TT", "MM", "KN"],
     cover: "group-wine",
+    photos: ["group-wine", "group-wine-2"],
   },
 ];
 
@@ -1547,6 +1551,7 @@ export type MockListing = {
   type: MockListingType;
   terms: string; // MOCK display label, e.g. "Gratis mot eksponering"
   cover: LibraryKey;
+  photos: LibraryKey[]; // MOCK gallery, cover first (at least two)
   owner: string;
   ownerMeta: string; // MOCK, e.g. "Verifisert bedrift"
   tags: string[];
@@ -1561,6 +1566,7 @@ export const listings: MockListing[] = [
     type: "Venue",
     terms: "Gratis mot eksponering",
     cover: "venue-music",
+    photos: ["venue-music", "venue-bar-2"],
     owner: "Oslo Kaffebar",
     ownerMeta: "Verifisert bedrift",
     tags: ["Intimt", "Jazz", "Livemusikk"],
@@ -1578,6 +1584,7 @@ export const listings: MockListing[] = [
     type: "Skaper",
     terms: "Fra 2 000 kr",
     cover: "person-maria",
+    photos: ["person-maria", "venue-music"],
     owner: "Maria Movik",
     ownerMeta: "Skaper",
     tags: ["Co-hosting", "Jazz"],
@@ -1594,6 +1601,7 @@ export const listings: MockListing[] = [
     type: "Sponsing",
     terms: "5 000 kr",
     cover: "venue-bar",
+    photos: ["venue-bar", "venue-music"],
     owner: "Elvebredden Kulturfond",
     ownerMeta: "Enterprise",
     tags: ["Festival", "Jazz"],
@@ -1610,6 +1618,7 @@ export const listings: MockListing[] = [
     type: "Co-hosting",
     terms: "70 % / 30 %",
     cover: "venue-cafe",
+    photos: ["venue-cafe", "venue-cafe-2"],
     owner: "Grünerløkka Bokcafé",
     ownerMeta: "Verifisert bedrift",
     tags: ["Kurs", "Kaffe"],
@@ -1626,6 +1635,7 @@ export const listings: MockListing[] = [
     type: "Brand",
     terms: "Etter avtale",
     cover: "venue-workshop",
+    photos: ["venue-workshop", "pottery-2"],
     owner: "Vulkan Keramikkstudio",
     ownerMeta: "Verifisert bedrift",
     tags: ["Keramikk", "Kreativt"],

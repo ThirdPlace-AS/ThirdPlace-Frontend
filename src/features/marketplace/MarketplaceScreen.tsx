@@ -25,6 +25,7 @@ import {
   type MockListingType,
 } from "@/fixtures";
 import { libImage } from "@/fixtures/images";
+import { Gallery } from "@/components/map/Gallery";
 import { gutterPx, useThemeColors } from "@/theme";
 
 // Marketplace, per the design (PDF p15–p16) and master spec §13: a B2B
@@ -284,11 +285,10 @@ function ListingSheet({
     >
       {listing ? (
         <View className="gap-4">
-          <Image
-            source={libImage(listing.cover)}
-            contentFit="cover"
-            style={{ height: 168, width: "100%", borderRadius: 14 }}
-            className="bg-surfaceMuted"
+          <Gallery
+            photos={listing.photos.map(libImage)}
+            height={180}
+            label={listing.title}
           />
           <Badge kind="status" label={listing.type} />
           <Text variant="label" weight="regular">

@@ -1,4 +1,3 @@
-import { Image } from "expo-image";
 import { router } from "expo-router";
 import { useEffect, useState } from "react";
 import { View } from "react-native";
@@ -13,7 +12,8 @@ import { SignInPrompt } from "@/components/SignInPrompt";
 import { showToast } from "@/components/Toast";
 import { EmptyState } from "@/components/states/StateView";
 import { places } from "@/fixtures";
-import { coverForPlace, libImage } from "@/fixtures/images";
+import { libImage, photosForPlace } from "@/fixtures/images";
+import { PhotoCarousel } from "./PhotoCarousel";
 import { media } from "@/theme";
 import { Illustration } from "@/components/illustrations/Illustration";
 import { formatRating } from "@/lib/format";
@@ -67,12 +67,12 @@ export function PlaceDeck({
   return (
     <View className="flex-1 bg-ink">
       <StatusBarStyle style="light" />
-      <Image
-        source={libImage(coverForPlace(place))}
-        contentFit="cover"
-        transition={150}
-        style={{ position: "absolute", top: 0, right: 0, bottom: 0, left: 0 }}
-        accessibilityLabel={place.name}
+      {/* Tap left/right to step through the place's photos (≥2 each). */}
+      <PhotoCarousel
+        key={place.id}
+        photos={photosForPlace(place).map(libImage)}
+        variant="card"
+        indicatorTop={insets.top + 52}
       />
       <View
         className="absolute inset-x-0 bottom-0 gap-3 px-gutter pb-6 pt-24"

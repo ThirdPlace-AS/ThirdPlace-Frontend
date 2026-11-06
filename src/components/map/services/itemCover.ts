@@ -4,7 +4,7 @@
 import type { ImageSourcePropType } from "react-native";
 
 import { businessById, experienceById, groupById, placeById } from "@/fixtures";
-import { coverForPlace, libImage } from "@/fixtures/images";
+import { coverForPlace, libImage, photosForPlace } from "@/fixtures/images";
 
 import type { DiscoveryItem } from "../types/mapPresentation";
 
@@ -32,15 +32,29 @@ export function coverForItem(
   }
 }
 
-/** All demo photos for a card (benchmark B3): experiences have several, the
- * other kinds one cover. Empty when there is none. */
+/** Every photo for a card or detail gallery, cover first (at least two per
+ * item since 2026-11-06). Businesses show their place's photos. Empty when
+ * there is none. */
 export function photosForItem(
   item: Pick<DiscoveryItem, "kind" | "id">,
 ): ImageSourcePropType[] {
-  if (item.kind === "experience") {
-    const photos = experienceById(item.id)?.photos ?? [];
-    if (photos.length > 0) return photos;
+  switch (item.kind) {
+    case "experience":
+      return experienceById(item.id)?.photos ?? [];
+    case "place": {
+      const p = placeById(item.id);
+      return p ? photosForPlace(p).map(libImage) : [];
+    }
+    case "business": {
+      const b = businessById(item.id);
+      const p = b ? placeById(b.placeId) : undefined;
+      return p ? photosForPlace(p).map(libImage) : [];
+    }
+    case "group":
+      return (groupById(item.id)?.photos ?? []).map(libImage);
+    default: {
+      const cover = coverForItem(item);
+      return cover ? [cover] : [];
+    }
   }
-  const cover = coverForItem(item);
-  return cover ? [cover] : [];
 }

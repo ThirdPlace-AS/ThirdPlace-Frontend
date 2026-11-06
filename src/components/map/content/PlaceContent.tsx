@@ -1,4 +1,3 @@
-import { Image } from "expo-image";
 import { Pressable, View } from "react-native";
 
 import { Icon, MetaRow, Text } from "@/components/ui";
@@ -10,9 +9,10 @@ import {
   placeById,
   priceBandFor,
 } from "@/fixtures";
-import { coverForPlace, libImage } from "@/fixtures/images";
+import { libImage, photosForPlace } from "@/fixtures/images";
 import { formatRating } from "@/lib/format";
 
+import { Gallery } from "../Gallery";
 import type { PushFn } from "../sheetTypes";
 import { markerId } from "../types/mapPresentation";
 import { DetailActions } from "./DetailActions";
@@ -60,14 +60,11 @@ export function PlaceContent({ id, push }: { id: string; push: PushFn }) {
         </Text>
       </View>
 
-      {/* Cover — illustrative library photo (MOCK; not of this venue). */}
-      <Image
-        source={libImage(coverForPlace(place))}
-        contentFit="cover"
-        transition={150}
-        accessibilityLabel={place.name}
-        style={{ height: 176, width: "100%", borderRadius: 12 }}
-        className="bg-surfaceMuted"
+      {/* Gallery: illustrative library photos (MOCK; not of this venue). */}
+      <Gallery
+        photos={photosForPlace(place).map(libImage)}
+        height={200}
+        label={place.name}
       />
 
       <DetailActions

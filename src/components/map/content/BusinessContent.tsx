@@ -3,6 +3,9 @@ import { Pressable, View } from "react-native";
 import { Icon, MetaRow, Text } from "@/components/ui";
 import { Card } from "@/components/Card";
 import { businessById, placeById } from "@/fixtures";
+import { libImage, photosForPlace } from "@/fixtures/images";
+
+import { Gallery } from "../Gallery";
 
 import type { PushFn } from "../sheetTypes";
 
@@ -19,6 +22,13 @@ export function BusinessContent({ id, push }: { id: string; push: PushFn }) {
 
   return (
     <View className="gap-4">
+      {place ? (
+        <Gallery
+          photos={photosForPlace(place).map(libImage)}
+          height={200}
+          label={business.name}
+        />
+      ) : null}
       <View className="flex-row items-center gap-2">
         <Text variant="caption" tone="muted">
           {business.category}

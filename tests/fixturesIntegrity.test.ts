@@ -2,8 +2,12 @@ import { describe, expect, it } from "@jest/globals";
 
 import {
   PLACE_CATEGORIES,
+  businesses,
   chats,
   experienceById,
+  experiences,
+  groups,
+  listings,
   messagesForChat,
   people,
   placeById,
@@ -15,8 +19,10 @@ import {
   coverForPlace,
   coverForPlaceCategory,
   libImage,
+  photosForPlace,
   type LibraryKey,
 } from "@/fixtures/images";
+import { photosForItem } from "@/components/map/services/itemCover";
 
 // Referential integrity for the demo fixtures. These IDs are wired by hand, so a
 // rename that breaks a reference should fail here, not render an empty sheet.
@@ -88,5 +94,53 @@ describe("coverForPlace", () => {
   it("does not collapse same-category places onto one photo", () => {
     const covers = new Set(places.map((p) => coverForPlace(p)));
     expect(covers.size).toBeGreaterThan(places.length / 2);
+  });
+});
+
+// Founder request 2026-11-06: every place, business, group, experience and
+// listing shows at least two distinct photos.
+describe("photo galleries", () => {
+  const distinct = (xs: readonly unknown[]) => new Set(xs).size;
+
+  it("every place has at least two distinct library photos", () => {
+    for (const p of places) {
+      const keys = photosForPlace(p);
+      expect(distinct(keys)).toBeGreaterThanOrEqual(2);
+      for (const k of keys) expect(LIBRARY[k]).toBeDefined();
+    }
+  });
+
+  it("every business shows its place's photos (at least two)", () => {
+    for (const b of businesses) {
+      const photos = photosForItem({ kind: "business", id: b.id });
+      expect(distinct(photos)).toBeGreaterThanOrEqual(2);
+    }
+  });
+
+  it("every group, experience and listing has at least two distinct photos", () => {
+    for (const g of groups) {
+      expect(distinct(g.photos)).toBeGreaterThanOrEqual(2);
+      expect(g.photos[0]).toBe(g.cover);
+    }
+    for (const e of experiences) {
+      expect(distinct(e.photos)).toBeGreaterThanOrEqual(2);
+    }
+    for (const l of listings) {
+      expect(distinct(l.photos)).toBeGreaterThanOrEqual(2);
+      expect(l.photos[0]).toBe(l.cover);
+    }
+  });
+
+  it("map items of every kind carry their full gallery", () => {
+    for (const p of places) {
+      expect(
+        photosForItem({ kind: "place", id: p.id }).length,
+      ).toBeGreaterThanOrEqual(2);
+    }
+    for (const g of groups) {
+      expect(
+        photosForItem({ kind: "group", id: g.id }).length,
+      ).toBeGreaterThanOrEqual(2);
+    }
   });
 });
