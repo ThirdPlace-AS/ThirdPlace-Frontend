@@ -25,5 +25,6 @@ module.exports = {
   ShapeSource: Noop,
   CircleLayer: Noop,
   SymbolLayer: Noop,
+  StyleImport: Noop,
   Images: Noop,
 };

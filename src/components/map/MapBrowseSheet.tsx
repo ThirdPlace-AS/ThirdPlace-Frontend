@@ -26,12 +26,16 @@ import { browseAnimatedIndex } from "./browseSheetProgress";
 import { coverForItem } from "./services/itemCover";
 import type { DiscoveryItem } from "./types/mapPresentation";
 
-// Airbnb-style persistent "browse" sheet. Always peeks (~9%) when no marker
+// Airbnb-style persistent "browse" sheet. Always peeks (handle + header,
+// measured) when no marker
 // detail is open, showing a city + weather header; dragging up expands into a
 // list of large image cards for the active discovery results (MASTER_SPEC §6
 // map/list alternative). Row tap opens the same detail sheet a marker tap does.
 // A floating "Kart" pill collapses the expanded list back to the map peek.
 // When a marker detail opens, `hidden` collapses this out of the way.
+// The sheet handle area above the header (indicator + vertical padding).
+const PEEK_HANDLE = 24;
+
 export function MapBrowseSheet({
   items,
   selectedMarkerId,
@@ -60,7 +64,10 @@ export function MapBrowseSheet({
   loading?: boolean;
 }) {
   const chrome = useSheetChrome();
-  const snapPoints = useMemo(() => ["8%", "49%", "84.5%"], []);
+  // Peek = handle + the measured city/weather header, so no card photo shows
+  // under it (review L11; a fixed 8% left a sliver of the first card).
+  const [peek, setPeek] = useState<number | null>(null);
+  const snapPoints = useMemo(() => [peek ?? "8%", "49%", "84.5%"], [peek]);
   const sheetRef = useRef<BottomSheet>(null);
 
   // The floating "Kart" pill mirrors the tab bar: it fades + slides in as the
@@ -168,7 +175,13 @@ export function MapBrowseSheet({
         {...chrome}
       >
         {/* Peek header — city (left) + weather (right). Always visible. */}
-        <View className="flex-row items-center justify-between pb-3 px-gutter">
+        <View
+          onLayout={(e) => {
+            const h = Math.round(e.nativeEvent.layout.height);
+            if (h > 0) setPeek(PEEK_HANDLE + h);
+          }}
+          className="flex-row items-center justify-between pb-3 px-gutter"
+        >
           <View className="flex-row items-center flex-1 gap-2">
             <Icon name="location" size="md" tone="ember" />
             <Text variant="body" weight="semibold" numberOfLines={1}>

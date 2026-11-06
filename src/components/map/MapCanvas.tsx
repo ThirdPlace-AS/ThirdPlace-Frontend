@@ -7,6 +7,7 @@ import { useThemeColors, elevation } from "@/theme";
 
 import { clusterByGrid, projectToUnit } from "./services/softClustering";
 import type { DiscoveryItem } from "./types/mapPresentation";
+import { softPin } from "./pinStyle";
 import { Text } from "@/components/ui";
 
 type MapProps = {
@@ -34,6 +35,9 @@ type MapProps = {
   focusCoord?: [number, number] | null;
   // Mapbox base-map style URL (layer switcher). SoftMap ignores it.
   styleURL?: string;
+  // True while the native basemap is in its dusk/night style: clusters flip
+  // to white so they stay visible (pinStyle.ts). SoftMap follows the theme.
+  darkBasemap?: boolean;
 };
 
 // User-location puck for the SoftMap fallback: an ember dot with a white ring
@@ -107,15 +111,6 @@ if (canUseMapbox) {
     RealMap = null;
   }
 }
-
-// Category → dot color (tailwind classes so NativeWind can resolve them).
-const softPinClass: Record<string, string> = {
-  Kafé: "bg-warning",
-  Bokcafé: "bg-success",
-  Vinbar: "bg-ember",
-  Verksted: "bg-ink",
-  Opplevelse: "bg-ember",
-};
 
 // Pastel placeholder shown when the real map is unavailable. It plots MOCK marker
 // dots + grid-bucketed cluster badges so the discovery surface is explorable in
@@ -203,12 +198,12 @@ function SoftMap({
           >
             <View
               className={`items-center justify-center rounded-full border-2 ${
-                selected ? "border-ember" : "border-surface"
-              } ${softPinClass[item.category] ?? "bg-ink"} ${
-                selected ? "h-7 w-7" : "h-5 w-5"
-              }`}
+                softPin(item.category).body
+              } ${selected ? "h-7 w-7 border-ember" : "h-5 w-5"}`}
             >
-              <View className="h-2 w-2 rounded-full bg-onInk" />
+              <View
+                className={`h-2 w-2 rounded-full ${softPin(item.category).dot}`}
+              />
             </View>
             {/* Title label under the pin (un-clustered markers only). The pill
                 keeps it legible regardless of the map background. */}
@@ -249,6 +244,7 @@ export function MapCanvas({
   onClusterPress,
   focusCoord,
   styleURL,
+  darkBasemap = false,
   height = 160,
   fill = false,
 }: MapProps & { height?: number; fill?: boolean }) {
@@ -271,6 +267,7 @@ export function MapCanvas({
           onMapPress={onMapPress}
           focusCoord={focusCoord}
           styleURL={styleURL}
+          darkBasemap={darkBasemap}
         />
       ) : (
         <SoftMap

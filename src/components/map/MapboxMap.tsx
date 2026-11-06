@@ -3,16 +3,19 @@ import Mapbox, {
   CircleLayer,
   MapView,
   ShapeSource,
+  StyleImport,
   SymbolLayer,
   UserLocation,
 } from "@rnmapbox/maps";
 import type { FeatureCollection, Point } from "geojson";
-import { useEffect, useMemo, useRef } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Dimensions } from "react-native";
 
 import { MAP_CENTER } from "@/fixtures";
 import { motion, palette } from "@/theme";
 
+import { periodForUrl } from "./mapStyles";
+import { pinPaint } from "./pinStyle";
 import type { DiscoveryItem } from "./types/mapPresentation";
 
 // Real Mapbox map. ONLY required from MapCanvas in a native dev/EAS build with a
@@ -27,29 +30,13 @@ function env_token(): string | undefined {
 }
 
 // Map pins sit on the basemap, not on the app surface, so they keep the light
-// palette in every app theme (dark ink pins with a white ring, as in the PDF);
+// palette in every app theme (paint in pinStyle.ts: white places, ink
+// experiences, as in the PDF);
 // the basemap itself follows the time of day.
 const pin = palette.light as unknown as Record<
   "ink" | "surface" | "onInk" | "ember" | "success" | "warning",
   string
 >;
-
-// Category → pin color (hex, since Mapbox style expressions can't use classes).
-const PIN_COLOR = [
-  "match",
-  ["get", "category"],
-  "Kafé",
-  pin.warning,
-  "Bokcafé",
-  pin.success,
-  "Vinbar",
-  pin.ember,
-  "Verksted",
-  pin.ink,
-  "Opplevelse",
-  pin.ember,
-  pin.ink, // default
-] as unknown as string;
 
 export function MapboxMap({
   markers,
@@ -60,6 +47,7 @@ export function MapboxMap({
   onMapPress,
   focusCoord,
   styleURL,
+  darkBasemap = false,
 }: {
   markers: DiscoveryItem[];
   selectedMarkerId?: string | null;
@@ -69,8 +57,16 @@ export function MapboxMap({
   onMapPress?: () => void;
   focusCoord?: [number, number] | null;
   styleURL?: string;
+  darkBasemap?: boolean;
 }) {
+  const paint = pinPaint(pin, darkBasemap);
   const cameraRef = useRef<Camera>(null);
+  // The basemap config (POIs off) mounts once the current style has loaded,
+  // and repeats the style's own light preset: the four ThirdPlace styles are
+  // Mapbox Standard with dawn/day/dusk/night presets, and a config without
+  // lightPreset reset every style to day (the night basemap never showed).
+  const [loadedStyle, setLoadedStyle] = useState<string | null>(null);
+  const currentStyle = styleURL ?? Mapbox.StyleURL.Street;
 
   useEffect(() => {
     if (recenterSignal === undefined || recenterSignal === 0) return;
@@ -118,12 +114,28 @@ export function MapboxMap({
   return (
     <MapView
       style={{ flex: 1 }}
-      styleURL={styleURL ?? Mapbox.StyleURL.Street}
+      styleURL={currentStyle}
       scaleBarEnabled={false}
       // Tap on empty map (a marker tap is consumed by the ShapeSource below and
       // does not fire this) — collapses the sheet + dismisses the keyboard.
       onPress={() => onMapPress?.()}
+      onDidFinishLoadingStyle={() => setLoadedStyle(currentStyle)}
     >
+      {/* Hide the basemap's own POI icons/labels (hospital crosses, theatre
+          masks …): in the same colours as our pins they competed with them
+          (review M20). The ThirdPlace Studio styles import Mapbox Standard as
+          "basemap"; if a style does not, the config is ignored. */}
+      {loadedStyle === currentStyle ? (
+        <StyleImport
+          key={currentStyle}
+          id="basemap"
+          existing
+          config={{
+            showPointOfInterestLabels: false,
+            lightPreset: periodForUrl(currentStyle),
+          }}
+        />
+      ) : null}
       {/* User-location puck — visible whenever OS location permission is granted.
           showsUserHeadingIndicator draws the native facing-direction cone. */}
       <UserLocation
@@ -167,10 +179,10 @@ export function MapboxMap({
           id="clusters"
           filter={["has", "point_count"]}
           style={{
-            circleColor: pin.ink,
+            circleColor: paint.clusterFill,
             circleRadius: ["step", ["get", "point_count"], 16, 5, 20, 10, 26],
             circleStrokeWidth: 3,
-            circleStrokeColor: pin.surface,
+            circleStrokeColor: paint.clusterStroke,
             // Fully self-emissive so the Mapbox Standard light preset
             // (day/dusk/night) never dims the bubble — see `points` below.
             circleEmissiveStrength: 1,
@@ -182,7 +194,11 @@ export function MapboxMap({
           style={{
             textField: ["get", "point_count_abbreviated"],
             textSize: 12,
-            textColor: pin.onInk,
+            textColor: paint.clusterText,
+            // Always draw the count: label collision dropped it when a pin
+            // title ran into the bubble, leaving an empty circle.
+            textAllowOverlap: true,
+            textIgnorePlacement: true,
           }}
         />
         {/* Invisible enlarged hit target for unclustered points so taps NEAR a
@@ -208,10 +224,10 @@ export function MapboxMap({
           id="points"
           filter={["!", ["has", "point_count"]]}
           style={{
-            circleColor: PIN_COLOR,
+            circleColor: paint.pointFill,
             circleRadius: 8,
             circleStrokeWidth: 3,
-            circleStrokeColor: pin.surface,
+            circleStrokeColor: paint.pointStroke,
             circleEmissiveStrength: 1,
           }}
         />
@@ -243,7 +259,9 @@ export function MapboxMap({
             textHaloWidth: 2,
             textHaloBlur: 0.5,
             textAnchor: "top",
-            textOffset: [0, 0.9],
+            // Below the 13 px selection ring, so a title never sits on the
+            // selected pin.
+            textOffset: [0, 1.4],
             textAllowOverlap: false,
             textOptional: true,
           }}

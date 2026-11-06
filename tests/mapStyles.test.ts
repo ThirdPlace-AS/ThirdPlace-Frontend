@@ -4,6 +4,7 @@ import {
   autoStyleKey,
   MAP_STYLES,
   periodForHour,
+  periodForUrl,
   styleKeyForHour,
 } from "@/components/map/mapStyles";
 
@@ -48,5 +49,13 @@ describe("autoStyleKey", () => {
   it("uses the night style whenever the app is dark", () => {
     expect(autoStyleKey(12, true)).toBe(night);
     expect(autoStyleKey(6, true)).toBe(night);
+  });
+});
+
+describe("periodForUrl (basemap config repeats the style's light preset)", () => {
+  it("maps each ThirdPlace style URL to its period, unknown URLs to day", () => {
+    for (const s of MAP_STYLES) expect(periodForUrl(s.url)).toBe(s.period);
+    expect(periodForUrl("mapbox://styles/mapbox/streets-v12")).toBe("day");
+    expect(periodForUrl(undefined)).toBe("day");
   });
 });

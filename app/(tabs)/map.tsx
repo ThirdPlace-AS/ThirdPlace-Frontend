@@ -215,6 +215,7 @@ export default function MapScreen() {
         onClusterPress={() => setBrowseExpand((n) => n + 1)}
         focusCoord={focusCoord}
         styleURL={styleUrlFor(styleKey)}
+        darkBasemap={darkBasemap}
         recenterSignal={camera.recenterSignal}
         center={location.center}
         userCoord={location.coord}
