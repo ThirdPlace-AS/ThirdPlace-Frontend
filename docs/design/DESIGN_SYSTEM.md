@@ -8,7 +8,7 @@ The design system **restyles the PDF's layouts**. It never adds screens, section
 
 ## 1. Principles
 
-1. **Calm ink canvas, ember as a spark.** Ink (`#202020`) carries primary actions and selection, as in the PDF. Ember (`#D80000`) is reserved for brand moments: like/heart, acquisition CTAs ("Opprett konto", "Kom i gang"), live/unread badges and the active tab. Success green is for nature, map and local completion.
+1. **Calm ink canvas, ember as a spark.** Ink (`#202020`) carries primary actions and selection, as in the PDF. Ember (`#D80000`) is reserved for brand moments: like/heart, acquisition CTAs ("Opprett konto", "Kom i gang"), live/unread badges, the active tab, FABs and the map selection ring. Toggles, checkboxes, edit links, codes and the current chart bar are ink (founder decision 2026-11-06). Success green is for nature, map and local completion.
 2. **Soft, round, tactile.** Pill actions and chips, 16 px cards, 28 px sheet tops, three soft elevation levels, press-scale feedback on everything tappable.
 3. **Photo-first.** Imagery runs full-bleed with a tokenised scrim; controls over imagery are round white floating buttons.
 4. **Honest feedback.** Every action responds immediately (motion, haptic, state change) but never pretends a backend answered. No delivery ticks, no "processing → success", no invented counts. Demo markers stay.
@@ -179,7 +179,9 @@ Motion explains a change (where something came from, what it became); it never d
 4. Tokens only — no hex, no arbitrary sizes, no hand-written shadows, no raw `Modal`.
 5. Verify on the Android emulator in light and dark; add a ledger line.
 
-`tests/designGuard.test.ts` enforces the mechanical rules in CI: no raw hex outside `src/theme`/fixtures/sandbox (escape: a `hex-ok:` comment with the reason), no legacy `text-xs…text-4xl`/`text-[Npx]` classes, no `rounded-3xl`/bare `rounded`/`rounded-[…]`, no raw `Modal` outside `Sheet`/`Overlay`, `Ionicons` only through `<Icon>` (escape: a `raw-icon:` comment saying why — animated colours, stamps with text shadows, caller-sized stars), no `active:/focus:/hover:` in `contentClassName`, no `InteractionManager`, and no `expo-status-bar` import outside `StatusBarStyle`.
+`tests/designGuard.test.ts` enforces the mechanical rules in CI: no raw hex outside `src/theme`/fixtures/sandbox (escape: a `hex-ok:` comment with the reason), no legacy `text-xs…text-4xl`/`text-[Npx]` classes, no `rounded-3xl`/bare `rounded`/`rounded-[…]`, no raw `Modal` outside `Sheet`/`Overlay`, `Ionicons` only through `<Icon>` (escape: a `raw-icon:` comment saying why — animated colours, stamps with text shadows, caller-sized stars), no `active:/focus:/hover:` in `contentClassName`, no `InteractionManager`, no `expo-status-bar` import outside `StatusBarStyle`, and no `.toFixed(` outside `src/lib/format.ts`.
+
+**Numbers.** Display decimals use the Norwegian comma (4,8 · 1,1 km) through `src/lib/format.ts` (`formatRating`, `formatDecimal`, `formatThreshold`); fixture strings are written the same way. Times keep the full stop ("kl. 12.00").
 
 **Status bar.** Screens over a fixed dark or light surface (swipe card, photo hero, dusk/night basemap) render `<StatusBarStyle style="light" | "dark" />`; a themed panel opened over one of those renders `style="auto"`. Requests are pushed while the screen is focused and popped on blur, newest wins, and with none left the icons follow the theme (`setStatusBarFallback` in `ThemeRoot`). `Screen` pads from the provider insets (seeded with `initialWindowMetrics`), not a native `SafeAreaView`, so a pushed screen never paints its header under the status bar.
 

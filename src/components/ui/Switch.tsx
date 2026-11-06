@@ -1,4 +1,6 @@
-// Switch — themed on/off toggle (ember when on, as in the PDF settings).
+// Switch — themed on/off toggle. Ink when on (founder decision 2026-11-06:
+// ember is kept for brand moments); the thumb changes colour with the state so
+// it stays visible on both tracks in light and dark.
 // `label` is required: the switch is announced as "<label>, på/av".
 import { Switch as RNSwitch } from "react-native";
 
@@ -25,8 +27,8 @@ export function Switch({
         onValueChange(next);
       }}
       disabled={disabled}
-      trackColor={{ true: c.ember, false: c.line }}
-      thumbColor={c.onEmber}
+      trackColor={{ true: c.ink, false: c.line }}
+      thumbColor={value ? c.onInk : c.muted}
       ios_backgroundColor={c.line}
       accessibilityLabel={label}
       accessibilityRole="switch"

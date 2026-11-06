@@ -32,6 +32,7 @@ import {
   VIBE_ICONS,
   VIBES,
 } from "@/fixtures";
+import { formatThreshold } from "@/lib/format";
 
 import {
   applyFilters,
@@ -724,7 +725,7 @@ function FilterBody({
                       key={r}
                       accessibilityRole="button"
                       accessibilityState={{ selected }}
-                      accessibilityLabel={`${r} stjerner og over`}
+                      accessibilityLabel={`${formatThreshold(r)} stjerner og over`}
                       onPress={() => setDraft((d) => ({ ...d, minRating: r }))}
                       className={`flex-row items-center gap-1.5 rounded-full border bg-surface px-3 py-2 ${
                         selected ? "border-2 border-ink" : "border border-line"
@@ -732,7 +733,7 @@ function FilterBody({
                     >
                       <RatingStars value={r} size={13} />
                       <Text variant="label" weight="regular">
-                        {r === 5 ? "5" : `${r.toString().replace(".", ",")}+`}
+                        {r === 5 ? "5" : `${formatThreshold(r)}+`}
                       </Text>
                     </Pressable>
                   );

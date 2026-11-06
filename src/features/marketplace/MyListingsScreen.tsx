@@ -69,7 +69,7 @@ export default function MyListingsScreen() {
               }
               hitSlop={8}
             >
-              <Text variant="label" weight="semibold" tone="ember">
+              <Text variant="label" weight="semibold" className="underline">
                 Rediger
               </Text>
             </Pressable>

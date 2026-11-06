@@ -22,7 +22,7 @@ export default function BecomeCreatorScreen() {
       progress: hosted / required,
     },
     {
-      label: "Gjennomsnittlig vurdering 4.0+",
+      label: "Gjennomsnittlig vurdering 4,0+",
       meta: `${rating} · oppfylt`,
       progress: 1,
     },

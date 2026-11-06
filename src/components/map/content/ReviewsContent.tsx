@@ -6,6 +6,7 @@ import { Button } from "@/components/Button";
 import { Card } from "@/components/Card";
 import { WriteReviewSheet } from "@/components/WriteReviewSheet";
 import { placeById, reviewsForPlace } from "@/fixtures";
+import { formatRating } from "@/lib/format";
 
 export function ReviewsContent({ id }: { id: string }) {
   const place = placeById(id);
@@ -18,7 +19,7 @@ export function ReviewsContent({ id }: { id: string }) {
         <View className="flex-row items-center gap-1">
           <Icon name="star" size="md" tone="ember" />
           <Text variant="body" weight="semibold">
-            {place.rating.toFixed(1)}
+            {formatRating(place.rating)}
           </Text>
           <Text variant="caption" tone="muted">
             · {place.reviews} anmeldelser · {place.name}

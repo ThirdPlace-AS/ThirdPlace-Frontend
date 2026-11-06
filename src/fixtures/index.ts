@@ -362,7 +362,7 @@ export const places: MockPlace[] = [
     id: "p4",
     name: "Sofienberg Sykkelverksted",
     category: "Verksted",
-    distance: "1.1 km",
+    distance: "1,1 km",
     distanceM: 1100,
     coord: [10.767, 59.919],
     priceLevel: 2,
@@ -481,7 +481,7 @@ export const places: MockPlace[] = [
     id: "p8",
     name: "Botanisk Hage Omvisning",
     category: "Kafé",
-    distance: "1.4 km",
+    distance: "1,4 km",
     distanceM: 1400,
     coord: [10.7698, 59.9191],
     priceLevel: 1,
@@ -541,7 +541,7 @@ export const places: MockPlace[] = [
     id: "p10",
     name: "Oslofjord Seiltur",
     category: "Vinbar",
-    distance: "2.3 km",
+    distance: "2,3 km",
     distanceM: 2300,
     coord: [10.7389, 59.9044],
     priceLevel: 3,
@@ -569,7 +569,7 @@ export const places: MockPlace[] = [
     id: "p11",
     name: "Munch-galleriet Kveldstur",
     category: "Bokcafé",
-    distance: "1.8 km",
+    distance: "1,8 km",
     distanceM: 1800,
     coord: [10.7566, 59.9058],
     priceLevel: 2,
@@ -608,7 +608,7 @@ export const places: MockPlace[] = [
     id: "p12",
     name: "Barcode Arkitekturtur",
     category: "Kafé",
-    distance: "2.0 km",
+    distance: "2,0 km",
     distanceM: 2000,
     coord: [10.7553, 59.9076],
     priceLevel: 1,
@@ -636,7 +636,7 @@ export const places: MockPlace[] = [
     id: "p13",
     name: "Grønland Krydderverksted",
     category: "Verksted",
-    distance: "1.6 km",
+    distance: "1,6 km",
     distanceM: 1600,
     coord: [10.7623, 59.9124],
     priceLevel: 2,
@@ -664,7 +664,7 @@ export const places: MockPlace[] = [
     id: "p14",
     name: "Frogner Skjønnhetssalong",
     category: "Bokcafé",
-    distance: "2.6 km",
+    distance: "2,6 km",
     distanceM: 2600,
     coord: [10.7045, 59.9205],
     priceLevel: 3,
@@ -1333,7 +1333,7 @@ export type MockVisited = {
 export type MockProfileActivity = {
   experienceId: string; // references `experiences`
   role: "Arrangert" | "Deltok";
-  meta: string; // MOCK line, e.g. "★ 4.9 · 38 deltakere" — not real counts
+  meta: string; // MOCK line, e.g. "★ 4,9 · 38 deltakere" — not real counts
 };
 
 export type MockProfileReview = {
@@ -1397,11 +1397,11 @@ export const profile = {
   interests: ["Kaffe", "Jazz", "Fotografi", "Brettspill"], // MOCK tags
   // "Veien til Skaper" card (PDF p12/p14). Illustrative copy only — the real
   // creator criteria are not defined (master spec §10: do not fabricate tiers).
-  creatorPath: { hosted: 2, required: 3, rating: "4.8" },
+  creatorPath: { hosted: 2, required: 3, rating: "4,8" },
   activity: [
-    { experienceId: "e6", role: "Arrangert", meta: "★ 4.9 · 38 deltakere" },
+    { experienceId: "e6", role: "Arrangert", meta: "★ 4,9 · 38 deltakere" },
     { experienceId: "e3", role: "Deltok", meta: "lørdag" },
-    { experienceId: "e1", role: "Arrangert", meta: "★ 4.7 · 12 deltakere" },
+    { experienceId: "e1", role: "Arrangert", meta: "★ 4,7 · 12 deltakere" },
   ] as MockProfileActivity[],
   // Places the user has "been" — MOCK history, references real place fixtures.
   visited: [

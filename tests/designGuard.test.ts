@@ -119,4 +119,20 @@ describe("design-system guard", () => {
     const hits = scan((line) => /\bInteractionManager\b/.test(line));
     expect(fmt(hits)).toEqual([]);
   });
+
+  it("status bar only via the focus-aware StatusBarStyle (a mounted <StatusBar> outlived its screen)", () => {
+    const hits = scan(
+      (line) => /from "expo-status-bar"/.test(line),
+      (file) => !file.endsWith("ui/StatusBarStyle.tsx"),
+    );
+    expect(fmt(hits)).toEqual([]);
+  });
+
+  it("display decimals only through src/lib/format.ts (nb-NO comma)", () => {
+    const hits = scan(
+      (line) => /\.toFixed\(/.test(line),
+      (file) => !file.endsWith("lib/format.ts"),
+    );
+    expect(fmt(hits)).toEqual([]);
+  });
 });

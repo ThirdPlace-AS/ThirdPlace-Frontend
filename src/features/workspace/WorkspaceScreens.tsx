@@ -162,19 +162,19 @@ const STATS: Record<(typeof RANGES)[number], [string, string][]> = {
     ["812", "Visninger"],
     ["74", "Følgere"],
     ["31", "Ble med i chat"],
-    ["4.7", "Vurdering"],
+    ["4,7", "Vurdering"],
   ],
   Måned: [
     ["3 420", "Visninger"],
     ["312", "Følgere"],
     ["145", "Ble med i chat"],
-    ["4.7", "Vurdering"],
+    ["4,7", "Vurdering"],
   ],
   Total: [
     ["18 900", "Visninger"],
     ["1 204", "Følgere"],
     ["690", "Ble med i chat"],
-    ["4.6", "Vurdering"],
+    ["4,6", "Vurdering"],
   ],
 };
 const BARS = [42, 55, 48, 62, 58, 70, 66, 74, 69, 80, 77, 88];
@@ -224,7 +224,7 @@ export function WorkspaceAnalytics() {
             <View
               key={i}
               className={`flex-1 rounded-t ${
-                i === BARS.length - 1 ? "bg-ember" : "bg-success"
+                i === BARS.length - 1 ? "bg-ink" : "bg-success"
               }`}
               style={{ height: `${h}%` }}
             />
@@ -250,7 +250,7 @@ export function WorkspaceCalendar() {
         {upcoming.map((e) => (
           <View
             key={e.id}
-            className="flex-row items-center gap-3 rounded-md border-l-4 border-l-ember bg-surface p-3"
+            className="flex-row items-center gap-3 rounded-md border border-line bg-surface p-3"
           >
             <View className="flex-1">
               <Text variant="caption" tone="muted">
@@ -267,7 +267,7 @@ export function WorkspaceCalendar() {
               accessibilityRole="button"
               onPress={() => router.navigate("/add")}
             >
-              <Text variant="label" weight="semibold" tone="ember">
+              <Text variant="label" weight="semibold" className="underline">
                 Rediger
               </Text>
             </Pressable>

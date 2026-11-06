@@ -16,6 +16,7 @@ import { places } from "@/fixtures";
 import { coverForPlace, libImage } from "@/fixtures/images";
 import { media } from "@/theme";
 import { Illustration } from "@/components/illustrations/Illustration";
+import { formatRating } from "@/lib/format";
 
 // "Steder" deck in Sveip (PDF p7 tab). Place cards with Hopp over / Lagre /
 // Vis på kartet. Button-driven (no drag) — the experience deck keeps the full
@@ -86,7 +87,7 @@ export function PlaceDeck({
           {place.name}
         </Text>
         <Text variant="body" tone="onMedia" className="opacity-85">
-          {place.category} · {place.distance} · ★ {place.rating.toFixed(1)}
+          {place.category} · {place.distance} · ★ {formatRating(place.rating)}
         </Text>
         <View className="flex-row flex-wrap gap-2">
           {place.vibes.slice(0, 3).map((v) => (

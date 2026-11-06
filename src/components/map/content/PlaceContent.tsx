@@ -11,6 +11,7 @@ import {
   priceBandFor,
 } from "@/fixtures";
 import { coverForPlace, libImage } from "@/fixtures/images";
+import { formatRating } from "@/lib/format";
 
 import type { PushFn } from "../sheetTypes";
 import { markerId } from "../types/mapPresentation";
@@ -35,7 +36,7 @@ export function PlaceContent({ id, push }: { id: string; push: PushFn }) {
         <View className="flex-row items-center gap-1">
           <Icon name="star" size="sm" tone="ember" />
           <Text variant="label" weight="semibold">
-            {place.rating.toFixed(1)}
+            {formatRating(place.rating)}
           </Text>
           <Text variant="caption" tone="muted">
             ({place.reviews})
@@ -164,7 +165,7 @@ export function PlaceContent({ id, push }: { id: string; push: PushFn }) {
             <View className="flex-row items-center gap-1">
               <Icon name="star" size="sm" tone="ember" />
               <Text variant="body" weight="semibold">
-                {place.rating.toFixed(1)}
+                {formatRating(place.rating)}
               </Text>
               <Text variant="caption" tone="muted">
                 · {place.reviews} anmeldelser

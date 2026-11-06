@@ -21,6 +21,7 @@ import {
 import { DemoBadge } from "@/components/DemoBadge";
 import { elevation } from "@/theme";
 import { MAP_CITY, type MockWeather } from "@/fixtures";
+import { formatRating } from "@/lib/format";
 import { browseAnimatedIndex } from "./browseSheetProgress";
 import { coverForItem } from "./services/itemCover";
 import type { DiscoveryItem } from "./types/mapPresentation";
@@ -325,7 +326,7 @@ const BrowseCard = memo(function BrowseCard({
               <View className="flex-row items-center gap-1">
                 <Icon name="star" size="sm" tone="ink" />
                 <Text variant="label" weight="semibold">
-                  {item.rating.toFixed(1).replace(".", ",")}
+                  {formatRating(item.rating)}
                 </Text>
                 {item.reviewCount != null ? (
                   <Text variant="caption" tone="muted">

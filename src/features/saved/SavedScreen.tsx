@@ -13,6 +13,7 @@ import { useMapSaved } from "@/components/map/hooks/useMapSaved";
 import { businessById, experienceById, placeById } from "@/fixtures";
 import { coverForPlace, libImage } from "@/fixtures/images";
 import { Illustration } from "@/components/illustrations/Illustration";
+import { formatRating } from "@/lib/format";
 
 type Kind = "place" | "experience" | "business";
 type Row = {
@@ -50,7 +51,7 @@ export default function SavedScreen() {
                   key,
                   kind: "place",
                   title: p.name,
-                  meta: `Sted · ★ ${p.rating.toFixed(1)}`,
+                  meta: `Sted · ★ ${formatRating(p.rating)}`,
                   placeId: p.id,
                 },
               ]
