@@ -13,7 +13,11 @@ import { ScreenHeader } from "@/components/ScreenHeader";
 export default function Register() {
   return (
     <Screen>
-      <ScrollView contentContainerClassName="gap-6 p-gutter">
+      <ScrollView
+        contentContainerClassName="gap-6 p-gutter"
+        // The first tap on a button lands while the keyboard is open.
+        keyboardShouldPersistTaps="handled"
+      >
         <View className="items-center">
           <Logo size={48} />
         </View>

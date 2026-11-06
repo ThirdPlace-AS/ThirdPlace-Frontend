@@ -1,12 +1,6 @@
 import { router, useLocalSearchParams } from "expo-router";
 import { useRef, useState } from "react";
-import {
-  FlatList,
-  KeyboardAvoidingView,
-  Platform,
-  TextInput,
-  View,
-} from "react-native";
+import { FlatList, KeyboardAvoidingView, TextInput, View } from "react-native";
 import Animated, {
   FadeInDown,
   useReducedMotion,
@@ -157,7 +151,8 @@ export default function ChatThreadScreen() {
 
       <KeyboardAvoidingView
         className="flex-1"
-        behavior={Platform.OS === "ios" ? "padding" : undefined}
+        // Edge-to-edge Android does not resize for the keyboard either.
+        behavior="padding"
       >
         <FlatList
           ref={listRef}

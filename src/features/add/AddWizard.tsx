@@ -1,7 +1,12 @@
 import { Image } from "expo-image";
 import { router, useLocalSearchParams } from "expo-router";
 import { useState } from "react";
-import { Pressable, ScrollView, View } from "react-native";
+import {
+  KeyboardAvoidingView,
+  Pressable,
+  ScrollView,
+  View,
+} from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { Switch } from "@/components/ui/Switch";
@@ -187,34 +192,40 @@ export function AddWizard() {
         label={`Steg ${stepIndex + 1} av ${steps.length}`}
       />
 
-      <ScrollView
-        contentContainerClassName="gap-5 p-gutter pb-8"
-        keyboardShouldPersistTaps="handled"
-      >
-        <StepBody step={step} draft={draft} patch={patch} />
-      </ScrollView>
+      {/* Edge-to-edge Android does not resize for the keyboard, so the step
+          and its footer move up themselves (padding on both platforms). */}
+      <KeyboardAvoidingView behavior="padding" className="flex-1">
+        <ScrollView
+          // New step, new scroll: each step starts at its top.
+          key={step}
+          contentContainerClassName="gap-5 p-gutter pb-8"
+          keyboardShouldPersistTaps="handled"
+        >
+          <StepBody step={step} draft={draft} patch={patch} />
+        </ScrollView>
 
-      <View className="px-gutter pb-3 pt-2">
-        <Button
-          label={
-            !isLast
-              ? "Neste"
-              : editing
-                ? "Lagre endringer"
-                : draft.kind === "place"
-                  ? "Send inn til vurdering"
-                  : "Publiser opplevelsen"
-          }
-          variant={isLast && draft.kind === "experience" ? "ember" : "ink"}
-          disabled={!canAdvance(step, draft)}
-          onPress={next}
-        />
-        {advanceHint(step, draft) ? (
-          <Text variant="caption" tone="muted" className="pt-2 text-center">
-            {advanceHint(step, draft)}
-          </Text>
-        ) : null}
-      </View>
+        <View className="border-t border-line bg-background px-gutter pb-3 pt-3">
+          <Button
+            label={
+              !isLast
+                ? "Neste"
+                : editing
+                  ? "Lagre endringer"
+                  : draft.kind === "place"
+                    ? "Send inn til vurdering"
+                    : "Publiser opplevelsen"
+            }
+            variant={isLast && draft.kind === "experience" ? "ember" : "ink"}
+            disabled={!canAdvance(step, draft)}
+            onPress={next}
+          />
+          {advanceHint(step, draft) ? (
+            <Text variant="caption" tone="muted" className="pt-2 text-center">
+              {advanceHint(step, draft)}
+            </Text>
+          ) : null}
+        </View>
+      </KeyboardAvoidingView>
     </Screen>
   );
 }

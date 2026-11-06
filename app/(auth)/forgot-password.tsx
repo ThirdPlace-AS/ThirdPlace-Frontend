@@ -14,7 +14,11 @@ export default function ForgotPassword() {
   const [sent, setSent] = useState(false);
   return (
     <Screen>
-      <ScrollView contentContainerClassName="gap-6 p-gutter">
+      <ScrollView
+        contentContainerClassName="gap-6 p-gutter"
+        // The first tap on a button lands while the keyboard is open.
+        keyboardShouldPersistTaps="handled"
+      >
         <ScreenHeader
           title="Glemt passord?"
           subtitle="Skriv inn e-posten din, så sender vi deg en lenke for å tilbakestille passordet."

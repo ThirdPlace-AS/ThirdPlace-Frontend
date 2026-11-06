@@ -42,6 +42,8 @@ export default function TabsLayout() {
     <Tabs
       screenOptions={{
         headerShown: false,
+        // The bar would ride on top of the keyboard (Add steps, chat search).
+        tabBarHideOnKeyboard: true,
         // PDF: the active tab's icon + label are Ember; the rest muted.
         // emberText keeps the active label readable on the dark surface too.
         tabBarActiveTintColor: colors.emberText,

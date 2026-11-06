@@ -12,6 +12,7 @@
 // buttons are never nested inside a <button> on web (CLAUDE.md "Sheets").
 import { useState, type ReactNode } from "react";
 import {
+  KeyboardAvoidingView,
   type LayoutChangeEvent,
   Modal,
   Pressable as RNPressable,
@@ -238,7 +239,15 @@ export function Sheet({
       onRequestClose={onClose}
     >
       <GestureHandlerRootView style={{ flex: 1 }}>
-        <View className="flex-1 justify-end">
+        {/* The keyboard pads the bottom (edge-to-edge Android does not resize
+            the Modal window), and the card shrinks so it stays on screen. */}
+        <KeyboardAvoidingView
+          behavior="padding"
+          className="flex-1 justify-end"
+          // Keeps a content sheet below the status bar when the keyboard
+          // leaves it less room than maxCardH.
+          style={fullHeight ? null : { paddingTop: insets.top + SHEET_TOP_GAP }}
+        >
           <Animated.View
             style={[StyleSheet.absoluteFill, animate ? scrimStyle : null]}
           >
@@ -256,7 +265,7 @@ export function Sheet({
           <Animated.View
             style={[
               animate ? cardStyle : null,
-              fullHeight ? { height: "92%" } : null,
+              fullHeight ? { height: "92%" } : { flexShrink: 1 },
             ]}
             onLayout={onCardLayout}
           >
@@ -269,7 +278,7 @@ export function Sheet({
                 elevation.e3,
                 dark ? { backgroundColor: media.base } : null,
                 { paddingBottom: padBottom },
-                fullHeight ? null : { maxHeight: maxCardH },
+                fullHeight ? null : { maxHeight: maxCardH, flexShrink: 1 },
               ]}
             >
               <GestureDetector gesture={pan}>
@@ -303,7 +312,7 @@ export function Sheet({
               )}
             </View>
           </Animated.View>
-        </View>
+        </KeyboardAvoidingView>
       </GestureHandlerRootView>
     </Modal>
   );
