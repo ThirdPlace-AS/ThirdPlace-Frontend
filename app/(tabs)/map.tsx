@@ -1,4 +1,4 @@
-import { useFocusEffect } from "expo-router";
+import { useFocusEffect, useLocalSearchParams } from "expo-router";
 import { useCallback, useMemo, useState } from "react";
 import {
   ActivityIndicator,
@@ -96,6 +96,19 @@ export default function MapScreen() {
 
   // Stable methods (the hooks useCallback these) for memo-friendly handlers.
   const { selectMarker, back: sheetBack, close: sheetClose } = selection;
+
+  // /map?focus=<kind>:<id>&at=<stamp> (e.g. "Vis på kartet" in the Steder
+  // deck) opens that item's detail once per request; the stamp tells repeat
+  // taps apart because the tab stays mounted.
+  const { focus, at } = useLocalSearchParams<{ focus?: string; at?: string }>();
+  const focusKey = focus ? `${focus}:${at ?? ""}` : undefined;
+  const [focusedKey, setFocusedKey] = useState<string | undefined>(undefined);
+  if (focusKey && focusKey !== focusedKey) {
+    setFocusedKey(focusKey);
+    const [kind, id] = (focus ?? "").split(":");
+    if ((kind === "place" || kind === "experience") && id)
+      selection.openTarget({ kind, id });
+  }
   const { setMode: setDiscoveryMode } = discovery;
 
   // Android back key: an open detail sheet steps back / closes first, so back

@@ -78,6 +78,22 @@ export function stepsFor(kind: AddKind | null): StepKey[] {
   return ["kind"];
 }
 
+// Kalender "Rediger" opens the experience flow pre-filled with what the
+// example experience already says (title, description, capacity).
+export function draftFromExperience(e: {
+  title: string;
+  about: string;
+  capacity: number;
+}): AddDraft {
+  return {
+    ...EMPTY_DRAFT,
+    kind: "experience",
+    title: e.title,
+    summary: e.about,
+    capacity: String(e.capacity),
+  };
+}
+
 // Minimal per-step validation, so "Neste" only enables when the step is filled.
 export function canAdvance(step: StepKey, d: AddDraft): boolean {
   switch (step) {

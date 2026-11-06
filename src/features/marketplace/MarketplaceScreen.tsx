@@ -324,7 +324,9 @@ function ListingSheet({
               </Text>
             </View>
           </View>
-          {notice ? <DemoNote>Listingen lagres ikke.</DemoNote> : null}
+          {notice ? (
+            <DemoNote>Lagret bare her. Listingen lagres ikke.</DemoNote>
+          ) : null}
           <View className="flex-row gap-3">
             <View className="flex-1">
               <Button
@@ -342,9 +344,12 @@ function ListingSheet({
             </View>
             <View className="w-28">
               <Button
-                label="Lagre"
+                label={notice ? "Lagret" : "Lagre"}
+                icon={notice ? "bookmark" : "bookmark-outline"}
                 variant="secondary"
-                onPress={() => (isGuest ? onGuest() : setNotice("save"))}
+                onPress={() =>
+                  isGuest ? onGuest() : setNotice((n) => (n ? null : "save"))
+                }
               />
             </View>
           </View>

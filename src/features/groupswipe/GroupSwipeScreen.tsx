@@ -1,6 +1,6 @@
 import { Ionicons } from "@expo/vector-icons";
 import { Image } from "expo-image";
-import { router } from "expo-router";
+import { type Href, router } from "expo-router";
 import { useEffect, useState } from "react";
 import { Pressable, ScrollView, View } from "react-native";
 import {
@@ -15,7 +15,7 @@ import { Button } from "@/components/Button";
 import { Chip } from "@/components/Chip";
 import { DemoNote } from "@/components/DemoNote";
 import { Input } from "@/components/Input";
-import { experiences, people, type MockPerson } from "@/fixtures";
+import { chats, experiences, people, type MockPerson } from "@/fixtures";
 import { libImage } from "@/fixtures/images";
 
 type Phase = "setup" | "lobby" | "swipe" | "match";
@@ -42,6 +42,10 @@ export default function GroupSwipeScreen() {
   const friends = people.filter((p) => invited.includes(p.id));
   const deck = experiences.filter((e) => e.status !== "cancelled");
   const card = deck[index % deck.length];
+  // The example chat pinned to the matched experience, if one exists.
+  const matchChat = card
+    ? chats.find((c) => c.pinnedExperienceId === card.id)
+    : undefined;
   const title = name.trim() || "Gruppe-sveip";
 
   // Lobby: simulated friends become ready one by one.
@@ -305,11 +309,19 @@ export default function GroupSwipeScreen() {
               Alle er enige
             </Text>
           </View>
-          <DemoNote>Ingen gruppechat ble opprettet i demoen.</DemoNote>
+          <DemoNote>
+            {matchChat
+              ? "Ingen ny gruppechat ble opprettet. Knappen åpner eksempelchatten for opplevelsen."
+              : "Ingen gruppechat ble opprettet i demoen."}
+          </DemoNote>
           <Button
             label="Åpne chatten →"
             variant="ink"
-            onPress={() => router.navigate("/chat")}
+            onPress={() =>
+              matchChat
+                ? router.push(`/chat/${matchChat.id}` as Href)
+                : router.navigate("/chat")
+            }
           />
           <Button
             label="Fortsett å sveipe"

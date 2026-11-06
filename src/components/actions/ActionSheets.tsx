@@ -333,11 +333,14 @@ export function RateSheet({
   heading = "Hvordan var det?",
   chips = PRAISE,
   chipsLabel = "Hva var bra?",
+  onSent,
 }: Base & {
   title: string;
   heading?: string;
   chips?: string[];
   chipsLabel?: string;
+  /** Lets the caller mark the item as rated locally. */
+  onSent?: () => void;
 }) {
   const [stars, setStars] = useState(0);
   const [liked, setLiked] = useState<string[]>([]);
@@ -386,7 +389,10 @@ export function RateSheet({
           label="Send vurdering"
           variant="ink"
           disabled={stars === 0}
-          onPress={() => setSent(true)}
+          onPress={() => {
+            setSent(true);
+            onSent?.();
+          }}
         />
         <Button label="Hopp over" variant="secondary" onPress={onClose} />
       </View>

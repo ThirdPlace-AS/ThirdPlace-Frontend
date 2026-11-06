@@ -66,6 +66,8 @@ const HISTORY = [
 
 export function CollabHistoryScreen() {
   const [rate, setRate] = useState<string | null>(null);
+  // Rated in this session (local only; the page note says it is an example).
+  const [ratedHere, setRatedHere] = useState<ReadonlySet<string>>(new Set());
   return (
     <Screen edges={["top"]}>
       <RouteHeader title="Samarbeidshistorikk" />
@@ -81,7 +83,7 @@ export function CollabHistoryScreen() {
             <Text variant="caption" tone="muted">
               {h.partner} · {h.when}
             </Text>
-            {h.rated ? (
+            {h.rated || ratedHere.has(h.partner) ? (
               <Text variant="caption" weight="semibold" tone="success">
                 ✓ Vurdert
               </Text>
@@ -109,6 +111,7 @@ export function CollabHistoryScreen() {
           chips={TRAITS}
           chipsLabel="Hva fungerte?"
           onClose={() => setRate(null)}
+          onSent={() => setRatedHere((s) => new Set(s).add(rate))}
         />
       ) : null}
     </Screen>

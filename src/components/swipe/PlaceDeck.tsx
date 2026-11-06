@@ -131,7 +131,13 @@ export function PlaceDeck({
             label="Vis på kartet"
             variant="media"
             size="lg"
-            onPress={() => router.navigate("/map")}
+            // Opens this place on the map (its detail), not just the map.
+            onPress={() =>
+              router.navigate({
+                pathname: "/map",
+                params: { focus: key, at: String(Date.now()) },
+              })
+            }
           />
           <IconButton
             icon="arrow-forward"

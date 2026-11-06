@@ -1,5 +1,5 @@
 import { Image } from "expo-image";
-import { router } from "expo-router";
+import { router, useLocalSearchParams } from "expo-router";
 import { useState } from "react";
 import { Pressable, ScrollView, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -25,13 +25,14 @@ import { DemoBadge } from "@/components/DemoBadge";
 import { DemoNote } from "@/components/DemoNote";
 import { Input } from "@/components/Input";
 import { CategoryPicker, PlacePicker } from "@/components/pickers/Pickers";
-import { experiences, OSLO_AREAS, places } from "@/fixtures";
+import { experienceById, experiences, OSLO_AREAS, places } from "@/fixtures";
 
 import {
   type AddDraft,
   type AddKind,
   advanceHint,
   canAdvance,
+  draftFromExperience,
   EMPTY_DRAFT,
   type StepKey,
   stepsFor,
@@ -125,6 +126,22 @@ export function AddWizard() {
   const [draft, setDraft] = useState<AddDraft>(EMPTY_DRAFT);
   const [stepIndex, setStepIndex] = useState(0);
   const [submitted, setSubmitted] = useState(false);
+  // Kalender "Rediger" → /add?edit=<id>&at=<stamp>: seed the draft once per
+  // request (the tab stays mounted, so a stamp tells repeat taps apart).
+  const { edit, at } = useLocalSearchParams<{ edit?: string; at?: string }>();
+  const editKey = edit ? `${edit}:${at ?? ""}` : undefined;
+  const [seeded, setSeeded] = useState<string | undefined>(undefined);
+  const [editing, setEditing] = useState(false);
+  if (editKey && editKey !== seeded) {
+    setSeeded(editKey);
+    const source = experienceById(edit ?? "");
+    if (source) {
+      setDraft(draftFromExperience(source));
+      setStepIndex(0);
+      setSubmitted(false);
+      setEditing(true);
+    }
+  }
 
   const steps = stepsFor(draft.kind);
   const step = steps[Math.min(stepIndex, steps.length - 1)] ?? "kind";
@@ -134,10 +151,11 @@ export function AddWizard() {
     setDraft(EMPTY_DRAFT);
     setStepIndex(0);
     setSubmitted(false);
+    setEditing(false);
   };
 
   if (submitted && draft.kind) {
-    return <SubmittedState draft={draft} onReset={reset} />;
+    return <SubmittedState draft={draft} editing={editing} onReset={reset} />;
   }
 
   if (step === "kind") {
@@ -146,14 +164,18 @@ export function AddWizard() {
         onPick={(kind) => {
           setDraft({ ...EMPTY_DRAFT, kind });
           setStepIndex(0);
+          setEditing(false);
         }}
       />
     );
   }
 
   const isLast = step === "review";
-  const back = () =>
-    stepIndex === 0 ? setDraft(EMPTY_DRAFT) : setStepIndex((i) => i - 1);
+  const back = () => {
+    if (stepIndex > 0) return setStepIndex((i) => i - 1);
+    setDraft(EMPTY_DRAFT);
+    setEditing(false);
+  };
   const next = () => (isLast ? setSubmitted(true) : setStepIndex((i) => i + 1));
 
   return (
@@ -177,9 +199,11 @@ export function AddWizard() {
           label={
             !isLast
               ? "Neste"
-              : draft.kind === "place"
-                ? "Send inn til vurdering"
-                : "Publiser opplevelsen"
+              : editing
+                ? "Lagre endringer"
+                : draft.kind === "place"
+                  ? "Send inn til vurdering"
+                  : "Publiser opplevelsen"
           }
           variant={isLast && draft.kind === "experience" ? "ember" : "ink"}
           disabled={!canAdvance(step, draft)}
@@ -653,9 +677,11 @@ function Fact({ icon, value }: { icon: IconName; value: string }) {
 
 function SubmittedState({
   draft,
+  editing,
   onReset,
 }: {
   draft: AddDraft;
+  editing: boolean;
   onReset: () => void;
 }) {
   const isPlace = draft.kind === "place";
@@ -679,12 +705,22 @@ function SubmittedState({
             {draft.title}
           </Text>
           <View className="flex-row">
-            <DemoBadge label={isPlace ? "IKKE SENDT" : "IKKE PUBLISERT"} />
+            <DemoBadge
+              label={
+                isPlace
+                  ? "IKKE SENDT"
+                  : editing
+                    ? "IKKE LAGRET"
+                    : "IKKE PUBLISERT"
+              }
+            />
           </View>
           <Text variant="body" tone="muted" className="px-6 text-center">
-            {isPlace
-              ? "Stedet ble ikke sendt inn. Det krever innlogging og en server, og ingen av delene er på plass ennå."
-              : "Opplevelsen ble ikke publisert, og ingen chat ble opprettet. Det krever innlogging og en server, og ingen av delene er på plass ennå."}
+            {editing
+              ? "Endringene ble ikke lagret. Det krever innlogging og en server, og ingen av delene er på plass ennå."
+              : isPlace
+                ? "Stedet ble ikke sendt inn. Det krever innlogging og en server, og ingen av delene er på plass ennå."
+                : "Opplevelsen ble ikke publisert, og ingen chat ble opprettet. Det krever innlogging og en server, og ingen av delene er på plass ennå."}
           </Text>
         </View>
         <View className="w-full gap-3 pt-2">

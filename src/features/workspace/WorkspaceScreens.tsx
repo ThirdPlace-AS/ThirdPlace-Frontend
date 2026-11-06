@@ -178,7 +178,13 @@ const STATS: Record<(typeof RANGES)[number], [string, string][]> = {
     ["4,6", "Vurdering"],
   ],
 };
-const BARS = [42, 55, 48, 62, 58, 70, 66, 74, 69, 80, 77, 88];
+// Example bar heights per range (the chart follows the Uke/Måned/Total
+// switch like the tiles above; all numbers are examples).
+const BARS: Record<(typeof RANGES)[number], number[]> = {
+  Uke: [48, 62, 55, 70, 66, 81, 74],
+  Måned: [42, 55, 48, 62, 58, 70, 66, 74, 69, 80, 77, 88],
+  Total: [20, 28, 35, 33, 46, 52, 58, 63, 71, 76, 84, 92],
+};
 
 export function WorkspaceAnalytics() {
   const [range, setRange] = useState<(typeof RANGES)[number]>("Måned");
@@ -221,11 +227,11 @@ export function WorkspaceAnalytics() {
           className="flex-row items-end gap-1.5 rounded-lg border border-line bg-surface p-3"
           style={{ height: 160 }}
         >
-          {BARS.map((h, i) => (
+          {BARS[range].map((h, i) => (
             <View
               key={i}
               className={`flex-1 rounded-t ${
-                i === BARS.length - 1 ? "bg-ink" : "bg-success"
+                i === BARS[range].length - 1 ? "bg-ink" : "bg-success"
               }`}
               style={{ height: `${h}%` }}
             />
@@ -267,7 +273,13 @@ export function WorkspaceCalendar() {
             <Pressable
               hitSlop={{ top: 12, bottom: 12, left: 8, right: 8 }}
               accessibilityRole="button"
-              onPress={() => router.navigate("/add")}
+              accessibilityLabel={`Rediger ${e.title}`}
+              onPress={() =>
+                router.navigate({
+                  pathname: "/add",
+                  params: { edit: e.id, at: String(Date.now()) },
+                })
+              }
             >
               <Text variant="label" weight="semibold" className="underline">
                 Rediger
