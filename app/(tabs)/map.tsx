@@ -234,7 +234,7 @@ export default function MapScreen() {
               the filter button isn't nested inside a button (invalid DOM on
               web). The search opener launches the full-screen overlay, so the
               bar itself never takes focus (no residual keyboard on close). */}
-          <View className="flex-row items-center flex-1 h-12 border rounded-md border-line bg-surface">
+          <View className="flex-row items-center flex-1 h-12 border rounded-full border-line bg-surface">
             <Pressable
               accessibilityRole="button"
               accessibilityLabel="Søk steder og opplevelser"

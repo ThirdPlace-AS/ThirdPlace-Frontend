@@ -1,6 +1,9 @@
 import { describe, expect, it } from "@jest/globals";
 
-import { coverForItem } from "@/components/map/services/itemCover";
+import {
+  coverForItem,
+  photosForItem,
+} from "@/components/map/services/itemCover";
 import { experiences, groups, places } from "@/fixtures";
 
 describe("coverForItem", () => {
@@ -14,5 +17,15 @@ describe("coverForItem", () => {
 
   it("returns undefined for unknown items", () => {
     expect(coverForItem({ kind: "place", id: "nope" })).toBeUndefined();
+  });
+
+  it("photosForItem: every photo for experiences, one cover otherwise", () => {
+    const exp = experiences.find((e) => e.photos.length > 1);
+    expect(exp).toBeTruthy();
+    expect(photosForItem({ kind: "experience", id: exp!.id })).toHaveLength(
+      exp!.photos.length,
+    );
+    expect(photosForItem({ kind: "place", id: places[0]!.id })).toHaveLength(1);
+    expect(photosForItem({ kind: "place", id: "nope" })).toEqual([]);
   });
 });

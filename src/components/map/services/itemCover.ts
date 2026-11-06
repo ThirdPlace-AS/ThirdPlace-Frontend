@@ -31,3 +31,16 @@ export function coverForItem(
       return undefined;
   }
 }
+
+/** All demo photos for a card (benchmark B3): experiences have several, the
+ * other kinds one cover. Empty when there is none. */
+export function photosForItem(
+  item: Pick<DiscoveryItem, "kind" | "id">,
+): ImageSourcePropType[] {
+  if (item.kind === "experience") {
+    const photos = experienceById(item.id)?.photos ?? [];
+    if (photos.length > 0) return photos;
+  }
+  const cover = coverForItem(item);
+  return cover ? [cover] : [];
+}

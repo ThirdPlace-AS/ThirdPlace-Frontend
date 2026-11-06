@@ -1,6 +1,5 @@
 import { Ionicons } from "@expo/vector-icons";
 import BottomSheet, { BottomSheetFlatList } from "@gorhom/bottom-sheet";
-import { Image } from "expo-image";
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Pressable, View } from "react-native";
 import Animated, {
@@ -23,7 +22,8 @@ import { elevation } from "@/theme";
 import { MAP_CITY, type MockWeather } from "@/fixtures";
 import { formatRating } from "@/lib/format";
 import { browseAnimatedIndex } from "./browseSheetProgress";
-import { coverForItem } from "./services/itemCover";
+import { PhotoPager } from "./PhotoPager";
+import { photosForItem } from "./services/itemCover";
 import type { DiscoveryItem } from "./types/mapPresentation";
 
 // Airbnb-style persistent "browse" sheet. Always peeks (handle + header,
@@ -70,8 +70,8 @@ export function MapBrowseSheet({
   const snapPoints = useMemo(() => [peek ?? "8%", "49%", "84.5%"], [peek]);
   const sheetRef = useRef<BottomSheet>(null);
 
-  // The floating "Kart" pill mirrors the tab bar: it fades + slides in as the
-  // sheet goes mid (index 1) → full (index 2), driven by the same shared value.
+  // The floating "Kart" pill fades + slides in as the sheet goes mid
+  // (index 1) → full (index 2), driven by the shared animated index.
   // `pillInteractive` gates touches so the invisible pill never swallows taps
   // on the cards below while it is faded out.
   const [pillInteractive, setPillInteractive] = useState(false);
@@ -116,8 +116,8 @@ export function MapBrowseSheet({
     if (expandSignal > 0 && !hidden) sheetRef.current?.snapToIndex(1);
   }, [expandSignal, hidden]);
 
-  // Reset the shared animated index when this screen unmounts so the tab bar
-  // (which reads it) is fully shown on the other tabs.
+  // Reset the shared animated index when this screen unmounts, so the pill
+  // starts hidden next time.
   useEffect(() => {
     return () => {
       browseAnimatedIndex.value = 0;
@@ -184,9 +184,18 @@ export function MapBrowseSheet({
         >
           <View className="flex-row items-center flex-1 gap-2">
             <Icon name="location" size="md" tone="ember" />
-            <Text variant="body" weight="semibold" numberOfLines={1}>
-              {cityLine}
-            </Text>
+            <View className="flex-1">
+              <Text variant="body" weight="semibold" numberOfLines={1}>
+                {cityLine}
+              </Text>
+              {/* How many results the list holds (fixture count; benchmark
+                  B1). No sort claim: there is no ranking contract. */}
+              {loading ? null : (
+                <Text variant="caption" tone="muted">
+                  {items.length} treff
+                </Text>
+              )}
+            </View>
           </View>
           <View className="flex-row items-center gap-2">
             {/* Fixture weather (MockWeather), not a live reading. */}
@@ -237,7 +246,7 @@ export function MapBrowseSheet({
       </BottomSheet>
 
       {/* Floating "Kart" pill — fades + slides in as the sheet nears full
-          extent (mirroring the tab bar fading out); tapping it collapses the
+          extent; tapping it collapses the
           list back to the map. */}
       {showMapPill ? (
         // Positioned by a plain View; the animated wrapper only carries the
@@ -283,7 +292,7 @@ const BrowseCard = memo(function BrowseCard({
   onSelect: (item: DiscoveryItem) => void;
   onToggleSave: (item: DiscoveryItem) => void;
 }) {
-  const cover = coverForItem(item);
+  const photos = photosForItem(item);
   return (
     // Card wrapper is a View; the save heart is a SIBLING of the
     // select Pressable (never nested) — nested <button> is invalid
@@ -297,19 +306,16 @@ const BrowseCard = memo(function BrowseCard({
         className="gap-3"
       >
         {/* Hero — bundled demo photo (placeholder when an item has none). */}
+        {/* Near-square photo (benchmark B2), swipeable when the item has
+            several (B3). */}
         <View
-          className={`h-52 w-full items-center justify-center overflow-hidden rounded-lg bg-surfaceMuted ${
+          style={{ aspectRatio: 1.05 }}
+          className={`w-full items-center justify-center overflow-hidden rounded-xl bg-surfaceMuted ${
             selected ? "border-2 border-ink" : ""
           }`}
         >
-          {cover ? (
-            <Image
-              source={cover}
-              contentFit="cover"
-              transition={150}
-              style={{ position: "absolute", inset: 0 }}
-              accessible={false}
-            />
+          {photos.length > 0 ? (
+            <PhotoPager photos={photos} />
           ) : (
             <Icon name="image-outline" size="2xl" tone="muted" />
           )}
@@ -350,7 +356,7 @@ const BrowseCard = memo(function BrowseCard({
             ) : null}
           </View>
           <Text variant="caption" tone="muted" numberOfLines={1}>
-            {item.category} · {item.subtitle}
+            {item.subtitle}
           </Text>
           {item.meta ? (
             <Text variant="label" weight="semibold" numberOfLines={1}>
