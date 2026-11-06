@@ -316,7 +316,7 @@ function ToggleList({
 }) {
   const [state, setState] = useState(initial);
   return (
-    <View className="overflow-hidden rounded-lg bg-surface">
+    <View className="overflow-hidden rounded-lg border border-line bg-surface">
       {items.map((i) => (
         <ToggleRow
           key={i.label}
@@ -417,7 +417,7 @@ function LanguageSheet({ visible, onClose }: SheetProps) {
         <Text variant="micro" weight="semibold" tone="muted" className="pt-2">
           Region
         </Text>
-        <View className="overflow-hidden rounded-lg bg-surface">
+        <View className="overflow-hidden rounded-lg border border-line bg-surface">
           <NavRow icon="cash-outline" label="Valuta" value="NOK (kr)" />
           <NavRow icon="time-outline" label="Tidssone" value="Oslo (CET)" />
         </View>
@@ -514,7 +514,7 @@ function HelpSheet({ visible, onClose }: SheetProps) {
         <Text variant="micro" weight="semibold" tone="muted">
           Vanlige spørsmål
         </Text>
-        <View className="overflow-hidden rounded-lg bg-surface">
+        <View className="overflow-hidden rounded-lg border border-line bg-surface">
           {faq.map((q) => (
             // Topics only: no answers exist yet, so the rows are not links.
             <NavRow key={q} icon="help-circle-outline" label={q} />

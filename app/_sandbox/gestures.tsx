@@ -45,10 +45,10 @@ export default function GestureSandbox() {
   );
 }
 
-// Provisional tokens (see src/theme/tokens.js): background #F8F8F8, muted #808080,
+// Provisional tokens (see src/theme/tokens.js): background #FFFFFF, muted #808080,
 // Ember #D80000.
 const styles = StyleSheet.create({
-  root: { flex: 1, backgroundColor: "#F8F8F8" },
+  root: { flex: 1, backgroundColor: "#FFFFFF" },
   hint: { color: "#808080", textAlign: "center", padding: 16 },
   stage: { flex: 1, alignItems: "center", justifyContent: "center" },
   box: { width: 96, height: 96, borderRadius: 20, backgroundColor: "#D80000" },

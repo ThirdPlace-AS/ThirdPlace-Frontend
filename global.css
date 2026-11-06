@@ -6,7 +6,7 @@
    sets the active scheme. Generated from src/theme/tokens.js; kept in sync by
    tests/themeTokens.test.ts. */
 :root {
-  --c-background: 248 248 248;
+  --c-background: 255 255 255;
   --c-surface: 255 255 255;
   --c-surface-raised: 255 255 255;
   --c-surface-muted: 240 240 240;

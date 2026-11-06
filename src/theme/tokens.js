@@ -19,7 +19,7 @@
 /** Semantic keys → hex, per scheme. Keep both maps on the same keys. */
 const palette = {
   light: {
-    background: "#F8F8F8", // app background
+    background: "#FFFFFF", // app background (Airbnb white, founder 2026-11-06)
     surface: "#FFFFFF", // cards / sheets / inputs
     surfaceRaised: "#FFFFFF", // floating controls, sheets over content
     surfaceMuted: "#F0F0F0", // secondary buttons / subtle fills

@@ -27,7 +27,9 @@ export function SettingsSection({
           {title}
         </Text>
       ) : null}
-      <View className="overflow-hidden rounded-lg bg-surface">{children}</View>
+      <View className="overflow-hidden rounded-lg border border-line bg-surface">
+        {children}
+      </View>
     </View>
   );
 }
