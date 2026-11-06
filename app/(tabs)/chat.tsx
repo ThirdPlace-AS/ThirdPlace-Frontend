@@ -219,18 +219,13 @@ function ChatRow({ chat, onPress }: { chat: MockChat; onPress: () => void }) {
       pressedScale={0.99}
       contentClassName="flex-row items-center gap-md rounded-lg bg-surface px-md py-md"
     >
-      {icon ? (
-        <View className="h-10 w-10 items-center justify-center rounded-full bg-surfaceMuted">
-          <Icon name={icon} size="md" tone="ink" />
-        </View>
-      ) : (
-        <Avatar
-          name={chat.name}
-          initials={chat.initials}
-          size="md"
-          decorative
-        />
-      )}
+      <Avatar
+        name={chat.name}
+        initials={chat.initials}
+        icon={icon ?? undefined}
+        size="md"
+        decorative
+      />
       <View className="flex-1 gap-0.5">
         <Text variant="body" weight="semibold" numberOfLines={1}>
           {chat.name}

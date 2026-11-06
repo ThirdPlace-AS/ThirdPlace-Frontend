@@ -22,6 +22,7 @@ import { Input } from "@/components/Input";
 import { Sheet } from "@/components/Sheet";
 import { SignInPrompt } from "@/components/SignInPrompt";
 import { useGuestMode } from "@/components/map/hooks/useGuestMode";
+import { tagIcon } from "@/components/swipe/SwipeCard";
 import { demoCopy } from "@/copy";
 import { experienceById, placeById, profile } from "@/fixtures";
 import { coverForPlace, libImage } from "@/fixtures/images";
@@ -267,6 +268,16 @@ function Row({
   );
 }
 
+// The row icon names what the experience is (camera for a photo walk, cup for
+// coffee), not the user's role in it. Broad tags only win when nothing more
+// specific maps.
+const BROAD_TAGS = new Set(["Sosialt", "Kultur", "Diskusjon"]);
+function experienceIcon(tags: readonly string[]): IconName {
+  const mapped = tags.filter((t) => tagIcon(t) !== "pricetag-outline");
+  const pick = mapped.find((t) => !BROAD_TAGS.has(t)) ?? mapped[0];
+  return pick ? tagIcon(pick) : "tp-experience";
+}
+
 function ActivityList() {
   return (
     <View className="gap-2">
@@ -276,7 +287,7 @@ function ActivityList() {
         return (
           <Row
             key={a.experienceId}
-            icon={a.role === "Arrangert" ? "mic-outline" : "camera-outline"}
+            icon={experienceIcon(exp.tags)}
             title={exp.title}
             meta={`${a.role} · ${a.meta}`}
           />

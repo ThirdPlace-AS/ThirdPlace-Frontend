@@ -3,6 +3,9 @@
 import { Image, type ImageProps } from "expo-image";
 import { View } from "react-native";
 
+import type { IconSize } from "@/theme";
+
+import { Icon, type IconName } from "./Icon";
 import { Text, type TextVariant } from "./Text";
 
 export type AvatarSize = "xs" | "sm" | "md" | "lg" | "xl";
@@ -13,6 +16,13 @@ const PX: Record<AvatarSize, number> = {
   md: 40,
   lg: 56,
   xl: 88,
+};
+const ICON: Record<AvatarSize, IconSize> = {
+  xs: "sm",
+  sm: "sm",
+  md: "md",
+  lg: "lg",
+  xl: "xl",
 };
 const TEXT: Record<AvatarSize, TextVariant> = {
   xs: "micro",
@@ -33,6 +43,7 @@ export function Avatar({
   name,
   initials,
   source,
+  icon,
   size = "md",
   decorative = false,
 }: {
@@ -41,6 +52,8 @@ export function Avatar({
   /** Explicit initials (overrides the ones derived from `name`). */
   initials?: string;
   source?: ImageProps["source"];
+  /** Glyph instead of initials (a place or experience chat), same size. */
+  icon?: IconName;
   size?: AvatarSize;
   /** Hide from screen readers when the name is already read next to it. */
   decorative?: boolean;
@@ -66,9 +79,14 @@ export function Avatar({
         <Image
           source={source}
           contentFit="cover"
+          // Faces sit in the upper part of portrait photos; a centred crop
+          // of a full-body shot shrank the face to a dot.
+          contentPosition="top"
           transition={150}
           style={{ width: px, height: px }}
         />
+      ) : icon ? (
+        <Icon name={icon} size={ICON[size]} tone="ink" />
       ) : (
         <Text variant={TEXT[size]} weight="semibold">
           {initials ?? (name ? initialsOf(name) : "")}

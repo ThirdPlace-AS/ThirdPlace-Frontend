@@ -1,6 +1,6 @@
 import { router } from "expo-router";
 import { useState } from "react";
-import { FlatList, Pressable, View } from "react-native";
+import { FlatList, Pressable, ScrollView, View } from "react-native";
 
 import {
   RateSheet,
@@ -46,19 +46,29 @@ export default function PlansScreen() {
       <FlatList
         data={rows}
         keyExtractor={(p) => `${p.state}-${p.experienceId}`}
-        contentContainerClassName="gap-2 px-gutter pb-10 flex-grow"
+        contentContainerClassName="gap-2 px-gutter pb-10 pt-4 flex-grow"
         ListHeaderComponent={
           <View className="gap-3 pb-2">
-            <View className="flex-row flex-wrap gap-2">
+            {/* One scrolling row (like the map chips) instead of a wrap that
+                left "Avlyst" alone on a second line. */}
+            <ScrollView
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              accessibilityRole="radiogroup"
+              className="-mx-gutter"
+              contentContainerClassName="gap-2 px-gutter"
+            >
               {TABS.map((t) => (
                 <Chip
                   key={t.key}
                   label={t.label}
+                  size="sm"
+                  role="radio"
                   selected={tab === t.key}
                   onPress={() => setTab(t.key)}
                 />
               ))}
-            </View>
+            </ScrollView>
             <DemoNote>Planene er eksempler. Du er ikke påmeldt noe.</DemoNote>
           </View>
         }

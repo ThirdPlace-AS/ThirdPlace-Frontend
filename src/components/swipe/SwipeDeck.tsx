@@ -58,7 +58,7 @@ import { decideCommit, rotationFor, type SwipeAction } from "./deckLogic";
 import { PhotoCarousel } from "./PhotoCarousel";
 import { PlaceDeck } from "./PlaceDeck";
 import { SwipeActions } from "./SwipeActions";
-import { SwipeCard, SWIPE_CONTENT_BOTTOM } from "./SwipeCard";
+import { SwipeCard, SwipeDemoPill, SWIPE_CONTENT_BOTTOM } from "./SwipeCard";
 import { SwipeFilterBar, type SwipeMode } from "./SwipeFilterBar";
 import {
   applySwipeFilters,
@@ -306,184 +306,188 @@ export function SwipeDeck() {
   const slots = deck.window.map((exp, n) => ({ exp, n })).reverse();
 
   return (
-    <View className="flex-1 bg-ink">
-      {mode === "places" ? (
-        <PlaceDeck onExhausted={setPlacesDone} />
-      ) : deck.done ? (
-        // PDF p8 "Du har sett alt for nå" — light screen, two actions.
-        <View
-          className="flex-1 justify-center bg-background"
-          style={{ paddingTop: insets.top }}
-        >
-          {deck.deck.length === 0 ? (
-            <EmptyState
-              icon="albums-outline"
-              title="Ingen treff"
-              message="Ingen opplevelser passer filtrene dine. Prøv andre filtre."
-              actionLabel="Nullstill filtre"
-              onAction={() => setFilters(DEFAULT_SWIPE_FILTERS)}
-              secondaryLabel="Utforsk kartet"
-              onSecondary={() => router.navigate("/map")}
-            />
-          ) : (
-            <EmptyState
-              icon="albums-outline"
-              illustration={<Illustration name="emptyDeck" />}
-              title="Du har sett alt for nå"
-              message="Nye anbefalinger dukker opp gjennom dagen. Prøv andre filtre, eller utforsk kartet i mellomtiden."
-              actionLabel="Endre filtre"
-              onAction={() => setFiltersOpen(true)}
-              secondaryLabel="Se kortene igjen"
-              onSecondary={deck.restart}
-            />
-          )}
-        </View>
-      ) : (
-        <View
-          style={StyleSheet.absoluteFill}
-          onLayout={(e) => {
-            const { width, height } = e.nativeEvent.layout;
-            setSize({ w: width, h: height });
-          }}
-        >
-          {slots.map(({ exp, n }) =>
-            n === 0 ? (
-              <TopCard
-                key={exp.id}
-                exp={exp}
-                pan={pan}
+    <SwipeDemoPill.Provider value={mode === "forYou"}>
+      <View className="flex-1 bg-ink">
+        {mode === "places" ? (
+          <PlaceDeck onExhausted={setPlacesDone} />
+        ) : deck.done ? (
+          // PDF p8 "Du har sett alt for nå" — light screen, two actions.
+          <View
+            className="flex-1 justify-center bg-background"
+            style={{ paddingTop: insets.top }}
+          >
+            {deck.deck.length === 0 ? (
+              <EmptyState
+                icon="albums-outline"
+                title="Ingen treff"
+                message="Ingen opplevelser passer filtrene dine. Prøv andre filtre."
+                actionLabel="Nullstill filtre"
+                onAction={() => setFilters(DEFAULT_SWIPE_FILTERS)}
+                secondaryLabel="Utforsk kartet"
+                onSecondary={() => router.navigate("/map")}
+              />
+            ) : (
+              <EmptyState
+                icon="albums-outline"
+                illustration={<Illustration name="emptyDeck" />}
+                title="Du har sett alt for nå"
+                message="Nye anbefalinger dukker opp gjennom dagen. Prøv andre filtre, eller utforsk kartet i mellomtiden."
+                actionLabel="Endre filtre"
+                onAction={() => setFiltersOpen(true)}
+                secondaryLabel="Se kortene igjen"
+                onSecondary={deck.restart}
+              />
+            )}
+          </View>
+        ) : (
+          <View
+            style={StyleSheet.absoluteFill}
+            onLayout={(e) => {
+              const { width, height } = e.nativeEvent.layout;
+              setSize({ w: width, h: height });
+            }}
+          >
+            {slots.map(({ exp, n }) =>
+              n === 0 ? (
+                <TopCard
+                  key={exp.id}
+                  exp={exp}
+                  pan={pan}
+                  tx={tx}
+                  ty={ty}
+                  op={op}
+                  w={size.w}
+                  h={size.h}
+                  reduced={reduced}
+                  arrowY={arrowY}
+                  onInfoTop={setArrowY}
+                  onExpand={() => setExpand(exp)}
+                />
+              ) : (
+                // The immediate next card (n===1) renders its FULL content so it is
+                // already complete underneath the top card — when the top card
+                // swipes off, the finished card is revealed with no info/gradient
+                // pop-in. The deeper card (n===2) stays minimal (fully occluded, so
+                // its overlays would be pure overdraw — F10).
+                <BehindCard key={exp.id} exp={exp} ready={n === 1} />
+              ),
+            )}
+
+            {/* Bottom action row — overlaid on the card's bottom gradient. */}
+            <View
+              pointerEvents="box-none"
+              className="absolute inset-x-0 bottom-0"
+              style={{
+                // Sit the discs low, just above the tab bar (K1) — the reference
+                // stacks the actions near the nav, not floating high.
+                paddingBottom: Math.max(insets.bottom, 2),
+                // Above the card stack (whose top card carries zIndex) so the
+                // action row is always visible, as in the reference.
+                zIndex: 30,
+                elevation: 30,
+              }}
+            >
+              <SwipeActions
+                canUndo={deck.canUndo}
+                saved={
+                  deck.current
+                    ? deck.isSaved(deck.savedKeyFor(deck.current))
+                    : false
+                }
+                onUndo={undo}
+                onNope={() => commit("nope")}
+                onSave={() => commit("save")}
+                onLike={() => commit("like")}
+                onShare={() => {
+                  // Local OS share of the current experience's title. No backend —
+                  // just the device share sheet with mock-fixture text, so it is a
+                  // real, honest action (not a faked server success).
+                  const c = deck.current;
+                  if (!c) return;
+                  void Share.share({
+                    message: `${c.title} — ThirdPlace`,
+                  }).catch(() => {});
+                }}
                 tx={tx}
                 ty={ty}
-                op={op}
                 w={size.w}
                 h={size.h}
                 reduced={reduced}
-                arrowY={arrowY}
-                onInfoTop={setArrowY}
-                onExpand={() => setExpand(exp)}
               />
-            ) : (
-              // The immediate next card (n===1) renders its FULL content so it is
-              // already complete underneath the top card — when the top card
-              // swipes off, the finished card is revealed with no info/gradient
-              // pop-in. The deeper card (n===2) stays minimal (fully occluded, so
-              // its overlays would be pure overdraw — F10).
-              <BehindCard key={exp.id} exp={exp} ready={n === 1} />
-            ),
-          )}
-
-          {/* Bottom action row — overlaid on the card's bottom gradient. */}
-          <View
-            pointerEvents="box-none"
-            className="absolute inset-x-0 bottom-0"
-            style={{
-              // Sit the discs low, just above the tab bar (K1) — the reference
-              // stacks the actions near the nav, not floating high.
-              paddingBottom: Math.max(insets.bottom, 2),
-              // Above the card stack (whose top card carries zIndex) so the
-              // action row is always visible, as in the reference.
-              zIndex: 30,
-              elevation: 30,
-            }}
-          >
-            <SwipeActions
-              canUndo={deck.canUndo}
-              saved={
-                deck.current
-                  ? deck.isSaved(deck.savedKeyFor(deck.current))
-                  : false
-              }
-              onUndo={undo}
-              onNope={() => commit("nope")}
-              onSave={() => commit("save")}
-              onLike={() => commit("like")}
-              onShare={() => {
-                // Local OS share of the current experience's title. No backend —
-                // just the device share sheet with mock-fixture text, so it is a
-                // real, honest action (not a faked server success).
-                const c = deck.current;
-                if (!c) return;
-                void Share.share({ message: `${c.title} — ThirdPlace` }).catch(
-                  () => {},
-                );
-              }}
-              tx={tx}
-              ty={ty}
-              w={size.w}
-              h={size.h}
-              reduced={reduced}
-            />
+            </View>
           </View>
-        </View>
-      )}
+        )}
 
-      {/* Top filter bar — overlaid, with its own status-bar inset. Sits above
+        {/* Top filter bar — overlaid, with its own status-bar inset. Sits above
           the card stack (whose top card/expand button carry zIndex) so the
           mode tabs stay visible, as in the reference. */}
-      <View
-        pointerEvents="box-none"
-        className="absolute inset-x-0 top-0"
-        style={{ paddingTop: insets.top + 4, zIndex: 30, elevation: 30 }}
-      >
-        <SwipeFilterBar
-          mode={mode}
-          onSelectMode={setMode}
-          onOpenFilters={() => setFiltersOpen(true)}
-          filterActive={
-            filters.tags.length > 0 || filters.when !== null || filters.hasSpots
-          }
-          onOpenNotifications={() => setNotifOpen(true)}
-          unreadCount={unreadNotifs}
-          onLight={mode === "places" ? placesDone : deck.done}
-          onOpenGroup={() => router.push("/group-swipe")}
-        />
+        <View
+          pointerEvents="box-none"
+          className="absolute inset-x-0 top-0"
+          style={{ paddingTop: insets.top + 4, zIndex: 30, elevation: 30 }}
+        >
+          <SwipeFilterBar
+            mode={mode}
+            onSelectMode={setMode}
+            onOpenFilters={() => setFiltersOpen(true)}
+            filterActive={
+              filters.tags.length > 0 ||
+              filters.when !== null ||
+              filters.hasSpots
+            }
+            onOpenNotifications={() => setNotifOpen(true)}
+            unreadCount={unreadNotifs}
+            onLight={mode === "places" ? placesDone : deck.done}
+            onOpenGroup={() => router.push("/group-swipe")}
+          />
 
-        {/* Honest demo note: "For deg" is not personalized yet — it shows the
+          {/* Honest demo note: "For deg" is not personalized yet — it shows the
             same deck as "Opplevelser". */}
-        {mode === "forYou" ? (
-          <View className="mx-gutter mt-2 flex-row items-center gap-2 self-start rounded-full bg-black/55 px-3 py-1.5">
-            <DemoBadge />
-            <Text
-              variant="caption"
-              weight="medium"
-              tone="onMedia"
-              className="opacity-80"
-            >
-              Ikke personalisert ennå
-            </Text>
-          </View>
-        ) : null}
-      </View>
+          {mode === "forYou" ? (
+            <View className="mx-gutter mt-2 flex-row items-center gap-2 self-start rounded-full bg-black/55 px-3 py-1.5">
+              <DemoBadge />
+              <Text
+                variant="caption"
+                weight="medium"
+                tone="onMedia"
+                className="opacity-80"
+              >
+                Ikke personalisert ennå
+              </Text>
+            </View>
+          ) : null}
+        </View>
 
-      {/* Filtre — looks like the map's Filtre sheet (muted sheet, white Section
+        {/* Filtre — looks like the map's Filtre sheet (muted sheet, white Section
           cards, "Fjern alt + Vis N" footer), carrying the swipe's own modes +
           interests plus the data-backed Når/availability facets. */}
-      <SwipeFilterSheet
-        visible={filtersOpen}
-        value={filters}
-        onClose={() => setFiltersOpen(false)}
-        onApply={setFilters}
-      />
+        <SwipeFilterSheet
+          visible={filtersOpen}
+          value={filters}
+          onClose={() => setFiltersOpen(false)}
+          onApply={setFilters}
+        />
 
-      {/* Notifications — the same demo sheet the map uses (bell in the top bar). */}
-      <NotificationsSheet
-        visible={notifOpen}
-        onClose={() => setNotifOpen(false)}
-      />
+        {/* Notifications — the same demo sheet the map uses (bell in the top bar). */}
+        <NotificationsSheet
+          visible={notifOpen}
+          onClose={() => setNotifOpen(false)}
+        />
 
-      {/* In-place detail — a full-screen DARK experience sheet (swipe-local, so
+        {/* In-place detail — a full-screen DARK experience sheet (swipe-local, so
           the shared map detail stays light). Pan is disabled while it is open. */}
-      <ExpandDetail exp={expand} onClose={() => setExpand(null)} />
+        <ExpandDetail exp={expand} onClose={() => setExpand(null)} />
 
-      <JoinChatSheet exp={joinChatFor} onClose={() => setJoinChatFor(null)} />
+        <JoinChatSheet exp={joinChatFor} onClose={() => setJoinChatFor(null)} />
 
-      {/* Account gate for guest join/save (also used by the detail's CTAs). */}
-      <SignInPrompt
-        visible={signInFor !== null}
-        action={signInFor ?? "fortsette"}
-        onClose={() => setSignInFor(null)}
-      />
-    </View>
+        {/* Account gate for guest join/save (also used by the detail's CTAs). */}
+        <SignInPrompt
+          visible={signInFor !== null}
+          action={signInFor ?? "fortsette"}
+          onClose={() => setSignInFor(null)}
+        />
+      </View>
+    </SwipeDemoPill.Provider>
   );
 }
 

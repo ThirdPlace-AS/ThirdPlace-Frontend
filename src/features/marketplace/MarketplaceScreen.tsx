@@ -1,7 +1,7 @@
 import { Image } from "expo-image";
 import { router, type Href } from "expo-router";
 import { useMemo, useState } from "react";
-import { FlatList, Pressable, TextInput, View } from "react-native";
+import { FlatList, Pressable, ScrollView, TextInput, View } from "react-native";
 
 import {
   Icon,
@@ -123,7 +123,12 @@ export default function MarketplaceScreen() {
                 accessibilityLabel="Søk i Marketplace"
               />
             </View>
-            <View className="flex-row flex-wrap gap-2">
+            <ScrollView
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              className="-mx-gutter"
+              contentContainerClassName="gap-2 px-gutter"
+            >
               <Chip
                 label="Alle"
                 selected={type === null}
@@ -137,7 +142,7 @@ export default function MarketplaceScreen() {
                   onPress={() => setType(t)}
                 />
               ))}
-            </View>
+            </ScrollView>
           </View>
         }
         ListEmptyComponent={

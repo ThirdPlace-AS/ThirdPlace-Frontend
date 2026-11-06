@@ -1,6 +1,6 @@
 import { Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
-import { useState } from "react";
+import { createContext, useContext, useState } from "react";
 import { StyleSheet, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
@@ -89,6 +89,11 @@ export const SWIPE_CONTENT_BOTTOM = 120;
 // for the behind-the-top-card peek, which is fully occluded, so the extra layers
 // would be pure overdraw. `onInfoTop` reports the measured top Y of the info block
 // so the deck can align the expand arrow to the actual title row.
+// True while the deck shows its "Ikke personalisert ennå" pill (For deg): the
+// photo dashes then sit below the pill instead of running through it, and the
+// pill's DEMO badge is the card's marker (no second badge).
+export const SwipeDemoPill = createContext(false);
+
 export function SwipeCard({
   exp,
   interactive = true,
@@ -101,6 +106,7 @@ export function SwipeCard({
   onInfoTop?: (y: number) => void;
 }) {
   const insets = useSafeAreaInsets();
+  const pillShown = useContext(SwipeDemoPill);
   // Track the shown photo ONLY to tint the footer scrim to it; the info block no
   // longer changes per photo. Behind/exiting cards rest on photo 0.
   const [photo, setPhoto] = useState(0);
@@ -130,7 +136,7 @@ export function SwipeCard({
         photos={exp.photos}
         interactive={interactive}
         onIndexChange={setPhoto}
-        indicatorTop={insets.top + 52}
+        indicatorTop={insets.top + (pillShown ? 100 : 52)}
         variant="card"
       />
 
@@ -162,9 +168,11 @@ export function SwipeCard({
       />
 
       {/* Honesty marker — stays on every card, below the top bar. */}
-      <View className="absolute right-gutter top-28">
-        <DemoBadge />
-      </View>
+      {pillShown ? null : (
+        <View className="absolute right-gutter top-28">
+          <DemoBadge />
+        </View>
+      )}
 
       {/* ─── Bottom info overlay — one consolidated block, bottom-anchored ─────
           name → location · distance → when → spots/status → interest pills.

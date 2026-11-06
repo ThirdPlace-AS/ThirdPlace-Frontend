@@ -92,9 +92,27 @@ export function WorkspaceHub() {
           <Text variant="label" weight="semibold">
             Kom i gang: 1 av 2 steg gjenstår
           </Text>
-          <Text variant="caption" tone="muted">
-            ✓ Verifiser bedriften · Start abonnement
-          </Text>
+          {/* One line per step, each with its own state (a single ✓ in
+              front of both read as both done). */}
+          {[
+            { label: "Verifiser bedriften", done: !!BIZ?.verified },
+            { label: "Start abonnement", done: false },
+          ].map((step) => (
+            <View key={step.label} className="flex-row items-center gap-2">
+              <Icon
+                name={step.done ? "checkmark-circle" : "ellipse-outline"}
+                size="sm"
+                tone={step.done ? "success" : "muted"}
+              />
+              <Text
+                variant="caption"
+                tone={step.done ? "muted" : "ink"}
+                accessibilityLabel={`${step.label}: ${step.done ? "fullført" : "gjenstår"}`}
+              >
+                {step.label}
+              </Text>
+            </View>
+          ))}
         </View>
         <DemoNote>
           Arbeidsflaten er et eksempel. Det finnes ingen bedriftskonto.
@@ -276,8 +294,8 @@ export function WorkspaceLocations() {
             key={b.id}
             className="gap-1 rounded-lg border border-line bg-surface p-4"
           >
-            <View className="flex-row items-center justify-between">
-              <Text variant="body" weight="semibold">
+            <View className="flex-row items-start justify-between gap-3">
+              <Text variant="body" weight="semibold" className="flex-1">
                 {b.name}
               </Text>
               <Badge
