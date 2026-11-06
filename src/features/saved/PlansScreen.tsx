@@ -19,6 +19,7 @@ import {
   type MockPlanState,
 } from "@/fixtures";
 import { Illustration } from "@/components/illustrations/Illustration";
+import { gutterPx } from "@/theme";
 
 const TABS: { key: MockPlanState; label: string }[] = [
   { key: "upcoming", label: "Kommende" },
@@ -55,7 +56,8 @@ export default function PlansScreen() {
               horizontal
               showsHorizontalScrollIndicator={false}
               accessibilityRole="radiogroup"
-              className="-mx-gutter"
+              // -mx-gutter generates nothing for the custom token; bleed explicitly.
+              style={{ marginHorizontal: -gutterPx }}
               contentContainerClassName="gap-2 px-gutter"
             >
               {TABS.map((t) => (

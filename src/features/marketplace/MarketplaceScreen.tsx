@@ -25,7 +25,7 @@ import {
   type MockListingType,
 } from "@/fixtures";
 import { libImage } from "@/fixtures/images";
-import { useThemeColors } from "@/theme";
+import { gutterPx, useThemeColors } from "@/theme";
 
 // Marketplace (DEMO), per the design (PDF p15–p16) and master spec §13: a B2B
 // collaboration space where creators, businesses and enterprises offer
@@ -126,7 +126,8 @@ export default function MarketplaceScreen() {
             <ScrollView
               horizontal
               showsHorizontalScrollIndicator={false}
-              className="-mx-gutter"
+              // -mx-gutter generates nothing for the custom token; bleed explicitly.
+              style={{ marginHorizontal: -gutterPx }}
               contentContainerClassName="gap-2 px-gutter"
             >
               <Chip

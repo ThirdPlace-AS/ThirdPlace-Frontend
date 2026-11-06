@@ -13,6 +13,9 @@ export const palette = tokens.palette;
 export const colors = tokens.colors;
 export const radius = tokens.radius;
 export const spacing = tokens.spacing;
+/** Screen side padding in dp, for styles that need the number (e.g. a
+ * negative margin so a horizontal chip row bleeds to the screen edge). */
+export const gutterPx = parseFloat(tokens.spacing.gutter ?? "16");
 export default tokens;
 
 // Motion tokens (see motion.ts) — re-exported for `import { motion } from "@/theme"`.

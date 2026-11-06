@@ -106,7 +106,8 @@ Lokasjoner + account switcher (p13–p15, p27), collaboration flow (p16–p18),
 structure-only paid join (p23), Utbetalinger (p21), Innleveringer (p12).
 
 **Built after 0137 (0138–0145):** Mine listings + editor, Delte bilder +
-bildeviser, creator profile + "Du er nå Skaper!", flytende varsler, Velg sted /
+bildeviser, creator profile + "Du er nå Skaper!" (since 0174 shown only once
+every requirement is met, which the fixture is not), flytende varsler, Velg sted /
 Velg kategori / Søk brukere, Betalingsstatus / historikk / vurdering, Importer
 innhold, Inviter kontakter, Marketplace-filtre + Analyse.
 
