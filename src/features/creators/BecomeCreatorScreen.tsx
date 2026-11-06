@@ -85,7 +85,6 @@ export default function BecomeCreatorScreen() {
           ingenting blir vurdert.
         </DemoNote>
 
-
         {/* Muted until every requirement is met, as in the design (PDF p14):
             the button never invites an application that cannot qualify. */}
         <Button
