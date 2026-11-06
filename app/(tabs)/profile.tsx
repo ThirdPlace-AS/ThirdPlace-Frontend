@@ -112,7 +112,11 @@ export default function ProfileScreen() {
               >
                 <Stat value={profile.stats.friends} label="Venner" />
               </UIPressable>
-              <DemoBadge />
+              {/* Counts are fixture numbers: badge at the row end, not wedged
+                  between the stats. */}
+              <View className="ml-auto">
+                <DemoBadge />
+              </View>
             </View>
 
             <View className="flex-row flex-wrap gap-2">

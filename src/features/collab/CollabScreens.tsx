@@ -2,7 +2,7 @@ import { router, useLocalSearchParams, type Href } from "expo-router";
 import { useState } from "react";
 import { Pressable, ScrollView, View } from "react-native";
 
-import { ChipGroup, Icon, Screen, Text } from "@/components/ui";
+import { ChipGroup, Icon, Screen, Text, type IconName } from "@/components/ui";
 import { Button } from "@/components/Button";
 import { DemoNote } from "@/components/DemoNote";
 import { Input } from "@/components/Input";
@@ -103,7 +103,11 @@ export function CollabDetailScreen() {
         <Label>Parter</Label>
         <View className="flex-row gap-3">
           <Party name="Maria Movik" role="Skaper · Primærvert" />
-          <Party name="Oslo Kaffebar" role="Venue · Co-vert" />
+          <Party
+            name="Oslo Kaffebar"
+            role="Venue · Co-vert"
+            icon="tp-business"
+          />
         </View>
         <View className="overflow-hidden rounded-md border border-line bg-surface">
           {[
@@ -143,21 +147,19 @@ export function CollabDetailScreen() {
             </Text>
           </View>
         ))}
-        <View className="flex-row gap-3 pt-2">
-          <View className="flex-1">
-            <Button
-              label="Innkommende tilbud"
-              variant="secondary"
-              onPress={() => setPanel("offer")}
-            />
-          </View>
-          <View className="flex-1">
-            <Button
-              label="Kontrakt"
-              variant="ink"
-              onPress={() => setPanel("contract")}
-            />
-          </View>
+        {/* Primary action full width; "Innkommende tilbud" gets its own row
+            (it wrapped to two left-aligned lines in a half-width cell). */}
+        <View className="gap-3 pt-2">
+          <Button
+            label="Kontrakt"
+            variant="ink"
+            onPress={() => setPanel("contract")}
+          />
+          <Button
+            label="Innkommende tilbud"
+            variant="secondary"
+            onPress={() => setPanel("offer")}
+          />
         </View>
         <View className="flex-row gap-3">
           <View className="flex-1">
@@ -297,10 +299,18 @@ function ContractSheet({ onClose }: { onClose: () => void }) {
   );
 }
 
-function Party({ name, role }: { name: string; role: string }) {
+function Party({
+  name,
+  role,
+  icon = "person-circle-outline",
+}: {
+  name: string;
+  role: string;
+  icon?: IconName;
+}) {
   return (
     <View className="flex-1 gap-0.5 rounded-md border border-line bg-surface p-3">
-      <Icon name="person-circle-outline" size="lg" tone="ink" />
+      <Icon name={icon} size="lg" tone="ink" />
       <Text variant="label" weight="semibold">
         {name}
       </Text>

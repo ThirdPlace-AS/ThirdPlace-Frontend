@@ -72,8 +72,9 @@ export function SwipeFilterBar({
               haptic="selection"
               pressedScale={0.95}
               onPress={() => onSelectMode(m.key)}
-              // Over a photo the pill is a dark scrim; on a light screen it is
-              // the theme ink (so it also works in dark mode).
+              // Over a photo the selected pill is a light surface with ink text
+              // (a dark scrim pill barely showed against a dark photo); on a
+              // light screen it is the theme ink (so it also works in dark mode).
               contentClassName={
                 active
                   ? `rounded-full px-3.5 py-2 ${onLight ? "bg-ink" : ""}`
@@ -81,7 +82,7 @@ export function SwipeFilterBar({
               }
               contentStyle={
                 active && !onLight
-                  ? { backgroundColor: media.scrimStrong }
+                  ? { backgroundColor: media.surface }
                   : undefined
               }
             >
@@ -98,6 +99,9 @@ export function SwipeFilterBar({
                       : "onMedia"
                 }
                 className={!active && !onLight ? "opacity-70" : undefined}
+                style={
+                  active && !onLight ? { color: media.inkOnLight } : undefined
+                }
               >
                 {m.label}
               </Text>

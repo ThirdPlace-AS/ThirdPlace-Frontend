@@ -89,7 +89,7 @@ export default function ChatThreadScreen() {
         <IconButton
           icon="chevron-back"
           label="Tilbake"
-          size="sm"
+          variant="outline"
           onPress={() => router.back()}
         />
         <Avatar

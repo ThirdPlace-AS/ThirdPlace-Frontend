@@ -1,5 +1,6 @@
 // Headers (docs/design/DESIGN_SYSTEM.md §4) — one back style everywhere
-// (chevron IconButton), titles from the type scale.
+// (outlined round chevron IconButton, as on every PDF screen), titles from the
+// type scale.
 //
 //   <Header>       pushed route screens: back · title · trailing actions
 //   <TitleBlock>   large title + subtitle (auth, tab roots), optional back above
@@ -50,7 +51,7 @@ export function Header({
         <IconButton
           icon="chevron-back"
           label="Tilbake"
-          size="sm"
+          variant="outline"
           onPress={onBack}
         />
       ) : null}
