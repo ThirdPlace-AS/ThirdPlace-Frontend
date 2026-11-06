@@ -1,8 +1,8 @@
 import { memo } from "react";
 import { Ionicons } from "@expo/vector-icons";
-import { Pressable, View } from "react-native";
+import { View } from "react-native";
 
-import { Icon, Text } from "@/components/ui";
+import { Icon, Text, Pressable as UIPressable } from "@/components/ui";
 
 // A labelled checkbox row (used by the filter sheet's "Tid på dagen", "Språk"
 // and "Tilgjengelighetsfunksjoner" sections). Square box, ember check when on.
@@ -24,14 +24,16 @@ export const CheckboxRow = memo(function CheckboxRow({
   divider?: boolean;
 }) {
   return (
-    <Pressable
+    <UIPressable
       accessibilityRole="checkbox"
       accessibilityState={{ checked }}
       accessibilityLabel={label}
       onPress={onToggle}
-      className={`flex-row items-center justify-between py-3 ${
+      haptic="selection"
+      contentClassName={`flex-row items-center justify-between py-3 ${
         divider ? "border-b border-line" : ""
       }`}
+      pressedScale={0.99}
     >
       <View className="flex-1 flex-row items-center gap-3 pr-3">
         {icon ? (
@@ -57,6 +59,6 @@ export const CheckboxRow = memo(function CheckboxRow({
       >
         {checked ? <Icon name="checkmark" size="sm" tone="onInk" /> : null}
       </View>
-    </Pressable>
+    </UIPressable>
   );
 });

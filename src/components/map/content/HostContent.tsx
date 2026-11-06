@@ -1,8 +1,8 @@
 import { router } from "expo-router";
 import { useState } from "react";
-import { Pressable, View } from "react-native";
+import { View } from "react-native";
 
-import { Icon, Text } from "@/components/ui";
+import { Icon, Text, Pressable as UIPressable } from "@/components/ui";
 import { CancelSheet } from "@/components/actions/ActionSheets";
 import { Button } from "@/components/Button";
 import { Card } from "@/components/Card";
@@ -50,7 +50,8 @@ export function HostContent({ id, push }: { id: string; push: PushFn }) {
         </Text>
       </View>
 
-      <Pressable
+      <UIPressable
+        pressedScale={0.99}
         accessibilityRole="button"
         onPress={() => push({ kind: "attendees", id: exp.id })}
       >
@@ -65,7 +66,7 @@ export function HostContent({ id, push }: { id: string; push: PushFn }) {
             <Icon name="chevron-forward" size="md" tone="muted" />
           </View>
         </Card>
-      </Pressable>
+      </UIPressable>
 
       {/* Host actions (PDF p6): Rediger opens the Add flow; Avlys confirms in
           a sheet first. The earlier "Marker som fullført" / "Gjenåpne"

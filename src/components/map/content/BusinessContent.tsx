@@ -1,6 +1,6 @@
-import { Pressable, View } from "react-native";
+import { View } from "react-native";
 
-import { Icon, MetaRow, Text } from "@/components/ui";
+import { Icon, MetaRow, Text, Pressable as UIPressable } from "@/components/ui";
 import { Card } from "@/components/Card";
 import { businessById, placeById } from "@/fixtures";
 import { libImage, photosForPlace } from "@/fixtures/images";
@@ -59,7 +59,8 @@ export function BusinessContent({ id, push }: { id: string; push: PushFn }) {
       </Card>
 
       {place ? (
-        <Pressable
+        <UIPressable
+          pressedScale={0.99}
           accessibilityRole="button"
           onPress={() => push({ kind: "place", id: place.id })}
         >
@@ -69,10 +70,11 @@ export function BusinessContent({ id, push }: { id: string; push: PushFn }) {
               <Icon name="chevron-forward" size="md" tone="muted" />
             </View>
           </Card>
-        </Pressable>
+        </UIPressable>
       ) : null}
 
-      <Pressable
+      <UIPressable
+        pressedScale={0.99}
         accessibilityRole="button"
         onPress={() => push({ kind: "verification", id: business.id })}
       >
@@ -85,7 +87,7 @@ export function BusinessContent({ id, push }: { id: string; push: PushFn }) {
             <Icon name="chevron-forward" size="md" tone="muted" />
           </View>
         </Card>
-      </Pressable>
+      </UIPressable>
     </View>
   );
 }

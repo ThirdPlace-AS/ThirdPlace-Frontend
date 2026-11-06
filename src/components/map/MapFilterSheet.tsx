@@ -791,21 +791,23 @@ function FilterBody({
               {RATING_THRESHOLDS.map((r) => {
                 const selected = draft.minRating === r;
                 return (
-                  <Pressable
+                  <UIPressable
                     key={r}
                     accessibilityRole="button"
                     accessibilityState={{ selected }}
                     accessibilityLabel={`${formatThreshold(r)} stjerner og over`}
                     onPress={() => setDraft((d) => ({ ...d, minRating: r }))}
-                    className={`flex-row items-center gap-1.5 rounded-full border bg-surface px-3 py-2 ${
+                    haptic="selection"
+                    contentClassName={`flex-row items-center gap-1.5 rounded-full bg-surface px-3 py-2 ${
                       selected ? "border-2 border-ink" : "border border-line"
                     }`}
+                    pressedScale={0.95}
                   >
                     <RatingStars value={r} size={13} />
                     <Text variant="label" weight="regular">
                       {r === 5 ? "5" : `${formatThreshold(r)}+`}
                     </Text>
-                  </Pressable>
+                  </UIPressable>
                 );
               })}
             </View>

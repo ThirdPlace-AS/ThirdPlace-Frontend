@@ -1,7 +1,7 @@
 import { router } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import { Asset } from "expo-asset";
-import { useEffect, useLayoutEffect, useMemo, useState } from "react";
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import {
   Platform,
   Pressable,
@@ -103,6 +103,11 @@ export function SwipeDeck() {
   // Bumped after the outgoing card has flown off and the deck advanced, so the
   // layout effect reveals + recenters the newly-promoted top card before paint.
   const [commitNonce, setCommitNonce] = useState(0);
+  // R27 (Phase 10 open item): a button tap made while a card is still flying
+  // off is queued (latest wins) and replayed once the next card is in place,
+  // instead of being dropped. Drags stay locked during the glide.
+  const pendingTap = useSharedValue<SwipeAction | null>(null);
+  const commitRef = useRef<(a: SwipeAction) => void>(() => {});
   // Measured top Y of the top card's info block → pins the expand arrow to the
   // actual title row instead of a brittle magic offset (F11).
   const [arrowY, setArrowY] = useState<number | null>(null);
@@ -144,7 +149,11 @@ export function SwipeDeck() {
   // fling shortens the glide a little. Reduced → a fade. Login is a DEMO.
   const commit = (action: SwipeAction, vx = 0, vy = 0) => {
     const card = deck.current;
-    if (!card || busy) return;
+    if (!card) return;
+    if (busy) {
+      if (vx === 0 && vy === 0) pendingTap.value = action;
+      return;
+    }
     // Account gate (honest guest restriction) — join/save need an account; pass
     // is free. Spring the drag back so a *dragged* like/save settles instead of
     // stranding the card behind the sign-in sheet (F1).
@@ -199,6 +208,7 @@ export function SwipeDeck() {
   const undo = () => {
     const action = deck.lastAction;
     if (!action || busy) return;
+    pendingTap.value = null;
     haptics.selection();
     if (reduced) {
       deck.undo();
@@ -266,8 +276,18 @@ export function SwipeDeck() {
     op.value = 1;
     tx.value = 0;
     ty.value = 0;
+    // Replay a queued tap on the card that just arrived (R27).
+    const queued = pendingTap.value;
+    if (queued) {
+      pendingTap.value = null;
+      setTimeout(() => commitRef.current(queued), 0);
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [commitNonce]);
+  // Keep the replay pointed at the latest commit (fresh deck and busy).
+  useLayoutEffect(() => {
+    commitRef.current = (a) => commit(a);
+  });
 
   // Web keyboard alternative: ← nope, → like, ↑ save, Backspace undo.
   useEffect(() => {

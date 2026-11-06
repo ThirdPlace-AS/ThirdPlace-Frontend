@@ -1,5 +1,5 @@
-import { useFocusEffect, useLocalSearchParams } from "expo-router";
-import { useCallback, useMemo, useRef, useState } from "react";
+import { router, useFocusEffect, useLocalSearchParams } from "expo-router";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { BackHandler, Keyboard, useWindowDimensions, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
@@ -54,6 +54,9 @@ import { elevation } from "@/theme";
 
 // Map discovery surface. Thin composition over feature hooks:
 // filters/search, discovery mode, selection (detail sheet), camera, location.
+// Set once the Sveip tab was pre-rendered (R28).
+let swipePrefetched = false;
+
 // Map-only — no list view. All data is MOCK fixtures (no backend).
 export default function MapScreen() {
   const insets = useSafeAreaInsets();
@@ -145,6 +148,19 @@ export default function MapScreen() {
   // Skeleton (browse list) for the first 2 s, then the loader (DESIGN_SYSTEM
   // §4 "Loading").
   const loadPhase = useLoadPhase(loading);
+
+  // R28 (Phase 10 open item): the first Sveip visit paid the tab mount and
+  // photo decode. Once the map has content, wait 2 s and pre-render the Sveip
+  // tab in the background (react-navigation preload), once per session; the
+  // first paint of the map is untouched.
+  useEffect(() => {
+    if (status !== "success" || swipePrefetched) return;
+    const t = setTimeout(() => {
+      swipePrefetched = true;
+      router.prefetch("/swipe");
+    }, 2000);
+    return () => clearTimeout(t);
+  }, [status]);
   const errored = status === "error";
 
   const retry = () => {

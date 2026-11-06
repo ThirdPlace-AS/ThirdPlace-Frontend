@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Pressable, View } from "react-native";
+import { View } from "react-native";
 import { Icon, PopIcon, Text, Pressable as UIPressable } from "@/components/ui";
 import { haptics } from "@/lib/haptics";
 import { ReportSheet, ShareSheet } from "@/components/actions/ActionSheets";
@@ -35,14 +35,16 @@ export function DetailActions({
   return (
     <>
       <View className="flex-row gap-2">
-        <Pressable
+        <UIPressable
           accessibilityRole="button"
           accessibilityLabel={saved ? "Fjern fra lagret" : "Lagre"}
           accessibilityState={{ selected: saved }}
           onPress={onSave}
-          className={`flex-1 flex-row items-center justify-center gap-2 rounded-md border px-3 py-2.5 ${
+          className="flex-1"
+          contentClassName={`flex-row items-center justify-center gap-2 rounded-md border px-3 py-2.5 ${
             saved ? "border-ember bg-ember/10" : "border-line bg-surface"
           }`}
+          pressedScale={0.99}
         >
           <PopIcon
             pop={saved}
@@ -57,7 +59,7 @@ export function DetailActions({
           >
             {saved ? "Lagret" : "Lagre"}
           </Text>
-        </Pressable>
+        </UIPressable>
 
         <UIPressable
           accessibilityRole="button"

@@ -1,5 +1,5 @@
 import { Ionicons } from "@expo/vector-icons";
-import { router } from "expo-router";
+import { router, type Href } from "expo-router";
 import { useState } from "react";
 import { Pressable, ScrollView, View } from "react-native";
 import {
@@ -95,10 +95,28 @@ export function WorkspaceHub() {
           {/* One line per step, each with its own state (a single ✓ in
               front of both read as both done). */}
           {[
-            { label: "Verifiser bedriften", done: !!BIZ?.verified },
-            { label: "Start abonnement", done: false },
+            {
+              label: "Verifiser bedriften",
+              done: !!BIZ?.verified,
+              href: "/business-onboarding" as Href,
+            },
+            {
+              label: "Start abonnement",
+              done: false,
+              href: "/payments" as Href,
+            },
           ].map((step) => (
-            <View key={step.label} className="flex-row items-center gap-2">
+            // Open steps lead on to where they are done (R30).
+            <UIPressable
+              key={step.label}
+              accessibilityRole={step.done ? "text" : "button"}
+              accessibilityLabel={`${step.label}: ${step.done ? "fullført" : "gjenstår"}`}
+              disabled={step.done}
+              dimWhenDisabled={false}
+              onPress={() => router.push(step.href)}
+              contentClassName="flex-row items-center gap-2 py-1"
+              pressedScale={0.99}
+            >
               <Icon
                 name={step.done ? "checkmark-circle" : "ellipse-outline"}
                 size="sm"
@@ -107,11 +125,14 @@ export function WorkspaceHub() {
               <Text
                 variant="caption"
                 tone={step.done ? "muted" : "ink"}
-                accessibilityLabel={`${step.label}: ${step.done ? "fullført" : "gjenstår"}`}
+                className="flex-1"
               >
                 {step.label}
               </Text>
-            </View>
+              {step.done ? null : (
+                <Icon name="chevron-forward" size="sm" tone="muted" />
+              )}
+            </UIPressable>
           ))}
         </View>
       </ScrollView>

@@ -1,8 +1,8 @@
 import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
 import { useState } from "react";
-import { Pressable, ScrollView, View } from "react-native";
-import { Icon, Screen, Text } from "@/components/ui";
+import { ScrollView, View } from "react-native";
+import { Icon, Screen, Text, Pressable as UIPressable } from "@/components/ui";
 import { Switch } from "@/components/ui/Switch";
 import { Button } from "@/components/Button";
 import { RouteHeader } from "@/components/RouteHeader";
@@ -58,14 +58,15 @@ export default function TwoFactor() {
             {methods.map((m) => {
               const active = method === m.key;
               return (
-                <Pressable
+                <UIPressable
                   key={m.key}
                   accessibilityRole="radio"
                   accessibilityState={{ selected: active }}
                   onPress={() => setMethod(m.key)}
-                  className={`flex-row items-center gap-3 rounded-lg border bg-surface p-4 ${
+                  contentClassName={`flex-row items-center gap-3 rounded-lg border bg-surface p-4 ${
                     active ? "border-ink" : "border-line"
                   }`}
+                  pressedScale={0.99}
                 >
                   <Icon name={m.icon} size="md" tone="ink" />
                   <View className="flex-1">
@@ -85,7 +86,7 @@ export default function TwoFactor() {
                       <Icon name="checkmark" size="sm" tone="onInk" />
                     ) : null}
                   </View>
-                </Pressable>
+                </UIPressable>
               );
             })}
 

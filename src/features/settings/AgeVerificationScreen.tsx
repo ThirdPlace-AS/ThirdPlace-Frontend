@@ -1,8 +1,8 @@
 import { Ionicons } from "@expo/vector-icons";
 import { useState } from "react";
-import { Pressable, ScrollView, View } from "react-native";
+import { ScrollView, View } from "react-native";
 
-import { Icon, Screen, Text } from "@/components/ui";
+import { Icon, Screen, Text, Pressable as UIPressable } from "@/components/ui";
 import { RouteHeader } from "@/components/RouteHeader";
 
 // Aldersverifisering, per the design (PDF p22): methods BankID /
@@ -56,13 +56,15 @@ export default function AgeVerificationScreen() {
           Verifiseringsmetode
         </Text>
         {METHODS.map((m) => (
-          <Pressable
+          <UIPressable
             key={m.key}
             accessibilityRole="button"
+            accessibilityState={{ selected: chosen === m.label }}
             onPress={() => setChosen(m.label)}
-            className={`flex-row items-center gap-3 rounded-lg border bg-surface p-4 active:opacity-80 ${
+            contentClassName={`flex-row items-center gap-3 rounded-lg border bg-surface p-4 ${
               chosen === m.label ? "border-ink" : "border-line"
             }`}
+            pressedScale={0.99}
           >
             <Icon name={m.icon} size="md" tone="ink" />
             <View className="flex-1">
@@ -74,7 +76,7 @@ export default function AgeVerificationScreen() {
               </Text>
             </View>
             <Icon name="chevron-forward" size="sm" tone="muted" />
-          </Pressable>
+          </UIPressable>
         ))}
 
         <Text variant="micro" weight="semibold" tone="muted">

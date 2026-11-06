@@ -1,6 +1,6 @@
 import { router, type Href } from "expo-router";
 import { ScrollView, View } from "react-native";
-import { Icon, Screen, Text } from "@/components/ui";
+import { Icon, Screen, Text, Pressable as UIPressable } from "@/components/ui";
 import { Button } from "@/components/Button";
 import { RouteHeader } from "@/components/RouteHeader";
 import { profile } from "@/fixtures";
@@ -17,13 +17,19 @@ export default function BecomeCreatorScreen() {
       label: `Arranger ${required} opplevelser`,
       meta: `${hosted} av ${required}`,
       progress: hosted / required,
+      next: { label: "Legg til en opplevelse", href: "/add" as Href },
     },
     {
       label: "Gjennomsnittlig vurdering 4,0+",
       meta: `${rating} · oppfylt`,
       progress: 1,
     },
-    { label: "Verifisert identitet", meta: "Ikke startet", progress: 0 },
+    {
+      label: "Verifisert identitet",
+      meta: "Ikke startet",
+      progress: 0,
+      next: { label: "Start verifisering", href: "/age-verification" as Href },
+    },
   ];
   const met = reqs.filter((r) => r.progress >= 1).length;
 
@@ -37,6 +43,7 @@ export default function BecomeCreatorScreen() {
 
         {reqs.map((r) => {
           const done = r.progress >= 1;
+          const next = "next" in r && !done ? r.next : undefined;
           return (
             <View
               key={r.label}
@@ -69,6 +76,20 @@ export default function BecomeCreatorScreen() {
                   style={{ width: `${Math.round(r.progress * 100)}%` }}
                 />
               </View>
+              {/* Next step for an open requirement (R30). */}
+              {next ? (
+                <UIPressable
+                  accessibilityRole="link"
+                  onPress={() => router.push(next.href)}
+                  hitSlop={{ top: 10, bottom: 10, left: 8, right: 8 }}
+                  className="self-start"
+                  feedback="none"
+                >
+                  <Text variant="label" weight="semibold" tone="ember">
+                    {next.label} →
+                  </Text>
+                </UIPressable>
+              ) : null}
             </View>
           );
         })}

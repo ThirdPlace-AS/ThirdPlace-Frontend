@@ -1,6 +1,6 @@
-import { Pressable, View } from "react-native";
+import { View } from "react-native";
 
-import { Icon, MetaRow, Text } from "@/components/ui";
+import { Icon, MetaRow, Text, Pressable as UIPressable } from "@/components/ui";
 import { Card } from "@/components/Card";
 import { Chip } from "@/components/Chip";
 import {
@@ -128,7 +128,8 @@ export function PlaceContent({ id, push }: { id: string; push: PushFn }) {
       </View>
 
       {business ? (
-        <Pressable
+        <UIPressable
+          pressedScale={0.99}
           accessibilityRole="button"
           onPress={() => push({ kind: "business", id: business.id })}
         >
@@ -150,10 +151,11 @@ export function PlaceContent({ id, push }: { id: string; push: PushFn }) {
               <Icon name="chevron-forward" size="md" tone="muted" />
             </View>
           </Card>
-        </Pressable>
+        </UIPressable>
       ) : null}
 
-      <Pressable
+      <UIPressable
+        pressedScale={0.99}
         accessibilityRole="button"
         onPress={() => push({ kind: "reviews", id: place.id })}
       >
@@ -171,7 +173,7 @@ export function PlaceContent({ id, push }: { id: string; push: PushFn }) {
             <Icon name="chevron-forward" size="md" tone="muted" />
           </View>
         </Card>
-      </Pressable>
+      </UIPressable>
 
       {/* Place chat — no real chat room is opened. */}
       <View className="flex-row items-center gap-2 rounded-md border border-line bg-surface px-3 py-3">
@@ -191,7 +193,8 @@ export function PlaceContent({ id, push }: { id: string; push: PushFn }) {
           </Text>
         ) : (
           exps.map((e) => (
-            <Pressable
+            <UIPressable
+              pressedScale={0.99}
               key={e.id}
               accessibilityRole="button"
               onPress={() => push({ kind: "experience", id: e.id })}
@@ -209,7 +212,7 @@ export function PlaceContent({ id, push }: { id: string; push: PushFn }) {
                   <Icon name="chevron-forward" size="md" tone="muted" />
                 </View>
               </Card>
-            </Pressable>
+            </UIPressable>
           ))
         )}
       </View>

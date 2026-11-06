@@ -1,7 +1,7 @@
 import { Ionicons } from "@expo/vector-icons";
 import { Pressable, View } from "react-native";
 
-import { Icon, Text } from "@/components/ui";
+import { Icon, Text, Pressable as UIPressable } from "@/components/ui";
 import { Sheet } from "@/components/Sheet";
 import { notificationTimeLabel, type NotificationType } from "@/fixtures";
 import { useNotificationReads } from "@/hooks/useNotificationReads";
@@ -53,14 +53,15 @@ export function NotificationsSheet({
         {items.map((n) => {
           const isRead = readIds.has(n.id);
           return (
-            <Pressable
+            <UIPressable
               key={n.id}
               accessibilityRole="button"
               accessibilityLabel={`${n.actorName} ${n.text}`}
               onPress={() => markRead(n.id)}
-              className={`flex-row items-start gap-3 rounded-lg border bg-surface p-3.5 active:opacity-80 ${
+              contentClassName={`flex-row items-start gap-3 rounded-lg border bg-surface p-3.5 ${
                 isRead ? "border-line" : "border-ink"
               }`}
+              pressedScale={0.99}
             >
               <View className="h-10 w-10 items-center justify-center rounded-full bg-surfaceMuted">
                 <Icon name={TYPE_ICON[n.type]} size="md" tone="ink" />
@@ -81,7 +82,7 @@ export function NotificationsSheet({
                   <View className="h-2 w-2 rounded-full bg-ember" />
                 ) : null}
               </View>
-            </Pressable>
+            </UIPressable>
           );
         })}
       </View>
