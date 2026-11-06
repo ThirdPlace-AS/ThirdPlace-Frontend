@@ -21,6 +21,8 @@ import { Input } from "@/components/Input";
 import { UserSearch } from "@/components/pickers/Pickers";
 import { NotificationsSheet } from "@/components/NotificationsSheet";
 import { Sheet } from "@/components/Sheet";
+import { showToastAfterSheet } from "@/components/Toast";
+import { demoToast } from "@/copy";
 import {
   CHAT_ACCESS_LABEL,
   chats,
@@ -327,7 +329,10 @@ function NewChatSheet({
           label="Opprett chat"
           variant="ink"
           disabled={name.trim().length === 0}
-          onPress={onClose}
+          onPress={() => {
+            onClose();
+            showToastAfterSheet(demoToast.chatNotCreated);
+          }}
         />
       </View>
     </Sheet>

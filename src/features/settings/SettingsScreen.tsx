@@ -16,7 +16,8 @@ import { RouteHeader } from "@/components/RouteHeader";
 import { Sheet } from "@/components/Sheet";
 import { SignInPrompt } from "@/components/SignInPrompt";
 import { useGuestMode } from "@/components/map/hooks/useGuestMode";
-import { demoCopy } from "@/copy";
+import { showToastAfterSheet } from "@/components/Toast";
+import { demoCopy, demoToast } from "@/copy";
 import { profile } from "@/fixtures";
 import { resetTo } from "@/lib/navigation";
 
@@ -227,7 +228,14 @@ function AccountSheet({ visible, onClose }: SheetProps) {
           Dette er eksempeldata. Endringer lagres ikke, og ingen økter logges
           ut.
         </DemoNote>
-        <Button label="Lagre endringer" variant="ink" onPress={onClose} />
+        <Button
+          label="Lagre endringer"
+          variant="ink"
+          onPress={() => {
+            onClose();
+            showToastAfterSheet(demoToast.accountNotSaved);
+          }}
+        />
       </View>
     </Sheet>
   );
@@ -493,7 +501,14 @@ function ExportSheet({ visible, onClose }: SheetProps) {
           ]}
         />
         <DemoNote>Eksporten lages ikke, og du får ingen e-post.</DemoNote>
-        <Button label="Be om eksport" variant="ink" onPress={onClose} />
+        <Button
+          label="Be om eksport"
+          variant="ink"
+          onPress={() => {
+            onClose();
+            showToastAfterSheet(demoToast.exportNotRequested);
+          }}
+        />
       </View>
     </Sheet>
   );
@@ -523,7 +538,14 @@ function HelpSheet({ visible, onClose }: SheetProps) {
         <DemoNote>
           Support er ikke koblet til ennå, så ingen sak blir opprettet.
         </DemoNote>
-        <Button label="Opprett supportsak" variant="ink" onPress={onClose} />
+        <Button
+          label="Opprett supportsak"
+          variant="ink"
+          onPress={() => {
+            onClose();
+            showToastAfterSheet(demoToast.supportNotCreated);
+          }}
+        />
       </View>
     </Sheet>
   );

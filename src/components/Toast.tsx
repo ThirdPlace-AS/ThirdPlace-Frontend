@@ -37,6 +37,13 @@ export function showToast(t: ToastInput) {
   emit();
 }
 
+// Sheets exit in 200 ms; a toast fired from inside one would draw under the
+// Modal. Close the sheet first, then call this: it waits for the exit.
+const SHEET_EXIT_MS = 240;
+export function showToastAfterSheet(t: ToastInput) {
+  setTimeout(() => showToast(t), SHEET_EXIT_MS);
+}
+
 export function dismissToast() {
   current = null;
   emit();

@@ -6,7 +6,8 @@ import { Button } from "@/components/Button";
 import { Sheet } from "@/components/Sheet";
 import { useThemeColors } from "@/theme";
 import { DemoNote } from "@/components/DemoNote";
-import { demoCopy } from "@/copy";
+import { showToastAfterSheet } from "@/components/Toast";
+import { demoCopy, demoToast } from "@/copy";
 
 export function WriteReviewSheet({
   placeName,
@@ -65,7 +66,10 @@ function Body({ onClose }: { onClose: () => void }) {
         label="Send anmeldelse"
         variant="ember"
         disabled={rating === 0}
-        onPress={onClose}
+        onPress={() => {
+          onClose();
+          showToastAfterSheet(demoToast.reviewNotSent);
+        }}
       />
     </>
   );

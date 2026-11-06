@@ -23,7 +23,8 @@ import { Sheet } from "@/components/Sheet";
 import { SignInPrompt } from "@/components/SignInPrompt";
 import { useGuestMode } from "@/components/map/hooks/useGuestMode";
 import { tagIcon } from "@/components/swipe/SwipeCard";
-import { demoCopy } from "@/copy";
+import { showToastAfterSheet } from "@/components/Toast";
+import { demoCopy, demoToast } from "@/copy";
 import { experienceById, placeById, profile } from "@/fixtures";
 import { coverForPlace, libImage } from "@/fixtures/images";
 
@@ -386,7 +387,14 @@ function EditProfileSheet({
         <Input label="Bio" value={bio} onChangeText={setBio} multiline />
         <Input label="Språk" value={lang} onChangeText={setLang} />
         <DemoNote>{demoCopy.editsNotSaved}</DemoNote>
-        <Button label="Lagre" variant="ink" onPress={onClose} />
+        <Button
+          label="Lagre"
+          variant="ink"
+          onPress={() => {
+            onClose();
+            showToastAfterSheet(demoToast.profileNotSaved);
+          }}
+        />
       </View>
     </Sheet>
   );

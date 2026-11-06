@@ -10,7 +10,8 @@ import { RouteHeader } from "@/components/RouteHeader";
 import { Sheet } from "@/components/Sheet";
 import { SignInPrompt } from "@/components/SignInPrompt";
 import { useGuestMode } from "@/components/map/hooks/useGuestMode";
-import { demoCopy } from "@/copy";
+import { showToastAfterSheet } from "@/components/Toast";
+import { demoCopy, demoToast } from "@/copy";
 
 import { NavRow, SettingsSection, ToggleRow } from "./settingsUi";
 
@@ -165,7 +166,14 @@ export default function PrivacyScreen() {
             e-post.
           </Text>
           <DemoNote>Eksporten lages ikke, og du får ingen e-post.</DemoNote>
-          <Button label="Be om eksport" variant="ink" onPress={close} />
+          <Button
+            label="Be om eksport"
+            variant="ink"
+            onPress={() => {
+              close();
+              showToastAfterSheet(demoToast.exportNotRequested);
+            }}
+          />
         </View>
       </Sheet>
 
@@ -232,7 +240,10 @@ function DeleteAccountSheet({
           label="Slett kontoen min"
           variant="secondary"
           disabled={confirm.trim() !== "SLETT"}
-          onPress={onClose}
+          onPress={() => {
+            onClose();
+            showToastAfterSheet(demoToast.accountNotDeleted);
+          }}
         />
         <Button label="Avbryt" variant="ink" onPress={onClose} />
       </View>

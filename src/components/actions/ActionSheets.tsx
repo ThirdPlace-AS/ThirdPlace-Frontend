@@ -7,6 +7,8 @@ import { Chip } from "@/components/Chip";
 import { DemoNote } from "@/components/DemoNote";
 import { Input } from "@/components/Input";
 import { Sheet } from "@/components/Sheet";
+import { showToastAfterSheet } from "@/components/Toast";
+import { demoToast } from "@/copy";
 
 // Shared action sheets (DEMO), per the design (PDF p23): Del, Rapporter,
 // Blokkere, Forlate opplevelsen, Bli med på ventelisten. BLOCKED_CONTRACT_GAP:
@@ -344,7 +346,6 @@ export function RateSheet({
 }) {
   const [stars, setStars] = useState(0);
   const [liked, setLiked] = useState<string[]>([]);
-  const [sent, setSent] = useState(false);
   return (
     <Sheet visible onClose={onClose} title={heading}>
       <View className="gap-3">
@@ -384,14 +385,14 @@ export function RateSheet({
             />
           ))}
         </View>
-        {sent ? <DemoNote>Vurderingen ble ikke lagret.</DemoNote> : null}
         <Button
           label="Send vurdering"
           variant="ink"
           disabled={stars === 0}
           onPress={() => {
-            setSent(true);
             onSent?.();
+            onClose();
+            showToastAfterSheet(demoToast.ratingNotSaved);
           }}
         />
         <Button label="Hopp over" variant="secondary" onPress={onClose} />
