@@ -5,7 +5,7 @@ import { View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { StatusBarStyle } from "@/components/ui/StatusBarStyle";
-import { HeartToggle, IconButton, Text } from "@/components/ui";
+import { FadeSwap, HeartToggle, IconButton, Text } from "@/components/ui";
 import { useGuestMode } from "@/components/map/hooks/useGuestMode";
 import { useMapSaved } from "@/components/map/hooks/useMapSaved";
 import { markerId } from "@/components/map/types/mapPresentation";
@@ -78,30 +78,34 @@ export function PlaceDeck({
         className="absolute inset-x-0 bottom-0 gap-3 px-gutter pb-6 pt-24"
         style={{ backgroundColor: media.scrim }}
       >
-        <Text
-          variant="display"
-          tone="onMedia"
-          accessibilityRole="text"
-          numberOfLines={2}
-        >
-          {place.name}
-        </Text>
-        <Text variant="body" tone="onMedia" className="opacity-85">
-          {place.category} · {place.distance} · ★ {formatRating(place.rating)}
-        </Text>
-        <View className="flex-row flex-wrap gap-2">
-          {place.vibes.slice(0, 3).map((v) => (
-            <View
-              key={v}
-              className="rounded-full px-3 py-1"
-              style={{ backgroundColor: media.fillSubtle }}
-            >
-              <Text variant="label" tone="onMedia">
-                {v}
-              </Text>
-            </View>
-          ))}
-        </View>
+        {/* The next place fades in with its photo (the text swapped in one
+            frame while the photo cross-faded). */}
+        <FadeSwap swapKey={place.id} style={{ gap: 12 }}>
+          <Text
+            variant="display"
+            tone="onMedia"
+            accessibilityRole="text"
+            numberOfLines={2}
+          >
+            {place.name}
+          </Text>
+          <Text variant="body" tone="onMedia" className="opacity-85">
+            {place.category} · {place.distance} · ★ {formatRating(place.rating)}
+          </Text>
+          <View className="flex-row flex-wrap gap-2">
+            {place.vibes.slice(0, 3).map((v) => (
+              <View
+                key={v}
+                className="rounded-full px-3 py-1"
+                style={{ backgroundColor: media.fillSubtle }}
+              >
+                <Text variant="label" tone="onMedia">
+                  {v}
+                </Text>
+              </View>
+            ))}
+          </View>
+        </FadeSwap>
         <View className="flex-row items-center justify-center gap-5 pt-2">
           <IconButton
             icon="close"

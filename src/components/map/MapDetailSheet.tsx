@@ -8,7 +8,7 @@ import BottomSheet, {
 import { useCallback, useEffect, useMemo, useRef } from "react";
 import { View } from "react-native";
 
-import { SheetHeader, useSheetChrome } from "@/components/ui";
+import { FadeSwap, SheetHeader, useSheetChrome } from "@/components/ui";
 
 import { ExperienceJoinBar } from "./content/ExperienceJoinBar";
 import { DetailContent, titleFor } from "./DetailContentRouter";
@@ -123,7 +123,10 @@ export function MapDetailSheet({
             contentContainerClassName={`gap-4 px-gutter ${footerId ? "pb-28" : "pb-16"}`}
             keyboardShouldPersistTaps="handled"
           >
-            <DetailContent target={top} push={push} />
+            {/* In-sheet push/back fades the new content in (was one frame). */}
+            <FadeSwap swapKey={`${top.kind}:${top.id}`}>
+              <DetailContent target={top} push={push} />
+            </FadeSwap>
           </BottomSheetScrollView>
         </>
       ) : (

@@ -17,6 +17,7 @@ import {
   StickyFooter,
   type IconName,
   Text,
+  FadeSwap,
 } from "@/components/ui";
 import { Button } from "@/components/Button";
 import { Chip } from "@/components/Chip";
@@ -200,321 +201,326 @@ export default function Onboarding() {
       {/* Edge-to-edge Android does not resize for the keyboard: the step and
           its footer move up themselves. */}
       <KeyboardAvoidingView behavior="padding" className="flex-1">
-        <ScrollView
-          // New step, new scroll: each step starts at its top.
-          key={step}
-          contentContainerClassName="gap-5 p-gutter pb-8"
-          keyboardShouldPersistTaps="handled"
-        >
-          {step === 0 ? (
-            <Shell
-              title="Hvem er du?"
-              subtitle="Velg hvordan du vil bruke ThirdPlace. Du kan endre dette senere."
-            >
-              {PERSONAS.map((p) => {
-                const active = role === p.key;
-                return (
-                  <Pressable
-                    key={p.key}
-                    accessibilityRole="radio"
-                    accessibilityState={{
-                      selected: active,
-                      disabled: !!p.locked,
-                    }}
-                    disabled={p.locked}
-                    onPress={() => setRole(p.key)}
-                    className={`flex-row items-center gap-3 rounded-lg border bg-surface p-4 ${
-                      active ? "border-ink" : "border-line"
-                    } ${p.locked ? "opacity-60" : ""}`}
+        {/* New step: fresh scroll at its top, faded in. */}
+        <FadeSwap swapKey={step} style={{ flex: 1 }}>
+          <ScrollView
+            contentContainerClassName="gap-5 p-gutter pb-8"
+            keyboardShouldPersistTaps="handled"
+          >
+            {step === 0 ? (
+              <Shell
+                title="Hvem er du?"
+                subtitle="Velg hvordan du vil bruke ThirdPlace. Du kan endre dette senere."
+              >
+                {PERSONAS.map((p) => {
+                  const active = role === p.key;
+                  return (
+                    <Pressable
+                      key={p.key}
+                      accessibilityRole="radio"
+                      accessibilityState={{
+                        selected: active,
+                        disabled: !!p.locked,
+                      }}
+                      disabled={p.locked}
+                      onPress={() => setRole(p.key)}
+                      className={`flex-row items-center gap-3 rounded-lg border bg-surface p-4 ${
+                        active ? "border-ink" : "border-line"
+                      } ${p.locked ? "opacity-60" : ""}`}
+                    >
+                      <View className="h-10 w-10 items-center justify-center rounded-md bg-surfaceMuted">
+                        <Icon name={p.icon as IconName} size="md" tone="ink" />
+                      </View>
+                      <View className="flex-1">
+                        <Text variant="body" weight="semibold">
+                          {p.label}
+                        </Text>
+                        <Text variant="caption" tone="muted">
+                          {p.hint}
+                        </Text>
+                      </View>
+                      {p.locked ? (
+                        <View className="flex-row items-center gap-1 rounded-full bg-surfaceMuted px-2 py-0.5">
+                          <Icon name="lock-closed" size="sm" tone="muted" />
+                          <Text
+                            variant="caption"
+                            weight="semibold"
+                            tone="muted"
+                          >
+                            LÅST
+                          </Text>
+                        </View>
+                      ) : active ? (
+                        <Icon name="checkmark-circle" size="lg" tone="ink" />
+                      ) : null}
+                    </Pressable>
+                  );
+                })}
+              </Shell>
+            ) : null}
+
+            {step === 1 ? (
+              <Shell
+                title="Dette er deg"
+                subtitle="Slik vil andre se deg på ThirdPlace."
+              >
+                <UIPressable
+                  accessibilityRole="button"
+                  accessibilityLabel="Legg til profilbilde"
+                  haptic="selection"
+                  onPress={() => setPhotoTried(true)}
+                  className="items-center gap-2 self-center"
+                >
+                  <View className="h-24 w-24 items-center justify-center rounded-full bg-surfaceMuted">
+                    <Icon name="camera-outline" size="lg" tone="ink" />
+                  </View>
+                  <Text variant="label" weight="semibold" tone="ember">
+                    Legg til profilbilde
+                  </Text>
+                </UIPressable>
+                {photoTried ? (
+                  <Text variant="caption" tone="muted" className="text-center">
+                    Bildeopplasting er ikke aktiv i demoen.
+                  </Text>
+                ) : null}
+                <Input
+                  label="Navn"
+                  placeholder="Fornavn Etternavn"
+                  value={name}
+                  onChangeText={setName}
+                  maxLength={60}
+                />
+                <View className="gap-1">
+                  <Input
+                    label="Fødselsdag"
+                    placeholder="dd.mm.åååå"
+                    keyboardType="numeric"
+                    value={birthday}
+                    onChangeText={(t) => setBirthday(formatBirthdayInput(t))}
+                    maxLength={10}
+                  />
+                  {age.status === "invalid" && birthday.length === 10 ? (
+                    <Text variant="caption" tone="danger">
+                      Sjekk datoen. Skriv den som dd.mm.åååå.
+                    </Text>
+                  ) : (
+                    <Text variant="caption" tone="muted">
+                      Du må være minst 18 år for å bruke ThirdPlace.
+                    </Text>
+                  )}
+                </View>
+                <Input
+                  label="Bio"
+                  placeholder="Fortell litt om deg selv …"
+                  value={bio}
+                  onChangeText={setBio}
+                  multiline
+                  maxLength={160}
+                />
+              </Shell>
+            ) : null}
+
+            {step === 2 ? (
+              <Shell
+                title="Hvem er du?"
+                subtitle="Fortell litt om deg selv. Alt er valgfritt."
+              >
+                {IDENTITY.map((g) => (
+                  <Group key={g.label} label={g.label}>
+                    {g.options.map((o) => (
+                      <Chip
+                        key={o}
+                        label={o}
+                        selected={identity[g.label] === o}
+                        onPress={() =>
+                          setIdentity((s) => ({
+                            ...s,
+                            [g.label]: s[g.label] === o ? "" : o,
+                          }))
+                        }
+                      />
+                    ))}
+                  </Group>
+                ))}
+                <Input
+                  label="Nasjonalitet"
+                  placeholder="F.eks. Norge"
+                  value={nationality}
+                  onChangeText={setNationality}
+                  maxLength={40}
+                />
+                <Text variant="caption" tone="muted">
+                  Alt her er valgfritt. Trykk på et valg igjen for å fjerne det.
+                </Text>
+              </Shell>
+            ) : null}
+
+            {step === 3 ? (
+              <Shell
+                title="Hva ser du etter?"
+                subtitle="Velg alt som passer deg."
+              >
+                <View className="flex-row flex-wrap gap-2">
+                  {INTENTS.map((i) => (
+                    <Chip
+                      key={i}
+                      label={i}
+                      selected={intents.includes(i)}
+                      onPress={() => setIntents((s) => toggleIn(s, i))}
+                    />
+                  ))}
+                </View>
+              </Shell>
+            ) : null}
+
+            {step === 4 ? (
+              <Shell title="Hva liker du?" subtitle="Velg minst 5 interesser.">
+                <View className="flex-row flex-wrap gap-2">
+                  {INTERESTS.map((i) => (
+                    <Chip
+                      key={i}
+                      label={i}
+                      selected={interests.includes(i)}
+                      onPress={() => setInterests((s) => toggleIn(s, i))}
+                    />
+                  ))}
+                </View>
+                <View
+                  className={`self-start rounded-full px-3 py-1 ${
+                    interests.length >= MIN_INTERESTS
+                      ? "bg-success"
+                      : "bg-surfaceMuted"
+                  }`}
+                >
+                  <Text
+                    variant="caption"
+                    weight="semibold"
+                    tone={interests.length >= MIN_INTERESTS ? "onMedia" : "ink"}
                   >
-                    <View className="h-10 w-10 items-center justify-center rounded-md bg-surfaceMuted">
-                      <Icon name={p.icon as IconName} size="md" tone="ink" />
+                    {Math.min(interests.length, MIN_INTERESTS)} av{" "}
+                    {MIN_INTERESTS} valgt
+                    {interests.length >= MIN_INTERESTS ? " ✓" : ""}
+                  </Text>
+                </View>
+              </Shell>
+            ) : null}
+
+            {step === 5 ? (
+              <Shell
+                title="Dine preferanser"
+                subtitle="Velg det som betyr noe for deg."
+              >
+                {PREFERENCES.map((g) => (
+                  <Group key={g.label} label={g.label}>
+                    {g.options.map((o) => (
+                      <Chip
+                        key={o}
+                        label={o}
+                        selected={prefs[g.label] === o}
+                        onPress={() =>
+                          setPrefs((s) => ({
+                            ...s,
+                            [g.label]: s[g.label] === o ? "" : o,
+                          }))
+                        }
+                      />
+                    ))}
+                  </Group>
+                ))}
+                <Group label="Matrestriksjoner">
+                  {DIET.map((o) => (
+                    <Chip
+                      key={o}
+                      label={o}
+                      selected={diet.includes(o)}
+                      onPress={() => setDiet((s) => toggleIn(s, o))}
+                    />
+                  ))}
+                </Group>
+              </Shell>
+            ) : null}
+
+            {step === 6 ? (
+              <Shell
+                title="Nesten i mål"
+                subtitle="ThirdPlace fungerer best med disse tillatelsene."
+              >
+                {PERMISSIONS.map((p) => (
+                  <View
+                    key={p.key}
+                    className="flex-row items-center gap-3 rounded-lg border border-line bg-surface p-4"
+                  >
+                    <View className="h-10 w-10 items-center justify-center rounded-full bg-surfaceMuted">
+                      <Icon name={p.icon} size="md" tone="ink" />
                     </View>
-                    <View className="flex-1">
-                      <Text variant="body" weight="semibold">
-                        {p.label}
-                      </Text>
+                    <View className="flex-1 gap-0.5">
+                      <View className="flex-row items-center gap-2">
+                        <Text variant="body" weight="semibold">
+                          {p.label}
+                        </Text>
+                        <Text
+                          variant="caption"
+                          weight="bold"
+                          tone="muted"
+                          className="rounded-xs bg-surfaceMuted px-1.5 py-0.5"
+                        >
+                          {p.tag}
+                        </Text>
+                      </View>
                       <Text variant="caption" tone="muted">
                         {p.hint}
                       </Text>
                     </View>
-                    {p.locked ? (
-                      <View className="flex-row items-center gap-1 rounded-full bg-surfaceMuted px-2 py-0.5">
-                        <Icon name="lock-closed" size="sm" tone="muted" />
-                        <Text variant="caption" weight="semibold" tone="muted">
-                          LÅST
-                        </Text>
-                      </View>
-                    ) : active ? (
-                      <Icon name="checkmark-circle" size="lg" tone="ink" />
-                    ) : null}
-                  </Pressable>
-                );
-              })}
-            </Shell>
-          ) : null}
-
-          {step === 1 ? (
-            <Shell
-              title="Dette er deg"
-              subtitle="Slik vil andre se deg på ThirdPlace."
-            >
-              <UIPressable
-                accessibilityRole="button"
-                accessibilityLabel="Legg til profilbilde"
-                haptic="selection"
-                onPress={() => setPhotoTried(true)}
-                className="items-center gap-2 self-center"
-              >
-                <View className="h-24 w-24 items-center justify-center rounded-full bg-surfaceMuted">
-                  <Icon name="camera-outline" size="lg" tone="ink" />
-                </View>
-                <Text variant="label" weight="semibold" tone="ember">
-                  Legg til profilbilde
-                </Text>
-              </UIPressable>
-              {photoTried ? (
-                <Text variant="caption" tone="muted" className="text-center">
-                  Bildeopplasting er ikke aktiv i demoen.
-                </Text>
-              ) : null}
-              <Input
-                label="Navn"
-                placeholder="Fornavn Etternavn"
-                value={name}
-                onChangeText={setName}
-                maxLength={60}
-              />
-              <View className="gap-1">
-                <Input
-                  label="Fødselsdag"
-                  placeholder="dd.mm.åååå"
-                  keyboardType="numeric"
-                  value={birthday}
-                  onChangeText={(t) => setBirthday(formatBirthdayInput(t))}
-                  maxLength={10}
-                />
-                {age.status === "invalid" && birthday.length === 10 ? (
-                  <Text variant="caption" tone="danger">
-                    Sjekk datoen. Skriv den som dd.mm.åååå.
-                  </Text>
-                ) : (
-                  <Text variant="caption" tone="muted">
-                    Du må være minst 18 år for å bruke ThirdPlace.
-                  </Text>
-                )}
-              </View>
-              <Input
-                label="Bio"
-                placeholder="Fortell litt om deg selv …"
-                value={bio}
-                onChangeText={setBio}
-                multiline
-                maxLength={160}
-              />
-            </Shell>
-          ) : null}
-
-          {step === 2 ? (
-            <Shell
-              title="Hvem er du?"
-              subtitle="Fortell litt om deg selv. Alt er valgfritt."
-            >
-              {IDENTITY.map((g) => (
-                <Group key={g.label} label={g.label}>
-                  {g.options.map((o) => (
-                    <Chip
-                      key={o}
-                      label={o}
-                      selected={identity[g.label] === o}
-                      onPress={() =>
-                        setIdentity((s) => ({
-                          ...s,
-                          [g.label]: s[g.label] === o ? "" : o,
-                        }))
+                    <Switch
+                      value={!!perms[p.key]}
+                      onValueChange={(v) =>
+                        setPerms((s) => ({ ...s, [p.key]: v }))
                       }
+                      label={p.label}
                     />
-                  ))}
-                </Group>
-              ))}
-              <Input
-                label="Nasjonalitet"
-                placeholder="F.eks. Norge"
-                value={nationality}
-                onChangeText={setNationality}
-                maxLength={40}
-              />
-              <Text variant="caption" tone="muted">
-                Alt her er valgfritt. Trykk på et valg igjen for å fjerne det.
-              </Text>
-            </Shell>
-          ) : null}
-
-          {step === 3 ? (
-            <Shell
-              title="Hva ser du etter?"
-              subtitle="Velg alt som passer deg."
-            >
-              <View className="flex-row flex-wrap gap-2">
-                {INTENTS.map((i) => (
-                  <Chip
-                    key={i}
-                    label={i}
-                    selected={intents.includes(i)}
-                    onPress={() => setIntents((s) => toggleIn(s, i))}
-                  />
-                ))}
-              </View>
-            </Shell>
-          ) : null}
-
-          {step === 4 ? (
-            <Shell title="Hva liker du?" subtitle="Velg minst 5 interesser.">
-              <View className="flex-row flex-wrap gap-2">
-                {INTERESTS.map((i) => (
-                  <Chip
-                    key={i}
-                    label={i}
-                    selected={interests.includes(i)}
-                    onPress={() => setInterests((s) => toggleIn(s, i))}
-                  />
-                ))}
-              </View>
-              <View
-                className={`self-start rounded-full px-3 py-1 ${
-                  interests.length >= MIN_INTERESTS
-                    ? "bg-success"
-                    : "bg-surfaceMuted"
-                }`}
-              >
-                <Text
-                  variant="caption"
-                  weight="semibold"
-                  tone={interests.length >= MIN_INTERESTS ? "onMedia" : "ink"}
-                >
-                  {Math.min(interests.length, MIN_INTERESTS)} av {MIN_INTERESTS}{" "}
-                  valgt
-                  {interests.length >= MIN_INTERESTS ? " ✓" : ""}
-                </Text>
-              </View>
-            </Shell>
-          ) : null}
-
-          {step === 5 ? (
-            <Shell
-              title="Dine preferanser"
-              subtitle="Velg det som betyr noe for deg."
-            >
-              {PREFERENCES.map((g) => (
-                <Group key={g.label} label={g.label}>
-                  {g.options.map((o) => (
-                    <Chip
-                      key={o}
-                      label={o}
-                      selected={prefs[g.label] === o}
-                      onPress={() =>
-                        setPrefs((s) => ({
-                          ...s,
-                          [g.label]: s[g.label] === o ? "" : o,
-                        }))
-                      }
-                    />
-                  ))}
-                </Group>
-              ))}
-              <Group label="Matrestriksjoner">
-                {DIET.map((o) => (
-                  <Chip
-                    key={o}
-                    label={o}
-                    selected={diet.includes(o)}
-                    onPress={() => setDiet((s) => toggleIn(s, o))}
-                  />
-                ))}
-              </Group>
-            </Shell>
-          ) : null}
-
-          {step === 6 ? (
-            <Shell
-              title="Nesten i mål"
-              subtitle="ThirdPlace fungerer best med disse tillatelsene."
-            >
-              {PERMISSIONS.map((p) => (
-                <View
-                  key={p.key}
-                  className="flex-row items-center gap-3 rounded-lg border border-line bg-surface p-4"
-                >
-                  <View className="h-10 w-10 items-center justify-center rounded-full bg-surfaceMuted">
-                    <Icon name={p.icon} size="md" tone="ink" />
                   </View>
-                  <View className="flex-1 gap-0.5">
-                    <View className="flex-row items-center gap-2">
-                      <Text variant="body" weight="semibold">
-                        {p.label}
+                ))}
+                <DemoNote>
+                  Ingen tillatelser blir spurt om i demoen. Posisjon kan du dele
+                  fra kartet.
+                </DemoNote>
+              </Shell>
+            ) : null}
+
+            {step === 7 ? (
+              <View className="gap-4 pt-6">
+                {experiences.slice(0, 3).map((e) => (
+                  <View
+                    key={e.id}
+                    className="flex-row items-center gap-3 rounded-lg border border-line bg-surface p-3.5"
+                  >
+                    <View className="h-10 w-10 items-center justify-center rounded-md bg-surfaceMuted">
+                      <Icon name="tp-experience" size="md" tone="ink" />
+                    </View>
+                    <View className="flex-1">
+                      <Text variant="body" weight="semibold" numberOfLines={1}>
+                        {e.title}
                       </Text>
-                      <Text
-                        variant="caption"
-                        weight="bold"
-                        tone="muted"
-                        className="rounded-xs bg-surfaceMuted px-1.5 py-0.5"
-                      >
-                        {p.tag}
+                      <Text variant="caption" tone="muted">
+                        {e.when}
                       </Text>
                     </View>
-                    <Text variant="caption" tone="muted">
-                      {p.hint}
-                    </Text>
                   </View>
-                  <Switch
-                    value={!!perms[p.key]}
-                    onValueChange={(v) =>
-                      setPerms((s) => ({ ...s, [p.key]: v }))
-                    }
-                    label={p.label}
-                  />
-                </View>
-              ))}
-              <DemoNote>
-                Ingen tillatelser blir spurt om i demoen. Posisjon kan du dele
-                fra kartet.
-              </DemoNote>
-            </Shell>
-          ) : null}
-
-          {step === 7 ? (
-            <View className="gap-4 pt-6">
-              {experiences.slice(0, 3).map((e) => (
-                <View
-                  key={e.id}
-                  className="flex-row items-center gap-3 rounded-lg border border-line bg-surface p-3.5"
+                ))}
+                <Text
+                  variant="body"
+                  tone="muted"
+                  className="px-4 pt-2 text-center"
                 >
-                  <View className="h-10 w-10 items-center justify-center rounded-md bg-surfaceMuted">
-                    <Icon name="tp-experience" size="md" tone="ink" />
-                  </View>
-                  <View className="flex-1">
-                    <Text variant="body" weight="semibold" numberOfLines={1}>
-                      {e.title}
-                    </Text>
-                    <Text variant="caption" tone="muted">
-                      {e.when}
-                    </Text>
-                  </View>
-                </View>
-              ))}
-              <Text
-                variant="body"
-                tone="muted"
-                className="px-4 pt-2 text-center"
-              >
-                Her er noen ting som skjer i byen din.
-              </Text>
-              <DemoNote>
-                Dette er eksempler. Feeden er ikke tilpasset deg ennå.
-              </DemoNote>
-            </View>
-          ) : null}
-        </ScrollView>
+                  Her er noen ting som skjer i byen din.
+                </Text>
+                <DemoNote>
+                  Dette er eksempler. Feeden er ikke tilpasset deg ennå.
+                </DemoNote>
+              </View>
+            ) : null}
+          </ScrollView>
+        </FadeSwap>
 
         <StickyFooter>
           <Button

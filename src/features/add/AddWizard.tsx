@@ -21,6 +21,7 @@ import {
   Pressable as UIPressable,
   Text,
   IconButton,
+  FadeSwap,
 } from "@/components/ui";
 import { Button } from "@/components/Button";
 import { haptics } from "@/lib/haptics";
@@ -201,14 +202,15 @@ export function AddWizard() {
       {/* Edge-to-edge Android does not resize for the keyboard, so the step
           and its footer move up themselves (padding on both platforms). */}
       <KeyboardAvoidingView behavior="padding" className="flex-1">
-        <ScrollView
-          // New step, new scroll: each step starts at its top.
-          key={step}
-          contentContainerClassName="gap-5 p-gutter pb-8"
-          keyboardShouldPersistTaps="handled"
-        >
-          <StepBody step={step} draft={draft} patch={patch} />
-        </ScrollView>
+        {/* New step: fresh scroll at its top, faded in. */}
+        <FadeSwap swapKey={step} style={{ flex: 1 }}>
+          <ScrollView
+            contentContainerClassName="gap-5 p-gutter pb-8"
+            keyboardShouldPersistTaps="handled"
+          >
+            <StepBody step={step} draft={draft} patch={patch} />
+          </ScrollView>
+        </FadeSwap>
 
         <StickyFooter>
           <Button

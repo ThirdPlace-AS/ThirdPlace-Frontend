@@ -15,6 +15,7 @@ import {
   IconButton,
   ListRow,
   Screen,
+  FadeSwap,
   ScrollRow,
   StickyFooter,
   Text,
@@ -266,31 +267,34 @@ export default function GroupSwipeScreen() {
 
       {phase === "swipe" && card ? (
         <ScrollView contentContainerClassName="gap-4 p-gutter pb-8">
-          <View className="overflow-hidden rounded-xl bg-ink">
-            <Image
-              source={card.photos[0]}
-              contentFit="cover"
-              style={{ height: cardImgH, width: "100%" }}
-            />
-          </View>
-          <View className="gap-1">
-            <Text variant="h1" accessibilityRole="text">
-              {card.title}
-            </Text>
-            <Text variant="caption" tone="muted">
-              {card.when}
-            </Text>
-            <View className="flex-row flex-wrap gap-2 pt-1">
-              {card.tags.map((t) => (
-                <View
-                  key={t}
-                  className="rounded-full border border-line px-3 py-1"
-                >
-                  <Text variant="caption">{t}</Text>
-                </View>
-              ))}
+          {/* Next card fades in (it swapped in one frame). */}
+          <FadeSwap swapKey={card.id} style={{ gap: 16 }}>
+            <View className="overflow-hidden rounded-xl bg-ink">
+              <Image
+                source={card.photos[0]}
+                contentFit="cover"
+                style={{ height: cardImgH, width: "100%" }}
+              />
             </View>
-          </View>
+            <View className="gap-1">
+              <Text variant="h1" accessibilityRole="text">
+                {card.title}
+              </Text>
+              <Text variant="caption" tone="muted">
+                {card.when}
+              </Text>
+              <View className="flex-row flex-wrap gap-2 pt-1">
+                {card.tags.map((t) => (
+                  <View
+                    key={t}
+                    className="rounded-full border border-line px-3 py-1"
+                  >
+                    <Text variant="caption">{t}</Text>
+                  </View>
+                ))}
+              </View>
+            </View>
+          </FadeSwap>
           <Text variant="label" weight="semibold" className="text-center">
             Hvem har sveipet?
           </Text>

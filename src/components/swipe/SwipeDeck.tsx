@@ -179,12 +179,13 @@ export function SwipeDeck() {
       });
       return;
     }
-    // Smooth, eased glide (longer than a snap) so the exit reads like the
-    // reference; faster flings shorten it a little. Fly fully past the edge so the
-    // rotated far corner clears too. On completion, hide the live card and advance.
+    // Eased glide, faster flings shorter. Phase 10 reaction lens: the old
+    // 560–720 ms glide settled after ~0.9 s and swallowed taps meanwhile, so
+    // it is 340–460 ms now (still a glide, not a snap). Fly fully past the
+    // edge so the rotated far corner clears too; then hide the card and advance.
     const dur = Math.min(
-      720,
-      Math.max(560, 680 - Math.max(Math.abs(vx), Math.abs(vy)) / 16),
+      460,
+      Math.max(340, 460 - Math.max(Math.abs(vx), Math.abs(vy)) / 16),
     );
     const easing = Easing.out(Easing.cubic);
     const done = (fin?: boolean) => {
@@ -220,7 +221,7 @@ export function SwipeDeck() {
     if (action === "save") ty.value = -1.3 * screenH;
     else tx.value = (action === "like" ? 1 : -1) * 1.6 * screenW;
     deck.undo();
-    const back = { duration: 560, easing: Easing.out(Easing.cubic) };
+    const back = { duration: 400, easing: Easing.out(Easing.cubic) };
     tx.value = withTiming(0, back);
     ty.value = withTiming(0, back);
   };

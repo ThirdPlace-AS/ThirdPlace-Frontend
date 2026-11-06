@@ -11,6 +11,7 @@ import {
   StepHeader,
   StickyFooter,
   Text,
+  FadeSwap,
 } from "@/components/ui";
 import { Button } from "@/components/Button";
 import { Chip } from "@/components/Chip";
@@ -124,251 +125,252 @@ export default function BusinessOnboarding() {
       {/* Edge-to-edge Android does not resize for the keyboard: the step and
           its footer move up themselves. */}
       <KeyboardAvoidingView behavior="padding" className="flex-1">
-        <ScrollView
-          // New step, new scroll: each step starts at its top.
-          key={step}
-          contentContainerClassName="gap-4 p-gutter pb-8"
-          keyboardShouldPersistTaps="handled"
-        >
-          {step === 2 ? (
-            <Shell
-              title="Personen bak bedriften"
-              subtitle="Dette er deg som styrer bedriften. Kundene ser bare bedriften."
-            >
-              <View className="items-center gap-1">
-                <View className="h-20 w-20 items-center justify-center rounded-full bg-surfaceMuted">
-                  <Icon name="person-outline" size="xl" tone="ink" />
-                </View>
-                <Text variant="caption" weight="semibold">
-                  Legg til bilde
-                </Text>
-              </View>
-              <Input
-                label="Ditt navn"
-                placeholder="Fornavn Etternavn"
-                value={owner}
-                onChangeText={setOwner}
-              />
-              <Input
-                label="E-postadresse"
-                placeholder="navn@bedrift.no"
-                keyboardType="email-address"
-                value={email}
-                onChangeText={setEmail}
-              />
-              <Input
-                label="Fødselsdag"
-                placeholder="dd.mm.åååå"
-                keyboardType="numeric"
-                value={birthday}
-                onChangeText={(t) => setBirthday(formatBirthdayInput(t))}
-                maxLength={10}
-              />
-              <Text variant="caption" tone="muted">
-                Du må være minst 18 år for å administrere en bedrift.
-              </Text>
-            </Shell>
-          ) : null}
-
-          {step === 3 ? (
-            <Shell
-              title="Om bedriften"
-              subtitle="Slik presenteres dere på kartet og i søk."
-            >
-              <Input
-                label="Bedriftsnavn"
-                placeholder="F.eks. Oslo Kaffebar"
-                value={name}
-                onChangeText={setName}
-              />
-              <Label>Kategori</Label>
-              <View className="flex-row flex-wrap gap-2">
-                {CATEGORIES.map((c) => (
-                  <Chip
-                    key={c}
-                    label={c}
-                    selected={category === c}
-                    onPress={() => setCategory(c)}
-                  />
-                ))}
-              </View>
-              <Input
-                label="Beskrivelse"
-                placeholder="Hva gjør stedet deres spesielt?"
-                value={about}
-                onChangeText={setAbout}
-                multiline
-              />
-              <Input
-                label="Nettside"
-                placeholder="bedrift.no"
-                value={web}
-                onChangeText={setWeb}
-              />
-              <Input
-                label="Telefon"
-                placeholder="+47 …"
-                keyboardType="numeric"
-                value={phone}
-                onChangeText={setPhone}
-              />
-            </Shell>
-          ) : null}
-
-          {step === 4 ? (
-            <Shell
-              title="Hvor ligger dere?"
-              subtitle="Velg området, og skriv inn adressen."
-            >
-              <View className="flex-row flex-wrap gap-2">
-                {OSLO_AREAS.map((a) => (
-                  <Chip
-                    key={a.name}
-                    label={a.name}
-                    selected={area === a.name}
-                    onPress={() => setArea(a.name)}
-                  />
-                ))}
-              </View>
-              <Input
-                label="Adresse"
-                placeholder="Gate og nummer"
-                value={street}
-                onChangeText={setStreet}
-              />
-              <DemoNote>
-                Kartpinne og adressesøk er ikke aktive i demoen.
-              </DemoNote>
-            </Shell>
-          ) : null}
-
-          {step === 5 ? (
-            <Shell
-              title="Kontakt og sosialt"
-              subtitle="Hvordan kan kundene nå dere?"
-            >
-              <Input
-                label="Kontakt-e-post"
-                placeholder="hei@bedrift.no"
-                keyboardType="email-address"
-                value={contact}
-                onChangeText={setContact}
-              />
-              <Input
-                label="Instagram"
-                placeholder="@bedrift"
-                value={insta}
-                onChangeText={setInsta}
-              />
-              <Input
-                label="Facebook"
-                placeholder="facebook.com/…"
-                value={fb}
-                onChangeText={setFb}
-              />
-              <Input
-                label="Meny-URL (valgfritt)"
-                placeholder="Lenke til meny"
-                value={menu}
-                onChangeText={setMenu}
-              />
-              <Text variant="caption" tone="muted">
-                Alle felt kan endres senere fra dashbordet.
-              </Text>
-            </Shell>
-          ) : null}
-
-          {step === 6 ? (
-            <Shell
-              title="Tillatelser"
-              subtitle="Bedriften trenger to tillatelser for å vises på kartet."
-            >
-              <Perm
-                icon="location-outline"
-                label="Posisjon"
-                tag="PÅKREVD"
-                hint="Bekrefter hvor bedriften ligger på kartet"
-                value={loc}
-                onChange={setLoc}
-              />
-              <Perm
-                icon="notifications-outline"
-                label="Varsler"
-                tag="ANBEFALT"
-                hint="Få beskjed om anmeldelser, chat og bestillinger"
-                value={notif}
-                onChange={setNotif}
-              />
-              <DemoNote>Ingen tillatelser blir spurt om i demoen.</DemoNote>
-            </Shell>
-          ) : null}
-
-          {step === 7 ? (
-            <Shell
-              title="Hva vil dere oppnå?"
-              subtitle="Velg det som passer best for dere."
-            >
-              <Label>Mål</Label>
-              <View className="flex-row flex-wrap gap-2">
-                {GOALS.map((g) => (
-                  <Chip
-                    key={g}
-                    label={g}
-                    selected={goals.includes(g)}
-                    onPress={() => setGoals((s) => toggle(s, g))}
-                  />
-                ))}
-              </View>
-              <Label>Stikkord</Label>
-              <View className="flex-row flex-wrap gap-2">
-                {TAGS.map((t) => (
-                  <Chip
-                    key={t}
-                    label={t}
-                    selected={tags.includes(t)}
-                    onPress={() => setTags((s) => toggle(s, t))}
-                  />
-                ))}
-              </View>
-            </Shell>
-          ) : null}
-
-          {step === 8 ? (
-            <Shell
-              title="Se bedriften på kartet"
-              subtitle="Slik ser kundene dere når bedriften er verifisert."
-            >
-              <View className="gap-3 rounded-lg border border-line bg-surface p-4">
-                <View className="flex-row items-center gap-1.5 self-start rounded-full border border-ember px-2.5 py-1">
-                  <Icon name="eye-outline" size="sm" tone="ember" />
-                  <Text variant="caption" weight="semibold" tone="ember">
-                    Forhåndsvisning. Bare du ser den.
+        {/* New step: fresh scroll at its top, faded in. */}
+        <FadeSwap swapKey={step} style={{ flex: 1 }}>
+          <ScrollView
+            contentContainerClassName="gap-4 p-gutter pb-8"
+            keyboardShouldPersistTaps="handled"
+          >
+            {step === 2 ? (
+              <Shell
+                title="Personen bak bedriften"
+                subtitle="Dette er deg som styrer bedriften. Kundene ser bare bedriften."
+              >
+                <View className="items-center gap-1">
+                  <View className="h-20 w-20 items-center justify-center rounded-full bg-surfaceMuted">
+                    <Icon name="person-outline" size="xl" tone="ink" />
+                  </View>
+                  <Text variant="caption" weight="semibold">
+                    Legg til bilde
                   </Text>
                 </View>
-                <Text variant="body" weight="semibold">
-                  {name || "Bedriften din"}
-                </Text>
+                <Input
+                  label="Ditt navn"
+                  placeholder="Fornavn Etternavn"
+                  value={owner}
+                  onChangeText={setOwner}
+                />
+                <Input
+                  label="E-postadresse"
+                  placeholder="navn@bedrift.no"
+                  keyboardType="email-address"
+                  value={email}
+                  onChangeText={setEmail}
+                />
+                <Input
+                  label="Fødselsdag"
+                  placeholder="dd.mm.åååå"
+                  keyboardType="numeric"
+                  value={birthday}
+                  onChangeText={(t) => setBirthday(formatBirthdayInput(t))}
+                  maxLength={10}
+                />
                 <Text variant="caption" tone="muted">
-                  {[category, street, area].filter(Boolean).join(" · ")}
+                  Du må være minst 18 år for å administrere en bedrift.
                 </Text>
-              </View>
-              <NextStep
-                n={1}
-                title="Verifiser bedriften"
-                hint="Org.nummer eller dokumenter"
-              />
-              <NextStep
-                n={2}
-                title="Start abonnement"
-                hint="Betaling er ikke aktiv i demoen"
-              />
-              <DemoNote>
-                Bedriften opprettes ikke, og ingen verifisering eller betaling
-                starter.
-              </DemoNote>
-            </Shell>
-          ) : null}
-        </ScrollView>
+              </Shell>
+            ) : null}
+
+            {step === 3 ? (
+              <Shell
+                title="Om bedriften"
+                subtitle="Slik presenteres dere på kartet og i søk."
+              >
+                <Input
+                  label="Bedriftsnavn"
+                  placeholder="F.eks. Oslo Kaffebar"
+                  value={name}
+                  onChangeText={setName}
+                />
+                <Label>Kategori</Label>
+                <View className="flex-row flex-wrap gap-2">
+                  {CATEGORIES.map((c) => (
+                    <Chip
+                      key={c}
+                      label={c}
+                      selected={category === c}
+                      onPress={() => setCategory(c)}
+                    />
+                  ))}
+                </View>
+                <Input
+                  label="Beskrivelse"
+                  placeholder="Hva gjør stedet deres spesielt?"
+                  value={about}
+                  onChangeText={setAbout}
+                  multiline
+                />
+                <Input
+                  label="Nettside"
+                  placeholder="bedrift.no"
+                  value={web}
+                  onChangeText={setWeb}
+                />
+                <Input
+                  label="Telefon"
+                  placeholder="+47 …"
+                  keyboardType="numeric"
+                  value={phone}
+                  onChangeText={setPhone}
+                />
+              </Shell>
+            ) : null}
+
+            {step === 4 ? (
+              <Shell
+                title="Hvor ligger dere?"
+                subtitle="Velg området, og skriv inn adressen."
+              >
+                <View className="flex-row flex-wrap gap-2">
+                  {OSLO_AREAS.map((a) => (
+                    <Chip
+                      key={a.name}
+                      label={a.name}
+                      selected={area === a.name}
+                      onPress={() => setArea(a.name)}
+                    />
+                  ))}
+                </View>
+                <Input
+                  label="Adresse"
+                  placeholder="Gate og nummer"
+                  value={street}
+                  onChangeText={setStreet}
+                />
+                <DemoNote>
+                  Kartpinne og adressesøk er ikke aktive i demoen.
+                </DemoNote>
+              </Shell>
+            ) : null}
+
+            {step === 5 ? (
+              <Shell
+                title="Kontakt og sosialt"
+                subtitle="Hvordan kan kundene nå dere?"
+              >
+                <Input
+                  label="Kontakt-e-post"
+                  placeholder="hei@bedrift.no"
+                  keyboardType="email-address"
+                  value={contact}
+                  onChangeText={setContact}
+                />
+                <Input
+                  label="Instagram"
+                  placeholder="@bedrift"
+                  value={insta}
+                  onChangeText={setInsta}
+                />
+                <Input
+                  label="Facebook"
+                  placeholder="facebook.com/…"
+                  value={fb}
+                  onChangeText={setFb}
+                />
+                <Input
+                  label="Meny-URL (valgfritt)"
+                  placeholder="Lenke til meny"
+                  value={menu}
+                  onChangeText={setMenu}
+                />
+                <Text variant="caption" tone="muted">
+                  Alle felt kan endres senere fra dashbordet.
+                </Text>
+              </Shell>
+            ) : null}
+
+            {step === 6 ? (
+              <Shell
+                title="Tillatelser"
+                subtitle="Bedriften trenger to tillatelser for å vises på kartet."
+              >
+                <Perm
+                  icon="location-outline"
+                  label="Posisjon"
+                  tag="PÅKREVD"
+                  hint="Bekrefter hvor bedriften ligger på kartet"
+                  value={loc}
+                  onChange={setLoc}
+                />
+                <Perm
+                  icon="notifications-outline"
+                  label="Varsler"
+                  tag="ANBEFALT"
+                  hint="Få beskjed om anmeldelser, chat og bestillinger"
+                  value={notif}
+                  onChange={setNotif}
+                />
+                <DemoNote>Ingen tillatelser blir spurt om i demoen.</DemoNote>
+              </Shell>
+            ) : null}
+
+            {step === 7 ? (
+              <Shell
+                title="Hva vil dere oppnå?"
+                subtitle="Velg det som passer best for dere."
+              >
+                <Label>Mål</Label>
+                <View className="flex-row flex-wrap gap-2">
+                  {GOALS.map((g) => (
+                    <Chip
+                      key={g}
+                      label={g}
+                      selected={goals.includes(g)}
+                      onPress={() => setGoals((s) => toggle(s, g))}
+                    />
+                  ))}
+                </View>
+                <Label>Stikkord</Label>
+                <View className="flex-row flex-wrap gap-2">
+                  {TAGS.map((t) => (
+                    <Chip
+                      key={t}
+                      label={t}
+                      selected={tags.includes(t)}
+                      onPress={() => setTags((s) => toggle(s, t))}
+                    />
+                  ))}
+                </View>
+              </Shell>
+            ) : null}
+
+            {step === 8 ? (
+              <Shell
+                title="Se bedriften på kartet"
+                subtitle="Slik ser kundene dere når bedriften er verifisert."
+              >
+                <View className="gap-3 rounded-lg border border-line bg-surface p-4">
+                  <View className="flex-row items-center gap-1.5 self-start rounded-full border border-ember px-2.5 py-1">
+                    <Icon name="eye-outline" size="sm" tone="ember" />
+                    <Text variant="caption" weight="semibold" tone="ember">
+                      Forhåndsvisning. Bare du ser den.
+                    </Text>
+                  </View>
+                  <Text variant="body" weight="semibold">
+                    {name || "Bedriften din"}
+                  </Text>
+                  <Text variant="caption" tone="muted">
+                    {[category, street, area].filter(Boolean).join(" · ")}
+                  </Text>
+                </View>
+                <NextStep
+                  n={1}
+                  title="Verifiser bedriften"
+                  hint="Org.nummer eller dokumenter"
+                />
+                <NextStep
+                  n={2}
+                  title="Start abonnement"
+                  hint="Betaling er ikke aktiv i demoen"
+                />
+                <DemoNote>
+                  Bedriften opprettes ikke, og ingen verifisering eller betaling
+                  starter.
+                </DemoNote>
+              </Shell>
+            ) : null}
+          </ScrollView>
+        </FadeSwap>
 
         <StickyFooter>
           <Button label={cta} variant="ink" disabled={!can} onPress={next} />

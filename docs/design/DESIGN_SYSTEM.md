@@ -159,6 +159,10 @@ One family, two engines, one look (handle, 28 px top radius, `e3`, `SheetHeader`
 
 Easing curves (`easing.*`, cubic-bezier): `standard` 0.2, 0, 0, 1 · `enter` 0.05, 0.7, 0.1, 1 · `exit` 0.3, 0, 0.8, 0.15. Sheet/overlay timing lives in `presentation`.
 
+- Content that replaces content in place (wizard steps, the in-sheet detail stack, the next Steder or group-swipe card) fades in through `<FadeSwap swapKey>` over `base`; nothing under reduced motion. Style only on the animated view.
+- The swipe card glides off in 340–460 ms (fling to tap) and comes back on undo in 400 ms; longer glides held the deck for ~0.9 s and dropped taps.
+- No fake waits: a demo screen with nothing to load shows its content at once (`useMockResource({ immediate })`); loading states appear only on a real reload.
+
 Motion explains a change (where something came from, what it became); it never delays navigation. Every animated hook checks `useReducedMotion()` and falls back to an opacity change or none.
 
 ### Microinteraction patterns
