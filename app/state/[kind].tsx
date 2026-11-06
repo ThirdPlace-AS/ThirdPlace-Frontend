@@ -7,6 +7,7 @@ import {
 } from "@/components/illustrations/Illustration";
 import { Button } from "@/components/Button";
 import { DemoNote } from "@/components/DemoNote";
+import { showToast } from "@/components/Toast";
 import { experienceById } from "@/fixtures";
 import { resetTo } from "@/lib/navigation";
 
@@ -103,7 +104,13 @@ export default function SystemState() {
             title="Oppdatering kreves"
             body="En ny versjon av ThirdPlace er tilgjengelig med viktige forbedringer og sikkerhetsfikser."
           >
-            <Button label="Oppdater nå" variant="ember" disabled />
+            <Button
+              label="Oppdater nå"
+              variant="ember"
+              onPress={() =>
+                showToast({ title: "Det finnes ingen oppdatering i demoen." })
+              }
+            />
           </State>
         ) : kind === "invite" ? (
           <Invite />

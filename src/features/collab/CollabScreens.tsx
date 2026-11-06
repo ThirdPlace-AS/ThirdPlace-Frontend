@@ -54,6 +54,9 @@ export function NewCollabScreen() {
         <ChipRow options={HOSTING} value={hosting} onChange={setHosting} />
         <Label>Inntektsdeling (du / partner)</Label>
         <ChipRow options={SPLITS} value={split} onChange={setSplit} />
+        <DemoNote>
+          Delingen er bare et valg i skjemaet. Ingenting regnes ut.
+        </DemoNote>
         <Input
           label="Melding"
           placeholder="Fortell kort hva du foreslår …"

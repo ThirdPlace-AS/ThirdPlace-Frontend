@@ -67,7 +67,7 @@ export default function MarketplaceScreen() {
       <FlatList
         data={data}
         keyExtractor={(l) => l.id}
-        contentContainerClassName="gap-3 px-gutter pb-10"
+        contentContainerClassName="gap-3 px-gutter pb-10 pt-4"
         keyboardShouldPersistTaps="handled"
         ListHeaderComponent={
           <View className="gap-3 pb-1">
@@ -75,6 +75,10 @@ export default function MarketplaceScreen() {
               Samarbeid mellom skapere og bedrifter — lokaler, vertskap,
               sponsing og brand.
             </Text>
+            <DemoNote>
+              Annonsene, prisene og navnene er eksempler. Ingenting kan
+              bestilles.
+            </DemoNote>
             <Pressable
               accessibilityRole="button"
               onPress={() => router.push("/my-listings")}

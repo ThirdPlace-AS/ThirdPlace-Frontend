@@ -17,7 +17,6 @@ const PLANS = ["Automatisk", "Ukentlig", "Månedlig"];
 
 export function PayoutsScreen() {
   const [plan, setPlan] = useState(PLANS[0] ?? "");
-  const [tried, setTried] = useState(false);
   return (
     <Screen edges={["top"]}>
       <RouteHeader title="Utbetalinger" />
@@ -25,21 +24,21 @@ export function PayoutsScreen() {
         <Text variant="caption" tone="muted">
           Sett opp hvordan du mottar penger fra opplevelser.
         </Text>
+        <DemoNote>
+          Utbetalinger er ikke slått på. Vi tar ikke imot kontoopplysninger, og
+          valgene her lagres ikke.
+        </DemoNote>
         <Section>Utbetalingsmetode</Section>
         <Pressable
           accessibilityRole="button"
-          onPress={() => setTried(true)}
-          className="items-center rounded-lg border border-dashed border-line py-4"
+          accessibilityState={{ disabled: true }}
+          disabled
+          className="items-center rounded-lg border border-dashed border-line py-4 opacity-50"
         >
           <Text variant="label" weight="semibold">
             + Legg til bankkonto
           </Text>
         </Pressable>
-        {tried ? (
-          <DemoNote>
-            Utbetalinger er ikke slått på. Vi tar ikke imot kontoopplysninger.
-          </DemoNote>
-        ) : null}
         <Section>Utbetalingsplan</Section>
         {PLANS.map((p) => (
           <Pressable

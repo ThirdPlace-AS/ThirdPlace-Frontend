@@ -18,6 +18,7 @@ import {
   Text,
   useSheetChrome,
 } from "@/components/ui";
+import { DemoBadge } from "@/components/DemoBadge";
 import { elevation } from "@/theme";
 import { MAP_CITY, type MockWeather } from "@/fixtures";
 import { browseAnimatedIndex } from "./browseSheetProgress";
@@ -174,7 +175,13 @@ export function MapBrowseSheet({
             </Text>
           </View>
           <View className="flex-row items-center gap-2">
-            <View className="flex-row items-center gap-1.5 rounded-full border border-line bg-surface px-3 py-1">
+            {/* Fixture weather (MockWeather), not a live reading. */}
+            <DemoBadge />
+            <View
+              accessible
+              accessibilityLabel={`Eksempelvær: ${weather.tempC} grader`}
+              className="flex-row items-center gap-1.5 rounded-full border border-line bg-surface px-3 py-1"
+            >
               <Icon
                 name={weather.icon as keyof typeof Ionicons.glyphMap}
                 size="md"

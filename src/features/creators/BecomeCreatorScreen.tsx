@@ -77,7 +77,7 @@ export default function BecomeCreatorScreen() {
           );
         })}
 
-        <View className="rounded-md bg-surfaceMuted p-3">
+        <View className="rounded-md border border-line bg-surface p-3">
           <Text variant="label">
             {met} av {reqs.length} krav oppfylt
           </Text>
@@ -103,9 +103,12 @@ export default function BecomeCreatorScreen() {
           </View>
         ) : null}
 
+        {/* Muted until every requirement is met, as in the design (PDF p14):
+            the button never invites an application that cannot qualify. */}
         <Button
           label="Søk om Skaper-rolle"
           variant="ink"
+          disabled={met < reqs.length}
           onPress={() => setApplied(true)}
         />
         <Button

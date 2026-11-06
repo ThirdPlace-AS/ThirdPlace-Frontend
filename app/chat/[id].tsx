@@ -15,7 +15,6 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 import { Icon, IconButton, Screen, Text, Avatar } from "@/components/ui";
 import { Button } from "@/components/Button";
-import { DemoBadge } from "@/components/DemoBadge";
 import { useGuestMode } from "@/components/map/hooks/useGuestMode";
 import { SignInPrompt } from "@/components/SignInPrompt";
 import {
@@ -113,7 +112,6 @@ export default function ChatThreadScreen() {
               .join(" · ")}
           </Text>
         </View>
-        <DemoBadge />
         <IconButton
           icon="information-circle-outline"
           label="Chat-info"

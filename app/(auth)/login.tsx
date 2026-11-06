@@ -31,11 +31,15 @@ export default function Login() {
             keyboardType="email-address"
           />
           <Input label="Passord" placeholder="••••••••" secureTextEntry />
-          <Link
-            href="/forgot-password"
-            className="text-right text-label font-semibold text-emberText"
-          >
-            Glemt passord?
+          <Link href="/forgot-password" asChild>
+            <Text
+              variant="label"
+              weight="semibold"
+              tone="ember"
+              className="text-right"
+            >
+              Glemt passord?
+            </Text>
           </Link>
           <SocialAuthButtons verb="Logg inn med" />
           <Button
@@ -55,8 +59,10 @@ export default function Login() {
         </View>
         <Text variant="caption" tone="muted" className="text-center">
           Har du ikke konto?{" "}
-          <Link href="/register" className="font-semibold text-emberText">
-            Registrer deg
+          <Link href="/register" asChild>
+            <Text variant="caption" weight="semibold" tone="ember">
+              Registrer deg
+            </Text>
           </Link>
         </Text>
       </ScrollView>

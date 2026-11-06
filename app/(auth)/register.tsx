@@ -51,8 +51,10 @@ export default function Register() {
         </Text>
         <Text variant="caption" tone="muted" className="text-center">
           Allerede medlem?{" "}
-          <Link href="/login" className="font-semibold text-emberText">
-            Logg inn
+          <Link href="/login" asChild>
+            <Text variant="caption" weight="semibold" tone="ember">
+              Logg inn
+            </Text>
           </Link>
         </Text>
       </ScrollView>

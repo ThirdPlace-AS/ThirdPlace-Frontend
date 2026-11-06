@@ -2,7 +2,7 @@ import { Link, router } from "expo-router";
 import { useState } from "react";
 import { ScrollView, View } from "react-native";
 
-import { Screen } from "@/components/ui";
+import { Screen, Text } from "@/components/ui";
 import { Button } from "@/components/Button";
 import { DemoNote } from "@/components/DemoNote";
 import { Input } from "@/components/Input";
@@ -44,8 +44,10 @@ export default function ForgotPassword() {
             </>
           ) : null}
         </View>
-        <Link href="/login" className="text-label font-semibold text-emberText">
-          Tilbake til innlogging
+        <Link href="/login" asChild>
+          <Text variant="label" weight="semibold">
+            Tilbake til innlogging
+          </Text>
         </Link>
       </ScrollView>
     </Screen>
