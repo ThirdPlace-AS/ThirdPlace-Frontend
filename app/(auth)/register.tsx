@@ -1,7 +1,7 @@
 import { Link, router } from "expo-router";
-import { ScrollView, Text, View } from "react-native";
+import { ScrollView, View } from "react-native";
 
-import { Screen } from "@/components/ui";
+import { Screen, Text } from "@/components/ui";
 import { SocialAuthButtons } from "@/components/auth/SocialAuthButtons";
 import { Button } from "@/components/Button";
 import { DemoBadge } from "@/components/DemoBadge";
@@ -40,16 +40,16 @@ export default function Register() {
           />
           <View className="flex-row items-center justify-center gap-2">
             <DemoBadge />
-            <Text className="text-xs text-muted font-normal">
+            <Text variant="caption" tone="muted">
               Ingen konto opprettes; feltene lagrer ingenting.
             </Text>
           </View>
           <SocialAuthButtons verb="Fortsett med" />
         </View>
-        <Text className="px-4 text-center text-xs text-muted font-normal">
+        <Text variant="caption" tone="muted" className="px-4 text-center">
           Ved å fortsette godtar du våre vilkår og personvernerklæring.
         </Text>
-        <Text className="text-center text-sm text-muted font-normal">
+        <Text variant="caption" tone="muted" className="text-center">
           Allerede medlem?{" "}
           <Link href="/login" className="font-semibold text-emberText">
             Logg inn

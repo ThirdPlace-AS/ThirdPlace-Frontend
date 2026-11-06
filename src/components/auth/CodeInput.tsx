@@ -1,5 +1,6 @@
 import { useRef } from "react";
-import { Pressable, Text, TextInput, View } from "react-native";
+import { Pressable, TextInput, View } from "react-native";
+import { Text } from "@/components/ui";
 
 // Six-box one-time-code entry (PDF p2: "Sjekk innboksen", "Bekreft
 // identiteten"). One hidden TextInput drives the boxes so paste, autofill
@@ -30,7 +31,9 @@ export function CodeInput({
               ch ? "border-ink" : active ? "border-ink/40" : "border-line"
             }`}
           >
-            <Text className="text-xl font-semibold text-ink">{ch ?? ""}</Text>
+            <Text variant="h2" accessibilityRole="text">
+              {ch ?? ""}
+            </Text>
           </View>
         );
       })}

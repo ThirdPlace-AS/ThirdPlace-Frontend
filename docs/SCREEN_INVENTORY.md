@@ -112,7 +112,7 @@ innhold, Inviter kontakter, Marketplace-filtre + Analyse.
 
 **Still missing / deliberately left out:** Marketplace venteliste (meaning
 needs the contract); Utbetalingshistorikk rows (no payment data may be shown);
-CategoryPicker is built but not wired. Everything else in the PDF has a demo
+CategoryPicker is now wired to the Add category field (0165). Everything else in the PDF has a demo
 screen.
 
 ## Design-system rollout (2026-11, branch `feat/design-system`)
@@ -128,3 +128,4 @@ per the PDF.
 | Swipe: deck, top bar, detail + safety, Steder deck, filter panel, group swipe | p7–p9            | done — bar on IconButton/tabs (fits 3 modes + 3 buttons), place-deck buttons on IconButton/HeartToggle, join CTA with heart pop                                                                                                                      | 0162   |
 | Chat: list, groups, search, thread, info/members/invite sheets                | p9–p10, p24, p26 | done — rows on Pressable/Avatar with unread in the label, ticket glyph for experience chats, "Ingen treff – ennå" search state, bubbles with Avatar + slide-in for sent messages, composer on tokens; empty-state actions are PDF ink pills app-wide | 0163   |
 | Profile, Lagret, Planer, Oppdag folk, Skaper, Inviter/Importer                | p12–p13, p26     | done — Avatar/ListRow/Pressable everywhere, readable stats/progress/stars, Lagret chips on one line with bookmark toggles, matched creator actions                                                                                                   | 0164   |
+| Auth, onboarding, business onboarding, Add wizard, pickers                    | p1–p5, p10–p12   | done — Kategori is a select field with art opening "Velg kategori" (PDF p10–p11), presses on Pressable                                                                                                                                               | 0165   |

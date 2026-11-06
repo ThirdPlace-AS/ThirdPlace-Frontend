@@ -1,8 +1,8 @@
 import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
 import { useState } from "react";
-import { Pressable, ScrollView, Text, View } from "react-native";
-import { Icon, Screen } from "@/components/ui";
+import { Pressable, ScrollView, View } from "react-native";
+import { Icon, Screen, Text } from "@/components/ui";
 import { Switch } from "@/components/ui/Switch";
 import { Button } from "@/components/Button";
 import { DemoNote } from "@/components/DemoNote";
@@ -41,17 +41,19 @@ export default function TwoFactor() {
     <Screen edges={["top"]}>
       <RouteHeader title="Totrinnsbekreftelse" />
       <ScrollView contentContainerClassName="gap-5 px-gutter py-4 pb-12">
-        <Text className="text-sm text-muted font-normal">
+        <Text variant="caption" tone="muted">
           Legg til et ekstra sikkerhetslag på kontoen din.
         </Text>
         <View className="flex-row items-center justify-between">
-          <Text className="text-base font-semibold text-ink">Aktiver 2FA</Text>
+          <Text variant="body" weight="semibold">
+            Aktiver 2FA
+          </Text>
           <Switch value={on} onValueChange={setOn} label="Aktiver 2FA" />
         </View>
 
         {on ? (
           <>
-            <Text className="text-xs font-semibold uppercase tracking-wide text-muted">
+            <Text variant="micro" weight="semibold" tone="muted">
               Metode
             </Text>
             {methods.map((m) => {
@@ -68,10 +70,10 @@ export default function TwoFactor() {
                 >
                   <Icon name={m.icon} size="md" tone="ink" />
                   <View className="flex-1">
-                    <Text className="text-base font-semibold text-ink">
+                    <Text variant="body" weight="semibold">
                       {m.label}
                     </Text>
-                    <Text className="text-xs text-muted font-normal">
+                    <Text variant="caption" tone="muted">
                       {m.hint}
                     </Text>
                   </View>
@@ -90,7 +92,7 @@ export default function TwoFactor() {
 
             {method === "app" ? (
               <>
-                <Text className="text-xs font-semibold uppercase tracking-wide text-muted">
+                <Text variant="micro" weight="semibold" tone="muted">
                   QR-kode
                 </Text>
                 <View className="items-center gap-2 rounded-lg border border-line bg-surface p-5">
@@ -100,14 +102,14 @@ export default function TwoFactor() {
                   >
                     <Icon name="qr-code-outline" size="3xl" tone="muted" />
                   </View>
-                  <Text className="text-xs text-muted font-normal">
+                  <Text variant="caption" tone="muted">
                     Skann med autentiseringsappen
                   </Text>
                 </View>
               </>
             ) : null}
 
-            <Text className="text-xs text-muted font-normal">
+            <Text variant="caption" tone="muted">
               Backupkoder lagres etter aktivering.
             </Text>
             <DemoNote>

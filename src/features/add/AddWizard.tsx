@@ -13,13 +13,18 @@ import {
   StepContent,
   StepHeader,
   type IconName,
+  Pressable as UIPressable,
+  Text as UIText,
 } from "@/components/ui";
 import { Button } from "@/components/Button";
-import { CategoryArt } from "@/components/illustrations/CategoryArt";
+import {
+  CategoryArt,
+  hasCategoryArt,
+} from "@/components/illustrations/CategoryArt";
 import { DemoBadge } from "@/components/DemoBadge";
 import { DemoNote } from "@/components/DemoNote";
 import { Input } from "@/components/Input";
-import { PlacePicker } from "@/components/pickers/Pickers";
+import { CategoryPicker, PlacePicker } from "@/components/pickers/Pickers";
 import { experiences, OSLO_AREAS, places } from "@/fixtures";
 import { useThemeColors } from "@/theme";
 
@@ -208,37 +213,40 @@ function KindMenu({ onPick }: { onPick: (k: AddKind) => void }) {
   return (
     <SafeAreaView className="flex-1 justify-end bg-background" edges={["top"]}>
       <View className="gap-3 p-gutter pb-6">
-        <Text className="pb-1 text-2xl font-bold text-ink">
+        <UIText variant="h1" className="pb-1">
           Hva vil du legge til?
-        </Text>
+        </UIText>
         <Pressable
           accessibilityRole="button"
           onPress={() => router.push("/import")}
           className="flex-row items-center gap-2 self-start py-1"
         >
           <Icon name="link-outline" size="sm" tone="ember" />
-          <Text className="text-sm font-semibold text-emberText">
+          <UIText variant="label" weight="semibold" tone="ember">
             Importer fra lenke →
-          </Text>
+          </UIText>
         </Pressable>
         {rows.map((r) => (
-          <Pressable
+          <UIPressable
             key={r.kind}
             accessibilityRole="button"
             onPress={() => onPick(r.kind)}
-            className="flex-row items-center gap-3 rounded-lg border border-line bg-surface p-4 active:opacity-80"
+            contentClassName="flex-row items-center gap-3 rounded-lg border border-line bg-surface p-4"
+            pressedScale={0.99}
           >
             <View className="h-12 w-12 items-center justify-center">
               <CategoryArt name={r.label} size={48} />
             </View>
             <View className="flex-1">
-              <Text className="text-base font-semibold text-ink">
+              <UIText variant="body" weight="semibold">
                 {r.label}
-              </Text>
-              <Text className="text-xs text-muted font-normal">{r.hint}</Text>
+              </UIText>
+              <UIText variant="caption" tone="muted">
+                {r.hint}
+              </UIText>
             </View>
             <Icon name="chevron-forward" size="md" tone="muted" />
-          </Pressable>
+          </UIPressable>
         ))}
       </View>
     </SafeAreaView>
@@ -278,11 +286,10 @@ function StepBody({
             onChangeText={(t) => patch({ title: t })}
             maxLength={60}
           />
-          <Label>Kategori</Label>
-          <ChipRow
+          <CategoryField
             options={isPlace ? PLACE_CATEGORIES : EXPERIENCE_CATEGORIES}
-            selected={draft.category ? [draft.category] : []}
-            onPress={(c) => patch({ category: c })}
+            value={draft.category || null}
+            onChange={(c) => patch({ category: c })}
           />
           <Input
             label="Beskrivelse"
@@ -310,9 +317,7 @@ function StepBody({
           {draft.area ? (
             <View className="flex-row items-center gap-2">
               <Icon name="location" size="sm" tone="ink" />
-              <Text className="text-sm font-medium text-ink">
-                {draft.area}, Oslo
-              </Text>
+              <UIText variant="label">{draft.area}, Oslo</UIText>
             </View>
           ) : null}
           <DemoNote>Kartpinne og adressesøk er ikke aktive i demoen.</DemoNote>
@@ -332,20 +337,21 @@ function StepBody({
               onPress={() => patch({ area: p.name })}
             />
           ))}
-          <Pressable
+          <UIPressable
             accessibilityRole="button"
             onPress={() => setPicker(true)}
-            className="flex-row items-center gap-2 rounded-md border border-line bg-surface p-3.5 active:opacity-80"
+            contentClassName="flex-row items-center gap-2 rounded-md border border-line bg-surface p-3.5"
+            pressedScale={0.99}
           >
             <Icon name="search" size="sm" tone="muted" />
-            <Text className="flex-1 text-sm text-muted font-normal">
+            <UIText variant="caption" tone="muted" className="flex-1">
               {draft.area &&
               !HOST_PLACES.some((p) => p.name === draft.area) &&
               !OSLO_AREAS.some((a) => a.name === draft.area)
                 ? `Valgt: ${draft.area}`
                 : "Søk etter et annet sted …"}
-            </Text>
-          </Pressable>
+            </UIText>
+          </UIPressable>
           {picker ? (
             <PlacePicker
               onPick={(pl) => patch({ area: pl.name })}
@@ -400,25 +406,25 @@ function StepBody({
                   />
                   {pos >= 0 ? (
                     <View className="absolute right-1.5 top-1.5 h-6 min-w-6 items-center justify-center rounded-full bg-ink px-1.5">
-                      <Text className="text-xs font-bold text-onInk">
+                      <UIText variant="caption" weight="bold" tone="onInk">
                         {pos + 1}
-                      </Text>
+                      </UIText>
                     </View>
                   ) : null}
                   {pos === 0 ? (
                     <View className="absolute bottom-1.5 left-1.5 rounded-full bg-ink px-2 py-0.5">
-                      <Text className="text-[10px] font-semibold text-onInk">
+                      <UIText variant="caption" weight="semibold" tone="onInk">
                         Hovedbilde
-                      </Text>
+                      </UIText>
                     </View>
                   ) : null}
                 </Pressable>
               );
             })}
           </View>
-          <Text className="text-xs text-muted font-normal">
+          <UIText variant="caption" tone="muted">
             Minst 1 bilde påkrevd · JPG, PNG · maks 10 MB
-          </Text>
+          </UIText>
           <DemoNote>
             Eksempelbilder — opplasting er ikke aktiv i demoen.
           </DemoNote>
@@ -437,7 +443,7 @@ function StepBody({
                 key={f}
                 className="flex-row items-center justify-between py-2"
               >
-                <Text className="text-base text-ink font-normal">{f}</Text>
+                <UIText variant="body">{f}</UIText>
                 <Switch
                   value={draft.features.includes(f)}
                   onValueChange={() =>
@@ -471,9 +477,9 @@ function StepBody({
             onPress={(t) => patch({ startTime: t })}
           />
           {draft.date && draft.startTime ? (
-            <Text className="text-sm font-medium text-ink">
+            <UIText variant="label">
               {formatDate(draft.date)} · {draft.startTime}
-            </Text>
+            </UIText>
           ) : null}
           <Label>Varighet</Label>
           <ChipRow
@@ -515,10 +521,10 @@ function StepBody({
             selected={[draft.access]}
             onPress={(a) => patch({ access: a })}
           />
-          <Text className="text-xs text-muted font-normal">
+          <UIText variant="caption" tone="muted">
             Alle = hvem som helst kan bli med · Godkjenning = du bestemmer ·
             Invitasjon = kun inviterte
-          </Text>
+          </UIText>
           <Label>Avbestilling</Label>
           <ChipRow
             options={CANCELLATION}
@@ -583,24 +589,24 @@ function ReviewStep({ draft }: { draft: AddDraft }) {
         />
       ) : null}
       <View className="gap-1">
-        <Text className="text-lg font-semibold text-ink">{draft.title}</Text>
-        <Text className="text-sm text-muted font-normal">
+        <UIText variant="title">{draft.title}</UIText>
+        <UIText variant="caption" tone="muted">
           {isPlace
             ? `${draft.category} · ${draft.area}, Oslo`
             : `${draft.date ? formatDate(draft.date) : ""} · ${draft.startTime} · ${draft.area}`}
-        </Text>
+        </UIText>
         {draft.summary ? (
-          <Text className="pt-1 text-sm text-ink font-normal">
+          <UIText variant="label" weight="regular" className="pt-1">
             {draft.summary}
-          </Text>
+          </UIText>
         ) : null}
       </View>
       {isPlace ? (
         <View className="flex-row items-start gap-2 rounded-md bg-surfaceMuted p-3">
           <Icon name="hourglass-outline" size="sm" tone="ink" />
-          <Text className="flex-1 text-sm text-ink font-normal">
+          <UIText variant="label" weight="regular" className="flex-1">
             Steder gjennomgås manuelt av ThirdPlace før de blir synlige.
-          </Text>
+          </UIText>
         </View>
       ) : (
         <>
@@ -612,7 +618,9 @@ function ReviewStep({ draft }: { draft: AddDraft }) {
           <View className="flex-row flex-wrap gap-2">
             {draft.vibes.map((v) => (
               <View key={v} className="rounded-full bg-surfaceMuted px-3 py-1">
-                <Text className="text-xs font-medium text-ink">{v}</Text>
+                <UIText variant="caption" weight="medium">
+                  {v}
+                </UIText>
               </View>
             ))}
           </View>
@@ -630,9 +638,9 @@ function Fact({ icon, value }: { icon: IconName; value: string }) {
   return (
     <View className="flex-1 gap-1 rounded-md border border-line bg-surface p-3">
       <Icon name={icon} size="sm" tone="ink" />
-      <Text className="text-xs font-medium text-ink" numberOfLines={1}>
+      <UIText variant="caption" weight="medium" numberOfLines={1}>
         {value}
-      </Text>
+      </UIText>
     </View>
   );
 }
@@ -656,17 +664,22 @@ function SubmittedState({
           />
         </View>
         <View className="items-center gap-2">
-          <Text className="text-center text-xl font-bold text-ink">
+          <UIText
+            variant="h2"
+            weight="bold"
+            className="text-center"
+            accessibilityRole="text"
+          >
             {draft.title}
-          </Text>
+          </UIText>
           <View className="flex-row">
             <DemoBadge label={isPlace ? "IKKE SENDT" : "IKKE PUBLISERT"} />
           </View>
-          <Text className="px-6 text-center text-base text-muted font-normal">
+          <UIText variant="body" tone="muted" className="px-6 text-center">
             {isPlace
               ? "Demo — stedet ble ikke sendt til vurdering. Innsending krever innlogging og en server, som ikke er aktiv ennå."
               : "Demo — opplevelsen ble ikke publisert, og ingen chat ble opprettet. Publisering krever innlogging og en server, som ikke er aktiv ennå."}
-          </Text>
+          </UIText>
         </View>
         <View className="w-full gap-3 pt-2">
           <Button label="Legg til noe nytt" variant="ink" onPress={onReset} />
@@ -686,8 +699,61 @@ function SubmittedState({
 // Wizard step body (design-system StepContent).
 const Shell = StepContent;
 
+// Kategori as a select field (PDF p10–p11): category art + value + chevron,
+// opening "Velg kategori".
+function CategoryField({
+  options,
+  value,
+  onChange,
+}: {
+  options: string[];
+  value: string | null;
+  onChange: (c: string) => void;
+}) {
+  const [open, setOpen] = useState(false);
+  return (
+    <View className="gap-1.5">
+      <UIText variant="label">Kategori</UIText>
+      <UIPressable
+        accessibilityRole="button"
+        accessibilityLabel={`Kategori, ${value ?? "ikke valgt"}`}
+        accessibilityHint="Åpner Velg kategori"
+        onPress={() => setOpen(true)}
+        pressedScale={0.99}
+        contentClassName="flex-row items-center gap-3 rounded-md border border-line bg-surface px-4 py-3"
+      >
+        {value && hasCategoryArt(value) ? (
+          <CategoryArt name={value} size={28} />
+        ) : (
+          <Icon name="pricetags-outline" size="md" tone="muted" />
+        )}
+        <UIText
+          variant="body"
+          tone={value ? "ink" : "muted"}
+          className="flex-1"
+        >
+          {value ?? "Velg kategori"}
+        </UIText>
+        <Icon name="chevron-down" size="md" tone="muted" />
+      </UIPressable>
+      {open ? (
+        <CategoryPicker
+          options={options}
+          value={value}
+          onPick={onChange}
+          onClose={() => setOpen(false)}
+        />
+      ) : null}
+    </View>
+  );
+}
+
 function Label({ children }: { children: string }) {
-  return <Text className="text-sm font-semibold text-ink">{children}</Text>;
+  return (
+    <UIText variant="label" weight="semibold">
+      {children}
+    </UIText>
+  );
 }
 
 function ChipRow({
@@ -728,8 +794,12 @@ function SelectRow({
     >
       <Icon name={icon} size="md" tone="ink" />
       <View className="flex-1">
-        <Text className="text-base font-semibold text-ink">{title}</Text>
-        <Text className="text-xs text-muted font-normal">{hint}</Text>
+        <UIText variant="body" weight="semibold">
+          {title}
+        </UIText>
+        <UIText variant="caption" tone="muted">
+          {hint}
+        </UIText>
       </View>
       <View
         className={`h-5 w-5 rounded-full border-2 ${
@@ -788,9 +858,9 @@ function MonthPicker({
             color={atStart ? colors.line : colors.ink}
           />
         </Pressable>
-        <Text className="text-sm font-semibold capitalize text-ink">
+        <UIText variant="label" weight="semibold" className="capitalize">
           {label}
-        </Text>
+        </UIText>
         <Pressable
           accessibilityRole="button"
           accessibilityLabel="Neste måned"
@@ -803,12 +873,14 @@ function MonthPicker({
       </View>
       <View className="flex-row">
         {["Ma", "Ti", "On", "To", "Fr", "Lø", "Sø"].map((d) => (
-          <Text
+          <UIText
             key={d}
-            className="flex-1 text-center text-xs text-muted font-normal"
+            variant="caption"
+            tone="muted"
+            className="flex-1 text-center"
           >
             {d}
-          </Text>
+          </UIText>
         ))}
       </View>
       <View className="flex-row flex-wrap">

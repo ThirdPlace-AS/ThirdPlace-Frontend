@@ -9,6 +9,7 @@ import {
   StepContent,
   StepHeader,
   type IconName,
+  Text as UIText,
 } from "@/components/ui";
 import { Button } from "@/components/Button";
 import { Chip } from "@/components/Chip";
@@ -216,19 +217,19 @@ export default function Onboarding() {
                     <Icon name={p.icon as IconName} size="md" tone="ink" />
                   </View>
                   <View className="flex-1">
-                    <Text className="text-base font-semibold text-ink">
+                    <UIText variant="body" weight="semibold">
                       {p.label}
-                    </Text>
-                    <Text className="text-xs text-muted font-normal">
+                    </UIText>
+                    <UIText variant="caption" tone="muted">
                       {p.hint}
-                    </Text>
+                    </UIText>
                   </View>
                   {p.locked ? (
                     <View className="flex-row items-center gap-1 rounded-full bg-surfaceMuted px-2 py-0.5">
                       <Icon name="lock-closed" size="sm" tone="muted" />
-                      <Text className="text-[10px] font-semibold text-muted">
+                      <UIText variant="caption" weight="semibold" tone="muted">
                         LÅST
-                      </Text>
+                      </UIText>
                     </View>
                   ) : active ? (
                     <Icon name="checkmark-circle" size="lg" tone="ink" />
@@ -248,9 +249,9 @@ export default function Onboarding() {
               <View className="h-24 w-24 items-center justify-center rounded-full bg-surfaceMuted">
                 <Icon name="camera-outline" size="lg" tone="ink" />
               </View>
-              <Text className="text-sm font-semibold text-emberText">
+              <UIText variant="label" weight="semibold" tone="ember">
                 Legg til profilbilde
-              </Text>
+              </UIText>
             </View>
             <Input
               label="Navn"
@@ -269,13 +270,13 @@ export default function Onboarding() {
                 maxLength={10}
               />
               {age.status === "invalid" && birthday.length === 10 ? (
-                <Text className="text-xs text-dangerText font-normal">
+                <UIText variant="caption" tone="danger">
                   Sjekk datoen — bruk formatet dd.mm.åååå.
-                </Text>
+                </UIText>
               ) : (
-                <Text className="text-xs text-muted font-normal">
+                <UIText variant="caption" tone="muted">
                   Du må være minst 18 år for å bruke ThirdPlace.
-                </Text>
+                </UIText>
               )}
             </View>
             <Input
@@ -318,9 +319,9 @@ export default function Onboarding() {
               onChangeText={setNationality}
               maxLength={40}
             />
-            <Text className="text-xs text-muted font-normal">
+            <UIText variant="caption" tone="muted">
               Alt her er valgfritt — trykk på et valg igjen for å fjerne det.
-            </Text>
+            </UIText>
           </Shell>
         ) : null}
 
@@ -424,16 +425,21 @@ export default function Onboarding() {
                 </View>
                 <View className="flex-1 gap-0.5">
                   <View className="flex-row items-center gap-2">
-                    <Text className="text-base font-semibold text-ink">
+                    <UIText variant="body" weight="semibold">
                       {p.label}
-                    </Text>
-                    <Text className="rounded bg-surfaceMuted px-1.5 py-0.5 text-[9px] font-bold text-muted">
+                    </UIText>
+                    <UIText
+                      variant="caption"
+                      weight="bold"
+                      tone="muted"
+                      className="rounded bg-surfaceMuted px-1.5 py-0.5"
+                    >
                       {p.tag}
-                    </Text>
+                    </UIText>
                   </View>
-                  <Text className="text-xs text-muted font-normal">
+                  <UIText variant="caption" tone="muted">
                     {p.hint}
-                  </Text>
+                  </UIText>
                 </View>
                 <Switch
                   value={!!perms[p.key]}
@@ -460,21 +466,22 @@ export default function Onboarding() {
                   <Icon name="tp-experience" size="md" tone="ink" />
                 </View>
                 <View className="flex-1">
-                  <Text
-                    className="text-base font-semibold text-ink"
-                    numberOfLines={1}
-                  >
+                  <UIText variant="body" weight="semibold" numberOfLines={1}>
                     {e.title}
-                  </Text>
-                  <Text className="text-xs text-muted font-normal">
+                  </UIText>
+                  <UIText variant="caption" tone="muted">
                     {e.when}
-                  </Text>
+                  </UIText>
                 </View>
               </View>
             ))}
-            <Text className="px-4 pt-2 text-center text-base text-muted font-normal">
+            <UIText
+              variant="body"
+              tone="muted"
+              className="px-4 pt-2 text-center"
+            >
               Her er noen ting som skjer i byen din.
-            </Text>
+            </UIText>
             <DemoNote>
               Eksempler fra demoen — feeden er ikke personalisert ennå.
             </DemoNote>
@@ -506,7 +513,9 @@ function Group({
 }) {
   return (
     <View className="gap-2">
-      <Text className="text-sm font-semibold text-ink">{label}</Text>
+      <UIText variant="label" weight="semibold">
+        {label}
+      </UIText>
       <View className="flex-row flex-wrap gap-2">{children}</View>
     </View>
   );

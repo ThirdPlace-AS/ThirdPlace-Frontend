@@ -1,10 +1,10 @@
 import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
 import { useState } from "react";
-import { ScrollView, Text, View } from "react-native";
+import { ScrollView, View } from "react-native";
 
 import { Switch } from "@/components/ui/Switch";
-import { Icon, Screen, StepContent, StepHeader } from "@/components/ui";
+import { Icon, Screen, StepContent, StepHeader, Text } from "@/components/ui";
 import { Button } from "@/components/Button";
 import { Chip } from "@/components/Chip";
 import { DemoNote } from "@/components/DemoNote";
@@ -127,7 +127,7 @@ export default function BusinessOnboarding() {
               <View className="h-20 w-20 items-center justify-center rounded-full bg-surfaceMuted">
                 <Icon name="person-outline" size="xl" tone="ink" />
               </View>
-              <Text className="text-xs font-semibold text-ink">
+              <Text variant="caption" weight="semibold">
                 Legg til bilde
               </Text>
             </View>
@@ -152,7 +152,7 @@ export default function BusinessOnboarding() {
               onChangeText={(t) => setBirthday(formatBirthdayInput(t))}
               maxLength={10}
             />
-            <Text className="text-xs text-muted font-normal">
+            <Text variant="caption" tone="muted">
               Du må være minst 18 år for å administrere en bedrift.
             </Text>
           </Shell>
@@ -260,7 +260,7 @@ export default function BusinessOnboarding() {
               value={menu}
               onChangeText={setMenu}
             />
-            <Text className="text-xs text-muted font-normal">
+            <Text variant="caption" tone="muted">
               Alle felt kan endres senere fra dashbordet.
             </Text>
           </Shell>
@@ -329,14 +329,14 @@ export default function BusinessOnboarding() {
             <View className="gap-3 rounded-lg border border-line bg-surface p-4">
               <View className="flex-row items-center gap-1.5 self-start rounded-full border border-ember px-2.5 py-1">
                 <Icon name="eye-outline" size="sm" tone="ember" />
-                <Text className="text-[11px] font-semibold text-emberText">
+                <Text variant="caption" weight="semibold" tone="ember">
                   Forhåndsvisning — kun synlig for deg
                 </Text>
               </View>
-              <Text className="text-base font-semibold text-ink">
+              <Text variant="body" weight="semibold">
                 {name || "Bedriften din"}
               </Text>
-              <Text className="text-xs text-muted font-normal">
+              <Text variant="caption" tone="muted">
                 {[category, street, area].filter(Boolean).join(" · ")}
               </Text>
             </View>
@@ -369,7 +369,11 @@ export default function BusinessOnboarding() {
 const Shell = StepContent;
 
 function Label({ children }: { children: string }) {
-  return <Text className="text-sm font-semibold text-ink">{children}</Text>;
+  return (
+    <Text variant="label" weight="semibold">
+      {children}
+    </Text>
+  );
 }
 
 function Perm({
@@ -394,12 +398,21 @@ function Perm({
       </View>
       <View className="flex-1 gap-0.5">
         <View className="flex-row items-center gap-2">
-          <Text className="text-base font-semibold text-ink">{label}</Text>
-          <Text className="rounded bg-surfaceMuted px-1.5 py-0.5 text-[9px] font-bold text-muted">
+          <Text variant="body" weight="semibold">
+            {label}
+          </Text>
+          <Text
+            variant="caption"
+            weight="bold"
+            tone="muted"
+            className="rounded bg-surfaceMuted px-1.5 py-0.5"
+          >
             {tag}
           </Text>
         </View>
-        <Text className="text-xs text-muted font-normal">{hint}</Text>
+        <Text variant="caption" tone="muted">
+          {hint}
+        </Text>
       </View>
       <Switch value={value} onValueChange={onChange} label={label} />
     </View>
@@ -418,11 +431,17 @@ function NextStep({
   return (
     <View className="flex-row items-center gap-3 rounded-md border border-line bg-surface p-3.5">
       <View className="h-7 w-7 items-center justify-center rounded-full bg-surfaceMuted">
-        <Text className="text-xs font-bold text-ink">{n}</Text>
+        <Text variant="caption" weight="bold">
+          {n}
+        </Text>
       </View>
       <View className="flex-1">
-        <Text className="text-sm font-semibold text-ink">{title}</Text>
-        <Text className="text-xs text-muted font-normal">{hint}</Text>
+        <Text variant="label" weight="semibold">
+          {title}
+        </Text>
+        <Text variant="caption" tone="muted">
+          {hint}
+        </Text>
       </View>
     </View>
   );

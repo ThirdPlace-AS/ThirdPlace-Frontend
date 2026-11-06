@@ -2,7 +2,7 @@ import { router, useLocalSearchParams } from "expo-router";
 import { useEffect, useState } from "react";
 import { ScrollView, Text, View } from "react-native";
 
-import { Screen } from "@/components/ui";
+import { Screen, Text as UIText } from "@/components/ui";
 import { CodeInput } from "@/components/auth/CodeInput";
 import { Button } from "@/components/Button";
 import { DemoNote } from "@/components/DemoNote";
@@ -53,7 +53,7 @@ export default function VerifyCode() {
           onPress={confirm}
         />
         <View className="items-center gap-1">
-          <Text className="text-sm text-muted font-normal">
+          <UIText variant="caption" tone="muted">
             Fikk du ikke koden?{" "}
             <Text
               onPress={
@@ -68,21 +68,21 @@ export default function VerifyCode() {
             >
               Send på nytt
             </Text>
-          </Text>
+          </UIText>
           {left > 0 ? (
-            <Text className="text-xs text-muted font-normal">
+            <UIText variant="caption" tone="muted">
               Du kan sende ny kode om {left} sekunder
-            </Text>
+            </UIText>
           ) : null}
         </View>
         {identity ? (
           <View className="gap-0.5 rounded-md border border-line bg-surface p-3">
-            <Text className="text-sm font-semibold text-ink">
+            <UIText variant="label" weight="semibold">
               Mistet tilgang?
-            </Text>
-            <Text className="text-sm font-semibold text-emberText">
+            </UIText>
+            <UIText variant="label" weight="semibold" tone="ember">
               Backupkoder er ikke aktive i demoen
-            </Text>
+            </UIText>
           </View>
         ) : null}
         <DemoNote>

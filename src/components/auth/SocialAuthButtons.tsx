@@ -1,8 +1,8 @@
 import { Ionicons } from "@expo/vector-icons";
 import { useState } from "react";
-import { Pressable, Text, View } from "react-native";
+import { View } from "react-native";
 
-import { Icon } from "@/components/ui";
+import { Icon, Text, Pressable as UIPressable } from "@/components/ui";
 import { DemoNote } from "@/components/DemoNote";
 
 // "ELLER" divider + Google / Apple buttons (PDF p1). The verb follows the
@@ -21,23 +21,29 @@ export function SocialAuthButtons({ verb }: { verb: string }) {
     <View className="gap-3">
       <View className="flex-row items-center gap-3">
         <View className="h-px flex-1 bg-line" />
-        <Text className="text-xs font-semibold tracking-widest text-muted">
+        <Text
+          variant="caption"
+          weight="semibold"
+          tone="muted"
+          className="tracking-widest"
+        >
           ELLER
         </Text>
         <View className="h-px flex-1 bg-line" />
       </View>
       {providers.map((p) => (
-        <Pressable
+        <UIPressable
           key={p.name}
           accessibilityRole="button"
           onPress={() => setTried(p.name)}
-          className="flex-row items-center justify-center gap-2 rounded-full border border-line bg-surface py-3.5 active:opacity-80"
+          contentClassName="flex-row items-center justify-center gap-2 rounded-full border border-line bg-surface py-3.5"
+          pressedScale={0.99}
         >
           <Icon name={p.icon} size="md" tone="ink" />
-          <Text className="text-base font-medium text-ink">
+          <Text variant="body" weight="medium">
             {verb} {p.name}
           </Text>
-        </Pressable>
+        </UIPressable>
       ))}
       {tried ? (
         <DemoNote>{`Innlogging med ${tried} er ikke aktiv i demoen.`}</DemoNote>

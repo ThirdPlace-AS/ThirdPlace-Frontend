@@ -1,7 +1,7 @@
 import { useState } from "react";
-import { ScrollView, Text, View } from "react-native";
+import { ScrollView, View } from "react-native";
 
-import { Screen } from "@/components/ui";
+import { Screen, Text } from "@/components/ui";
 import { Button } from "@/components/Button";
 import { DemoNote } from "@/components/DemoNote";
 import { Input } from "@/components/Input";
@@ -39,7 +39,7 @@ export default function ResetPassword() {
               onChangeText={setPw}
             />
             {short ? (
-              <Text className="text-xs text-dangerText font-normal">
+              <Text variant="caption" tone="danger">
                 Passordet må ha minst 8 tegn.
               </Text>
             ) : null}
@@ -53,7 +53,7 @@ export default function ResetPassword() {
               onChangeText={setAgain}
             />
             {mismatch ? (
-              <Text className="text-xs text-dangerText font-normal">
+              <Text variant="caption" tone="danger">
                 Passordene er ikke like.
               </Text>
             ) : null}

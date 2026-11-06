@@ -1,7 +1,7 @@
 import { Image } from "expo-image";
 import { Link, router } from "expo-router";
 import { StatusBar } from "expo-status-bar";
-import { Text, View } from "react-native";
+import { View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { Button } from "@/components/Button";
@@ -9,6 +9,7 @@ import { LogoMark } from "@/components/Logo";
 import { useGuestMode } from "@/components/map/hooks/useGuestMode";
 import { libImage } from "@/fixtures/images";
 import { resetTo } from "@/lib/navigation";
+import { Text } from "@/components/ui";
 
 // Welcome (PDF p1): a full-bleed venue photo with the ThirdPlace mark, and a
 // bottom card — "Velkommen hjem", the pitch, "Kom i gang" (→ register),
@@ -31,20 +32,17 @@ export default function Welcome() {
       >
         <View className="flex-row items-center justify-center gap-2 pt-4">
           <LogoMark size={32} />
-          <Text
-            className="text-lg font-semibold text-white"
-            style={{ letterSpacing: -0.3 }}
-          >
+          <Text variant="title" tone="onMedia" style={{ letterSpacing: -0.3 }}>
             ThirdPlace
           </Text>
         </View>
 
         <View className="mx-3 mb-2 gap-4 rounded-xl bg-background p-6">
           <View className="h-1 w-10 self-center rounded-full bg-line" />
-          <Text className="text-center text-2xl font-bold text-ink">
+          <Text variant="h1" className="text-center">
             Velkommen hjem
           </Text>
-          <Text className="text-center text-base text-muted font-normal">
+          <Text variant="body" tone="muted" className="text-center">
             Oppdag nabolagets lune møteplasser. Finn din neste third place — der
             byen faktisk skjer.
           </Text>
@@ -61,7 +59,7 @@ export default function Welcome() {
               resetTo("/map");
             }}
           />
-          <Text className="text-center text-sm text-muted font-normal">
+          <Text variant="caption" tone="muted" className="text-center">
             Allerede medlem?{" "}
             <Link href="/login" className="font-semibold text-emberText">
               Logg inn
