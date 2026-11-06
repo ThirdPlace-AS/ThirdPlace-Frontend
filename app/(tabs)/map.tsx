@@ -61,7 +61,10 @@ export default function MapScreen() {
   const insets = useSafeAreaInsets();
   const { height: windowHeight } = useWindowDimensions();
   // Keep the bottom-right map tools clear of the persistent ~12% browse peek.
-  const browsePeekClearance = Math.round(windowHeight * 0.12);
+  // Tools sit just above the browse peek: its measured height once known
+  // (12 % of the window left ~30 dp of extra gap on tall phones).
+  const [peekH, setPeekH] = useState<number | null>(null);
+  const browsePeekClearance = peekH ?? Math.round(windowHeight * 0.12);
   const [filterOpen, setFilterOpen] = useState(false);
   const [notifOpen, setNotifOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
@@ -323,7 +326,8 @@ export default function MapScreen() {
         pointerEvents="box-none"
         className="absolute bottom-0 right-0 items-end gap-2 px-gutter"
         style={{
-          paddingBottom: insets.bottom + 16 + browsePeekClearance,
+          // The tab bar already covers the bottom inset inside a tab screen.
+          paddingBottom: 12 + browsePeekClearance,
           zIndex: 0,
         }}
       >
@@ -449,6 +453,7 @@ export default function MapScreen() {
           weather={MOCK_WEATHER}
           hidden={selection.sheetStack.length > 0}
           expandSignal={browseExpand}
+          onPeekHeight={setPeekH}
         />
       ) : null}
 

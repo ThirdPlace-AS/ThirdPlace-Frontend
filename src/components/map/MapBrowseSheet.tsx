@@ -48,6 +48,7 @@ export function MapBrowseSheet({
   hidden,
   expandSignal = 0,
   loading = false,
+  onPeekHeight,
 }: {
   items: DiscoveryItem[];
   selectedMarkerId: string | null;
@@ -62,6 +63,8 @@ export function MapBrowseSheet({
   expandSignal?: number;
   /** Mock load in flight: show skeleton cards instead of the empty message. */
   loading?: boolean;
+  /** Measured peek height, so map tools can sit just above it. */
+  onPeekHeight?: (h: number) => void;
 }) {
   const chrome = useSheetChrome();
   // Peek = handle + the measured city/weather header, so no card photo shows
@@ -178,7 +181,10 @@ export function MapBrowseSheet({
         <View
           onLayout={(e) => {
             const h = Math.round(e.nativeEvent.layout.height);
-            if (h > 0) setPeek(PEEK_HANDLE + h);
+            if (h > 0) {
+              setPeek(PEEK_HANDLE + h);
+              onPeekHeight?.(PEEK_HANDLE + h);
+            }
           }}
           className="flex-row items-center justify-between pb-3 px-gutter"
         >

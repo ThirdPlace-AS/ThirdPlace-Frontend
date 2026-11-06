@@ -1,25 +1,16 @@
 import { Ionicons } from "@expo/vector-icons";
-import { useState } from "react";
 import { Pressable, View } from "react-native";
 
 import { Icon, Text } from "@/components/ui";
-import { Button } from "@/components/Button";
 import { Chip } from "@/components/Chip";
 import { DemoNote } from "@/components/DemoNote";
-import { SignInPrompt } from "@/components/SignInPrompt";
 import { demoCopy } from "@/copy";
 import { experienceById, groupById, type ExperienceStatus } from "@/fixtures";
 
-import { useGuestMode } from "../hooks/useGuestMode";
+import { useExperienceJoin } from "../hooks/useExperienceJoin";
 import type { PushFn } from "../sheetTypes";
 import { markerId } from "../types/mapPresentation";
 import { DetailActions } from "./DetailActions";
-
-import {
-  LeaveSheet,
-  PaySheet,
-  WaitlistSheet,
-} from "@/components/actions/ActionSheets";
 
 const statusMeta: Record<
   ExperienceStatus,
@@ -31,8 +22,6 @@ const statusMeta: Record<
   joined: { label: "Påmeldt", className: "bg-ember" },
   cancelled: { label: "Avlyst", className: "bg-danger" },
 };
-
-type UserState = "none" | "joined" | "waitlisted";
 
 function LinkRow({
   icon,
@@ -58,21 +47,14 @@ function LinkRow({
   );
 }
 
+// Experience detail body. The join action lives in the sheet's pinned bar
+// (ExperienceJoinBar, PDF p6); both read the same local join state.
 export function ExperienceContent({ id, push }: { id: string; push: PushFn }) {
   const experience = experienceById(id);
-  const [user, setUser] = useState<UserState>(
+  const [user] = useExperienceJoin(
+    id,
     experience?.status === "joined" ? "joined" : "none",
   );
-  const { isGuest } = useGuestMode();
-  const [promptOpen, setPromptOpen] = useState(false);
-  // PDF p23: leaving and joining the waitlist confirm in a sheet first.
-  const [confirm, setConfirm] = useState<"leave" | "waitlist" | "pay" | null>(
-    null,
-  );
-  // Join / waitlist are account actions: guests get the sign-in prompt, the
-  // signed-in demo flips local state only (BLOCKED_CONTRACT_GAP).
-  const gated = (run: () => void) => () =>
-    isGuest ? setPromptOpen(true) : run();
 
   if (!experience) {
     return (
@@ -85,26 +67,6 @@ export function ExperienceContent({ id, push }: { id: string; push: PushFn }) {
   const meta = statusMeta[experience.status];
   const joinedCount = experience.going + (user === "joined" ? 1 : 0);
   const group = groupById(experience.groupId);
-
-  const primary = (() => {
-    if (user === "joined")
-      return { label: "Forlat", action: () => setConfirm("leave") };
-    if (user === "waitlisted")
-      return { label: "Meld av venteliste", action: () => setUser("none") };
-    if (experience.status === "cancelled")
-      return { label: "Avlyst", action: undefined, disabled: true };
-    if (experience.status === "full" || experience.status === "waitlist")
-      return {
-        label: "Meld på venteliste",
-        action: gated(() => setConfirm("waitlist")),
-      };
-    if (experience.priceNok)
-      return {
-        label: `Bli med · ${experience.priceNok} kr`,
-        action: gated(() => setConfirm("pay")),
-      };
-    return { label: "Bli med", action: gated(() => setUser("joined")) };
-  })();
 
   return (
     <View className="gap-4">
@@ -139,27 +101,13 @@ export function ExperienceContent({ id, push }: { id: string; push: PushFn }) {
         markerId={markerId("experience", experience.id)}
         title={experience.title}
       />
-      {confirm === "leave" ? (
-        <LeaveSheet
-          onClose={() => setConfirm(null)}
-          onConfirm={() => setUser("none")}
-        />
-      ) : null}
-      {confirm === "pay" && experience.priceNok ? (
-        <PaySheet
-          title={experience.title}
-          when={experience.when}
-          priceNok={experience.priceNok}
-          onClose={() => setConfirm(null)}
-          onJoined={() => setUser("joined")}
-        />
-      ) : null}
-      {confirm === "waitlist" ? (
-        <WaitlistSheet
-          ahead={3}
-          onClose={() => setConfirm(null)}
-          onConfirm={() => setUser("waitlisted")}
-        />
+
+      {user !== "none" ? (
+        <DemoNote>
+          {user === "joined"
+            ? demoCopy.joinedNoBackend
+            : demoCopy.waitlistedNoBackend}
+        </DemoNote>
       ) : null}
 
       <View className="gap-2">
@@ -186,27 +134,6 @@ export function ExperienceContent({ id, push }: { id: string; push: PushFn }) {
           onPress={() => push({ kind: "host", id: experience.id })}
         />
       </View>
-
-      {user !== "none" ? (
-        <DemoNote>
-          {user === "joined"
-            ? demoCopy.joinedNoBackend
-            : demoCopy.waitlistedNoBackend}
-        </DemoNote>
-      ) : null}
-
-      <Button
-        label={primary.label}
-        variant={user === "none" ? "ember" : "secondary"}
-        disabled={primary.disabled}
-        onPress={primary.action}
-      />
-
-      <SignInPrompt
-        visible={promptOpen}
-        onClose={() => setPromptOpen(false)}
-        action={primary.label.toLowerCase()}
-      />
     </View>
   );
 }

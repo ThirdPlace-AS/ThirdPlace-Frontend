@@ -1,6 +1,8 @@
 import BottomSheet, {
   BottomSheetBackdrop,
   type BottomSheetBackdropProps,
+  BottomSheetFooter,
+  type BottomSheetFooterProps,
   BottomSheetScrollView,
 } from "@gorhom/bottom-sheet";
 import { useCallback, useEffect, useMemo, useRef } from "react";
@@ -8,6 +10,7 @@ import { View } from "react-native";
 
 import { SheetHeader, useSheetChrome } from "@/components/ui";
 
+import { ExperienceJoinBar } from "./content/ExperienceJoinBar";
 import { DetailContent, titleFor } from "./DetailContentRouter";
 import type { PushFn, SheetTarget } from "./sheetTypes";
 
@@ -59,6 +62,21 @@ export function MapDetailSheet({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open, rootKey, openNonce]);
 
+  // Experiences pin their join bar to the bottom of the sheet (PDF p6), so
+  // "Bli med" shows at every snap instead of only at the end of the scroll.
+  const footerId = top?.kind === "experience" ? top.id : null;
+  const renderFooter = useCallback(
+    (props: BottomSheetFooterProps) =>
+      footerId ? (
+        <BottomSheetFooter {...props}>
+          <View className="border-t border-line bg-surface px-gutter pb-3 pt-3">
+            <ExperienceJoinBar id={footerId} />
+          </View>
+        </BottomSheetFooter>
+      ) : null,
+    [footerId],
+  );
+
   const renderBackdrop = useCallback(
     (props: BottomSheetBackdropProps) => (
       <BottomSheetBackdrop
@@ -85,6 +103,7 @@ export function MapDetailSheet({
       // (just above the tab bar) so it reads as sliding up from the nav instead
       // of floating in the middle of the map.
       backdropComponent={renderBackdrop}
+      footerComponent={footerId ? renderFooter : undefined}
       onClose={() => {
         // Sync React state when the sheet is dismissed by gesture/backdrop.
         if (open) onClose();
@@ -101,7 +120,7 @@ export function MapDetailSheet({
             />
           </View>
           <BottomSheetScrollView
-            contentContainerClassName="gap-4 px-gutter pb-16"
+            contentContainerClassName={`gap-4 px-gutter ${footerId ? "pb-28" : "pb-16"}`}
             keyboardShouldPersistTaps="handled"
           >
             <DetailContent target={top} push={push} />
