@@ -63,4 +63,10 @@ describe("mapBackAction", () => {
     expect(mapBackAction(1)).toBe("close");
     expect(mapBackAction(0)).toBe("none");
   });
+
+  it("collapses the full-screen experience page before closing", () => {
+    expect(mapBackAction(1, true)).toBe("collapse");
+    expect(mapBackAction(2, true)).toBe("back");
+    expect(mapBackAction(0, true)).toBe("none");
+  });
 });

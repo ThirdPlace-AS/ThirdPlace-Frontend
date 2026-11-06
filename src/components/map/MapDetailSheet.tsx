@@ -1,73 +1,158 @@
 import BottomSheet, {
   BottomSheetBackdrop,
   type BottomSheetBackdropProps,
+  type BottomSheetBackgroundProps,
   BottomSheetFooter,
   type BottomSheetFooterProps,
+  type BottomSheetHandleProps,
   BottomSheetScrollView,
 } from "@gorhom/bottom-sheet";
-import { useCallback, useEffect, useMemo, useRef } from "react";
-import { View } from "react-native";
+import {
+  forwardRef,
+  useCallback,
+  useEffect,
+  useImperativeHandle,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
+import { Share, View } from "react-native";
+import Animated, {
+  Extrapolation,
+  interpolate,
+  runOnJS,
+  useAnimatedReaction,
+  useAnimatedStyle,
+  useSharedValue,
+  type SharedValue,
+} from "react-native-reanimated";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-import { FadeSwap, SheetHeader, useSheetChrome } from "@/components/ui";
-
+import {
+  FadeSwap,
+  HeartToggle,
+  IconButton,
+  RootPortal,
+  SheetHeader,
+  StatusBarStyle,
+  Text,
+  useSheetChrome,
+} from "@/components/ui";
+import { SignInPrompt } from "@/components/SignInPrompt";
+import { experienceCaption } from "@/components/experience/experienceMeta";
+import { PAGE_BAR_ROW } from "@/components/experience/ExperiencePageOverlay";
 import { experienceById, placeById } from "@/fixtures";
+import { elevation, gutterPx, useThemeColors } from "@/theme";
 
 import { ExperienceJoinBar } from "./content/ExperienceJoinBar";
+import { useGuestMode } from "./hooks/useGuestMode";
+import { useMapSaved } from "./hooks/useMapSaved";
 import { markViewed } from "./hooks/useRecentlyViewed";
 import { DetailContent, titleFor } from "./DetailContentRouter";
 import type { PushFn, SheetTarget } from "./sheetTypes";
+import { markerId } from "./types/mapPresentation";
 
-// Google-Maps-style expandable detail sheet (@gorhom/bottom-sheet). Draggable
-// with momentum between three snaps — peek (16%), mid (50%), full (92%). Marker
-// taps open it at the peek so a slice of the detail shows right away; the user
-// drags up for more or pulls down to dismiss. Above the peek a backdrop dims the
-// map and closes the sheet on tap; at the peek there is NO backdrop so the map
-// stays interactive (tapping the map collapses the sheet — handled in map.tsx).
-// Drilling in (reviews, attendees, …) swaps content on the in-sheet stack with a
-// back chevron instead of pushing a route.
-export function MapDetailSheet({
-  stack,
-  openIndex,
-  openNonce,
-  push,
-  onBack,
-  onClose,
-}: {
-  stack: SheetTarget[];
-  // Snap index to animate to when a new target opens (0 peek / 1 mid).
-  openIndex: number;
-  // Bumped by the selection hook on every tap — re-snaps the sheet open even
-  // when the target is unchanged, so a marker tap always shows the detail.
-  openNonce: number;
-  push: PushFn;
-  onBack: () => void;
-  onClose: () => void;
-}) {
+// Google-Maps-style expandable detail sheet (@gorhom/bottom-sheet) with three
+// snaps — peek, mid, full. Marker taps open it at the peek; the user drags up
+// for more or pulls down to dismiss. Above the peek a backdrop dims the map.
+// Drilling in (reviews, attendees, …) swaps content on the in-sheet stack.
+//
+// Experiences (Phase 11 G5, the founder's reference video): the experience
+// sheet is a modal sheet rendered in the app-root portal, above the tab bar,
+// so its 100 % top snap is the full-screen page. While dragging up, the
+// handle fades, the top corners square off and the page top bar (back,
+// caption, share, save) grows in — all from gorhom's animatedIndex on the UI
+// thread (styles only on Animated.View). Tried and dropped: hiding the tab
+// bar (it resized gorhom's container and re-snapped the sheet) and handing
+// off to a second full-screen page at the top (the sheet vanished for ~1 s
+// while the page mounted). Back / ← at the top returns to the mid snap.
+// Pushed views keep the normal header, padded below the status bar at the
+// top snap. Places, businesses and groups keep the 92 % sheet docked above
+// the tab bar.
+
+export const PAGE_SNAP = 2;
+const PAGE_FROM = 1.7; // animatedIndex where the page chrome starts to show
+
+export type MapDetailSheetHandle = {
+  /** Page → mid snap (Android back at the top snap). */
+  collapse: () => void;
+};
+
+export const MapDetailSheet = forwardRef<
+  MapDetailSheetHandle,
+  {
+    stack: SheetTarget[];
+    // Snap index to animate to when a new target opens (0 peek / 1 mid).
+    openIndex: number;
+    // Bumped by the selection hook on every tap — re-snaps the sheet open even
+    // when the target is unchanged, so a marker tap always shows the detail.
+    openNonce: number;
+    push: PushFn;
+    onBack: () => void;
+    onClose: () => void;
+    /** Reports whether the experience page is full screen (top snap). */
+    onPageChange?: (isPage: boolean) => void;
+  }
+>(function MapDetailSheet(
+  { stack, openIndex, openNonce, push, onBack, onClose, onPageChange },
+  ref,
+) {
   const chrome = useSheetChrome();
-  const snapPoints = useMemo(() => ["35%", "60%", "92%"], []);
+  const insets = useSafeAreaInsets();
+  const root = stack[0];
+  const pageCapable = root?.kind === "experience";
+  const snapPoints = useMemo(
+    () => (pageCapable ? ["35%", "60%", "100%"] : ["35%", "60%", "92%"]),
+    [pageCapable],
+  );
 
   const sheetRef = useRef<BottomSheet>(null);
+  const animatedIndex = useSharedValue(openIndex);
+  const [isPage, setIsPage] = useState(false);
   const open = stack.length > 0;
   const top = stack[stack.length - 1];
   const nested = stack.length > 1;
+  const topIsExperience = top?.kind === "experience";
   // Re-snap only when the ROOT target changes (not on in-sheet push/back).
-  const rootKey = stack[0] ? `${stack[0].kind}:${stack[0].id}` : null;
+  const rootKey = root ? `${root.kind}:${root.id}` : null;
+  // The page top bar clears the status bar; the handle row (24) sits above.
+  const topPad = Math.max(0, insets.top - 24);
 
-  // Open → animate to the requested snap; closed → hide. Driven imperatively so
-  // the user can still drag freely once it is open. `openNonce` is in the deps
-  // so EVERY tap re-snaps the sheet open, even when the target is unchanged or
-  // the sheet was left mounted at a different snap. Belt-and-suspenders with the
-  // declarative `index` prop below, which handles the first-mount open without
-  // relying on effect timing.
+  // Page state from the sheet position, not onChange: a drag that reaches
+  // the top and carries on into the content scroll never "snaps", so gorhom
+  // does not report index 2. Drives back handling, the top bar's touch and
+  // the status bar.
+  const onTop = useCallback(
+    (atTop: boolean) => setIsPage(pageCapable && atTop),
+    [pageCapable],
+  );
+  useAnimatedReaction(
+    () => animatedIndex.value > PAGE_SNAP - 0.02,
+    (atTop, prev) => {
+      if (atTop !== prev) runOnJS(onTop)(atTop);
+    },
+    [onTop],
+  );
+
+  useImperativeHandle(ref, () => ({
+    collapse: () => sheetRef.current?.snapToIndex(1),
+  }));
+
+  // Open → animate to the requested snap; closed → hide. `openNonce` is in
+  // the deps so EVERY tap re-snaps the sheet open.
   useEffect(() => {
     if (open) sheetRef.current?.snapToIndex(openIndex);
     else sheetRef.current?.close();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open, rootKey, openNonce]);
 
-  // Experiences pin their join bar to the bottom of the sheet (PDF p6), so
-  // "Bli med" shows at every snap instead of only at the end of the scroll.
-  const footerId = top?.kind === "experience" ? top.id : null;
+  useEffect(() => {
+    onPageChange?.(isPage);
+  }, [isPage, onPageChange]);
+
+  // Experiences pin their join action as a floating card (PDF p6 + video),
+  // so "Bli med" shows at every snap.
+  const footerId = topIsExperience && top ? top.id : null;
 
   // "Nylig sett": a place or experience whose detail actually opened.
   const topKind = top?.kind;
@@ -82,16 +167,28 @@ export function MapDetailSheet({
       if (e) markViewed({ kind: "experience", id: topId, title: e.title });
     }
   }, [topKind, topId]);
+
   const renderFooter = useCallback(
     (props: BottomSheetFooterProps) =>
       footerId ? (
         <BottomSheetFooter {...props}>
-          <View className="border-t border-line bg-surface px-gutter pb-3 pt-3">
-            <ExperienceJoinBar id={footerId} />
+          <View
+            style={{
+              paddingHorizontal: gutterPx,
+              // The portal sheet reaches the screen bottom (gesture bar).
+              paddingBottom: pageCapable ? Math.max(insets.bottom, 12) : 12,
+            }}
+          >
+            <View
+              className="rounded-lg border border-line bg-surface px-4 py-3"
+              style={elevation.e2}
+            >
+              <ExperienceJoinBar id={footerId} />
+            </View>
           </View>
         </BottomSheetFooter>
       ) : null,
-    [footerId],
+    [footerId, pageCapable, insets.bottom],
   );
 
   const renderBackdrop = useCallback(
@@ -106,49 +203,214 @@ export function MapDetailSheet({
     [],
   );
 
+  // Header: the experience page shows only ✕ in sheet mode and collapses it
+  // as the page top bar grows in; pushed views keep back + title and move
+  // below the status bar at the top snap.
+  const headerStyle = useAnimatedStyle(() => {
+    if (!pageCapable) return {};
+    const t = interpolate(
+      animatedIndex.value,
+      [PAGE_FROM, PAGE_SNAP],
+      [0, 1],
+      Extrapolation.CLAMP,
+    );
+    // Always set every key: Reanimated keeps a prop that a later style
+    // object leaves out (a pushed view kept maxHeight 0 and vanished).
+    return topIsExperience
+      ? { maxHeight: 64 * (1 - t), opacity: 1 - t, paddingTop: 0 }
+      : { maxHeight: 200, opacity: 1, paddingTop: topPad * t };
+  }, [pageCapable, topIsExperience, topPad]);
+
+  const sheet = (
+    <>
+      {isPage ? <StatusBarStyle style="auto" /> : null}
+      <BottomSheet
+        ref={sheetRef}
+        // Declarative open: mount already at the requested snap so the detail
+        // shows on the first frame.
+        index={open ? openIndex : -1}
+        snapPoints={snapPoints}
+        animatedIndex={animatedIndex}
+        enableDynamicSizing={false}
+        enablePanDownToClose
+        backdropComponent={renderBackdrop}
+        footerComponent={footerId ? renderFooter : undefined}
+        onClose={() => {
+          // Sync React state when the sheet is dismissed by gesture/backdrop.
+          if (open) onClose();
+        }}
+        {...chrome}
+        {...(pageCapable
+          ? { backgroundComponent: PageBackground, handleComponent: PageHandle }
+          : null)}
+      >
+        {top ? (
+          <>
+            {pageCapable && topIsExperience ? (
+              <PageTopBar
+                animatedIndex={animatedIndex}
+                topPad={topPad}
+                interactive={isPage}
+                experienceId={top.id}
+                onBack={() => sheetRef.current?.snapToIndex(1)}
+              />
+            ) : null}
+            <Animated.View
+              style={[
+                { paddingHorizontal: gutterPx, overflow: "hidden" },
+                headerStyle,
+              ]}
+            >
+              <View className="pb-2">
+                <SheetHeader
+                  title={topIsExperience ? undefined : titleFor(top)}
+                  onBack={nested ? onBack : undefined}
+                  onClose={onClose}
+                />
+              </View>
+            </Animated.View>
+            <BottomSheetScrollView
+              contentContainerClassName={`gap-4 px-gutter ${pageCapable ? "pt-4" : ""} ${footerId ? "pb-36" : "pb-16"}`}
+              keyboardShouldPersistTaps="handled"
+            >
+              {/* In-sheet push/back fades the new content in (was one frame). */}
+              <FadeSwap swapKey={`${top.kind}:${top.id}`}>
+                <DetailContent target={top} push={push} />
+              </FadeSwap>
+            </BottomSheetScrollView>
+          </>
+        ) : (
+          <View />
+        )}
+      </BottomSheet>
+    </>
+  );
+  // Experiences: a modal sheet at the app root, above the tab bar.
+  return pageCapable ? <RootPortal>{sheet}</RootPortal> : sheet;
+});
+
+// Sheet background whose top corners square off on the way to the page snap.
+function PageBackground({ style, animatedIndex }: BottomSheetBackgroundProps) {
+  const c = useThemeColors();
+  const chrome = useSheetChrome();
+  const radius =
+    (chrome.backgroundStyle.borderTopLeftRadius as number | undefined) ?? 28;
+  const a = useAnimatedStyle(() => {
+    const r = interpolate(
+      animatedIndex.value,
+      [PAGE_FROM, PAGE_SNAP],
+      [radius, 0],
+      Extrapolation.CLAMP,
+    );
+    return { borderTopLeftRadius: r, borderTopRightRadius: r };
+  }, [radius]);
   return (
-    <BottomSheet
-      ref={sheetRef}
-      // Declarative open: mount already at the requested snap so the detail
-      // shows on the first frame (no wait for the effect to fire — fixes taps
-      // that intermittently opened nothing on the SoftMap/web path).
-      index={open ? openIndex : -1}
-      snapPoints={snapPoints}
-      enableDynamicSizing={false}
-      enablePanDownToClose
-      // No bottomInset: the sheet docks to the bottom of the screen content
-      // (just above the tab bar) so it reads as sliding up from the nav instead
-      // of floating in the middle of the map.
-      backdropComponent={renderBackdrop}
-      footerComponent={footerId ? renderFooter : undefined}
-      onClose={() => {
-        // Sync React state when the sheet is dismissed by gesture/backdrop.
-        if (open) onClose();
-      }}
-      {...chrome}
+    <Animated.View
+      pointerEvents="none"
+      style={[style, { backgroundColor: c.surface }, elevation.e3, a]}
+    />
+  );
+}
+
+// Grab handle that fades out on the way to the page snap (still draggable).
+function PageHandle({ animatedIndex }: BottomSheetHandleProps) {
+  const c = useThemeColors();
+  const a = useAnimatedStyle(() => ({
+    opacity: interpolate(
+      animatedIndex.value,
+      [PAGE_FROM, PAGE_SNAP],
+      [1, 0],
+      Extrapolation.CLAMP,
+    ),
+  }));
+  return (
+    <View
+      style={{ height: 24, alignItems: "center", justifyContent: "center" }}
+      accessibilityLabel="Dra for å endre størrelse"
     >
-      {top ? (
-        <>
-          <View className="px-gutter pb-2">
-            <SheetHeader
-              title={titleFor(top)}
-              onBack={nested ? onBack : undefined}
-              onClose={onClose}
-            />
-          </View>
-          <BottomSheetScrollView
-            contentContainerClassName={`gap-4 px-gutter ${footerId ? "pb-28" : "pb-16"}`}
-            keyboardShouldPersistTaps="handled"
-          >
-            {/* In-sheet push/back fades the new content in (was one frame). */}
-            <FadeSwap swapKey={`${top.kind}:${top.id}`}>
-              <DetailContent target={top} push={push} />
-            </FadeSwap>
-          </BottomSheetScrollView>
-        </>
-      ) : (
-        <View />
-      )}
-    </BottomSheet>
+      <Animated.View
+        style={[
+          { width: 40, height: 4, borderRadius: 2, backgroundColor: c.line },
+          a,
+        ]}
+      />
+    </View>
+  );
+}
+
+// The reference page's top bar: back (to 60 %), small centred caption, share
+// and save. Grows in with the drag; tappable only once the page is settled.
+function PageTopBar({
+  animatedIndex,
+  topPad,
+  interactive,
+  experienceId,
+  onBack,
+}: {
+  animatedIndex: SharedValue<number>;
+  topPad: number;
+  interactive: boolean;
+  experienceId: string;
+  onBack: () => void;
+}) {
+  const exp = experienceById(experienceId);
+  const { isGuest } = useGuestMode();
+  const { isSaved, toggle } = useMapSaved();
+  const [promptOpen, setPromptOpen] = useState(false);
+  const full = topPad + PAGE_BAR_ROW;
+  const a = useAnimatedStyle(() => {
+    const t = interpolate(
+      animatedIndex.value,
+      [PAGE_FROM, PAGE_SNAP],
+      [0, 1],
+      Extrapolation.CLAMP,
+    );
+    return { height: full * t, opacity: t };
+  }, [full]);
+  if (!exp) return null;
+  const key = markerId("experience", exp.id);
+  const saved = isSaved(key);
+  return (
+    <Animated.View
+      pointerEvents={interactive ? "auto" : "none"}
+      style={[{ overflow: "hidden" }, a]}
+    >
+      <View
+        className="flex-row items-center gap-1 border-b border-line px-2"
+        style={{ paddingTop: topPad, height: full }}
+      >
+        <IconButton icon="arrow-back" label="Tilbake" onPress={onBack} />
+        <Text
+          variant="caption"
+          weight="semibold"
+          tone="muted"
+          className="flex-1 text-center"
+          numberOfLines={1}
+        >
+          {experienceCaption(exp)}
+        </Text>
+        <IconButton
+          icon="share-outline"
+          label="Del"
+          onPress={() =>
+            void Share.share({
+              message: `${exp.title} på ThirdPlace: thirdplace.app/experience/${exp.id}`,
+            }).catch(() => {})
+          }
+        />
+        <HeartToggle
+          selected={saved}
+          variant="ghost"
+          haptic={!isGuest}
+          label={saved ? "Fjern fra lagret" : "Lagre"}
+          onToggle={() => (isGuest ? setPromptOpen(true) : toggle(key))}
+        />
+      </View>
+      <SignInPrompt
+        visible={promptOpen}
+        onClose={() => setPromptOpen(false)}
+        action="lagre"
+      />
+    </Animated.View>
   );
 }

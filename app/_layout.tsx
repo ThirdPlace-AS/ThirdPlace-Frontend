@@ -12,6 +12,7 @@ import {
 } from "react-native-safe-area-context";
 
 import { ToastHost } from "@/components/Toast";
+import { RootPortalHost } from "@/components/ui/RootPortal";
 import { queryClient } from "@/services/api/queryClient";
 import { useThemeColors } from "@/theme";
 import { fontAssets } from "@/theme/fonts";
@@ -44,6 +45,7 @@ export default function RootLayout() {
             ) : (
               <View className="flex-1 bg-background" />
             )}
+            <RootPortalHost />
             <ToastHost />
           </ThemeRoot>
         </QueryClientProvider>

@@ -12,12 +12,17 @@ import { type DiscoveryItem, markerId } from "../types/mapPresentation";
 export const SNAP_PEEK = 0;
 export const SNAP_MID = 1;
 
-// What the Android back key does on the map, from the detail-stack depth: step
-// back inside the sheet, close it, or (nothing open) let navigation handle it.
-export type MapBackAction = "back" | "close" | "none";
-export function mapBackAction(stackDepth: number): MapBackAction {
+// What the Android back key does on the map, from the detail-stack depth and
+// whether the experience page is full screen: step back inside the sheet,
+// collapse the page to the mid snap, close the sheet, or (nothing open) let
+// navigation handle it. Page → 60 % → close (Phase 11 G5).
+export type MapBackAction = "back" | "collapse" | "close" | "none";
+export function mapBackAction(
+  stackDepth: number,
+  isPage = false,
+): MapBackAction {
   if (stackDepth > 1) return "back";
-  if (stackDepth === 1) return "close";
+  if (stackDepth === 1) return isPage ? "collapse" : "close";
   return "none";
 }
 

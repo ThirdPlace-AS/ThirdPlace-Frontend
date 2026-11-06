@@ -1,11 +1,10 @@
-import { router, type Href } from "expo-router";
+import { router } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import { Asset } from "expo-asset";
-import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useMemo, useState } from "react";
 import {
   Platform,
   Pressable,
-  ScrollView,
   Share,
   StyleSheet,
   useWindowDimensions,
@@ -28,28 +27,21 @@ import Animated, {
   type SharedValue,
 } from "react-native-reanimated";
 
-import { HeartToggle, Icon, IconButton, Overlay, Text } from "@/components/ui";
-import { StatusBarStyle } from "@/components/ui/StatusBarStyle";
+import { Icon, Text } from "@/components/ui";
 import { Button } from "@/components/Button";
 import { Sheet } from "@/components/Sheet";
 import { useGuestMode } from "@/components/map/hooks/useGuestMode";
-import { useMapSaved } from "@/components/map/hooks/useMapSaved";
-import { markerId } from "@/components/map/types/mapPresentation";
 import { NotificationsSheet } from "@/components/NotificationsSheet";
 import { SignInPrompt } from "@/components/SignInPrompt";
 import { EmptyState } from "@/components/states/StateView";
-import { chats, experienceById, type MockExperience } from "@/fixtures";
-import { ExperiencePage } from "@/components/experience/ExperiencePage";
-import { experienceCaption } from "@/components/experience/experienceMeta";
-import { ExperienceJoinBar } from "@/components/map/content/ExperienceJoinBar";
-import { DetailContent, titleFor } from "@/components/map/DetailContentRouter";
-import type { SheetTarget } from "@/components/map/sheetTypes";
+import { chats, type MockExperience } from "@/fixtures";
+import { ExperiencePageOverlay } from "@/components/experience/ExperiencePageOverlay";
 import { showToastAfterSheet } from "@/components/Toast";
 import { confirmToast } from "@/copy";
 import { useNotificationReads } from "@/hooks/useNotificationReads";
 import { markViewed } from "@/components/map/hooks/useRecentlyViewed";
 import { haptics } from "@/lib/haptics";
-import { elevation, motion, useThemeColors, media } from "@/theme";
+import { motion, useThemeColors, media } from "@/theme";
 
 import { decideCommit, rotationFor, type SwipeAction } from "./deckLogic";
 import { PlaceDeck } from "./PlaceDeck";
@@ -464,7 +456,7 @@ export function SwipeDeck() {
 
         {/* In-place detail — a full-screen DARK experience sheet (swipe-local, so
           the shared map detail stays light). Pan is disabled while it is open. */}
-        <ExpandDetail exp={expand} onClose={() => setExpand(null)} />
+        <ExperiencePageOverlay exp={expand} onClose={() => setExpand(null)} />
 
         <JoinChatSheet exp={joinChatFor} onClose={() => setJoinChatFor(null)} />
 
@@ -747,164 +739,6 @@ function Stamps({
           style={stampShadow}
         />
       </Animated.View>
-    </View>
-  );
-}
-
-// Full-screen in-place detail (Phase 11 G5): the shared ExperiencePage in an
-// Overlay, laid out as the reference video's page — white top bar (back,
-// caption, share, save), the page body, and the join action as a floating
-// card. Sub-views (deltakere, gruppe, sjekk inn, vert) open in a sheet over
-// the page; place, host profile and chat leave the overlay first (a route
-// would render under the Modal). Join/save use the shared stores, so the map
-// and Sveip agree; guests get the sign-in prompt (BLOCKED_CONTRACT_GAP).
-function ExpandDetail({
-  exp,
-  onClose,
-}: {
-  exp: MockExperience | null;
-  onClose: () => void;
-}) {
-  const c = useThemeColors();
-  // Keep the last experience on screen while the overlay animates out, and
-  // let "Flere opplevelser i området" swap it in place.
-  const [shown, setShown] = useState(exp);
-  const [opened, setOpened] = useState(exp);
-  if (exp !== opened) {
-    setOpened(exp);
-    if (exp) setShown(exp);
-  }
-  return (
-    <Overlay
-      visible={exp !== null}
-      onClose={onClose}
-      enter="up"
-      statusBarTranslucent
-      style={{ backgroundColor: c.background }}
-      accessibilityLabel={shown?.title}
-    >
-      {shown ? (
-        <ExpandBody exp={shown} onClose={onClose} onSwap={setShown} />
-      ) : null}
-    </Overlay>
-  );
-}
-
-function ExpandBody({
-  exp,
-  onClose,
-  onSwap,
-}: {
-  exp: MockExperience;
-  onClose: () => void;
-  onSwap: (e: MockExperience) => void;
-}) {
-  const insets = useSafeAreaInsets();
-  const scrollRef = useRef<ScrollView>(null);
-  const { isGuest } = useGuestMode();
-  const [signInFor, setSignInFor] = useState<string | null>(null);
-  const [sub, setSub] = useState<SheetTarget[]>([]);
-  const { isSaved, toggle } = useMapSaved();
-  const savedKey = markerId("experience", exp.id);
-  const saved = isSaved(savedKey);
-
-  // Leave the overlay before navigating: a route would open under the Modal.
-  const leaveTo = (href: Href) => {
-    onClose();
-    setTimeout(() => router.push(href), 260);
-  };
-  const top = sub[sub.length - 1];
-
-  return (
-    <View className="flex-1">
-      <StatusBarStyle style="auto" />
-      {/* Page top bar (reference: back, small centred caption, share, heart). */}
-      <View
-        className="flex-row items-center gap-1 border-b border-line bg-background px-2 pb-1"
-        style={{ paddingTop: insets.top + 4 }}
-      >
-        <IconButton icon="arrow-back" label="Tilbake" onPress={onClose} />
-        <Text
-          variant="caption"
-          weight="semibold"
-          tone="muted"
-          className="flex-1 text-center"
-          numberOfLines={1}
-        >
-          {experienceCaption(exp)}
-        </Text>
-        <IconButton
-          icon="share-outline"
-          label="Del"
-          onPress={() =>
-            void Share.share({
-              message: `${exp.title} på ThirdPlace: thirdplace.app/experience/${exp.id}`,
-            }).catch(() => {})
-          }
-        />
-        <HeartToggle
-          selected={saved}
-          variant="ghost"
-          haptic={!isGuest}
-          label={saved ? "Fjern fra lagret" : "Lagre"}
-          onToggle={() => (isGuest ? setSignInFor("lagre") : toggle(savedKey))}
-        />
-      </View>
-
-      <ScrollView
-        ref={scrollRef}
-        contentContainerClassName="px-gutter pb-40 pt-4"
-        keyboardShouldPersistTaps="handled"
-      >
-        <ExperiencePage
-          exp={exp}
-          onOpen={(t) =>
-            t.kind === "place"
-              ? leaveTo(`/map?focus=place:${t.id}&at=${Date.now()}` as Href)
-              : setSub([t])
-          }
-          onOpenExperience={(id) => {
-            const next = experienceById(id);
-            if (!next) return;
-            onSwap(next);
-            scrollRef.current?.scrollTo({ y: 0, animated: false });
-          }}
-          onNavigate={leaveTo}
-        />
-      </ScrollView>
-
-      {/* Join action as the reference's floating card. */}
-      <View
-        pointerEvents="box-none"
-        className="absolute inset-x-0 bottom-0 px-gutter"
-        style={{ paddingBottom: Math.max(insets.bottom, 12) + 4 }}
-      >
-        <View
-          className="rounded-lg border border-line bg-surface px-4 py-3"
-          style={elevation.e2}
-        >
-          <ExperienceJoinBar id={exp.id} />
-        </View>
-      </View>
-
-      {top ? (
-        <Sheet
-          visible
-          onClose={() => setSub([])}
-          title={titleFor(top)}
-          onBack={
-            sub.length > 1 ? () => setSub((s) => s.slice(0, -1)) : undefined
-          }
-        >
-          <DetailContent target={top} push={(t) => setSub((s) => [...s, t])} />
-        </Sheet>
-      ) : null}
-
-      <SignInPrompt
-        visible={signInFor !== null}
-        action={signInFor ?? "fortsette"}
-        onClose={() => setSignInFor(null)}
-      />
     </View>
   );
 }

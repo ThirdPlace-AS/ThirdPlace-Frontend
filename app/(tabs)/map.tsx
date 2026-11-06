@@ -1,5 +1,5 @@
 import { useFocusEffect, useLocalSearchParams } from "expo-router";
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useMemo, useRef, useState } from "react";
 import {
   ActivityIndicator,
   BackHandler,
@@ -20,7 +20,10 @@ import {
 import { Illustration } from "@/components/illustrations/Illustration";
 import { canUseMapbox, MapCanvas } from "@/components/map/MapCanvas";
 import { DiscoveryModeTabs } from "@/components/map/DiscoveryModeTabs";
-import { MapDetailSheet } from "@/components/map/MapDetailSheet";
+import {
+  MapDetailSheet,
+  type MapDetailSheetHandle,
+} from "@/components/map/MapDetailSheet";
 import { MapFilterSheet } from "@/components/map/MapFilterSheet";
 import { MapLayerSheet } from "@/components/map/MapLayerSheet";
 import { MapLocationSheet } from "@/components/map/MapLocationSheet";
@@ -117,16 +120,19 @@ export default function MapScreen() {
   // does not leave the map with the sheet still up. Only while the map is
   // focused; Modal sheets (Filtre, search, …) handle back themselves.
   const sheetDepth = selection.sheetStack.length;
+  const detailRef = useRef<MapDetailSheetHandle>(null);
+  const [detailIsPage, setDetailIsPage] = useState(false);
   useFocusEffect(
     useCallback(() => {
       const sub = BackHandler.addEventListener("hardwareBackPress", () => {
-        const action = mapBackAction(sheetDepth);
+        const action = mapBackAction(sheetDepth, detailIsPage);
         if (action === "back") sheetBack();
+        else if (action === "collapse") detailRef.current?.collapse();
         else if (action === "close") sheetClose();
         return action !== "none";
       });
       return () => sub.remove();
-    }, [sheetDepth, sheetBack, sheetClose]),
+    }, [sheetDepth, detailIsPage, sheetBack, sheetClose]),
   );
 
   // Mock async load so the surface can show loading/error states (no backend).
@@ -473,6 +479,8 @@ export default function MapScreen() {
           container that would swallow taps meant for the map's floating buttons. */}
       {selection.sheetStack.length > 0 ? (
         <MapDetailSheet
+          ref={detailRef}
+          onPageChange={setDetailIsPage}
           stack={selection.sheetStack}
           openIndex={selection.openIndex}
           openNonce={selection.openNonce}
