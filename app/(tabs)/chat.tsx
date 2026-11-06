@@ -20,6 +20,7 @@ import { DemoNote } from "@/components/DemoNote";
 import { Input } from "@/components/Input";
 import { UserSearch } from "@/components/pickers/Pickers";
 import { NotificationsSheet } from "@/components/NotificationsSheet";
+import { useNotificationReads } from "@/hooks/useNotificationReads";
 import { Sheet } from "@/components/Sheet";
 import { showToastAfterSheet } from "@/components/Toast";
 import { demoToast } from "@/copy";
@@ -40,6 +41,7 @@ export default function ChatScreen() {
   const [open, setOpen] = useState<Record<string, boolean>>({});
   const [newOpen, setNewOpen] = useState(false);
   const [notifOpen, setNotifOpen] = useState(false);
+  const { unread: unreadNotifs } = useNotificationReads();
   const [archOpen, setArchOpen] = useState(false);
 
   const q = query.trim().toLowerCase();
@@ -93,6 +95,7 @@ export default function ChatScreen() {
             <IconButton
               icon="notifications-outline"
               label="Varsler"
+              badge={unreadNotifs}
               onPress={() => setNotifOpen(true)}
             />
           }

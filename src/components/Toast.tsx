@@ -24,6 +24,9 @@ export type ToastInput = {
   title: string;
   body?: string;
   icon?: keyof typeof Ionicons.glyphMap;
+  /** One action on the right (PDF p27 draws "Meld på" / "Bli med"), e.g.
+   * "Angre" after removing something. The toast stays 5 s instead of 3.5. */
+  action?: { label: string; onPress: () => void };
 };
 type Toast = ToastInput & { id: number };
 
@@ -67,7 +70,7 @@ export function ToastHost() {
 
   useEffect(() => {
     if (!toast) return;
-    const t = setTimeout(dismissToast, 3500);
+    const t = setTimeout(dismissToast, toast.action ? 5000 : 3500);
     return () => clearTimeout(t);
   }, [toast]);
 
@@ -85,33 +88,59 @@ export function ToastHost() {
           entering={reduced ? undefined : FadeInUp.duration(duration.base)}
           exiting={reduced ? undefined : FadeOutUp.duration(duration.fast)}
         >
-          <Pressable
-            accessibilityRole="alert"
-            accessibilityLabel={`${toast.title}. ${toast.body ?? ""}`}
-            accessibilityHint="Trykk for å lukke"
-            onPress={dismissToast}
-            pressedScale={0.98}
-            contentClassName="flex-row items-center gap-md rounded-lg bg-ink px-md py-md"
-            contentStyle={elevation.e3}
+          {/* Row: tap-to-close body + an optional action as a SIBLING (no
+              button inside a button on web). */}
+          <View
+            className="flex-row items-center rounded-lg bg-ink"
+            style={elevation.e3}
           >
-            <View className="h-9 w-9 items-center justify-center rounded-full bg-onInk/10">
-              <Icon
-                name={toast.icon ?? "notifications-outline"}
-                size="md"
-                tone="onInk"
-              />
-            </View>
-            <View className="flex-1 gap-0.5">
-              <Text variant="label" weight="semibold" tone="onInk">
-                {toast.title}
-              </Text>
-              {toast.body ? (
-                <Text variant="caption" tone="onInk" numberOfLines={2}>
-                  {toast.body}
+            <Pressable
+              accessibilityRole="alert"
+              accessibilityLabel={`${toast.title}. ${toast.body ?? ""}`}
+              accessibilityHint="Trykk for å lukke"
+              onPress={dismissToast}
+              pressedScale={0.98}
+              className="flex-1"
+              contentClassName="flex-row items-center gap-md px-md py-md"
+            >
+              <View className="h-9 w-9 items-center justify-center rounded-full bg-onInk/10">
+                <Icon
+                  name={toast.icon ?? "notifications-outline"}
+                  size="md"
+                  tone="onInk"
+                />
+              </View>
+              <View className="flex-1 gap-0.5">
+                <Text variant="label" weight="semibold" tone="onInk">
+                  {toast.title}
                 </Text>
-              ) : null}
-            </View>
-          </Pressable>
+                {toast.body ? (
+                  <Text variant="caption" tone="onInk" numberOfLines={2}>
+                    {toast.body}
+                  </Text>
+                ) : null}
+              </View>
+            </Pressable>
+            {toast.action ? (
+              <Pressable
+                accessibilityRole="button"
+                accessibilityLabel={toast.action.label}
+                haptic="selection"
+                hitSlop={8}
+                onPress={() => {
+                  const run = toast.action?.onPress;
+                  dismissToast();
+                  run?.();
+                }}
+                className="pr-md"
+                contentClassName="rounded-full bg-onInk/10 px-md py-2"
+              >
+                <Text variant="label" weight="semibold" tone="onInk">
+                  {toast.action.label}
+                </Text>
+              </Pressable>
+            ) : null}
+          </View>
         </Animated.View>
       ) : null}
     </View>

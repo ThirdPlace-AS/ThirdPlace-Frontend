@@ -42,14 +42,12 @@ import {
   useMapSelection,
 } from "@/components/map/hooks/useMapSelection";
 import { NotificationsSheet } from "@/components/NotificationsSheet";
+import { SignInPrompt } from "@/components/SignInPrompt";
+import { useGuestMode } from "@/components/map/hooks/useGuestMode";
 import { MapBrowseSheet } from "@/components/map/MapBrowseSheet";
-import {
-  MOCK_NOTIFICATIONS,
-  MOCK_WEATHER,
-  OSLO_AREAS,
-  places,
-} from "@/fixtures";
+import { MOCK_WEATHER, OSLO_AREAS, places } from "@/fixtures";
 import { useMockResource } from "@/hooks/useMockResource";
+import { useNotificationReads } from "@/hooks/useNotificationReads";
 import { haptics } from "@/lib/haptics";
 import { elevation, useThemeColors } from "@/theme";
 
@@ -152,7 +150,7 @@ export default function MapScreen() {
   const noResults = !loading && !errored && items.length === 0;
 
   // Unread badge on the bell (MOCK — static demo notifications, no real inbox).
-  const unreadNotifs = MOCK_NOTIFICATIONS.filter((n) => !n.read).length;
+  const { unread: unreadNotifs } = useNotificationReads();
 
   const itemByMarker = useMemo(() => {
     const map = new Map(items.map((i) => [i.markerId, i]));
@@ -188,9 +186,14 @@ export default function MapScreen() {
     [selectMarker],
   );
 
+  // Saving is an account action everywhere (detail Lagre, Sveip, Steder):
+  // the browse heart now asks guests to sign in too instead of saving.
+  const { isGuest } = useGuestMode();
+  const [signInOpen, setSignInOpen] = useState(false);
   const handleToggleSave = useCallback(
-    (item: DiscoveryItem) => saved.toggle(item.markerId),
-    [saved],
+    (item: DiscoveryItem) =>
+      isGuest ? setSignInOpen(true) : saved.toggle(item.markerId),
+    [saved, isGuest],
   );
 
   // Tap on empty map: dismiss the keyboard and collapse the open sheet.
@@ -414,6 +417,11 @@ export default function MapScreen() {
       <NotificationsSheet
         visible={notifOpen}
         onClose={() => setNotifOpen(false)}
+      />
+      <SignInPrompt
+        visible={signInOpen}
+        onClose={() => setSignInOpen(false)}
+        action="lagre"
       />
       <MapLayerSheet
         visible={layerOpen}

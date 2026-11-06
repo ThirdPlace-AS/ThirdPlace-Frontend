@@ -1,16 +1,11 @@
 import { Ionicons } from "@expo/vector-icons";
-import { useState } from "react";
 import { Pressable, View } from "react-native";
 
 import { Icon, Text } from "@/components/ui";
 import { DemoNote } from "@/components/DemoNote";
 import { Sheet } from "@/components/Sheet";
-import {
-  MOCK_NOTIFICATIONS,
-  notificationTimeLabel,
-  visibleNotifications,
-  type NotificationType,
-} from "@/fixtures";
+import { notificationTimeLabel, type NotificationType } from "@/fixtures";
+import { useNotificationReads } from "@/hooks/useNotificationReads";
 
 // type → leading category glyph.
 const TYPE_ICON: Record<NotificationType, keyof typeof Ionicons.glyphMap> = {
@@ -23,8 +18,9 @@ const TYPE_ICON: Record<NotificationType, keyof typeof Ionicons.glyphMap> = {
 
 // Varsler (DEMO), per the design (PDF p20): a light list of cards — category
 // glyph, bold title, one-line detail, time and an unread dot — with "Merk alle
-// lest". Read state is local only. BLOCKED_CONTRACT_GAP: no push, inbox or
-// notification feed exists; the items are static demo activity.
+// lest". Read state is a shared in-memory store (useNotificationReads), so
+// the bell badges drop as items are read. BLOCKED_CONTRACT_GAP: no push, inbox
+// or notification feed exists; the items are static demo activity.
 export function NotificationsSheet({
   visible,
   onClose,
@@ -32,12 +28,8 @@ export function NotificationsSheet({
   visible: boolean;
   onClose: () => void;
 }) {
-  const [readIds, setReadIds] = useState<ReadonlySet<string>>(
-    () => new Set(MOCK_NOTIFICATIONS.filter((n) => n.read).map((n) => n.id)),
-  );
-  const items = visibleNotifications(MOCK_NOTIFICATIONS);
-  const unread = items.filter((n) => !readIds.has(n.id)).length;
-  const markRead = (id: string) => setReadIds((s) => new Set([...s, id]));
+  const { items, readIds, unread, markRead, markAllRead } =
+    useNotificationReads();
 
   return (
     <Sheet visible={visible} onClose={onClose} title="Varsler">
@@ -46,7 +38,7 @@ export function NotificationsSheet({
           <Pressable
             accessibilityRole="button"
             disabled={unread === 0}
-            onPress={() => setReadIds(new Set(items.map((n) => n.id)))}
+            onPress={markAllRead}
             hitSlop={8}
           >
             <Text

@@ -49,7 +49,8 @@ import { markerId } from "@/components/map/types/mapPresentation";
 import { NotificationsSheet } from "@/components/NotificationsSheet";
 import { SignInPrompt } from "@/components/SignInPrompt";
 import { EmptyState } from "@/components/states/StateView";
-import { MOCK_NOTIFICATIONS, places, type MockExperience } from "@/fixtures";
+import { places, type MockExperience } from "@/fixtures";
+import { useNotificationReads } from "@/hooks/useNotificationReads";
 import { haptics } from "@/lib/haptics";
 import { motion, useThemeColors, media } from "@/theme";
 
@@ -91,7 +92,7 @@ export function SwipeDeck() {
   const setMode = (m: SwipeMode) => setFilters((f) => ({ ...f, mode: m }));
   const [filtersOpen, setFiltersOpen] = useState(false);
   const [notifOpen, setNotifOpen] = useState(false);
-  const unreadNotifs = MOCK_NOTIFICATIONS.filter((n) => !n.read).length;
+  const { unread: unreadNotifs } = useNotificationReads();
 
   const filterKey = JSON.stringify(filters);
   const filter = useMemo(

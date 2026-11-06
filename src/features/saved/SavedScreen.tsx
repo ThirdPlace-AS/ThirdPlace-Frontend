@@ -139,6 +139,13 @@ export default function SavedScreen() {
               variant="card"
               title={item.title}
               subtitle={item.meta}
+              // Opens the saved item on the map (its detail), like a search hit.
+              onPress={() =>
+                router.navigate({
+                  pathname: "/map",
+                  params: { focus: item.key, at: String(Date.now()) },
+                })
+              }
               leading={
                 place ? (
                   <Image
@@ -164,6 +171,10 @@ export default function SavedScreen() {
                       title: "Fjernet fra Lagret",
                       body: item.title,
                       icon: "bookmark-outline",
+                      action: {
+                        label: "Angre",
+                        onPress: () => toggle(item.key),
+                      },
                     });
                   }}
                 />

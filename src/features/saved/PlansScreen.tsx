@@ -7,7 +7,7 @@ import {
   SplitBillSheet,
   SpotOfferSheet,
 } from "@/components/actions/ActionSheets";
-import { Screen, Text } from "@/components/ui";
+import { Pressable as UIPressable, Screen, Text } from "@/components/ui";
 import { Chip } from "@/components/Chip";
 import { DemoNote } from "@/components/DemoNote";
 import { RouteHeader } from "@/components/RouteHeader";
@@ -89,12 +89,30 @@ export default function PlansScreen() {
           if (!exp) return null;
           return (
             <View className="gap-0.5 rounded-lg border border-line bg-surface p-3.5">
-              <Text variant="body" weight="semibold">
-                {exp.title}
-              </Text>
-              <Text variant="caption" tone="muted">
-                {exp.when} · {item.note}
-              </Text>
+              {/* Title + meta open the experience on the map; the plan
+                  actions below stay separate buttons. */}
+              <UIPressable
+                accessibilityRole="link"
+                accessibilityLabel={`${exp.title}, ${exp.when}. Vis på kartet`}
+                onPress={() =>
+                  router.navigate({
+                    pathname: "/map",
+                    params: {
+                      focus: `experience:${exp.id}`,
+                      at: String(Date.now()),
+                    },
+                  })
+                }
+                pressedScale={0.99}
+                contentClassName="gap-0.5"
+              >
+                <Text variant="body" weight="semibold">
+                  {exp.title}
+                </Text>
+                <Text variant="caption" tone="muted">
+                  {exp.when} · {item.note}
+                </Text>
+              </UIPressable>
               {item.state === "past" ? (
                 <PlanAction
                   label="Vurder opplevelsen"
