@@ -135,3 +135,18 @@ Feel, reaction, feedback, whole-screen and retention pass; report in `docs/revie
 | Collab, workspace                                 | Reasons, ✓ Vurdert, contract haptic, chart follows its range                                                                  | 0198, 0199, 0205                   |
 | Splash, map load, lobby                           | No fake waits                                                                                                                 | 0206                               |
 | UI primitives                                     | Label chips, readable disabled Button, StickyFooter, ScrollRow, FadeSwap, toast action, 34 presses to the ui Pressable        | 0198, 0202, 0203, 0205, 0207, 0208 |
+
+## Phase 11 (2026-11-06)
+
+Founder list: no demo markers, white background, ≥2 photos, marker icons, video-style experience page, loading rule, user puck + locate, R27–R30. Report: `docs/reviews/APP_REVIEW_2026-11-06.md` §11.
+
+| Surface                                                  | Change                                                                                             | Ledger           |
+| -------------------------------------------------------- | -------------------------------------------------------------------------------------------------- | ---------------- |
+| All routes                                               | Demo markers removed; product-voice confirmations (`confirmToast`); white light background         | 0215, 0219, 0216 |
+| Map / place, business, group, listing                    | Photo galleries (≥2 photos each); marker glyphs; user puck; Posisjon flies in at zoom 15           | 0217, 0218, 0223 |
+| Map experience detail (p6)                               | Shared ExperiencePage in a root-portal sheet 35/60/100 %; top snap = full-screen page; back → 60 % | 0221             |
+| Sveip expanded detail (p8)                               | Same page in an Overlay with page top bar and floating join card; sub-views in a sheet             | 0220             |
+| Map loading                                              | Skeleton under 2 s, loader after                                                                   | 0222             |
+| Sveip deck                                               | Taps during the glide queued; tab pre-rendered after the map loads                                 | 0224             |
+| Betalingsstatus (p18), Bli Skaper (p14), Workspace (p13) | PDF p18 structure (money as "—"); next-step links                                                  | 0224             |
+| `_sandbox/simulate` (dev only)                           | Map offline + check-in distance switches (moved out of product UI)                                 | 0215             |

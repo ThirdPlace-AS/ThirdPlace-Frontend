@@ -194,3 +194,7 @@ honesty and Kalender order (0173), one honesty marker per money/ID/live screen
 and ember auth links (0174), chip rows, icons and avatars (0175), one circled
 back button (0176). Kept-as-designed PDF lines and styling are listed in §6 of
 the review for the founder.
+
+## Phase 11 (2026-11-06)
+
+p5 Map: marker glyphs (0218), galleries in browse cards and place/business/group detail (0217), user puck + Posisjon zoom (0223), loading rule (0222). p6 Experience detail: shared ExperiencePage, full-screen at the top snap (0220, 0221) — layout follows the founder's reference video where the PDF draws a sheet; every PDF item kept. p8 Sveip detail: same page (0220); Steder deck photos (0217). p13 Workspace "Kom i gang" links (0224). p14 Bli Skaper next-step links (0224). p18 Betalingsstatus in PDF order, money as "—" (0224). p24 Bildeviser: shared PhotoViewer (0220).

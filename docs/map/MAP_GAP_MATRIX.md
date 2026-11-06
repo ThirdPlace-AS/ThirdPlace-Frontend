@@ -110,3 +110,10 @@ and [MAP_DELIVERABLES.md](MAP_DELIVERABLES.md) for journeys + completion classes
 - Map search shows "Nylig sett" (founder-approved; `useRecentlyViewed`, in-memory) (0209).
 - Filtre mounts every section with the sheet; the 400 ms deferral made the lower half settle 1.2–1.4 s on the production bundle (0212).
 - The map no longer fakes a 500 ms load on open; loading/error stay reachable via the offline toggle and "Prøv igjen" (0206).
+
+## Phase 11 changes (2026-11-06)
+
+- Marker glyphs: `services/markerIcon.ts` (per place, category fallback, experience tags, business → place, group → people); native `point-icon` SymbolLayer from `Images` views, emissive (0218).
+- User location: `userPuck.ts`; the native UserLocation only reports position, our emissive halo/dot/heading layers draw the puck the same on every preset; SoftMap matches; "Posisjon" flies to the user at zoom 15 (0223).
+- Experience detail: snaps 35/60/100 % in an app-root `RootPortal` above the tab bar; page chrome from `animatedIndex`; `mapBackAction` gains "collapse" (0221).
+- Detail galleries for places, businesses and groups (0217); loading rule on the browse list (0222); Sveip pre-render after the map loads (0224).
