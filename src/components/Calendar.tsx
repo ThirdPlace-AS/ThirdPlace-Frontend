@@ -142,6 +142,11 @@ export function Calendar({
       >
         {months.map(({ year, month }) => (
           <View key={`${year}-${month}`} className="gap-2 pb-5">
+            {/* Month name ABOVE its grid (it sat under the grid, where it read
+                as the label of the next month). */}
+            <Text variant="body" weight="semibold" className="capitalize">
+              {MONTHS[month]} {year}
+            </Text>
             <View className="flex-row flex-wrap">
               {monthCells(year, month).map((c) => {
                 if (c.day === null)
@@ -164,7 +169,7 @@ export function Calendar({
                       disabled={past}
                       onPress={() => press(date)}
                       className={`h-9 w-9 items-center justify-center rounded-full ${
-                        endpoint ? "bg-ink" : inRange ? "bg-ember/10" : ""
+                        endpoint ? "bg-ink" : inRange ? "bg-surfaceMuted" : ""
                       }`}
                     >
                       <Text
@@ -180,9 +185,6 @@ export function Calendar({
                 );
               })}
             </View>
-            <Text variant="label" weight="regular">
-              {MONTHS[month]} {year}
-            </Text>
           </View>
         ))}
       </ScrollView>

@@ -445,6 +445,9 @@ function FilterBody({
         ? fmtDate(draft.dateStart)
         : (draft.time ?? "Legg til datoer");
 
+  const hasDate =
+    draft.time !== null || draft.dateStart !== null || draft.dateEnd !== null;
+
   // Something to clear? (benchmark F9: "Fjern alt" is inactive otherwise)
   const canClear = JSON.stringify(draft) !== JSON.stringify(DEFAULT_FILTERS);
 
@@ -503,7 +506,13 @@ function FilterBody({
             onToggle={() => toggleSection("when")}
           >
             <View className="gap-4">
-              <View className="flex-row flex-wrap gap-2">
+              {/* One row of quick dates (benchmark W2), scrolling if the four
+                  PDF labels don't fit. */}
+              <ScrollView
+                horizontal
+                showsHorizontalScrollIndicator={false}
+                contentContainerClassName="gap-2"
+              >
                 {WHEN_CHIPS.map((c) => {
                   const selected = draft.time === c.time;
                   return (
@@ -522,8 +531,6 @@ function FilterBody({
                             };
                           }
                           const r = WHEN_RANGES[c.label];
-                          // Advance to "Hvem?" once a date shortcut is picked.
-                          setOpenSection("who");
                           return {
                             ...d,
                             time: c.time,
@@ -532,7 +539,8 @@ function FilterBody({
                           };
                         })
                       }
-                      className={`w-[48%] grow gap-0.5 rounded-lg border px-3 py-3.5 ${
+                      style={{ minWidth: 104 }}
+                      className={`gap-0.5 rounded-lg border px-3 py-3 ${
                         selected ? "border-2 border-ink" : "border border-line"
                       }`}
                     >
@@ -545,12 +553,18 @@ function FilterBody({
                     </Pressable>
                   );
                 })}
-              </View>
+              </ScrollView>
               <Calendar
                 start={draft.dateStart}
                 end={draft.dateEnd}
                 onChange={(s, e) =>
-                  setDraft((d) => ({ ...d, dateStart: s, dateEnd: e }))
+                  // A custom range replaces the quick choice (its tile no longer applies).
+                  setDraft((d) => ({
+                    ...d,
+                    dateStart: s,
+                    dateEnd: e,
+                    time: null,
+                  }))
                 }
               />
               <Text variant="caption" tone="muted">
@@ -907,41 +921,75 @@ function FilterBody({
         ) : null}
       </ScrollView>
 
-      {/* Sticky footer — compact reset link + wide primary button */}
-      <View className="flex-row items-center gap-2 border-t border-line pt-3">
-        <Pressable
-          accessibilityRole="button"
-          accessibilityState={{ disabled: !canClear }}
-          disabled={!canClear}
-          onPress={() => {
-            setDraft(DEFAULT_FILTERS);
-            setLangExpanded(false);
-            setOpenSection(null);
-          }}
-          className="px-2 py-3"
-        >
-          <Text
-            variant="body"
-            weight="semibold"
-            tone={canClear ? "ink" : "muted"}
-            className={canClear ? "underline" : undefined}
+      {/* Sticky footer. While "Når" is open it steps the flow (benchmark W5):
+          Hopp over / Neste, with Nullstill once a date is picked. Otherwise the
+          reset link + "Vis N resultater". */}
+      {openSection === "when" ? (
+        <View className="flex-row items-center justify-between gap-2 border-t border-line pt-3">
+          <Pressable
+            accessibilityRole="button"
+            onPress={() =>
+              hasDate
+                ? setDraft((d) => ({
+                    ...d,
+                    time: null,
+                    dateStart: null,
+                    dateEnd: null,
+                  }))
+                : setOpenSection("who")
+            }
+            className="px-2 py-3"
           >
-            Fjern alt
-          </Text>
-        </Pressable>
-        <View className="flex-1">
-          <Button
-            label={footerLabel}
-            variant="ink"
-            rounded="full"
-            disabled={resultCount === 0}
-            onPress={() => {
-              onApply(draft);
-              onClose();
-            }}
-          />
+            <Text variant="body" weight="semibold" className="underline">
+              {hasDate ? "Nullstill" : "Hopp over"}
+            </Text>
+          </Pressable>
+          {/* Fixed width: a bare Button stretched past the sheet edge. */}
+          <View style={{ width: 160 }}>
+            <Button
+              label="Neste"
+              variant="ink"
+              rounded="full"
+              onPress={() => setOpenSection("who")}
+            />
+          </View>
         </View>
-      </View>
+      ) : (
+        <View className="flex-row items-center gap-2 border-t border-line pt-3">
+          <Pressable
+            accessibilityRole="button"
+            accessibilityState={{ disabled: !canClear }}
+            disabled={!canClear}
+            onPress={() => {
+              setDraft(DEFAULT_FILTERS);
+              setLangExpanded(false);
+              setOpenSection(null);
+            }}
+            className="px-2 py-3"
+          >
+            <Text
+              variant="body"
+              weight="semibold"
+              tone={canClear ? "ink" : "muted"}
+              className={canClear ? "underline" : undefined}
+            >
+              Fjern alt
+            </Text>
+          </Pressable>
+          <View className="flex-1">
+            <Button
+              label={footerLabel}
+              variant="ink"
+              rounded="full"
+              disabled={resultCount === 0}
+              onPress={() => {
+                onApply(draft);
+                onClose();
+              }}
+            />
+          </View>
+        </View>
+      )}
     </View>
   );
 }
