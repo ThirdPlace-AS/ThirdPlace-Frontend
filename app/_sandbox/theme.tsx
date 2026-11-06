@@ -10,6 +10,39 @@ import {
   type SchemePreference,
 } from "@/theme";
 import { Screen, Text as UIText } from "@/components/ui";
+import { CategoryArt } from "@/components/illustrations/CategoryArt";
+import {
+  Illustration,
+  type IllustrationName,
+} from "@/components/illustrations/Illustration";
+import type { ArtKey } from "@/assets/3d/manifest";
+
+const ART_KEYS: ArtKey[] = [
+  "cafe",
+  "bar",
+  "restaurant",
+  "outdoors",
+  "culture",
+  "workshop",
+  "tasting",
+  "music",
+  "hiking",
+  "art",
+  "sport",
+  "social",
+  "place",
+  "experience",
+  "location",
+];
+const ILLUSTRATIONS: IllustrationName[] = [
+  "offline",
+  "error",
+  "maintenance",
+  "update",
+  "emptySaved",
+  "emptyDeck",
+  "emptyPlans",
+];
 
 const SAMPLE_BODY =
   "Oppdag nabolagets lune møteplasser. Finn din neste third place — der byen faktisk skjer.";
@@ -157,6 +190,31 @@ export default function ThemeSandbox() {
               {t} — Kaffe på Grünerløkka
             </UIText>
           ))}
+        </Section>
+
+        <Section title="Kategorikunst">
+          <View className="flex-row flex-wrap gap-3">
+            {ART_KEYS.map((k) => (
+              <View key={k} className="items-center gap-1">
+                <View className="rounded-lg bg-surface p-2">
+                  <CategoryArt name={k} size={64} />
+                </View>
+                <UIText variant="micro" tone="muted">
+                  {k}
+                </UIText>
+              </View>
+            ))}
+          </View>
+        </Section>
+
+        <Section title="Illustrasjoner">
+          <View className="flex-row flex-wrap gap-3">
+            {ILLUSTRATIONS.map((k) => (
+              <View key={k} className="rounded-lg bg-surface p-2">
+                <Illustration name={k} width={140} />
+              </View>
+            ))}
+          </View>
         </Section>
 
         <Section title="Hjørner">

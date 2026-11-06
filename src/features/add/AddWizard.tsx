@@ -15,6 +15,7 @@ import {
   type IconName,
 } from "@/components/ui";
 import { Button } from "@/components/Button";
+import { CategoryArt } from "@/components/illustrations/CategoryArt";
 import { DemoBadge } from "@/components/DemoBadge";
 import { DemoNote } from "@/components/DemoNote";
 import { Input } from "@/components/Input";
@@ -227,8 +228,8 @@ function KindMenu({ onPick }: { onPick: (k: AddKind) => void }) {
             onPress={() => onPick(r.kind)}
             className="flex-row items-center gap-3 rounded-lg border border-line bg-surface p-4 active:opacity-80"
           >
-            <View className="h-11 w-11 items-center justify-center rounded-md bg-surfaceMuted">
-              <Icon name={r.icon} size="md" tone="ink" />
+            <View className="h-12 w-12 items-center justify-center">
+              <CategoryArt name={r.label} size={48} />
             </View>
             <View className="flex-1">
               <Text className="text-base font-semibold text-ink">

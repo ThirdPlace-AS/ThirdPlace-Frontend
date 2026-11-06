@@ -2,6 +2,7 @@ import { Pressable, Text, View } from "react-native";
 
 import { Icon, Switch } from "@/components/ui";
 import { Button } from "@/components/Button";
+import { CategoryArt } from "@/components/illustrations/CategoryArt";
 import { Chip } from "@/components/Chip";
 import { Sheet } from "@/components/Sheet";
 import { OSLO_AREAS, type MockArea } from "@/fixtures";
@@ -37,6 +38,9 @@ export function MapLocationSheet({
 
   return (
     <Sheet visible={visible} onClose={onClose} title="Posisjon">
+      <View className="items-center">
+        <CategoryArt name="location" size={96} />
+      </View>
       <Text className="text-sm text-muted font-normal">
         Vi bruker posisjonen din bare til å vise steder og opplevelser i
         nærheten. Du kan også velge et område manuelt.
