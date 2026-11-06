@@ -138,6 +138,7 @@ One family, two engines, one look (handle, 28 px top radius, `e3`, `SheetHeader`
 
 - Enter 320 ms (`easing.enter`), exit 200 ms (`easing.exit`); reduced motion → 150 ms fade. The Modal stays mounted until the exit finishes (`usePresence`).
 - `<Sheet>` closes on scrim tap, Android back, or a drag down on the handle/header (past 25 % of its height or a 900 px/s flick).
+- gorhom sheets have no back handling of their own. On the map, Android back steps back inside the detail sheet, then closes it, and only then leaves the screen (`mapBackAction` in `useMapSelection`, a focus-scoped `BackHandler` in `app/(tabs)/map.tsx`).
 - Children mount only while open, so state seeds fresh each time. Render the body unconditionally inside `<Overlay>`; mount a whole `<Sheet>` conditionally only when it must reset between uses.
 - No raw `Modal` outside `src/components/ui/Sheet.tsx` and `Overlay.tsx`.
 

@@ -2,6 +2,7 @@ import { describe, expect, it } from "@jest/globals";
 import { act, renderHook } from "@testing-library/react-native";
 
 import {
+  mapBackAction,
   SNAP_MID,
   SNAP_PEEK,
   useMapSelection,
@@ -52,5 +53,14 @@ describe("useMapSelection", () => {
     act(() => result.current.close());
     expect(result.current.sheetStack).toHaveLength(0);
     expect(result.current.selectedMarkerId).toBeNull();
+  });
+});
+
+describe("mapBackAction", () => {
+  it("steps back in a nested sheet, closes a single one, else passes through", () => {
+    expect(mapBackAction(3)).toBe("back");
+    expect(mapBackAction(2)).toBe("back");
+    expect(mapBackAction(1)).toBe("close");
+    expect(mapBackAction(0)).toBe("none");
   });
 });

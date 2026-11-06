@@ -1,6 +1,8 @@
+import { useFocusEffect } from "expo-router";
 import { useCallback, useMemo, useState } from "react";
 import {
   ActivityIndicator,
+  BackHandler,
   Keyboard,
   Pressable,
   useWindowDimensions,
@@ -35,7 +37,10 @@ import { useMapLocation } from "@/components/map/hooks/useMapLocation";
 import { useMapDiscovery } from "@/components/map/hooks/useMapDiscovery";
 import { useMapFilters } from "@/components/map/hooks/useMapFilters";
 import { useMapSaved } from "@/components/map/hooks/useMapSaved";
-import { useMapSelection } from "@/components/map/hooks/useMapSelection";
+import {
+  mapBackAction,
+  useMapSelection,
+} from "@/components/map/hooks/useMapSelection";
 import { NotificationsSheet } from "@/components/NotificationsSheet";
 import { MapBrowseSheet } from "@/components/map/MapBrowseSheet";
 import {
@@ -90,8 +95,24 @@ export default function MapScreen() {
   const location = useMapLocation();
 
   // Stable methods (the hooks useCallback these) for memo-friendly handlers.
-  const { selectMarker } = selection;
+  const { selectMarker, back: sheetBack, close: sheetClose } = selection;
   const { setMode: setDiscoveryMode } = discovery;
+
+  // Android back key: an open detail sheet steps back / closes first, so back
+  // does not leave the map with the sheet still up. Only while the map is
+  // focused; Modal sheets (Filtre, search, …) handle back themselves.
+  const sheetDepth = selection.sheetStack.length;
+  useFocusEffect(
+    useCallback(() => {
+      const sub = BackHandler.addEventListener("hardwareBackPress", () => {
+        const action = mapBackAction(sheetDepth);
+        if (action === "back") sheetBack();
+        else if (action === "close") sheetClose();
+        return action !== "none";
+      });
+      return () => sub.remove();
+    }, [sheetDepth, sheetBack, sheetClose]),
+  );
 
   // Mock async load so the surface can show loading/error states (no backend).
   // `offline` is a demo toggle (from the location sheet) that forces an error.
