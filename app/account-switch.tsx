@@ -1,7 +1,12 @@
 import { router, type Href } from "expo-router";
-import { Pressable, Text, View } from "react-native";
+import { Pressable, View } from "react-native";
 
-import { Icon, type IconName } from "@/components/ui";
+import {
+  Icon,
+  type IconName,
+  Pressable as UIPressable,
+  Text,
+} from "@/components/ui";
 import { DemoNote } from "@/components/DemoNote";
 import { businesses, profile } from "@/fixtures";
 
@@ -49,30 +54,34 @@ export default function AccountSwitch() {
         style={{ width: 280 }}
       >
         {rows.map((r) => (
-          <Pressable
+          <UIPressable
             key={r.title}
             accessibilityRole="button"
             onPress={r.onPress}
-            className="flex-row items-center gap-3 rounded-md p-2.5 active:bg-surfaceMuted"
+            contentClassName="flex-row items-center gap-3 rounded-md p-2.5"
           >
             <Icon name={r.icon} size="xl" tone="ink" />
             <View className="flex-1">
-              <Text className="text-sm font-semibold text-ink">{r.title}</Text>
-              <Text className="text-xs text-muted font-normal">{r.hint}</Text>
+              <Text variant="label" weight="semibold">
+                {r.title}
+              </Text>
+              <Text variant="caption" tone="muted">
+                {r.hint}
+              </Text>
             </View>
             {r.active ? (
-              <Text className="text-xs font-semibold text-successText">
+              <Text variant="caption" weight="semibold" tone="success">
                 ✓ Aktiv
               </Text>
             ) : null}
-          </Pressable>
+          </UIPressable>
         ))}
         <Pressable
           accessibilityRole="button"
           onPress={() => router.replace("/settings")}
           className="items-center rounded-md bg-surfaceMuted py-2.5"
         >
-          <Text className="text-sm font-semibold text-ink">
+          <Text variant="label" weight="semibold">
             Administrer kontoer
           </Text>
         </Pressable>

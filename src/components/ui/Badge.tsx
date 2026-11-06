@@ -33,13 +33,24 @@ const FG: Record<BadgeTone, TextTone> = {
 export function Badge({
   label,
   tone = "neutral",
+  kind = "tag",
 }: {
   label: string;
   tone?: BadgeTone;
+  /** "tag" = short uppercase marker (DEMO, LIVE); "status" = sentence-case
+   *  state ("Venter på verifisering", "Godkjent"). */
+  kind?: "tag" | "status";
 }) {
+  const status = kind === "status";
   return (
-    <View className={`self-start rounded-full px-sm py-0.5 ${SHELL[tone]}`}>
-      <Text variant="micro" weight="semibold" tone={FG[tone]}>
+    <View
+      className={`self-start rounded-full ${status ? "px-2.5 py-1" : "px-sm py-0.5"} ${SHELL[tone]}`}
+    >
+      <Text
+        variant={status ? "caption" : "micro"}
+        weight="semibold"
+        tone={FG[tone]}
+      >
         {label}
       </Text>
     </View>

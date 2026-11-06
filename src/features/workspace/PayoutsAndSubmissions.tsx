@@ -1,8 +1,8 @@
 import { router } from "expo-router";
 import { useState } from "react";
-import { Pressable, ScrollView, Text, View } from "react-native";
+import { Pressable, ScrollView, View } from "react-native";
 
-import { Screen } from "@/components/ui";
+import { Screen, Text, Badge } from "@/components/ui";
 import { Button } from "@/components/Button";
 import { Chip } from "@/components/Chip";
 import { DemoNote } from "@/components/DemoNote";
@@ -22,7 +22,7 @@ export function PayoutsScreen() {
     <Screen edges={["top"]}>
       <RouteHeader title="Utbetalinger" />
       <ScrollView contentContainerClassName="gap-4 px-gutter py-4 pb-12">
-        <Text className="text-sm text-muted font-normal">
+        <Text variant="caption" tone="muted">
           Sett opp hvordan du mottar penger fra opplevelser.
         </Text>
         <Section>Utbetalingsmetode</Section>
@@ -31,7 +31,7 @@ export function PayoutsScreen() {
           onPress={() => setTried(true)}
           className="items-center rounded-lg border border-dashed border-line py-4"
         >
-          <Text className="text-sm font-semibold text-ink">
+          <Text variant="label" weight="semibold">
             + Legg til bankkonto
           </Text>
         </Pressable>
@@ -54,12 +54,14 @@ export function PayoutsScreen() {
                 plan === p ? "border-ink bg-ink" : "border-line"
               }`}
             />
-            <Text className="text-sm text-ink font-normal">{p}</Text>
+            <Text variant="label" weight="regular">
+              {p}
+            </Text>
           </Pressable>
         ))}
         <Section>Valuta</Section>
         <View className="rounded-md border border-line bg-surface px-4 py-3.5">
-          <Text className="text-sm text-ink font-normal">
+          <Text variant="label" weight="regular">
             NOK — Norske kroner
           </Text>
         </View>
@@ -104,7 +106,7 @@ export function SubmissionsScreen() {
     <Screen edges={["top"]}>
       <RouteHeader title="Innleveringer" />
       <ScrollView contentContainerClassName="gap-3 px-gutter py-4 pb-12">
-        <Text className="text-sm text-muted font-normal">
+        <Text variant="caption" tone="muted">
           Steder du har foreslått til ThirdPlace.
         </Text>
         <View className="flex-row flex-wrap gap-2">
@@ -122,32 +124,26 @@ export function SubmissionsScreen() {
             key={s.name}
             className="gap-1 rounded-lg border border-line bg-surface p-4"
           >
-            <Text className="text-base font-semibold text-ink">{s.name}</Text>
-            <View
-              className={`self-start rounded-full px-2.5 py-0.5 ${
+            <Text variant="body" weight="semibold">
+              {s.name}
+            </Text>
+            <Badge
+              kind="status"
+              label={s.status}
+              tone={
                 s.status === "Godkjent"
-                  ? "bg-success/15"
+                  ? "success"
                   : s.status === "Avvist"
-                    ? "bg-surfaceMuted"
-                    : "bg-warning/20"
-              }`}
-            >
-              <Text
-                className={`text-xs font-semibold ${
-                  s.status === "Godkjent"
-                    ? "text-successText"
-                    : s.status === "Avvist"
-                      ? "text-dangerText"
-                      : "text-ink"
-                }`}
-              >
-                {s.status}
-              </Text>
-            </View>
-            <Text className="text-xs text-muted font-normal">{s.meta}</Text>
+                    ? "danger"
+                    : "warning"
+              }
+            />
+            <Text variant="caption" tone="muted">
+              {s.meta}
+            </Text>
           </View>
         ))}
-        <Text className="text-xs text-muted font-normal">
+        <Text variant="caption" tone="muted">
           Avviste innleveringer kan sendes på nytt med oppdatert informasjon.
         </Text>
         <DemoNote>Eksempelinnleveringer — ingen steder er sendt inn.</DemoNote>
@@ -163,7 +159,7 @@ export function SubmissionsScreen() {
 
 function Section({ children }: { children: string }) {
   return (
-    <Text className="text-xs font-semibold uppercase tracking-wide text-muted">
+    <Text variant="micro" weight="semibold" tone="muted">
       {children}
     </Text>
   );

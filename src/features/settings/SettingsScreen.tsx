@@ -1,8 +1,14 @@
 import { router, type Href } from "expo-router";
 import { useState } from "react";
-import { Pressable, ScrollView, Text, View } from "react-native";
+import { Pressable, ScrollView, View } from "react-native";
 
-import { Icon, Screen, type IconName } from "@/components/ui";
+import {
+  Icon,
+  Screen,
+  type IconName,
+  Pressable as UIPressable,
+  Text,
+} from "@/components/ui";
 import { Button } from "@/components/Button";
 import { DemoNote } from "@/components/DemoNote";
 import { Input } from "@/components/Input";
@@ -112,7 +118,7 @@ export default function SettingsScreen() {
           }
         />
 
-        <Text className="px-1 text-center text-[11px] text-muted font-normal">
+        <Text variant="caption" tone="muted" className="px-1 text-center">
           {profile.memberSince} · demoversjon
         </Text>
       </ScrollView>
@@ -133,7 +139,7 @@ export default function SettingsScreen() {
         onClose={() => setLogoutOpen(false)}
         title="Logg ut"
       >
-        <Text className="text-sm text-ink font-normal">
+        <Text variant="label" weight="regular">
           Vil du logge ut av ThirdPlace?
         </Text>
         <DemoNote>{demoCopy.logoutNoSession}</DemoNote>
@@ -174,35 +180,37 @@ function AccountSheet({ visible, onClose }: SheetProps) {
       <View className="gap-3">
         <Input label="E-post" value={email} onChangeText={setEmail} />
         <Input label="Telefon" value={phone} onChangeText={setPhone} />
-        <Pressable
+        <UIPressable
           accessibilityRole="button"
           onPress={() => {
             onClose();
             router.push("/two-factor");
           }}
-          className="flex-row items-center gap-3 rounded-md border border-line bg-surface p-3 active:opacity-80"
+          contentClassName="flex-row items-center gap-3 rounded-md border border-line bg-surface p-3"
+          pressedScale={0.99}
         >
           <Icon name="shield-checkmark-outline" size="md" tone="ink" />
-          <Text className="flex-1 text-sm font-semibold text-ink">
+          <Text variant="label" weight="semibold" className="flex-1">
             Totrinnsbekreftelse
           </Text>
           <Icon name="chevron-forward" size="sm" tone="muted" />
-        </Pressable>
-        <Pressable
+        </UIPressable>
+        <UIPressable
           accessibilityRole="button"
           onPress={() => {
             onClose();
             router.push("/age-verification");
           }}
-          className="flex-row items-center gap-3 rounded-md border border-line bg-surface p-3 active:opacity-80"
+          contentClassName="flex-row items-center gap-3 rounded-md border border-line bg-surface p-3"
+          pressedScale={0.99}
         >
           <Icon name="id-card-outline" size="md" tone="ink" />
-          <Text className="flex-1 text-sm font-semibold text-ink">
+          <Text variant="label" weight="semibold" className="flex-1">
             Aldersverifisering
           </Text>
           <Icon name="chevron-forward" size="sm" tone="muted" />
-        </Pressable>
-        <Text className="pt-1 text-xs font-semibold uppercase tracking-wide text-muted">
+        </UIPressable>
+        <Text variant="micro" weight="semibold" tone="muted" className="pt-1">
           Aktive økter
         </Text>
         <Session
@@ -237,8 +245,12 @@ function Session({
     <View className="flex-row items-center gap-3 rounded-md border border-line bg-surface p-3">
       <Icon name={icon} size="md" tone="ink" />
       <View className="flex-1">
-        <Text className="text-sm font-semibold text-ink">{name}</Text>
-        <Text className="text-xs text-muted font-normal">{meta}</Text>
+        <Text variant="label" weight="semibold">
+          {name}
+        </Text>
+        <Text variant="caption" tone="muted">
+          {meta}
+        </Text>
       </View>
     </View>
   );
@@ -254,26 +266,29 @@ function LinkedSheet({ visible, onClose }: SheetProps) {
           name={profile.name}
           meta="Utforsker · aktiv nå"
         />
-        <Pressable
+        <UIPressable
           accessibilityRole="button"
           onPress={() => {
             onClose();
             router.push("/workspace" as Href);
           }}
-          className="flex-row items-center gap-3 rounded-md border border-line bg-surface p-3 active:opacity-80"
+          contentClassName="flex-row items-center gap-3 rounded-md border border-line bg-surface p-3"
+          pressedScale={0.99}
         >
           <Icon name="tp-business" size="md" tone="ink" />
           <View className="flex-1">
-            <Text className="text-sm font-semibold text-ink">
+            <Text variant="label" weight="semibold">
               Oslo Kaffebar AS
             </Text>
-            <Text className="text-xs text-muted font-normal">
+            <Text variant="caption" tone="muted">
               Bedrift · eksempel
             </Text>
           </View>
-          <Text className="text-xs font-semibold text-ink">Bytt til</Text>
-        </Pressable>
-        <Text className="text-xs text-muted font-normal">
+          <Text variant="caption" weight="semibold">
+            Bytt til
+          </Text>
+        </UIPressable>
+        <Text variant="caption" tone="muted">
           Har du en bedrift eller er skaper, kan kontoene kobles her og byttes
           med langt trykk på Profil-fanen.
         </Text>
@@ -319,7 +334,7 @@ function NotificationPrefsSheet({ visible, onClose }: SheetProps) {
   return (
     <Sheet visible={visible} onClose={onClose} title="Varsler">
       <View className="gap-3">
-        <Text className="text-xs font-semibold uppercase tracking-wide text-muted">
+        <Text variant="micro" weight="semibold" tone="muted">
           Push
         </Text>
         <ToggleList
@@ -357,7 +372,7 @@ function NotificationPrefsSheet({ visible, onClose }: SheetProps) {
             },
           ]}
         />
-        <Text className="text-xs font-semibold uppercase tracking-wide text-muted">
+        <Text variant="micro" weight="semibold" tone="muted">
           Stille timer
         </Text>
         <ToggleList
@@ -391,13 +406,13 @@ function LanguageSheet({ visible, onClose }: SheetProps) {
             onPress={() => setLang(l)}
             className="flex-row items-center justify-between rounded-md border border-line bg-surface px-4 py-3.5"
           >
-            <Text className="text-base text-ink font-normal">{l}</Text>
+            <Text variant="body">{l}</Text>
             {lang === l ? (
               <View className="h-4 w-4 rounded-full bg-ink" />
             ) : null}
           </Pressable>
         ))}
-        <Text className="pt-2 text-xs font-semibold uppercase tracking-wide text-muted">
+        <Text variant="micro" weight="semibold" tone="muted" className="pt-2">
           Region
         </Text>
         <View className="overflow-hidden rounded-lg bg-surface">
@@ -440,7 +455,7 @@ function AccessibilitySheet({ visible, onClose }: SheetProps) {
             { label: "Skjermleser-optimalisert", icon: "ear-outline" },
           ]}
         />
-        <Text className="text-xs font-semibold uppercase tracking-wide text-muted">
+        <Text variant="micro" weight="semibold" tone="muted">
           Kart
         </Text>
         <ToggleList
@@ -467,7 +482,7 @@ function ExportSheet({ visible, onClose }: SheetProps) {
   return (
     <Sheet visible={visible} onClose={onClose} title="Eksporter data">
       <View className="gap-3">
-        <Text className="text-sm text-muted font-normal">
+        <Text variant="caption" tone="muted">
           Få en kopi av alt ThirdPlace vet om deg (GDPR).
         </Text>
         <ToggleList
@@ -504,7 +519,7 @@ function HelpSheet({ visible, onClose }: SheetProps) {
   return (
     <Sheet visible={visible} onClose={onClose} title="Hjelp og støtte">
       <View className="gap-3">
-        <Text className="text-xs font-semibold uppercase tracking-wide text-muted">
+        <Text variant="micro" weight="semibold" tone="muted">
           Vanlige spørsmål
         </Text>
         <View className="overflow-hidden rounded-lg bg-surface">

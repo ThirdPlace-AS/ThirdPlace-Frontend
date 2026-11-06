@@ -1,6 +1,6 @@
-import { Text, View } from "react-native";
+import { View } from "react-native";
 
-import { Icon } from "@/components/ui";
+import { Icon, Text } from "@/components/ui";
 import { Button } from "@/components/Button";
 import { Sheet } from "@/components/Sheet";
 import { DemoNote } from "@/components/DemoNote";
@@ -25,7 +25,7 @@ export function SignInPrompt({
     <Sheet visible={visible} onClose={onClose} title="Logg inn">
       <View className="flex-row items-center gap-2">
         <Icon name="lock-closed-outline" size="md" tone="muted" />
-        <Text className="flex-1 text-sm text-muted font-normal">
+        <Text variant="caption" tone="muted" className="flex-1">
           Du må ha en konto for å {action}. Utforsking er åpent for alle.
         </Text>
       </View>

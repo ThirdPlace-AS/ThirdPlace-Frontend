@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
-import { Text, View } from "react-native";
-import { Icon, ListRow, type IconName } from "@/components/ui";
+import { View } from "react-native";
+import { Icon, ListRow, type IconName, Text } from "@/components/ui";
 import { Switch } from "@/components/ui/Switch";
 
 // Shared building blocks for the Settings + Privacy routes. All inert/demo:
@@ -17,7 +17,7 @@ export function SettingsSection({
   return (
     <View className="gap-2">
       {title ? (
-        <Text className="px-1 text-xs font-semibold uppercase tracking-wide text-muted">
+        <Text variant="micro" weight="semibold" tone="muted" className="px-1">
           {title}
         </Text>
       ) : null}
@@ -69,9 +69,11 @@ export function ToggleRow({
     <View className="flex-row items-center gap-3 border-b border-line px-4 py-3">
       <Icon name={icon} size="md" tone="ink" />
       <View className="flex-1">
-        <Text className="text-base text-ink font-normal">{label}</Text>
+        <Text variant="body">{label}</Text>
         {hint ? (
-          <Text className="text-xs text-muted font-normal">{hint}</Text>
+          <Text variant="caption" tone="muted">
+            {hint}
+          </Text>
         ) : null}
       </View>
       <Switch value={value} onValueChange={onValueChange} label={label} />

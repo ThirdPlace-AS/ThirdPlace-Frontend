@@ -1,6 +1,6 @@
-import { Pressable, Text, View } from "react-native";
+import { Pressable, View } from "react-native";
 
-import { Icon } from "@/components/ui";
+import { Icon, Text } from "@/components/ui";
 
 // A labelled − value + counter row (used by the filter sheet's "Who?" guests).
 // Clamps to [min, max]. Demo-only where used (no backend).
@@ -33,9 +33,11 @@ export function Stepper({
       }`}
     >
       <View className="flex-1 pr-3">
-        <Text className="text-base text-ink font-normal">{label}</Text>
+        <Text variant="body">{label}</Text>
         {hint ? (
-          <Text className="text-xs text-muted font-normal">{hint}</Text>
+          <Text variant="caption" tone="muted">
+            {hint}
+          </Text>
         ) : null}
       </View>
       <View className="flex-row items-center gap-4">
@@ -51,7 +53,7 @@ export function Stepper({
         >
           <Icon name="remove" size="md" tone="ink" />
         </Pressable>
-        <Text className="w-6 text-center text-base text-ink font-normal">
+        <Text variant="body" className="w-6 text-center">
           {value}
         </Text>
         <Pressable

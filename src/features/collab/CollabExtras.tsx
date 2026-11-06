@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Pressable, ScrollView, Text, View } from "react-native";
 
-import { Icon, Screen } from "@/components/ui";
+import { Icon, Screen, Text as UIText } from "@/components/ui";
 import { RateSheet } from "@/components/actions/ActionSheets";
 import { DemoNote } from "@/components/DemoNote";
 import { RouteHeader } from "@/components/RouteHeader";
@@ -23,9 +23,9 @@ export function PaymentStatusScreen() {
     <Screen edges={["top"]}>
       <RouteHeader title="Betalingsstatus" />
       <ScrollView contentContainerClassName="gap-4 px-gutter py-4 pb-12">
-        <Text className="text-sm text-muted font-normal">
+        <UIText variant="caption" tone="muted">
           Jazz-samarbeid · Oslo Kaffebar
-        </Text>
+        </UIText>
         {PAY_STEPS.map((s) => (
           <View key={s.label} className="flex-row items-center gap-3">
             <View
@@ -71,22 +71,24 @@ export function CollabHistoryScreen() {
             key={h.title}
             className="gap-1 rounded-lg border border-line bg-surface p-4"
           >
-            <Text className="text-base font-semibold text-ink">{h.title}</Text>
-            <Text className="text-xs text-muted font-normal">
+            <UIText variant="body" weight="semibold">
+              {h.title}
+            </UIText>
+            <UIText variant="caption" tone="muted">
               {h.partner} · {h.when}
-            </Text>
+            </UIText>
             {h.rated ? (
-              <Text className="text-xs font-semibold text-successText">
+              <UIText variant="caption" weight="semibold" tone="success">
                 ✓ Vurdert
-              </Text>
+              </UIText>
             ) : (
               <Pressable
                 accessibilityRole="button"
                 onPress={() => setRate(h.partner)}
               >
-                <Text className="text-sm font-semibold text-emberText">
+                <UIText variant="label" weight="semibold" tone="ember">
                   Vurder samarbeid →
-                </Text>
+                </UIText>
               </Pressable>
             )}
           </View>

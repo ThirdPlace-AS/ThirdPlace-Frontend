@@ -2,7 +2,7 @@ import { router, useLocalSearchParams, type Href } from "expo-router";
 import { useState } from "react";
 import { Pressable, ScrollView, Text, View } from "react-native";
 
-import { ChipGroup, Icon, Screen } from "@/components/ui";
+import { ChipGroup, Icon, Screen, Text as UIText } from "@/components/ui";
 import { Button } from "@/components/Button";
 import { DemoNote } from "@/components/DemoNote";
 import { Input } from "@/components/Input";
@@ -34,17 +34,17 @@ export function NewCollabScreen() {
         contentContainerClassName="gap-4 px-gutter py-4 pb-12"
         keyboardShouldPersistTaps="handled"
       >
-        <Text className="text-sm text-muted font-normal">
+        <UIText variant="caption" tone="muted">
           Foreslå et samarbeid basert på en listing.
-        </Text>
+        </UIText>
         <Label>Knyttet listing</Label>
         <View className="gap-0.5 rounded-md border border-line bg-surface p-3">
-          <Text className="text-sm font-semibold text-ink">
+          <UIText variant="label" weight="semibold">
             {listing?.title}
-          </Text>
-          <Text className="text-xs text-muted font-normal">
+          </UIText>
+          <UIText variant="caption" tone="muted">
             {listing?.owner} · {listing?.type}
-          </Text>
+          </UIText>
         </View>
         <Label>Samarbeidstype</Label>
         <ChipRow options={TYPES} value={type} onChange={setType} />
@@ -112,8 +112,10 @@ export function CollabDetailScreen() {
               key={k}
               className="flex-row justify-between border-b border-line px-3.5 py-3"
             >
-              <Text className="text-sm text-muted font-normal">{k}</Text>
-              <Text className="text-sm font-medium text-ink">{v}</Text>
+              <UIText variant="caption" tone="muted">
+                {k}
+              </UIText>
+              <UIText variant="label">{v}</UIText>
             </View>
           ))}
         </View>
@@ -128,7 +130,9 @@ export function CollabDetailScreen() {
             >
               {t.label}
             </Text>
-            <Text className="text-xs text-muted font-normal">{t.meta}</Text>
+            <UIText variant="caption" tone="muted">
+              {t.meta}
+            </UIText>
           </View>
         ))}
         <View className="flex-row gap-3 pt-2">
@@ -185,10 +189,12 @@ function OfferSheet({ onClose }: { onClose: () => void }) {
     >
       <View className="gap-3">
         <View className="gap-0.5 rounded-md border border-line bg-surface p-3">
-          <Text className="text-sm font-semibold text-ink">Maria Movik</Text>
-          <Text className="text-xs text-muted font-normal">
+          <UIText variant="label" weight="semibold">
+            Maria Movik
+          </UIText>
+          <UIText variant="caption" tone="muted">
             Co-hosting · Primær/sekundær · 70 % / 30 %
-          </Text>
+          </UIText>
         </View>
         {counter ? (
           <>
@@ -223,9 +229,14 @@ function OfferSheet({ onClose }: { onClose: () => void }) {
             accessibilityRole="button"
             onPress={() => setCounter(true)}
           >
-            <Text className="text-center text-sm font-semibold text-emberText">
+            <UIText
+              variant="label"
+              weight="semibold"
+              tone="ember"
+              className="text-center"
+            >
               Send mottilbud
-            </Text>
+            </UIText>
           </Pressable>
         ) : null}
         {done ? <DemoNote>{`${done} ble ikke sendt.`}</DemoNote> : null}
@@ -241,12 +252,12 @@ function ContractSheet({ onClose }: { onClose: () => void }) {
     <Sheet visible onClose={onClose} title="Kontrakt">
       <View className="gap-3">
         <View className="gap-2 rounded-md border border-line bg-surface p-4">
-          <Text className="text-xs font-semibold uppercase tracking-wide text-muted">
+          <UIText variant="micro" weight="semibold" tone="muted">
             Samarbeidsavtale
-          </Text>
-          <Text className="text-sm text-ink font-normal">
+          </UIText>
+          <UIText variant="label" weight="regular">
             Mellom Maria Movik og Oslo Kaffebar
-          </Text>
+          </UIText>
           {[
             "1. Samarbeidstype: Co-hosting (primær/sekundær)",
             "2. Opplevelse: Jazzkveld, 1. august",
@@ -254,9 +265,9 @@ function ContractSheet({ onClose }: { onClose: () => void }) {
             "4. Ansvar: lokale + utstyr / innhold og promotering",
             "5. Varighet: engangshendelse",
           ].map((c) => (
-            <Text key={c} className="text-xs text-ink font-normal">
+            <UIText key={c} variant="caption">
               {c}
-            </Text>
+            </UIText>
           ))}
         </View>
         <Pressable
@@ -264,9 +275,9 @@ function ContractSheet({ onClose }: { onClose: () => void }) {
           onPress={() => setSigned(true)}
           className="items-center rounded-md border-2 border-dashed border-line py-6"
         >
-          <Text className="text-sm text-muted font-normal">
+          <UIText variant="caption" tone="muted">
             {signed ? "✓ Signert (demo)" : "Trykk for å signere"}
-          </Text>
+          </UIText>
         </Pressable>
         <DemoNote>
           Kontrakten er et eksempel — ingen signatur lagres, og ingen avtale er
@@ -282,14 +293,22 @@ function Party({ name, role }: { name: string; role: string }) {
   return (
     <View className="flex-1 gap-0.5 rounded-md border border-line bg-surface p-3">
       <Icon name="person-circle-outline" size="lg" tone="ink" />
-      <Text className="text-sm font-semibold text-ink">{name}</Text>
-      <Text className="text-xs text-muted font-normal">{role}</Text>
+      <UIText variant="label" weight="semibold">
+        {name}
+      </UIText>
+      <UIText variant="caption" tone="muted">
+        {role}
+      </UIText>
     </View>
   );
 }
 
 function Label({ children }: { children: string }) {
-  return <Text className="text-sm font-semibold text-ink">{children}</Text>;
+  return (
+    <UIText variant="label" weight="semibold">
+      {children}
+    </UIText>
+  );
 }
 
 function ChipRow({

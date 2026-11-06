@@ -1,7 +1,8 @@
-import { Text, View } from "react-native";
+import { View } from "react-native";
 import Svg, { Circle, Path, Rect } from "react-native-svg";
 
 import { useThemeColors } from "@/theme";
+import { Text } from "@/components/ui";
 
 // ThirdPlace brand mark — a location pin ("a place on the map"), drawn as a
 // crisp vector so it stays sharp at every size. Provisional palette (Ember
@@ -92,10 +93,7 @@ export function Logo({
     <View className="items-center gap-2">
       <LogoMark size={size} variant={variant} color={color} />
       {showWordmark ? (
-        <Text
-          className="text-base font-semibold text-ink"
-          style={{ letterSpacing: -0.3 }}
-        >
+        <Text variant="body" weight="semibold" style={{ letterSpacing: -0.3 }}>
           ThirdPlace
         </Text>
       ) : null}
@@ -116,10 +114,7 @@ export function LogoLockup({
   return (
     <View className="flex-row items-center gap-2">
       <LogoMark size={size} variant={variant} color={color} />
-      <Text
-        className="text-lg font-bold text-ink"
-        style={{ letterSpacing: -0.4 }}
-      >
+      <Text variant="title" weight="bold" style={{ letterSpacing: -0.4 }}>
         ThirdPlace
       </Text>
     </View>

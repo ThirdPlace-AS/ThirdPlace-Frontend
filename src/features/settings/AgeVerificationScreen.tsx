@@ -1,8 +1,8 @@
 import { Ionicons } from "@expo/vector-icons";
 import { useState } from "react";
-import { Pressable, ScrollView, Text, View } from "react-native";
+import { Pressable, ScrollView, View } from "react-native";
 
-import { Icon, Screen } from "@/components/ui";
+import { Icon, Screen, Text } from "@/components/ui";
 import { DemoNote } from "@/components/DemoNote";
 import { RouteHeader } from "@/components/RouteHeader";
 
@@ -48,11 +48,11 @@ export default function AgeVerificationScreen() {
     <Screen edges={["top"]}>
       <RouteHeader title="Aldersverifisering" />
       <ScrollView contentContainerClassName="gap-4 px-gutter py-4 pb-12">
-        <Text className="text-sm text-muted font-normal">
+        <Text variant="caption" tone="muted">
           Noen opplevelser krever verifisert alder. Bekreft alderen din for full
           tilgang.
         </Text>
-        <Text className="text-xs font-semibold uppercase tracking-wide text-muted">
+        <Text variant="micro" weight="semibold" tone="muted">
           Verifiseringsmetode
         </Text>
         {METHODS.map((m) => (
@@ -66,10 +66,12 @@ export default function AgeVerificationScreen() {
           >
             <Icon name={m.icon} size="md" tone="ink" />
             <View className="flex-1">
-              <Text className="text-base font-semibold text-ink">
+              <Text variant="body" weight="semibold">
                 {m.label}
               </Text>
-              <Text className="text-xs text-muted font-normal">{m.hint}</Text>
+              <Text variant="caption" tone="muted">
+                {m.hint}
+              </Text>
             </View>
             <Icon name="chevron-forward" size="sm" tone="muted" />
           </Pressable>
@@ -77,13 +79,15 @@ export default function AgeVerificationScreen() {
         {chosen ? (
           <DemoNote>{`${chosen} er ikke koblet til i demoen — ingenting ble verifisert.`}</DemoNote>
         ) : null}
-        <Text className="text-xs font-semibold uppercase tracking-wide text-muted">
+        <Text variant="micro" weight="semibold" tone="muted">
           Fordeler
         </Text>
         {BENEFITS.map((b) => (
           <View key={b} className="flex-row items-center gap-2">
             <Icon name="checkmark" size="sm" tone="success" />
-            <Text className="text-sm text-ink font-normal">{b}</Text>
+            <Text variant="label" weight="regular">
+              {b}
+            </Text>
           </View>
         ))}
       </ScrollView>

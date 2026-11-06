@@ -1,9 +1,15 @@
 import { Image } from "expo-image";
 import { router, type Href } from "expo-router";
 import { useMemo, useState } from "react";
-import { FlatList, Pressable, Text, TextInput, View } from "react-native";
+import { FlatList, Pressable, TextInput, View } from "react-native";
 
-import { Icon, Screen } from "@/components/ui";
+import {
+  Icon,
+  Screen,
+  Pressable as UIPressable,
+  Text,
+  Badge,
+} from "@/components/ui";
 import { Button } from "@/components/Button";
 import { Chip } from "@/components/Chip";
 import { DemoNote } from "@/components/DemoNote";
@@ -65,7 +71,7 @@ export default function MarketplaceScreen() {
         keyboardShouldPersistTaps="handled"
         ListHeaderComponent={
           <View className="gap-3 pb-1">
-            <Text className="text-sm text-muted font-normal">
+            <Text variant="caption" tone="muted">
               Samarbeid mellom skapere og bedrifter — lokaler, vertskap,
               sponsing og brand.
             </Text>
@@ -75,7 +81,7 @@ export default function MarketplaceScreen() {
               className="flex-row items-center gap-2 self-start"
             >
               <Icon name="albums-outline" size="sm" tone="ember" />
-              <Text className="text-sm font-semibold text-emberText">
+              <Text variant="label" weight="semibold" tone="ember">
                 Mine listings →
               </Text>
             </Pressable>
@@ -86,7 +92,7 @@ export default function MarketplaceScreen() {
                 className="flex-row items-center gap-1.5"
               >
                 <Icon name="options-outline" size="sm" tone="ink" />
-                <Text className="text-sm font-semibold text-ink">
+                <Text variant="label" weight="semibold">
                   Filtre{freeOnly ? " (1)" : ""}
                 </Text>
               </Pressable>
@@ -96,7 +102,9 @@ export default function MarketplaceScreen() {
                 className="flex-row items-center gap-1.5"
               >
                 <Icon name="stats-chart-outline" size="sm" tone="ink" />
-                <Text className="text-sm font-semibold text-ink">Analyse</Text>
+                <Text variant="label" weight="semibold">
+                  Analyse
+                </Text>
               </Pressable>
             </View>
             <View className="flex-row items-center gap-2 rounded-full border border-line bg-surface px-4">
@@ -128,7 +136,7 @@ export default function MarketplaceScreen() {
           </View>
         }
         ListEmptyComponent={
-          <Text className="py-10 text-center text-sm text-muted font-normal">
+          <Text variant="caption" tone="muted" className="py-10 text-center">
             Ingen listings matcher søket.
           </Text>
         }
@@ -152,7 +160,9 @@ export default function MarketplaceScreen() {
         title="Filtre"
       >
         <View className="gap-3">
-          <Text className="text-sm font-semibold text-ink">Type</Text>
+          <Text variant="label" weight="semibold">
+            Type
+          </Text>
           <View className="flex-row flex-wrap gap-2">
             <Chip
               label="Alle"
@@ -168,7 +178,9 @@ export default function MarketplaceScreen() {
               />
             ))}
           </View>
-          <Text className="text-sm font-semibold text-ink">Vilkår</Text>
+          <Text variant="label" weight="semibold">
+            Vilkår
+          </Text>
           <View className="flex-row flex-wrap gap-2">
             <Chip
               label="Kun gratis / eksponering"
@@ -200,10 +212,11 @@ function ListingCard({
   onPress: () => void;
 }) {
   return (
-    <Pressable
+    <UIPressable
       accessibilityRole="button"
       onPress={onPress}
-      className="flex-row gap-3 rounded-lg border border-line bg-surface p-3 active:opacity-80"
+      contentClassName="flex-row gap-3 rounded-lg border border-line bg-surface p-3"
+      pressedScale={0.99}
     >
       <Image
         source={libImage(listing.cover)}
@@ -214,20 +227,18 @@ function ListingCard({
         accessibilityLabel={listing.title}
       />
       <View className="flex-1 gap-1">
-        <Text className="text-base font-semibold text-ink" numberOfLines={1}>
+        <Text variant="body" weight="semibold" numberOfLines={1}>
           {listing.title}
         </Text>
-        <View className="self-start rounded-full bg-surfaceMuted px-2 py-0.5">
-          <Text className="text-[11px] font-semibold text-ink">
-            {listing.type}
-          </Text>
-        </View>
-        <Text className="text-sm font-semibold text-ink">{listing.terms}</Text>
-        <Text className="text-xs text-muted font-normal" numberOfLines={1}>
+        <Badge kind="status" label={listing.type} />
+        <Text variant="label" weight="semibold">
+          {listing.terms}
+        </Text>
+        <Text variant="caption" tone="muted" numberOfLines={1}>
           {listing.owner}
         </Text>
       </View>
-    </Pressable>
+    </UIPressable>
   );
 }
 
@@ -261,12 +272,8 @@ function ListingSheet({
             style={{ height: 168, width: "100%", borderRadius: 14 }}
             className="bg-surfaceMuted"
           />
-          <View className="self-start rounded-full bg-surfaceMuted px-2.5 py-1">
-            <Text className="text-xs font-semibold text-ink">
-              {listing.type}
-            </Text>
-          </View>
-          <Text className="text-sm text-ink font-normal">
+          <Badge kind="status" label={listing.type} />
+          <Text variant="label" weight="regular">
             {listing.description}
           </Text>
           <View className="overflow-hidden rounded-md border border-line bg-surface">
@@ -276,12 +283,10 @@ function ListingSheet({
                   key={d.label}
                   className="flex-row justify-between border-b border-line px-3.5 py-3"
                 >
-                  <Text className="text-sm text-muted font-normal">
+                  <Text variant="caption" tone="muted">
                     {d.label}
                   </Text>
-                  <Text className="text-sm font-medium text-ink">
-                    {d.value}
-                  </Text>
+                  <Text variant="label">{d.value}</Text>
                 </View>
               ),
             )}
@@ -289,17 +294,19 @@ function ListingSheet({
           <View className="flex-row flex-wrap gap-2">
             {listing.tags.map((t) => (
               <View key={t} className="rounded-full bg-surfaceMuted px-3 py-1">
-                <Text className="text-xs font-medium text-ink">{t}</Text>
+                <Text variant="caption" weight="medium">
+                  {t}
+                </Text>
               </View>
             ))}
           </View>
           <View className="flex-row items-center gap-3 rounded-md border border-line bg-surface p-3">
             <Icon name="tp-business" size="md" tone="ink" />
             <View className="flex-1">
-              <Text className="text-sm font-semibold text-ink">
+              <Text variant="label" weight="semibold">
                 {listing.owner}
               </Text>
-              <Text className="text-xs text-muted font-normal">
+              <Text variant="caption" tone="muted">
                 {listing.ownerMeta}
               </Text>
             </View>

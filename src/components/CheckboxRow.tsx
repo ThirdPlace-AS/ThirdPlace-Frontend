@@ -1,8 +1,8 @@
 import { memo } from "react";
 import { Ionicons } from "@expo/vector-icons";
-import { Pressable, Text, View } from "react-native";
+import { Pressable, View } from "react-native";
 
-import { Icon } from "@/components/ui";
+import { Icon, Text } from "@/components/ui";
 
 // A labelled checkbox row (used by the filter sheet's "Tid på dagen", "Språk"
 // and "Tilgjengelighetsfunksjoner" sections). Square box, ember check when on.
@@ -42,9 +42,11 @@ export const CheckboxRow = memo(function CheckboxRow({
           />
         ) : null}
         <View className="flex-1">
-          <Text className="text-base text-ink font-normal">{label}</Text>
+          <Text variant="body">{label}</Text>
           {hint ? (
-            <Text className="text-xs text-muted font-normal">{hint}</Text>
+            <Text variant="caption" tone="muted">
+              {hint}
+            </Text>
           ) : null}
         </View>
       </View>

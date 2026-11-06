@@ -1,7 +1,7 @@
 import { Ionicons } from "@expo/vector-icons";
 import { useState } from "react";
-import { Pressable, Text, View } from "react-native";
-import { Icon } from "@/components/ui";
+import { Pressable, View } from "react-native";
+import { Icon, Text } from "@/components/ui";
 import { Button } from "@/components/Button";
 import { Chip } from "@/components/Chip";
 import { DemoNote } from "@/components/DemoNote";
@@ -32,8 +32,10 @@ export function ShareSheet({
     <Sheet visible onClose={onClose} title="Del">
       <View className="gap-4">
         <View className="gap-0.5 rounded-md border border-line bg-surface p-3">
-          <Text className="text-sm font-semibold text-ink">{title}</Text>
-          <Text className="text-xs text-muted font-normal">
+          <Text variant="label" weight="semibold">
+            {title}
+          </Text>
+          <Text variant="caption" tone="muted">
             thirdplace.app/{slug}
           </Text>
         </View>
@@ -48,7 +50,7 @@ export function ShareSheet({
               <View className="h-12 w-12 items-center justify-center rounded-full bg-surfaceMuted">
                 <Icon name={a.icon} size="md" tone="ink" />
               </View>
-              <Text className="text-xs text-ink font-normal">{a.label}</Text>
+              <Text variant="caption">{a.label}</Text>
             </Pressable>
           ))}
         </View>
@@ -75,7 +77,7 @@ export function ReportSheet({ onClose }: Base) {
   return (
     <Sheet visible onClose={onClose} title="Rapporter">
       <View className="gap-3">
-        <Text className="text-sm text-muted font-normal">
+        <Text variant="caption" tone="muted">
           Hva er galt? Rapporten er anonym.
         </Text>
         {REASONS.map((r) => (
@@ -86,7 +88,7 @@ export function ReportSheet({ onClose }: Base) {
             onPress={() => setReason(r)}
             className="flex-row items-center justify-between rounded-md border border-line bg-surface px-4 py-3.5"
           >
-            <Text className="text-sm font-medium text-ink">{r}</Text>
+            <Text variant="label">{r}</Text>
             <View
               className={`h-5 w-5 rounded-full border-2 ${
                 reason === r ? "border-ink bg-ink" : "border-line"
@@ -117,7 +119,7 @@ export function BlockSheet({ name, onClose }: Base & { name: string }) {
   return (
     <Sheet visible onClose={onClose} title={`Blokkere ${first}?`}>
       <View className="gap-3">
-        <Text className="text-sm text-muted font-normal">
+        <Text variant="caption" tone="muted">
           {first} kan ikke lenger se profilen din, sende meldinger eller finne
           deg i søk. Dere fjernes fra felles chatter.
         </Text>
@@ -141,7 +143,7 @@ export function LeaveSheet({
   return (
     <Sheet visible onClose={onClose} title="Forlate opplevelsen?">
       <View className="gap-3">
-        <Text className="text-sm text-muted font-normal">
+        <Text variant="caption" tone="muted">
           Plassen din tilbys først på ventelisten.
         </Text>
         <DemoNote>Ingen påmelding endres og ingen refusjon skjer.</DemoNote>
@@ -169,12 +171,14 @@ export function WaitlistSheet({
     <Sheet visible onClose={onClose} title="Bli med på ventelisten?">
       <View className="gap-3">
         <View className="flex-row items-center gap-3 rounded-md bg-surfaceMuted p-4">
-          <Text className="text-2xl font-bold text-ink">#{ahead + 1}</Text>
+          <Text variant="h1" accessibilityRole="text">
+            #{ahead + 1}
+          </Text>
           <View>
-            <Text className="text-sm font-semibold text-ink">
+            <Text variant="label" weight="semibold">
               Din plass i køen
             </Text>
-            <Text className="text-xs text-muted font-normal">
+            <Text variant="caption" tone="muted">
               {ahead} personer foran deg
             </Text>
           </View>
@@ -216,14 +220,20 @@ export function PaySheet({
     <Sheet visible onClose={onClose} title="Bli med">
       <View className="gap-3">
         <View className="gap-0.5 rounded-md border border-line bg-surface p-3">
-          <Text className="text-sm font-semibold text-ink">{title}</Text>
-          <Text className="text-xs text-muted font-normal">{when}</Text>
+          <Text variant="label" weight="semibold">
+            {title}
+          </Text>
+          <Text variant="caption" tone="muted">
+            {when}
+          </Text>
         </View>
         <View className="flex-row justify-between px-1">
-          <Text className="text-sm text-muted font-normal">
+          <Text variant="caption" tone="muted">
             Billett (eksempelpris)
           </Text>
-          <Text className="text-sm font-semibold text-ink">{priceNok} kr</Text>
+          <Text variant="label" weight="semibold">
+            {priceNok} kr
+          </Text>
         </View>
         <DemoNote>
           Betaling er ikke aktiv — ingen kort brukes, ingenting belastes og
@@ -255,7 +265,7 @@ export function CancelSheet({
   return (
     <Sheet visible onClose={onClose} title={`Avlyse ${title}?`}>
       <View className="gap-3">
-        <Text className="text-sm text-muted font-normal">
+        <Text variant="caption" tone="muted">
           {going} er påmeldt. Du kan skrive en årsak (valgfritt).
         </Text>
         <Input
@@ -290,9 +300,11 @@ export function SpotOfferSheet({ title, onClose }: Base & { title: string }) {
     <Sheet visible onClose={onClose} title="En plass åpnet seg!">
       <View className="gap-3">
         <View className="gap-0.5 rounded-md border border-line bg-surface p-3">
-          <Text className="text-sm font-semibold text-ink">{title}</Text>
+          <Text variant="label" weight="semibold">
+            {title}
+          </Text>
         </View>
-        <Text className="text-sm text-muted font-normal">
+        <Text variant="caption" tone="muted">
           Vil du ta plassen?
         </Text>
         {choice ? (
@@ -334,7 +346,9 @@ export function RateSheet({
   return (
     <Sheet visible onClose={onClose} title={heading}>
       <View className="gap-3">
-        <Text className="text-sm text-muted font-normal">{title}</Text>
+        <Text variant="caption" tone="muted">
+          {title}
+        </Text>
         <View className="flex-row gap-1">
           {[1, 2, 3, 4, 5].map((n) => (
             <Pressable
@@ -351,7 +365,9 @@ export function RateSheet({
             </Pressable>
           ))}
         </View>
-        <Text className="text-sm font-semibold text-ink">{chipsLabel}</Text>
+        <Text variant="label" weight="semibold">
+          {chipsLabel}
+        </Text>
         <View className="flex-row flex-wrap gap-2">
           {chips.map((p) => (
             <Chip
@@ -391,7 +407,9 @@ export function SplitBillSheet({
   return (
     <Sheet visible onClose={onClose} title="Del regningen">
       <View className="gap-3">
-        <Text className="text-sm text-muted font-normal">{title}</Text>
+        <Text variant="caption" tone="muted">
+          {title}
+        </Text>
         <View className="flex-row gap-2">
           {["Likt", "Egendefinert"].map((m) => (
             <Chip
@@ -407,8 +425,12 @@ export function SplitBillSheet({
             key={n}
             className="flex-row items-center justify-between rounded-md border border-line bg-surface px-4 py-3"
           >
-            <Text className="text-sm font-semibold text-ink">{n}</Text>
-            <Text className="text-xs text-muted font-normal">—</Text>
+            <Text variant="label" weight="semibold">
+              {n}
+            </Text>
+            <Text variant="caption" tone="muted">
+              —
+            </Text>
           </View>
         ))}
         <DemoNote>

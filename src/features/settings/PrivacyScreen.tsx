@@ -1,7 +1,7 @@
 import { useState } from "react";
-import { ScrollView, Text, View } from "react-native";
+import { ScrollView, View } from "react-native";
 
-import { Screen } from "@/components/ui";
+import { Screen, Text } from "@/components/ui";
 import { Button } from "@/components/Button";
 import { Chip } from "@/components/Chip";
 import { DemoNote } from "@/components/DemoNote";
@@ -99,7 +99,7 @@ export default function PrivacyScreen() {
         title="Blokkerte brukere"
       >
         <View className="gap-2">
-          <Text className="text-sm text-muted font-normal">
+          <Text variant="caption" tone="muted">
             Blokkerte brukere kan ikke se profilen din, sende meldinger eller
             finne deg.
           </Text>
@@ -109,12 +109,14 @@ export default function PrivacyScreen() {
               className="flex-row items-center gap-3 rounded-md border border-line bg-surface p-3"
             >
               <View className="flex-1">
-                <Text className="text-sm font-semibold text-ink">{b.name}</Text>
-                <Text className="text-xs text-muted font-normal">
+                <Text variant="label" weight="semibold">
+                  {b.name}
+                </Text>
+                <Text variant="caption" tone="muted">
                   {b.why} · {b.when}
                 </Text>
               </View>
-              <Text className="text-xs font-semibold text-emberText">
+              <Text variant="caption" weight="semibold" tone="ember">
                 Avblokkér
               </Text>
             </View>
@@ -129,7 +131,7 @@ export default function PrivacyScreen() {
         title="Eksporter data"
       >
         <View className="gap-3">
-          <Text className="text-sm text-muted font-normal">
+          <Text variant="caption" tone="muted">
             Få en kopi av alt ThirdPlace vet om deg (GDPR). Lenken sendes på
             e-post.
           </Text>
@@ -166,24 +168,18 @@ function DeleteAccountSheet({
   return (
     <Sheet visible={visible} onClose={onClose} title="Slett konto">
       <View className="gap-3">
-        <Text className="text-sm font-semibold text-dangerText">
+        <Text variant="label" weight="semibold" tone="danger">
           Denne handlingen er permanent og kan ikke angres.
         </Text>
         <View className="gap-1 rounded-md bg-surfaceMuted p-3">
-          <Text className="text-sm font-semibold text-ink">
+          <Text variant="label" weight="semibold">
             Når du sletter kontoen din:
           </Text>
-          <Text className="text-xs text-ink font-normal">
-            • Alle data slettes permanent
-          </Text>
-          <Text className="text-xs text-ink font-normal">
-            • Opplevelser du har opprettet fjernes
-          </Text>
-          <Text className="text-xs text-ink font-normal">
-            • Meldinger kan ikke gjenopprettes
-          </Text>
+          <Text variant="caption">• Alle data slettes permanent</Text>
+          <Text variant="caption">• Opplevelser du har opprettet fjernes</Text>
+          <Text variant="caption">• Meldinger kan ikke gjenopprettes</Text>
         </View>
-        <Text className="text-sm font-semibold text-ink">
+        <Text variant="label" weight="semibold">
           Hvorfor sletter du?
         </Text>
         <View className="flex-row flex-wrap gap-2">

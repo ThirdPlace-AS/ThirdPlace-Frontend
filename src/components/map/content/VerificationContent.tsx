@@ -1,6 +1,6 @@
 import { Text, View } from "react-native";
 
-import { Icon, Text as UIText } from "@/components/ui";
+import { Icon, Text as UIText, Badge } from "@/components/ui";
 import { DemoNote } from "@/components/DemoNote";
 import { GuestLock } from "@/components/GuestLock";
 import { useGuestMode } from "@/components/map/hooks/useGuestMode";
@@ -89,19 +89,11 @@ export function VerificationContent() {
             <UIText variant="label" weight="regular" className="flex-1">
               {d.name}
             </UIText>
-            <View
-              className={`rounded-full px-2.5 py-1 ${
-                d.status === "Godkjent" ? "bg-success/15" : "bg-warning/20"
-              }`}
-            >
-              <Text
-                className={`text-xs font-semibold ${
-                  d.status === "Godkjent" ? "text-successText" : "text-ink"
-                }`}
-              >
-                {d.status}
-              </Text>
-            </View>
+            <Badge
+              kind="status"
+              label={d.status}
+              tone={d.status === "Godkjent" ? "success" : "warning"}
+            />
           </View>
         ))}
       </View>

@@ -1,7 +1,7 @@
 import { useState } from "react";
-import { Pressable, ScrollView, Text, View } from "react-native";
+import { Pressable, ScrollView, View } from "react-native";
 
-import { IconButton, Screen } from "@/components/ui";
+import { IconButton, Screen, Text, Badge } from "@/components/ui";
 import { Button } from "@/components/Button";
 import { Chip } from "@/components/Chip";
 import { DemoNote } from "@/components/DemoNote";
@@ -42,7 +42,7 @@ export default function MyListingsScreen() {
           ))}
         </View>
         {rows.length === 0 ? (
-          <Text className="py-10 text-center text-sm text-muted font-normal">
+          <Text variant="caption" tone="muted" className="py-10 text-center">
             Ingen listings her ennå.
           </Text>
         ) : null}
@@ -52,14 +52,10 @@ export default function MyListingsScreen() {
             className="flex-row items-center gap-3 rounded-lg border border-line bg-surface p-3.5"
           >
             <View className="flex-1 gap-1">
-              <Text className="text-base font-semibold text-ink">
+              <Text variant="body" weight="semibold">
                 {l.title}
               </Text>
-              <View className="self-start rounded-full bg-surfaceMuted px-2 py-0.5">
-                <Text className="text-[11px] font-semibold text-ink">
-                  {l.type}
-                </Text>
-              </View>
+              <Badge kind="status" label={l.type} />
             </View>
             <Pressable
               accessibilityRole="button"
@@ -73,7 +69,7 @@ export default function MyListingsScreen() {
               }
               hitSlop={8}
             >
-              <Text className="text-sm font-semibold text-emberText">
+              <Text variant="label" weight="semibold" tone="ember">
                 Rediger
               </Text>
             </Pressable>
@@ -114,10 +110,12 @@ function ListingEditor({
       title={isNew ? "Ny listing" : "Rediger listing"}
     >
       <View className="gap-3">
-        <Text className="text-sm text-muted font-normal">
+        <Text variant="caption" tone="muted">
           Del det du tilbyr med andre skapere og bedrifter.
         </Text>
-        <Text className="text-sm font-semibold text-ink">Type</Text>
+        <Text variant="label" weight="semibold">
+          Type
+        </Text>
         <View className="flex-row flex-wrap gap-2">
           {LISTING_TYPES.map((t) => (
             <Chip

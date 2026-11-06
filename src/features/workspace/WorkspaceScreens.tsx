@@ -1,8 +1,14 @@
 import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
 import { useState } from "react";
-import { Pressable, ScrollView, Text, View } from "react-native";
-import { Icon, Screen } from "@/components/ui";
+import { Pressable, ScrollView, View } from "react-native";
+import {
+  Icon,
+  Screen,
+  Pressable as UIPressable,
+  Text,
+  Badge,
+} from "@/components/ui";
 import { Chip } from "@/components/Chip";
 import { DemoBadge } from "@/components/DemoBadge";
 import { DemoNote } from "@/components/DemoNote";
@@ -27,7 +33,7 @@ export function WorkspaceHub() {
             size="sm"
             tone={BIZ?.verified ? "success" : "muted"}
           />
-          <Text className="text-sm font-semibold text-ink">
+          <Text variant="label" weight="semibold">
             {BIZ?.verified ? "Verifisert bedrift" : "Ikke verifisert"}
           </Text>
         </View>
@@ -64,10 +70,10 @@ export function WorkspaceHub() {
         <View className="flex-row items-center gap-3 rounded-lg bg-surfaceMuted p-4">
           <Icon name="person-circle-outline" size="xl" tone="ink" />
           <View className="flex-1">
-            <Text className="text-sm font-semibold text-ink">
+            <Text variant="label" weight="semibold">
               {profile.name}
             </Text>
-            <Text className="text-xs text-muted font-normal">
+            <Text variant="caption" tone="muted">
               Personlig konto
             </Text>
           </View>
@@ -76,14 +82,16 @@ export function WorkspaceHub() {
             onPress={() => router.navigate("/profile")}
             className="rounded-full border border-line bg-surface px-3 py-1.5"
           >
-            <Text className="text-xs font-semibold text-ink">Bytt til</Text>
+            <Text variant="caption" weight="semibold">
+              Bytt til
+            </Text>
           </Pressable>
         </View>
         <View className="gap-1 rounded-lg border border-line bg-surface p-4">
-          <Text className="text-sm font-semibold text-ink">
+          <Text variant="label" weight="semibold">
             Kom i gang: 1 av 2 steg gjenstår
           </Text>
-          <Text className="text-xs text-muted font-normal">
+          <Text variant="caption" tone="muted">
             ✓ Verifiser bedriften · Start abonnement
           </Text>
         </View>
@@ -107,20 +115,25 @@ function HubCard({
   onPress: () => void;
 }) {
   return (
-    <Pressable
+    <UIPressable
       accessibilityRole="button"
       onPress={onPress}
-      className="flex-row items-center gap-3 rounded-lg border border-line bg-surface p-4 active:opacity-80"
+      contentClassName="flex-row items-center gap-3 rounded-lg border border-line bg-surface p-4"
+      pressedScale={0.99}
     >
       <View className="h-11 w-11 items-center justify-center rounded-md bg-surfaceMuted">
         <Icon name={icon} size="md" tone="ink" />
       </View>
       <View className="flex-1">
-        <Text className="text-base font-semibold text-ink">{title}</Text>
-        <Text className="text-xs text-muted font-normal">{hint}</Text>
+        <Text variant="body" weight="semibold">
+          {title}
+        </Text>
+        <Text variant="caption" tone="muted">
+          {hint}
+        </Text>
       </View>
       <Icon name="chevron-forward" size="md" tone="muted" />
-    </Pressable>
+    </UIPressable>
   );
 }
 
@@ -172,12 +185,16 @@ export function WorkspaceAnalytics() {
               key={l}
               className="w-[48%] gap-0.5 rounded-lg bg-surfaceMuted p-4"
             >
-              <Text className="text-2xl font-bold text-ink">{v}</Text>
-              <Text className="text-xs text-muted font-normal">{l}</Text>
+              <Text variant="h1" accessibilityRole="text">
+                {v}
+              </Text>
+              <Text variant="caption" tone="muted">
+                {l}
+              </Text>
             </View>
           ))}
         </View>
-        <Text className="text-xs font-semibold uppercase tracking-wide text-muted">
+        <Text variant="micro" weight="semibold" tone="muted">
           Visninger siste periode
         </Text>
         <View
@@ -208,7 +225,7 @@ export function WorkspaceCalendar() {
     <Screen edges={["top"]}>
       <RouteHeader title="Kalender" />
       <ScrollView contentContainerClassName="gap-3 px-gutter py-4 pb-12">
-        <Text className="text-xs font-semibold uppercase tracking-wide text-muted">
+        <Text variant="micro" weight="semibold" tone="muted">
           Kommende
         </Text>
         {upcoming.map((e) => (
@@ -217,11 +234,13 @@ export function WorkspaceCalendar() {
             className="flex-row items-center gap-3 rounded-md border-l-4 border-l-ember bg-surface p-3"
           >
             <View className="flex-1">
-              <Text className="text-xs text-muted font-normal">{e.when}</Text>
-              <Text className="text-base font-semibold text-ink">
+              <Text variant="caption" tone="muted">
+                {e.when}
+              </Text>
+              <Text variant="body" weight="semibold">
                 {e.title}
               </Text>
-              <Text className="text-xs text-muted font-normal">
+              <Text variant="caption" tone="muted">
                 {e.capacity} plasser
               </Text>
             </View>
@@ -229,7 +248,7 @@ export function WorkspaceCalendar() {
               accessibilityRole="button"
               onPress={() => router.navigate("/add")}
             >
-              <Text className="text-sm font-semibold text-emberText">
+              <Text variant="label" weight="semibold" tone="ember">
                 Rediger
               </Text>
             </Pressable>
@@ -248,7 +267,7 @@ export function WorkspaceLocations() {
     <Screen edges={["top"]}>
       <RouteHeader title="Lokasjoner" />
       <ScrollView contentContainerClassName="gap-3 px-gutter py-4 pb-12">
-        <Text className="text-sm text-muted font-normal">
+        <Text variant="caption" tone="muted">
           {businesses.length} lokasjoner
         </Text>
         {businesses.map((b) => (
@@ -257,26 +276,22 @@ export function WorkspaceLocations() {
             className="gap-1 rounded-lg border border-line bg-surface p-4"
           >
             <View className="flex-row items-center justify-between">
-              <Text className="text-base font-semibold text-ink">{b.name}</Text>
-              <View
-                className={`rounded-full px-2.5 py-1 ${
-                  b.verified ? "bg-success/15" : "bg-warning/20"
-                }`}
-              >
-                <Text
-                  className={`text-xs font-semibold ${
-                    b.verified ? "text-successText" : "text-ink"
-                  }`}
-                >
-                  {b.verified ? "✓ Verifisert" : "Venter på verifisering"}
-                </Text>
-              </View>
+              <Text variant="body" weight="semibold">
+                {b.name}
+              </Text>
+              <Badge
+                kind="status"
+                label={b.verified ? "✓ Verifisert" : "Venter på verifisering"}
+                tone={b.verified ? "success" : "warning"}
+              />
             </View>
-            <Text className="text-xs text-muted font-normal">{b.address}</Text>
+            <Text variant="caption" tone="muted">
+              {b.address}
+            </Text>
           </View>
         ))}
         <View className="items-center rounded-lg border border-dashed border-line py-4">
-          <Text className="text-sm font-semibold text-muted">
+          <Text variant="caption" weight="semibold" tone="muted">
             + Legg til lokasjon (ikke aktiv)
           </Text>
         </View>

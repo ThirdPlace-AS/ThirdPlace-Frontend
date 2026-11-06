@@ -1,7 +1,7 @@
 import { useState } from "react";
-import { Pressable, ScrollView, Text, View } from "react-native";
+import { ScrollView, View } from "react-native";
 
-import { Icon, Screen } from "@/components/ui";
+import { Icon, Screen, Pressable as UIPressable, Text } from "@/components/ui";
 import { DemoBadge } from "@/components/DemoBadge";
 import { RouteHeader } from "@/components/RouteHeader";
 import { Sheet } from "@/components/Sheet";
@@ -25,39 +25,36 @@ export default function PaymentsScreen() {
         <SettingsSection title="Betalingsmetoder">
           <View className="items-center gap-2 px-4 py-8">
             <Icon name="card-outline" size="xl" tone="muted" />
-            <Text className="text-sm font-medium text-ink">
-              Ingen betalingsmetoder
-            </Text>
-            <Text className="px-4 text-center text-xs text-muted font-normal">
+            <Text variant="label">Ingen betalingsmetoder</Text>
+            <Text variant="caption" tone="muted" className="px-4 text-center">
               Her ville betalingsmetodene dine ligget.
             </Text>
           </View>
-          <Pressable
+          <UIPressable
             accessibilityRole="button"
             onPress={() => setInfoOpen(true)}
-            className="flex-row items-center gap-3 border-t border-line px-4 py-3.5 active:bg-surfaceMuted"
+            contentClassName="flex-row items-center gap-3 border-t border-line px-4 py-3.5"
+            pressedScale={0.99}
           >
             <Icon name="add-circle-outline" size="md" tone="ink" />
-            <Text className="flex-1 text-base text-ink font-normal">
+            <Text variant="body" className="flex-1">
               Legg til betalingsmetode
             </Text>
             <DemoBadge />
-          </Pressable>
+          </UIPressable>
         </SettingsSection>
 
         <SettingsSection title="Historikk">
           <View className="items-center gap-2 px-4 py-8">
             <Icon name="receipt-outline" size="xl" tone="muted" />
-            <Text className="text-sm font-medium text-ink">
-              Ingen transaksjoner
-            </Text>
-            <Text className="px-4 text-center text-xs text-muted font-normal">
+            <Text variant="label">Ingen transaksjoner</Text>
+            <Text variant="caption" tone="muted" className="px-4 text-center">
               Kvitteringer ville dukket opp her.
             </Text>
           </View>
         </SettingsSection>
 
-        <Text className="px-1 text-[11px] text-muted font-normal">
+        <Text variant="caption" tone="muted" className="px-1">
           {/* BLOCKED_CONTRACT_GAP: no payment/billing contract. */}
           Betaling er ikke tilgjengelig i demoen. Denne skjermen viser bare
           oppsettet — ingen kortdata samles inn og ingen betaling skjer.
@@ -72,7 +69,7 @@ export default function PaymentsScreen() {
         <DemoNote>{demoCopy.paymentsDemoScreen}</DemoNote>
         <View className="flex-row items-start gap-3 rounded-lg bg-surfaceMuted p-3">
           <Icon name="shield-checkmark-outline" size="lg" tone="success" />
-          <Text className="flex-1 text-sm leading-5 text-ink font-normal">
+          <Text variant="label" weight="regular" className="flex-1 leading-5">
             Denne demoen samler aldri inn kort-, bank- eller kontoopplysninger,
             og ingen ekte betaling kan skje. Et reelt betalingsskjema vil komme
             når betalingsflyten er fastsatt.

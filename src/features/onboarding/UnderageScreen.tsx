@@ -1,6 +1,6 @@
-import { Text, View } from "react-native";
+import { View } from "react-native";
 
-import { Icon, Screen } from "@/components/ui";
+import { Icon, Screen, Text } from "@/components/ui";
 import { Button } from "@/components/Button";
 import { resetTo } from "@/lib/navigation";
 
@@ -13,10 +13,10 @@ export function UnderageScreen() {
         <View className="h-16 w-16 items-center justify-center rounded-full bg-surfaceMuted">
           <Icon name="hand-left-outline" size="xl" tone="ink" />
         </View>
-        <Text className="text-center text-2xl font-bold text-ink">
+        <Text variant="h1" className="text-center">
           ThirdPlace er for 18+
         </Text>
-        <Text className="px-4 text-center text-base text-muted font-normal">
+        <Text variant="body" tone="muted" className="px-4 text-center">
           Du må være minst 18 år for å lage en konto. Vi har ikke lagret noe av
           det du skrev inn.
         </Text>

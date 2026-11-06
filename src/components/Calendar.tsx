@@ -7,6 +7,7 @@ import {
   Text,
   View,
 } from "react-native";
+import { Text as UIText } from "@/components/ui";
 
 const WEEKDAYS = ["M", "T", "O", "T", "F", "L", "S"]; // Norwegian, Monday-first
 const MONTHS = [
@@ -122,12 +123,15 @@ export function Calendar({
       {/* Pinned weekday header */}
       <View className="flex-row justify-between">
         {WEEKDAYS.map((w, i) => (
-          <Text
+          <UIText
             key={i}
-            className="w-9 text-center text-xs font-medium text-muted"
+            variant="caption"
+            weight="medium"
+            tone="muted"
+            className="w-9 text-center"
           >
             {w}
-          </Text>
+          </UIText>
         ))}
       </View>
       <ScrollView
@@ -180,9 +184,9 @@ export function Calendar({
                 );
               })}
             </View>
-            <Text className="text-sm text-ink font-normal">
+            <UIText variant="label" weight="regular">
               {MONTHS[month]} {year}
-            </Text>
+            </UIText>
           </View>
         ))}
       </ScrollView>
