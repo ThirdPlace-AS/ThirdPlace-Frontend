@@ -41,7 +41,7 @@ export default function Register() {
           <View className="flex-row items-center justify-center gap-2">
             <DemoBadge />
             <Text variant="caption" tone="muted">
-              Ingen konto opprettes; feltene lagrer ingenting.
+              Du får ingen konto, og det du skriver lagres ikke.
             </Text>
           </View>
           <SocialAuthButtons verb="Fortsett med" />

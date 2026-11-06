@@ -613,10 +613,7 @@ function FilterBody({
               />
             </Section>
             {/* Pris per gjest */}
-            <Section
-              title="Pris per gjest"
-              subtitle="Priser før gebyrer og skatt"
-            >
+            <Section title="Pris per gjest">
               <PriceHistogram
                 values={PRICE_VALUES}
                 min={PRICE_FLOOR}

@@ -21,7 +21,7 @@ const METHODS: {
     key: "bankid",
     label: "BankID",
     hint: "Automatisk via BankID (Norge)",
-    icon: "card-outline",
+    icon: "shield-checkmark-outline",
   },
   {
     key: "id",
@@ -49,9 +49,12 @@ export default function AgeVerificationScreen() {
       <RouteHeader title="Aldersverifisering" />
       <ScrollView contentContainerClassName="gap-4 px-gutter py-4 pb-12">
         <Text variant="caption" tone="muted">
-          Noen opplevelser krever verifisert alder. Bekreft alderen din for full
+          Noen opplevelser krever verifisert alder. Bekreft alderen din for
           tilgang.
         </Text>
+        <DemoNote>
+          Metodene er ikke koblet til, og fordelene under er bare eksempler.
+        </DemoNote>
         <Text variant="micro" weight="semibold" tone="muted">
           Verifiseringsmetode
         </Text>

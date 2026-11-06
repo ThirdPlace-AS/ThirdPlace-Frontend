@@ -62,7 +62,7 @@ export function NewCollabScreen() {
         />
         {sent ? (
           <DemoNote>
-            Ingen forespørsel ble sendt, og ingen avtale er laget.
+            Forespørselen ble ikke sendt, og det finnes ingen avtale.
           </DemoNote>
         ) : null}
         <Button

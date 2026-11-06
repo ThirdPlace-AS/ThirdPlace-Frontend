@@ -900,7 +900,7 @@ function ExpandBody({
         <View className="flex-row items-center gap-2">
           <DemoBadge />
           <Text variant="caption" tone="onMedia" className="flex-1 opacity-60">
-            Ingen påmelding eller lagring skjer i demoen.
+            Du blir ikke påmeldt, og ingenting lagres.
           </Text>
         </View>
 
@@ -1001,7 +1001,7 @@ function ExpandBody({
       {/* Safety action sheet (Master §7 report/block) — local demo, no report
             is sent; account-gated for guests. */}
       <Sheet visible={safetyOpen} onClose={() => setSafetyOpen(false)}>
-        <DemoNote>Ingen rapport sendes, og ingen blokkering lagres.</DemoNote>
+        <DemoNote>Rapporten sendes ikke, og blokkeringen lagres ikke.</DemoNote>
         <ListRow
           variant="card"
           icon="flag-outline"

@@ -113,7 +113,7 @@ export default function TwoFactor() {
               Backupkoder lagres etter aktivering.
             </Text>
             <DemoNote>
-              Ingen 2FA aktiveres, og ingen QR-kode eller backupkode lages.
+              2FA slås ikke på, og du får ingen QR-kode eller backupkoder.
             </DemoNote>
             <Button
               label="Aktiver 2FA"

@@ -49,7 +49,7 @@ export default function Login() {
           <View className="flex-row items-center justify-center gap-2">
             <DemoBadge />
             <Text variant="caption" tone="muted">
-              Ingen reell innlogging; feltene lagrer ingenting.
+              Innlogging er ikke på ennå. Det du skriver, lagres ikke.
             </Text>
           </View>
         </View>

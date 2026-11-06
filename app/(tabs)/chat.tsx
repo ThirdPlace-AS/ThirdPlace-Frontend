@@ -138,7 +138,7 @@ export default function ChatScreen() {
           <EmptyState
             fill={false}
             icon="search"
-            title="Ingen treff – ennå"
+            title="Ingen treff"
             message={`Ingen samtaler matcher «${query.trim()}».`}
             actionLabel="Tøm søk"
             onAction={() => setQuery("")}
@@ -326,7 +326,7 @@ function NewChatSheet({
             onClose={() => setSearch(false)}
           />
         ) : null}
-        <DemoNote>Ingen chat opprettes, og ingen blir invitert.</DemoNote>
+        <DemoNote>Chatten blir ikke laget, og ingen får invitasjon.</DemoNote>
         <Button
           label="Opprett chat"
           variant="ink"

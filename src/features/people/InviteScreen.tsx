@@ -124,8 +124,8 @@ export default function InviteScreen() {
           </View>
         ))}
         <DemoNote>
-          Belønningene er eksempler fra designet. Ingen fordeler er bestemt
-          eller opptjent.
+          Belønningene er bare eksempler. Ingenting er bestemt, og du har ikke
+          tjent opp noe.
         </DemoNote>
       </ScrollView>
     </Screen>

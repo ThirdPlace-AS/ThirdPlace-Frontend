@@ -6,6 +6,7 @@
 // it is sample content, not product copy.
 //
 // usage: node scripts/extract-copy.js [--json]   (from the repo root)
+/* global __dirname */
 const fs = require("fs");
 const path = require("path");
 const parser = require("@babel/parser");
@@ -101,11 +102,19 @@ function extract() {
         }
       },
       JSXExpressionContainer(p) {
-        // {"literal"} / {`template`} children of an element
+        // {"literal"} / {`template`} children of an element, including the
+        // string branches of {cond ? "a" : "b"} and {cond && "a"}
         if (p.parent.type !== "JSXElement") return;
-        const e = p.node.expression;
-        if (e.type === "StringLiteral") add("text", e.value, e);
-        else if (e.type === "TemplateLiteral") add("text", templateText(e), e);
+        const visit = (e) => {
+          if (e.type === "StringLiteral") add("text", e.value, e);
+          else if (e.type === "TemplateLiteral")
+            add("text", templateText(e), e);
+          else if (e.type === "ConditionalExpression") {
+            visit(e.consequent);
+            visit(e.alternate);
+          } else if (e.type === "LogicalExpression") visit(e.right);
+        };
+        visit(p.node.expression);
       },
       CallExpression(p) {
         const c = p.node.callee;

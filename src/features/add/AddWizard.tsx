@@ -602,12 +602,7 @@ function ReviewStep({ draft }: { draft: AddDraft }) {
         ) : null}
       </View>
       {isPlace ? (
-        <View className="flex-row items-start gap-2 rounded-md bg-surfaceMuted p-3">
-          <Icon name="hourglass-outline" size="sm" tone="ink" />
-          <Text variant="label" weight="regular" className="flex-1">
-            Steder gjennomgås manuelt av ThirdPlace før de blir synlige.
-          </Text>
-        </View>
+        <DemoNote>Stedet sendes ikke inn, og ingen andre ser det.</DemoNote>
       ) : (
         <>
           <View className="flex-row gap-2">
@@ -677,8 +672,8 @@ function SubmittedState({
           </View>
           <Text variant="body" tone="muted" className="px-6 text-center">
             {isPlace
-              ? "Demo — stedet ble ikke sendt til vurdering. Innsending krever innlogging og en server, som ikke er aktiv ennå."
-              : "Demo — opplevelsen ble ikke publisert, og ingen chat ble opprettet. Publisering krever innlogging og en server, som ikke er aktiv ennå."}
+              ? "Stedet ble ikke sendt inn. Det krever innlogging og en server, og ingen av delene er på plass ennå."
+              : "Opplevelsen ble ikke publisert, og ingen chat ble opprettet. Det krever innlogging og en server, og ingen av delene er på plass ennå."}
           </Text>
         </View>
         <View className="w-full gap-3 pt-2">

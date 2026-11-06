@@ -290,8 +290,8 @@ function LinkedSheet({ visible, onClose }: SheetProps) {
           </Text>
         </UIPressable>
         <Text variant="caption" tone="muted">
-          Har du en bedrift eller er skaper, kan kontoene kobles her og byttes
-          med langt trykk på Profil-fanen.
+          Har du en bedrift eller er Skaper, kan du koble kontoene her. Hold
+          inne Profil-fanen for å bytte.
         </Text>
         <DemoNote>
           Bedriftskontoen er et eksempel. Ingen kontoer er koblet.
@@ -501,7 +501,7 @@ function ExportSheet({ visible, onClose }: SheetProps) {
             { label: "Betalingshistorikk", icon: "card-outline" },
           ]}
         />
-        <DemoNote>Ingen eksport lages, og ingen e-post sendes.</DemoNote>
+        <DemoNote>Eksporten lages ikke, og du får ingen e-post.</DemoNote>
         <Button label="Be om eksport" variant="ink" onPress={onClose} />
       </View>
     </Sheet>
@@ -534,8 +534,7 @@ function HelpSheet({ visible, onClose }: SheetProps) {
           ))}
         </View>
         <DemoNote>
-          Svar og supportsaker er ikke koblet til noen tjeneste. Ingen sak blir
-          opprettet.
+          Support er ikke koblet til ennå, så ingen sak blir opprettet.
         </DemoNote>
         <Button label="Opprett supportsak" variant="ink" onPress={onClose} />
       </View>

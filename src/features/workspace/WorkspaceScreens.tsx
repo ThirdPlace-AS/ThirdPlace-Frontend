@@ -290,13 +290,17 @@ export function WorkspaceLocations() {
             </Text>
           </View>
         ))}
-        <View className="items-center rounded-lg border border-dashed border-line py-4">
+        <View
+          accessibilityRole="button"
+          accessibilityState={{ disabled: true }}
+          className="items-center rounded-lg border border-dashed border-line py-4 opacity-50"
+        >
           <Text variant="caption" weight="semibold" tone="muted">
-            + Legg til lokasjon (ikke aktiv)
+            + Legg til lokasjon
           </Text>
         </View>
         <DemoNote>
-          Lokasjoner og priser er ikke slått på. Ingenting faktureres.
+          Du kan ikke legge til lokasjoner ennå, og ingenting blir fakturert.
         </DemoNote>
       </ScrollView>
     </Screen>

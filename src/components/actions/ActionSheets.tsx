@@ -143,10 +143,9 @@ export function LeaveSheet({
   return (
     <Sheet visible onClose={onClose} title="Forlate opplevelsen?">
       <View className="gap-3">
-        <Text variant="caption" tone="muted">
-          Plassen din tilbys først på ventelisten.
-        </Text>
-        <DemoNote>Ingen påmelding endres og ingen refusjon skjer.</DemoNote>
+        <DemoNote>
+          Påmeldingen din endres ikke, og ingenting refunderes.
+        </DemoNote>
         <Button
           label="Forlat"
           variant="secondary"
@@ -277,7 +276,7 @@ export function CancelSheet({
           maxLength={200}
         />
         <DemoNote>
-          Ingen blir varslet, og ingen refusjon skjer i demoen.
+          Ingen får beskjed, og ingenting refunderes i demoen.
         </DemoNote>
         <Button
           label="Avlys"
@@ -436,7 +435,7 @@ export function SplitBillSheet({
         <DemoNote>
           {reminded
             ? "Ingen påminnelse ble sendt."
-            : "Regningsdeling er ikke aktiv — fordeling og beløp er ikke definert."}
+            : "Regningsdeling er ikke på plass ennå, og ingen beløp er bestemt."}
         </DemoNote>
         <Button
           label="Send påminnelse"

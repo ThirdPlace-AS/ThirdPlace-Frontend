@@ -27,7 +27,7 @@ export default function PaymentsScreen() {
             <Icon name="card-outline" size="xl" tone="muted" />
             <Text variant="label">Ingen betalingsmetoder</Text>
             <Text variant="caption" tone="muted" className="px-4 text-center">
-              Her ville betalingsmetodene dine ligget.
+              Lagrede betalingsmetoder vises her.
             </Text>
           </View>
           <UIPressable
@@ -49,16 +49,13 @@ export default function PaymentsScreen() {
             <Icon name="receipt-outline" size="xl" tone="muted" />
             <Text variant="label">Ingen transaksjoner</Text>
             <Text variant="caption" tone="muted" className="px-4 text-center">
-              Kvitteringer ville dukket opp her.
+              Kvitteringene dine vises her.
             </Text>
           </View>
         </SettingsSection>
 
-        <Text variant="caption" tone="muted" className="px-1">
-          {/* BLOCKED_CONTRACT_GAP: no payment/billing contract. */}
-          Betaling er ikke tilgjengelig i demoen. Skjermen viser bare oppsettet.
-          Ingen kortdata samles inn, og ingen betaling skjer.
-        </Text>
+        {/* BLOCKED_CONTRACT_GAP: no payment/billing contract. The DemoNote at
+            the top is the one honesty line for this screen. */}
       </ScrollView>
 
       <Sheet
@@ -70,9 +67,8 @@ export default function PaymentsScreen() {
         <View className="flex-row items-start gap-3 rounded-lg bg-surfaceMuted p-3">
           <Icon name="shield-checkmark-outline" size="lg" tone="success" />
           <Text variant="label" weight="regular" className="flex-1 leading-5">
-            Denne demoen samler aldri inn kort-, bank- eller kontoopplysninger,
-            og ingen ekte betaling kan skje. Et reelt betalingsskjema vil komme
-            når betalingsflyten er fastsatt.
+            Her kan du ikke legge inn kort- eller bankopplysninger, og ingen
+            betaling kan skje.
           </Text>
         </View>
       </Sheet>

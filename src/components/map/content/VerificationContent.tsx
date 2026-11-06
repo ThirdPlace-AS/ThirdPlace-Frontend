@@ -99,8 +99,7 @@ export function VerificationContent() {
 
       <View className="rounded-md bg-surfaceMuted p-3">
         <Text variant="label" weight="regular">
-          Når verifisering er aktiv, får du beskjed så snart vurderingen er
-          klar.
+          Verifisering er ikke slått på ennå, så du får ingen beskjed.
         </Text>
       </View>
     </View>

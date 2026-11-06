@@ -87,8 +87,8 @@ export default function VerifyCode() {
         ) : null}
         <DemoNote>
           {resent
-            ? "Ingen kode ble sendt på nytt — alle 6 siffer godtas i demoen."
-            : "Ingen kode er sendt — alle 6 siffer godtas i demoen."}
+            ? "Ingen ny kode er sendt. Skriv inn hvilke som helst 6 sifre."
+            : "Ingen kode er sendt. Skriv inn hvilke som helst 6 sifre."}
         </DemoNote>
       </ScrollView>
     </Screen>
