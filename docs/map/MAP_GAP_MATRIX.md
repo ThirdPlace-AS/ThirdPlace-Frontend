@@ -99,3 +99,14 @@ demo-safe unbuilt items are **mark-all-read** and a read-state-driven badge.
 
 See [MAP_BLOCKERS.md](MAP_BLOCKERS.md) for the blocker + native-verify registers
 and [MAP_DELIVERABLES.md](MAP_DELIVERABLES.md) for journeys + completion classes.
+
+## Phase 9–10 changes (2026-11-06)
+
+- Android back steps back / closes the detail sheet before leaving the map (0193).
+- Experience detail pins its join bar through gorhom `footerComponent` (PDF p6); join state is a shared demo store (`useExperienceJoin`) (0204).
+- `/map?focus=<kind>:<id>&at=<stamp>` opens a detail from Steder "Vis på kartet", Lagret and Mine planer (0199, 0208).
+- Browse heart asks guests to sign in, like every other save (0208).
+- Map tools sit 12 dp above the measured browse peek (0204).
+- Map search shows "Nylig sett" (founder-approved; `useRecentlyViewed`, in-memory) (0209).
+- Filtre mounts every section with the sheet; the 400 ms deferral made the lower half settle 1.2–1.4 s on the production bundle (0212).
+- The map no longer fakes a 500 ms load on open; loading/error stay reachable via the offline toggle and "Prøv igjen" (0206).

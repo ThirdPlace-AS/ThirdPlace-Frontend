@@ -39,7 +39,7 @@ Directory routes with no PDF page (`experiences`, `places`, `groups`,
 | Oppdag folk   | `app/people.tsx` (Profil → Venner) | p22      | partial (no filter/invite)     | follow = DemoNote; guest SignInPrompt                                                                                                                                       | 0089, 0112       |
 | Bli Skaper    | `app/become-creator.tsx`           | p14      | demo-complete                  | illustrative requirements, apply sends nothing; apply muted until all are met (PDF p14); "Du er nå Skaper!" is `app/creator-welcome.tsx`, reachable by deep link for review | 0118, 0174, 0181 |
 | Marketplace   | `app/marketplace.tsx`              | p15–p16  | partial (list + detail only)   | B2B; request/save DemoNote; guest SignInPrompt                                                                                                                              | 0118             |
-| Notifications | map / chat / swipe bell            | p20      | demo-complete                  | DemoNote (no push/inbox)                                                                                                                                                    | 0117             |
+| Notifications | map / chat / swipe bell            | p20      | demo-complete                  | DemoNote (no push/inbox); shared read state, bells drop (0208)                                                                                                              | 0117             |
 | Settings      | `app/settings.tsx`                 | p19–p20  | demo-complete                  | every sheet DemoNote                                                                                                                                                        | 0116             |
 | Privacy       | `app/privacy.tsx`                  | p19, p21 | demo-complete                  | blocked/export/delete DemoNote                                                                                                                                              | 0116             |
 | Payments      | `app/payments.tsx`                 | p20      | demo-complete (structure-only) | no input fields, no card data, no transactions                                                                                                                              | 0096, 0099       |
@@ -74,15 +74,15 @@ Directory routes with no PDF page (`experiences`, `places`, `groups`,
 
 ## Cross-cutting
 
-| Concern                     | Where                                        | Status   | Notes                                                                                | Ledger     |
-| --------------------------- | -------------------------------------------- | -------- | ------------------------------------------------------------------------------------ | ---------- |
-| Brand logo / app icon       | `src/components/Logo.tsx`, `assets/`         | complete | SVG mark, provisional ember token                                                    | 0084       |
-| Imagery                     | `src/fixtures/images.ts` (Unsplash, bundled) | complete | per-place covers; none depict the named venues/people                                | 0099       |
-| Honesty copy                | `src/copy/demo.ts` + `DemoNote`              | partial  | DemoNote text never repeats "Demo —"; many slice-specific notes stay inline          | 0103, 0118 |
-| Session-boundary navigation | `src/lib/navigation.ts` `resetTo`            | complete | back after logout/onboarding exits instead of returning to a signed-in screen        | 0102       |
-| Tab bar                     | `app/(tabs)/_layout.tsx`                     | complete | center CTA, filled-when-active icons                                                 | 0101       |
-| CI secret check             | `.github/workflows/ci.yml`                   | complete | anchored `sk.` grep (asset-hash false positive)                                      | 0100       |
-| Persistence of demo state   | in-memory stores                             | blocked  | saved/guest/recent searches reset on reload — persistence is contract-blocked (CB-5) | —          |
+| Concern                     | Where                                        | Status   | Notes                                                                                                                                     | Ledger     |
+| --------------------------- | -------------------------------------------- | -------- | ----------------------------------------------------------------------------------------------------------------------------------------- | ---------- |
+| Brand logo / app icon       | `src/components/Logo.tsx`, `assets/`         | complete | SVG mark, provisional ember token                                                                                                         | 0084       |
+| Imagery                     | `src/fixtures/images.ts` (Unsplash, bundled) | complete | per-place covers; none depict the named venues/people                                                                                     | 0099       |
+| Honesty copy                | `src/copy/demo.ts` + `DemoNote`              | partial  | DemoNote text never repeats "Demo —"; many slice-specific notes stay inline                                                               | 0103, 0118 |
+| Session-boundary navigation | `src/lib/navigation.ts` `resetTo`            | complete | back after logout/onboarding exits instead of returning to a signed-in screen                                                             | 0102       |
+| Tab bar                     | `app/(tabs)/_layout.tsx`                     | complete | center CTA, filled-when-active icons                                                                                                      | 0101       |
+| CI secret check             | `.github/workflows/ci.yml`                   | complete | anchored `sk.` grep (asset-hash false positive)                                                                                           | 0100       |
+| Persistence of demo state   | in-memory stores                             | blocked  | saved/guest/recent searches, notification reads, experience joins and Nylig sett reset on reload — persistence is contract-blocked (CB-5) | —          |
 
 ## Known gaps (not done)
 
@@ -93,6 +93,7 @@ Directory routes with no PDF page (`experiences`, `places`, `groups`,
   sheet push/back — verified on the emulator only.
 - **Native verification outstanding** for real GPS/heading and haptics on a
   physical device (see `docs/map/MAP_BLOCKERS.md`, NV register).
+- **iOS keyboard layouts unverified** — `KeyboardAvoidingView` padding (0201) was checked on Android only.
 - **PDF screens still missing** — see the list at the end of `docs/SCREEN_INVENTORY.md`.
 
 ## Phase 6 review (2026-11-06)
@@ -109,3 +110,26 @@ Directory routes with no PDF page (`experiences`, `places`, `groups`,
 | Marketplace, collab                                 | DemoNotes, chips scroll, defaults/contract state agree, fictional sponsor | 0173, 0174, 0175, 0176 |
 | Workspace (hub, Kalender, Lokasjoner, Utbetalinger) | Calendar order, checklist per step, pill spacing, payouts note            | 0171, 0173, 0174, 0175 |
 | System states                                       | Update button full ember with demo toast; state note rewritten            | 0171, 0174             |
+
+## Phase 10 review (2026-11-06)
+
+Feel, reaction, feedback, whole-screen and retention pass; report in `docs/reviews/FEEL_REVIEW_2026-11-06.md`.
+
+| Surface                                           | Change                                                                                                                        | Ledger                             |
+| ------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------- | ---------------------------------- |
+| Sheet engine (all Modal sheets)                   | Cap below the status bar and scroll; keyboard padding; safe-area bottom                                                       | 0196, 0201                         |
+| Chat thread                                       | Opens at the newest message, follows sends, pinned bar under the header, not-found way back                                   | 0197                               |
+| Map detail                                        | Pinned join bar (PDF p6), focus param from Steder/Lagret/Mine planer, guest heart asks to sign in, tools on the measured peek | 0199, 0204, 0208                   |
+| Map search                                        | Nylig sett (founder-approved)                                                                                                 | 0209                               |
+| Filtre                                            | All sections mount with the sheet                                                                                             | 0212                               |
+| Sveip                                             | Bar fits 360 dp, quicker glide, Steder fade, Vis på kartet opens the place                                                    | 0199, 0203, 0207                   |
+| Add, onboarding, business onboarding              | Reason under a disabled Neste, keyboard-safe sticky footer, fresh faded step, Kalender Rediger pre-fill                       | 0198, 0199, 0201, 0202, 0207       |
+| Gruppe-sveip                                      | Opens the experience chat on a match, pinned Start, one-line rows, saved deck + Lagre til senere                              | 0199, 0202, 0203, 0210             |
+| Lagret / Mine planer                              | Rows open their detail, Angre after unsave, Sveip lagrede med venner, Til samtalen                                            | 0208, 0210, 0211                   |
+| Profil                                            | Honest toast after Lagre, Neste plan card                                                                                     | 0200, 0211                         |
+| Settings / Privacy                                | Plain rows instead of no-op chevrons, Avblokkér toggles, honest toasts                                                        | 0198, 0200                         |
+| Notifications                                     | Shared read state across Kart, Sveip, Chat bells                                                                              | 0208                               |
+| People, Marketplace, Mine listings, Innleveringer | Honesty marker, onward empty states, one-line tab rows                                                                        | 0203                               |
+| Collab, workspace                                 | Reasons, ✓ Vurdert, contract haptic, chart follows its range                                                                  | 0198, 0199, 0205                   |
+| Splash, map load, lobby                           | No fake waits                                                                                                                 | 0206                               |
+| UI primitives                                     | Label chips, readable disabled Button, StickyFooter, ScrollRow, FadeSwap, toast action, 34 presses to the ui Pressable        | 0198, 0202, 0203, 0205, 0207, 0208 |
