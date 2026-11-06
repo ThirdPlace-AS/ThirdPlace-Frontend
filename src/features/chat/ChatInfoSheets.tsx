@@ -1,6 +1,6 @@
 import { Image } from "expo-image";
 import { useState } from "react";
-import { Pressable, Text, View } from "react-native";
+import { Pressable, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import {
   Avatar,
@@ -8,7 +8,7 @@ import {
   IconButton,
   ListRow,
   Overlay,
-  Text as UIText,
+  Text,
 } from "@/components/ui";
 import { ReportSheet } from "@/components/actions/ActionSheets";
 import { Button } from "@/components/Button";
@@ -98,24 +98,26 @@ function InfoSheet({
   return (
     <Sheet visible={visible} onClose={onClose} title={chat.name}>
       <View className="gap-4">
-        <Text className="text-sm text-muted font-normal">
+        <Text variant="caption" tone="muted">
           {CHAT_TYPE_LABEL[chat.type]} · {CHAT_ACCESS_LABEL[chat.access]}
           {chat.type === "experience" ? " · arkiveres etter kvelden" : ""}
         </Text>
         {exp ? (
           <View className="gap-0.5 rounded-md bg-surfaceMuted p-3">
-            <Text className="text-xs font-semibold text-muted">
+            <Text variant="caption" weight="semibold" tone="muted">
               Tilknyttet opplevelse
             </Text>
-            <Text className="text-sm font-semibold text-ink">
+            <Text variant="label" weight="semibold">
               {exp.title} · {exp.when}
             </Text>
           </View>
         ) : null}
         <View className="flex-row items-center justify-between">
-          <Text className="text-sm font-semibold text-ink">Medlemmer</Text>
+          <Text variant="label" weight="semibold">
+            Medlemmer
+          </Text>
           <Pressable accessibilityRole="button" onPress={onMembers} hitSlop={8}>
-            <Text className="text-sm font-semibold text-emberText">
+            <Text variant="label" weight="semibold" tone="ember">
               Se alle ({chat.members ?? members.length}) →
             </Text>
           </Pressable>
@@ -123,7 +125,9 @@ function InfoSheet({
         {members.slice(0, 3).map((m) => (
           <MemberRow key={m.person.id} {...m} />
         ))}
-        <Text className="text-sm font-semibold text-ink">Delte bilder</Text>
+        <Text variant="label" weight="semibold">
+          Delte bilder
+        </Text>
         <View className="flex-row gap-2">
           {SHARED.map((src, i) => (
             <Pressable
@@ -161,7 +165,9 @@ function InfoSheet({
               className="flex-1 items-center gap-1 rounded-md border border-line bg-surface py-3 active:opacity-80"
             >
               <Icon name={a.icon} size="md" tone="ink" />
-              <Text className="text-xs font-medium text-ink">{a.label}</Text>
+              <Text variant="caption" weight="medium">
+                {a.label}
+              </Text>
             </Pressable>
           ))}
         </View>
@@ -198,7 +204,7 @@ function MembersSheet({
   return (
     <Sheet visible={visible} onClose={onClose} title="Medlemmer">
       <View className="gap-3">
-        <Text className="text-sm text-muted font-normal">
+        <Text variant="caption" tone="muted">
           {chat.members ?? all.length} i chatten
         </Text>
         <SearchField
@@ -237,22 +243,24 @@ function InviteSheet({
           onChange={setQ}
           placeholder="Søk brukere …"
         />
-        <Text className="text-xs font-semibold uppercase tracking-wide text-muted">
+        <Text variant="micro" weight="semibold" tone="muted">
           Del invitasjonslenke
         </Text>
         <View className="gap-0.5 rounded-md border border-line bg-surface p-3">
-          <Text className="text-sm text-emberText font-normal">
+          <Text variant="label" weight="regular" tone="ember">
             thirdplace.app/join/{slug}
           </Text>
-          <Text className="text-xs font-semibold text-emberText">
+          <Text variant="caption" weight="semibold" tone="ember">
             Kopier lenke
           </Text>
         </View>
         <View className="items-center gap-2 rounded-md border border-line bg-surface p-4">
           <Icon name="qr-code-outline" size="3xl" tone="muted" />
-          <Text className="text-xs text-muted font-normal">QR-kode</Text>
+          <Text variant="caption" tone="muted">
+            QR-kode
+          </Text>
         </View>
-        <Text className="text-xs font-semibold uppercase tracking-wide text-muted">
+        <Text variant="micro" weight="semibold" tone="muted">
           Foreslåtte
         </Text>
         {people
@@ -267,7 +275,7 @@ function InviteSheet({
                 source={libImage(p.avatar)}
                 style={{ height: 36, width: 36, borderRadius: 18 }}
               />
-              <Text className="flex-1 text-sm font-semibold text-ink">
+              <Text variant="label" weight="semibold" className="flex-1">
                 {p.name}
               </Text>
               <Button
@@ -347,9 +355,9 @@ function ImageViewer({
             variant="mediaSubtle"
             onPress={onClose}
           />
-          <UIText variant="label" weight="semibold" tone="onMedia">
+          <Text variant="label" weight="semibold" tone="onMedia">
             {`${index + 1} / ${n}`}
-          </UIText>
+          </Text>
           <View className="w-10" />
         </View>
         <View

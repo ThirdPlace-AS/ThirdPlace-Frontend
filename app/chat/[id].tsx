@@ -4,14 +4,16 @@ import {
   FlatList,
   KeyboardAvoidingView,
   Platform,
-  Pressable,
-  Text,
   TextInput,
   View,
 } from "react-native";
+import Animated, {
+  FadeInDown,
+  useReducedMotion,
+} from "react-native-reanimated";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-import { Icon, IconButton, Screen } from "@/components/ui";
+import { Icon, IconButton, Screen, Text, Avatar } from "@/components/ui";
 import { Button } from "@/components/Button";
 import { DemoBadge } from "@/components/DemoBadge";
 import { useGuestMode } from "@/components/map/hooks/useGuestMode";
@@ -25,7 +27,9 @@ import {
   type MockMessage,
 } from "@/fixtures";
 import { ChatInfoSheets } from "@/features/chat/ChatInfoSheets";
-import { useThemeColors } from "@/theme";
+import { duration, useThemeColors } from "@/theme";
+import { fontFamilyFor } from "@/theme/fonts";
+import { haptics } from "@/lib/haptics";
 
 // Chat conversation (DEMO ONLY). BLOCKED_CONTRACT_GAP: no realtime/messaging
 // backend, no delivery or read receipts. The composer echoes locally so the UI
@@ -50,7 +54,7 @@ export default function ChatThreadScreen() {
   if (!chat) {
     return (
       <SafeAreaView className="flex-1 items-center justify-center bg-background">
-        <Text className="text-base text-muted font-normal">
+        <Text variant="body" tone="muted">
           Samtalen finnes ikke.
         </Text>
       </SafeAreaView>
@@ -76,6 +80,7 @@ export default function ChatThreadScreen() {
       },
     ]);
     setDraft("");
+    haptics.light();
   };
 
   return (
@@ -88,16 +93,17 @@ export default function ChatThreadScreen() {
           size="sm"
           onPress={() => router.back()}
         />
-        <View className="h-10 w-10 items-center justify-center rounded-full bg-surfaceMuted">
-          <Text className="text-base font-semibold text-ink">
-            {chat.initials}
-          </Text>
-        </View>
+        <Avatar
+          name={chat.name}
+          initials={chat.initials}
+          size="md"
+          decorative
+        />
         <View className="flex-1">
-          <Text className="text-base font-semibold text-ink" numberOfLines={1}>
+          <Text variant="body" weight="semibold" numberOfLines={1}>
             {chat.name}
           </Text>
-          <Text className="text-xs text-muted font-normal">
+          <Text variant="caption" tone="muted" numberOfLines={1}>
             {[
               CHAT_TYPE_LABEL[chat.type],
               chat.type === "dm" ? null : CHAT_ACCESS_LABEL[chat.access],
@@ -131,12 +137,16 @@ export default function ChatThreadScreen() {
               <View className="mb-1 flex-row items-center gap-2 rounded-xl border border-line bg-surface px-3 py-2.5">
                 <Icon name="pricetag-outline" size="sm" tone="ember" />
                 <Text
-                  className="flex-1 text-sm text-ink font-normal"
+                  variant="label"
+                  weight="regular"
+                  className="flex-1"
                   numberOfLines={1}
                 >
                   {pinned.title}
                 </Text>
-                <Text className="text-xs text-muted font-normal">Festet</Text>
+                <Text variant="caption" tone="muted">
+                  Festet
+                </Text>
               </View>
             ) : null
           }
@@ -145,7 +155,7 @@ export default function ChatThreadScreen() {
 
         {chat.status === "archived" ? (
           <View className="border-t border-line px-gutter pb-3 pt-3">
-            <Text className="text-center text-sm text-muted font-normal">
+            <Text variant="caption" tone="muted" className="text-center">
               Arkivert — kun lesbart. Du kan ikke sende nye meldinger.
             </Text>
           </View>
@@ -159,33 +169,28 @@ export default function ChatThreadScreen() {
           </View>
         ) : (
           <View className="gap-2 border-t border-line px-gutter pb-2 pt-2.5">
-            <Text className="text-center text-[11px] text-muted font-normal">
+            <Text variant="caption" tone="muted" className="text-center">
               Demo — meldinger sendes eller lagres ikke
             </Text>
             <View className="flex-row items-end gap-2">
               <TextInput
-                className="max-h-28 flex-1 rounded-lg border border-line bg-surface px-4 py-2.5 text-base text-ink font-normal"
+                accessibilityLabel="Melding"
+                className="max-h-28 flex-1 rounded-2xl border border-line bg-surface px-4 py-2.5 text-ink"
+                style={{ fontFamily: fontFamilyFor("regular"), fontSize: 16 }}
                 placeholder="Skriv en melding …"
                 placeholderTextColor={colors.muted}
                 value={draft}
                 onChangeText={setDraft}
                 multiline
               />
-              <Pressable
-                accessibilityRole="button"
-                accessibilityLabel="Send"
+              <IconButton
+                icon="arrow-up"
+                label="Send"
+                variant={draft.trim() ? "ink" : "filled"}
+                tone={draft.trim() ? "onInk" : "muted"}
                 disabled={!draft.trim()}
                 onPress={send}
-                className={`h-11 w-11 items-center justify-center rounded-full ${
-                  draft.trim() ? "bg-ink active:opacity-80" : "bg-surfaceMuted"
-                }`}
-              >
-                <Icon
-                  name="arrow-up"
-                  size="md"
-                  tone={draft.trim() ? "onInk" : "muted"}
-                />
-              </Pressable>
+              />
             </View>
           </View>
         )}
@@ -201,33 +206,44 @@ export default function ChatThreadScreen() {
 }
 
 function Bubble({ message }: { message: MockMessage }) {
+  const reduced = useReducedMotion();
+  // Only messages written in this session slide in from the composer; the
+  // fixture history is already there. No delivered/read ticks (no backend).
+  const entering =
+    message.id.startsWith("local-") && !reduced
+      ? FadeInDown.duration(duration.base)
+      : undefined;
   if (message.mine) {
     return (
-      <View className="max-w-[80%] flex-row items-end gap-2 self-end">
+      <Animated.View
+        entering={entering}
+        style={{ alignSelf: "flex-end", maxWidth: "80%" }}
+      >
         <View className="rounded-lg rounded-br-sm bg-ink px-3.5 py-2.5">
-          <Text className="text-base text-onInk font-normal">
+          <Text variant="body" tone="onInk">
             {message.text}
           </Text>
-          <Text className="pt-0.5 text-[10px] text-onInk/70 font-normal">
+          <Text variant="caption" tone="onInk" className="pt-0.5 opacity-70">
             {message.time}
           </Text>
         </View>
-      </View>
+      </Animated.View>
     );
   }
   return (
     <View className="max-w-[82%] flex-row items-end gap-2 self-start">
-      <View className="h-7 w-7 items-center justify-center rounded-full bg-surfaceMuted">
-        <Text className="text-xs font-semibold text-ink">
-          {message.initials}
-        </Text>
-      </View>
+      <Avatar
+        name={message.author}
+        initials={message.initials}
+        size="sm"
+        decorative
+      />
       <View className="rounded-lg rounded-bl-sm border border-line bg-surface px-3.5 py-2.5">
-        <Text className="text-xs font-semibold text-muted">
+        <Text variant="caption" weight="semibold" tone="muted">
           {message.author}
         </Text>
-        <Text className="text-base text-ink font-normal">{message.text}</Text>
-        <Text className="pt-0.5 text-[10px] text-muted font-normal">
+        <Text variant="body">{message.text}</Text>
+        <Text variant="caption" tone="muted" className="pt-0.5">
           {message.time}
         </Text>
       </View>

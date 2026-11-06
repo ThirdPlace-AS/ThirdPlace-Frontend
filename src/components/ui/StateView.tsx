@@ -85,11 +85,14 @@ export function StateView({
           />
         </View>
       ) : actionLabel ? (
-        <View className="w-48">
+        // PDF p26: one compact ink pill, centred.
+        <View className="flex-row justify-center">
           <Button
             label={actionLabel}
-            variant={danger ? "ink" : "secondary"}
-            fullWidth
+            variant="ink"
+            rounded="full"
+            size="sm"
+            fullWidth={false}
             onPress={onAction}
           />
         </View>

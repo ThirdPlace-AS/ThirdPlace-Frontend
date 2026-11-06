@@ -1,6 +1,6 @@
 import { router } from "expo-router";
 import { useMemo, useState } from "react";
-import { Pressable, ScrollView, Text, View } from "react-native";
+import { Pressable, ScrollView, View } from "react-native";
 
 import { Button } from "@/components/Button";
 import {
@@ -10,6 +10,10 @@ import {
   Screen,
   SearchBar,
   Accordion,
+  Avatar,
+  Pressable as UIPressable,
+  Text,
+  EmptyState,
 } from "@/components/ui";
 import { Chip } from "@/components/Chip";
 import { DemoNote } from "@/components/DemoNote";
@@ -101,7 +105,7 @@ export default function ChatScreen() {
 
         {active.length > 0 ? (
           <View className="gap-2">
-            <Text className="text-xs font-semibold uppercase tracking-wide text-muted">
+            <Text variant="micro" weight="semibold" tone="muted">
               Aktive samtaler
             </Text>
             {active.map((c) => (
@@ -131,9 +135,14 @@ export default function ChatScreen() {
         )}
 
         {visible.length === 0 ? (
-          <Text className="py-8 text-center text-sm text-muted font-normal">
-            Ingen samtaler matcher «{query}».
-          </Text>
+          <EmptyState
+            fill={false}
+            icon="search"
+            title="Ingen treff – ennå"
+            message={`Ingen samtaler matcher «${query.trim()}».`}
+            actionLabel="Tøm søk"
+            onAction={() => setQuery("")}
+          />
         ) : null}
 
         {archived.length > 0 && !q ? (
@@ -143,7 +152,7 @@ export default function ChatScreen() {
             className="flex-row items-center gap-3 px-1 py-2 active:opacity-70"
           >
             <Icon name="archive-outline" size="md" tone="muted" />
-            <Text className="flex-1 text-sm text-muted font-normal">
+            <Text variant="caption" tone="muted" className="flex-1">
               Arkiverte chatter ({archived.length})
             </Text>
             <Icon name="chevron-forward" size="sm" tone="muted" />
@@ -168,7 +177,7 @@ export default function ChatScreen() {
         title="Arkiverte chatter"
       >
         <View className="gap-2">
-          <Text className="text-sm text-muted font-normal">
+          <Text variant="caption" tone="muted">
             Kun lesbart — du kan ikke sende nye meldinger.
           </Text>
           {archived.map((c) => (
@@ -197,46 +206,59 @@ export default function ChatScreen() {
 function ChatRow({ chat, onPress }: { chat: MockChat; onPress: () => void }) {
   const icon =
     chat.type === "experience"
-      ? "musical-notes-outline"
+      ? "tp-experience"
       : chat.type === "place" || chat.type === "business"
         ? "cafe-outline"
         : null;
+  const unread = chat.unread > 0 ? `, ${chat.unread} uleste` : "";
   return (
-    <Pressable
+    <UIPressable
       accessibilityRole="button"
+      accessibilityLabel={`${chat.name}, ${chat.last}, ${chat.time}${unread}`}
       onPress={onPress}
-      className="flex-row items-center gap-3 rounded-md bg-surface px-3 py-3 active:opacity-80"
+      pressedScale={0.99}
+      contentClassName="flex-row items-center gap-md rounded-lg bg-surface px-md py-md"
     >
-      <View className="h-11 w-11 items-center justify-center rounded-full bg-surfaceMuted">
-        {icon ? (
+      {icon ? (
+        <View className="h-10 w-10 items-center justify-center rounded-full bg-surfaceMuted">
           <Icon name={icon} size="md" tone="ink" />
-        ) : (
-          <Text className="text-sm font-semibold text-ink">
-            {chat.initials}
-          </Text>
-        )}
-      </View>
-      <View className="flex-1">
-        <Text className="text-base font-semibold text-ink" numberOfLines={1}>
+        </View>
+      ) : (
+        <Avatar
+          name={chat.name}
+          initials={chat.initials}
+          size="md"
+          decorative
+        />
+      )}
+      <View className="flex-1 gap-0.5">
+        <Text variant="body" weight="semibold" numberOfLines={1}>
           {chat.name}
         </Text>
-        <Text className="text-sm text-muted font-normal" numberOfLines={1}>
+        <Text variant="caption" tone="muted" numberOfLines={1}>
           {chat.last}
         </Text>
       </View>
       <View className="items-end gap-1">
-        <Text className="text-xs text-muted font-normal">{chat.time}</Text>
+        <Text variant="caption" tone="muted">
+          {chat.time}
+        </Text>
         {chat.unread > 0 ? (
           <View className="h-5 min-w-5 items-center justify-center rounded-full bg-ember px-1.5">
-            <Text className="text-xs font-semibold text-onEmber">
-              {chat.unread}
+            <Text
+              variant="micro"
+              weight="bold"
+              tone="onEmber"
+              className="normal-case"
+            >
+              {String(chat.unread)}
             </Text>
           </View>
         ) : (
           <View className="h-5" />
         )}
       </View>
-    </Pressable>
+    </UIPressable>
   );
 }
 
@@ -264,7 +286,9 @@ function NewChatSheet({
           maxLength={50}
         />
         <View className="gap-2">
-          <Text className="text-sm font-semibold text-ink">Type</Text>
+          <Text variant="label" weight="semibold">
+            Type
+          </Text>
           <View className="flex-row flex-wrap gap-2">
             {(Object.keys(CHAT_ACCESS_LABEL) as MockChatAccess[]).map((a) => (
               <Chip
@@ -277,9 +301,11 @@ function NewChatSheet({
           </View>
         </View>
         <View className="gap-2">
-          <Text className="text-sm font-semibold text-ink">Medlemmer</Text>
+          <Text variant="label" weight="semibold">
+            Medlemmer
+          </Text>
           {members.length ? (
-            <Text className="text-sm text-ink font-normal">
+            <Text variant="label" weight="regular">
               {members.join(", ")}
             </Text>
           ) : null}
@@ -289,7 +315,7 @@ function NewChatSheet({
             className="flex-row items-center gap-2 self-start rounded-full border border-line bg-surface px-3 py-2"
           >
             <Icon name="person-add-outline" size="sm" tone="ink" />
-            <Text className="text-sm font-medium text-ink">Legg til</Text>
+            <Text variant="label">Legg til</Text>
           </Pressable>
         </View>
         {search ? (
