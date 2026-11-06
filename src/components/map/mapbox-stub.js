@@ -27,4 +27,5 @@ module.exports = {
   SymbolLayer: Noop,
   StyleImport: Noop,
   Images: Noop,
+  Image: Noop,
 };

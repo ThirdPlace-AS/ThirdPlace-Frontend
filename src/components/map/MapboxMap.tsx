@@ -1,6 +1,9 @@
+import { Ionicons } from "@expo/vector-icons";
 import Mapbox, {
   Camera,
   CircleLayer,
+  Image as MapImage,
+  Images,
   MapView,
   ShapeSource,
   StyleImport,
@@ -9,13 +12,14 @@ import Mapbox, {
 } from "@rnmapbox/maps";
 import type { FeatureCollection, Point } from "geojson";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { Dimensions } from "react-native";
+import { Dimensions, View } from "react-native";
 
 import { MAP_CENTER } from "@/fixtures";
 import { motion, palette } from "@/theme";
 
 import { periodForUrl } from "./mapStyles";
-import { pinPaint } from "./pinStyle";
+import { isExperience, pinPaint } from "./pinStyle";
+import { markerIcon, type MarkerGlyph } from "./services/markerIcon";
 import type { DiscoveryItem } from "./types/mapPresentation";
 
 // Real Mapbox map. ONLY required from MapCanvas in a native dev/EAS build with a
@@ -94,22 +98,33 @@ export function MapboxMap({
     });
   }, [focusKey, focusCoord]);
 
-  const shape = useMemo<FeatureCollection<Point>>(
-    () => ({
+  // Each pin carries a glyph that matches it (markerIcon). Glyphs render as
+  // map images from RN views: ink on the white place pins, white on the ink
+  // experience pins (one image per glyph + tone actually on the map).
+  const { shape, glyphs } = useMemo(() => {
+    const keys = new Map<string, { glyph: MarkerGlyph; dark: boolean }>();
+    const fc: FeatureCollection<Point> = {
       type: "FeatureCollection",
-      features: markers.map((m) => ({
-        type: "Feature",
-        id: m.markerId,
-        properties: {
-          markerId: m.markerId,
-          category: m.category,
-          title: m.title,
-        },
-        geometry: { type: "Point", coordinates: m.coord },
-      })),
-    }),
-    [markers],
-  );
+      features: markers.map((m) => {
+        const glyph = markerIcon(m);
+        const dark = isExperience(m.category);
+        const icon = `${glyph}:${dark ? "on-ink" : "on-white"}`;
+        keys.set(icon, { glyph, dark });
+        return {
+          type: "Feature",
+          id: m.markerId,
+          properties: {
+            markerId: m.markerId,
+            category: m.category,
+            title: m.title,
+            icon,
+          },
+          geometry: { type: "Point", coordinates: m.coord },
+        };
+      }),
+    };
+    return { shape: fc, glyphs: [...keys.entries()] };
+  }, [markers]);
 
   return (
     <MapView
@@ -149,6 +164,26 @@ export function MapboxMap({
         centerCoordinate={center}
         animationDuration={0}
       />
+      <Images>
+        {glyphs.map(([key, g]) => (
+          <MapImage key={key} name={key}>
+            <View
+              style={{
+                width: 18,
+                height: 18,
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+            >
+              <Ionicons
+                name={g.glyph}
+                size={15}
+                color={g.dark ? pin.onInk : pin.ink}
+              />
+            </View>
+          </MapImage>
+        ))}
+      </Images>
       <ShapeSource
         id="discovery"
         shape={shape}
@@ -209,7 +244,7 @@ export function MapboxMap({
           filter={["!", ["has", "point_count"]]}
           style={{
             circleColor: pin.ink,
-            circleRadius: 20,
+            circleRadius: 24,
             circleOpacity: 0,
           }}
         />
@@ -225,10 +260,22 @@ export function MapboxMap({
           filter={["!", ["has", "point_count"]]}
           style={{
             circleColor: paint.pointFill,
-            circleRadius: 8,
-            circleStrokeWidth: 3,
+            circleRadius: 14,
+            circleStrokeWidth: 2.5,
             circleStrokeColor: paint.pointStroke,
             circleEmissiveStrength: 1,
+          }}
+        />
+        {/* The pin's glyph, centred on its circle. Emissive like the circles
+            so dusk/night presets never dim it. */}
+        <SymbolLayer
+          id="point-icon"
+          filter={["!", ["has", "point_count"]]}
+          style={{
+            iconImage: ["get", "icon"],
+            iconAllowOverlap: true,
+            iconIgnorePlacement: true,
+            iconEmissiveStrength: 1,
           }}
         />
         {/* Selected-point highlight ring */}
@@ -237,7 +284,7 @@ export function MapboxMap({
           filter={["==", ["get", "markerId"], selectedMarkerId ?? "__none__"]}
           style={{
             circleColor: "transparent",
-            circleRadius: 13,
+            circleRadius: 19,
             circleStrokeWidth: 3,
             circleStrokeColor: pin.ember,
             circleEmissiveStrength: 1,
@@ -259,9 +306,9 @@ export function MapboxMap({
             textHaloWidth: 2,
             textHaloBlur: 0.5,
             textAnchor: "top",
-            // Below the 13 px selection ring, so a title never sits on the
+            // Below the 19 px selection ring, so a title never sits on the
             // selected pin.
-            textOffset: [0, 1.4],
+            textOffset: [0, 1.9],
             textAllowOverlap: false,
             textOptional: true,
           }}

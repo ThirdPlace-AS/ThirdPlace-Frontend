@@ -7,8 +7,9 @@ import { useThemeColors, elevation } from "@/theme";
 
 import { clusterByGrid, projectToUnit } from "./services/softClustering";
 import type { DiscoveryItem } from "./types/mapPresentation";
-import { softPin } from "./pinStyle";
-import { Text } from "@/components/ui";
+import { isExperience, softPin } from "./pinStyle";
+import { markerIcon } from "./services/markerIcon";
+import { Icon, Text } from "@/components/ui";
 
 type MapProps = {
   markers: DiscoveryItem[];
@@ -199,10 +200,12 @@ function SoftMap({
             <View
               className={`items-center justify-center rounded-full border-2 ${
                 softPin(item.category).body
-              } ${selected ? "h-7 w-7 border-ember" : "h-5 w-5"}`}
+              } ${selected ? "h-10 w-10 border-ember" : "h-8 w-8"}`}
             >
-              <View
-                className={`h-2 w-2 rounded-full ${softPin(item.category).dot}`}
+              <Icon
+                name={markerIcon(item)}
+                size="sm"
+                tone={isExperience(item.category) ? "onInk" : "ink"}
               />
             </View>
             {/* Title label under the pin (un-clustered markers only). The pill
@@ -210,7 +213,7 @@ function SoftMap({
             <View
               pointerEvents="none"
               className="absolute items-center"
-              style={{ top: selected ? 32 : 28, left: -40, width: 124 }}
+              style={{ top: selected ? 38 : 34, left: -40, width: 124 }}
             >
               <View
                 style={elevation.e1}
