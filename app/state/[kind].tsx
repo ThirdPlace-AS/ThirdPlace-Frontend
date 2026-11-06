@@ -1,7 +1,10 @@
-import { Ionicons } from "@expo/vector-icons";
 import { router, useLocalSearchParams } from "expo-router";
 import { ScrollView, Text, View } from "react-native";
-import { Icon, Screen } from "@/components/ui";
+import { Icon, Screen, Text as UIText, type IconName } from "@/components/ui";
+import {
+  Illustration,
+  type IllustrationName,
+} from "@/components/illustrations/Illustration";
 import { Button } from "@/components/Button";
 import { DemoNote } from "@/components/DemoNote";
 import { experienceById } from "@/fixtures";
@@ -30,6 +33,7 @@ export default function SystemState() {
         {kind === "offline" ? (
           <State
             icon="cloud-offline-outline"
+            art="offline"
             title="Du er offline"
             body="Kartet bruker mellomlagrede fliser. Meldinger og handlinger sendes automatisk når du er på nett igjen."
           >
@@ -42,6 +46,7 @@ export default function SystemState() {
         ) : kind === "error" ? (
           <State
             icon="alert-circle-outline"
+            art="error"
             title="Noe gikk galt"
             body="Vi klarte ikke å laste dette akkurat nå. Prøv igjen eller gå tilbake til kartet."
           >
@@ -59,6 +64,7 @@ export default function SystemState() {
         ) : kind === "maintenance" ? (
           <State
             icon="construct-outline"
+            art="maintenance"
             title="Vi pusser opp!"
             body="ThirdPlace er nede for vedlikehold. Vi er snart tilbake."
           >
@@ -86,6 +92,7 @@ export default function SystemState() {
         ) : kind === "update" ? (
           <State
             icon="rocket-outline"
+            art="update"
             title="Oppdatering kreves"
             body="En ny versjon av ThirdPlace er tilgjengelig med viktige forbedringer og sikkerhetsfikser."
           >
@@ -116,11 +123,14 @@ export default function SystemState() {
 
 function State({
   icon,
+  art,
   title,
   body,
   children,
 }: {
-  icon: keyof typeof Ionicons.glyphMap;
+  icon: IconName;
+  /** Illustration for the PDF's art slot (offline, error, maintenance, update). */
+  art?: IllustrationName;
   title: string;
   body: string;
   children?: React.ReactNode;
@@ -128,13 +138,19 @@ function State({
   return (
     <View className="gap-5">
       <View className="items-center gap-3">
-        <View className="h-20 w-20 items-center justify-center rounded-full bg-surfaceMuted">
-          <Icon name={icon} size="2xl" tone="ink" />
-        </View>
-        <Text className="text-center text-2xl font-bold text-ink">{title}</Text>
-        <Text className="px-4 text-center text-base text-muted font-normal">
+        {art ? (
+          <Illustration name={art} width={176} />
+        ) : (
+          <View className="h-20 w-20 items-center justify-center rounded-full bg-surfaceMuted">
+            <Icon name={icon} size="2xl" tone="ink" />
+          </View>
+        )}
+        <UIText variant="h1" weight="bold" className="text-center">
+          {title}
+        </UIText>
+        <UIText variant="body" tone="muted" className="px-4 text-center">
           {body}
-        </Text>
+        </UIText>
       </View>
       {children}
     </View>

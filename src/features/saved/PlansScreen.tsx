@@ -18,6 +18,7 @@ import {
   profile,
   type MockPlanState,
 } from "@/fixtures";
+import { Illustration } from "@/components/illustrations/Illustration";
 
 const TABS: { key: MockPlanState; label: string }[] = [
   { key: "upcoming", label: "Kommende" },
@@ -64,6 +65,7 @@ export default function PlansScreen() {
         ListEmptyComponent={
           <EmptyState
             icon="calendar-outline"
+            illustration={<Illustration name="emptyPlans" />}
             title="Ingen planer her"
             message="Opplevelser du blir med på dukker opp her."
             actionLabel="Utforsk kartet"

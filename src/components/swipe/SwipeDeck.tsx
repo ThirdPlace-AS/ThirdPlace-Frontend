@@ -65,6 +65,7 @@ import {
   type SwipeFilters,
 } from "./SwipeFilterSheet";
 import { useSwipeDeck } from "./useSwipeDeck";
+import { Illustration } from "@/components/illustrations/Illustration";
 
 const G = motion.gesture;
 
@@ -325,6 +326,7 @@ export function SwipeDeck() {
           ) : (
             <EmptyState
               icon="albums-outline"
+              illustration={<Illustration name="emptyDeck" />}
               title="Du har sett alt for nå"
               message="Nye anbefalinger dukker opp gjennom dagen. Prøv andre filtre, eller utforsk kartet i mellomtiden."
               actionLabel="Endre filtre"

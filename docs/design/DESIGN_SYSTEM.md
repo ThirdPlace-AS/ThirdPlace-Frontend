@@ -167,7 +167,7 @@ Motion explains a change (where something came from, what it became); it never d
 
 ## 6. Illustration and 3D
 
-- **Vector illustrations:** editorial, organic shapes, simplified faceless people, natural proportions, palette from tokens (works on light and dark). Slots: the PDF p26 empty states, error/offline/maintenance, onboarding steps, achievements. Delivered as `react-native-svg` components that read theme colours.
+- **Vector illustrations** (`src/components/illustrations/Illustration.tsx`, `<Illustration name>`): one hand for every scene — 160 × 120 canvas, ground line at y 104, 2.5 px ink outlines with round caps, flat token fills only (no gradients), **one** ember accent per scene, everyday Oslo objects (trikk, café cup, paint roller, calendar) instead of blobs or faceless people. Theme colours, so light and dark both work. Current set: `offline` (trikk with its pantograph down), `error` (tipped cup), `maintenance` (bucket + roller), `update` (phone + arrow), `emptySaved`, `emptyDeck`, `emptyPlans`. Pass one to `StateView`/`EmptyState` via `illustration`. No emoji in their place.
 - **3D category art:** soft rounded geometry, matte/satin materials, one soft key light (top-left) plus fill, ¾ camera at about 30°, isolated, no text. Sets: People, Places, Experiences, plus the fixture categories. Delivered as transparent WebP at 1x/2x/3x (≤ 40 KB each), shown with `expo-image`. The brief lives in `ASSET_SPEC_3D.md` (S12). Static assets only — no realtime 3D.
 - Art appears only where the PDF has a slot for it.
 

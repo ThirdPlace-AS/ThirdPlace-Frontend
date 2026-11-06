@@ -15,6 +15,7 @@ import { EmptyState } from "@/components/states/StateView";
 import { places } from "@/fixtures";
 import { coverForPlace, libImage } from "@/fixtures/images";
 import { useThemeColors, media } from "@/theme";
+import { Illustration } from "@/components/illustrations/Illustration";
 
 // "Steder" deck in Sveip (PDF p7 tab). Place cards with Hopp over / Lagre /
 // Vis på kartet. Button-driven (no drag) — the experience deck keeps the full
@@ -46,6 +47,7 @@ export function PlaceDeck({
         <StatusBar style="dark" />
         <EmptyState
           icon="tp-business"
+          illustration={<Illustration name="emptyDeck" />}
           title="Du har sett alle stedene"
           message="Utforsk kartet for flere, eller se gjennom dem på nytt."
           actionLabel="Se stedene igjen"

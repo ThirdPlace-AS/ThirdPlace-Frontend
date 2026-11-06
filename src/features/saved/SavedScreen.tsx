@@ -12,6 +12,7 @@ import { EmptyState } from "@/components/states/StateView";
 import { useMapSaved } from "@/components/map/hooks/useMapSaved";
 import { businessById, experienceById, placeById } from "@/fixtures";
 import { coverForPlace, libImage } from "@/fixtures/images";
+import { Illustration } from "@/components/illustrations/Illustration";
 
 type Kind = "place" | "experience" | "business";
 type Row = {
@@ -111,6 +112,7 @@ export default function SavedScreen() {
         ListEmptyComponent={
           <EmptyState
             icon="bookmark-outline"
+            illustration={<Illustration name="emptySaved" />}
             title="Ingenting lagret – ennå"
             message="Lagre stedene og opplevelsene du ikke vil gå glipp av."
             actionLabel="Utforsk kartet"
