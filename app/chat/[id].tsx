@@ -1,5 +1,5 @@
 import { router, useLocalSearchParams } from "expo-router";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import {
   FlatList,
   KeyboardAvoidingView,
@@ -11,9 +11,15 @@ import Animated, {
   FadeInDown,
   useReducedMotion,
 } from "react-native-reanimated";
-import { SafeAreaView } from "react-native-safe-area-context";
 
-import { Icon, IconButton, Screen, Text, Avatar } from "@/components/ui";
+import {
+  Avatar,
+  EmptyState,
+  Icon,
+  IconButton,
+  Screen,
+  Text,
+} from "@/components/ui";
 import { Button } from "@/components/Button";
 import { useGuestMode } from "@/components/map/hooks/useGuestMode";
 import { SignInPrompt } from "@/components/SignInPrompt";
@@ -49,14 +55,23 @@ export default function ChatThreadScreen() {
   const [panel, setPanel] = useState<"info" | "members" | "invite" | null>(
     null,
   );
+  const listRef = useRef<FlatList<MockMessage>>(null);
+  // Open at the newest message and follow every send (the list used to open
+  // at the oldest message and new bubbles landed out of view).
+  const sentCount = useRef(0);
 
   if (!chat) {
     return (
-      <SafeAreaView className="flex-1 items-center justify-center bg-background">
-        <Text variant="body" tone="muted">
-          Samtalen finnes ikke.
-        </Text>
-      </SafeAreaView>
+      <Screen>
+        <EmptyState
+          icon="chatbubbles-outline"
+          title="Samtalen finnes ikke"
+          actionLabel="Til chattene"
+          onAction={() =>
+            router.canGoBack() ? router.back() : router.replace("/chat")
+          }
+        />
+      </Screen>
     );
   }
 
@@ -79,6 +94,7 @@ export default function ChatThreadScreen() {
       },
     ]);
     setDraft("");
+    sentCount.current += 1;
     haptics.light();
   };
 
@@ -120,33 +136,44 @@ export default function ChatThreadScreen() {
         />
       </View>
 
+      {pinned ? (
+        // Informational pin under the header (PDF p9): the experience this
+        // group organizes. Not a link: experience detail is a map sheet.
+        <View className="flex-row items-center gap-2 border-b border-line px-gutter py-2.5">
+          <Icon name="pricetag-outline" size="sm" tone="ember" />
+          <Text
+            variant="label"
+            weight="regular"
+            className="flex-1"
+            numberOfLines={1}
+          >
+            {pinned.title}
+          </Text>
+          <Text variant="caption" tone="muted">
+            Festet
+          </Text>
+        </View>
+      ) : null}
+
       <KeyboardAvoidingView
         className="flex-1"
         behavior={Platform.OS === "ios" ? "padding" : undefined}
       >
         <FlatList
+          ref={listRef}
           data={messages}
           keyExtractor={(m) => m.id}
-          contentContainerClassName="gap-3 p-gutter"
-          ListHeaderComponent={
-            pinned ? (
-              // Informational pin (the experience this group organizes). Not a
-              // link — experience detail is a map sheet, not reachable here.
-              <View className="mb-1 flex-row items-center gap-2 rounded-xl border border-line bg-surface px-3 py-2.5">
-                <Icon name="pricetag-outline" size="sm" tone="ember" />
-                <Text
-                  variant="label"
-                  weight="regular"
-                  className="flex-1"
-                  numberOfLines={1}
-                >
-                  {pinned.title}
-                </Text>
-                <Text variant="caption" tone="muted">
-                  Festet
-                </Text>
-              </View>
-            ) : null
+          // Short threads sit just above the composer, like any chat.
+          contentContainerClassName="grow justify-end gap-3 p-gutter"
+          onContentSizeChange={() =>
+            listRef.current?.scrollToEnd({ animated: sentCount.current > 0 })
+          }
+          ListEmptyComponent={
+            <View className="flex-1 items-center justify-center py-10">
+              <Text variant="caption" tone="muted" className="text-center">
+                Ingen meldinger ennå.
+              </Text>
+            </View>
           }
           renderItem={({ item }) => <Bubble message={item} />}
         />
