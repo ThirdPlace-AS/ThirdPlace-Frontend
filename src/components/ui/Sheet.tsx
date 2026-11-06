@@ -15,10 +15,12 @@ import {
   type LayoutChangeEvent,
   Modal,
   Pressable as RNPressable,
+  ScrollView,
   StyleSheet,
   View,
   useWindowDimensions,
 } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import {
   Gesture,
   GestureDetector,
@@ -46,6 +48,8 @@ import { usePresence } from "./usePresence";
 
 /** Sheet top corners (radius token "2xl", 28 px). */
 export const SHEET_RADIUS = parseInt(radius["2xl"] ?? "28", 10);
+/** Scrim left visible above the tallest content sheet. */
+const SHEET_TOP_GAP = 16;
 
 export type SheetTone = "light" | "dark";
 
@@ -165,7 +169,12 @@ export function Sheet({
 }: SheetProps) {
   const dark = tone === "dark";
   const c = useThemeColors();
+  const insets = useSafeAreaInsets();
   const { height: winH } = useWindowDimensions();
+  // A content sheet never grows past the status bar: taller content scrolls
+  // inside the card (8 notifications overflowed a 640 dp phone).
+  const maxCardH = winH - insets.top - SHEET_TOP_GAP;
+  const padBottom = Math.max(insets.bottom, 12) + 16;
   const { mounted, progress, reduced, settled } = usePresence(visible);
   const cardH = useSharedValue(winH);
   const drag = useSharedValue(0);
@@ -259,7 +268,8 @@ export function Sheet({
               style={[
                 elevation.e3,
                 dark ? { backgroundColor: media.base } : null,
-                { paddingBottom: 28 },
+                { paddingBottom: padBottom },
+                fullHeight ? null : { maxHeight: maxCardH },
               ]}
             >
               <GestureDetector gesture={pan}>
@@ -277,9 +287,20 @@ export function Sheet({
                   />
                 </View>
               </GestureDetector>
-              <View className={`gap-4 px-gutter ${fullHeight ? "flex-1" : ""}`}>
-                {children}
-              </View>
+              {fullHeight ? (
+                // Tall sheets own their scroll area and sticky footer.
+                <View className="flex-1 gap-4 px-gutter">{children}</View>
+              ) : (
+                <ScrollView
+                  style={{ flexGrow: 0, flexShrink: 1 }}
+                  contentContainerClassName="gap-4 px-gutter"
+                  keyboardShouldPersistTaps="handled"
+                  bounces={false}
+                  overScrollMode="never"
+                >
+                  {children}
+                </ScrollView>
+              )}
             </View>
           </Animated.View>
         </View>
