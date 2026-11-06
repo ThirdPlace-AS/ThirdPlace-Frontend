@@ -213,3 +213,14 @@ Left out by this run because CLAUDE.md bans stating them as product behaviour: "
 | 0193   | `f6118f6` | Android back closes the map detail sheet (one level at a time) before it leaves the map                   |
 | 0194   | `666c060` | Sveip icon stroke 2, as in the founder's file                                                             |
 | 0195   | this page | Calendar range band checked in dark: it reads (grey disc between the white start and end), no code change |
+
+## 10. Addendum: Phase 10, feel and reaction (6 November 2026)
+
+The founder asked for every screen to be checked for feel, look, reaction, feedback, retention and use of the whole screen. The full report is [FEEL_REVIEW_2026-11-06.md](FEEL_REVIEW_2026-11-06.md); in short:
+
+- **Reaction:** measured on the production JS bundle, most taps paint within a frame. Fixed the real slow spots: the Filtre deferred mount (lower half 1.2–1.4 s → 0.02–0.33 s), the swipe glide (0.83–0.93 s → 0.62–0.72 s) and fake waits (splash 1.2 s, map 0.5 s).
+- **Feedback:** no dead controls left in the sweep; demo confirms close with an honest toast; disabled buttons say why and no longer look broken.
+- **Whole screen:** sheets fit a 640 dp phone, forms stay above the keyboard on edge-to-edge Android, single-goal screens pin their main action, the experience detail pins its join bar (PDF p6).
+- **Retention:** shared notification reads, undo on unsave, rows that open their detail, and four founder-approved surfaces (Nylig sett, group swipe from Lagret with "Lagre til senere", Til samtalen, Neste plan).
+
+17 slices, ledger 0196–0212. Open items (R27–R30) and limits (iOS, emulator timings, haptics checked in code) are listed in the report.
