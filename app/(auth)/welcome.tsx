@@ -1,9 +1,9 @@
 import { Image } from "expo-image";
 import { Link, router } from "expo-router";
-import { StatusBar } from "expo-status-bar";
 import { View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
+import { StatusBarStyle } from "@/components/ui/StatusBarStyle";
 import { Button } from "@/components/Button";
 import { LogoMark } from "@/components/Logo";
 import { useGuestMode } from "@/components/map/hooks/useGuestMode";
@@ -19,7 +19,7 @@ export default function Welcome() {
   const { setGuest } = useGuestMode();
   return (
     <View className="flex-1 bg-ink">
-      <StatusBar style="light" />
+      <StatusBarStyle style="light" />
       <Image
         source={libImage("venue-cafe")}
         contentFit="cover"

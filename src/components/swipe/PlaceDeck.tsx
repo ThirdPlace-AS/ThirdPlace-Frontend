@@ -1,10 +1,10 @@
 import { Image } from "expo-image";
 import { router } from "expo-router";
 import { useEffect, useState } from "react";
-import { StatusBar } from "expo-status-bar";
 import { View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
+import { StatusBarStyle } from "@/components/ui/StatusBarStyle";
 import { HeartToggle, IconButton, Text } from "@/components/ui";
 import { useGuestMode } from "@/components/map/hooks/useGuestMode";
 import { useMapSaved } from "@/components/map/hooks/useMapSaved";
@@ -44,7 +44,7 @@ export function PlaceDeck({
         className="flex-1 justify-center bg-background"
         style={{ paddingTop: insets.top }}
       >
-        <StatusBar style="dark" />
+        <StatusBarStyle style="auto" />
         <EmptyState
           icon="tp-business"
           illustration={<Illustration name="emptyDeck" />}
@@ -65,7 +65,7 @@ export function PlaceDeck({
 
   return (
     <View className="flex-1 bg-ink">
-      <StatusBar style="light" />
+      <StatusBarStyle style="light" />
       <Image
         source={libImage(coverForPlace(place))}
         contentFit="cover"

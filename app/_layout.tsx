@@ -6,7 +6,10 @@ import { useFonts } from "expo-font";
 import { Stack } from "expo-router";
 import { View } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
-import { SafeAreaProvider } from "react-native-safe-area-context";
+import {
+  initialWindowMetrics,
+  SafeAreaProvider,
+} from "react-native-safe-area-context";
 
 import { ToastHost } from "@/components/Toast";
 import { queryClient } from "@/services/api/queryClient";
@@ -30,7 +33,10 @@ export default function RootLayout() {
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
-      <SafeAreaProvider>
+      {/* Seed the insets from the native window so the first frame of a
+          deep-linked stack screen never lays its header out with a 0 top
+          inset (fresh-eyes review H1). */}
+      <SafeAreaProvider initialMetrics={initialWindowMetrics}>
         <QueryClientProvider client={queryClient}>
           <ThemeRoot>
             {fontsLoaded || fontError ? (

@@ -179,7 +179,9 @@ Motion explains a change (where something came from, what it became); it never d
 4. Tokens only — no hex, no arbitrary sizes, no hand-written shadows, no raw `Modal`.
 5. Verify on the Android emulator in light and dark; add a ledger line.
 
-`tests/designGuard.test.ts` enforces the mechanical rules in CI: no raw hex outside `src/theme`/fixtures/sandbox (escape: a `hex-ok:` comment with the reason), no legacy `text-xs…text-4xl`/`text-[Npx]` classes, no `rounded-3xl`/bare `rounded`/`rounded-[…]`, no raw `Modal` outside `Sheet`/`Overlay`, `Ionicons` only through `<Icon>` (escape: a `raw-icon:` comment saying why — animated colours, stamps with text shadows, caller-sized stars), no `active:/focus:/hover:` in `contentClassName`, and no `InteractionManager`.
+`tests/designGuard.test.ts` enforces the mechanical rules in CI: no raw hex outside `src/theme`/fixtures/sandbox (escape: a `hex-ok:` comment with the reason), no legacy `text-xs…text-4xl`/`text-[Npx]` classes, no `rounded-3xl`/bare `rounded`/`rounded-[…]`, no raw `Modal` outside `Sheet`/`Overlay`, `Ionicons` only through `<Icon>` (escape: a `raw-icon:` comment saying why — animated colours, stamps with text shadows, caller-sized stars), no `active:/focus:/hover:` in `contentClassName`, no `InteractionManager`, and no `expo-status-bar` import outside `StatusBarStyle`.
+
+**Status bar.** Screens over a fixed dark or light surface (swipe card, photo hero, dusk/night basemap) render `<StatusBarStyle style="light" | "dark" />`; a themed panel opened over one of those renders `style="auto"`. Requests are pushed while the screen is focused and popped on blur, newest wins, and with none left the icons follow the theme (`setStatusBarFallback` in `ThemeRoot`). `Screen` pads from the provider insets (seeded with `initialWindowMetrics`), not a native `SafeAreaView`, so a pushed screen never paints its header under the status bar.
 
 Animated surfaces inside a Modal render a plain style once settled (`usePresence().settled`): on Android a React commit inside a Modal dropped Reanimated's animated style.
 

@@ -2,7 +2,7 @@ import { Image } from "expo-image";
 import { router } from "expo-router";
 import { useState } from "react";
 import { Pressable, ScrollView, View } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { Switch } from "@/components/ui/Switch";
 import {
@@ -190,6 +190,7 @@ export function AddWizard() {
 }
 
 function KindMenu({ onPick }: { onPick: (k: AddKind) => void }) {
+  const insets = useSafeAreaInsets();
   const rows: {
     kind: AddKind;
     label: string;
@@ -210,7 +211,10 @@ function KindMenu({ onPick }: { onPick: (k: AddKind) => void }) {
     },
   ];
   return (
-    <SafeAreaView className="flex-1 justify-end bg-background" edges={["top"]}>
+    <View
+      className="flex-1 justify-end bg-background"
+      style={{ paddingTop: insets.top }}
+    >
       <View className="gap-3 p-gutter pb-6">
         <Text variant="h1" className="pb-1">
           Hva vil du legge til?
@@ -248,7 +252,7 @@ function KindMenu({ onPick }: { onPick: (k: AddKind) => void }) {
           </UIPressable>
         ))}
       </View>
-    </SafeAreaView>
+    </View>
   );
 }
 

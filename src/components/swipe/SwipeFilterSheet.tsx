@@ -1,7 +1,7 @@
-import { StatusBar } from "expo-status-bar";
 import { useState } from "react";
 import { Pressable, ScrollView, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { StatusBarStyle } from "@/components/ui/StatusBarStyle";
 import { IconButton, Overlay, Text } from "@/components/ui";
 import { Button } from "@/components/Button";
 import { CheckboxRow } from "@/components/CheckboxRow";
@@ -125,7 +125,7 @@ function FilterBody({
       style={{ paddingTop: insets.top + 8 }}
     >
       {/* Dark status-bar content over the light panel. */}
-      <StatusBar style="dark" />
+      <StatusBarStyle style="auto" />
 
       {/* Header: back + title + close, like the notifications screen. */}
       <View className="flex-row items-center gap-2 border-b border-line pb-3">

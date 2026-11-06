@@ -16,14 +16,15 @@ import {
   Text,
 } from "@/components/ui";
 import { Illustration } from "@/components/illustrations/Illustration";
-import { MapCanvas } from "@/components/map/MapCanvas";
+import { canUseMapbox, MapCanvas } from "@/components/map/MapCanvas";
 import { DiscoveryModeTabs } from "@/components/map/DiscoveryModeTabs";
 import { MapDetailSheet } from "@/components/map/MapDetailSheet";
 import { MapFilterSheet } from "@/components/map/MapFilterSheet";
 import { MapLayerSheet } from "@/components/map/MapLayerSheet";
 import { MapLocationSheet } from "@/components/map/MapLocationSheet";
 import { MapSearchOverlay } from "@/components/map/MapSearchOverlay";
-import { styleUrlFor } from "@/components/map/mapStyles";
+import { periodForKey, styleUrlFor } from "@/components/map/mapStyles";
+import { StatusBarStyle } from "@/components/ui/StatusBarStyle";
 import type {
   DiscoveryItem,
   DiscoveryMode,
@@ -67,6 +68,11 @@ export default function MapScreen() {
     selectStyle,
     enableAuto,
   } = useTimeOfDayStyle();
+  // The dusk/night basemaps are dark whatever the app theme, so the status-bar
+  // icons go light over them; the themed SoftMap follows the theme.
+  const darkBasemap =
+    canUseMapbox &&
+    (periodForKey(styleKey) === "night" || periodForKey(styleKey) === "dusk");
   // Bumped to force the browse sheet to expand (SoftMap cluster tap).
   const [browseExpand, setBrowseExpand] = useState(0);
 
@@ -199,6 +205,7 @@ export default function MapScreen() {
 
   return (
     <View className="flex-1 bg-background">
+      <StatusBarStyle style={darkBasemap ? "light" : "auto"} />
       <MapCanvas
         fill
         markers={loading ? [] : items}

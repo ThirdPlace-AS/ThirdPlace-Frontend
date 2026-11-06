@@ -59,3 +59,8 @@ export {
   type StateTone,
   type StateViewProps,
 } from "./StateView";
+export {
+  StatusBarStyle,
+  setStatusBarFallback,
+  type BarStyle,
+} from "./StatusBarStyle";

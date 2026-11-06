@@ -2,10 +2,11 @@
 // `vars()`. Every `bg-*` / `text-*` / `border-*` token class below it reads
 // these variables, so switching the scheme restyles the app without `dark:`
 // variants. Modal content is still a React child, so it inherits them too.
-import { StatusBar } from "expo-status-bar";
 import { vars } from "nativewind";
-import { useMemo, type ReactNode } from "react";
+import { useEffect, useMemo, type ReactNode } from "react";
 import { View } from "react-native";
+
+import { setStatusBarFallback } from "@/components/ui/StatusBarStyle";
 
 import { useScheme } from "./scheme";
 
@@ -17,10 +18,13 @@ const tokens = require("./tokens.js") as {
 export function ThemeRoot({ children }: { children: ReactNode }) {
   const scheme = useScheme();
   const style = useMemo(() => vars(tokens.cssVars(scheme)), [scheme]);
+  // Status-bar content contrasts with the scheme background; screens over a
+  // fixed dark/light surface override it while focused (StatusBarStyle).
+  useEffect(() => {
+    setStatusBarFallback(scheme === "dark" ? "light" : "dark");
+  }, [scheme]);
   return (
     <View style={[{ flex: 1 }, style]} className="bg-background">
-      {/* Status-bar content contrasts with the scheme background. */}
-      <StatusBar style={scheme === "dark" ? "light" : "dark"} />
       {children}
     </View>
   );

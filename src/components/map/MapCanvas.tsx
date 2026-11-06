@@ -95,7 +95,8 @@ const nativeMapAvailable =
   Platform.OS !== "web" &&
   !isExpoGo &&
   process.env.EXPO_PUBLIC_USE_NATIVE_MAP === "1";
-const canUseMapbox = nativeMapAvailable && !!env.mapboxToken;
+/** True when the Mapbox basemap renders (native build + token). */
+export const canUseMapbox = nativeMapAvailable && !!env.mapboxToken;
 
 let RealMap: ComponentType<MapProps> | null = null;
 if (canUseMapbox) {

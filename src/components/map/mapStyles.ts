@@ -51,6 +51,10 @@ export const MAP_STYLES = [
 // Key union derived from the array above, so changing the styles stays type-safe.
 export type MapStyleKey = (typeof MAP_STYLES)[number]["key"];
 
+export function periodForKey(key: MapStyleKey): MapStylePeriod {
+  return (MAP_STYLES.find((s) => s.key === key) ?? MAP_STYLES[0]).period;
+}
+
 export function styleUrlFor(key: MapStyleKey): string {
   return (MAP_STYLES.find((s) => s.key === key) ?? MAP_STYLES[0]).url;
 }

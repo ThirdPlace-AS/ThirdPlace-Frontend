@@ -1,7 +1,6 @@
 import { router } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import { Asset } from "expo-asset";
-import { StatusBar } from "expo-status-bar";
 import { useEffect, useLayoutEffect, useMemo, useState } from "react";
 import {
   Platform,
@@ -39,6 +38,7 @@ import {
   Pressable as UIPressable,
   Text,
 } from "@/components/ui";
+import { StatusBarStyle } from "@/components/ui/StatusBarStyle";
 import { Button } from "@/components/Button";
 import { DemoBadge } from "@/components/DemoBadge";
 import { DemoNote } from "@/components/DemoNote";
@@ -854,7 +854,7 @@ function ExpandBody({
     // focus is contained to it (F2/F7), not the deck behind it.
     <View className="flex-1">
       {/* Light status-bar content over the dark detail surface. */}
-      <StatusBar style="light" />
+      <StatusBarStyle style="light" />
       {/* Header: title + collapse. */}
       <View
         className="flex-row items-center gap-2 px-gutter pb-2"
