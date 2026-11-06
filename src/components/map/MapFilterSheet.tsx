@@ -1,7 +1,12 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Pressable, ScrollView, View } from "react-native";
 
-import { Accordion, Icon, Text } from "@/components/ui";
+import {
+  Accordion,
+  Icon,
+  Text,
+  Pressable as UIPressable,
+} from "@/components/ui";
 import { elevation, presentation } from "@/theme";
 import { Button } from "@/components/Button";
 import { Calendar } from "@/components/Calendar";
@@ -209,11 +214,11 @@ function ChipGroup({
         ))}
       </View>
       {items.length > visible ? (
-        <Pressable
+        <UIPressable
           accessibilityRole="button"
           accessibilityState={{ expanded }}
           onPress={() => setExpanded((e) => !e)}
-          className="flex-row items-center gap-1 py-1"
+          contentClassName="flex-row items-center gap-1 py-1"
         >
           <Text variant="body" weight="semibold" className="underline">
             {expanded ? "Vis mindre" : "Vis mer"}
@@ -223,7 +228,7 @@ function ChipGroup({
             size="sm"
             tone="ink"
           />
-        </Pressable>
+        </UIPressable>
       ) : null}
     </View>
   );
@@ -281,29 +286,30 @@ function SearchRow({
         style={cardShadow}
         className="gap-4 rounded-lg border border-line bg-surface px-6 py-5"
       >
-        <Pressable
+        <UIPressable
           accessibilityRole="button"
           accessibilityState={{ expanded: true }}
           onPress={onToggle}
-          className="flex-row items-center justify-between"
+          contentClassName="flex-row items-center justify-between"
         >
           <Text variant="h2" weight="bold" accessibilityRole="text">
             {title}
           </Text>
           <Icon name="chevron-up" size="md" tone="ink" />
-        </Pressable>
+        </UIPressable>
         {children}
       </View>
     );
   }
   return (
-    <Pressable
+    <UIPressable
       accessibilityRole="button"
       accessibilityState={{ expanded: false }}
       accessibilityLabel={`${label}, ${value}`}
       onPress={onToggle}
-      style={cardShadow}
-      className="flex-row items-center justify-between gap-2 rounded-lg border border-line bg-surface px-6 py-5"
+      contentStyle={cardShadow}
+      contentClassName="flex-row items-center justify-between gap-2 rounded-lg border border-line bg-surface px-6 py-5"
+      pressedScale={0.99}
     >
       <Text variant="body" tone="muted" className="shrink-0">
         {label}
@@ -319,7 +325,7 @@ function SearchRow({
         </Text>
         <Icon name="chevron-down" size="md" tone="muted" />
       </View>
-    </Pressable>
+    </UIPressable>
   );
 }
 
@@ -847,11 +853,11 @@ function FilterBody({
                     }
                   />
                 ))}
-                <Pressable
+                <UIPressable
                   accessibilityRole="button"
                   accessibilityState={{ expanded: langExpanded }}
                   onPress={() => setLangExpanded((e) => !e)}
-                  className="flex-row items-center gap-1 py-3"
+                  contentClassName="flex-row items-center gap-1 py-3"
                 >
                   <Text variant="body" weight="semibold" className="underline">
                     {langExpanded ? "Vis mindre" : "Vis mer"}
@@ -861,7 +867,7 @@ function FilterBody({
                     size="sm"
                     tone="ink"
                   />
-                </Pressable>
+                </UIPressable>
               </View>
             </Section>
             {/* Tilgjengelighetsfunksjoner — collapsed, grouped (benchmark F7) */}
@@ -926,7 +932,7 @@ function FilterBody({
           reset link + "Vis N resultater". */}
       {openSection === "when" ? (
         <View className="flex-row items-center justify-between gap-2 border-t border-line pt-3">
-          <Pressable
+          <UIPressable
             accessibilityRole="button"
             onPress={() =>
               hasDate
@@ -938,12 +944,12 @@ function FilterBody({
                   }))
                 : setOpenSection("who")
             }
-            className="px-2 py-3"
+            contentClassName="px-2 py-3"
           >
             <Text variant="body" weight="semibold" className="underline">
               {hasDate ? "Nullstill" : "Hopp over"}
             </Text>
-          </Pressable>
+          </UIPressable>
           {/* Fixed width: a bare Button stretched past the sheet edge. */}
           <View style={{ width: 160 }}>
             <Button
@@ -956,7 +962,7 @@ function FilterBody({
         </View>
       ) : (
         <View className="flex-row items-center gap-2 border-t border-line pt-3">
-          <Pressable
+          <UIPressable
             accessibilityRole="button"
             accessibilityState={{ disabled: !canClear }}
             disabled={!canClear}
@@ -965,7 +971,7 @@ function FilterBody({
               setLangExpanded(false);
               setOpenSection(null);
             }}
-            className="px-2 py-3"
+            contentClassName="px-2 py-3"
           >
             <Text
               variant="body"
@@ -975,7 +981,7 @@ function FilterBody({
             >
               Fjern alt
             </Text>
-          </Pressable>
+          </UIPressable>
           <View className="flex-1">
             <Button
               label={footerLabel}

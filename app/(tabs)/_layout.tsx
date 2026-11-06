@@ -1,8 +1,10 @@
 import { router } from "expo-router";
+
 import { Tabs } from "expo-router/js-tabs";
 import { View, type ColorValue } from "react-native";
 
 import { Icon, type IconName } from "@/components/ui";
+import { haptics } from "@/lib/haptics";
 import { useThemeColors } from "@/theme";
 import { fontFamilyFor } from "@/theme/fonts";
 
@@ -83,7 +85,12 @@ export default function TabsLayout() {
       <Tabs.Screen
         name="profile"
         // PDF p27: a long press on Profil opens the account switcher.
-        listeners={{ tabLongPress: () => router.push("/account-switch") }}
+        listeners={{
+          tabLongPress: () => {
+            haptics.selection();
+            router.push("/account-switch");
+          },
+        }}
         options={{
           title: "Profil",
           tabBarIcon: icon("person-outline", "person"),

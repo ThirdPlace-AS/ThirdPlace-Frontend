@@ -1,6 +1,6 @@
 import { router, type Href } from "expo-router";
 import { useState } from "react";
-import { Pressable, ScrollView, View } from "react-native";
+import { ScrollView, View } from "react-native";
 
 import {
   Icon,
@@ -409,18 +409,19 @@ function LanguageSheet({ visible, onClose }: SheetProps) {
     <Sheet visible={visible} onClose={onClose} title="Språk og region">
       <View className="gap-2">
         {langs.map((l) => (
-          <Pressable
+          <UIPressable
             key={l}
             accessibilityRole="radio"
             accessibilityState={{ selected: lang === l }}
             onPress={() => setLang(l)}
-            className="flex-row items-center justify-between rounded-md border border-line bg-surface px-4 py-3.5"
+            contentClassName="flex-row items-center justify-between rounded-md border border-line bg-surface px-4 py-3.5"
+            pressedScale={0.99}
           >
             <Text variant="body">{l}</Text>
             {lang === l ? (
               <View className="h-4 w-4 rounded-full bg-ink" />
             ) : null}
-          </Pressable>
+          </UIPressable>
         ))}
         <Text variant="micro" weight="semibold" tone="muted" className="pt-2">
           Region

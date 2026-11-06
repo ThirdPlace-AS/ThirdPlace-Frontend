@@ -14,8 +14,10 @@ import {
   StickyFooter,
   Text,
   type IconName,
+  Pressable as UIPressable,
 } from "@/components/ui";
 import { Button } from "@/components/Button";
+import { haptics } from "@/lib/haptics";
 import { DemoNote } from "@/components/DemoNote";
 import { Input } from "@/components/Input";
 import { RouteHeader } from "@/components/RouteHeader";
@@ -301,15 +303,19 @@ function ContractSheet({ onClose }: { onClose: () => void }) {
             </Text>
           ))}
         </View>
-        <Pressable
+        <UIPressable
           accessibilityRole="button"
-          onPress={() => setSigned(true)}
-          className="items-center rounded-md border-2 border-dashed border-line py-6"
+          onPress={() => {
+            if (!signed) haptics.light();
+            setSigned(true);
+          }}
+          contentClassName="items-center rounded-md border-2 border-dashed border-line py-6"
+          pressedScale={0.99}
         >
           <Text variant="caption" tone="muted">
             {signed ? "✓ Signert (demo)" : "Trykk for å signere"}
           </Text>
-        </Pressable>
+        </UIPressable>
         <DemoNote>
           Kontrakten er et eksempel. Ingen signatur lagres, og ingenting er
           bindende.

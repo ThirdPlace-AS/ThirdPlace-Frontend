@@ -1,6 +1,6 @@
 import { router } from "expo-router";
 import { useMemo, useState } from "react";
-import { Pressable, ScrollView, View } from "react-native";
+import { ScrollView, View } from "react-native";
 
 import { Button } from "@/components/Button";
 import {
@@ -321,14 +321,16 @@ function NewChatSheet({
               {members.join(", ")}
             </Text>
           ) : null}
-          <Pressable
+          <UIPressable
             accessibilityRole="button"
             onPress={() => setSearch(true)}
-            className="flex-row items-center gap-2 self-start rounded-full border border-line bg-surface px-3 py-2"
+            className="self-start"
+            contentClassName="flex-row items-center gap-2 rounded-full border border-line bg-surface px-3 py-2"
+            pressedScale={0.99}
           >
             <Icon name="person-add-outline" size="sm" tone="ink" />
             <Text variant="label">Legg til</Text>
-          </Pressable>
+          </UIPressable>
         </View>
         {search ? (
           <UserSearch

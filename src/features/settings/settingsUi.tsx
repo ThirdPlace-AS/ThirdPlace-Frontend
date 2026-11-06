@@ -1,6 +1,12 @@
 import type { ReactNode } from "react";
-import { Pressable, View } from "react-native";
-import { Icon, ListRow, type IconName, Text } from "@/components/ui";
+import { View } from "react-native";
+import {
+  Icon,
+  ListRow,
+  type IconName,
+  Text,
+  Pressable as UIPressable,
+} from "@/components/ui";
 import { Switch } from "@/components/ui/Switch";
 
 // Shared building blocks for the Settings + Privacy routes. All inert/demo:
@@ -69,10 +75,12 @@ export function ToggleRow({
   return (
     // The whole row toggles (the switch alone was a 27 dp target); the
     // Switch stays the one accessible control, so the row is not focusable.
-    <Pressable
+    <UIPressable
       accessible={false}
+      haptic="selection"
       onPress={() => onValueChange(!value)}
-      className="flex-row items-center gap-3 border-b border-line px-4 py-3"
+      contentClassName="flex-row items-center gap-3 border-b border-line px-4 py-3"
+      pressedScale={0.99}
     >
       <Icon name={icon} size="md" tone="ink" />
       <View className="flex-1">
@@ -84,6 +92,6 @@ export function ToggleRow({
         ) : null}
       </View>
       <Switch value={value} onValueChange={onValueChange} label={label} />
-    </Pressable>
+    </UIPressable>
   );
 }

@@ -1,7 +1,7 @@
 import { Ionicons } from "@expo/vector-icons";
-import { Pressable, View } from "react-native";
+import { View } from "react-native";
 
-import { Icon, Text } from "@/components/ui";
+import { Icon, Text, Pressable as UIPressable } from "@/components/ui";
 import { Chip } from "@/components/Chip";
 import { DemoNote } from "@/components/DemoNote";
 import { demoCopy } from "@/copy";
@@ -33,17 +33,18 @@ function LinkRow({
   onPress: () => void;
 }) {
   return (
-    <Pressable
+    <UIPressable
       accessibilityRole="button"
       onPress={onPress}
-      className="flex-row items-center gap-2 rounded-md border border-line bg-surface px-3 py-3"
+      contentClassName="flex-row items-center gap-2 rounded-md border border-line bg-surface px-3 py-3"
+      pressedScale={0.99}
     >
       <Icon name={icon} size="md" tone="ink" />
       <Text variant="label" weight="regular" className="flex-1">
         {label}
       </Text>
       <Icon name="chevron-forward" size="md" tone="muted" />
-    </Pressable>
+    </UIPressable>
   );
 }
 

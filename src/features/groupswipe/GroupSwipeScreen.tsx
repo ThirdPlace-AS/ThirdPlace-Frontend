@@ -18,8 +18,10 @@ import {
   ScrollRow,
   StickyFooter,
   Text,
+  Pressable as UIPressable,
 } from "@/components/ui";
 import { Button } from "@/components/Button";
+import { haptics } from "@/lib/haptics";
 import { Chip } from "@/components/Chip";
 import { DemoNote } from "@/components/DemoNote";
 import { Input } from "@/components/Input";
@@ -118,7 +120,7 @@ export default function GroupSwipeScreen() {
               {people.map((p) => {
                 const on = invited.includes(p.id);
                 return (
-                  <Pressable
+                  <UIPressable
                     key={p.id}
                     accessibilityRole="checkbox"
                     accessibilityState={{ checked: on }}
@@ -128,7 +130,7 @@ export default function GroupSwipeScreen() {
                         on ? s.filter((x) => x !== p.id) : [...s, p.id],
                       )
                     }
-                    className="items-center gap-1"
+                    contentClassName="items-center gap-1"
                   >
                     <View
                       className={`rounded-full border-2 p-0.5 ${on ? "border-ink" : "border-transparent"}`}
@@ -150,7 +152,7 @@ export default function GroupSwipeScreen() {
                     >
                       {p.name.split(" ")[0]}
                     </Text>
-                  </Pressable>
+                  </UIPressable>
                 );
               })}
             </ScrollRow>
@@ -313,11 +315,11 @@ export default function GroupSwipeScreen() {
               icon="heart"
               label="Liker"
               filled
-              onPress={() =>
-                card.id === AGREED_ID
-                  ? setPhase("match")
-                  : setIndex((i) => i + 1)
-              }
+              onPress={() => {
+                if (card.id !== AGREED_ID) return setIndex((i) => i + 1);
+                haptics.light();
+                setPhase("match");
+              }}
             />
           </View>
           <DemoNote>Stemmene til vennene er simulert i demoen.</DemoNote>

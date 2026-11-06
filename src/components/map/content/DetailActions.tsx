@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Pressable, View } from "react-native";
-import { Icon, PopIcon, Text } from "@/components/ui";
+import { Icon, PopIcon, Text, Pressable as UIPressable } from "@/components/ui";
 import { haptics } from "@/lib/haptics";
 import { ReportSheet, ShareSheet } from "@/components/actions/ActionSheets";
 import { SignInPrompt } from "@/components/SignInPrompt";
@@ -59,29 +59,33 @@ export function DetailActions({
           </Text>
         </Pressable>
 
-        <Pressable
+        <UIPressable
           accessibilityRole="button"
           accessibilityLabel="Del"
           onPress={() => setNotice("share")}
-          className="flex-1 flex-row items-center justify-center gap-2 rounded-md border border-line bg-surface px-3 py-2.5"
+          className="flex-1"
+          contentClassName="flex-row items-center justify-center gap-2 rounded-md border border-line bg-surface px-3 py-2.5"
+          pressedScale={0.99}
         >
           <Icon name="share-outline" size="md" tone="ink" />
           <Text variant="label" weight="semibold">
             Del
           </Text>
-        </Pressable>
+        </UIPressable>
 
-        <Pressable
+        <UIPressable
           accessibilityRole="button"
           accessibilityLabel="Rapporter"
           onPress={() => setNotice("report")}
-          className="flex-1 flex-row items-center justify-center gap-2 rounded-md border border-line bg-surface px-3 py-2.5"
+          className="flex-1"
+          contentClassName="flex-row items-center justify-center gap-2 rounded-md border border-line bg-surface px-3 py-2.5"
+          pressedScale={0.99}
         >
           <Icon name="flag-outline" size="md" tone="ink" />
           <Text variant="label" weight="semibold">
             Rapporter
           </Text>
-        </Pressable>
+        </UIPressable>
       </View>
 
       {notice === "share" ? (

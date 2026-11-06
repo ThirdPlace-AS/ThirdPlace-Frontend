@@ -1,8 +1,13 @@
 import { useState } from "react";
-import { Pressable, ScrollView, View } from "react-native";
+import { ScrollView, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { StatusBarStyle } from "@/components/ui/StatusBarStyle";
-import { IconButton, Overlay, Text } from "@/components/ui";
+import {
+  IconButton,
+  Overlay,
+  Text,
+  Pressable as UIPressable,
+} from "@/components/ui";
 import { Button } from "@/components/Button";
 import { CheckboxRow } from "@/components/CheckboxRow";
 import { TypeChip } from "@/components/map/TypeChip";
@@ -196,17 +201,17 @@ function FilterBody({
 
       {/* Sticky footer — "Fjern alt" link + wide primary "Vis N" button. */}
       <View className="flex-row items-center gap-2 border-t border-line pt-3">
-        <Pressable
+        <UIPressable
           accessibilityRole="button"
           onPress={() =>
             setDraft({ ...DEFAULT_SWIPE_FILTERS, mode: draft.mode })
           }
-          className="px-2 py-3"
+          contentClassName="px-2 py-3"
         >
           <Text variant="body" weight="semibold" className="underline">
             Fjern alt
           </Text>
-        </Pressable>
+        </UIPressable>
         <View className="flex-1">
           <Button
             label={footerLabel}

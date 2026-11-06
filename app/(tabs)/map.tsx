@@ -4,7 +4,6 @@ import {
   ActivityIndicator,
   BackHandler,
   Keyboard,
-  Pressable,
   useWindowDimensions,
   View,
 } from "react-native";
@@ -16,6 +15,7 @@ import {
   Icon,
   IconButton,
   Text,
+  Pressable as UIPressable,
 } from "@/components/ui";
 import { Illustration } from "@/components/illustrations/Illustration";
 import { canUseMapbox, MapCanvas } from "@/components/map/MapCanvas";
@@ -272,11 +272,12 @@ export default function MapScreen() {
               web). The search opener launches the full-screen overlay, so the
               bar itself never takes focus (no residual keyboard on close). */}
           <View className="flex-row items-center flex-1 h-12 border rounded-full border-line bg-surface">
-            <Pressable
+            <UIPressable
               accessibilityRole="button"
               accessibilityLabel="Søk steder og opplevelser"
               onPress={() => setSearchOpen(true)}
-              className="flex-row items-center flex-1 h-full gap-2 pl-3"
+              className="flex-1"
+              contentClassName="flex-row items-center h-full gap-2 pl-3"
             >
               <Icon name="search" size="md" tone="muted" />
               <Text
@@ -287,13 +288,14 @@ export default function MapScreen() {
               >
                 {filters.query || "Søk steder, opplevelser …"}
               </Text>
-            </Pressable>
+            </UIPressable>
             <View className="w-px h-6 bg-line" />
-            <Pressable
+            <UIPressable
               accessibilityRole="button"
               accessibilityLabel="Filtre"
               onPress={() => setFilterOpen(true)}
-              className="items-center justify-center w-12 h-full"
+              className="w-12"
+              contentClassName="items-center justify-center h-full"
             >
               <Icon name="options-outline" size="md" tone="ink" />
               {filters.extraCount > 0 ? (
@@ -303,7 +305,7 @@ export default function MapScreen() {
                   </Text>
                 </View>
               ) : null}
-            </Pressable>
+            </UIPressable>
           </View>
           <IconButton
             icon="notifications-outline"

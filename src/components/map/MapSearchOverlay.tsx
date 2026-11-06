@@ -8,6 +8,7 @@ import {
   Overlay,
   type IconName,
   Text,
+  Pressable as UIPressable,
 } from "@/components/ui";
 import { Chip } from "@/components/Chip";
 import { SearchBar } from "@/components/SearchBar";
@@ -229,15 +230,16 @@ function RecentSearches({
           key={q}
           className="flex-row items-center gap-3 rounded-md px-1 py-2"
         >
-          <Pressable
+          <UIPressable
             accessibilityRole="button"
             accessibilityLabel={`Søk etter ${q}`}
             onPress={() => onPick(q)}
-            className="flex-1 flex-row items-center gap-3"
+            className="flex-1"
+            contentClassName="flex-row items-center gap-3"
           >
             <Icon name="time-outline" size="md" tone="muted" />
             <Text variant="body">{q}</Text>
-          </Pressable>
+          </UIPressable>
           <Pressable
             accessibilityRole="button"
             accessibilityLabel={`Fjern ${q}`}
@@ -270,12 +272,12 @@ function ResultGroup({
         {title}
       </Text>
       {items.map((r) => (
-        <Pressable
+        <UIPressable
           key={`${r.kind}:${r.id}`}
           accessibilityRole="button"
           accessibilityLabel={`${r.title}, ${r.subtitle}`}
           onPress={() => onPick(r)}
-          className="flex-row items-center gap-3 rounded-md px-1 py-2"
+          contentClassName="flex-row items-center gap-3 rounded-md px-1 py-2"
         >
           <View className="h-9 w-9 items-center justify-center rounded-full bg-surfaceMuted">
             <Icon name={icon} size="md" tone="ink" />
@@ -288,7 +290,7 @@ function ResultGroup({
               {r.subtitle}
             </Text>
           </View>
-        </Pressable>
+        </UIPressable>
       ))}
     </View>
   );

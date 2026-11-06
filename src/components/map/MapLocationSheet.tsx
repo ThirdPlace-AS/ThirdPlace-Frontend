@@ -1,6 +1,6 @@
-import { Pressable, View } from "react-native";
+import { View } from "react-native";
 
-import { Icon, Switch, Text } from "@/components/ui";
+import { Icon, Switch, Text, Pressable as UIPressable } from "@/components/ui";
 import { Button } from "@/components/Button";
 import { CategoryArt } from "@/components/illustrations/CategoryArt";
 import { Chip } from "@/components/Chip";
@@ -103,12 +103,14 @@ export function MapLocationSheet({
       </View>
 
       {/* Simulate an offline/error state to exercise recovery. */}
-      <Pressable
+      <UIPressable
         accessibilityRole="switch"
         accessibilityLabel="Simuler frakoblet"
         accessibilityState={{ checked: offline }}
+        haptic="selection"
         onPress={onToggleOffline}
-        className="flex-row items-center justify-between rounded-md border border-line bg-surface px-4 py-3"
+        contentClassName="flex-row items-center justify-between rounded-md border border-line bg-surface px-4 py-3"
+        pressedScale={0.99}
       >
         <View className="flex-1 flex-row items-center gap-2">
           <Text variant="body">Simuler frakoblet</Text>
@@ -124,7 +126,7 @@ export function MapLocationSheet({
             label="Simuler frakoblet"
           />
         </View>
-      </Pressable>
+      </UIPressable>
     </Sheet>
   );
 }

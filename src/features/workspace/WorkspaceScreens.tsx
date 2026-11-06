@@ -78,16 +78,17 @@ export function WorkspaceHub() {
               Personlig konto
             </Text>
           </View>
-          <Pressable
+          <UIPressable
             hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
             accessibilityRole="button"
             onPress={() => router.navigate("/profile")}
-            className="rounded-full border border-line bg-surface px-3 py-1.5"
+            contentClassName="rounded-full border border-line bg-surface px-3 py-1.5"
+            pressedScale={0.99}
           >
             <Text variant="caption" weight="semibold">
               Bytt til
             </Text>
-          </Pressable>
+          </UIPressable>
         </View>
         <View className="gap-1 rounded-lg border border-line bg-surface p-4">
           <Text variant="label" weight="semibold">

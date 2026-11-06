@@ -1,7 +1,7 @@
 import { Ionicons } from "@expo/vector-icons";
 import { useState } from "react";
 import { Pressable, View } from "react-native";
-import { Icon, Text } from "@/components/ui";
+import { Icon, Text, Pressable as UIPressable } from "@/components/ui";
 import { Button } from "@/components/Button";
 import { Chip } from "@/components/Chip";
 import { DemoNote } from "@/components/DemoNote";
@@ -43,17 +43,17 @@ export function ShareSheet({
         </View>
         <View className="flex-row gap-6">
           {actions.map((a) => (
-            <Pressable
+            <UIPressable
               key={a.label}
               accessibilityRole="button"
               onPress={() => setDone(a.label)}
-              className="items-center gap-1"
+              contentClassName="items-center gap-1"
             >
               <View className="h-12 w-12 items-center justify-center rounded-full bg-surfaceMuted">
                 <Icon name={a.icon} size="md" tone="ink" />
               </View>
               <Text variant="caption">{a.label}</Text>
-            </Pressable>
+            </UIPressable>
           ))}
         </View>
         {done ? (
@@ -83,12 +83,13 @@ export function ReportSheet({ onClose }: Base) {
           Hva er galt? Rapporten er anonym.
         </Text>
         {REASONS.map((r) => (
-          <Pressable
+          <UIPressable
             key={r}
             accessibilityRole="radio"
             accessibilityState={{ selected: reason === r }}
             onPress={() => setReason(r)}
-            className="flex-row items-center justify-between rounded-md border border-line bg-surface px-4 py-3.5"
+            contentClassName="flex-row items-center justify-between rounded-md border border-line bg-surface px-4 py-3.5"
+            pressedScale={0.99}
           >
             <Text variant="label">{r}</Text>
             <View
@@ -96,7 +97,7 @@ export function ReportSheet({ onClose }: Base) {
                 reason === r ? "border-ink bg-ink" : "border-line"
               }`}
             />
-          </Pressable>
+          </UIPressable>
         ))}
         {sent ? (
           <DemoNote>

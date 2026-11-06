@@ -1,7 +1,7 @@
 import { Ionicons } from "@expo/vector-icons";
 import BottomSheet, { BottomSheetFlatList } from "@gorhom/bottom-sheet";
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { Pressable, View } from "react-native";
+import { View } from "react-native";
 import Animated, {
   Extrapolation,
   interpolate,
@@ -304,12 +304,12 @@ const BrowseCard = memo(function BrowseCard({
     // select Pressable (never nested) — nested <button> is invalid
     // DOM on web.
     <View className="relative gap-3">
-      <Pressable
+      <UIPressable
         accessibilityRole="button"
         accessibilityState={{ selected }}
         accessibilityLabel={`${item.title}, ${item.category}, ${item.subtitle}`}
         onPress={() => onSelect(item)}
-        className="gap-3"
+        contentClassName="gap-3"
       >
         {/* Hero — bundled demo photo (placeholder when an item has none). */}
         {/* Near-square photo (benchmark B2), swipeable when the item has
@@ -384,7 +384,7 @@ const BrowseCard = memo(function BrowseCard({
             </View>
           ) : null}
         </View>
-      </Pressable>
+      </UIPressable>
 
       {/* Top-right save (heart) — sibling overlay over the hero. */}
       <HeartToggle

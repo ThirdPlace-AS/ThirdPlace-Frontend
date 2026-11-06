@@ -2,7 +2,13 @@ import { router } from "expo-router";
 import { useState } from "react";
 import { Pressable, ScrollView, View } from "react-native";
 
-import { Badge, Screen, ScrollRow, Text } from "@/components/ui";
+import {
+  Badge,
+  Screen,
+  ScrollRow,
+  Text,
+  Pressable as UIPressable,
+} from "@/components/ui";
 import { Button } from "@/components/Button";
 import { Chip } from "@/components/Chip";
 import { DemoNote } from "@/components/DemoNote";
@@ -41,12 +47,13 @@ export function PayoutsScreen() {
         </Pressable>
         <Section>Utbetalingsplan</Section>
         {PLANS.map((p) => (
-          <Pressable
+          <UIPressable
             key={p}
             accessibilityRole="radio"
             accessibilityState={{ selected: plan === p }}
             onPress={() => setPlan(p)}
-            className="flex-row items-center gap-3 rounded-md border border-line bg-surface px-4 py-3.5"
+            contentClassName="flex-row items-center gap-3 rounded-md border border-line bg-surface px-4 py-3.5"
+            pressedScale={0.99}
           >
             <View
               className={`h-5 w-5 rounded-full border-2 ${
@@ -56,7 +63,7 @@ export function PayoutsScreen() {
             <Text variant="label" weight="regular">
               {p}
             </Text>
-          </Pressable>
+          </UIPressable>
         ))}
         <Section>Valuta</Section>
         <View className="rounded-md border border-line bg-surface px-4 py-3.5">

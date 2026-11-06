@@ -1,7 +1,7 @@
 import { useState } from "react";
-import { Pressable, TextInput, View } from "react-native";
+import { TextInput, View } from "react-native";
 
-import { Icon, Text } from "@/components/ui";
+import { Icon, Text, Pressable as UIPressable } from "@/components/ui";
 import { OSLO_AREAS } from "@/fixtures";
 import { useThemeColors } from "@/theme";
 
@@ -35,11 +35,11 @@ export function WhereField({
   const Row = ({ name }: { name: string }) => {
     const selected = value === name;
     return (
-      <Pressable
+      <UIPressable
         accessibilityRole="button"
         accessibilityState={{ selected }}
         onPress={() => choose(name)}
-        className="flex-row items-center gap-3 py-3"
+        contentClassName="flex-row items-center gap-3 py-3"
       >
         <View className="h-11 w-11 items-center justify-center rounded-md bg-surfaceMuted">
           <Icon name="location-outline" size="md" tone="ink" />
@@ -52,7 +52,7 @@ export function WhereField({
           {name}
         </Text>
         {selected ? <Icon name="checkmark" size="md" tone="ember" /> : null}
-      </Pressable>
+      </UIPressable>
     );
   };
 
@@ -69,7 +69,7 @@ export function WhereField({
           style={{ fontSize: 16 }}
         />
         {text || value ? (
-          <Pressable
+          <UIPressable
             accessibilityRole="button"
             accessibilityLabel="Fjern sted"
             onPress={() => {
@@ -77,10 +77,11 @@ export function WhereField({
               onSelect(null);
             }}
             hitSlop={8}
-            className="h-7 w-7 items-center justify-center rounded-full bg-surfaceMuted"
+            className="w-7"
+            contentClassName="h-7 items-center justify-center rounded-full bg-surfaceMuted"
           >
             <Icon name="close" size="sm" tone="muted" />
-          </Pressable>
+          </UIPressable>
         ) : null}
       </View>
 

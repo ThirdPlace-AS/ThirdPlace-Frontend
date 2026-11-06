@@ -23,6 +23,7 @@ import {
   IconButton,
 } from "@/components/ui";
 import { Button } from "@/components/Button";
+import { haptics } from "@/lib/haptics";
 import {
   CategoryArt,
   hasCategoryArt,
@@ -182,7 +183,11 @@ export function AddWizard() {
     setDraft(EMPTY_DRAFT);
     setEditing(false);
   };
-  const next = () => (isLast ? setSubmitted(true) : setStepIndex((i) => i + 1));
+  const next = () => {
+    if (!isLast) return setStepIndex((i) => i + 1);
+    haptics.light();
+    setSubmitted(true);
+  };
 
   return (
     <Screen edges={["top"]}>
@@ -261,17 +266,18 @@ function KindMenu({ onPick }: { onPick: (k: AddKind) => void }) {
         <Text variant="h1" className="pb-1">
           Hva vil du legge til?
         </Text>
-        <Pressable
+        <UIPressable
           hitSlop={{ top: 10, bottom: 10, left: 8, right: 8 }}
           accessibilityRole="button"
           onPress={() => router.push("/import")}
-          className="flex-row items-center gap-2 self-start py-1"
+          className="self-start"
+          contentClassName="flex-row items-center gap-2 py-1"
         >
           <Icon name="link-outline" size="sm" tone="ember" />
           <Text variant="label" weight="semibold" tone="ember">
             Importer fra lenke →
           </Text>
-        </Pressable>
+        </UIPressable>
         {rows.map((r) => (
           <UIPressable
             key={r.kind}
@@ -929,14 +935,15 @@ function MonthPicker({
           const past = iso < todayIso;
           const selected = iso === value;
           return (
-            <Pressable
+            <UIPressable
               key={i}
               accessibilityRole="button"
               accessibilityLabel={`${d}. ${label}`}
               accessibilityState={{ selected, disabled: past }}
               disabled={past}
               onPress={() => onChange(iso)}
-              className="h-10 w-[14.28%] items-center justify-center"
+              className="w-[14.28%]"
+              contentClassName="h-10 items-center justify-center"
             >
               <View
                 className={`h-9 w-9 items-center justify-center rounded-full ${
@@ -952,7 +959,7 @@ function MonthPicker({
                   {d}
                 </Text>
               </View>
-            </Pressable>
+            </UIPressable>
           );
         })}
       </View>

@@ -1,7 +1,7 @@
 import { Image } from "expo-image";
 import { router, type Href } from "expo-router";
 import { useMemo, useState } from "react";
-import { FlatList, Pressable, ScrollView, TextInput, View } from "react-native";
+import { FlatList, ScrollView, TextInput, View } from "react-native";
 
 import {
   Badge,
@@ -79,40 +79,41 @@ export default function MarketplaceScreen() {
               Annonsene, prisene og navnene er eksempler. Ingenting kan
               bestilles.
             </DemoNote>
-            <Pressable
+            <UIPressable
               hitSlop={{ top: 12, bottom: 12, left: 8, right: 8 }}
               accessibilityRole="button"
               onPress={() => router.push("/my-listings")}
-              className="flex-row items-center gap-2 self-start"
+              className="self-start"
+              contentClassName="flex-row items-center gap-2"
             >
               <Icon name="albums-outline" size="sm" tone="ember" />
               <Text variant="label" weight="semibold" tone="ember">
                 Mine listings →
               </Text>
-            </Pressable>
+            </UIPressable>
             <View className="flex-row gap-4">
-              <Pressable
+              <UIPressable
                 accessibilityRole="button"
                 hitSlop={{ top: 12, bottom: 12, left: 8, right: 8 }}
                 onPress={() => setFilterOpen(true)}
-                className="flex-row items-center gap-1.5"
+                contentClassName="flex-row items-center gap-1.5"
               >
                 <Icon name="options-outline" size="sm" tone="ink" />
                 <Text variant="label" weight="semibold">
                   Filtre{freeOnly ? " (1)" : ""}
                 </Text>
-              </Pressable>
-              <Pressable
+              </UIPressable>
+              <UIPressable
                 accessibilityRole="button"
                 hitSlop={{ top: 12, bottom: 12, left: 8, right: 8 }}
                 onPress={() => router.push("/workspace/analytics" as Href)}
-                className="flex-row items-center gap-1.5"
+                contentClassName="flex-row items-center gap-1.5"
               >
                 <Icon name="stats-chart-outline" size="sm" tone="ink" />
                 <Text variant="label" weight="semibold">
                   Analyse
                 </Text>
-              </Pressable>
+              </UIPressable>
             </View>
             <View className="flex-row items-center gap-2 rounded-full border border-line bg-surface px-4">
               <Icon name="search" size="md" tone="muted" />

@@ -76,15 +76,15 @@ export default function AccountSwitch() {
             ) : null}
           </UIPressable>
         ))}
-        <Pressable
+        <UIPressable
           accessibilityRole="button"
           onPress={() => router.replace("/settings")}
-          className="items-center rounded-md bg-surfaceMuted py-2.5"
+          contentClassName="items-center rounded-md bg-surfaceMuted py-2.5"
         >
           <Text variant="label" weight="semibold">
             Administrer kontoer
           </Text>
-        </Pressable>
+        </UIPressable>
         <DemoNote>Kontobytte er bare navigasjon i demoen.</DemoNote>
       </View>
     </View>
