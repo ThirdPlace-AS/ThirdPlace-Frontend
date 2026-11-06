@@ -176,6 +176,7 @@ Left out by this run because CLAUDE.md bans stating them as product behaviour: "
 - **Price totals, price pins, sort explanations, guest-favourite tags** from the reference recordings stay out: they need price, ranking or policy contracts.
 - **Mobbin** blocks the built-in browser (403); Airbnb mobile references came via Firecrawl screenshots instead.
 - **Real 3D renders** remain an optional upgrade; hand-built SVG category art ships now.
+- **Tap speed** was not measured on a release build. On the emulator's dev build, a tap takes about 2–2.5 s to show on screen, for a map mode chip and a calendar date alike, so it reads as the build and the host, not one screen.
 
 ## 9. Addendum: Phases 7 and 8 (6 November 2026)
 
@@ -204,3 +205,11 @@ Left out by this run because CLAUDE.md bans stating them as product behaviour: "
 | 0187   | `c433804` | Filtre count = list count (it counted places only); badge counts Opplevelsestype                                                                                |
 | 0188   | `02bca9f` | Hvor / Når / Hvem steps (Hopp over / Neste); calendar month names above their grids (bug); neutral range band                                                   |
 | 0189   | `f92138c` | Dark pass of 48 routes clean, 0 unlabeled controls, 44 dp targets for text links and small rows                                                                 |
+
+**Phase 9** closed the three items left open after Phase 8:
+
+| Ledger | Commit    | Slice                                                                                                     |
+| ------ | --------- | --------------------------------------------------------------------------------------------------------- |
+| 0193   | `f6118f6` | Android back closes the map detail sheet (one level at a time) before it leaves the map                   |
+| 0194   | `666c060` | Sveip icon stroke 2, as in the founder's file                                                             |
+| 0195   | this page | Calendar range band checked in dark: it reads (grey disc between the white start and end), no code change |

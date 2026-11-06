@@ -79,7 +79,7 @@ Founder decision: the flow stays at the top of Filtre (the PDF search pill opens
 
 ## 4. What was built
 
-All four slices are done (commits `a603896`, `35214a4`, `c433804`, `02bca9f`); emulator checks and the slice table are in `APP_REVIEW_2026-11-06.md` §9. The tiles above show ThirdPlace **before** these slices.
+All four slices are done (commits `a603896`, `35214a4`, `c433804`, `02bca9f`); emulator checks and the slice table are in `APP_REVIEW_2026-11-06.md` §9. The tiles above show ThirdPlace **before** these slices. Phase 9 checked the W4 range band in dark mode as well (it reads; ledger 0195).
 
 | Slice                | Ledger | Items                      |
 | -------------------- | ------ | -------------------------- |
