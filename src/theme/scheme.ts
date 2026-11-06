@@ -15,7 +15,7 @@ const tokens = require("./tokens.js") as {
 export type Scheme = "light" | "dark";
 export type SchemePreference = Scheme | "system";
 
-export const DEFAULT_SCHEME_PREFERENCE: SchemePreference = "light";
+export const DEFAULT_SCHEME_PREFERENCE: SchemePreference = "system";
 
 let preference: SchemePreference = DEFAULT_SCHEME_PREFERENCE;
 const listeners = new Set<() => void>();

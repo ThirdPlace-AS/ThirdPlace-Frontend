@@ -1,6 +1,7 @@
 import { describe, expect, it } from "@jest/globals";
 
 import {
+  autoStyleKey,
   MAP_STYLES,
   periodForHour,
   styleKeyForHour,
@@ -36,5 +37,16 @@ describe("styleKeyForHour", () => {
     for (let hour = 0; hour < 24; hour++) {
       expect(validKeys.has(styleKeyForHour(hour))).toBe(true);
     }
+  });
+});
+
+describe("autoStyleKey", () => {
+  const night = MAP_STYLES.find((s) => s.period === "night")?.key;
+  it("follows the clock in light mode", () => {
+    expect(autoStyleKey(12, false)).toBe(styleKeyForHour(12));
+  });
+  it("uses the night style whenever the app is dark", () => {
+    expect(autoStyleKey(12, true)).toBe(night);
+    expect(autoStyleKey(6, true)).toBe(night);
   });
 });

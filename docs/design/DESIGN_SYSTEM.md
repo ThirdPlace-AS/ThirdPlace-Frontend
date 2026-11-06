@@ -17,15 +17,15 @@ The design system **restyles the PDF's layouts**. It never adds screens, section
 
 ## 2. Decisions
 
-| Topic             | Decision (2026-11-05)                                                                                                                                                                                 |
-| ----------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Brand colour      | Ember stays `#D80000`. No drift towards other brands' reds. Changing it is a founder call.                                                                                                            |
-| Typeface          | One open-licence geometric sans loaded via `expo-font` (candidate **DM Sans**, alternative Plus Jakarta Sans; a specimen in `app/_sandbox/` picks). Supersedes the Phase 0.3 "system fonts" decision. |
-| Theme             | Semantic tokens with **light and dark**, shipped together. Tokens are CSS variables so `className` utilities switch per scheme without `dark:` variants.                                              |
-| Sheets            | One Sheet API with two engines: `@gorhom/bottom-sheet` for snapping map sheets, the Modal engine for action sheets. No raw `Modal` outside the engine.                                                |
-| Icons             | Ionicons behind a single `Icon` wrapper (outline = default, filled = selected). ThirdPlace-specific glyphs become custom SVGs behind the same wrapper.                                                |
-| Illustration / 3D | Art-direction spec, pipeline and named slots now, with themed SVG placeholders. Final art is supplied later and dropped into the slots. IMG.LY/Codesign is not used.                                  |
-| Benchmark         | Airbnb is a **quality benchmark only**. No tracing, copying or lookalikes of its icons, illustrations, 3D renders, typeface or layouts.                                                               |
+| Topic             | Decision (2026-11-05)                                                                                                                                                                                                                                                                                                             |
+| ----------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Brand colour      | Ember stays `#D80000`. No drift towards other brands' reds. Changing it is a founder call.                                                                                                                                                                                                                                        |
+| Typeface          | One open-licence geometric sans loaded via `expo-font` (candidate **DM Sans**, alternative Plus Jakarta Sans; a specimen in `app/_sandbox/` picks). Supersedes the Phase 0.3 "system fonts" decision.                                                                                                                             |
+| Theme             | Semantic tokens with **light and dark**, shipped together; the app follows the phone setting (`system`, dark palette approved 2026-11-05). Tokens are CSS variables so `className` utilities switch per scheme without `dark:` variants. Map basemap goes to the night style in dark; map pins and photo UI (`media`) stay fixed. |
+| Sheets            | One Sheet API with two engines: `@gorhom/bottom-sheet` for snapping map sheets, the Modal engine for action sheets. No raw `Modal` outside the engine.                                                                                                                                                                            |
+| Icons             | Ionicons behind a single `Icon` wrapper (outline = default, filled = selected). ThirdPlace-specific glyphs become custom SVGs behind the same wrapper.                                                                                                                                                                            |
+| Illustration / 3D | Art-direction spec, pipeline and named slots now, with themed SVG placeholders. Final art is supplied later and dropped into the slots. IMG.LY/Codesign is not used.                                                                                                                                                              |
+| Benchmark         | Airbnb is a **quality benchmark only**. No tracing, copying or lookalikes of its icons, illustrations, 3D renders, typeface or layouts.                                                                                                                                                                                           |
 
 ## 3. Foundations
 
@@ -46,7 +46,7 @@ The design system **restyles the PDF's layouts**. It never adds screens, section
 | `danger`        | `#B5342B` | Destructive (value still provisional)          |
 | `warning`       | `#B05008` | Warning (value still provisional)              |
 
-Opacity modifiers (`bg-scrim/40`, `bg-danger/15`) work on every token but only in Tailwind steps of 5 — `/12` generates nothing. Dark values are defined in S2 and must pass the contrast test (`tests/themeContrast.test.ts`). Never write a hex literal outside `src/theme/`; read native colour props from the theme hook.
+Opacity modifiers (`bg-scrim/40`, `bg-danger/15`) work on every token but only in Tailwind steps of 5 — `/12` generates nothing. Dark values are defined in S2 and must pass the contrast test (`tests/themeTokens.test.ts`). Never write a hex literal outside `src/theme/`; read native colour props from the theme hook.
 
 ### Typography
 

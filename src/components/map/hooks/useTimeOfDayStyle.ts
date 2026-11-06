@@ -1,14 +1,15 @@
 import { useCallback, useEffect, useState } from "react";
 import { AppState } from "react-native";
 
-import { styleKeyForHour, type MapStyleKey } from "@/components/map/mapStyles";
+import { autoStyleKey, type MapStyleKey } from "@/components/map/mapStyles";
+import { useScheme } from "@/theme";
 
 // How often the follow-the-clock timer re-checks the current period while the
 // map is open. 5 min is well under the narrowest band (3h) so no transition is
 // missed, without churning the native map.
 const TICK_MS = 5 * 60 * 1000;
 
-const currentStyleKey = () => styleKeyForHour(new Date().getHours());
+const currentHour = () => new Date().getHours();
 
 // Owns the base-map style key and whether it auto-follows the time of day.
 //
@@ -20,14 +21,18 @@ const currentStyleKey = () => styleKeyForHour(new Date().getHours());
 //
 // `Date` / `AppState` / timers live here so `mapStyles.ts` stays pure.
 export function useTimeOfDayStyle() {
-  const [styleKey, setStyleKey] = useState<MapStyleKey>(currentStyleKey);
-  const [auto, setAuto] = useState(true);
+  const dark = useScheme() === "dark";
+  const [hour, setHour] = useState(currentHour);
+  const [manualKey, setManualKey] = useState<MapStyleKey | null>(null);
+  const auto = manualKey === null;
+  // Auto follows the clock, and the night style while the app is dark.
+  const styleKey = manualKey ?? autoStyleKey(hour, dark);
 
-  // Only call setState when the key actually changes, to avoid needless
+  // Only call setState when the hour actually changes, to avoid needless
   // re-renders / native camera churn on every tick.
   const applyCurrent = useCallback(() => {
-    const next = currentStyleKey();
-    setStyleKey((prev) => (prev === next ? prev : next));
+    const next = currentHour();
+    setHour((prev) => (prev === next ? prev : next));
   }, []);
 
   useEffect(() => {
@@ -48,13 +53,12 @@ export function useTimeOfDayStyle() {
   }, [auto, applyCurrent]);
 
   const selectStyle = useCallback((key: MapStyleKey) => {
-    setAuto(false);
-    setStyleKey(key);
+    setManualKey(key);
   }, []);
 
   const enableAuto = useCallback(() => {
-    setStyleKey(currentStyleKey());
-    setAuto(true);
+    setHour(currentHour());
+    setManualKey(null);
   }, []);
 
   return { styleKey, auto, selectStyle, enableAuto };

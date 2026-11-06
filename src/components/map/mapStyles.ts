@@ -70,3 +70,10 @@ export function styleKeyForHour(hour: number): MapStyleKey {
   const period = periodForHour(hour);
   return (MAP_STYLES.find((s) => s.period === period) ?? MAP_STYLES[0]).key;
 }
+
+// The auto basemap: the night style whenever the app is in dark mode (a bright
+// day map under dark chrome looks broken), the time of day otherwise.
+export function autoStyleKey(hour: number, dark: boolean): MapStyleKey {
+  if (!dark) return styleKeyForHour(hour);
+  return (MAP_STYLES.find((s) => s.period === "night") ?? MAP_STYLES[0]).key;
+}
