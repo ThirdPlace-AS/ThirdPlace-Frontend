@@ -9,7 +9,6 @@ import {
   ScrollView,
   Share,
   StyleSheet,
-  Text,
   useWindowDimensions,
   View,
 } from "react-native";
@@ -36,6 +35,9 @@ import {
   IconButton,
   ListRow,
   Overlay,
+  PopIcon,
+  Pressable as UIPressable,
+  Text,
 } from "@/components/ui";
 import { Button } from "@/components/Button";
 import { DemoBadge } from "@/components/DemoBadge";
@@ -441,7 +443,12 @@ export function SwipeDeck() {
         {mode === "forYou" ? (
           <View className="mx-gutter mt-2 flex-row items-center gap-2 self-start rounded-full bg-black/55 px-3 py-1.5">
             <DemoBadge />
-            <Text className="text-xs font-medium text-white/80">
+            <Text
+              variant="caption"
+              weight="medium"
+              tone="onMedia"
+              className="opacity-80"
+            >
               Ikke personalisert ennå
             </Text>
           </View>
@@ -761,7 +768,10 @@ function MetaLine({
     <View className="flex-row items-center gap-2">
       <Icon name={icon} size="sm" tone="onMedia" />
       <Text
-        className="flex-1 text-[15px] text-white/90 font-normal"
+        variant="label"
+        weight="regular"
+        tone="onMedia"
+        className="flex-1 opacity-90"
         numberOfLines={1}
       >
         {children}
@@ -807,7 +817,6 @@ function ExpandBody({
   exp: MockExperience;
   onClose: () => void;
 }) {
-  const colors = useThemeColors();
   const insets = useSafeAreaInsets();
   const { height: screenH } = useWindowDimensions();
   const heroH = Math.round(screenH * 0.46);
@@ -848,7 +857,14 @@ function ExpandBody({
         className="flex-row items-center gap-2 px-gutter pb-2"
         style={{ paddingTop: insets.top + 4 }}
       >
-        <Text className="flex-1 text-xl font-bold text-white" numberOfLines={1}>
+        <Text
+          variant="h2"
+          weight="bold"
+          tone="onMedia"
+          className="flex-1"
+          accessibilityRole="text"
+          numberOfLines={1}
+        >
           {exp.title}
         </Text>
         <IconButton
@@ -880,7 +896,7 @@ function ExpandBody({
 
         <View className="flex-row items-center gap-2">
           <DemoBadge />
-          <Text className="flex-1 text-xs text-white/60 font-normal">
+          <Text variant="caption" tone="onMedia" className="flex-1 opacity-60">
             Demo — ingen reell påmelding eller lagring på server.
           </Text>
         </View>
@@ -899,15 +915,24 @@ function ExpandBody({
         </View>
 
         <View className="gap-1">
-          <Text className="text-base font-bold text-white">Om</Text>
-          <Text className="text-[15px] leading-6 text-white/85 font-normal">
+          <Text variant="body" weight="bold" tone="onMedia">
+            Om
+          </Text>
+          <Text
+            variant="label"
+            weight="regular"
+            tone="onMedia"
+            className="leading-6 opacity-85"
+          >
             {exp.about}
           </Text>
         </View>
 
         {exp.tags.length > 0 ? (
           <View className="gap-2">
-            <Text className="text-base font-bold text-white">Interesser</Text>
+            <Text variant="body" weight="bold" tone="onMedia">
+              Interesser
+            </Text>
             <View className="flex-row flex-wrap gap-2">
               {exp.tags.map((t) => (
                 <View
@@ -915,7 +940,7 @@ function ExpandBody({
                   className="rounded-full px-3.5 py-1.5"
                   style={{ backgroundColor: media.fillSubtle }}
                 >
-                  <Text className="text-[14px] font-medium text-white">
+                  <Text variant="label" tone="onMedia">
                     {t}
                   </Text>
                 </View>
@@ -936,22 +961,19 @@ function ExpandBody({
           borderColor: media.hairline,
         }}
       >
-        <Pressable
+        <UIPressable
           accessibilityRole="button"
           accessibilityLabel={joined ? "Meld av (demo)" : joinLabel}
           accessibilityState={{ selected: joined }}
-          onPress={() => gate(joinLabel, () => setJoined((j) => !j))}
-          style={{ backgroundColor: colors.ember }}
-          className="h-12 flex-1 flex-row items-center justify-center gap-2 rounded-full"
+          onPress={() => gate("bli med", () => setJoined((j) => !j))}
+          className="flex-1"
+          contentClassName="h-12 flex-row items-center justify-center gap-sm rounded-full bg-ember"
         >
-          <Icon name="heart" size="md" tone="onEmber" />
-          <Text
-            className="text-base font-bold"
-            style={{ color: colors.onEmber }}
-          >
+          <PopIcon pop={joined} name="heart" size="md" tone="onEmber" />
+          <Text variant="body" weight="bold" tone="onEmber">
             {joined ? "Du er med · demo" : joinLabel}
           </Text>
-        </Pressable>
+        </UIPressable>
         <HeartToggle
           kind="bookmark"
           selected={saved}
@@ -1033,11 +1055,15 @@ function JoinChatSheet({
     <Sheet visible={exp !== null} onClose={close} title="Bli med i samtalen">
       {exp ? (
         <View className="gap-3">
-          <Text className="text-base font-semibold text-ink">{exp.title}</Text>
-          <Text className="text-sm text-muted font-normal">{exp.when}</Text>
+          <Text variant="body" weight="semibold">
+            {exp.title}
+          </Text>
+          <Text variant="caption" tone="muted">
+            {exp.when}
+          </Text>
           <View className="flex-row items-center gap-2 rounded-md bg-surfaceMuted p-3">
             <Icon name="chatbubbles-outline" size="sm" tone="ink" />
-            <Text className="flex-1 text-sm text-ink font-normal">
+            <Text variant="label" weight="regular" className="flex-1">
               Chat er gratis — billett kjøper du når du vil.
             </Text>
           </View>

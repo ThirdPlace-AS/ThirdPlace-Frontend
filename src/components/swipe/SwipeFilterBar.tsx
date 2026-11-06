@@ -1,6 +1,7 @@
-import { Ionicons } from "@expo/vector-icons";
+import { ScrollView, View } from "react-native";
+
+import { IconButton, Pressable, Text } from "@/components/ui";
 import { media } from "@/theme";
-import { Pressable, ScrollView, Text, View } from "react-native";
 
 // Top overlay filter bar. A sliders button opens the Filtre sheet, a horizontal
 // row of mode text-tabs (selected = dark pill, the rest plain text), and a
@@ -41,21 +42,19 @@ export function SwipeFilterBar({
   // Opens "Start gruppe-sveip" (PDF p8).
   onOpenGroup?: () => void;
 }) {
-  const glyph = onLight ? media.inkOnLight : media.onMedia;
+  const iconVariant = onLight ? "ghost" : "media";
+  const iconTone = onLight ? "ink" : "onMedia";
   return (
-    <View className="flex-row items-center gap-2 px-gutter">
-      <Pressable
-        accessibilityRole="button"
-        accessibilityLabel="Filtre"
+    <View className="flex-row items-center gap-xs px-gutter">
+      <IconButton
+        icon="options-outline"
+        label="Filtre"
+        variant="ghost"
+        size="sm"
+        tone={iconTone}
+        badge={filterActive}
         onPress={onOpenFilters}
-        hitSlop={8}
-        className="h-10 w-10 items-center justify-center"
-      >
-        <Ionicons name="options-outline" size={24} color={glyph} />
-        {filterActive ? (
-          <View className="absolute right-1.5 top-1.5 h-2 w-2 rounded-full bg-ember" />
-        ) : null}
-      </Pressable>
+      />
 
       <ScrollView
         horizontal
@@ -68,28 +67,37 @@ export function SwipeFilterBar({
           return (
             <Pressable
               key={m.key}
-              accessibilityRole="button"
+              accessibilityRole="tab"
               accessibilityState={{ selected: active }}
+              haptic="selection"
+              pressedScale={0.95}
               onPress={() => onSelectMode(m.key)}
-              style={
+              // Over a photo the pill is a dark scrim; on a light screen it is
+              // the theme ink (so it also works in dark mode).
+              contentClassName={
                 active
-                  ? {
-                      backgroundColor: onLight
-                        ? media.inkOnLight
-                        : media.scrimStrong,
-                    }
+                  ? `rounded-full px-3.5 py-2 ${onLight ? "bg-ink" : ""}`
+                  : "px-2.5 py-2"
+              }
+              contentStyle={
+                active && !onLight
+                  ? { backgroundColor: media.scrimStrong }
                   : undefined
               }
-              className={active ? "rounded-full px-4 py-2" : "px-3 py-2"}
             >
               <Text
-                className={`font-normal text-sm ${
+                variant="caption"
+                weight={active ? "bold" : "medium"}
+                tone={
                   active
-                    ? "font-bold text-white"
+                    ? onLight
+                      ? "onInk"
+                      : "onMedia"
                     : onLight
-                      ? "font-medium text-muted"
-                      : "font-medium text-white/70"
-                }`}
+                      ? "muted"
+                      : "onMedia"
+                }
+                className={!active && !onLight ? "opacity-70" : undefined}
               >
                 {m.label}
               </Text>
@@ -99,39 +107,27 @@ export function SwipeFilterBar({
       </ScrollView>
 
       {onOpenGroup ? (
-        <Pressable
-          accessibilityRole="button"
-          accessibilityLabel="Start gruppe-sveip"
+        <IconButton
+          icon="people-outline"
+          label="Start gruppe-sveip"
+          variant={iconVariant}
+          size="sm"
+          tone={iconTone}
           onPress={onOpenGroup}
-          style={{
-            backgroundColor: onLight ? "transparent" : media.scrimSoft,
-          }}
-          className="h-10 w-10 items-center justify-center rounded-full"
-        >
-          <Ionicons name="people-outline" size={20} color={glyph} />
-        </Pressable>
+        />
       ) : null}
 
       {/* Notifications bell (opens the demo notifications sheet), with an unread
           count badge — same affordance as the map's top bar. */}
-      <Pressable
-        accessibilityRole="button"
-        accessibilityLabel="Varsler"
+      <IconButton
+        icon="notifications-outline"
+        label="Varsler"
+        variant={iconVariant}
+        size="sm"
+        tone={iconTone}
+        badge={unreadCount}
         onPress={onOpenNotifications}
-        style={{
-          backgroundColor: onLight ? "transparent" : media.scrimSoft,
-        }}
-        className="h-10 w-10 items-center justify-center rounded-full"
-      >
-        <Ionicons name="notifications-outline" size={20} color={glyph} />
-        {unreadCount > 0 ? (
-          <View className="absolute -right-0.5 -top-0.5 h-4 w-4 items-center justify-center rounded-full bg-ember">
-            <Text className="text-[9px] font-bold text-onEmber">
-              {unreadCount}
-            </Text>
-          </View>
-        ) : null}
-      </Pressable>
+      />
     </View>
   );
 }

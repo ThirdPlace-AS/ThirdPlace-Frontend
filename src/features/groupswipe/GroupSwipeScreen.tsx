@@ -2,8 +2,15 @@ import { Ionicons } from "@expo/vector-icons";
 import { Image } from "expo-image";
 import { router } from "expo-router";
 import { useEffect, useState } from "react";
-import { Pressable, ScrollView, Text, View } from "react-native";
-import { Avatar, Icon, IconButton, ListRow, Screen } from "@/components/ui";
+import { Pressable, ScrollView, View } from "react-native";
+import {
+  Avatar,
+  Icon,
+  IconButton,
+  ListRow,
+  Screen,
+  Text,
+} from "@/components/ui";
 import { Button } from "@/components/Button";
 import { Chip } from "@/components/Chip";
 import { DemoNote } from "@/components/DemoNote";
@@ -63,7 +70,9 @@ export default function GroupSwipeScreen() {
           onPress={back}
         />
         {phase === "swipe" ? (
-          <Text className="text-base font-semibold text-ink">{title}</Text>
+          <Text variant="body" weight="semibold">
+            {title}
+          </Text>
         ) : null}
         <View className="w-10" />
       </View>
@@ -73,10 +82,8 @@ export default function GroupSwipeScreen() {
           contentContainerClassName="gap-4 p-gutter pb-8"
           keyboardShouldPersistTaps="handled"
         >
-          <Text className="text-3xl font-bold text-ink">
-            Start gruppe-sveip
-          </Text>
-          <Text className="text-sm text-muted font-normal">
+          <Text variant="display">Start gruppe-sveip</Text>
+          <Text variant="caption" tone="muted">
             Sveip sammen med venner — finn noe dere alle vil.
           </Text>
           <Input
@@ -86,7 +93,9 @@ export default function GroupSwipeScreen() {
             onChangeText={setName}
             maxLength={40}
           />
-          <Text className="text-sm font-semibold text-ink">Inviter venner</Text>
+          <Text variant="label" weight="semibold">
+            Inviter venner
+          </Text>
           <View className="flex-row flex-wrap gap-3">
             {people.map((p) => {
               const on = invited.includes(p.id);
@@ -111,14 +120,12 @@ export default function GroupSwipeScreen() {
                       style={{ height: 48, width: 48, borderRadius: 24 }}
                     />
                   </View>
-                  <Text className="text-xs text-ink font-normal">
-                    {p.name.split(" ")[0]}
-                  </Text>
+                  <Text variant="caption">{p.name.split(" ")[0]}</Text>
                 </Pressable>
               );
             })}
           </View>
-          <Text className="text-sm font-semibold text-ink">
+          <Text variant="label" weight="semibold">
             Filtre for gruppen
           </Text>
           <View className="flex-row flex-wrap gap-2">
@@ -135,7 +142,7 @@ export default function GroupSwipeScreen() {
               />
             ))}
           </View>
-          <Text className="text-sm font-semibold text-ink">
+          <Text variant="label" weight="semibold">
             Tid tilgjengelig
           </Text>
           <View className="flex-row flex-wrap gap-2">
@@ -149,7 +156,7 @@ export default function GroupSwipeScreen() {
             ))}
           </View>
           <View className="rounded-md bg-surfaceMuted p-3">
-            <Text className="text-sm text-ink font-normal">
+            <Text variant="label" weight="regular">
               Alle får se kortene — match når alle sveiper høyre.
             </Text>
           </View>
@@ -167,8 +174,10 @@ export default function GroupSwipeScreen() {
 
       {phase === "lobby" ? (
         <ScrollView contentContainerClassName="gap-4 p-gutter pb-8">
-          <Text className="text-3xl font-bold text-ink">{title}</Text>
-          <Text className="text-sm text-muted font-normal">
+          <Text variant="display" accessibilityRole="text">
+            {title}
+          </Text>
+          <Text variant="caption" tone="muted">
             Venter på at alle blir med …
           </Text>
           {friends.map((f) => (
@@ -176,7 +185,7 @@ export default function GroupSwipeScreen() {
           ))}
           {filters.length || time ? (
             <View className="gap-2 rounded-md border border-line bg-surface p-3">
-              <Text className="text-xs font-semibold uppercase tracking-wide text-muted">
+              <Text variant="micro" weight="semibold" tone="muted">
                 Økt-innstillinger
               </Text>
               <View className="flex-row flex-wrap gap-2">
@@ -185,13 +194,15 @@ export default function GroupSwipeScreen() {
                     key={f}
                     className="rounded-full bg-surfaceMuted px-3 py-1"
                   >
-                    <Text className="text-xs font-medium text-ink">{f}</Text>
+                    <Text variant="caption" weight="medium">
+                      {f}
+                    </Text>
                   </View>
                 ))}
               </View>
             </View>
           ) : null}
-          <Text className="text-center text-sm text-muted font-normal">
+          <Text variant="caption" tone="muted" className="text-center">
             {ready.length} av {friends.length} klare
           </Text>
           <DemoNote>
@@ -220,20 +231,24 @@ export default function GroupSwipeScreen() {
             />
           </View>
           <View className="gap-1">
-            <Text className="text-2xl font-bold text-ink">{card.title}</Text>
-            <Text className="text-sm text-muted font-normal">{card.when}</Text>
+            <Text variant="h1" accessibilityRole="text">
+              {card.title}
+            </Text>
+            <Text variant="caption" tone="muted">
+              {card.when}
+            </Text>
             <View className="flex-row flex-wrap gap-2 pt-1">
               {card.tags.map((t) => (
                 <View
                   key={t}
                   className="rounded-full border border-line px-3 py-1"
                 >
-                  <Text className="text-xs text-ink font-normal">{t}</Text>
+                  <Text variant="caption">{t}</Text>
                 </View>
               ))}
             </View>
           </View>
-          <Text className="text-center text-sm font-semibold text-ink">
+          <Text variant="label" weight="semibold" className="text-center">
             Hvem har sveipet?
           </Text>
           <View className="flex-row justify-center gap-4">
@@ -242,13 +257,11 @@ export default function GroupSwipeScreen() {
                 <View className="h-10 w-10 items-center justify-center rounded-full bg-success">
                   <Icon name="checkmark" size="md" tone="onInk" />
                 </View>
-                <Text className="text-xs text-ink font-normal">
-                  {f.name.split(" ")[0]}
-                </Text>
+                <Text variant="caption">{f.name.split(" ")[0]}</Text>
               </View>
             ))}
           </View>
-          <Text className="text-center text-xs text-muted font-normal">
+          <Text variant="caption" tone="muted" className="text-center">
             Stemmer avsløres ikke før match!
           </Text>
           <View className="flex-row justify-center gap-6">
@@ -279,15 +292,15 @@ export default function GroupSwipeScreen() {
             contentFit="cover"
             style={{ height: 200, width: "100%", borderRadius: 20 }}
           />
-          <Text className="text-center text-3xl font-bold text-ink">
+          <Text variant="display" className="text-center">
             Dere matcher!
           </Text>
-          <Text className="text-center text-sm text-muted font-normal">
+          <Text variant="caption" tone="muted" className="text-center">
             Alle sveipet høyre på {card.title}.
           </Text>
           <View className="flex-row items-center gap-1.5 self-center rounded-full bg-success/15 px-3 py-1">
             <Icon name="checkmark" size="sm" tone="success" />
-            <Text className="text-xs font-semibold text-successText">
+            <Text variant="caption" weight="semibold" tone="success">
               Alle er enige
             </Text>
           </View>

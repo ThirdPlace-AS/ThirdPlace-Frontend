@@ -2,7 +2,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { useState } from "react";
 import { Pressable, Text, View } from "react-native";
 
-import { Icon } from "@/components/ui";
+import { Icon, Text as UIText } from "@/components/ui";
 import { DemoNote } from "@/components/DemoNote";
 import { Sheet } from "@/components/Sheet";
 import {
@@ -75,20 +75,17 @@ export function NotificationsSheet({
                 <Icon name={TYPE_ICON[n.type]} size="md" tone="ink" />
               </View>
               <View className="flex-1 gap-0.5">
-                <Text className="text-sm font-semibold text-ink">
+                <UIText variant="label" weight="semibold">
                   {n.actorName}
-                </Text>
-                <Text
-                  className="text-xs text-muted font-normal"
-                  numberOfLines={2}
-                >
+                </UIText>
+                <UIText variant="caption" tone="muted" numberOfLines={2}>
                   {n.text}
-                </Text>
+                </UIText>
               </View>
               <View className="items-end gap-1.5">
-                <Text className="text-xs text-muted font-normal">
+                <UIText variant="caption" tone="muted">
                   {notificationTimeLabel(n.minutesAgo)}
-                </Text>
+                </UIText>
                 {!isRead ? (
                   <View className="h-2 w-2 rounded-full bg-ember" />
                 ) : null}

@@ -122,6 +122,7 @@ text on `Text` variants, primitives for rows/avatars/chips/sheets, real
 loading/empty/error states where the PDF has them. Layout, order and copy stay
 per the PDF.
 
-| Surface                                                               | PDF   | Upgrade                                                                                                  | Ledger |
-| --------------------------------------------------------------------- | ----- | -------------------------------------------------------------------------------------------------------- | ------ |
-| Map: browse sheet, detail content, Filtre, search, location, overlays | p5–p6 | done — photo browse cards, state cards with illustration, theme-aware slider, all Filtre sections render | 0161   |
+| Surface                                                                       | PDF   | Upgrade                                                                                                                         | Ledger |
+| ----------------------------------------------------------------------------- | ----- | ------------------------------------------------------------------------------------------------------------------------------- | ------ |
+| Map: browse sheet, detail content, Filtre, search, location, overlays         | p5–p6 | done — photo browse cards, state cards with illustration, theme-aware slider, all Filtre sections render                        | 0161   |
+| Swipe: deck, top bar, detail + safety, Steder deck, filter panel, group swipe | p7–p9 | done — bar on IconButton/tabs (fits 3 modes + 3 buttons), place-deck buttons on IconButton/HeartToggle, join CTA with heart pop | 0162   |

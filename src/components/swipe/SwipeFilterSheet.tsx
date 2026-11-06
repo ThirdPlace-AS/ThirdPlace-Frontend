@@ -1,8 +1,8 @@
 import { StatusBar } from "expo-status-bar";
 import { useState } from "react";
-import { Pressable, ScrollView, Text, View } from "react-native";
+import { Pressable, ScrollView, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { IconButton, Overlay } from "@/components/ui";
+import { IconButton, Overlay, Text } from "@/components/ui";
 import { Button } from "@/components/Button";
 import { CheckboxRow } from "@/components/CheckboxRow";
 import { TypeChip } from "@/components/map/TypeChip";
@@ -49,9 +49,13 @@ function Section({
   return (
     <View className="gap-3 rounded-lg border border-line bg-surface px-5 py-5">
       <View className="gap-0.5">
-        <Text className="text-base font-semibold text-ink">{title}</Text>
+        <Text variant="body" weight="semibold">
+          {title}
+        </Text>
         {subtitle ? (
-          <Text className="text-xs text-muted font-normal">{subtitle}</Text>
+          <Text variant="caption" tone="muted">
+            {subtitle}
+          </Text>
         ) : null}
       </View>
       {children}
@@ -132,7 +136,9 @@ function FilterBody({
           onPress={onClose}
           className="-ml-xs"
         />
-        <Text className="flex-1 text-lg font-bold text-ink">Filtre</Text>
+        <Text variant="title" weight="bold" className="flex-1">
+          Filtre
+        </Text>
         <IconButton icon="close" label="Lukk" size="sm" onPress={onClose} />
       </View>
 
@@ -197,7 +203,7 @@ function FilterBody({
           }
           className="px-2 py-3"
         >
-          <Text className="text-base font-semibold text-ink underline">
+          <Text variant="body" weight="semibold" className="underline">
             Fjern alt
           </Text>
         </Pressable>

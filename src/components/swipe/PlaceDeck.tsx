@@ -1,11 +1,11 @@
-import { Ionicons } from "@expo/vector-icons";
 import { Image } from "expo-image";
 import { router } from "expo-router";
 import { useEffect, useState } from "react";
 import { StatusBar } from "expo-status-bar";
-import { Pressable, Text, View } from "react-native";
+import { View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
+import { HeartToggle, IconButton, Text } from "@/components/ui";
 import { useGuestMode } from "@/components/map/hooks/useGuestMode";
 import { useMapSaved } from "@/components/map/hooks/useMapSaved";
 import { markerId } from "@/components/map/types/mapPresentation";
@@ -14,7 +14,7 @@ import { showToast } from "@/components/Toast";
 import { EmptyState } from "@/components/states/StateView";
 import { places } from "@/fixtures";
 import { coverForPlace, libImage } from "@/fixtures/images";
-import { useThemeColors, media } from "@/theme";
+import { media } from "@/theme";
 import { Illustration } from "@/components/illustrations/Illustration";
 
 // "Steder" deck in Sveip (PDF p7 tab). Place cards with Hopp over / Lagre /
@@ -77,26 +77,45 @@ export function PlaceDeck({
         className="absolute inset-x-0 bottom-0 gap-3 px-gutter pb-6 pt-24"
         style={{ backgroundColor: media.scrim }}
       >
-        <Text className="text-3xl font-bold text-white" numberOfLines={2}>
+        <Text
+          variant="display"
+          tone="onMedia"
+          accessibilityRole="text"
+          numberOfLines={2}
+        >
           {place.name}
         </Text>
-        <Text className="text-base text-white/85 font-normal">
+        <Text variant="body" tone="onMedia" className="opacity-85">
           {place.category} · {place.distance} · ★ {place.rating.toFixed(1)}
         </Text>
         <View className="flex-row flex-wrap gap-2">
           {place.vibes.slice(0, 3).map((v) => (
-            <View key={v} className="rounded-full bg-black/50 px-3 py-1">
-              <Text className="text-sm font-medium text-white">{v}</Text>
+            <View
+              key={v}
+              className="rounded-full px-3 py-1"
+              style={{ backgroundColor: media.fillSubtle }}
+            >
+              <Text variant="label" tone="onMedia">
+                {v}
+              </Text>
             </View>
           ))}
         </View>
         <View className="flex-row items-center justify-center gap-5 pt-2">
-          <Round icon="close" label="Hopp over" onPress={next} />
-          <Round
-            icon={saved ? "bookmark" : "bookmark-outline"}
-            label={saved ? "Fjern fra lagret" : "Lagre"}
-            big
-            onPress={() => {
+          <IconButton
+            icon="close"
+            label="Hopp over"
+            variant="media"
+            size="lg"
+            onPress={next}
+          />
+          <HeartToggle
+            kind="bookmark"
+            selected={saved}
+            variant="media"
+            size="xl"
+            haptic={!isGuest}
+            onToggle={() => {
               if (isGuest) return setSignIn(true);
               toggle(key);
               showToast({
@@ -106,12 +125,20 @@ export function PlaceDeck({
               });
             }}
           />
-          <Round
+          <IconButton
             icon="map-outline"
             label="Vis på kartet"
+            variant="media"
+            size="lg"
             onPress={() => router.navigate("/map")}
           />
-          <Round icon="arrow-forward" label="Neste" onPress={next} />
+          <IconButton
+            icon="arrow-forward"
+            label="Neste"
+            variant="media"
+            size="lg"
+            onPress={next}
+          />
         </View>
       </View>
       <SignInPrompt
@@ -120,35 +147,5 @@ export function PlaceDeck({
         action="lagre steder"
       />
     </View>
-  );
-}
-
-function Round({
-  icon,
-  label,
-  big,
-  onPress,
-}: {
-  icon: keyof typeof Ionicons.glyphMap;
-  label: string;
-  big?: boolean;
-  onPress: () => void;
-}) {
-  const colors = useThemeColors();
-  const size = big ? 64 : 52;
-  return (
-    <Pressable
-      accessibilityRole="button"
-      accessibilityLabel={label}
-      onPress={onPress}
-      style={{ height: size, width: size, borderRadius: size / 2 }}
-      className="items-center justify-center bg-black/55 active:opacity-80"
-    >
-      <Ionicons
-        name={icon}
-        size={big ? 28 : 22}
-        color={big ? colors.ember : media.onMedia}
-      />
-    </Pressable>
   );
 }

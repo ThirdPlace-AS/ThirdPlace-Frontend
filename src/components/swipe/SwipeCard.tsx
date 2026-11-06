@@ -1,10 +1,10 @@
 import { Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
 import { useState } from "react";
-import { StyleSheet, Text, View } from "react-native";
+import { StyleSheet, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-import { MetaRow } from "@/components/ui";
+import { MetaRow, Text } from "@/components/ui";
 import { DemoBadge } from "@/components/DemoBadge";
 import { media } from "@/theme";
 import { places, type MockExperience } from "@/fixtures";
@@ -54,7 +54,9 @@ function TagPills({ tags }: { tags: string[] }) {
           className="rounded-full px-3.5 py-1.5"
           style={{ backgroundColor: media.scrimStrong }}
         >
-          <Text className="text-[15px] font-medium text-white">{t}</Text>
+          <Text variant="label" tone="onMedia">
+            {t}
+          </Text>
         </View>
       ))}
       {extra > 0 ? (
@@ -62,7 +64,7 @@ function TagPills({ tags }: { tags: string[] }) {
           className="rounded-full px-3.5 py-1.5"
           style={{ backgroundColor: media.scrimStrong }}
         >
-          <Text className="text-[15px] font-medium text-white">{`+${extra}`}</Text>
+          <Text variant="label" tone="onMedia">{`+${extra}`}</Text>
         </View>
       ) : null}
     </View>
@@ -174,7 +176,9 @@ export function SwipeCard({
         onLayout={(e) => onInfoTop?.(e.nativeEvent.layout.y)}
       >
         <Text
-          className="text-4xl font-extrabold tracking-tight text-white"
+          variant="display"
+          tone="onMedia"
+          className="tracking-tight"
           numberOfLines={2}
           accessibilityRole="header"
           accessibilityLiveRegion={interactive ? "polite" : "none"}
