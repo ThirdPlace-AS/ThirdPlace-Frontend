@@ -1,3 +1,4 @@
+import { Image } from "expo-image";
 import { useMemo, useState } from "react";
 import { Keyboard, Pressable, ScrollView, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -11,9 +12,13 @@ import {
   Pressable as UIPressable,
 } from "@/components/ui";
 import { Chip } from "@/components/Chip";
+import { DemoNote } from "@/components/DemoNote";
+import { experienceById, placeById } from "@/fixtures";
+import { coverForPlace, libImage } from "@/fixtures/images";
 import { SearchBar } from "@/components/SearchBar";
 
 import { useRecentSearches } from "./hooks/useRecentSearches";
+import { useRecentlyViewed, type ViewedItem } from "./hooks/useRecentlyViewed";
 import {
   searchFixtures,
   suggestFixtures,
@@ -75,6 +80,7 @@ function SearchBody({
 }) {
   const insets = useSafeAreaInsets();
   const { recent, add, remove, clear } = useRecentSearches();
+  const { viewed, clear: clearViewed } = useRecentlyViewed();
   const [query, setQuery] = useState(initialQuery);
 
   const results = useMemo(() => searchFixtures(query), [query]);
@@ -124,12 +130,35 @@ function SearchBody({
           keyboardShouldPersistTaps="handled"
         >
           {!hasQuery ? (
-            <RecentSearches
-              recent={recent}
-              onPick={submit}
-              onRemove={remove}
-              onClear={clear}
-            />
+            <>
+              {recent.length === 0 && viewed.length === 0 ? (
+                <View className="items-center gap-2 pt-10">
+                  <Icon name="time-outline" size="xl" tone="muted" />
+                  <Text variant="caption" tone="muted" className="text-center">
+                    Søk etter steder, opplevelser og grupper.
+                  </Text>
+                </View>
+              ) : null}
+              <RecentSearches
+                recent={recent}
+                onPick={submit}
+                onRemove={remove}
+                onClear={clear}
+              />
+              <RecentlyViewed
+                viewed={viewed}
+                onClear={clearViewed}
+                onPick={(v) => {
+                  onSelect({
+                    kind: v.kind,
+                    id: v.id,
+                    title: v.title,
+                    subtitle: "",
+                  });
+                  onClose();
+                }}
+              />
+            </>
           ) : results.total === 0 ? (
             <View className="items-center gap-2 pt-10">
               <Icon name="search" size="xl" tone="muted" />
@@ -199,16 +228,7 @@ function RecentSearches({
   onRemove: (q: string) => void;
   onClear: () => void;
 }) {
-  if (recent.length === 0) {
-    return (
-      <View className="items-center gap-2 pt-10">
-        <Icon name="time-outline" size="xl" tone="muted" />
-        <Text variant="caption" tone="muted" className="text-center">
-          Søk etter steder, opplevelser og grupper.
-        </Text>
-      </View>
-    );
-  }
+  if (recent.length === 0) return null;
   return (
     <View className="gap-1">
       <View className="flex-row items-center justify-between">
@@ -250,6 +270,74 @@ function RecentSearches({
           </Pressable>
         </View>
       ))}
+    </View>
+  );
+}
+
+// "Nylig sett" (approved new surface, 2026-11-06): details opened in this
+// session, newest first. Local only; the note says it clears on restart.
+function RecentlyViewed({
+  viewed,
+  onPick,
+  onClear,
+}: {
+  viewed: readonly ViewedItem[];
+  onPick: (v: ViewedItem) => void;
+  onClear: () => void;
+}) {
+  if (viewed.length === 0) return null;
+  return (
+    <View className="gap-1">
+      <View className="flex-row items-center justify-between">
+        <Text variant="label" weight="semibold">
+          Nylig sett
+        </Text>
+        <Pressable
+          accessibilityRole="button"
+          accessibilityLabel="Tøm nylig sett"
+          onPress={onClear}
+          hitSlop={8}
+        >
+          <Text variant="caption" tone="muted">
+            Tøm
+          </Text>
+        </Pressable>
+      </View>
+      {viewed.map((v) => {
+        const place = v.kind === "place" ? placeById(v.id) : undefined;
+        const exp = v.kind === "experience" ? experienceById(v.id) : undefined;
+        const src = place ? libImage(coverForPlace(place)) : exp?.photos[0];
+        return (
+          <UIPressable
+            key={`${v.kind}:${v.id}`}
+            accessibilityRole="button"
+            accessibilityLabel={`${v.title}, ${v.kind === "place" ? "sted" : "opplevelse"}`}
+            onPress={() => onPick(v)}
+            pressedScale={0.99}
+            contentClassName="flex-row items-center gap-3 rounded-md px-1 py-2"
+          >
+            {src ? (
+              <Image
+                source={src}
+                contentFit="cover"
+                style={{ height: 40, width: 40, borderRadius: 8 }}
+                accessible={false}
+              />
+            ) : (
+              <View className="h-10 w-10 rounded-sm bg-surfaceMuted" />
+            )}
+            <View className="flex-1">
+              <Text variant="body" numberOfLines={1}>
+                {v.title}
+              </Text>
+              <Text variant="caption" tone="muted">
+                {v.kind === "place" ? "Sted" : "Opplevelse"}
+              </Text>
+            </View>
+          </UIPressable>
+        );
+      })}
+      <DemoNote>Nylig sett tømmes når appen startes på nytt.</DemoNote>
     </View>
   );
 }

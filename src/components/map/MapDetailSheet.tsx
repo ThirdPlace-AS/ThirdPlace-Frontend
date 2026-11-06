@@ -10,7 +10,10 @@ import { View } from "react-native";
 
 import { FadeSwap, SheetHeader, useSheetChrome } from "@/components/ui";
 
+import { experienceById, placeById } from "@/fixtures";
+
 import { ExperienceJoinBar } from "./content/ExperienceJoinBar";
+import { markViewed } from "./hooks/useRecentlyViewed";
 import { DetailContent, titleFor } from "./DetailContentRouter";
 import type { PushFn, SheetTarget } from "./sheetTypes";
 
@@ -65,6 +68,20 @@ export function MapDetailSheet({
   // Experiences pin their join bar to the bottom of the sheet (PDF p6), so
   // "Bli med" shows at every snap instead of only at the end of the scroll.
   const footerId = top?.kind === "experience" ? top.id : null;
+
+  // "Nylig sett": a place or experience whose detail actually opened.
+  const topKind = top?.kind;
+  const topId = top?.id;
+  useEffect(() => {
+    if (!topId) return;
+    if (topKind === "place") {
+      const p = placeById(topId);
+      if (p) markViewed({ kind: "place", id: topId, title: p.name });
+    } else if (topKind === "experience") {
+      const e = experienceById(topId);
+      if (e) markViewed({ kind: "experience", id: topId, title: e.title });
+    }
+  }, [topKind, topId]);
   const renderFooter = useCallback(
     (props: BottomSheetFooterProps) =>
       footerId ? (

@@ -51,6 +51,7 @@ import { SignInPrompt } from "@/components/SignInPrompt";
 import { EmptyState } from "@/components/states/StateView";
 import { places, type MockExperience } from "@/fixtures";
 import { useNotificationReads } from "@/hooks/useNotificationReads";
+import { markViewed } from "@/components/map/hooks/useRecentlyViewed";
 import { haptics } from "@/lib/haptics";
 import { motion, useThemeColors, media } from "@/theme";
 
@@ -363,7 +364,14 @@ export function SwipeDeck() {
                   reduced={reduced}
                   arrowY={arrowY}
                   onInfoTop={setArrowY}
-                  onExpand={() => setExpand(exp)}
+                  onExpand={() => {
+                    markViewed({
+                      kind: "experience",
+                      id: exp.id,
+                      title: exp.title,
+                    });
+                    setExpand(exp);
+                  }}
                 />
               ) : (
                 // The immediate next card (n===1) renders its FULL content so it is

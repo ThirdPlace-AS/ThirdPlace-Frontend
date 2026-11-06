@@ -59,6 +59,18 @@ CLAUDE.md governance.
 | p27 | Kontoen er suspendert     | … midlertidig suspendert på grunn av gjentatte brudd på retningslinjene våre.                                                                                        | Kontoen din er stengt midlertidig fordi du har brutt retningslinjene våre.                                                                                                      |
 | p27 | Oppdatering kreves        | En ny versjon av ThirdPlace er tilgjengelig med viktige forbedringer og sikkerhetsfikser.                                                                            | Denne versjonen er for gammel. Oppdater appen for å fortsette.                                                                                                                  |
 
+## Founder-approved additions without a PDF slot (2026-11-06)
+
+Approved by the founder in the Phase 10 review (AskUserQuestion). Each is local demo state that clears on restart and carries a DemoNote; none adds counts, ranking or notification policy.
+
+| Addition                 | Where                                       | Spec basis                       | Status       |
+| ------------------------ | ------------------------------------------- | -------------------------------- | ------------ |
+| Nylig sett               | Map search overlay, under "Nylige søk"      | §4 Account "history"             | Built (0209) |
+| Sveip lagrede med venner | Lagret → group swipe with the saved deck    | §11 Saved, §7 group swipe        | Planned      |
+| Til samtalen             | Mine planer rows with an example chat       | §11 My Plans                     | Planned      |
+| Lagre til senere         | Group-swipe match screen (p9)               | §11 Saved                        | Planned      |
+| Neste plan               | Profil, signed in, under the interest chips | §11 My Plans, §4 Account "plans" | Planned      |
+
 ## Pages
 
 | PDF   | Screen                                                                                                                                                                                                                                                                                                       | Key labels (PDF)                                                                                                                                                                                                                                                                                                                                                                                                                                                            | App                                                                         | Status                                                                                            |
