@@ -1,7 +1,6 @@
-import { router } from "expo-router";
+import { router, useRootNavigationState } from "expo-router";
 import { useEffect } from "react";
 import { View } from "react-native";
-import { useReducedMotion } from "react-native-reanimated";
 
 import { StatusBarStyle } from "@/components/ui/StatusBarStyle";
 import { LogoMark } from "@/components/Logo";
@@ -9,18 +8,19 @@ import { useThemeColors } from "@/theme";
 import { Text } from "@/components/ui";
 
 // Splash (PDF p1): Ember screen with the mark, "ThirdPlace" and "Finn folk og
-// steder i byen din" (founder copy, 2026-11-06), then on to Welcome. No session check exists (no backend), so
-// it only holds briefly — shorter when the user prefers reduced motion.
+// steder i byen din" (founder copy, 2026-11-06), then on to Welcome. Nothing
+// loads here (no session check, no backend; the root layout already waits for
+// the fonts), so it no longer holds 1.2 s: it hands over on the first frame
+// once the root navigator is ready (navigating earlier throws). The native
+// splash is the same ember, so the hand-over does not flash.
 export default function Splash() {
   const colors = useThemeColors();
-  const reduced = useReducedMotion();
+  const navKey = useRootNavigationState()?.key;
   useEffect(() => {
-    const t = setTimeout(
-      () => router.replace("/welcome"),
-      reduced ? 300 : 1200,
-    );
-    return () => clearTimeout(t);
-  }, [reduced]);
+    if (!navKey) return;
+    const frame = requestAnimationFrame(() => router.replace("/welcome"));
+    return () => cancelAnimationFrame(frame);
+  }, [navKey]);
 
   return (
     <View

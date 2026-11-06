@@ -135,6 +135,9 @@ export default function MapScreen() {
   const [offline, setOffline] = useState(false);
   const { status, reload } = useMockResource(places, {
     delayMs: 500,
+    // No fake wait on open: the fixtures are already here. "Prøv igjen" and
+    // the offline toggle still show the loading / error states.
+    immediate: true,
     simulate: offline ? "error" : "success",
   });
   const loading = status === "loading";

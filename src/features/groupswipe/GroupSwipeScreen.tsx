@@ -34,6 +34,7 @@ const FILTERS = ["Rolig", "Kreativt", "Utendørs", "Mat"];
 const TIMES = ["1–2 timer", "Hele kvelden", "Hele dagen"];
 // The demo's friends "agree" on this card, so a like on it produces a match.
 const AGREED_ID = "e3";
+const LOBBY_STEP_MS = 500;
 
 // Gruppe-sveip (DEMO), per the design (PDF p8–p9): Start gruppe-sveip →
 // lobby (who is ready) → shared deck ("Hvem har sveipet?") → "Dere matcher!".
@@ -63,12 +64,13 @@ export default function GroupSwipeScreen() {
     : undefined;
   const title = name.trim() || "Gruppe-sveip";
 
-  // Lobby: simulated friends become ready one by one.
+  // Lobby: simulated friends become ready one by one (labelled as a
+  // simulation). Paced at 500 ms: enough to read, not a wait for nothing.
   useEffect(() => {
     if (phase !== "lobby" || ready.length >= friends.length) return;
     const t = setTimeout(
       () => setReady((r) => [...r, friends[r.length]?.id ?? ""]),
-      1200,
+      LOBBY_STEP_MS,
     );
     return () => clearTimeout(t);
   }, [phase, ready, friends]);
