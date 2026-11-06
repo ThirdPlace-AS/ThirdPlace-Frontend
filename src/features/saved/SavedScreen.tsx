@@ -10,6 +10,7 @@ import { RouteHeader } from "@/components/RouteHeader";
 import { showToast } from "@/components/Toast";
 import { EmptyState } from "@/components/states/StateView";
 import { useMapSaved } from "@/components/map/hooks/useMapSaved";
+import { useGuestMode } from "@/components/map/hooks/useGuestMode";
 import { businessById, experienceById, placeById } from "@/fixtures";
 import { coverForPlace, libImage } from "@/fixtures/images";
 import { Illustration } from "@/components/illustrations/Illustration";
@@ -37,6 +38,10 @@ const FILTERS: { key: Kind | null; label: string }[] = [
 // clears on reload.
 export default function SavedScreen() {
   const { savedIds, toggle } = useMapSaved();
+  const { isGuest } = useGuestMode();
+  const savedExperienceCount = savedIds.filter((k) =>
+    k.startsWith("experience:"),
+  ).length;
   const [filter, setFilter] = useState<Kind | null>(null);
 
   const rows = useMemo<Row[]>(
@@ -99,20 +104,38 @@ export default function SavedScreen() {
         keyExtractor={(r) => r.key}
         contentContainerClassName="gap-2 px-gutter pb-10 flex-grow"
         ListHeaderComponent={
-          <View
-            accessibilityRole="radiogroup"
-            className="flex-row flex-wrap gap-2 pb-2"
-          >
-            {FILTERS.map((f) => (
-              <Chip
-                key={f.label}
-                label={f.label}
-                size="sm"
-                role="radio"
-                selected={filter === f.key}
-                onPress={() => setFilter(f.key)}
+          <View className="gap-3 pb-2">
+            {/* Approved addition (2026-11-06): turn saved experiences into a
+                group decision. Signed in, two or more saved experiences. */}
+            {!isGuest && savedExperienceCount >= 2 ? (
+              <ListRow
+                variant="card"
+                icon="people-outline"
+                title="Sveip lagrede med venner"
+                subtitle={`${savedExperienceCount} lagrede opplevelser`}
+                onPress={() =>
+                  router.push({
+                    pathname: "/group-swipe",
+                    params: { from: "saved" },
+                  })
+                }
               />
-            ))}
+            ) : null}
+            <View
+              accessibilityRole="radiogroup"
+              className="flex-row flex-wrap gap-2"
+            >
+              {FILTERS.map((f) => (
+                <Chip
+                  key={f.label}
+                  label={f.label}
+                  size="sm"
+                  role="radio"
+                  selected={filter === f.key}
+                  onPress={() => setFilter(f.key)}
+                />
+              ))}
+            </View>
           </View>
         }
         ListEmptyComponent={

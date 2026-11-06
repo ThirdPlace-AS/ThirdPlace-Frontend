@@ -1,7 +1,7 @@
 import { Ionicons } from "@expo/vector-icons";
 import { Image } from "expo-image";
-import { type Href, router } from "expo-router";
-import { useEffect, useState } from "react";
+import { type Href, router, useLocalSearchParams } from "expo-router";
+import { useEffect, useMemo, useState } from "react";
 import {
   KeyboardAvoidingView,
   Pressable,
@@ -26,7 +26,18 @@ import { haptics } from "@/lib/haptics";
 import { Chip } from "@/components/Chip";
 import { DemoNote } from "@/components/DemoNote";
 import { Input } from "@/components/Input";
-import { chats, experiences, people, type MockPerson } from "@/fixtures";
+import { showToast } from "@/components/Toast";
+import { SignInPrompt } from "@/components/SignInPrompt";
+import { useGuestMode } from "@/components/map/hooks/useGuestMode";
+import { useMapSaved } from "@/components/map/hooks/useMapSaved";
+import {
+  chats,
+  experienceById,
+  experiences,
+  people,
+  type MockExperience,
+  type MockPerson,
+} from "@/fixtures";
 import { libImage } from "@/fixtures/images";
 
 type Phase = "setup" | "lobby" | "swipe" | "match";
@@ -52,8 +63,26 @@ export default function GroupSwipeScreen() {
   const [index, setIndex] = useState(0);
 
   const friends = people.filter((p) => invited.includes(p.id));
-  const deck = experiences.filter((e) => e.status !== "cancelled");
-  const card = deck[index % deck.length];
+  // /group-swipe?from=saved (approved addition, 2026-11-06): the deck is the
+  // user's saved experiences, it ends instead of looping, and the simulated
+  // friends agree on the first card the user likes.
+  const fromSaved = useLocalSearchParams<{ from?: string }>().from === "saved";
+  const { savedIds, isSaved, toggle } = useMapSaved();
+  const { isGuest } = useGuestMode();
+  const [signInOpen, setSignInOpen] = useState(false);
+  const savedDeck = useMemo(
+    () =>
+      savedIds
+        .filter((k) => k.startsWith("experience:"))
+        .map((k) => experienceById(k.slice("experience:".length)))
+        .filter((e): e is MockExperience => !!e),
+    [savedIds],
+  );
+  const deck = fromSaved
+    ? savedDeck
+    : experiences.filter((e) => e.status !== "cancelled");
+  const deckEnded = fromSaved && index >= deck.length;
+  const card = fromSaved ? deck[index] : deck[index % deck.length];
   // Photos scale with the screen so the vote buttons stay in view on a
   // 640 dp phone (fixed 300 / 200 pushed them below the fold).
   const { height: winH } = useWindowDimensions();
@@ -159,37 +188,50 @@ export default function GroupSwipeScreen() {
                 );
               })}
             </ScrollRow>
-            <Text variant="label" weight="semibold">
-              Filtre for gruppen
-            </Text>
-            <ScrollRow>
-              {FILTERS.map((f) => (
-                <Chip
-                  key={f}
-                  label={f}
-                  selected={filters.includes(f)}
-                  onPress={() =>
-                    setFilters((s) =>
-                      s.includes(f) ? s.filter((x) => x !== f) : [...s, f],
-                    )
-                  }
-                />
-              ))}
-            </ScrollRow>
-            <Text variant="label" weight="semibold">
-              Tid tilgjengelig
-            </Text>
-            <ScrollRow radio>
-              {TIMES.map((t) => (
-                <Chip
-                  key={t}
-                  role="radio"
-                  label={t}
-                  selected={time === t}
-                  onPress={() => setTime(t)}
-                />
-              ))}
-            </ScrollRow>
+            {fromSaved ? (
+              <View className="gap-1 rounded-md border border-line bg-surface p-3">
+                <Text variant="label" weight="semibold">
+                  Kortstokk: Lagret ({deck.length})
+                </Text>
+                <Text variant="caption" tone="muted">
+                  Dere sveiper på opplevelsene du har lagret.
+                </Text>
+              </View>
+            ) : (
+              <>
+                <Text variant="label" weight="semibold">
+                  Filtre for gruppen
+                </Text>
+                <ScrollRow>
+                  {FILTERS.map((f) => (
+                    <Chip
+                      key={f}
+                      label={f}
+                      selected={filters.includes(f)}
+                      onPress={() =>
+                        setFilters((s) =>
+                          s.includes(f) ? s.filter((x) => x !== f) : [...s, f],
+                        )
+                      }
+                    />
+                  ))}
+                </ScrollRow>
+                <Text variant="label" weight="semibold">
+                  Tid tilgjengelig
+                </Text>
+                <ScrollRow radio>
+                  {TIMES.map((t) => (
+                    <Chip
+                      key={t}
+                      role="radio"
+                      label={t}
+                      selected={time === t}
+                      onPress={() => setTime(t)}
+                    />
+                  ))}
+                </ScrollRow>
+              </>
+            )}
             <View className="rounded-md bg-surfaceMuted p-3">
               <Text variant="label" weight="regular">
                 Alle ser de samme kortene. Det blir match når alle sveiper til
@@ -265,6 +307,32 @@ export default function GroupSwipeScreen() {
         </ScrollView>
       ) : null}
 
+      {phase === "swipe" && deckEnded ? (
+        // Saved deck: an end instead of a loop (2–3 cards looped visibly).
+        <View className="flex-1 items-center justify-center gap-4 p-gutter">
+          <Text variant="h1" className="text-center">
+            Ingen match denne gangen
+          </Text>
+          <Text variant="caption" tone="muted" className="text-center">
+            Dere har sveipet gjennom alle de lagrede opplevelsene.
+          </Text>
+          <View className="w-full gap-3 pt-2">
+            <Button
+              label="Sveip igjen"
+              variant="ink"
+              onPress={() => setIndex(0)}
+            />
+            <Button
+              label="Tilbake til Lagret"
+              variant="secondary"
+              onPress={() =>
+                router.canGoBack() ? router.back() : router.replace("/saved")
+              }
+            />
+          </View>
+        </View>
+      ) : null}
+
       {phase === "swipe" && card ? (
         <ScrollView contentContainerClassName="gap-4 p-gutter pb-8">
           {/* Next card fades in (it swapped in one frame). */}
@@ -322,7 +390,8 @@ export default function GroupSwipeScreen() {
               label="Liker"
               filled
               onPress={() => {
-                if (card.id !== AGREED_ID) return setIndex((i) => i + 1);
+                const agrees = fromSaved || card.id === AGREED_ID;
+                if (!agrees) return setIndex((i) => i + 1);
                 haptics.light();
                 setPhase("match");
               }}
@@ -366,6 +435,26 @@ export default function GroupSwipeScreen() {
             }
           />
           <Button
+            label={
+              isSaved(`experience:${card.id}`) ? "Lagret" : "Lagre til senere"
+            }
+            icon={
+              isSaved(`experience:${card.id}`) ? "bookmark" : "bookmark-outline"
+            }
+            variant="secondary"
+            onPress={() => {
+              if (isGuest) return setSignInOpen(true);
+              const key = `experience:${card.id}`;
+              const was = isSaved(key);
+              toggle(key);
+              showToast({
+                title: was ? "Fjernet fra Lagret" : "Lagret",
+                body: `${card.title} · tømmes når appen starter på nytt`,
+                icon: was ? "bookmark-outline" : "bookmark",
+              });
+            }}
+          />
+          <Button
             label="Fortsett å sveipe"
             variant="secondary"
             onPress={() => {
@@ -375,6 +464,11 @@ export default function GroupSwipeScreen() {
           />
         </ScrollView>
       ) : null}
+      <SignInPrompt
+        visible={signInOpen}
+        onClose={() => setSignInOpen(false)}
+        action="lagre"
+      />
     </Screen>
   );
 }

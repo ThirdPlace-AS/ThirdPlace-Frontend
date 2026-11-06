@@ -66,9 +66,9 @@ Approved by the founder in the Phase 10 review (AskUserQuestion). Each is local 
 | Addition                 | Where                                       | Spec basis                       | Status       |
 | ------------------------ | ------------------------------------------- | -------------------------------- | ------------ |
 | Nylig sett               | Map search overlay, under "Nylige søk"      | §4 Account "history"             | Built (0209) |
-| Sveip lagrede med venner | Lagret → group swipe with the saved deck    | §11 Saved, §7 group swipe        | Planned      |
+| Sveip lagrede med venner | Lagret → group swipe with the saved deck    | §11 Saved, §7 group swipe        | Built (0210) |
 | Til samtalen             | Mine planer rows with an example chat       | §11 My Plans                     | Planned      |
-| Lagre til senere         | Group-swipe match screen (p9)               | §11 Saved                        | Planned      |
+| Lagre til senere         | Group-swipe match screen (p9)               | §11 Saved                        | Built (0210) |
 | Neste plan               | Profil, signed in, under the interest chips | §11 My Plans, §4 Account "plans" | Planned      |
 
 ## Pages
