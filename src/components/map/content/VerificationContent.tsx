@@ -93,12 +93,6 @@ export function VerificationContent() {
           </View>
         ))}
       </View>
-
-      <View className="rounded-md bg-surfaceMuted p-3">
-        <Text variant="label" weight="regular">
-          Verifisering er ikke slått på ennå, så du får ingen beskjed.
-        </Text>
-      </View>
     </View>
   );
 }

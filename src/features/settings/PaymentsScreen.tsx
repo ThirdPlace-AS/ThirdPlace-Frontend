@@ -60,8 +60,7 @@ export default function PaymentsScreen() {
         <View className="flex-row items-start gap-3 rounded-lg bg-surfaceMuted p-3">
           <Icon name="shield-checkmark-outline" size="lg" tone="success" />
           <Text variant="label" weight="regular" className="flex-1 leading-5">
-            Her kan du ikke legge inn kort- eller bankopplysninger, og ingen
-            betaling kan skje.
+            Betalingsmetoder kommer snart.
           </Text>
         </View>
       </Sheet>

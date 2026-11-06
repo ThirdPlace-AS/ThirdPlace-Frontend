@@ -895,12 +895,6 @@ function ExpandBody({
           <PhotoCarousel photos={exp.photos} interactive />
         </View>
 
-        <View className="flex-row items-center gap-2">
-          <Text variant="caption" tone="onMedia" className="flex-1 opacity-60">
-            Du blir ikke påmeldt, og ingenting lagres.
-          </Text>
-        </View>
-
         <View className="gap-2">
           <MetaLine icon="people-outline">
             {`${statusText} · ${exp.going}/${exp.capacity} påmeldt`}
