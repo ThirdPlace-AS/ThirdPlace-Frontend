@@ -10,7 +10,7 @@ After the design-system rollout (Phases 1–5) the whole app was reviewed in thr
 2. **Fresh-eyes reviewer** that only saw the screenshots and an extracted table of every string the app owns, and answered per screen: does this look, feel or sound AI-made, and why. 5 high, 25 medium, 20 low findings, plus a copy table.
 3. **Benchmark** of eight apps (Airbnb, Meetup, Hinge, Bumble BFF, Strava, Partiful, Timeleft, Instagram) for onboarding, discovery, social proof, re-engagement and retention patterns.
 
-Every finding was checked against `ThirdPlace_All_Screens.pdf` before acting. Many of the reviewer's points turned out to be PDF copy or PDF styling; those stay as designed and are listed for the founder (§6). Everything else in scope was fixed in eight slices (ledger 0170–0176, §7).
+Every finding was checked against `ThirdPlace_All_Screens.pdf` before acting. Many of the reviewer's points turned out to be PDF copy or PDF styling; those stay as designed and are listed for the founder (§6). Everything else in scope was fixed in seven slices and one correction (ledger 0170–0176 and 0178, §7).
 
 **Verdict.** The app now reads as made by a person with a restrained brief: monochrome UI with one red, real photos, hand-drawn state illustrations, no gradients, glow or sparkle icons. The remaining AI-made signals were the honesty copy (one repeated sentence frame), a few template set-pieces, a broken status bar, and real organisations used as fake partners. All of those are fixed or, where the PDF draws them, documented.
 
@@ -156,15 +156,16 @@ Left out by this run because CLAUDE.md bans stating them as product behaviour: "
 
 ## 7. Phase 6 slices
 
-| Ledger | Commit                       | Slice                                                                                        |
-| ------ | ---------------------------- | -------------------------------------------------------------------------------------------- |
-| 0170   | `dd3ce50` (+ `10bf8bd` deps) | Copy extractor, voice test, 53 owned lines rewritten                                         |
-| 0171   | `910dea7`                    | Honesty notes varied, banned rule lines left out, extractor reads ternary children, lint fix |
-| 0172   | `5827294`                    | Focus-aware status bar; `Screen` pads from seeded insets                                     |
-| 0173   | `521b290`                    | Fixtures: no real organisations as partners; calendar order; collab states                   |
-| 0174   | `c9532ea`                    | One honesty marker per money/ID/live screen; auth links; update button; Bli Skaper CTA       |
-| 0175   | `884dba5`                    | Chip rows scroll, icons follow content, one avatar size, swipe dashes clear the pill         |
-| 0176   | `0702946`                    | One circled back button; readable swipe tab; collab actions restacked                        |
+| Ledger | Commit                       | Slice                                                                                                                |
+| ------ | ---------------------------- | -------------------------------------------------------------------------------------------------------------------- |
+| 0170   | `dd3ce50` (+ `10bf8bd` deps) | Copy extractor, voice test, 53 owned lines rewritten                                                                 |
+| 0171   | `910dea7`                    | Honesty notes varied, banned rule lines left out, extractor reads ternary children, lint fix                         |
+| 0172   | `5827294`                    | Focus-aware status bar; `Screen` pads from seeded insets                                                             |
+| 0173   | `521b290`                    | Fixtures: no real organisations as partners; calendar order; collab states                                           |
+| 0174   | `c9532ea`                    | One honesty marker per money/ID/live screen; auth links; update button; Bli Skaper CTA                               |
+| 0175   | `884dba5`                    | Chip rows scroll, icons follow content, one avatar size, swipe dashes clear the pill                                 |
+| 0176   | `0702946`                    | One circled back button; readable swipe tab; collab actions restacked                                                |
+| 0178   | `4fdfa24`                    | Correction: chip rows now really bleed to the edge (0175 claimed it); docs note the unreachable Skaper success state |
 
 ## 8. Honest not-done
 
