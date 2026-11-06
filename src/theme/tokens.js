@@ -1,8 +1,9 @@
 // Design tokens — see docs/design/DESIGN_SYSTEM.md (the rulebook).
 //
-// Palette values are still PROVISIONAL (extracted 2026-10-12 from
-// DESIGN/ThirdPlace_All_Screens.pdf; see docs/design/DESIGN_TOKENS_PROVISIONAL.md).
-// The dark palette (2026-11-05) is a first proposal awaiting founder sign-off.
+// Palette: Airbnb's colours (founder decision 2026-11-06, replaces the PDF's
+// provisional ember #D80000 / ink #202020). Values checked against airbnb.com
+// (brand #FF385C, text #222222, link #DA1249, button gradient #E61E4D →
+// #E31C5F → #D70466). Dark is Airbnb-style (near-black, white text).
 //
 // How theming works:
 //   - `palette.light` / `palette.dark` hold the hex values per semantic key.
@@ -19,52 +20,61 @@
 /** Semantic keys → hex, per scheme. Keep both maps on the same keys. */
 const palette = {
   light: {
-    background: "#FFFFFF", // app background (Airbnb white, founder 2026-11-06)
+    background: "#FFFFFF", // app background (Airbnb white)
     surface: "#FFFFFF", // cards / sheets / inputs
     surfaceRaised: "#FFFFFF", // floating controls, sheets over content
-    surfaceMuted: "#F0F0F0", // secondary buttons / subtle fills
-    line: "#E0E0E0", // borders / dividers
-    ink: "#202020", // primary text; ink primary button; selection
+    surfaceMuted: "#F7F7F7", // secondary buttons / subtle fills
+    line: "#DDDDDD", // borders / dividers
+    ink: "#222222", // primary text; ink primary button; selection
     onInk: "#FFFFFF",
-    muted: "#6B6B6B", // secondary text / placeholders
-    ember: "#D80000", // brand moments only (heart, acquisition CTA, badges)
+    muted: "#6A6A6A", // secondary text / placeholders
+    // #FF385C: fills WITHOUT text — hearts, active tab, dots, map selection,
+    // logo, FAB glyph discs (white icon on it = 3.5:1, fine for icons only).
+    ember: "#FF385C",
     onEmber: "#FFFFFF",
-    success: "#387850",
+    // Pink fills that carry text (number badges, Live tags): white = 4.6:1.
+    emberStrong: "#E31C5F",
+    success: "#008A05",
     onSuccess: "#FFFFFF",
-    danger: "#B5342B", // LOW confidence
-    warning: "#B05008", // LOW confidence
+    danger: "#C13515",
+    warning: "#B05008",
     scrim: "#000000", // use with an opacity modifier, e.g. bg-scrim/40
     onMedia: "#FFFFFF", // content over photos/video (with a scrim), any scheme
     // Status colours as TEXT on surfaces (fills keep the base keys above).
-    emberText: "#D80000",
-    successText: "#387850",
-    dangerText: "#B5342B",
+    emberText: "#DA1249", // Airbnb's link pink
+    successText: "#008A05",
+    dangerText: "#C13515",
     warningText: "#B05008",
   },
   dark: {
-    background: "#111111",
-    surface: "#1B1B1B",
-    surfaceRaised: "#242424",
-    surfaceMuted: "#2A2A2A",
-    line: "#353535",
-    ink: "#F2F2F2",
-    onInk: "#161616",
-    muted: "#A3A3A3",
-    ember: "#D80000", // brand fill unchanged; white-on-ember stays AA
+    background: "#121212",
+    surface: "#1E1E1E",
+    surfaceRaised: "#262626",
+    surfaceMuted: "#2E2E2E",
+    line: "#3A3A3A",
+    ink: "#FFFFFF",
+    onInk: "#222222",
+    muted: "#B0B0B0",
+    ember: "#FF385C",
     onEmber: "#FFFFFF",
-    success: "#387850",
+    emberStrong: "#E31C5F",
+    success: "#008A05",
     onSuccess: "#FFFFFF",
-    danger: "#B5342B",
+    danger: "#C13515",
     warning: "#B05008",
     scrim: "#000000",
     onMedia: "#FFFFFF",
     // Brighter on dark surfaces so text stays AA (fills keep the base keys).
-    emberText: "#FF6B61",
-    successText: "#6CC28C",
+    emberText: "#FF6B85",
+    successText: "#4CC665",
     dangerText: "#FF8A80",
     warningText: "#F3A35E",
   },
 };
+
+/** Airbnb's primary-button gradient (left → right). White text passes AA
+ * on every stop. Used by Button variant "ember" (expo-linear-gradient). */
+const brandGradient = ["#E61E4D", "#E31C5F", "#D70466"];
 
 /** "#RRGGBB" → "R G B" (space-separated channels for rgb(var() / alpha)). */
 function channels(hex) {
@@ -147,6 +157,7 @@ const fontFamily = {
 
 module.exports = {
   palette,
+  brandGradient,
   fontFamily,
   colors,
   themeColors,

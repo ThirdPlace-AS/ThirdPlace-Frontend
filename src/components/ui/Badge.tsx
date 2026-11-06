@@ -16,7 +16,7 @@ export type BadgeTone =
 const SHELL: Record<BadgeTone, string> = {
   neutral: "border border-line bg-surfaceMuted",
   ink: "bg-ink",
-  ember: "bg-ember",
+  ember: "bg-emberStrong", // text on pink: the AA-safe pink
   success: "bg-success/15",
   warning: "bg-warning/15",
   danger: "bg-danger/15",

@@ -335,7 +335,7 @@ export default function MapScreen() {
             >
               <Icon name="options-outline" size="md" tone="ink" />
               {filters.extraCount > 0 ? (
-                <View className="absolute items-center justify-center w-4 h-4 rounded-full right-1 top-1 bg-ember">
+                <View className="absolute items-center justify-center w-4 h-4 rounded-full right-1 top-1 bg-emberStrong">
                   <Text variant="caption" weight="bold" tone="onEmber">
                     {filters.extraCount}
                   </Text>

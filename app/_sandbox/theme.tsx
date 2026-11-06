@@ -103,6 +103,7 @@ const SWATCH_CLASS: Record<string, string> = {
   muted: "bg-muted",
   ember: "bg-ember",
   onEmber: "bg-onEmber",
+  emberStrong: "bg-emberStrong",
   success: "bg-success",
   onSuccess: "bg-onSuccess",
   danger: "bg-danger",

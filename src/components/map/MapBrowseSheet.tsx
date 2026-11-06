@@ -8,6 +8,7 @@ import Animated, {
   runOnJS,
   useAnimatedReaction,
   useAnimatedStyle,
+  useSharedValue,
 } from "react-native-reanimated";
 import {
   HeartToggle,
@@ -21,7 +22,6 @@ import {
 import { elevation } from "@/theme";
 import { MAP_CITY, type MockWeather } from "@/fixtures";
 import { formatRating } from "@/lib/format";
-import { browseAnimatedIndex } from "./browseSheetProgress";
 import { PhotoPager } from "./PhotoPager";
 import { photosForItem } from "./services/itemCover";
 import type { DiscoveryItem } from "./types/mapPresentation";
@@ -75,6 +75,9 @@ export function MapBrowseSheet({
   const [peek, setPeek] = useState<number | null>(null);
   const snapPoints = useMemo(() => [peek ?? "8%", "49%", "84.5%"], [peek]);
   const sheetRef = useRef<BottomSheet>(null);
+  // Live fractional snap index (0 peek · 1 mid · 2 full), written by gorhom;
+  // the floating "Kart" pill reads it. Per mount, so it starts at the peek.
+  const browseAnimatedIndex = useSharedValue(0);
 
   // The floating "Kart" pill fades + slides in as the sheet goes mid
   // (index 1) → full (index 2), driven by the shared animated index.
@@ -122,14 +125,6 @@ export function MapBrowseSheet({
     if (expandSignal > 0 && !hidden) sheetRef.current?.snapToIndex(1);
   }, [expandSignal, hidden]);
 
-  // Reset the shared animated index when this screen unmounts, so the pill
-  // starts hidden next time.
-  useEffect(() => {
-    return () => {
-      browseAnimatedIndex.value = 0;
-    };
-  }, []);
-
   // Parent callbacks are read through refs so the card callbacks stay stable;
   // with memoized cards, a map re-render only re-renders cards whose
   // selected/saved state actually changed.
@@ -170,6 +165,11 @@ export function MapBrowseSheet({
       <BottomSheet
         ref={sheetRef}
         index={0}
+        // Placed at the peek on the first frame, no mount slide. With the
+        // mount animation, the measured peek changed the snap points mid-slide
+        // and the native view stayed at the closed position (below the tab
+        // bar) on the rebuilt dev client, although gorhom reported index 0.
+        animateOnMount={false}
         snapPoints={snapPoints}
         animatedIndex={browseAnimatedIndex}
         enableDynamicSizing={false}

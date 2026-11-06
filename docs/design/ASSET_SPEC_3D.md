@@ -43,7 +43,7 @@ Not used for: tab bar, chips smaller than 32 px, decoration rails, or anything t
 - **Light:** one key light from the top-left for every object.
 - **Camera:** ¾ view, about 30° down; objects show thickness (top ellipse or a 3–4 px extrusion).
 - **Contact shadow:** one flat soft ellipse under the object, ink at about 12 %.
-- **Palette:** ThirdPlace tokens only — ember `#D80000`, ink `#202020`, success green, warning amber, and their light/dark mixes; paper-grey (muted mixed with white) for "white" objects so they read on white cards. At most one ember element per object. No purple/blue gradients, no rainbow, no neon.
+- **Palette:** ThirdPlace tokens only — brand pink `#FF385C` (the `ember` token, Airbnb palette since 2026-11-06), ink `#222222`, success green, warning amber, and their light/dark mixes; paper-grey (muted mixed with white) for "white" objects so they read on white cards. At most one ember element per object. No purple/blue gradients, no rainbow, no neon.
 - **Background:** transparent; nothing behind the object.
 - **No text** in the art.
 - Works on light and dark screens unchanged (like a photo).

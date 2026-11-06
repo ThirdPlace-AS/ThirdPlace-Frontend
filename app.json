@@ -19,7 +19,7 @@
       "package": "com.thirdplace.app",
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
-        "backgroundColor": "#D80000"
+        "backgroundColor": "#FF385C"
       }
     },
     "web": {
@@ -38,7 +38,7 @@
           "image": "./assets/splash-icon.png",
           "imageWidth": 180,
           "resizeMode": "contain",
-          "backgroundColor": "#D80000"
+          "backgroundColor": "#FF385C"
         }
       ],
       "@rnmapbox/maps"

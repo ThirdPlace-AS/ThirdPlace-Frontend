@@ -5,8 +5,8 @@ import { useThemeColors } from "@/theme";
 import { Text } from "@/components/ui";
 
 // ThirdPlace brand mark — a location pin ("a place on the map"), drawn as a
-// crisp vector so it stays sharp at every size. Provisional palette (Ember
-// #D80000), not founder-approved — see docs/design/.
+// crisp vector so it stays sharp at every size. Brand pink #FF385C (Airbnb
+// palette, founder decision 2026-11-06) — the "ember" token.
 //
 // Variants:
 //  - "tile"     Ember rounded-square app-tile + white pin (default; nav, splash)

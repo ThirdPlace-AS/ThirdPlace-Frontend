@@ -1,10 +1,12 @@
 // Button (docs/design/DESIGN_SYSTEM.md §4). The one text button.
-// Variants: ink (primary/confirm, PDF), ember (acquisition CTAs only:
-// "Opprett konto", "Kom i gang"), secondary (grey), outline, ghost, danger.
+// Variants: ink (primary/confirm, PDF), ember (main brand CTA: Airbnb's pink
+// gradient #E61E4D → #E31C5F → #D70466 with white text, founder 2026-11-06),
+// secondary (grey), outline, ghost, danger.
 // Loading keeps the width (label stays in layout, hidden) and blocks presses.
-import { ActivityIndicator, View } from "react-native";
+import { LinearGradient } from "expo-linear-gradient";
+import { ActivityIndicator, StyleSheet, View } from "react-native";
 
-import { useThemeColors } from "@/theme";
+import { brandGradient, useThemeColors } from "@/theme";
 
 import { Icon, type IconName, type IconTone } from "./Icon";
 import { Pressable, type PressHaptic } from "./Pressable";
@@ -22,7 +24,8 @@ export type ButtonSize = "sm" | "md" | "lg";
 // Literal class names so Tailwind generates them.
 const BG: Record<ButtonVariant, string> = {
   ink: "bg-ink",
-  ember: "bg-ember",
+  // Flat AA-safe pink under the gradient (shows if the gradient can't paint).
+  ember: "overflow-hidden bg-emberStrong",
   secondary: "bg-surfaceMuted",
   outline: "border border-line bg-surface",
   ghost: "bg-transparent",
@@ -90,6 +93,7 @@ export function Button({
         ? BG.ghost
         : "bg-surfaceMuted"
     : BG[variant];
+  const gradient = variant === "ember" && !off;
   return (
     <Pressable
       testID={testID}
@@ -108,6 +112,15 @@ export function Button({
       } ${bg}`}
       contentStyle={{ minHeight: HEIGHT[size] }}
     >
+      {gradient ? (
+        <LinearGradient
+          colors={brandGradient}
+          start={{ x: 0, y: 0.5 }}
+          end={{ x: 1, y: 0.5 }}
+          style={StyleSheet.absoluteFill}
+          pointerEvents="none"
+        />
+      ) : null}
       <View
         className="flex-row items-center gap-sm"
         style={loading ? { opacity: 0 } : undefined}

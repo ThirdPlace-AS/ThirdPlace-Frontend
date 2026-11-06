@@ -8,7 +8,7 @@ The design system **restyles the PDF's layouts**. It never adds screens, section
 
 ## 1. Principles
 
-1. **Calm ink canvas, ember as a spark.** Ink (`#202020`) carries primary actions and selection, as in the PDF. Ember (`#D80000`) is reserved for brand moments: like/heart, acquisition CTAs ("Opprett konto", "Kom i gang"), live/unread badges, the active tab, FABs and the map selection ring. Toggles, checkboxes, edit links, codes and the current chart bar are ink (founder decision 2026-11-06). Success green is for nature, map and local completion.
+1. **Calm ink canvas, pink as a spark (Airbnb palette, founder decision 2026-11-06).** Ink (`#222222`) carries text, ink buttons and selection. The brand pink is used three ways: the **gradient** (`#E61E4D → #E31C5F → #D70466`, white text) for the main brand CTA (Button `variant="ember"`); **`ember` `#FF385C`** for fills without text — hearts, the active tab, text-less dots, map selection, the logo, FAB glyph discs; **`emberStrong` `#E31C5F`** for pink fills that carry text (number badges, Live tags) and **`emberText` `#DA1249`** for pink text. White on `#FF385C` is only 3.5:1, so it never sits behind text. Toggles, checkboxes, edit links, codes and the current chart bar are ink. Success green `#008A05` is for local completion.
 2. **Soft, round, tactile.** Pill actions and chips, 16 px cards, 28 px sheet tops, three soft elevation levels, press-scale feedback on everything tappable.
 3. **Photo-first.** Imagery runs full-bleed with a tokenised scrim; controls over imagery are round white floating buttons.
 4. **Clear feedback.** Every action responds immediately (motion, haptic, state change) and confirms in product voice (`confirmToast`). No demo markers (founder decision 2026-11-06). Still no delivery ticks, no "processing → success" sequences, no invented counts, and payments stay structure only.
@@ -19,7 +19,7 @@ The design system **restyles the PDF's layouts**. It never adds screens, section
 
 | Topic             | Decision (2026-11-05)                                                                                                                                                                                                                                                                                                             |
 | ----------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Brand colour      | Ember stays `#D80000`. No drift towards other brands' reds. Changing it is a founder call.                                                                                                                                                                                                                                        |
+| Brand colour      | **Airbnb's palette (founder decision 2026-11-06, replaces "ember stays #D80000")**: brand pink `#FF385C`, button gradient `#E61E4D → #E31C5F → #D70466`, text `#222222`, link pink `#DA1249`; logo, splash and app-icon background `#FF385C`. Token names stay (`ember`, `emberText` …) so no call site changes.                  |
 | Typeface          | One open-licence geometric sans loaded via `expo-font` (candidate **DM Sans**, alternative Plus Jakarta Sans; a specimen in `app/_sandbox/` picks). Supersedes the Phase 0.3 "system fonts" decision.                                                                                                                             |
 | Theme             | Semantic tokens with **light and dark**, shipped together; the app follows the phone setting (`system`, dark palette approved 2026-11-05). Tokens are CSS variables so `className` utilities switch per scheme without `dark:` variants. Map basemap goes to the night style in dark; map pins and photo UI (`media`) stay fixed. |
 | Sheets            | One Sheet API with two engines: `@gorhom/bottom-sheet` for snapping map sheets, the Modal engine for action sheets. No raw `Modal` outside the engine.                                                                                                                                                                            |
@@ -31,20 +31,24 @@ The design system **restyles the PDF's layouts**. It never adds screens, section
 
 ### Colour (semantic)
 
-| Token           | Light     | Use                                            |
-| --------------- | --------- | ---------------------------------------------- |
-| `bg`            | `#F8F8F8` | App background                                 |
-| `surface`       | `#FFFFFF` | Cards, sheets, inputs                          |
-| `surface-muted` | `#F0F0F0` | Secondary buttons, subtle fills                |
-| `line`          | `#E0E0E0` | Borders, dividers                              |
-| `ink`           | `#202020` | Primary text, primary (ink) buttons, selection |
-| `on-ink`        | `#FFFFFF` | Content on ink                                 |
-| `muted`         | `#6B6B6B` | Secondary text, placeholders                   |
-| `ember`         | `#D80000` | Brand moments only (see principle 1)           |
-| `on-ember`      | `#FFFFFF` | Content on ember                               |
-| `success`       | `#387850` | Nature, map, local completion                  |
-| `danger`        | `#B5342B` | Destructive (value still provisional)          |
-| `warning`       | `#B05008` | Warning (value still provisional)              |
+| Token           | Light     | Dark      | Use                                                        |
+| --------------- | --------- | --------- | ---------------------------------------------------------- |
+| `background`    | `#FFFFFF` | `#121212` | App background                                             |
+| `surface`       | `#FFFFFF` | `#1E1E1E` | Cards, sheets, inputs                                      |
+| `surfaceRaised` | `#FFFFFF` | `#262626` | Floating controls, sheets over content                     |
+| `surfaceMuted`  | `#F7F7F7` | `#2E2E2E` | Secondary buttons, subtle fills                            |
+| `line`          | `#DDDDDD` | `#3A3A3A` | Borders, dividers                                          |
+| `ink`           | `#222222` | `#FFFFFF` | Primary text, ink buttons, selection                       |
+| `onInk`         | `#FFFFFF` | `#222222` | Content on ink                                             |
+| `muted`         | `#6A6A6A` | `#B0B0B0` | Secondary text, placeholders                               |
+| `ember`         | `#FF385C` | `#FF385C` | Pink fills **without text** (heart, active tab, dots, pin) |
+| `emberStrong`   | `#E31C5F` | `#E31C5F` | Pink fills **with text** (number badges, tags)             |
+| `emberText`     | `#DA1249` | `#FF6B85` | Pink text and links                                        |
+| `success`       | `#008A05` | `#008A05` | Local completion                                           |
+| `danger`        | `#C13515` | `#C13515` | Destructive                                                |
+| `warning`       | `#B05008` | `#B05008` | Warning                                                    |
+
+Brand gradient (`brandGradient` in `src/theme/tokens.js`): `#E61E4D → #E31C5F → #D70466`, left to right, white text (≥ 4.5:1 on every stop). Only Button `variant="ember"` draws it.
 
 Opacity modifiers (`bg-scrim/40`, `bg-danger/15`) work on every token but only in Tailwind steps of 5 — `/12` generates nothing. Dark values are defined in S2 and must pass the contrast test (`tests/themeTokens.test.ts`). Never write a hex literal outside `src/theme/`; read native colour props from the theme hook.
 

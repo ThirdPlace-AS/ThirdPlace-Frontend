@@ -258,7 +258,7 @@ function ChatRow({ chat, onPress }: { chat: MockChat; onPress: () => void }) {
           {chat.time}
         </Text>
         {chat.unread > 0 ? (
-          <View className="h-5 min-w-5 items-center justify-center rounded-full bg-ember px-1.5">
+          <View className="h-5 min-w-5 items-center justify-center rounded-full bg-emberStrong px-1.5">
             <Text
               variant="micro"
               weight="bold"

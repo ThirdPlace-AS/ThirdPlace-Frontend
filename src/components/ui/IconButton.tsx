@@ -140,8 +140,10 @@ export function IconButton({
       {showBadge ? (
         <View
           pointerEvents="none"
-          className={`absolute items-center justify-center rounded-full border-2 border-surface bg-ember ${
-            count !== null ? "-right-1 -top-1 px-xs" : "right-1 top-1"
+          className={`absolute items-center justify-center rounded-full border-2 border-surface ${
+            count !== null
+              ? "-right-1 -top-1 bg-emberStrong px-xs"
+              : "right-1 top-1 bg-ember"
           }`}
           style={
             count !== null

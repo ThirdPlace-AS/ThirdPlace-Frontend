@@ -18,7 +18,7 @@ export const STATUS_META: Record<
   open: { label: "Åpen", className: "bg-success" },
   waitlist: { label: "Venteliste", className: "bg-warning" },
   full: { label: "Fullt", className: "bg-muted" },
-  joined: { label: "Påmeldt", className: "bg-ember" },
+  joined: { label: "Påmeldt", className: "bg-emberStrong" },
   cancelled: { label: "Avlyst", className: "bg-danger" },
 };
 

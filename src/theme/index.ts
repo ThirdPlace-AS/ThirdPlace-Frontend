@@ -3,12 +3,15 @@
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const tokens = require("./tokens.js") as {
   palette: { light: Record<string, string>; dark: Record<string, string> };
+  brandGradient: [string, string, string];
   colors: Record<string, string>;
   radius: Record<string, string>;
   spacing: Record<string, string>;
 };
 
 export const palette = tokens.palette;
+/** Airbnb button gradient stops (left → right) for Button variant "ember". */
+export const brandGradient = tokens.brandGradient;
 /** Light hex values (back-compat). Prefer `useThemeColors()` for native colour props. */
 export const colors = tokens.colors;
 export const radius = tokens.radius;

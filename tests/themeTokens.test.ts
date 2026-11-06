@@ -8,6 +8,7 @@ import { fontSize as typeScale } from "@/theme/typography";
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const tokens = require("../src/theme/tokens.js") as {
   palette: Record<"light" | "dark", Record<string, string>>;
+  brandGradient: string[];
   themeColors: Record<string, string>;
   cssVars: (s: "light" | "dark") => Record<string, string>;
   fontSize: Record<string, [string, { lineHeight: string }]>;
@@ -41,7 +42,7 @@ const TEXT_PAIRS: [fg: string, bg: string][] = [
   ["muted", "background"],
   ["muted", "surface"],
   ["onInk", "ink"],
-  ["onEmber", "ember"],
+  ["onEmber", "emberStrong"],
   ["onSuccess", "success"],
   ["emberText", "background"],
   ["emberText", "surface"],
@@ -49,6 +50,13 @@ const TEXT_PAIRS: [fg: string, bg: string][] = [
   ["dangerText", "surface"],
   ["dangerText", "background"],
   ["warningText", "surface"],
+];
+
+// Non-text pairs (icons, active glyphs, dots, focus): WCAG 1.4.11 = 3:1.
+const UI_PAIRS: [fg: string, bg: string][] = [
+  ["onEmber", "ember"],
+  ["ember", "background"],
+  ["ember", "surface"],
 ];
 
 describe("theme tokens", () => {
@@ -77,6 +85,26 @@ describe("theme tokens", () => {
       }
     },
   );
+
+  it.each(["light", "dark"] as const)(
+    "%s: icon/brand pairs meet 3:1",
+    (scheme) => {
+      const p = tokens.palette[scheme];
+      for (const [fg, bg] of UI_PAIRS) {
+        const ratio = contrast(p[fg] ?? "", p[bg] ?? "");
+        if (ratio < 3)
+          throw new Error(`${scheme} ${fg} on ${bg}: ${ratio.toFixed(2)}`);
+      }
+    },
+  );
+
+  it("white button text passes AA on every brand gradient stop", () => {
+    expect(tokens.brandGradient).toHaveLength(3);
+    for (const stop of tokens.brandGradient) {
+      expect(stop).toMatch(/^#[0-9A-F]{6}$/i);
+      expect(contrast("#FFFFFF", stop)).toBeGreaterThanOrEqual(4.5);
+    }
+  });
 
   it("tailwind colours read CSS variables with an alpha slot", () => {
     expect(tokens.themeColors.surfaceMuted).toBe(

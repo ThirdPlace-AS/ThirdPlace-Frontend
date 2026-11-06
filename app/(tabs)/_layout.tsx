@@ -46,9 +46,9 @@ export default function TabsLayout() {
         headerShown: false,
         // The bar would ride on top of the keyboard (Add steps, chat search).
         tabBarHideOnKeyboard: true,
-        // PDF: the active tab's icon + label are Ember; the rest muted.
-        // emberText keeps the active label readable on the dark surface too.
-        tabBarActiveTintColor: colors.emberText,
+        // Active tab icon + label in Airbnb pink #FF385C (founder 2026-11-06);
+        // the filled glyph marks the active tab too, so colour isn't alone.
+        tabBarActiveTintColor: colors.ember,
         tabBarInactiveTintColor: colors.muted,
         tabBarLabelStyle: { fontFamily: fontFamilyFor("medium") },
         tabBarStyle: {
