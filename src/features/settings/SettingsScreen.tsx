@@ -268,6 +268,7 @@ function LinkedSheet({ visible, onClose }: SheetProps) {
           meta="Utforsker · aktiv nå"
         />
         <UIPressable
+          hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
           accessibilityRole="button"
           onPress={() => {
             onClose();

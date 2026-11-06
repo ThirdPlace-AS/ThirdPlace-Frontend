@@ -79,6 +79,7 @@ export default function MarketplaceScreen() {
               bestilles.
             </DemoNote>
             <Pressable
+              hitSlop={{ top: 12, bottom: 12, left: 8, right: 8 }}
               accessibilityRole="button"
               onPress={() => router.push("/my-listings")}
               className="flex-row items-center gap-2 self-start"
@@ -91,6 +92,7 @@ export default function MarketplaceScreen() {
             <View className="flex-row gap-4">
               <Pressable
                 accessibilityRole="button"
+                hitSlop={{ top: 12, bottom: 12, left: 8, right: 8 }}
                 onPress={() => setFilterOpen(true)}
                 className="flex-row items-center gap-1.5"
               >
@@ -101,6 +103,7 @@ export default function MarketplaceScreen() {
               </Pressable>
               <Pressable
                 accessibilityRole="button"
+                hitSlop={{ top: 12, bottom: 12, left: 8, right: 8 }}
                 onPress={() => router.push("/workspace/analytics" as Href)}
                 className="flex-row items-center gap-1.5"
               >

@@ -1,6 +1,6 @@
 import { Link, router } from "expo-router";
 import { useState } from "react";
-import { ScrollView, View } from "react-native";
+import { Pressable, ScrollView, View } from "react-native";
 
 import { Screen, Text } from "@/components/ui";
 import { Button } from "@/components/Button";
@@ -45,9 +45,15 @@ export default function ForgotPassword() {
           ) : null}
         </View>
         <Link href="/login" asChild>
-          <Text variant="label" weight="semibold">
-            Tilbake til innlogging
-          </Text>
+          <Pressable
+            accessibilityRole="link"
+            hitSlop={{ top: 14, bottom: 14, left: 8, right: 8 }}
+            className="self-start"
+          >
+            <Text variant="label" weight="semibold">
+              Tilbake til innlogging
+            </Text>
+          </Pressable>
         </Link>
       </ScrollView>
     </Screen>

@@ -1,5 +1,5 @@
 import { Link } from "expo-router";
-import { ScrollView, View } from "react-native";
+import { Pressable, ScrollView, View } from "react-native";
 
 import { Screen, Text } from "@/components/ui";
 import { SocialAuthButtons } from "@/components/auth/SocialAuthButtons";
@@ -32,14 +32,15 @@ export default function Login() {
           />
           <Input label="Passord" placeholder="••••••••" secureTextEntry />
           <Link href="/forgot-password" asChild>
-            <Text
-              variant="label"
-              weight="semibold"
-              tone="ember"
-              className="text-right"
+            <Pressable
+              accessibilityRole="link"
+              hitSlop={{ top: 14, bottom: 14, left: 8, right: 8 }}
+              className="self-end"
             >
-              Glemt passord?
-            </Text>
+              <Text variant="label" weight="semibold" tone="ember">
+                Glemt passord?
+              </Text>
+            </Pressable>
           </Link>
           <SocialAuthButtons verb="Logg inn med" />
           <Button
@@ -57,14 +58,21 @@ export default function Login() {
             </Text>
           </View>
         </View>
-        <Text variant="caption" tone="muted" className="text-center">
-          Har du ikke konto?{" "}
+        <View className="flex-row flex-wrap items-center justify-center">
+          <Text variant="caption" tone="muted">
+            Har du ikke konto?{" "}
+          </Text>
           <Link href="/register" asChild>
-            <Text variant="caption" weight="semibold" tone="ember">
-              Registrer deg
-            </Text>
+            <Pressable
+              accessibilityRole="link"
+              hitSlop={{ top: 14, bottom: 14, left: 8, right: 8 }}
+            >
+              <Text variant="caption" weight="semibold" tone="ember">
+                Registrer deg
+              </Text>
+            </Pressable>
           </Link>
-        </Text>
+        </View>
       </ScrollView>
     </Screen>
   );

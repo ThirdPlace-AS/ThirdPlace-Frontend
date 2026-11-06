@@ -1,6 +1,6 @@
 import { Image } from "expo-image";
 import { Link, router } from "expo-router";
-import { View } from "react-native";
+import { Pressable, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { StatusBarStyle } from "@/components/ui/StatusBarStyle";
@@ -58,14 +58,21 @@ export default function Welcome() {
               resetTo("/map");
             }}
           />
-          <Text variant="caption" tone="muted" className="text-center">
-            Allerede medlem?{" "}
+          <View className="flex-row flex-wrap items-center justify-center">
+            <Text variant="caption" tone="muted">
+              Allerede medlem?{" "}
+            </Text>
             <Link href="/login" asChild>
-              <Text variant="caption" weight="semibold" tone="ember">
-                Logg inn
-              </Text>
+              <Pressable
+                accessibilityRole="link"
+                hitSlop={{ top: 14, bottom: 14, left: 8, right: 8 }}
+              >
+                <Text variant="caption" weight="semibold" tone="ember">
+                  Logg inn
+                </Text>
+              </Pressable>
             </Link>
-          </Text>
+          </View>
         </View>
       </SafeAreaView>
     </View>

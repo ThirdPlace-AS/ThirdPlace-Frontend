@@ -1,5 +1,5 @@
 import { Link, router } from "expo-router";
-import { ScrollView, View } from "react-native";
+import { Pressable, ScrollView, View } from "react-native";
 
 import { Screen, Text } from "@/components/ui";
 import { SocialAuthButtons } from "@/components/auth/SocialAuthButtons";
@@ -49,14 +49,21 @@ export default function Register() {
         <Text variant="caption" tone="muted" className="px-4 text-center">
           Ved å fortsette godtar du våre vilkår og personvernerklæring.
         </Text>
-        <Text variant="caption" tone="muted" className="text-center">
-          Allerede medlem?{" "}
+        <View className="flex-row flex-wrap items-center justify-center">
+          <Text variant="caption" tone="muted">
+            Allerede medlem?{" "}
+          </Text>
           <Link href="/login" asChild>
-            <Text variant="caption" weight="semibold" tone="ember">
-              Logg inn
-            </Text>
+            <Pressable
+              accessibilityRole="link"
+              hitSlop={{ top: 14, bottom: 14, left: 8, right: 8 }}
+            >
+              <Text variant="caption" weight="semibold" tone="ember">
+                Logg inn
+              </Text>
+            </Pressable>
           </Link>
-        </Text>
+        </View>
       </ScrollView>
     </Screen>
   );

@@ -148,6 +148,7 @@ export default function ChatScreen() {
         {archived.length > 0 && !q ? (
           <UIPressable
             accessibilityRole="button"
+            hitSlop={{ top: 5, bottom: 5, left: 8, right: 8 }}
             onPress={() => setArchOpen(true)}
             contentClassName="flex-row items-center gap-3 px-1 py-2"
           >

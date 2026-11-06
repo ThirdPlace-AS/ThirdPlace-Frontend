@@ -140,7 +140,11 @@ function PlanAction({
   onPress: () => void;
 }) {
   return (
-    <Pressable accessibilityRole="button" onPress={onPress} hitSlop={6}>
+    <Pressable
+      accessibilityRole="button"
+      onPress={onPress}
+      hitSlop={{ top: 10, bottom: 10, left: 8, right: 8 }}
+    >
       <Text variant="label" weight="semibold" tone="ember" className="pt-1">
         {label} →
       </Text>

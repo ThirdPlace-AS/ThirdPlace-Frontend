@@ -67,7 +67,7 @@ export default function MyListingsScreen() {
                   about: l.description,
                 })
               }
-              hitSlop={8}
+              hitSlop={{ top: 12, bottom: 12, left: 8, right: 8 }}
             >
               <Text variant="label" weight="semibold" className="underline">
                 Rediger

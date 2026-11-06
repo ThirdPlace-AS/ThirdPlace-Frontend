@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import { View } from "react-native";
+import { Pressable, View } from "react-native";
 import { Icon, ListRow, type IconName, Text } from "@/components/ui";
 import { Switch } from "@/components/ui/Switch";
 
@@ -66,7 +66,13 @@ export function ToggleRow({
   onValueChange: (v: boolean) => void;
 }) {
   return (
-    <View className="flex-row items-center gap-3 border-b border-line px-4 py-3">
+    // The whole row toggles (the switch alone was a 27 dp target); the
+    // Switch stays the one accessible control, so the row is not focusable.
+    <Pressable
+      accessible={false}
+      onPress={() => onValueChange(!value)}
+      className="flex-row items-center gap-3 border-b border-line px-4 py-3"
+    >
       <Icon name={icon} size="md" tone="ink" />
       <View className="flex-1">
         <Text variant="body">{label}</Text>
@@ -77,6 +83,6 @@ export function ToggleRow({
         ) : null}
       </View>
       <Switch value={value} onValueChange={onValueChange} label={label} />
-    </View>
+    </Pressable>
   );
 }

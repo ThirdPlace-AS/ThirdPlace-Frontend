@@ -220,6 +220,7 @@ function KindMenu({ onPick }: { onPick: (k: AddKind) => void }) {
           Hva vil du legge til?
         </Text>
         <Pressable
+          hitSlop={{ top: 10, bottom: 10, left: 8, right: 8 }}
           accessibilityRole="button"
           onPress={() => router.push("/import")}
           className="flex-row items-center gap-2 self-start py-1"

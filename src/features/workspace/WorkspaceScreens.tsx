@@ -79,6 +79,7 @@ export function WorkspaceHub() {
             </Text>
           </View>
           <Pressable
+            hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
             accessibilityRole="button"
             onPress={() => router.navigate("/profile")}
             className="rounded-full border border-line bg-surface px-3 py-1.5"
@@ -264,6 +265,7 @@ export function WorkspaceCalendar() {
               </Text>
             </View>
             <Pressable
+              hitSlop={{ top: 12, bottom: 12, left: 8, right: 8 }}
               accessibilityRole="button"
               onPress={() => router.navigate("/add")}
             >

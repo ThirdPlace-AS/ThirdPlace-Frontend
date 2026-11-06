@@ -28,6 +28,8 @@ export function FollowButton({
   return (
     <Pressable
       accessibilityRole="button"
+      // sm is 36 dp tall: top up to the 44 dp target.
+      hitSlop={size === "md" ? undefined : { top: 4, bottom: 4 }}
       accessibilityLabel={
         following
           ? `Slutt å følge${name ? ` ${name}` : ""}`

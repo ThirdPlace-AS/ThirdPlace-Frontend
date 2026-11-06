@@ -78,8 +78,8 @@ export default function CreatorWelcomeScreen() {
         </View>
 
         <DemoNote>
-          Dette er en forhåndsvisning. Ingen søknad er sendt, og hva Skaper-rollen
-          gir tilgang til er ikke bestemt ennå.
+          Dette er en forhåndsvisning. Ingen søknad er sendt, og hva
+          Skaper-rollen gir tilgang til er ikke bestemt ennå.
         </DemoNote>
 
         <View className="mt-auto gap-3">
@@ -89,6 +89,7 @@ export default function CreatorWelcomeScreen() {
             onPress={() => router.replace("/marketplace")}
           />
           <Pressable
+            hitSlop={{ top: 6, bottom: 6, left: 8, right: 8 }}
             accessibilityRole="button"
             onPress={leave}
             className="items-center py-2"
