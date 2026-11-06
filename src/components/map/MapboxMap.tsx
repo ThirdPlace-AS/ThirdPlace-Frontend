@@ -19,6 +19,7 @@ import { motion, palette } from "@/theme";
 
 import { periodForUrl } from "./mapStyles";
 import { isExperience, pinPaint } from "./pinStyle";
+import { USER_PUCK } from "./userPuck";
 import { markerIcon, type MarkerGlyph } from "./services/markerIcon";
 import type { DiscoveryItem } from "./types/mapPresentation";
 
@@ -47,7 +48,10 @@ export function MapboxMap({
   selectedMarkerId,
   onSelectMarker,
   recenterSignal,
+  recenterZoom = 13,
   center = MAP_CENTER,
+  userCoord,
+  heading,
   onMapPress,
   focusCoord,
   styleURL,
@@ -57,7 +61,10 @@ export function MapboxMap({
   selectedMarkerId?: string | null;
   onSelectMarker?: (markerId: string) => void;
   recenterSignal?: number;
+  recenterZoom?: number;
   center?: [number, number];
+  userCoord?: [number, number] | null;
+  heading?: number | null;
   onMapPress?: () => void;
   focusCoord?: [number, number] | null;
   styleURL?: string;
@@ -76,10 +83,33 @@ export function MapboxMap({
     if (recenterSignal === undefined || recenterSignal === 0) return;
     cameraRef.current?.setCamera({
       centerCoordinate: center,
-      zoomLevel: 13,
+      zoomLevel: recenterZoom,
+      animationMode: "flyTo",
       animationDuration: motion.duration.recenter,
     });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [recenterSignal, center]);
+
+  // The user's position for the puck: the app's own fix (after "Posisjon")
+  // or, before that, the native location updates (OS permission granted).
+  const [nativeCoord, setNativeCoord] = useState<[number, number] | null>(null);
+  const puckCoord = userCoord ?? nativeCoord;
+  const puckShape = useMemo<FeatureCollection<Point>>(
+    () => ({
+      type: "FeatureCollection",
+      features: puckCoord
+        ? [
+            {
+              type: "Feature",
+              // heading only when known: the wedge layer filters on it.
+              properties: heading != null ? { heading } : {},
+              geometry: { type: "Point", coordinates: puckCoord },
+            },
+          ]
+        : [],
+    }),
+    [puckCoord, heading],
+  );
 
   // Selecting a marker pans the camera so the pin sits centered in the map area
   // ABOVE the detail sheet (bottom padding ≈ the peek height), Google-Maps style.
@@ -151,12 +181,15 @@ export function MapboxMap({
           }}
         />
       ) : null}
-      {/* User-location puck — visible whenever OS location permission is granted.
-          showsUserHeadingIndicator draws the native facing-direction cone. */}
+      {/* The native puck follows each style's light preset (it looked
+          different on every basemap), so it only reports the position here;
+          the puck itself is our own emissive layers below (userPuck.ts). */}
       <UserLocation
-        visible
-        showsUserHeadingIndicator
-        androidRenderMode="normal"
+        visible={false}
+        minDisplacement={5}
+        onUpdate={(l) =>
+          setNativeCoord([l.coords.longitude, l.coords.latitude])
+        }
       />
       <Camera
         ref={cameraRef}
@@ -165,6 +198,28 @@ export function MapboxMap({
         animationDuration={0}
       />
       <Images>
+        <MapImage name="user-heading">
+          <View
+            style={{
+              width: 44,
+              height: 44,
+              alignItems: "center",
+            }}
+          >
+            <View
+              style={{
+                width: 0,
+                height: 0,
+                borderLeftWidth: 6,
+                borderRightWidth: 6,
+                borderBottomWidth: 9,
+                borderLeftColor: "transparent",
+                borderRightColor: "transparent",
+                borderBottomColor: USER_PUCK.dot,
+              }}
+            />
+          </View>
+        </MapImage>
         {glyphs.map(([key, g]) => (
           <MapImage key={key} name={key}>
             <View
@@ -311,6 +366,43 @@ export function MapboxMap({
             textOffset: [0, 1.9],
             textAllowOverlap: false,
             textOptional: true,
+          }}
+        />
+      </ShapeSource>
+      {/* The user's location: the same look on every basemap (fixed
+          colours, fully emissive), above the pins. */}
+      <ShapeSource id="user-location" shape={puckShape}>
+        <CircleLayer
+          id="user-halo"
+          style={{
+            circleColor: USER_PUCK.halo,
+            circleOpacity: USER_PUCK.haloOpacity,
+            circleRadius: USER_PUCK.haloRadius,
+            circlePitchAlignment: "map",
+            circleEmissiveStrength: 1,
+          }}
+        />
+        <SymbolLayer
+          id="user-heading"
+          filter={["has", "heading"]}
+          style={{
+            iconImage: "user-heading",
+            iconRotate: ["get", "heading"],
+            iconRotationAlignment: "map",
+            iconAllowOverlap: true,
+            iconIgnorePlacement: true,
+            iconEmissiveStrength: 1,
+          }}
+        />
+        <CircleLayer
+          id="user-dot"
+          style={{
+            circleColor: USER_PUCK.dot,
+            circleRadius: USER_PUCK.dotRadius,
+            circleStrokeWidth: USER_PUCK.ringWidth,
+            circleStrokeColor: USER_PUCK.ring,
+            circlePitchAlignment: "map",
+            circleEmissiveStrength: 1,
           }}
         />
       </ShapeSource>

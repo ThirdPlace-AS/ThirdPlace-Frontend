@@ -5,6 +5,12 @@ import { useCallback, useState } from "react";
 // it. Real location recenter arrives with expo-location in Milestone 6.
 export function useMapCamera() {
   const [recenterSignal, setRecenterSignal] = useState(0);
-  const recenter = useCallback(() => setRecenterSignal((n) => n + 1), []);
-  return { recenterSignal, recenter };
+  // Zoom for the next recenter: 13 for an area, 15 when flying to the user
+  // (Phase 11 G8, "Posisjon" zooms in on the user).
+  const [recenterZoom, setRecenterZoom] = useState(13);
+  const recenter = useCallback((zoom = 13) => {
+    setRecenterZoom(zoom);
+    setRecenterSignal((n) => n + 1);
+  }, []);
+  return { recenterSignal, recenterZoom, recenter };
 }

@@ -32,6 +32,7 @@ import type {
 import { useMapCamera } from "@/components/map/hooks/useMapCamera";
 import { useTimeOfDayStyle } from "@/components/map/hooks/useTimeOfDayStyle";
 import { useMapLocation } from "@/components/map/hooks/useMapLocation";
+import { USER_PUCK } from "@/components/map/userPuck";
 import { useMapDiscovery } from "@/components/map/hooks/useMapDiscovery";
 import { useMapFilters } from "@/components/map/hooks/useMapFilters";
 import { useMapSaved } from "@/components/map/hooks/useMapSaved";
@@ -229,9 +230,11 @@ export default function MapScreen() {
     filters.setFilters(next);
   };
 
+  // "Posisjon": fly to the user and zoom in (street level); without a fix,
+  // ask for it, or fall back to the manual-area sheet.
   const handleLocationPress = () => {
     if (location.status === "granted" && location.coord) {
-      camera.recenter();
+      camera.recenter(USER_PUCK.locateZoom);
     } else if (location.status === "granted") {
       // A manual area replaced the GPS fix — go back to the real position.
       void handleRequestLocation();
@@ -241,8 +244,10 @@ export default function MapScreen() {
   };
 
   const handleRequestLocation = async () => {
-    await location.request();
-    camera.recenter();
+    const granted = await location.request();
+    camera.recenter(granted ? USER_PUCK.locateZoom : 13);
+    // With a fix, close the Posisjon sheet so the user sees where they are.
+    if (granted) setLocationOpen(false);
   };
 
   const handleSelectArea = (a: Parameters<typeof location.selectArea>[0]) => {
@@ -265,6 +270,7 @@ export default function MapScreen() {
         styleURL={styleUrlFor(styleKey)}
         darkBasemap={darkBasemap}
         recenterSignal={camera.recenterSignal}
+        recenterZoom={camera.recenterZoom}
         center={location.center}
         userCoord={location.coord}
         heading={location.heading}

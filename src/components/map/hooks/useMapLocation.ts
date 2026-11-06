@@ -46,15 +46,17 @@ export function useMapLocation() {
     headSub.current = null;
   }, []);
 
-  const request = useCallback(async () => {
+  /** Resolves true once a GPS fix is in (so the caller can fly to it). */
+  const request = useCallback(async (): Promise<boolean> => {
     setStatus("requesting");
+    let ok = false;
     try {
       // eslint-disable-next-line @typescript-eslint/no-require-imports
       const Location: LocationModule = require("expo-location");
       const perm = await Location.requestForegroundPermissionsAsync();
       if (perm.status !== "granted") {
         setStatus("denied");
-        return;
+        return false;
       }
       const pos = await Location.getCurrentPositionAsync({
         accuracy: Location.Accuracy.Balanced,
@@ -63,6 +65,7 @@ export function useMapLocation() {
       setArea(null);
       setPrecise(pos.coords.accuracy != null && pos.coords.accuracy <= 100);
       setStatus("granted");
+      ok = true;
 
       // Continuously watch position + heading so the puck stays current. Replace
       // any prior watches. Failures here are non-fatal — the one-shot fix above
@@ -81,7 +84,7 @@ export function useMapLocation() {
         );
         if (!live()) {
           ps.remove();
-          return;
+          return ok;
         }
         posSub.current = ps;
         const hs = await Location.watchHeadingAsync((h) => {
@@ -91,7 +94,7 @@ export function useMapLocation() {
         });
         if (!live()) {
           hs.remove();
-          return;
+          return ok;
         }
         headSub.current = hs;
       } catch {
@@ -101,6 +104,7 @@ export function useMapLocation() {
       // API unreachable (web geolocation blocked, Expo Go, etc.) — never guess.
       setStatus("unavailable");
     }
+    return ok;
   }, [stop]);
 
   // Manual fallback: pick a known area so public content stays browsable without

@@ -3,11 +3,12 @@ import type { ComponentType } from "react";
 import { Platform, Pressable, View } from "react-native";
 
 import { env } from "@/lib/env";
-import { useThemeColors, elevation } from "@/theme";
+import { elevation } from "@/theme";
 
 import { clusterByGrid, projectToUnit } from "./services/softClustering";
 import type { DiscoveryItem } from "./types/mapPresentation";
 import { isExperience, softPin } from "./pinStyle";
+import { USER_PUCK } from "./userPuck";
 import { markerIcon } from "./services/markerIcon";
 import { Icon, Text } from "@/components/ui";
 
@@ -18,13 +19,14 @@ type MapProps = {
   onSelectMarker?: (markerId: string) => void;
   // Bump to recenter the real map on `center` (SoftMap ignores it).
   recenterSignal?: number;
+  // Zoom for that recenter (15 = fly to the user, 13 = an area).
+  recenterZoom?: number;
   // Camera center (GPS fix / manual area / demo default). SoftMap ignores it.
   center?: [number, number];
-  // The user's real GPS fix (null until granted). SoftMap draws a puck here;
-  // the native map uses its own UserLocation and ignores this.
+  // The user's real GPS fix (null until granted). Both maps draw the same
+  // puck (userPuck.ts); the native map also follows its own location updates.
   userCoord?: [number, number] | null;
-  // Device facing heading in degrees (0 = north), or null. SoftMap rotates the
-  // puck arrow; the native map draws its own heading indicator.
+  // Device facing heading in degrees (0 = north), or null: the puck's wedge.
   heading?: number | null;
   // Tap on empty map (not a marker) — collapses selection + dismisses keyboard.
   onMapPress?: () => void;
@@ -51,8 +53,9 @@ function SoftUserPuck({
   coord: [number, number];
   heading: number | null;
 }) {
-  const colors = useThemeColors();
   const { x, y } = projectToUnit(coord);
+  const box = USER_PUCK.haloRadius * 2;
+  const dot = (USER_PUCK.dotRadius + USER_PUCK.ringWidth) * 2;
   return (
     <View
       pointerEvents="none"
@@ -60,11 +63,22 @@ function SoftUserPuck({
       style={{
         left: `${x * 100}%`,
         top: `${y * 100}%`,
-        width: 28,
-        height: 28,
-        transform: [{ translateX: -14 }, { translateY: -14 }],
+        width: box,
+        height: box,
+        transform: [{ translateX: -box / 2 }, { translateY: -box / 2 }],
       }}
     >
+      {/* Same look as the native puck: halo, white ring, ember dot. */}
+      <View
+        className="absolute"
+        style={{
+          width: box,
+          height: box,
+          borderRadius: box / 2,
+          backgroundColor: USER_PUCK.halo,
+          opacity: USER_PUCK.haloOpacity,
+        }}
+      />
       {heading != null ? (
         // Rotation layer centered on the dot: the arrow orbits to the heading.
         <View
@@ -80,12 +94,21 @@ function SoftUserPuck({
               borderBottomWidth: 8,
               borderLeftColor: "transparent",
               borderRightColor: "transparent",
-              borderBottomColor: colors.ember,
+              borderBottomColor: USER_PUCK.dot,
             }}
           />
         </View>
       ) : null}
-      <View className="h-4 w-4 rounded-full border-2 border-surface bg-ember" />
+      <View
+        style={{
+          width: dot,
+          height: dot,
+          borderRadius: dot / 2,
+          backgroundColor: USER_PUCK.dot,
+          borderWidth: USER_PUCK.ringWidth,
+          borderColor: USER_PUCK.ring,
+        }}
+      />
     </View>
   );
 }
@@ -240,6 +263,7 @@ export function MapCanvas({
   selectedMarkerId,
   onSelectMarker,
   recenterSignal,
+  recenterZoom,
   center,
   userCoord,
   heading,
@@ -266,7 +290,10 @@ export function MapCanvas({
           selectedMarkerId={selectedMarkerId}
           onSelectMarker={onSelectMarker}
           recenterSignal={recenterSignal}
+          recenterZoom={recenterZoom}
           center={center}
+          userCoord={userCoord}
+          heading={heading}
           onMapPress={onMapPress}
           focusCoord={focusCoord}
           styleURL={styleURL}
