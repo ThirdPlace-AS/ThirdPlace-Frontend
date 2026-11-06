@@ -12,6 +12,7 @@ import Animated, {
 import {
   HeartToggle,
   Icon,
+  Loader,
   Pressable as UIPressable,
   SkeletonList,
   Text,
@@ -47,6 +48,7 @@ export function MapBrowseSheet({
   hidden,
   expandSignal = 0,
   loading = false,
+  loadingSlow = false,
   onPeekHeight,
 }: {
   items: DiscoveryItem[];
@@ -62,6 +64,8 @@ export function MapBrowseSheet({
   expandSignal?: number;
   /** Mock load in flight: show skeleton cards instead of the empty message. */
   loading?: boolean;
+  /** Past 2 s: the loader replaces the skeleton (useLoadPhase). */
+  loadingSlow?: boolean;
   /** Measured peek height, so map tools can sit just above it. */
   onPeekHeight?: (h: number) => void;
 }) {
@@ -229,11 +233,15 @@ export function MapBrowseSheet({
           showsVerticalScrollIndicator={false}
           ListEmptyComponent={
             loading ? (
-              <SkeletonList
-                variant="mediaCard"
-                count={2}
-                label="Laster steder"
-              />
+              loadingSlow ? (
+                <Loader label="Laster steder …" />
+              ) : (
+                <SkeletonList
+                  variant="mediaCard"
+                  count={2}
+                  label="Laster steder"
+                />
+              )
             ) : (
               <View className="items-center gap-2 p-gutter">
                 <Icon name="compass-outline" size="xl" tone="muted" />

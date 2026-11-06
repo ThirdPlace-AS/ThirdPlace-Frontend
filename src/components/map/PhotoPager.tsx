@@ -1,7 +1,6 @@
 // Swipeable photo strip for a browse card (Phase 8, benchmark B3): pages
 // horizontally with dots at the bottom; a single photo renders without dots.
 // Bundled demo art only (no media contract).
-import { Image } from "expo-image";
 import { useState } from "react";
 import {
   type ImageSourcePropType,
@@ -12,6 +11,8 @@ import {
 // Gesture-handler ScrollView: a plain RN one lost the horizontal pan to the
 // browse sheet's gesture handler, so photos never paged.
 import { ScrollView } from "react-native-gesture-handler";
+
+import { LoadingImage } from "@/components/ui/LoadingImage";
 
 export function PhotoPager({
   photos,
@@ -44,7 +45,7 @@ export function PhotoPager({
           accessible={false}
         >
           {photos.map((src, i) => (
-            <Image
+            <LoadingImage
               key={i}
               source={src}
               contentFit="cover"

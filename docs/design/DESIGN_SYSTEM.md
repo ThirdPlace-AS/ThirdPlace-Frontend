@@ -162,6 +162,7 @@ Easing curves (`easing.*`, cubic-bezier): `standard` 0.2, 0, 0, 1 · `enter` 0.0
 
 - Content that replaces content in place (wizard steps, the in-sheet detail stack, the next Steder or group-swipe card) fades in through `<FadeSwap swapKey>` over `base`; nothing under reduced motion. Style only on the animated view.
 - The swipe card glides off in 340–460 ms (fling to tap) and comes back on undo in 400 ms; longer glides held the deck for ~0.9 s and dropped taps.
+- Loading rule (founder, 2026-11-06): a wait under 2 s shows a skeleton; past 2 s the skeleton gives way to `<Loader>` (spinner + label). `useLoadPhase(loading)` returns `skeleton` → `loader`; photos that can arrive late use `<LoadingImage>` (skeleton behind the photo, spinner after 2 s). Map: skeleton cards in the browse sheet, then the loader pill over the map.
 - No fake waits: a screen with nothing to load shows its content at once (`useMockResource({ immediate })`); loading states appear only on a real reload.
 
 Motion explains a change (where something came from, what it became); it never delays navigation. Every animated hook checks `useReducedMotion()` and falls back to an opacity change or none.

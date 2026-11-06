@@ -9,7 +9,6 @@
 // Built only from fixture fields: no rating, reviews, itinerary or
 // availability (BLOCKED_CONTRACT_GAP). The join action lives in the host's
 // floating ExperienceJoinBar card.
-import { Image } from "expo-image";
 import type { Href } from "expo-router";
 import { useState } from "react";
 import { ScrollView, View, useWindowDimensions } from "react-native";
@@ -21,6 +20,7 @@ import {
   Avatar,
   Chip,
   Icon,
+  LoadingImage,
   PhotoViewer,
   Text,
   Pressable as UIPressable,
@@ -181,12 +181,11 @@ export function ExperiencePage({
                 contentClassName="gap-1.5"
                 pressedScale={0.98}
               >
-                <Image
+                <LoadingImage
                   source={e.photos[0]}
                   contentFit="cover"
                   transition={150}
                   style={{ width: 176, height: 132, borderRadius: 16 }}
-                  className="bg-surfaceMuted"
                 />
                 <Text variant="label" weight="semibold" numberOfLines={1}>
                   {e.title}

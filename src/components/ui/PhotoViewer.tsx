@@ -1,7 +1,6 @@
 // Full-screen photo viewer (PDF p24 Bildeviser; Phase 11 G5): swipe between
 // photos, "3 av 10" counter, ✕ to close; Android back closes (Overlay).
 // Bundled fixture photos only (no media contract).
-import { Image } from "expo-image";
 import { useState } from "react";
 import {
   FlatList,
@@ -16,6 +15,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { media } from "@/theme";
 
 import { IconButton } from "./IconButton";
+import { LoadingImage } from "./LoadingImage";
 import { Overlay } from "./Overlay";
 import { StatusBarStyle } from "./StatusBarStyle";
 import { Text } from "./Text";
@@ -88,7 +88,7 @@ function ViewerBody({
             accessibilityRole="image"
             accessibilityLabel={`Bilde ${i + 1} av ${n}`}
           >
-            <Image
+            <LoadingImage
               source={item}
               contentFit="contain"
               transition={150}

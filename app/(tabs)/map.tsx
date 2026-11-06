@@ -1,12 +1,6 @@
 import { useFocusEffect, useLocalSearchParams } from "expo-router";
 import { useCallback, useMemo, useRef, useState } from "react";
-import {
-  ActivityIndicator,
-  BackHandler,
-  Keyboard,
-  useWindowDimensions,
-  View,
-} from "react-native";
+import { BackHandler, Keyboard, useWindowDimensions, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import {
@@ -14,6 +8,7 @@ import {
   ErrorState,
   Icon,
   IconButton,
+  Loader,
   Text,
   Pressable as UIPressable,
 } from "@/components/ui";
@@ -50,16 +45,16 @@ import { useGuestMode } from "@/components/map/hooks/useGuestMode";
 import { MapBrowseSheet } from "@/components/map/MapBrowseSheet";
 import { MOCK_WEATHER, OSLO_AREAS, places } from "@/fixtures";
 import { useMockResource } from "@/hooks/useMockResource";
+import { useLoadPhase } from "@/hooks/useLoadPhase";
 import { useNotificationReads } from "@/hooks/useNotificationReads";
 import { haptics } from "@/lib/haptics";
 import { setDevSimulation, useDevSimulation } from "@/lib/devSimulation";
-import { elevation, useThemeColors } from "@/theme";
+import { elevation } from "@/theme";
 
 // Map discovery surface. Thin composition over feature hooks:
 // filters/search, discovery mode, selection (detail sheet), camera, location.
 // Map-only — no list view. All data is MOCK fixtures (no backend).
 export default function MapScreen() {
-  const colors = useThemeColors();
   const insets = useSafeAreaInsets();
   const { height: windowHeight } = useWindowDimensions();
   // Keep the bottom-right map tools clear of the persistent ~12% browse peek.
@@ -146,6 +141,9 @@ export default function MapScreen() {
     simulate: offline ? "error" : "success",
   });
   const loading = status === "loading";
+  // Skeleton (browse list) for the first 2 s, then the loader (DESIGN_SYSTEM
+  // §4 "Loading").
+  const loadPhase = useLoadPhase(loading);
   const errored = status === "error";
 
   const retry = () => {
@@ -369,18 +367,14 @@ export default function MapScreen() {
         />
       </View>
 
-      {/* Loading overlay (mock async load) */}
-      {loading ? (
+      {/* Slow load (> 2 s): a loader over the map; shorter loads show only
+          the skeleton in the browse sheet. */}
+      {loadPhase === "loader" ? (
         <View
           pointerEvents="box-none"
           className="absolute inset-0 items-center justify-center"
         >
-          <View className="flex-row items-center gap-2 px-4 py-2 border rounded-full border-line bg-surface">
-            <ActivityIndicator color={colors.ink} />
-            <Text variant="caption" tone="muted">
-              Laster steder…
-            </Text>
-          </View>
+          <Loader label="Laster steder …" variant="pill" />
         </View>
       ) : null}
 
@@ -462,6 +456,7 @@ export default function MapScreen() {
         <MapBrowseSheet
           items={loading ? [] : items}
           loading={loading}
+          loadingSlow={loadPhase === "loader"}
           selectedMarkerId={selection.selectedMarkerId}
           onSelect={handleSelectItem}
           isSaved={saved.isSaved}
