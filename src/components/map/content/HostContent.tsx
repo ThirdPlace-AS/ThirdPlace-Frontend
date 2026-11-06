@@ -82,7 +82,7 @@ export function HostContent({ id, push }: { id: string; push: PushFn }) {
         ) : null}
         {status === "cancelled" ? (
           <DemoNote>
-            Avlyst i demoen — ingen ble varslet eller refundert.
+            Avlyst i demoen. Ingen ble varslet, og ingenting ble refundert.
           </DemoNote>
         ) : (
           <Button

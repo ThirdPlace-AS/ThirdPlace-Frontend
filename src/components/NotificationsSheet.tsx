@@ -95,7 +95,7 @@ export function NotificationsSheet({
         })}
 
         <DemoNote>
-          Eksempelvarsler — ingen push eller innboks er aktiv ennå.
+          Dette er eksempelvarsler. Push og innboks er ikke slått på.
         </DemoNote>
       </View>
     </Sheet>

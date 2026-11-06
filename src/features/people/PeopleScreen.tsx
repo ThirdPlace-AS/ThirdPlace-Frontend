@@ -62,7 +62,7 @@ export default function PeopleScreen() {
         contentContainerClassName="px-gutter pb-10"
         ListEmptyComponent={
           <Text variant="caption" tone="muted" className="py-10 text-center">
-            Ingen treff — prøv et annet filter.
+            Ingen treff. Prøv et annet filter.
           </Text>
         }
         ListHeaderComponent={

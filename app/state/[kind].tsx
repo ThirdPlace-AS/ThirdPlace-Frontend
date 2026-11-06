@@ -121,7 +121,7 @@ export default function SystemState() {
           </State>
         )}
         <DemoNote>
-          Systemskjerm vist for gjennomgang — ingen reell status er sjekket.
+          Skjermen vises bare for gjennomgang. Ingen status er sjekket.
         </DemoNote>
       </ScrollView>
     </Screen>

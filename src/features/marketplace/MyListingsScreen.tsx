@@ -75,7 +75,7 @@ export default function MyListingsScreen() {
             </Pressable>
           </View>
         ))}
-        <DemoNote>Eksempel-listings — ingenting er publisert.</DemoNote>
+        <DemoNote>Listingene er eksempler. Ingenting er publisert.</DemoNote>
       </ScrollView>
       <IconButton
         icon="add"

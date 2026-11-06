@@ -96,7 +96,7 @@ export function WorkspaceHub() {
           </Text>
         </View>
         <DemoNote>
-          Bedriftsarbeidsflaten er et eksempel — ingen bedriftskonto finnes.
+          Arbeidsflaten er et eksempel. Det finnes ingen bedriftskonto.
         </DemoNote>
       </ScrollView>
     </Screen>
@@ -212,7 +212,7 @@ export function WorkspaceAnalytics() {
           ))}
         </View>
         <DemoNote>
-          Tallene er eksempler — ingen analyse eller sporing er aktiv.
+          Tallene er eksempler. Ingen analyse eller sporing er slått på.
         </DemoNote>
       </ScrollView>
     </Screen>
@@ -255,7 +255,7 @@ export function WorkspaceCalendar() {
           </View>
         ))}
         <DemoNote>
-          Eksempelopplevelser — kalenderen er ikke koblet til en bedrift.
+          Opplevelsene er eksempler. Kalenderen er ikke koblet til en bedrift.
         </DemoNote>
       </ScrollView>
     </Screen>
@@ -296,7 +296,7 @@ export function WorkspaceLocations() {
           </Text>
         </View>
         <DemoNote>
-          Lokasjoner og priser er ikke aktive — ingenting faktureres.
+          Lokasjoner og priser er ikke slått på. Ingenting faktureres.
         </DemoNote>
       </ScrollView>
     </Screen>

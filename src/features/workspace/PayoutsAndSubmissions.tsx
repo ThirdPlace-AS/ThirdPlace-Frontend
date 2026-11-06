@@ -37,7 +37,7 @@ export function PayoutsScreen() {
         </Pressable>
         {tried ? (
           <DemoNote>
-            Utbetalinger er ikke aktive — ingen kontoopplysninger tas imot.
+            Utbetalinger er ikke slått på. Vi tar ikke imot kontoopplysninger.
           </DemoNote>
         ) : null}
         <Section>Utbetalingsplan</Section>
@@ -62,7 +62,7 @@ export function PayoutsScreen() {
         <Section>Valuta</Section>
         <View className="rounded-md border border-line bg-surface px-4 py-3.5">
           <Text variant="label" weight="regular">
-            NOK — Norske kroner
+            NOK · norske kroner
           </Text>
         </View>
         <Section>Utbetalingshistorikk</Section>
@@ -146,7 +146,9 @@ export function SubmissionsScreen() {
         <Text variant="caption" tone="muted">
           Avviste innleveringer kan sendes på nytt med oppdatert informasjon.
         </Text>
-        <DemoNote>Eksempelinnleveringer — ingen steder er sendt inn.</DemoNote>
+        <DemoNote>
+          Innleveringene er eksempler. Ingen steder er sendt inn.
+        </DemoNote>
         <Button
           label="Send inn nytt sted"
           variant="ink"

@@ -121,7 +121,7 @@ export default function PrivacyScreen() {
               </Text>
             </View>
           ))}
-          <DemoNote>Eksempeldata — ingen blokkering endres.</DemoNote>
+          <DemoNote>Dette er eksempeldata. Ingen blokkering endres.</DemoNote>
         </View>
       </Sheet>
 

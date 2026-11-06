@@ -425,7 +425,7 @@ function StepBody({
             Minst 1 bilde påkrevd · JPG, PNG · maks 10 MB
           </Text>
           <DemoNote>
-            Eksempelbilder — opplasting er ikke aktiv i demoen.
+            Dette er eksempelbilder. Opplasting er ikke slått på.
           </DemoNote>
         </Shell>
       );
@@ -507,7 +507,8 @@ function StepBody({
             maxLength={4}
           />
           <Input
-            label="Pris per person (kr) — tomt = gratis"
+            label="Pris per person (kr)"
+            helper="La feltet stå tomt hvis det er gratis."
             placeholder="F.eks. 350"
             keyboardType="numeric"
             value={draft.price}
@@ -531,8 +532,8 @@ function StepBody({
             onPress={(c) => patch({ cancellation: c })}
           />
           <DemoNote>
-            Pris og avbestilling er bare visning — ingen betaling eller refusjon
-            er aktiv.
+            Pris og avbestilling vises bare. Ingen betaling eller refusjon er
+            slått på.
           </DemoNote>
         </Shell>
       );

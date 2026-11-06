@@ -16,9 +16,8 @@ export const demoCopy = {
   privacyNotSaved: "Ingen reell synlighet eller samtykke lagres eller endres.",
   settingsNotSaved: "Innstillinger lagres ikke og nullstilles ved omstart.",
   joinedNoBackend:
-    "Du er med i demoen — ingen reell påmelding, og ingen gruppechat er åpnet.",
-  waitlistedNoBackend:
-    "Du står på venteliste i demoen — ingen varsler blir sendt.",
+    "Du er med i demoen. Ingen påmelding er sendt, og ingen gruppechat er åpnet.",
+  waitlistedNoBackend: "Du står på venteliste i demoen. Du får ingen varsler.",
 
   // Standalone (no badge next to them)
 } as const;

@@ -271,7 +271,7 @@ export default function Onboarding() {
               />
               {age.status === "invalid" && birthday.length === 10 ? (
                 <Text variant="caption" tone="danger">
-                  Sjekk datoen — bruk formatet dd.mm.åååå.
+                  Sjekk datoen. Skriv den som dd.mm.åååå.
                 </Text>
               ) : (
                 <Text variant="caption" tone="muted">
@@ -320,7 +320,7 @@ export default function Onboarding() {
               maxLength={40}
             />
             <Text variant="caption" tone="muted">
-              Alt her er valgfritt — trykk på et valg igjen for å fjerne det.
+              Alt her er valgfritt. Trykk på et valg igjen for å fjerne det.
             </Text>
           </Shell>
         ) : null}
@@ -479,7 +479,7 @@ export default function Onboarding() {
               Her er noen ting som skjer i byen din.
             </Text>
             <DemoNote>
-              Eksempler fra demoen — feeden er ikke personalisert ennå.
+              Dette er eksempler. Feeden er ikke tilpasset deg ennå.
             </DemoNote>
           </View>
         ) : null}

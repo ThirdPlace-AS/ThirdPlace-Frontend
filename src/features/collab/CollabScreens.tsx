@@ -94,7 +94,7 @@ export function CollabDetailScreen() {
     <Screen edges={["top"]}>
       <RouteHeader title="Jazz-samarbeid" />
       <ScrollView contentContainerClassName="gap-4 px-gutter py-4 pb-12">
-        <DemoNote>Et eksempel på et samarbeid — ingen avtale finnes.</DemoNote>
+        <DemoNote>Dette er et eksempel. Det finnes ingen avtale.</DemoNote>
         <Label>Parter</Label>
         <View className="flex-row gap-3">
           <Party name="Maria Movik" role="Skaper · Primærvert" />
@@ -283,8 +283,8 @@ function ContractSheet({ onClose }: { onClose: () => void }) {
           </Text>
         </Pressable>
         <DemoNote>
-          Kontrakten er et eksempel — ingen signatur lagres, og ingen avtale er
-          juridisk bindende.
+          Kontrakten er et eksempel. Ingen signatur lagres, og ingenting er
+          bindende.
         </DemoNote>
         <Button label="Lukk" variant="secondary" onPress={onClose} />
       </View>

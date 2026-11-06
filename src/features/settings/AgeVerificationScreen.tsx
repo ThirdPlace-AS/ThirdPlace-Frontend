@@ -77,7 +77,7 @@ export default function AgeVerificationScreen() {
           </Pressable>
         ))}
         {chosen ? (
-          <DemoNote>{`${chosen} er ikke koblet til i demoen — ingenting ble verifisert.`}</DemoNote>
+          <DemoNote>{`${chosen} er ikke koblet til i demoen. Ingenting ble verifisert.`}</DemoNote>
         ) : null}
         <Text variant="micro" weight="semibold" tone="muted">
           Fordeler

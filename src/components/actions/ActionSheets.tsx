@@ -55,7 +55,7 @@ export function ShareSheet({
           ))}
         </View>
         {done ? (
-          <DemoNote>Ingenting ble delt — lenken er et eksempel.</DemoNote>
+          <DemoNote>Ingenting ble delt. Lenken er bare et eksempel.</DemoNote>
         ) : null}
       </View>
     </Sheet>
@@ -98,7 +98,7 @@ export function ReportSheet({ onClose }: Base) {
         ))}
         {sent ? (
           <DemoNote>
-            Rapporten ble ikke sendt — moderering er ikke aktiv.
+            Rapporten ble ikke sendt. Moderering er ikke på plass ennå.
           </DemoNote>
         ) : null}
         <Button
@@ -184,7 +184,7 @@ export function WaitlistSheet({
           </View>
         </View>
         <DemoNote>
-          Køplassen er et eksempel — ingen venteliste er aktiv.
+          Køplassen er bare et eksempel. Det finnes ingen venteliste ennå.
         </DemoNote>
         <Button
           label="Sett meg på ventelisten"
@@ -236,8 +236,8 @@ export function PaySheet({
           </Text>
         </View>
         <DemoNote>
-          Betaling er ikke aktiv — ingen kort brukes, ingenting belastes og
-          ingen plass reserveres.
+          Betaling er ikke slått på, så ingenting belastes og ingen plass holdes
+          av.
         </DemoNote>
         <Button
           label="Bli med uten betaling (demo)"
@@ -308,7 +308,7 @@ export function SpotOfferSheet({ title, onClose }: Base & { title: string }) {
           Vil du ta plassen?
         </Text>
         {choice ? (
-          <DemoNote>{`«${choice}» gjør ingenting — ingen venteliste er aktiv.`}</DemoNote>
+          <DemoNote>{`«${choice}» gjør ingenting i demoen. Det finnes ingen venteliste ennå.`}</DemoNote>
         ) : null}
         <Button
           label="Ta plassen"

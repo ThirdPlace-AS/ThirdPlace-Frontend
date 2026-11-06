@@ -35,8 +35,7 @@ export function VerificationContent() {
     <View className="gap-5">
       {/* Honesty first: everything below is an example, not a real claim. */}
       <DemoNote>
-        Eksempelstatus — ingen dokumenter er sendt inn, og ingen vurdering
-        pågår.
+        Statusen er et eksempel. Ingen dokumenter er sendt inn.
       </DemoNote>
       <View className="gap-0">
         {STEPS.map((s, i) => (

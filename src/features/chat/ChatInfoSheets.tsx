@@ -289,7 +289,7 @@ function InviteSheet({
             </View>
           ))}
         <DemoNote>
-          Lenken og QR-koden er eksempler — ingen invitasjon sendes.
+          Lenken og QR-koden er eksempler. Ingen invitasjon blir sendt.
         </DemoNote>
       </View>
     </Sheet>

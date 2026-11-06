@@ -52,7 +52,7 @@ export function ImportContentScreen() {
           ))}
         </View>
         {tried ? (
-          <DemoNote>Import er ikke aktiv — ingenting ble hentet.</DemoNote>
+          <DemoNote>Import er ikke slått på. Ingenting ble hentet.</DemoNote>
         ) : null}
         <Button
           label="Importer"

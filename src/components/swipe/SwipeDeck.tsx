@@ -900,7 +900,7 @@ function ExpandBody({
         <View className="flex-row items-center gap-2">
           <DemoBadge />
           <Text variant="caption" tone="onMedia" className="flex-1 opacity-60">
-            Demo — ingen reell påmelding eller lagring på server.
+            Ingen påmelding eller lagring skjer i demoen.
           </Text>
         </View>
 

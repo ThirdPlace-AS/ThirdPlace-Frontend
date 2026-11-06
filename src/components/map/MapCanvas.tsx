@@ -163,7 +163,7 @@ function SoftMap({
             <Pressable
               key={c.key}
               accessibilityRole="button"
-              accessibilityLabel={`${c.items.length} steder her — åpne liste`}
+              accessibilityLabel={`${c.items.length} steder her. Åpne listen.`}
               onPress={() => onClusterPress?.()}
               hitSlop={8}
               className="absolute h-11 w-11 items-center justify-center"

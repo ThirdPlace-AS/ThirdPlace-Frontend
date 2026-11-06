@@ -120,7 +120,7 @@ export function PlaceDeck({
               toggle(key);
               showToast({
                 title: saved ? "Fjernet fra Lagret" : "Lagret",
-                body: `${place.name} · demo — tømmes ved omstart`,
+                body: `${place.name} · tømmes når appen starter på nytt`,
                 icon: saved ? "bookmark-outline" : "bookmark",
               });
             }}

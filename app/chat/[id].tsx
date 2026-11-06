@@ -156,7 +156,7 @@ export default function ChatThreadScreen() {
         {chat.status === "archived" ? (
           <View className="border-t border-line px-gutter pb-3 pt-3">
             <Text variant="caption" tone="muted" className="text-center">
-              Arkivert — kun lesbart. Du kan ikke sende nye meldinger.
+              Arkivert. Du kan lese, men ikke sende meldinger.
             </Text>
           </View>
         ) : isGuest ? (
@@ -170,7 +170,7 @@ export default function ChatThreadScreen() {
         ) : (
           <View className="gap-2 border-t border-line px-gutter pb-2 pt-2.5">
             <Text variant="caption" tone="muted" className="text-center">
-              Demo — meldinger sendes eller lagres ikke
+              Meldinger sendes ikke og lagres ikke i demoen.
             </Text>
             <View className="flex-row items-end gap-2">
               <TextInput

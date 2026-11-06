@@ -492,7 +492,7 @@ function FilterBody({
                 }
               />
               <Text variant="caption" tone="muted">
-                Datoer er kun demo — påvirker ikke resultatene.
+                Datoene påvirker ikke resultatene i demoen.
               </Text>
             </View>
           </SearchRow>
@@ -507,7 +507,7 @@ function FilterBody({
             onToggle={() => toggleSection("who")}
           >
             <View>
-              <DemoBadge label="DEMO — teller ikke med i resultatene" />
+              <DemoBadge label="Demo · telles ikke med" />
               <Stepper
                 label="Voksne"
                 divider
@@ -794,7 +794,7 @@ function FilterBody({
             {/* Tilgjengelighetsfunksjoner — icon rows */}
             <Section
               title="Tilgjengelighetsfunksjoner"
-              subtitle="Oppgitt av stedet — DEMO, ikke verifisert"
+              subtitle="Oppgitt av stedet, ikke sjekket (demo)"
             >
               <View>
                 {ACCESSIBILITY_OPTIONS.map((a, i) => (

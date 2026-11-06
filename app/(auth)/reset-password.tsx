@@ -64,9 +64,7 @@ export default function ResetPassword() {
             disabled={!ok}
             onPress={() => resetTo("/login")}
           />
-          <DemoNote>
-            Passordet lagres ikke — ingen konto finnes i demoen.
-          </DemoNote>
+          <DemoNote>Passordet lagres ikke. Demoen har ingen kontoer.</DemoNote>
         </View>
       </ScrollView>
     </Screen>

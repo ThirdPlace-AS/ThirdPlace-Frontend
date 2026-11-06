@@ -84,7 +84,7 @@ export default function BecomeCreatorScreen() {
         </View>
 
         <DemoNote>
-          Kravene er eksempler — Skaper-kriteriene er ikke bestemt ennå, og
+          Kravene er eksempler. Kriteriene for Skaper er ikke bestemt, og
           ingenting blir vurdert.
         </DemoNote>
 
@@ -98,7 +98,7 @@ export default function BecomeCreatorScreen() {
               låses opp.
             </Text>
             <DemoNote>
-              Forhåndsvisning — ingen søknad er sendt eller godkjent.
+              Dette er en forhåndsvisning. Ingen søknad er sendt.
             </DemoNote>
           </View>
         ) : null}

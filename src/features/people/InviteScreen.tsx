@@ -74,7 +74,7 @@ export default function InviteScreen() {
           </View>
         </View>
         {notice ? (
-          <DemoNote>Koden er et eksempel — ingenting ble delt.</DemoNote>
+          <DemoNote>Koden er et eksempel. Ingenting ble delt.</DemoNote>
         ) : null}
         <Button
           label="Inviter kontakter"
@@ -124,7 +124,7 @@ export default function InviteScreen() {
           </View>
         ))}
         <DemoNote>
-          Belønningene er eksempler fra designet — ingen fordeler er definert
+          Belønningene er eksempler fra designet. Ingen fordeler er bestemt
           eller opptjent.
         </DemoNote>
       </ScrollView>

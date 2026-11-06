@@ -206,7 +206,7 @@ export default function GroupSwipeScreen() {
             {ready.length} av {friends.length} klare
           </Text>
           <DemoNote>
-            Vennene er eksempler — at de blir klare er simulert, og ingen
+            Vennene er eksempler, og at de blir klare er simulert. Ingen
             invitasjon er sendt.
           </DemoNote>
           <Button

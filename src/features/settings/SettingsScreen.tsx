@@ -224,7 +224,8 @@ function AccountSheet({ visible, onClose }: SheetProps) {
           meta="Sist aktiv for 2 dager siden"
         />
         <DemoNote>
-          Eksempeldata — endringer lagres ikke, og ingen økter logges ut.
+          Dette er eksempeldata. Endringer lagres ikke, og ingen økter logges
+          ut.
         </DemoNote>
         <Button label="Lagre endringer" variant="ink" onPress={onClose} />
       </View>
@@ -293,7 +294,7 @@ function LinkedSheet({ visible, onClose }: SheetProps) {
           med langt trykk på Profil-fanen.
         </Text>
         <DemoNote>
-          Bedriftskontoen er et eksempel — ingen kontoer er koblet.
+          Bedriftskontoen er et eksempel. Ingen kontoer er koblet.
         </DemoNote>
         <Button label="Lukk" variant="secondary" onPress={onClose} />
       </View>
@@ -430,7 +431,7 @@ function LanguageSheet({ visible, onClose }: SheetProps) {
           />
         </View>
         <DemoNote>
-          Appen er bare på norsk i demoen — valget endrer ingenting.
+          Demoen finnes bare på norsk, så valget endrer ingenting.
         </DemoNote>
       </View>
     </Sheet>
@@ -533,8 +534,8 @@ function HelpSheet({ visible, onClose }: SheetProps) {
           ))}
         </View>
         <DemoNote>
-          Svarene og supportsaker er ikke koblet til en tjeneste ennå — ingen
-          sak opprettes.
+          Svar og supportsaker er ikke koblet til noen tjeneste. Ingen sak blir
+          opprettet.
         </DemoNote>
         <Button label="Opprett supportsak" variant="ink" onPress={onClose} />
       </View>

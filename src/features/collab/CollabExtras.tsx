@@ -45,7 +45,7 @@ export function PaymentStatusScreen() {
           </View>
         ))}
         <DemoNote>
-          Strukturen er et eksempel — ingen beløp beregnes eller utbetales.
+          Oppsettet er et eksempel. Ingen beløp regnes ut eller betales ut.
         </DemoNote>
       </ScrollView>
     </Screen>
@@ -95,7 +95,9 @@ export function CollabHistoryScreen() {
             )}
           </View>
         ))}
-        <DemoNote>Eksempelhistorikk — ingen samarbeid er gjennomført.</DemoNote>
+        <DemoNote>
+          Historikken er et eksempel. Ingen samarbeid er gjennomført.
+        </DemoNote>
       </ScrollView>
       {rate ? (
         <RateSheet

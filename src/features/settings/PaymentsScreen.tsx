@@ -56,8 +56,8 @@ export default function PaymentsScreen() {
 
         <Text variant="caption" tone="muted" className="px-1">
           {/* BLOCKED_CONTRACT_GAP: no payment/billing contract. */}
-          Betaling er ikke tilgjengelig i demoen. Denne skjermen viser bare
-          oppsettet — ingen kortdata samles inn og ingen betaling skjer.
+          Betaling er ikke tilgjengelig i demoen. Skjermen viser bare oppsettet.
+          Ingen kortdata samles inn, og ingen betaling skjer.
         </Text>
       </ScrollView>
 

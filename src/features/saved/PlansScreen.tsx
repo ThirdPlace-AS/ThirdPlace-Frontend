@@ -59,7 +59,7 @@ export default function PlansScreen() {
                 />
               ))}
             </View>
-            <DemoNote>Eksempelplaner — ingen reelle påmeldinger.</DemoNote>
+            <DemoNote>Planene er eksempler. Du er ikke påmeldt noe.</DemoNote>
           </View>
         }
         ListEmptyComponent={
