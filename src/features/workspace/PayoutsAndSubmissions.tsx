@@ -94,7 +94,7 @@ const SUBS: Sub[] = [
   {
     name: "Gatefotogalleri, Tøyen",
     status: "Avvist",
-    meta: "Finnes allerede — se eksisterende sted",
+    meta: "Finnes allerede. Se stedet.",
   },
 ];
 const TABS = ["Alle", "Ventende", "Godkjent", "Avvist"] as const;

@@ -9,6 +9,7 @@ import {
   Text,
   Badge,
 } from "@/components/ui";
+import { byStart } from "@/features/workspace/calendarOrder";
 import { Chip } from "@/components/Chip";
 import { DemoBadge } from "@/components/DemoBadge";
 import { DemoNote } from "@/components/DemoNote";
@@ -220,7 +221,7 @@ export function WorkspaceAnalytics() {
 }
 
 export function WorkspaceCalendar() {
-  const upcoming = experiences.filter((e) => e.status !== "cancelled");
+  const upcoming = byStart(experiences.filter((e) => e.status !== "cancelled"));
   return (
     <Screen edges={["top"]}>
       <RouteHeader title="Kalender" />

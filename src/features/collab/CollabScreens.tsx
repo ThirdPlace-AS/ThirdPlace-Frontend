@@ -23,7 +23,9 @@ export function NewCollabScreen() {
   const { listing: listingId } = useLocalSearchParams<{ listing?: string }>();
   const listing = listingById(listingId ?? "") ?? listings[0];
   const [type, setType] = useState("Co-hosting");
-  const [hosting, setHosting] = useState(HOSTING[0] ?? "");
+  // Defaults agree with each other and with the design example (PDF p16:
+  // primær/sekundær co-hosting, 70 / 30).
+  const [hosting, setHosting] = useState(HOSTING[1] ?? "");
   const [split, setSplit] = useState("70 / 30");
   const [msg, setMsg] = useState("");
   const [sent, setSent] = useState(false);

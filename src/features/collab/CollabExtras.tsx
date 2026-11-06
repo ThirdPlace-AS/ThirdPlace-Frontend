@@ -12,7 +12,9 @@ import { RouteHeader } from "@/components/RouteHeader";
 // moved; history and ratings are fixture examples (BLOCKED_CONTRACT_GAP).
 
 const PAY_STEPS: { label: string; done: boolean }[] = [
-  { label: "Avtale signert", done: true },
+  // Same collab and state as the Jazz-samarbeid timeline (PDF p16/p18):
+  // the contract still waits for your signature.
+  { label: "Kontrakt signert", done: false },
   { label: "Opplevelse gjennomført", done: false },
   { label: "Oppgjør klart", done: false },
   { label: "Utbetalt", done: false },
