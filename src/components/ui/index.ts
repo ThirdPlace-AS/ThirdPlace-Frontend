@@ -27,6 +27,7 @@ export { Header, StepContent, StepHeader, TitleBlock } from "./Header";
 export { ChipGroup, type ChipGroupProps } from "./ChipGroup";
 export { Screen } from "./Screen";
 export { StickyFooter } from "./StickyFooter";
+export { ScrollRow } from "./ScrollRow";
 export { Avatar, initialsOf, type AvatarSize } from "./Avatar";
 export { Input, type InputProps } from "./Input";
 export { ListRow, MetaRow, type ListRowVariant } from "./ListRow";

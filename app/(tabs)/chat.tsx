@@ -229,16 +229,30 @@ function ChatRow({ chat, onPress }: { chat: MockChat; onPress: () => void }) {
         size="md"
         decorative
       />
+      {/* Unread rows read as unread: bold name, ink preview and time. */}
       <View className="flex-1 gap-0.5">
-        <Text variant="body" weight="semibold" numberOfLines={1}>
+        <Text
+          variant="body"
+          weight={chat.unread > 0 ? "bold" : "semibold"}
+          numberOfLines={1}
+        >
           {chat.name}
         </Text>
-        <Text variant="caption" tone="muted" numberOfLines={1}>
+        <Text
+          variant="caption"
+          tone={chat.unread > 0 ? "ink" : "muted"}
+          weight={chat.unread > 0 ? "medium" : "regular"}
+          numberOfLines={1}
+        >
           {chat.last}
         </Text>
       </View>
       <View className="items-end gap-1">
-        <Text variant="caption" tone="muted">
+        <Text
+          variant="caption"
+          tone={chat.unread > 0 ? "ink" : "muted"}
+          weight={chat.unread > 0 ? "semibold" : "regular"}
+        >
           {chat.time}
         </Text>
         {chat.unread > 0 ? (

@@ -4,11 +4,12 @@ import { useMemo, useState } from "react";
 import { FlatList, Pressable, ScrollView, TextInput, View } from "react-native";
 
 import {
+  Badge,
+  EmptyState,
   Icon,
   Screen,
   Pressable as UIPressable,
   Text,
-  Badge,
 } from "@/components/ui";
 import { Button } from "@/components/Button";
 import { Chip } from "@/components/Chip";
@@ -149,9 +150,16 @@ export default function MarketplaceScreen() {
           </View>
         }
         ListEmptyComponent={
-          <Text variant="caption" tone="muted" className="py-10 text-center">
-            Ingen listings matcher søket.
-          </Text>
+          <EmptyState
+            fill={false}
+            icon="search-outline"
+            title="Ingen listings matcher søket"
+            actionLabel="Nullstill søk"
+            onAction={() => {
+              setQuery("");
+              setType(null);
+            }}
+          />
         }
         renderItem={({ item }) => (
           <ListingCard listing={item} onPress={() => setSelectedId(item.id)} />

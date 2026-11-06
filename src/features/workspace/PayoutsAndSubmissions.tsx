@@ -2,7 +2,7 @@ import { router } from "expo-router";
 import { useState } from "react";
 import { Pressable, ScrollView, View } from "react-native";
 
-import { Screen, Text, Badge } from "@/components/ui";
+import { Badge, Screen, ScrollRow, Text } from "@/components/ui";
 import { Button } from "@/components/Button";
 import { Chip } from "@/components/Chip";
 import { DemoNote } from "@/components/DemoNote";
@@ -108,16 +108,17 @@ export function SubmissionsScreen() {
         <Text variant="caption" tone="muted">
           Steder du har foreslått til ThirdPlace.
         </Text>
-        <View className="flex-row flex-wrap gap-2">
+        <ScrollRow radio>
           {TABS.map((t) => (
             <Chip
               key={t}
+              role="radio"
               label={t}
               selected={tab === t}
               onPress={() => setTab(t)}
             />
           ))}
-        </View>
+        </ScrollRow>
         {list.map((s) => (
           <View
             key={s.name}

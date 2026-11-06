@@ -101,17 +101,17 @@ No sparkle, magic-wand or "AI" glyphs: they read as machine-made. Use a literal 
 
 All primitives live in `src/components/ui/`. Each one must implement the states that apply to it:
 
-| State                   | Rule                                                                                 |
-| ----------------------- | ------------------------------------------------------------------------------------ |
-| Default                 | Token colours only                                                                   |
-| Pressed                 | Scale 0.97 + tint, `spring.snappy`; opacity-only under reduced motion                |
-| Focused                 | 2 px `ink` focus ring (web / keyboard)                                               |
-| Selected                | Ink fill or filled icon; `accessibilityState.selected`                               |
-| Disabled                | 40 % opacity, no press feedback; `accessibilityState.disabled`                       |
-| Loading                 | Spinner replaces the label, width locked, presses ignored; `accessibilityState.busy` |
-| Error                   | `danger` border + message under the field                                            |
-| Expanded / collapsed    | Animated height; `accessibilityState.expanded`                                       |
-| Empty / error (screens) | `StateView` with an illustration slot and one or two actions                         |
+| State                   | Rule                                                                                                                                                                                                                    |
+| ----------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Default                 | Token colours only                                                                                                                                                                                                      |
+| Pressed                 | Scale 0.97 + tint, `spring.snappy`; opacity-only under reduced motion                                                                                                                                                   |
+| Focused                 | 2 px `ink` focus ring (web / keyboard)                                                                                                                                                                                  |
+| Selected                | Ink fill or filled icon; `accessibilityState.selected`                                                                                                                                                                  |
+| Disabled                | 40 % opacity, no press feedback; `accessibilityState.disabled`. `Button` instead turns muted surface + muted label at full opacity (a faded ink fill read as broken), with a one-line reason under it where one exists. |
+| Loading                 | Spinner replaces the label, width locked, presses ignored; `accessibilityState.busy`                                                                                                                                    |
+| Error                   | `danger` border + message under the field                                                                                                                                                                               |
+| Expanded / collapsed    | Animated height; `accessibilityState.expanded`                                                                                                                                                                          |
+| Empty / error (screens) | `StateView` with an illustration slot and one or two actions                                                                                                                                                            |
 
 Touch targets are at least 44×44 (use `hitSlop` to reach it on small visuals).
 
@@ -126,6 +126,7 @@ Touch targets are at least 44×44 (use `hitSlop` to reach it on small visuals).
 | Empty / error       | `<EmptyState>` / `<ErrorState>` (icon in a soft disc, or an `illustration`).                                                                                                                                                          |
 | Toast               | `showToast()` — ink surface, polite live region, fades in/out. Demo-honest copy only. A demo confirm inside a sheet closes the sheet, then calls `showToastAfterSheet(demoToast.x)` (waits for the exit; the host sits under Modals). |
 | StickyFooter        | Primary action of a flow or single-goal screen, pinned after the scroll area (hairline, page background, `safeBottom` on stack routes). Wizards, Du er nå Skaper!, gruppe-sveip setup, Nytt samarbeid.                                |
+| ScrollRow           | One line of chips or avatars that scrolls sideways and bleeds to the screen edges, instead of wrapping an orphan at 360 dp (tab chips, group-swipe friends and filters).                                                              |
 
 ### Sheets & overlays
 

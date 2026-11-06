@@ -1,7 +1,14 @@
 import { useState } from "react";
 import { Pressable, ScrollView, View } from "react-native";
 
-import { IconButton, Screen, Text, Badge } from "@/components/ui";
+import {
+  Badge,
+  EmptyState,
+  IconButton,
+  Screen,
+  ScrollRow,
+  Text,
+} from "@/components/ui";
 import { Button } from "@/components/Button";
 import { Chip } from "@/components/Chip";
 import { DemoNote } from "@/components/DemoNote";
@@ -31,20 +38,24 @@ export default function MyListingsScreen() {
     <Screen edges={["top"]}>
       <RouteHeader title="Mine listings" />
       <ScrollView contentContainerClassName="gap-3 px-gutter py-4 pb-28">
-        <View className="flex-row flex-wrap gap-2">
+        <ScrollRow radio>
           {TABS.map((t) => (
             <Chip
               key={t}
+              role="radio"
               label={`${t} (${MINE.filter((l) => l.state === t).length})`}
               selected={tab === t}
               onPress={() => setTab(t)}
             />
           ))}
-        </View>
+        </ScrollRow>
         {rows.length === 0 ? (
-          <Text variant="caption" tone="muted" className="py-10 text-center">
-            Ingen listings her ennå.
-          </Text>
+          <EmptyState
+            fill={false}
+            icon="pricetags-outline"
+            title="Ingen listings her ennå"
+            message="Bruk + nederst for å lage en."
+          />
         ) : null}
         {rows.map((l) => (
           <View

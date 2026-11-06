@@ -1,4 +1,4 @@
-import { ScrollView, View } from "react-native";
+import { ScrollView, useWindowDimensions, View } from "react-native";
 
 import { IconButton, Pressable, Text } from "@/components/ui";
 import { media } from "@/theme";
@@ -44,8 +44,13 @@ export function SwipeFilterBar({
 }) {
   const iconVariant = onLight ? "ghost" : "media";
   const iconTone = onLight ? "ink" : "onMedia";
+  // Under 380 dp the three tabs plus three icons do not fit: "Steder" was cut
+  // mid-word at 360 dp. Tighter paddings there; wider phones keep the PDF look.
+  const compact = useWindowDimensions().width < 380;
   return (
-    <View className="flex-row items-center gap-xs px-gutter">
+    <View
+      className={`flex-row items-center gap-xs ${compact ? "px-3" : "px-gutter"}`}
+    >
       <IconButton
         icon="options-outline"
         label="Filtre"
@@ -59,7 +64,7 @@ export function SwipeFilterBar({
       <ScrollView
         horizontal
         showsHorizontalScrollIndicator={false}
-        contentContainerStyle={{ gap: 6, alignItems: "center" }}
+        contentContainerStyle={{ gap: compact ? 2 : 6, alignItems: "center" }}
         className="flex-1"
       >
         {SWIPE_MODES.map((m) => {
@@ -78,8 +83,8 @@ export function SwipeFilterBar({
               // light screen it is the theme ink (so it also works in dark mode).
               contentClassName={
                 active
-                  ? `rounded-full px-3.5 py-2 ${onLight ? "bg-ink" : ""}`
-                  : "px-2.5 py-2"
+                  ? `rounded-full ${compact ? "px-3" : "px-3.5"} py-2 ${onLight ? "bg-ink" : ""}`
+                  : `${compact ? "px-2" : "px-2.5"} py-2`
               }
               contentStyle={
                 active && !onLight

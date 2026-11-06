@@ -50,6 +50,9 @@ export type PressableProps = Omit<RNPressableProps, "children" | "style"> & {
   pressedScale?: number;
   /** Haptic fired on press (default none). */
   haptic?: PressHaptic;
+  /** Fade to 40 % when disabled (default). Off when the child draws its own
+   * disabled look (Button). */
+  dimWhenDisabled?: boolean;
 };
 
 // NativeWind turns `active:`/`focus:` classes into press handlers on the
@@ -78,6 +81,7 @@ export const Pressable = forwardRef<View, PressableProps>(function Pressable(
     feedback = "scale",
     pressedScale = 0.97,
     haptic = "none",
+    dimWhenDisabled = true,
     disabled,
     onPressIn,
     onPressOut,
@@ -129,7 +133,12 @@ export const Pressable = forwardRef<View, PressableProps>(function Pressable(
       style={style}
       {...rest}
     >
-      <Animated.View style={[animated, disabled ? { opacity: 0.4 } : null]}>
+      <Animated.View
+        style={[
+          animated,
+          disabled && dimWhenDisabled ? { opacity: 0.4 } : null,
+        ]}
+      >
         <View
           className={stripInteractive(contentClassName)}
           style={contentStyle}

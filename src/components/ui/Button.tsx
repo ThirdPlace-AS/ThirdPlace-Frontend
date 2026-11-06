@@ -78,7 +78,18 @@ export function Button({
   testID,
 }: ButtonProps) {
   const c = useThemeColors();
-  const fg = FG[variant];
+  // Disabled reads as "not yet", not as a broken colour: filled buttons turn
+  // muted grey with a muted label at full opacity (a 40 % ink fill looked
+  // like white text on mid-grey).
+  const off = disabled && !loading;
+  const fg = off ? "muted" : FG[variant];
+  const bg = off
+    ? variant === "outline"
+      ? BG.outline
+      : variant === "ghost"
+        ? BG.ghost
+        : "bg-surfaceMuted"
+    : BG[variant];
   return (
     <Pressable
       testID={testID}
@@ -90,10 +101,11 @@ export function Button({
       // Busy: ignore presses without the disabled dim (the spinner says busy).
       onPress={loading ? undefined : onPress}
       haptic={haptic}
+      dimWhenDisabled={false}
       className={fullWidth ? "w-full" : "self-start"}
       contentClassName={`flex-row items-center justify-center gap-sm ${PAD[size]} ${
         rounded === "full" ? "rounded-full" : "rounded-md"
-      } ${BG[variant]}`}
+      } ${bg}`}
       contentStyle={{ minHeight: HEIGHT[size] }}
     >
       <View

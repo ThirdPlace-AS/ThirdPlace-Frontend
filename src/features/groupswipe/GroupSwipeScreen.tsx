@@ -15,6 +15,7 @@ import {
   IconButton,
   ListRow,
   Screen,
+  ScrollRow,
   StickyFooter,
   Text,
 } from "@/components/ui";
@@ -111,9 +112,9 @@ export default function GroupSwipeScreen() {
               maxLength={40}
             />
             <Text variant="label" weight="semibold">
-              Inviter venner
+              Inviter venner{invited.length ? ` · ${invited.length} valgt` : ""}
             </Text>
-            <View className="flex-row flex-wrap gap-3">
+            <ScrollRow gap="gap-3">
               {people.map((p) => {
                 const on = invited.includes(p.id);
                 return (
@@ -136,16 +137,27 @@ export default function GroupSwipeScreen() {
                         source={libImage(p.avatar)}
                         style={{ height: 48, width: 48, borderRadius: 24 }}
                       />
+                      {on ? (
+                        // A filled check makes the choice readable at a glance.
+                        <View className="absolute -bottom-0.5 -right-0.5 h-5 w-5 items-center justify-center rounded-full border-2 border-background bg-ink">
+                          <Icon name="checkmark" size="sm" tone="onInk" />
+                        </View>
+                      ) : null}
                     </View>
-                    <Text variant="caption">{p.name.split(" ")[0]}</Text>
+                    <Text
+                      variant="caption"
+                      weight={on ? "semibold" : "regular"}
+                    >
+                      {p.name.split(" ")[0]}
+                    </Text>
                   </Pressable>
                 );
               })}
-            </View>
+            </ScrollRow>
             <Text variant="label" weight="semibold">
               Filtre for gruppen
             </Text>
-            <View className="flex-row flex-wrap gap-2">
+            <ScrollRow>
               {FILTERS.map((f) => (
                 <Chip
                   key={f}
@@ -158,20 +170,21 @@ export default function GroupSwipeScreen() {
                   }
                 />
               ))}
-            </View>
+            </ScrollRow>
             <Text variant="label" weight="semibold">
               Tid tilgjengelig
             </Text>
-            <View className="flex-row flex-wrap gap-2">
+            <ScrollRow radio>
               {TIMES.map((t) => (
                 <Chip
                   key={t}
+                  role="radio"
                   label={t}
                   selected={time === t}
                   onPress={() => setTime(t)}
                 />
               ))}
-            </View>
+            </ScrollRow>
             <View className="rounded-md bg-surfaceMuted p-3">
               <Text variant="label" weight="regular">
                 Alle ser de samme kortene. Det blir match når alle sveiper til

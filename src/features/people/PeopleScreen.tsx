@@ -3,6 +3,7 @@ import { useState } from "react";
 import { FlatList, View } from "react-native";
 
 import {
+  EmptyState,
   FollowButton,
   Header,
   Icon,
@@ -61,15 +62,28 @@ export default function PeopleScreen() {
         keyExtractor={(p) => p.id}
         contentContainerClassName="px-gutter pb-10"
         ListEmptyComponent={
-          <Text variant="caption" tone="muted" className="py-10 text-center">
-            Ingen treff. Prøv et annet filter.
-          </Text>
+          <EmptyState
+            fill={false}
+            icon="people-outline"
+            title="Ingen treff"
+            message="Prøv et annet filter."
+            actionLabel="Vis alle"
+            onAction={() => {
+              setTab("all");
+              setFilterTags([]);
+            }}
+          />
         }
         ListHeaderComponent={
           <View className="gap-3 pb-3 pt-1">
             <Text variant="caption" tone="muted">
               Folk du kanskje vil bli kjent med.
             </Text>
+            {/* The list shows example people with "felles" counts and Følg:
+                say so here, not only inside the person sheet. */}
+            <DemoNote>
+              Personene og «felles» er eksempler. Å følge lagrer ingenting.
+            </DemoNote>
             <View className="flex-row flex-wrap items-center gap-2">
               <Chip
                 label="Alle"
