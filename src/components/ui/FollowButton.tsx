@@ -14,6 +14,7 @@ export function FollowButton({
   size = "sm",
   name,
   fullWidth = false,
+  followLabel = "Følg",
 }: {
   following: boolean;
   onPress: () => void;
@@ -22,6 +23,8 @@ export function FollowButton({
   /** Who is followed — makes the label specific for screen readers. */
   name?: string;
   fullWidth?: boolean;
+  /** Label while not following, e.g. "Følg tilbake" for a follower (PDF p13). */
+  followLabel?: string;
 }) {
   const reduced = useReducedMotion();
   const height = size === "md" ? 52 : 36;
@@ -33,7 +36,7 @@ export function FollowButton({
       accessibilityLabel={
         following
           ? `Slutt å følge${name ? ` ${name}` : ""}`
-          : `Følg${name ? ` ${name}` : ""}`
+          : `${followLabel}${name ? ` ${name}` : ""}`
       }
       accessibilityState={{ selected: following }}
       haptic="selection"
@@ -54,7 +57,7 @@ export function FollowButton({
           weight="semibold"
           tone={following ? "ink" : "onInk"}
         >
-          {following ? "Følger" : "Følg"}
+          {following ? "Følger" : followLabel}
         </Text>
       </Animated.View>
     </Pressable>

@@ -96,7 +96,7 @@ Directory routes with no PDF page (`experiences`, `places`, `groups`,
 - **Native verification outstanding** for real GPS/heading and haptics on a
   physical device (see `docs/map/MAP_BLOCKERS.md`, NV register).
 - **iOS keyboard layouts unverified** — `KeyboardAvoidingView` padding (0201) was checked on Android only.
-- **PDF screens still missing** — p13 Preferanser, Følgere / Følger and Venner, and p18 Marketplace Venteliste (status per page in `docs/SCREEN_INVENTORY.md`, "Pages").
+- **PDF screens still missing** — p18 Marketplace Venteliste (status per page in `docs/SCREEN_INVENTORY.md`, "Pages").
 
 ## Phase 6 review (2026-11-06)
 
@@ -176,6 +176,8 @@ Founder decision 2026-11-06: content you read, browse or fill in is a page, not 
 
 PDF screens that were still missing, built on fixtures (2026-11-07).
 
-| Surface           | Route                          | Opened from          | Status                                                                                            | Ledger |
-| ----------------- | ------------------------------ | -------------------- | ------------------------------------------------------------------------------------------------- | ------ |
-| Preferanser (p13) | `app/settings/preferences.tsx` | Innstillinger, Konto | demo-complete; shared in-memory store (`src/lib/preferences.ts`), onboarding answers carried over | 0251   |
+| Surface                | Route                                          | Opened from          | Status                                                                                                                        | Ledger |
+| ---------------------- | ---------------------------------------------- | -------------------- | ----------------------------------------------------------------------------------------------------------------------------- | ------ |
+| Følgere / Følger (p13) | `app/profile/followers.tsx` (`?tab=following`) | Profil counts        | demo-complete; counts are the list lengths; "Følg tilbake" for followers; follows shared with Oppdag folk and the person page | 0253   |
+| Venner (p13)           | `app/profile/friends.tsx`                      | Profil count         | demo-complete; mutual follows, search, DM opens or starts the direct message; "Sist aktiv" left out (presence)                | 0253   |
+| Preferanser (p13)      | `app/settings/preferences.tsx`                 | Innstillinger, Konto | demo-complete; shared in-memory store (`src/lib/preferences.ts`), onboarding answers carried over                             | 0251   |

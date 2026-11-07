@@ -2768,8 +2768,12 @@ export const profile = {
   bio: "Kaffeelsker · alltid klar for en fotowalk",
   avatar: "person-ola" as const, // key into fixtures/images LIBRARY
   memberSince: "Medlem siden 2024", // MOCK label
-  // MOCK counts — not a real follow graph (PDF p12: Følgere / Følger / Venner)
-  stats: { followers: 48, following: 61, friends: 12 },
+  // MOCK follow lists (ids from `people`), not a real follow graph. Profil's
+  // Følgere / Følger / Venner (PDF p12) are counted from these lists: who
+  // follows you, and who you follow when the session starts (src/lib/following.ts
+  // keeps follows made after that). Venner = both ways.
+  followerIds: ["u1", "u2", "u3", "u5", "u6", "u7"] as string[],
+  followingIds: ["u3", "u4", "u5"] as string[],
   interests: ["Kaffe", "Jazz", "Fotografi", "Brettspill"], // MOCK tags
   // "Veien til Skaper" card (PDF p12/p14). Illustrative copy only — the real
   // creator criteria are not defined (master spec §10: do not fabricate tiers).

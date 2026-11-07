@@ -20,6 +20,7 @@ import { SignInPrompt } from "@/components/SignInPrompt";
 import { useGuestMode } from "@/components/map/hooks/useGuestMode";
 import { tagIcon } from "@/components/swipe/SwipeCard";
 import { experienceById, placeById, profile } from "@/fixtures";
+import { useProfileCounts } from "@/lib/following";
 import { useMyProfile } from "@/lib/myProfile";
 import {
   coverForPlace,
@@ -38,11 +39,13 @@ const TABS: { key: Tab; label: string }[] = [
 // Profile, laid out per the design (PDF p12): header with name +
 // age and bio, Følgere / Følger / Venner, interest chips, the "Veien til
 // Skaper" card, and Opplevelser / Steder / Anmeldelser tabs. Settings sit
-// behind the gear. BLOCKED_CONTRACT_GAP: no account, follow graph, review or
-// creator-progression backend — every count is mock and marked as such.
+// behind the gear. Følgere / Følger / Venner are counted from the fixture
+// follow lists and open them (PDF p13). BLOCKED_CONTRACT_GAP: no account,
+// follow graph, review or creator-progression backend; everything is MOCK.
 export default function ProfileScreen() {
   const { isGuest } = useGuestMode();
   const me = useMyProfile();
+  const counts = useProfileCounts();
   const [tab, setTab] = useState<Tab>("experiences");
   const [signIn, setSignIn] = useState(false);
 
@@ -105,18 +108,26 @@ export default function ProfileScreen() {
               </View>
             </UIPressable>
 
+            {/* Counted from the follow lists (src/lib/following.ts); each
+                opens its list (PDF p13). */}
             <View className="flex-row items-center gap-8">
-              <Stat value={profile.stats.followers} label="Følgere" />
-              <Stat value={profile.stats.following} label="Følger" />
-              <UIPressable
-                accessibilityRole="button"
-                accessibilityLabel={`${profile.stats.friends} venner, oppdag folk`}
-                onPress={() => router.push("/people" as Href)}
-              >
-                <Stat value={profile.stats.friends} label="Venner" />
-              </UIPressable>
-              {/* Counts are fixture numbers: badge at the row end, not wedged
-                  between the stats. */}
+              <Stat
+                value={counts.followers}
+                label="Følgere"
+                onPress={() => router.push("/profile/followers" as Href)}
+              />
+              <Stat
+                value={counts.following}
+                label="Følger"
+                onPress={() =>
+                  router.push("/profile/followers?tab=following" as Href)
+                }
+              />
+              <Stat
+                value={counts.friends}
+                label="Venner"
+                onPress={() => router.push("/profile/friends" as Href)}
+              />
             </View>
 
             <View className="flex-row flex-wrap gap-2">
@@ -172,16 +183,29 @@ function GuestProfile({ onSignIn }: { onSignIn: () => void }) {
   );
 }
 
-function Stat({ value, label }: { value: number; label: string }) {
+function Stat({
+  value,
+  label,
+  onPress,
+}: {
+  value: number;
+  label: string;
+  onPress: () => void;
+}) {
   return (
-    <View accessible accessibilityLabel={`${value} ${label.toLowerCase()}`}>
+    <UIPressable
+      accessibilityRole="button"
+      accessibilityLabel={`${value} ${label.toLowerCase()}`}
+      onPress={onPress}
+      hitSlop={8}
+    >
       <Text variant="title" weight="bold">
         {value}
       </Text>
       <Text variant="caption" tone="muted">
         {label}
       </Text>
-    </View>
+    </UIPressable>
   );
 }
 

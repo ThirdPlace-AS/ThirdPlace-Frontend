@@ -7,6 +7,7 @@ import { act, renderHook } from "@testing-library/react-native";
 
 import { routeFor } from "@/lib/entityRoutes";
 import { resetFollowing, toggleFollow, useFollowing } from "@/lib/following";
+import { profile } from "@/fixtures";
 import { goBackOr } from "@/lib/navigation";
 
 const mockBack = jest.fn();
@@ -73,6 +74,7 @@ describe("following store", () => {
     expect(b.result.current.has("u1")).toBe(false);
     act(() => toggleFollow("u2"));
     act(() => resetFollowing());
-    expect(a.result.current.size).toBe(0);
+    // Reset goes back to the fixture list (profile.followingIds).
+    expect([...a.result.current]).toEqual(profile.followingIds);
   });
 });
