@@ -1,12 +1,12 @@
 import { router } from "expo-router";
 
 import { Tabs } from "expo-router/js-tabs";
-import { View, type ColorValue } from "react-native";
+import { type ColorValue } from "react-native";
 
 import { Icon, type IconName } from "@/components/ui";
 import { useUnreadChatCount } from "@/lib/chatReads";
 import { haptics } from "@/lib/haptics";
-import { useScheme, useThemeColors } from "@/theme";
+import { useThemeColors } from "@/theme";
 import { fontFamilyFor } from "@/theme/fonts";
 
 // Outline when idle, filled when active — the usual iOS/Android tab convention.
@@ -24,45 +24,6 @@ function icon(idle: IconName, active: IconName) {
   }) => <Icon name={focused ? active : idle} color={String(color)} size="lg" />;
   Comp.displayName = `TabIcon(${idle})`;
   return Comp;
-}
-
-// Center "Legg til": TikTok-style in our colours (founder 2026-11-06) — an
-// ink rounded rectangle with a white "+", an ember layer peeking out on the
-// left and a grey one on the right, with the "Legg til" label underneath
-// like the other tabs. In dark mode ink is white, so the right layer uses the
-// muted grey to stay visible against the white button and the dark bar.
-// While Legg til is not the open tab the button is grey like the other idle
-// tabs (founder 2026-11-07): a muted rectangle with both side layers in the
-// line grey. The colours come back while the tab is open.
-const ADD_BUTTON = { w: 40, h: 28, peek: 3 } as const;
-function AddIcon({ focused }: { focused: boolean }) {
-  const dark = useScheme() === "dark";
-  const { w, h, peek } = ADD_BUTTON;
-  const leftLayer = focused ? "bg-ember" : "bg-line";
-  const rightLayer = focused && dark ? "bg-muted" : "bg-line";
-  const face = focused ? "bg-ink" : "bg-muted";
-  return (
-    <View
-      accessible={false}
-      style={{ width: w + peek * 2, height: h }}
-      className="items-center justify-center"
-    >
-      <View
-        className={`absolute rounded-sm ${leftLayer}`}
-        style={{ left: 0, width: w, height: h }}
-      />
-      <View
-        className={`absolute rounded-sm ${rightLayer}`}
-        style={{ right: 0, width: w, height: h }}
-      />
-      <View
-        className={`items-center justify-center rounded-sm ${face}`}
-        style={{ width: w, height: h }}
-      >
-        <Icon name="add" size="md" tone="onInk" />
-      </View>
-    </View>
-  );
 }
 
 // The tab bar is always visible. It used to collapse as the map browse sheet
@@ -104,7 +65,10 @@ export default function TabsLayout() {
         name="add"
         options={{
           title: "Legg til",
-          tabBarIcon: AddIcon,
+          // Same convention as the other tabs (founder 2026-11-07): a plus in
+          // a rounded square, outline and grey while idle, filled ember while
+          // open. It replaced the TikTok-style button of 2026-11-06.
+          tabBarIcon: icon("tp-add", "tp-add-filled"),
         }}
       />
       <Tabs.Screen

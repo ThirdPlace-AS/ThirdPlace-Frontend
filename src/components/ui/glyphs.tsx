@@ -103,6 +103,33 @@ function SwipeFilled({ size, color }: GlyphProps) {
   );
 }
 
+/** Legg til (centre tab, founder 2026-11-07: like the other tabs) — a plus
+ * in a rounded square. Idle: outline with the shared stroke. */
+function Add({ size, color }: GlyphProps) {
+  return (
+    <Frame size={size}>
+      <Rect x={3.5} y={3.5} width={17} height={17} rx={4.5} {...line(color)} />
+      <Path d="M12 8.25v7.5M8.25 12h7.5" {...line(color)} />
+    </Frame>
+  );
+}
+
+// Active: the square filled to the outline's outer edge (2.625–21.375) with
+// the plus cut out (evenodd), so the bar shows through it; a glyph gets no
+// background colour to draw the plus with. The cut-out keeps the outline's
+// round ends (arcs of half the stroke).
+const ADD_FILLED =
+  "M8 2.625h8A5.375 5.375 0 0 1 21.375 8v8A5.375 5.375 0 0 1 16 21.375H8A5.375 5.375 0 0 1 2.625 16V8A5.375 5.375 0 0 1 8 2.625z" +
+  "M11.125 8.25a.875.875 0 0 1 1.75 0v2.875h2.875a.875.875 0 0 1 0 1.75h-2.875v2.875a.875.875 0 0 1-1.75 0v-2.875H8.25a.875.875 0 0 1 0-1.75h2.875z";
+
+function AddFilled({ size, color }: GlyphProps) {
+  return (
+    <Frame size={size}>
+      <Path d={ADD_FILLED} fill={color} fillRule="evenodd" />
+    </Frame>
+  );
+}
+
 /** GPS-ankomst — a pin with a check: "you are here". */
 function Arrival({ size, color }: GlyphProps) {
   return (
@@ -141,6 +168,8 @@ export const glyphs = {
   "tp-experience": Experience,
   "tp-swipe": Swipe,
   "tp-swipe-filled": SwipeFilled,
+  "tp-add": Add,
+  "tp-add-filled": AddFilled,
   "tp-arrival": Arrival,
   "tp-business": Business,
 } as const;
