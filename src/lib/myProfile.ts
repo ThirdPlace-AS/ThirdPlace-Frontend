@@ -56,6 +56,25 @@ export function resetMyProfile() {
   emit();
 }
 
+export type MyProfileDraft = Omit<MyProfile, "age">;
+
+/** Rediger profil: does the draft differ from what is saved? Interests
+ *  compare by content, so ticking one off and on again is no change. */
+export function profileDraftChanged(
+  saved: MyProfile,
+  draft: MyProfileDraft,
+): boolean {
+  const same = (a: readonly string[], b: readonly string[]) =>
+    a.length === b.length && a.every((x) => b.includes(x));
+  return (
+    saved.name !== draft.name ||
+    saved.bio !== draft.bio ||
+    saved.languages !== draft.languages ||
+    saved.avatar !== draft.avatar ||
+    !same(saved.interests, draft.interests)
+  );
+}
+
 export function getMyProfile(): MyProfile {
   return current;
 }

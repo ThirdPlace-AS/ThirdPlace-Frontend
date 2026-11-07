@@ -25,3 +25,15 @@ require("react-native-gesture-handler/jestSetup");
 jest.mock("@react-native-async-storage/async-storage", () =>
   require("@react-native-async-storage/async-storage/jest/async-storage-mock"),
 );
+
+// Pages that ask before they are left (src/lib/useConfirmLeave.ts) use
+// react-navigation's usePreventRemove, which needs a navigator. Screens render
+// without one under Jest: the hook only records its arguments (a test can run
+// the callback), and navigation is one shared stub.
+jest.mock("expo-router/react-navigation", () => {
+  const navigation = { dispatch: jest.fn() };
+  return {
+    usePreventRemove: jest.fn(),
+    useNavigation: () => navigation,
+  };
+});

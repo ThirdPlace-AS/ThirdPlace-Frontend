@@ -24,7 +24,8 @@ import { useGuestMode } from "@/components/map/hooks/useGuestMode";
 import { tagIcon } from "@/components/swipe/SwipeCard";
 import { experienceById, placeById, profile } from "@/fixtures";
 import { useProfileCounts } from "@/lib/following";
-import { useMyProfile } from "@/lib/myProfile";
+import { useMyProfile, type MyProfile } from "@/lib/myProfile";
+import { openProfileSteps, PROFILE_STEP_COUNT } from "@/lib/profileSteps";
 import {
   coverForPlace,
   libImage,
@@ -160,6 +161,8 @@ export default function ProfileScreen() {
               ))}
             </View>
 
+            <FinishProfileCard me={me} />
+
             <NextPlanCard />
 
             <CreatorPathCard />
@@ -228,6 +231,47 @@ function Stat({
         {label}
       </Text>
     </UIPressable>
+  );
+}
+
+// "Fullfør profilen" (Phase 18, screen benchmark): the Rediger profil fields
+// still empty, each opening the page; gone once everything is filled in.
+function FinishProfileCard({ me }: { me: MyProfile }) {
+  const open = openProfileSteps(me);
+  if (open.length === 0) return null;
+  const done = PROFILE_STEP_COUNT - open.length;
+  return (
+    <View className="gap-3 rounded-lg border border-line bg-surface p-4">
+      <View className="gap-1">
+        <Text variant="body" weight="semibold" accessibilityRole="header">
+          Fullfør profilen
+        </Text>
+        <Text variant="caption" tone="muted">
+          {done} av {PROFILE_STEP_COUNT} er på plass
+        </Text>
+      </View>
+      <View
+        accessibilityRole="progressbar"
+        accessibilityLabel="Fullfør profilen"
+        accessibilityValue={{ min: 0, max: PROFILE_STEP_COUNT, now: done }}
+        className="h-1.5 overflow-hidden rounded-full bg-surfaceMuted"
+      >
+        <View
+          className="h-full rounded-full bg-ink"
+          style={{ width: `${(done / PROFILE_STEP_COUNT) * 100}%` }}
+        />
+      </View>
+      <View>
+        {open.map((s) => (
+          <ListRow
+            key={s.key}
+            icon={s.icon}
+            title={s.label}
+            onPress={() => router.push("/profile/edit" as Href)}
+          />
+        ))}
+      </View>
+    </View>
   );
 }
 
