@@ -410,8 +410,8 @@ export function RateSheet({
   heading?: string;
   chips?: string[];
   chipsLabel?: string;
-  /** Lets the caller mark the item as rated locally. */
-  onSent?: () => void;
+  /** Lets the caller keep the answer locally (stars and what was good). */
+  onSent?: (rating: { stars: number; liked: string[] }) => void;
 }) {
   const [stars, setStars] = useState(0);
   const [liked, setLiked] = useState<string[]>([]);
@@ -459,7 +459,7 @@ export function RateSheet({
           variant="ink"
           disabled={stars === 0}
           onPress={() => {
-            onSent?.();
+            onSent?.({ stars, liked });
             onClose();
             showToastAfterSheet(confirmToast.ratingSent);
           }}

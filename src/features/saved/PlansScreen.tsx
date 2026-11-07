@@ -11,6 +11,7 @@ import { RouteHeader } from "@/components/RouteHeader";
 import { EmptyState } from "@/components/states/StateView";
 import { MonthGrid } from "@/components/MonthGrid";
 import { isoDay } from "@/lib/dates";
+import { myRatingLabel, saveMyRating, useMyRatings } from "@/lib/myRatings";
 import {
   chatForExperience,
   experienceById,
@@ -71,7 +72,10 @@ export default function PlansScreen() {
   const [sheet, setSheet] = useState<{
     kind: "rate" | "offer";
     title: string;
+    id: string;
   } | null>(null);
+  // Phase 18: a sent "Hvordan var det?" stays on its plan row.
+  const myRatings = useMyRatings();
 
   return (
     <Screen edges={["top"]}>
@@ -186,17 +190,31 @@ export default function PlansScreen() {
                 </Text>
               </UIPressable>
               {item.state === "past" ? (
-                <View className="flex-row flex-wrap gap-x-5">
-                  <PlanAction
-                    label="Vurder opplevelsen"
-                    onPress={() => setSheet({ kind: "rate", title: exp.title })}
-                  />
+                <View className="flex-row flex-wrap items-center gap-x-5">
+                  {myRatings[exp.id] ? (
+                    <Text
+                      variant="caption"
+                      weight="medium"
+                      accessibilityLabel={`Din vurdering: ${myRatings[exp.id]!.stars} av 5 stjerner`}
+                    >
+                      Din vurdering: {myRatingLabel(myRatings[exp.id]!)}
+                    </Text>
+                  ) : (
+                    <PlanAction
+                      label="Vurder opplevelsen"
+                      onPress={() =>
+                        setSheet({ kind: "rate", title: exp.title, id: exp.id })
+                      }
+                    />
+                  )}
                   <HelpAction id={exp.id} />
                 </View>
               ) : item.state === "waitlisted" ? (
                 <PlanAction
                   label="Se venteliste-tilbud"
-                  onPress={() => setSheet({ kind: "offer", title: exp.title })}
+                  onPress={() =>
+                    setSheet({ kind: "offer", title: exp.title, id: exp.id })
+                  }
                 />
               ) : null}
               {item.state === "cancelled" ? <HelpAction id={exp.id} /> : null}
@@ -239,7 +257,11 @@ export default function PlansScreen() {
         }}
       />
       {sheet?.kind === "rate" ? (
-        <RateSheet title={sheet.title} onClose={() => setSheet(null)} />
+        <RateSheet
+          title={sheet.title}
+          onClose={() => setSheet(null)}
+          onSent={(r) => saveMyRating(sheet.id, r)}
+        />
       ) : null}
       {sheet?.kind === "offer" ? (
         <SpotOfferSheet title={sheet.title} onClose={() => setSheet(null)} />

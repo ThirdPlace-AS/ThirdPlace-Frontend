@@ -1,3 +1,4 @@
+import { router, type Href } from "expo-router";
 import { useState } from "react";
 import { View } from "react-native";
 
@@ -6,14 +7,36 @@ import { Button } from "@/components/Button";
 import { Card } from "@/components/Card";
 import { GuestLock } from "@/components/GuestLock";
 import { SignInPrompt } from "@/components/SignInPrompt";
-import { groupById } from "@/fixtures";
+import { experiences, groupById, sessionsFor } from "@/fixtures";
 import { libImage } from "@/fixtures/images";
+import { shortSessionLabel } from "@/lib/dates";
 import { membersLabel } from "@/lib/format";
 import { haptics } from "@/lib/haptics";
-import { Text } from "@/components/ui";
+import { ListRow, Text } from "@/components/ui";
 
 import { Gallery } from "../Gallery";
 import { useGuestMode } from "../hooks/useGuestMode";
+
+// Phase 18 (founder, screen benchmark: Meetup, Spond): the page leads with
+// "Neste møte", the group's next experience from the fixtures, and shows the
+// group's "Regler" in its creator's words when it has any.
+export function nextMeeting(groupId: string, now = new Date()) {
+  let best: { id: string; title: string; start: Date; where: string } | null =
+    null;
+  for (const e of experiences) {
+    if (e.groupId !== groupId || e.status === "cancelled") continue;
+    const s = sessionsFor(e, now, 1)[0];
+    if (s && (!best || s.start < best.start)) {
+      best = {
+        id: e.id,
+        title: e.title,
+        start: s.start,
+        where: e.meetingPoint.name,
+      };
+    }
+  }
+  return best;
+}
 
 export function GroupContent({ id }: { id: string }) {
   const group = groupById(id);
@@ -52,6 +75,19 @@ export function GroupContent({ id }: { id: string }) {
         {membersLabel(group.memberCount)}
       </Text>
 
+      <NextMeeting groupId={group.id} />
+
+      {group.rules ? (
+        <View className="gap-1">
+          <Text variant="body" weight="semibold" accessibilityRole="header">
+            Regler
+          </Text>
+          <Text variant="label" weight="regular">
+            {group.rules}
+          </Text>
+        </View>
+      ) : null}
+
       <Card>
         <View className="gap-2">
           <Text variant="body" weight="semibold">
@@ -79,6 +115,26 @@ export function GroupContent({ id }: { id: string }) {
         visible={promptOpen}
         onClose={() => setPromptOpen(false)}
         action="bli medlem"
+      />
+    </View>
+  );
+}
+
+function NextMeeting({ groupId }: { groupId: string }) {
+  const [now] = useState(() => new Date());
+  const next = nextMeeting(groupId, now);
+  if (!next) return null;
+  return (
+    <View className="gap-2">
+      <Text variant="body" weight="semibold" accessibilityRole="header">
+        Neste møte
+      </Text>
+      <ListRow
+        variant="card"
+        icon="calendar-outline"
+        title={next.title}
+        subtitle={`${shortSessionLabel(next.start, now)} · ${next.where}`}
+        onPress={() => router.push(`/experience/${next.id}` as Href)}
       />
     </View>
   );

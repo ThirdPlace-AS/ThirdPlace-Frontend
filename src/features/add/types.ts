@@ -43,6 +43,8 @@ export type AddDraft = {
   // Group: interests and who can join.
   interests: string[];
   groupAccess: MockChatAccess;
+  // Phase 18: the group's rules in its creator's words (optional).
+  groupRules: string;
 };
 
 export const EMPTY_DRAFT: AddDraft = {
@@ -70,6 +72,7 @@ export const EMPTY_DRAFT: AddDraft = {
   steps: [],
   interests: [],
   groupAccess: "open",
+  groupRules: "",
 };
 
 export type StepKey =

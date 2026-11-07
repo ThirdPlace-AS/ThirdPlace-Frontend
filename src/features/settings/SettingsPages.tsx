@@ -481,6 +481,12 @@ export function HelpScreen() {
         // the case is sent.
         onPress={() => router.push("/settings/support" as Href)}
       />
+      {/* Phase 18 (screen benchmark): ideas, problems and praise. */}
+      <Button
+        label="Send tilbakemelding"
+        variant="secondary"
+        onPress={() => router.push("/settings/feedback" as Href)}
+      />
     </Page>
   );
 }

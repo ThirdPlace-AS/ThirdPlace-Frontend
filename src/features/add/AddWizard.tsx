@@ -250,6 +250,7 @@ export function AddWizard() {
           area: draft.area ?? "Oslo",
           photos: draft.photos.map((i) => GROUP_POOL[i]!),
           access: draft.groupAccess,
+          rules: draft.groupRules,
         }),
       );
     } else if (draft.kind === "experience" && !editing) {
@@ -905,6 +906,16 @@ function StepBody({
               onPress={() => patch({ groupAccess: a.value })}
             />
           ))}
+          {/* Phase 18 (screen benchmark): the group's rules, in the
+              creator's words; shown on the group page. */}
+          <Input
+            label="Regler for gruppen"
+            placeholder="Valgfritt: det som gjelder hos dere"
+            value={draft.groupRules}
+            onChangeText={(t) => patch({ groupRules: t })}
+            multiline
+            maxLength={500}
+          />
         </Shell>
       );
 
@@ -970,6 +981,16 @@ function ReviewStep({ draft }: { draft: AddDraft }) {
               ""
             }
           />
+          {draft.groupRules.trim() ? (
+            <View className="gap-1">
+              <Text variant="label" weight="semibold">
+                Regler
+              </Text>
+              <Text variant="caption" tone="muted">
+                {draft.groupRules.trim()}
+              </Text>
+            </View>
+          ) : null}
           <View className="flex-row flex-wrap gap-2">
             {draft.interests.map((v) => (
               <View key={v} className="rounded-full bg-surfaceMuted px-3 py-1">

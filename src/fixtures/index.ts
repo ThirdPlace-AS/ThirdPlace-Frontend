@@ -1812,6 +1812,9 @@ export type MockGroup = {
   photos: LibraryKey[]; // MOCK gallery, cover first (at least two)
   // Created by the viewer in Legg til (src/fixtures/created.ts): they are in it.
   mine?: boolean;
+  // Phase 18: "Regler", in the group's own words (written by its creator in
+  // the Gruppe wizard). MOCK text for the fixture groups; not app rules.
+  rules?: string;
 };
 
 export const groups: MockGroup[] = [
@@ -1819,6 +1822,8 @@ export const groups: MockGroup[] = [
     id: "g1",
     name: "Morgenkaffe-gjengen",
     about: "Folk som møtes til kaffe i helgene.",
+    rules:
+      "Alle er velkomne, også om du kommer alene. Si fra i chatten om du ikke rekker det.",
     memberCount: 34,
     members: ["MM", "TT", "ÅK", "JB", "ND"],
     cover: "group-coffee",
@@ -1828,6 +1833,7 @@ export const groups: MockGroup[] = [
     id: "g2",
     name: "Løkka Lesesirkel",
     about: "Månedlig lesesirkel på Grünerløkka.",
+    rules: "Les så mye du rekker, ingen spoilere i chatten før møtet.",
     memberCount: 18,
     members: ["ÅK", "PO", "IS"],
     cover: "group-books",
@@ -1837,6 +1843,7 @@ export const groups: MockGroup[] = [
     id: "g3",
     name: "Naturvin-klubben",
     about: "Vi smaker naturvin sammen én gang i måneden.",
+    rules: "Ta med noe å spise til å dele. Vi bytter på hvem som velger vin.",
     memberCount: 52,
     members: ["TT", "MM", "KN"],
     cover: "group-wine",

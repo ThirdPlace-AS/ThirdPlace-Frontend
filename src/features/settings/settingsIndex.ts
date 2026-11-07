@@ -61,7 +61,7 @@ export const PAGE_ROWS = {
     "Reduser bevegelse",
     "Vis kun rullestolvennlige",
   ],
-  "Hjelp og støtte": ["Opprett supportsak"],
+  "Hjelp og støtte": ["Opprett supportsak", "Send tilbakemelding"],
   "Om ThirdPlace": ["Lisenser"],
 } as const satisfies Record<string, readonly string[]>;
 

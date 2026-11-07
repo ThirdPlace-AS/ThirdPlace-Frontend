@@ -113,6 +113,8 @@ export type NewGroupInput = {
   area: string;
   photos: LibraryKey[];
   access: MockChatAccess;
+  /** Optional, the creator's own words (Phase 18). */
+  rules?: string;
 };
 
 /** Creates a group and its group chat; returns both ids. */
@@ -132,6 +134,7 @@ export function createGroup(input: NewGroupInput): {
     cover: input.photos[0]!,
     photos: input.photos,
     mine: true,
+    ...(input.rules?.trim() ? { rules: input.rules.trim() } : {}),
   };
   const chat: MockChat = {
     id: chatId,

@@ -25,6 +25,7 @@ export const confirmToast = {
   accountDeleted: { title: "Kontoen er slettet", icon: ok },
   reviewSent: { title: "Takk for anmeldelsen", icon: "star-outline" },
   ratingSent: { title: "Takk for vurderingen", icon: "star-outline" },
+  feedbackSent: { title: "Takk for tilbakemeldingen", icon: ok },
   reportSent: { title: "Takk, rapporten er sendt", icon: ok },
   linkCopied: { title: "Lenken er kopiert", icon: "copy-outline" },
   sharedInMessage: { title: "Delt i en melding", icon: "paper-plane-outline" },

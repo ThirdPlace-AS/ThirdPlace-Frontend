@@ -1,5 +1,6 @@
 import { resetBlocked } from "@/lib/blocked";
 import { resetMyProfile } from "@/lib/myProfile";
+import { resetMyRatings } from "@/lib/myRatings";
 import { resetTo } from "@/lib/navigation";
 import { resetPinnedChats } from "@/lib/pinnedChats";
 import { resetPreferences } from "@/lib/preferences";
@@ -19,5 +20,6 @@ export function signOut() {
   resetBlocked();
   resetPrivacyPrefs();
   resetPinnedChats();
+  resetMyRatings();
   resetTo("/welcome");
 }
