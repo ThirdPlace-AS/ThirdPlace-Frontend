@@ -91,6 +91,9 @@ const TAG_ITEMS = PLACE_TAGS.map((t) => ({
 // When-quick chips → the TimeWindow axis (I dag/I morgen/Helg) used by discovery.
 const WHEN_CHIPS: { label: string; time: MapFilters["time"] }[] = [
   { label: "I dag", time: "I dag" },
+  // Phase 18 (founder, screen benchmark): today after 17.00, i.e. "I dag"
+  // plus Tid på dagen "Kveld", both visible in the sheet.
+  { label: "I kveld", time: "I dag" },
   { label: "I morgen", time: "I morgen" },
   { label: "Denne uka", time: "Denne uka" },
   { label: "Helg", time: "Helg" },
@@ -149,7 +152,12 @@ const WHEN_RANGES: Record<string, WhenRange> = (() => {
     Helg: { start: isoD(sat), end: isoD(sun) },
   };
 })();
+// "I kveld" is "I dag" with only "Kveld" ticked under Tid på dagen.
+const kveldOnly = (f: Pick<MapFilters, "time" | "timeOfDay">) =>
+  f.time === "I dag" && f.timeOfDay.length === 1 && f.timeOfDay[0] === "kveld";
+
 function whenChipSubtitle(label: string): string {
+  if (label === "I kveld") return "Etter kl. 17.00";
   const r = WHEN_RANGES[label];
   if (!r) return "";
   return r.end ? `${fmtDate(r.start)} – ${fmtDate(r.end)}` : fmtDate(r.start);
@@ -452,9 +460,11 @@ function FilterBody({
   const whenValue =
     draft.dateStart && draft.dateEnd
       ? `${fmtDate(draft.dateStart)} – ${fmtDate(draft.dateEnd)}`
-      : draft.dateStart
-        ? fmtDate(draft.dateStart)
-        : (draft.time ?? "Legg til datoer");
+      : draft.dateStart && draft.time === null
+        ? `${fmtDate(draft.dateStart)}${draft.dateFlex ? " ± 1 dag" : ""}`
+        : kveldOnly(draft)
+          ? "I kveld"
+          : (draft.time ?? "Legg til datoer");
 
   const hasDate =
     draft.time !== null || draft.dateStart !== null || draft.dateEnd !== null;
@@ -525,7 +535,10 @@ function FilterBody({
                 contentContainerClassName="gap-2"
               >
                 {WHEN_CHIPS.map((c) => {
-                  const selected = draft.time === c.time;
+                  const kveld = c.label === "I kveld";
+                  const selected =
+                    draft.time === c.time &&
+                    (c.time !== "I dag" || kveld === kveldOnly(draft));
                   return (
                     <Pressable
                       key={c.label}
@@ -533,20 +546,26 @@ function FilterBody({
                       accessibilityState={{ selected }}
                       onPress={() =>
                         setDraft((d) => {
-                          if (d.time === c.time) {
+                          // Leaving "I kveld" also unticks its "Kveld".
+                          const timeOfDay = kveldOnly(d) ? [] : d.timeOfDay;
+                          if (selected) {
                             return {
                               ...d,
                               time: null,
                               dateStart: null,
                               dateEnd: null,
+                              dateFlex: 0,
+                              timeOfDay,
                             };
                           }
-                          const r = WHEN_RANGES[c.label];
+                          const r = WHEN_RANGES[kveld ? "I dag" : c.label];
                           return {
                             ...d,
                             time: c.time,
                             dateStart: r?.start ?? null,
                             dateEnd: r?.end ?? null,
+                            dateFlex: 0,
+                            timeOfDay: kveld ? ["kveld"] : timeOfDay,
                           };
                         })
                       }
@@ -575,9 +594,34 @@ function FilterBody({
                     dateStart: s,
                     dateEnd: e,
                     time: null,
+                    // "± 1 dag" is for one picked day.
+                    dateFlex: e && e !== s ? 0 : d.dateFlex,
+                    timeOfDay: kveldOnly(d) ? [] : d.timeOfDay,
                   }))
                 }
               />
+              {/* Phase 18 (Airbnb's flexible dates): one picked day can
+                  widen by a day on each side. */}
+              {draft.time === null &&
+              draft.dateStart !== null &&
+              (draft.dateEnd === null || draft.dateEnd === draft.dateStart) ? (
+                <View className="flex-row gap-2" accessibilityRole="radiogroup">
+                  <Chip
+                    label="Nøyaktig dato"
+                    size="sm"
+                    role="radio"
+                    selected={draft.dateFlex === 0}
+                    onPress={() => setDraft((d) => ({ ...d, dateFlex: 0 }))}
+                  />
+                  <Chip
+                    label="± 1 dag"
+                    size="sm"
+                    role="radio"
+                    selected={draft.dateFlex === 1}
+                    onPress={() => setDraft((d) => ({ ...d, dateFlex: 1 }))}
+                  />
+                </View>
+              ) : null}
             </View>
           </SearchRow>
 

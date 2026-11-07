@@ -477,7 +477,9 @@ export function HelpScreen() {
       <Button
         label="Opprett supportsak"
         variant="ink"
-        onPress={() => showToast(confirmToast.supportCreated)}
+        // Phase 18: a short form (what it is about, what happened) before
+        // the case is sent.
+        onPress={() => router.push("/settings/support" as Href)}
       />
     </Page>
   );

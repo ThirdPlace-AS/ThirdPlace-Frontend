@@ -8,6 +8,7 @@ import {
   places,
   ratingOf,
   reviewsForExperience,
+  sessionsFor,
   TIME_OF_DAY,
   type MockExperience,
   type MockPlace,
@@ -17,6 +18,7 @@ import {
 } from "@/fixtures";
 
 import { formatRating } from "@/lib/format";
+import { shortDayMonth } from "@/lib/dates";
 
 import { experienceMatchesQuery, placeMatchesQuery } from "./mapSearch";
 import {
@@ -58,8 +60,12 @@ export type MapFilters = {
   categories: MarkerCategory[];
   types: string[]; // "Opplevelsestype" (OR match)
   whereArea: string | null; // "Where?" selected Oslo area — recenters, does NOT filter
-  dateStart: string | null; // "When?" demo range start (ISO) — does NOT filter
-  dateEnd: string | null; // "When?" demo range end (ISO) — does NOT filter
+  // "When?" picked dates (ISO). Phase 18: without a quick tile (`time`), they
+  // keep the experiences with a session in the range (± dateFlex days);
+  // places are not dated.
+  dateStart: string | null;
+  dateEnd: string | null;
+  dateFlex: 0 | 1; // "± 1 dag" for a picked day (Airbnb's flexible dates)
   guests: GuestCounts; // "Who?" demo guest counts — does NOT filter
   maxDistanceM: number | null; // null = any distance
   priceMin: number; // NOK, inclusive
@@ -84,6 +90,7 @@ export const DEFAULT_FILTERS: MapFilters = {
   whereArea: null,
   dateStart: null,
   dateEnd: null,
+  dateFlex: 0,
   guests: DEFAULT_GUESTS,
   maxDistanceM: null,
   priceMin: PRICE_FLOOR,
@@ -192,6 +199,7 @@ export function activeExtraFilterCount(f: MapFilters): number {
     (f.languages.length > 0 ? 1 : 0) +
     (f.accessibility.length > 0 ? 1 : 0) +
     (f.time !== null ? 1 : 0) +
+    (f.time === null && f.dateStart !== null ? 1 : 0) +
     (f.openNowOnly ? 1 : 0) +
     (f.hasSpots ? 1 : 0)
   );
@@ -217,6 +225,30 @@ export function timeOfDayFor(when: string): string | null {
 }
 
 const lower = (list: readonly string[]) => list.map((x) => x.toLowerCase());
+
+/** The picked days as a time window: from the first day's start to the
+ *  last day's end, widened by `dateFlex` days on each side. */
+export function dateWindow(f: MapFilters): [Date, Date] | null {
+  if (!f.dateStart) return null;
+  const day = (iso: string) => {
+    const [y, m, d] = iso.split("-").map(Number);
+    return new Date(y ?? 1970, (m ?? 1) - 1, d ?? 1);
+  };
+  const from = day(f.dateStart);
+  from.setDate(from.getDate() - f.dateFlex);
+  const to = day(f.dateEnd ?? f.dateStart);
+  to.setDate(to.getDate() + f.dateFlex + 1);
+  to.setTime(to.getTime() - 1);
+  return [from, to];
+}
+
+function hasSessionIn(e: MockExperience, f: MapFilters): boolean {
+  const w = dateWindow(f);
+  if (!w) return true;
+  return sessionsFor(e, new Date(), 8).some(
+    (s) => s.start >= w[0] && s.start <= w[1],
+  );
+}
 
 export function applyExperienceFilters(
   all: MockExperience[],
@@ -275,6 +307,8 @@ export function applyExperienceFilters(
     )
       return false;
     if (f.time !== null && e.day !== f.time) return false;
+    if (f.time === null && f.dateStart !== null && !hasSessionIn(e, f))
+      return false;
     if (f.hasSpots && e.capacity - e.going <= 0) return false;
     if (q !== "" && !experienceMatchesQuery(e, q) && !"opplevelse".includes(q))
       return false;
@@ -333,6 +367,16 @@ export function appliedFilterChips(f: MapFilters): AppliedFilterChip[] {
       key: "time",
       label: f.time,
       remove: (g) => ({ ...g, time: null }),
+    });
+  if (f.time === null && f.dateStart !== null)
+    out.push({
+      key: "dates",
+      label: `${shortDayMonth(f.dateStart)}${
+        f.dateEnd && f.dateEnd !== f.dateStart
+          ? `–${shortDayMonth(f.dateEnd)}`
+          : ""
+      }${f.dateFlex ? " ± 1 dag" : ""}`,
+      remove: (g) => ({ ...g, dateStart: null, dateEnd: null, dateFlex: 0 }),
     });
   each(
     "timeOfDay",

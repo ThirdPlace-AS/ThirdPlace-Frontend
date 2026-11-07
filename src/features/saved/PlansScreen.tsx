@@ -1,5 +1,5 @@
 import { type Href, router } from "expo-router";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { FlatList, Pressable, ScrollView, View } from "react-native";
 
 import { RateSheet, SpotOfferSheet } from "@/components/actions/ActionSheets";
@@ -9,11 +9,14 @@ import { AddToCalendarLink } from "@/components/AddToCalendarLink";
 import { CountdownChip, planCountdown } from "@/components/CountdownChip";
 import { RouteHeader } from "@/components/RouteHeader";
 import { EmptyState } from "@/components/states/StateView";
+import { MonthGrid } from "@/components/MonthGrid";
+import { isoDay } from "@/lib/dates";
 import {
   chatForExperience,
   experienceById,
   profile,
   sessionsFor,
+  type MockExperience,
   type MockPlanState,
 } from "@/fixtures";
 import { Illustration } from "@/components/illustrations/Illustration";
@@ -30,9 +33,40 @@ const TABS: { key: MockPlanState; label: string }[] = [
 // cancelled and waitlisted plans. No PDF page of its own; it follows the
 // Lagret layout (p14). BLOCKED_CONTRACT_GAP: there is no attendance or join
 // lifecycle — the plans are fixture examples.
+// The next time of a plan (the one its countdown and calendar link use).
+function nextStart(exp: MockExperience, now: Date): Date | undefined {
+  return sessionsFor(exp, now).find((s) => s.start.getTime() > now.getTime())
+    ?.start;
+}
+
 export default function PlansScreen() {
   const [tab, setTab] = useState<MockPlanState>("upcoming");
-  const rows = profile.plans.filter((p) => p.state === tab);
+  // Phase 18 (screen benchmark: Google Calendar, Apple Calendar): upcoming
+  // plans as a month with a dot on each day; tapping a day narrows the list.
+  const [view, setView] = useState<"list" | "month">("list");
+  const [month, setMonth] = useState(() => new Date());
+  const [day, setDay] = useState<string | null>(null);
+  const [now] = useState(() => new Date());
+  const upcomingDays = useMemo(() => {
+    const m = new Map<string, number>();
+    for (const p of profile.plans) {
+      if (p.state !== "upcoming") continue;
+      const exp = experienceById(p.experienceId);
+      const start = exp ? nextStart(exp, now) : undefined;
+      if (!start) continue;
+      const key = isoDay(start);
+      m.set(key, (m.get(key) ?? 0) + 1);
+    }
+    return m;
+  }, [now]);
+  const monthView = tab === "upcoming" && view === "month";
+  const rows = profile.plans.filter((p) => {
+    if (p.state !== tab) return false;
+    if (!monthView || day === null) return true;
+    const exp = experienceById(p.experienceId);
+    const start = exp ? nextStart(exp, now) : undefined;
+    return start ? isoDay(start) === day : false;
+  });
   // Lifecycle sheets (PDF p24–p25), per plan state.
   const [sheet, setSheet] = useState<{
     kind: "rate" | "offer";
@@ -69,6 +103,43 @@ export default function PlansScreen() {
                 />
               ))}
             </ScrollView>
+            {tab === "upcoming" ? (
+              <View className="flex-row gap-2" accessibilityRole="radiogroup">
+                <Chip
+                  label="Liste"
+                  size="sm"
+                  role="radio"
+                  icon="list-outline"
+                  selected={view === "list"}
+                  onPress={() => {
+                    setView("list");
+                    setDay(null);
+                  }}
+                />
+                <Chip
+                  label="Kalender"
+                  size="sm"
+                  role="radio"
+                  icon="calendar-outline"
+                  selected={view === "month"}
+                  onPress={() => setView("month")}
+                />
+              </View>
+            ) : null}
+            {monthView ? (
+              <MonthGrid
+                month={month}
+                marked={upcomingDays}
+                selected={day}
+                today={now}
+                onSelect={setDay}
+                onMonthChange={(delta) =>
+                  setMonth(
+                    (m) => new Date(m.getFullYear(), m.getMonth() + delta, 1),
+                  )
+                }
+              />
+            ) : null}
           </View>
         }
         ListEmptyComponent={
@@ -76,7 +147,11 @@ export default function PlansScreen() {
             icon="calendar-outline"
             illustration={<Illustration name="emptyPlans" />}
             title="Ingen planer her"
-            message="Opplevelser du blir med på dukker opp her."
+            message={
+              monthView && day
+                ? "Ingen planer denne dagen."
+                : "Opplevelser du blir med på dukker opp her."
+            }
             actionLabel="Utforsk kartet"
             onAction={() => router.navigate("/map")}
           />
@@ -111,16 +186,20 @@ export default function PlansScreen() {
                 </Text>
               </UIPressable>
               {item.state === "past" ? (
-                <PlanAction
-                  label="Vurder opplevelsen"
-                  onPress={() => setSheet({ kind: "rate", title: exp.title })}
-                />
+                <View className="flex-row flex-wrap gap-x-5">
+                  <PlanAction
+                    label="Vurder opplevelsen"
+                    onPress={() => setSheet({ kind: "rate", title: exp.title })}
+                  />
+                  <HelpAction id={exp.id} />
+                </View>
               ) : item.state === "waitlisted" ? (
                 <PlanAction
                   label="Se venteliste-tilbud"
                   onPress={() => setSheet({ kind: "offer", title: exp.title })}
                 />
               ) : null}
+              {item.state === "cancelled" ? <HelpAction id={exp.id} /> : null}
               {/* PDF p25 "Del regningen" is hidden: split payments are a V1
                   non-goal in the spec (founder 2026-11-07, Phase 15). */}
               {/* Approved addition (2026-11-06): a plan links to the example
@@ -150,6 +229,7 @@ export default function PlansScreen() {
                           session={next}
                           tone="ember"
                         />
+                        <HelpAction id={exp.id} />
                       </View>
                     );
                   })()
@@ -185,5 +265,18 @@ function PlanAction({
         {label}
       </Text>
     </Pressable>
+  );
+}
+
+// Phase 18: help that starts from the plan (Uber, Amazon), with the
+// experience filled in on the support form.
+function HelpAction({ id }: { id: string }) {
+  return (
+    <PlanAction
+      label="Få hjelp"
+      onPress={() =>
+        router.push({ pathname: "/settings/support", params: { about: id } })
+      }
+    />
   );
 }

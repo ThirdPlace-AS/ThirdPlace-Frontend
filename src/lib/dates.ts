@@ -98,3 +98,41 @@ export function countdownLabel(start: Date, now: Date): string | null {
   if (days === 1) return "I morgen";
   return `Om ${days} dager`;
 }
+
+// ── Month view (Phase 18, Mine planer) ──
+
+/** "2026-11-12" in local time. */
+export function isoDay(d: Date): string {
+  return `${d.getFullYear()}-${two(d.getMonth() + 1)}-${two(d.getDate())}`;
+}
+
+/** "November 2026". */
+export function monthTitle(d: Date): string {
+  return `${cap(MONTHS[d.getMonth()] ?? "")} ${d.getFullYear()}`;
+}
+
+/** "12. november" (read out for a day in the month view). */
+export function dayMonthLabel(d: Date): string {
+  return `${d.getDate()}. ${MONTHS[d.getMonth()] ?? ""}`;
+}
+
+/** The weeks of the month of `d`, Monday first; null pads the edges. */
+export function monthWeeks(d: Date): (Date | null)[][] {
+  const first = new Date(d.getFullYear(), d.getMonth(), 1);
+  const days = new Date(d.getFullYear(), d.getMonth() + 1, 0).getDate();
+  const lead = (first.getDay() + 6) % 7; // Monday = 0
+  const cells: (Date | null)[] = Array.from({ length: lead }, () => null);
+  for (let i = 1; i <= days; i++)
+    cells.push(new Date(d.getFullYear(), d.getMonth(), i));
+  while (cells.length % 7 !== 0) cells.push(null);
+  const weeks: (Date | null)[][] = [];
+  for (let i = 0; i < cells.length; i += 7) weeks.push(cells.slice(i, i + 7));
+  return weeks;
+}
+
+/** "12. nov" for a "yyyy-mm-dd" day (Filtre's chips). */
+export function shortDayMonth(iso: string): string {
+  const [, m, day] = iso.split("-").map(Number);
+  // As Filtre writes it ("12. nov"), without the abbreviation dot.
+  return `${day ?? ""}. ${(MONTHS_SHORT[(m ?? 1) - 1] ?? "").replace(/.$/, "")}`;
+}

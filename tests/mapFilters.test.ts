@@ -165,15 +165,18 @@ describe("activeExtraFilterCount", () => {
     );
   });
 
-  it("counts ratingSort but ignores demo-only where/date/guests", () => {
+  it("counts ratingSort but ignores demo-only where/guests", () => {
     expect(
       activeExtraFilterCount({ ...DEFAULT_FILTERS, ratingSort: "best" }),
+    ).toBe(1);
+    // Phase 18: a picked date narrows experiences (± 1 dag), so it counts.
+    expect(
+      activeExtraFilterCount({ ...DEFAULT_FILTERS, dateStart: "2026-11-20" }),
     ).toBe(1);
     expect(
       activeExtraFilterCount({
         ...DEFAULT_FILTERS,
         whereArea: "Frogner",
-        dateStart: "2026-11-20",
         guests: {
           adults: 2,
           children: 0,

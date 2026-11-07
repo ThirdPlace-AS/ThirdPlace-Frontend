@@ -370,6 +370,14 @@ export function ExperiencePage({
           label="Administrer (vert)"
           onPress={() => onOpen({ kind: "host", id: exp.id })}
         />
+        {/* Phase 18: help that starts from this experience (Uber, Amazon). */}
+        <FooterLink
+          icon="help-buoy-outline"
+          label="Få hjelp med opplevelsen"
+          onPress={() =>
+            onNavigate(`/settings/support?about=${exp.id}` as Href)
+          }
+        />
         <FooterLink
           icon="flag-outline"
           label="Rapporter opplevelsen"

@@ -7,6 +7,7 @@ import {
   WaitlistSheet,
 } from "@/components/actions/ActionSheets";
 import { Button } from "@/components/Button";
+import { JoinedSheet } from "@/components/experience/JoinedSheet";
 import { FaceStack } from "@/components/FaceStack";
 import { SignInPrompt } from "@/components/SignInPrompt";
 import { Text } from "@/components/ui";
@@ -46,9 +47,10 @@ export function ExperienceJoinBar({ id }: { id: string }) {
   );
   const session = sessions.find((s) => s.id === chosenId) ?? sessions[0];
   // PDF p23: leaving, paying and joining the waitlist confirm in a sheet.
-  const [confirm, setConfirm] = useState<"leave" | "waitlist" | "pay" | null>(
-    null,
-  );
+  // Phase 18: "Du er med" after joining (screen benchmark).
+  const [confirm, setConfirm] = useState<
+    "leave" | "waitlist" | "pay" | "joined" | null
+  >(null);
   if (!experience) return null;
 
   const gated = (run: () => void) => () =>
@@ -56,6 +58,7 @@ export function ExperienceJoinBar({ id }: { id: string }) {
   const join = () => {
     haptics.light();
     setUser("joined");
+    setConfirm("joined");
   };
   // Places left at the picked time (the viewer's own seat counts once joined).
   const left = Math.max(
@@ -127,7 +130,19 @@ export function ExperienceJoinBar({ id }: { id: string }) {
             when={when}
             priceNok={experience.priceNok}
             onClose={() => setConfirm(null)}
-            onJoined={() => setUser("joined")}
+            onJoined={() => {
+              setUser("joined");
+              // After the pay sheet has gone (one Modal at a time).
+              setTimeout(() => setConfirm("joined"), 260);
+            }}
+          />
+        ) : null}
+        {confirm === "joined" ? (
+          <JoinedSheet
+            experience={experience}
+            session={session}
+            when={when}
+            onClose={() => setConfirm(null)}
           />
         ) : null}
         {confirm === "waitlist" ? (
