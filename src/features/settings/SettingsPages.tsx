@@ -549,17 +549,10 @@ export function DeleteAccountScreen() {
         </>
       }
     >
-      <Text variant="label" weight="semibold" tone="danger">
-        Denne handlingen er permanent og kan ikke angres.
-      </Text>
-      <View className="gap-1 rounded-md bg-surfaceMuted p-3">
-        <Text variant="label" weight="semibold">
-          Når du sletter kontoen din:
-        </Text>
-        <Text variant="caption">• Alle data slettes permanent</Text>
-        <Text variant="caption">• Opplevelser du har opprettet fjernes</Text>
-        <Text variant="caption">• Meldinger kan ikke gjenopprettes</Text>
-      </View>
+      {/* PDF p21's "permanent, kan ikke angres" and "Når du sletter
+          kontoen din: …" are left out: the spec has deletion, anonymising and
+          retention under legal holds, with timing the app must explain once it
+          is decided (founder 2026-11-07, Phase 15). */}
       <Text variant="label" weight="semibold">
         Hvorfor sletter du?
       </Text>

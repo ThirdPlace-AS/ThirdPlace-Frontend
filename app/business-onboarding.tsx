@@ -288,7 +288,7 @@ export default function BusinessOnboarding() {
                 <Perm
                   icon="location-outline"
                   label="Posisjon"
-                  tag="PÅKREVD"
+                  tag="ANBEFALT"
                   hint="Bekrefter hvor bedriften ligger på kartet"
                   value={loc}
                   onChange={setLoc}

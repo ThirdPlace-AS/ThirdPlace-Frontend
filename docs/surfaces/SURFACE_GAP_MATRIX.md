@@ -48,22 +48,22 @@ Directory routes with no PDF page (`experiences`, `places`, `groups`,
 
 ## Phase 3 routes (PDF screens, 2026-11-05)
 
-| Surface                      | Route                            | PDF       | Status                         | Markers                          | Ledger     |
-| ---------------------------- | -------------------------------- | --------- | ------------------------------ | -------------------------------- | ---------- |
-| E-post-kode / identitet      | `app/verify-code.tsx`            | p2        | demo-complete                  | any 6 digits pass; DemoNote      | 0122       |
-| Lag nytt passord             | `app/(auth)/reset-password.tsx`  | p1        | demo-complete                  | nothing stored                   | 0122       |
-| Totrinnsbekreftelse          | `app/two-factor.tsx`             | p2        | demo-complete                  | nothing enabled                  | 0122       |
-| Bedriftsonboarding           | `app/business-onboarding.tsx`    | p3–p5     | demo-complete                  | 18+ gate; nothing created        | 0123, 0133 |
-| Gruppe-sveip                 | `app/group-swipe.tsx`            | p8–p9     | demo-complete                  | simulated friends/votes, said so | 0124       |
-| Systemskjermer               | `app/state/[kind].tsx`           | p26–p27   | demo-complete (deep link)      | review-only note                 | 0127       |
-| Inviter venner / Belønninger | `app/invite.tsx`                 | p22       | demo-complete                  | rewards undefined                | 0128, 0133 |
-| Aldersverifisering           | `app/age-verification.tsx`       | p22       | demo-complete                  | provider not connected           | 0128       |
-| Bedriftsarbeidsflate         | `app/workspace/*`                | p13–p15   | demo-complete                  | EKSEMPELTALL; nothing billed     | 0129, 0133 |
-| Kontobytte                   | `app/account-switch.tsx`         | p27       | demo-complete                  | navigation only                  | 0129, 0133 |
-| Samarbeid                    | `app/collab/*`                   | p16–p18   | partial                        | nothing sent/signed              | 0130       |
-| Utbetalinger                 | `app/payouts.tsx`                | p21       | demo-complete (structure-only) | no account data accepted         | 0132, 0133 |
-| Innleveringer                | `app/submissions.tsx`            | p12       | demo-complete                  | example entries                  | 0132       |
-| Lagret / Mine planer         | `app/saved.tsx`, `app/plans.tsx` | p14 / REQ | demo-complete                  | clears on reload                 | 0119       |
+| Surface                 | Route                            | PDF       | Status                         | Markers                                                                              | Ledger           |
+| ----------------------- | -------------------------------- | --------- | ------------------------------ | ------------------------------------------------------------------------------------ | ---------------- |
+| E-post-kode / identitet | `app/verify-code.tsx`            | p2        | demo-complete                  | any 6 digits pass; DemoNote                                                          | 0122             |
+| Lag nytt passord        | `app/(auth)/reset-password.tsx`  | p1        | demo-complete                  | nothing stored                                                                       | 0122             |
+| Totrinnsbekreftelse     | `app/two-factor.tsx`             | p2        | demo-complete                  | nothing enabled                                                                      | 0122             |
+| Bedriftsonboarding      | `app/business-onboarding.tsx`    | p3–p5     | demo-complete                  | 18+ gate; nothing created                                                            | 0123, 0133       |
+| Gruppe-sveip            | `app/group-swipe.tsx`            | p8–p9     | demo-complete                  | simulated friends/votes, said so                                                     | 0124             |
+| Systemskjermer          | `app/state/[kind].tsx`           | p26–p27   | demo-complete (deep link)      | review-only note                                                                     | 0127             |
+| Inviter venner          | `app/invite.tsx`                 | p22       | demo-complete                  | Belønninger hidden: rewards off until a policy enables them (0267)                   | 0128, 0133, 0267 |
+| Aldersverifisering      | `app/age-verification.tsx`       | p22       | demo-complete                  | provider not connected                                                               | 0128             |
+| Bedriftsarbeidsflate    | `app/workspace/*`                | p13–p15   | demo-complete                  | EKSEMPELTALL; nothing billed                                                         | 0129, 0133       |
+| Kontobytte              | `app/account-switch.tsx`         | p27       | demo-complete                  | navigation only                                                                      | 0129, 0133       |
+| Samarbeid               | `app/collab/*`                   | p16–p18   | partial                        | nothing sent/signed                                                                  | 0130             |
+| Utbetalinger            | `app/payouts.tsx`                | p21       | demo-complete (structure-only) | no account data accepted; Utbetalingsplan hidden (no schedule in the contract, 0267) | 0132, 0133, 0267 |
+| Innleveringer           | `app/submissions.tsx`            | p12       | demo-complete                  | example entries                                                                      | 0132             |
+| Lagret / Mine planer    | `app/saved.tsx`, `app/plans.tsx` | p14 / REQ | demo-complete                  | clears on reload; Del regningen hidden (split payments are a V1 non-goal, 0267)      | 0119, 0267       |
 
 ## Entry
 

@@ -1,8 +1,11 @@
 import { router, type Href } from "expo-router";
+import { useState } from "react";
 import { ScrollView, View } from "react-native";
 import { Icon, Screen, Text, Pressable as UIPressable } from "@/components/ui";
 import { Button } from "@/components/Button";
 import { RouteHeader } from "@/components/RouteHeader";
+import { showToast } from "@/components/Toast";
+import { confirmToast } from "@/copy";
 import { profile } from "@/fixtures";
 
 // Bli Skaper, per the design (PDF p14): the requirements to unlock the
@@ -11,6 +14,7 @@ import { profile } from "@/fixtures";
 // defined, so the three requirements are the design's illustrative copy —
 // nothing is evaluated, and applying sends nothing (BLOCKED_CONTRACT_GAP).
 export default function BecomeCreatorScreen() {
+  const [applied, setApplied] = useState(false);
   const { hosted, required, rating } = profile.creatorPath;
   const reqs = [
     {
@@ -101,12 +105,17 @@ export default function BecomeCreatorScreen() {
         </View>
 
         {/* Muted until every requirement is met, as in the design (PDF p14):
-            the button never invites an application that cannot qualify. */}
+            the button never invites an application that cannot qualify. An
+            application ends at "sent": the spec has no auto-approval and a
+            review decides (Phase 15); "Du er nå Skaper!" stays a deep link. */}
         <Button
-          label="Søk om Skaper-rolle"
+          label={applied ? "Søknaden er sendt" : "Søk om Skaper-rolle"}
           variant="ink"
-          disabled={met < reqs.length}
-          onPress={() => router.push("/creator-welcome" as Href)}
+          disabled={applied || met < reqs.length}
+          onPress={() => {
+            setApplied(true);
+            showToast(confirmToast.creatorApplied);
+          }}
         />
         <Button
           label="Se en skaperprofil"

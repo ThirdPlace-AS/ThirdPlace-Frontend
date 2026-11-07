@@ -1,42 +1,19 @@
-import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
 import { ScrollView, Share, View } from "react-native";
 
-import { Icon, Screen, Text } from "@/components/ui";
+import { Screen, Text } from "@/components/ui";
 import { Button } from "@/components/Button";
 import { RouteHeader } from "@/components/RouteHeader";
 import { showToast } from "@/components/Toast";
 import { confirmToast } from "@/copy";
 
-// Inviter venner + Belønninger, per the design (PDF p22): a personal code,
-// copy/share, the invite activity and the milestone ladder with progress.
-// Master spec forbids inventing entitlements, so milestones name no perk;
-// nothing is earned, granted or tracked (BLOCKED_CONTRACT_GAP).
+// Inviter venner, per the design (PDF p22): a personal code, copy/share and
+// the invite activity. p22's reward ladder and its activity count are hidden:
+// the spec keeps referral rewards off until a policy enables them (founder
+// 2026-11-07, Phase 15). Nothing is tracked (BLOCKED_CONTRACT_GAP).
 const ACTIVITY = [
   { label: "Sendt", value: 0 },
   { label: "Registrerte", value: 0 },
-  { label: "Belønninger", value: 0 },
-];
-const REWARDS: {
-  label: string;
-  hint: string;
-  icon: keyof typeof Ionicons.glyphMap;
-}[] = [
-  {
-    label: "3 venner",
-    hint: "0 av 3 har registrert seg",
-    icon: "flash-outline",
-  },
-  {
-    label: "5 venner",
-    hint: "0 av 5 har registrert seg",
-    icon: "star-outline",
-  },
-  {
-    label: "10 venner",
-    hint: "0 av 10 har registrert seg",
-    icon: "trophy-outline",
-  },
 ];
 
 export default function InviteScreen() {
@@ -100,29 +77,6 @@ export default function InviteScreen() {
             </View>
           ))}
         </View>
-
-        <Text variant="title" accessibilityRole="header">
-          Belønninger
-        </Text>
-        {REWARDS.map((r) => (
-          <View
-            key={r.label}
-            className="flex-row items-center gap-3 rounded-md border border-line bg-surface p-3.5"
-          >
-            <View className="h-10 w-10 items-center justify-center rounded-full bg-surfaceMuted">
-              <Icon name={r.icon} size="md" tone="muted" />
-            </View>
-            <View className="flex-1">
-              <Text variant="label" weight="semibold">
-                {r.label}
-              </Text>
-              <Text variant="caption" tone="muted">
-                {r.hint}
-              </Text>
-            </View>
-            <Icon name="lock-closed-outline" size="sm" tone="muted" />
-          </View>
-        ))}
       </ScrollView>
     </Screen>
   );

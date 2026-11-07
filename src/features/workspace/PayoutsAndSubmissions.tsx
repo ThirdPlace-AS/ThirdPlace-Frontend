@@ -2,13 +2,7 @@ import { router } from "expo-router";
 import { useState } from "react";
 import { Pressable, ScrollView, View } from "react-native";
 
-import {
-  Badge,
-  Screen,
-  ScrollRow,
-  Text,
-  Pressable as UIPressable,
-} from "@/components/ui";
+import { Badge, Screen, ScrollRow, Text } from "@/components/ui";
 import { Button } from "@/components/Button";
 import { Chip } from "@/components/Chip";
 import { RouteHeader } from "@/components/RouteHeader";
@@ -17,11 +11,10 @@ import { EmptyState } from "@/components/states/StateView";
 // Utbetalinger (PDF p21) — STRUCTURE ONLY. Shows the payout method slot, the
 // payout schedule and an empty history. It never asks for or shows bank or
 // account numbers and moves no money (prohibited + BLOCKED_CONTRACT_GAP).
-// Schedule names only — timing rules are not defined (no payout contract).
-const PLANS = ["Automatisk", "Ukentlig", "Månedlig"];
-
+// p21's payout schedule (Automatisk / Ukentlig / Månedlig) is hidden: the
+// payout contract defines no schedule and payout timing is a legal review
+// item (founder 2026-11-07, Phase 15).
 export function PayoutsScreen() {
-  const [plan, setPlan] = useState(PLANS[0] ?? "");
   return (
     <Screen edges={["top"]}>
       <RouteHeader title="Utbetalinger" />
@@ -41,26 +34,6 @@ export function PayoutsScreen() {
             + Legg til bankkonto
           </Text>
         </Pressable>
-        <Section>Utbetalingsplan</Section>
-        {PLANS.map((p) => (
-          <UIPressable
-            key={p}
-            accessibilityRole="radio"
-            accessibilityState={{ selected: plan === p }}
-            onPress={() => setPlan(p)}
-            contentClassName="flex-row items-center gap-3 rounded-md border border-line bg-surface px-4 py-3.5"
-            pressedScale={0.99}
-          >
-            <View
-              className={`h-5 w-5 rounded-full border-2 ${
-                plan === p ? "border-ink bg-ink" : "border-line"
-              }`}
-            />
-            <Text variant="label" weight="regular">
-              {p}
-            </Text>
-          </UIPressable>
-        ))}
         <Section>Valuta</Section>
         <View className="rounded-md border border-line bg-surface px-4 py-3.5">
           <Text variant="label" weight="regular">

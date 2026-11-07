@@ -80,7 +80,7 @@ const PERMISSIONS: {
   {
     key: "location",
     label: "Posisjon",
-    tag: "PÅKREVD",
+    tag: "ANBEFALT",
     hint: "Slik finner vi steder og opplevelser nær deg",
     icon: "location-outline",
   },

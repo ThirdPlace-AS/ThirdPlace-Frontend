@@ -44,7 +44,6 @@ export default function PrivacyScreen() {
           <ToggleRow
             icon="map-outline"
             label="Synlig på kartet"
-            hint="Andre kan se at du er innsjekket"
             value={mapVisible}
             onValueChange={setMapVisible}
           />

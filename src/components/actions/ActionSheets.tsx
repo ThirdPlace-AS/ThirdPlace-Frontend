@@ -85,14 +85,15 @@ const REASONS = [
   "Annet",
 ];
 
-// Rapporter (p23): anonymous reason picker.
+// Rapporter (p23): reason picker. Whether a report is anonymous is a policy
+// the spec leaves open, so the sheet does not say (Phase 15).
 export function ReportSheet({ onClose }: Base) {
   const [reason, setReason] = useState<string | null>(null);
   return (
     <Sheet visible onClose={onClose} title="Rapporter">
       <View className="gap-3">
         <Text variant="caption" tone="muted">
-          Hva er galt? Rapporten er anonym.
+          Hva er galt?
         </Text>
         {REASONS.map((r) => (
           <UIPressable
@@ -414,57 +415,6 @@ export function RateSheet({
           }}
         />
         <Button label="Hopp over" variant="secondary" onPress={onClose} />
-      </View>
-    </Sheet>
-  );
-}
-
-// "Del regningen" (PDF p25) — STRUCTURE ONLY: how a shared bill would split
-// between participants. No amounts are collected or requested.
-export function SplitBillSheet({
-  title,
-  names,
-  onClose,
-}: Base & { title: string; names: string[] }) {
-  const [mode, setMode] = useState("Likt");
-  return (
-    <Sheet visible onClose={onClose} title="Del regningen">
-      <View className="gap-3">
-        <Text variant="caption" tone="muted">
-          {title}
-        </Text>
-        <View className="flex-row gap-2">
-          {["Likt", "Egendefinert"].map((m) => (
-            <Chip
-              key={m}
-              label={m}
-              selected={mode === m}
-              onPress={() => setMode(m)}
-            />
-          ))}
-        </View>
-        {names.map((n) => (
-          <View
-            key={n}
-            className="flex-row items-center justify-between rounded-md border border-line bg-surface px-4 py-3"
-          >
-            <Text variant="label" weight="semibold">
-              {n}
-            </Text>
-            <Text variant="caption" tone="muted">
-              —
-            </Text>
-          </View>
-        ))}
-
-        <Button
-          label="Send påminnelse"
-          variant="ink"
-          onPress={() => {
-            onClose();
-            showToastAfterSheet(confirmToast.reminderSent);
-          }}
-        />
       </View>
     </Sheet>
   );

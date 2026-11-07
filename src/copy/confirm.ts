@@ -15,11 +15,7 @@ export const confirmToast = {
   sessionSignedOut: { title: "Enheten er logget ut", icon: ok },
   otherSessionsSignedOut: { title: "Andre enheter er logget ut", icon: ok },
   chatCreated: { title: "Chatten er opprettet", icon: "chatbubbles-outline" },
-  exportRequested: {
-    title: "Eksporten er bestilt",
-    body: "Du får en e-post når filen er klar.",
-    icon: "download-outline",
-  },
+  exportRequested: { title: "Eksporten er bestilt", icon: "download-outline" },
   supportCreated: {
     title: "Supportsaken er opprettet",
     body: "Vi svarer deg så snart vi kan.",
@@ -38,6 +34,7 @@ export const confirmToast = {
   spotTaken: { title: "Plassen er din", icon: ok },
   spotPassed: { title: "Plassen er gitt videre", icon: ok },
   requestSent: { title: "Forespørselen er sendt", icon: "paper-plane-outline" },
+  creatorApplied: { title: "Søknaden er sendt", icon: "paper-plane-outline" },
   counterSent: { title: "Mottilbudet er sendt", icon: "paper-plane-outline" },
   offerAccepted: { title: "Tilbudet er godtatt", icon: ok },
   offerDeclined: { title: "Tilbudet er avslått", icon: ok },

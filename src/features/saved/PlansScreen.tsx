@@ -2,11 +2,7 @@ import { type Href, router } from "expo-router";
 import { useState } from "react";
 import { FlatList, Pressable, ScrollView, View } from "react-native";
 
-import {
-  RateSheet,
-  SplitBillSheet,
-  SpotOfferSheet,
-} from "@/components/actions/ActionSheets";
+import { RateSheet, SpotOfferSheet } from "@/components/actions/ActionSheets";
 import { Pressable as UIPressable, Screen, Text } from "@/components/ui";
 import { Chip } from "@/components/Chip";
 import { RouteHeader } from "@/components/RouteHeader";
@@ -14,7 +10,6 @@ import { EmptyState } from "@/components/states/StateView";
 import {
   chatForExperience,
   experienceById,
-  people,
   profile,
   type MockPlanState,
 } from "@/fixtures";
@@ -37,7 +32,7 @@ export default function PlansScreen() {
   const rows = profile.plans.filter((p) => p.state === tab);
   // Lifecycle sheets (PDF p24–p25), per plan state.
   const [sheet, setSheet] = useState<{
-    kind: "rate" | "split" | "offer";
+    kind: "rate" | "offer";
     title: string;
   } | null>(null);
 
@@ -114,12 +109,9 @@ export default function PlansScreen() {
                   label="Se venteliste-tilbud"
                   onPress={() => setSheet({ kind: "offer", title: exp.title })}
                 />
-              ) : item.state === "upcoming" && exp.priceNok ? (
-                <PlanAction
-                  label="Del regningen"
-                  onPress={() => setSheet({ kind: "split", title: exp.title })}
-                />
               ) : null}
+              {/* PDF p25 "Del regningen" is hidden: split payments are a V1
+                  non-goal in the spec (founder 2026-11-07, Phase 15). */}
               {/* Approved addition (2026-11-06): a plan links to the example
                   chat pinned to its experience, where one exists. A link only:
                   joining does not grant chat membership (spec §12). */}
@@ -143,13 +135,6 @@ export default function PlansScreen() {
       ) : null}
       {sheet?.kind === "offer" ? (
         <SpotOfferSheet title={sheet.title} onClose={() => setSheet(null)} />
-      ) : null}
-      {sheet?.kind === "split" ? (
-        <SplitBillSheet
-          title={sheet.title}
-          names={["Du", ...people.slice(0, 3).map((p) => p.name)]}
-          onClose={() => setSheet(null)}
-        />
       ) : null}
     </Screen>
   );
