@@ -32,6 +32,7 @@ import {
 } from "./mapFilters";
 import { experienceMatchesQuery } from "./mapSearch";
 import { inArea, type MapArea } from "./bounds";
+import { goingLine } from "@/lib/going";
 
 function placeToItem(p: MockPlace): DiscoveryItem {
   return {
@@ -61,7 +62,9 @@ function experienceToItem(e: MockExperience): DiscoveryItem {
     category: "Opplevelse",
     title: e.title,
     subtitle: e.when,
-    meta: `${e.going}/${e.capacity} påmeldt`,
+    // Who is going (Phase 16): "5 skal · 3 plasser igjen"; the browse card
+    // draws it live with the faces (GoingLine).
+    meta: goingLine(e),
     tags: e.tags,
   };
 }

@@ -7,15 +7,18 @@ import {
   WaitlistSheet,
 } from "@/components/actions/ActionSheets";
 import { Button } from "@/components/Button";
+import { FaceStack } from "@/components/FaceStack";
 import { SignInPrompt } from "@/components/SignInPrompt";
 import { Text } from "@/components/ui";
 import { experienceById, sessionsFor } from "@/fixtures";
 import { shortSessionLabel } from "@/lib/dates";
 import { haptics } from "@/lib/haptics";
+import { goingLabel } from "@/lib/going";
 
 import { useExperienceSession } from "../../experience/useExperienceSession";
 
 import { useExperienceJoin } from "../hooks/useExperienceJoin";
+import { useGoing } from "../hooks/useGoing";
 import { useGuestMode } from "../hooks/useGuestMode";
 
 // Pinned action bar of the experience detail sheet (PDF p6), the reference
@@ -23,6 +26,9 @@ import { useGuestMode } from "../hooks/useGuestMode";
 // one) and its places left on the left, the pink join pill on the right.
 // Join / waitlist / leave act on the picked time; they are local demo state
 // only (BLOCKED_CONTRACT_GAP); guests get the sign-in prompt.
+// Phase 16 (founder, after the section benchmark): above it, who is going:
+// faces of people who chose "Vis meg som deltaker" (the viewer once joined
+// and opted in) and "N skal", which counts everyone.
 export function ExperienceJoinBar({ id }: { id: string }) {
   const experience = experienceById(id);
   const [user, setUser] = useExperienceJoin(
@@ -30,6 +36,7 @@ export function ExperienceJoinBar({ id }: { id: string }) {
     experience?.status === "joined" ? "joined" : "none",
   );
   const { isGuest } = useGuestMode();
+  const going = useGoing(id);
   const [promptOpen, setPromptOpen] = useState(false);
   const [chosenId] = useExperienceSession(id);
   const [now] = useState(() => new Date());
@@ -78,56 +85,64 @@ export function ExperienceJoinBar({ id }: { id: string }) {
   })();
 
   return (
-    <View className="flex-row items-center gap-3">
-      <View className="flex-1">
-        <Text variant="body" weight="bold" numberOfLines={1}>
-          {experience.priceNok ? `${experience.priceNok} kr` : "Gratis"}
-        </Text>
-        <Text variant="caption" tone="muted" numberOfLines={1}>
-          {user === "joined"
-            ? `Du er påmeldt · ${when}`
-            : user === "waitlisted"
-              ? `Venteliste · ${when}`
-              : `${when} · ${left > 0 ? `${left} igjen` : "Fullt"}`}
+    <View className="gap-2">
+      <View className="flex-row items-center gap-2">
+        <FaceStack faces={going.faces} />
+        <Text variant="caption" weight="semibold">
+          {goingLabel(going.count)}
         </Text>
       </View>
-      <View style={{ minWidth: 150 }}>
-        <Button
-          label={primary.label}
-          rounded="full"
-          variant={user === "none" ? "ember" : "secondary"}
-          disabled={primary.disabled}
-          onPress={primary.action}
-        />
-      </View>
+      <View className="flex-row items-center gap-3">
+        <View className="flex-1">
+          <Text variant="body" weight="bold" numberOfLines={1}>
+            {experience.priceNok ? `${experience.priceNok} kr` : "Gratis"}
+          </Text>
+          <Text variant="caption" tone="muted" numberOfLines={1}>
+            {user === "joined"
+              ? `Du er påmeldt · ${when}`
+              : user === "waitlisted"
+                ? `Venteliste · ${when}`
+                : `${when} · ${left > 0 ? `${left} igjen` : "Fullt"}`}
+          </Text>
+        </View>
+        <View style={{ minWidth: 150 }}>
+          <Button
+            label={primary.label}
+            rounded="full"
+            variant={user === "none" ? "ember" : "secondary"}
+            disabled={primary.disabled}
+            onPress={primary.action}
+          />
+        </View>
 
-      {confirm === "leave" ? (
-        <LeaveSheet
-          onClose={() => setConfirm(null)}
-          onConfirm={() => setUser("none")}
+        {confirm === "leave" ? (
+          <LeaveSheet
+            onClose={() => setConfirm(null)}
+            onConfirm={() => setUser("none")}
+          />
+        ) : null}
+        {confirm === "pay" && experience.priceNok ? (
+          <PaySheet
+            title={experience.title}
+            when={when}
+            priceNok={experience.priceNok}
+            onClose={() => setConfirm(null)}
+            onJoined={() => setUser("joined")}
+          />
+        ) : null}
+        {confirm === "waitlist" ? (
+          <WaitlistSheet
+            ahead={3}
+            onClose={() => setConfirm(null)}
+            onConfirm={() => setUser("waitlisted")}
+          />
+        ) : null}
+        <SignInPrompt
+          visible={promptOpen}
+          onClose={() => setPromptOpen(false)}
+          action={primary.label.toLowerCase()}
         />
-      ) : null}
-      {confirm === "pay" && experience.priceNok ? (
-        <PaySheet
-          title={experience.title}
-          when={when}
-          priceNok={experience.priceNok}
-          onClose={() => setConfirm(null)}
-          onJoined={() => setUser("joined")}
-        />
-      ) : null}
-      {confirm === "waitlist" ? (
-        <WaitlistSheet
-          ahead={3}
-          onClose={() => setConfirm(null)}
-          onConfirm={() => setUser("waitlisted")}
-        />
-      ) : null}
-      <SignInPrompt
-        visible={promptOpen}
-        onClose={() => setPromptOpen(false)}
-        action={primary.label.toLowerCase()}
-      />
+      </View>
     </View>
   );
 }

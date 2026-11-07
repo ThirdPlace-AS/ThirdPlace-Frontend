@@ -22,6 +22,7 @@ import {
 import { elevation } from "@/theme";
 import { MAP_CITY, type MockWeather } from "@/fixtures";
 import { formatRating } from "@/lib/format";
+import { GoingLine } from "@/components/GoingLine";
 import { PhotoPager } from "./PhotoPager";
 import { sheetA11yChrome } from "./sheetA11y";
 import { photosForItem } from "./services/itemCover";
@@ -399,7 +400,10 @@ const BrowseCard = memo(function BrowseCard({
           <Text variant="caption" tone="muted" numberOfLines={1}>
             {item.subtitle}
           </Text>
-          {item.meta ? (
+          {item.kind === "experience" ? (
+            // Who is going, live with your own join (Phase 16).
+            <GoingLine id={item.id} />
+          ) : item.meta ? (
             <Text variant="label" weight="semibold" numberOfLines={1}>
               {item.meta}
             </Text>

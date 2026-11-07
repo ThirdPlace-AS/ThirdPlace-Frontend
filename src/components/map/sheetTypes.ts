@@ -6,6 +6,9 @@ export type SheetKind =
   | "experience"
   | "reviews"
   | "attendees"
+  // Every guest by name, for the host's own tools (Administrer); the
+  // public "attendees" list names only people who opted in (Phase 16).
+  | "guests"
   | "host"
   | "group"
   | "checkin"

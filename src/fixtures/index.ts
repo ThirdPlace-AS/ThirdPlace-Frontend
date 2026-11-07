@@ -1219,10 +1219,29 @@ export type MockAttendee = {
   name: string;
   initials: string;
   isHost: boolean;
+  /** Chose "Vis meg som deltaker": the face shows on cards (Phase 16). */
+  shown: boolean;
 };
 
+// Who chose "Vis meg som deltaker" (MOCK). Founder 2026-11-07, after the
+// section benchmark: like Airbnb, only people who opt in get a face on
+// "who's going"; everyone going is counted either way.
+const SHOWN_ATTENDEES = new Set([
+  "Maria Movik",
+  "Tom Tangen",
+  "Jonas Berg",
+  "Per Olsen",
+  "Sofie Lind",
+  "Kari Nilsen",
+  "Ingrid Solberg",
+  "Ali Khan",
+]);
+
 // Keyed by experience id.
-export const attendeesByExperience: Record<string, MockAttendee[]> = {
+export const attendeesByExperience: Record<
+  string,
+  Omit<MockAttendee, "shown">[]
+> = {
   e1: [
     { id: "a1", name: "Maria Movik", initials: "MM", isHost: true },
     { id: "a2", name: "Tom Tangen", initials: "TT", isHost: false },
@@ -1269,7 +1288,7 @@ export function attendeesForExperience(expId: string): MockAttendee[] {
     if (list.some((a) => a.name === name)) continue;
     list.push({ id: `${expId}-${initials}`, name, initials, isHost: false });
   }
-  return list;
+  return list.map((a) => ({ ...a, shown: SHOWN_ATTENDEES.has(a.name) }));
 }
 
 export type MockReview = {

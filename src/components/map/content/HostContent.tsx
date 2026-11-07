@@ -53,7 +53,9 @@ export function HostContent({ id, push }: { id: string; push: PushFn }) {
       <UIPressable
         pressedScale={0.99}
         accessibilityRole="button"
-        onPress={() => push({ kind: "attendees", id: exp.id })}
+        // The host sees every guest (the public list names only those who
+        // opted in, Phase 16).
+        onPress={() => push({ kind: "guests", id: exp.id })}
       >
         <Card>
           <View className="flex-row items-center justify-between">

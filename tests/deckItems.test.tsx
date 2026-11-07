@@ -32,9 +32,12 @@ describe("deck items", () => {
       expect(text).not.toMatch(/\b(Venteliste|Fullt|Åpen|Påmeldt)\b/);
       expect(item.lines[2]!.text).toBe(spotsLine(e));
     }
-    expect(spotsLine({ capacity: 8, going: 5 })).toBe("3 plasser igjen · 5/8");
+    // Phase 16: "N skal" counts everyone going, then the places left.
+    expect(spotsLine({ capacity: 8, going: 5 })).toBe(
+      "5 skal · 3 plasser igjen",
+    );
     expect(spotsLine({ capacity: 8, going: 8 })).toBe(
-      "Ingen ledige plasser · 8/8",
+      "8 skal · ingen ledige plasser",
     );
   });
 

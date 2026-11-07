@@ -7,6 +7,7 @@ import { RouteHeader } from "@/components/RouteHeader";
 import { SignInPrompt } from "@/components/SignInPrompt";
 import { useGuestMode } from "@/components/map/hooks/useGuestMode";
 import { blockedCount, useBlocked } from "@/lib/blocked";
+import { setShowMeAsAttendee, useShowMeAsAttendee } from "@/lib/going";
 
 import { ExportSheet } from "./ExportSheet";
 import { NavRow, SettingsSection, ToggleRow } from "./settingsUi";
@@ -22,6 +23,9 @@ import { NavRow, SettingsSection, ToggleRow } from "./settingsUi";
 // backend — the real visibility/consent model is not certified.
 export default function PrivacyScreen() {
   const blocked = useBlocked();
+  // Phase 16 (founder 2026-11-07): off until you choose it; shared with the
+  // experience cards (src/lib/going.ts), in memory like the other switches.
+  const showMe = useShowMeAsAttendee();
   const [mapVisible, setMapVisible] = useState(true);
   const [profileVisible, setProfileVisible] = useState(true);
   const [discoverable, setDiscoverable] = useState(false);
@@ -60,6 +64,13 @@ export default function PrivacyScreen() {
             hint="Andre kan finne deg basert på felles interesser"
             value={discoverable}
             onValueChange={setDiscoverable}
+          />
+          <ToggleRow
+            icon="people-circle-outline"
+            label="Vis meg som deltaker"
+            hint="Bildet ditt vises på opplevelser du er med på. Alle telles uansett."
+            value={showMe}
+            onValueChange={setShowMeAsAttendee}
           />
         </SettingsSection>
 

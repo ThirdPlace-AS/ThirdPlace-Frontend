@@ -29,6 +29,7 @@ export function titleFor(t: SheetTarget): string {
     case "reviews":
       return "Anmeldelser";
     case "attendees":
+    case "guests":
       return "Deltakere";
     case "host":
       return "Administrer";
@@ -57,6 +58,8 @@ export function DetailContent({
       return <ReviewsContent id={target.id} />;
     case "attendees":
       return <AttendeesContent id={target.id} />;
+    case "guests":
+      return <AttendeesContent id={target.id} everyone />;
     case "host":
       return <HostContent id={target.id} push={push} />;
     case "group":

@@ -4,6 +4,7 @@ import { useState } from "react";
 import { StyleSheet, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
+import { GoingLine } from "@/components/GoingLine";
 import { MetaRow, Text } from "@/components/ui";
 import { media } from "@/theme";
 import type { IconName } from "@/components/ui";
@@ -183,11 +184,16 @@ export function SwipeCard({
         </Text>
 
         <View style={{ gap: 6 }}>
-          {item.lines.map((l) => (
-            <InfoRow key={l.icon} icon={l.icon}>
-              {l.text}
-            </InfoRow>
-          ))}
+          {item.lines.map((l) =>
+            l.goingId ? (
+              // Who is going: faces of people who opted in, then the count.
+              <GoingLine key={l.icon} id={l.goingId} onMedia />
+            ) : (
+              <InfoRow key={l.icon} icon={l.icon}>
+                {l.text}
+              </InfoRow>
+            ),
+          )}
         </View>
 
         {item.chips.length > 0 ? <TagPills tags={item.chips} /> : null}

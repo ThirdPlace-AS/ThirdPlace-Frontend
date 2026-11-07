@@ -10,6 +10,7 @@
 import type { ImageSourcePropType } from "react-native";
 
 import type { IconName } from "@/components/ui";
+import { goingLine } from "@/lib/going";
 import {
   chatForExperience,
   chatForPlace,
@@ -25,7 +26,10 @@ import { media } from "@/theme";
 
 export type DeckKind = "experience" | "place";
 
-export type DeckLine = { icon: IconName; text: string };
+/** An info line. `goingId`: the experience whose "who is going" the card
+ *  draws live in its place (faces + "N skal", Phase 16); `text` is the
+ *  same line from the fixtures. */
+export type DeckLine = { icon: IconName; text: string; goingId?: string };
 
 export type DeckItem = {
   kind: DeckKind;
@@ -42,12 +46,10 @@ export type DeckItem = {
   subtitle: string;
 };
 
-/** Places-left line: "3 plasser igjen · 5/8" or "Ingen ledige plasser · 8/8". */
+/** Who is going and places left: "5 skal · 3 plasser igjen" (Phase 16:
+ *  "N skal" counts everyone; the faces are the people who opted in). */
 export function spotsLine(e: Pick<MockExperience, "capacity" | "going">) {
-  const left = Math.max(0, e.capacity - e.going);
-  return left > 0
-    ? `${left} plasser igjen · ${e.going}/${e.capacity}`
-    : `Ingen ledige plasser · ${e.going}/${e.capacity}`;
+  return goingLine(e);
 }
 
 export function experienceToDeckItem(e: MockExperience): DeckItem {
@@ -64,7 +66,11 @@ export function experienceToDeckItem(e: MockExperience): DeckItem {
         text: place ? `${place.name} · ${place.distance}` : e.meetingPoint.name,
       },
       { icon: "calendar-outline", text: e.when },
-      { icon: "people-outline", text: spotsLine(e) },
+      {
+        icon: "people-outline",
+        text: spotsLine(e),
+        goingId: e.id,
+      },
     ],
     chips: e.tags,
     chatId: chatForExperience(e.id)?.id,
