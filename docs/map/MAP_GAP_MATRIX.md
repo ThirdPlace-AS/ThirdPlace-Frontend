@@ -82,20 +82,20 @@ founder-approved), `historical` (prior doc, not V2.2-certified), `blocked`
 
 ## Notifications — gaps vs the V2.2 contract
 
-The `NotificationsSheet` is a fixtures-only demo re-skinned Instagram-style
-(swipe-to-reveal •••/trash, per-item action sheet, type-mute, unread filter,
-thumbnail placeholders — all in-memory, `DemoBadge`-marked, reset on reload).
+Varsler is the `/notifications` page (`NotificationsScreen`, a page since
+0240): fixture cards with a category glyph, name, one-line detail, time and an
+unread dot. A tap marks the card read and "Merk alle lest" sits in the header;
+read state is the shared in-memory store (`useNotificationReads`, 0208), so
+the map, chat and Sveip bells drop as cards are read. It resets on reload.
 
-Honesty note: per the V2.2 Notifications contract the per-item actions
-("Ikke interessert" / "Slå av varsler som dette" / delete) are **not contract
-behavior** — deletion via API is explicitly prohibited and per-item mute is
-unspecified. They are Instagram-parity **demo** UI only.
+There are no per-item delete, mute or "Ikke interessert" actions: the V2.2
+Notifications contract prohibits deletion via API and leaves per-item mute
+unspecified.
 
-Still unimplemented / contract-blocked: real `/notifications*` API, mark-all-read,
+Still unimplemented / contract-blocked: a real `/notifications*` API,
 preferences + quiet hours (field-gated `DTO_LOCK`), push + delivery lifecycle,
-cross-device sync, category taxonomy, deep-link target resolution, and a
-read-state-driven unread badge (the map bell count is still static). The nearest
-demo-safe unbuilt items are **mark-all-read** and a read-state-driven badge.
+cross-device sync, category taxonomy and deep-link target resolution (a tap
+does not open the item yet).
 
 See [MAP_BLOCKERS.md](MAP_BLOCKERS.md) for the blocker + native-verify registers
 and [MAP_DELIVERABLES.md](MAP_DELIVERABLES.md) for journeys + completion classes.
