@@ -1,6 +1,7 @@
 import { useMemo, useState } from "react";
 
 import type { MockPlace, TimeWindow } from "@/fixtures";
+import type { MapFilters } from "../services/mapFilters";
 import { useCreatedVersion } from "@/fixtures/created";
 
 import { resultForMode } from "../services/mapFixtureAdapter";
@@ -16,6 +17,7 @@ export function useMapDiscovery({
   savedIds,
   time = null,
   hasSpots = false,
+  filters,
   initial = "forYou",
 }: {
   places: MockPlace[];
@@ -23,6 +25,8 @@ export function useMapDiscovery({
   savedIds: readonly string[];
   time?: TimeWindow | null;
   hasSpots?: boolean;
+  /** The full filter set: experiences go through the same facets. */
+  filters?: MapFilters;
   initial?: DiscoveryMode;
 }) {
   const [mode, setMode] = useState<DiscoveryMode>(initial);
@@ -30,9 +34,10 @@ export function useMapDiscovery({
   const created = useCreatedVersion();
 
   const result = useMemo(
-    () => resultForMode({ mode, places, query, savedIds, time, hasSpots }),
+    () =>
+      resultForMode({ mode, places, query, savedIds, time, hasSpots, filters }),
     // eslint-disable-next-line react-hooks/exhaustive-deps -- created: the fixture lists grew
-    [mode, places, query, savedIds, time, hasSpots, created],
+    [mode, places, query, savedIds, time, hasSpots, filters, created],
   );
 
   return { mode, setMode, ...result };

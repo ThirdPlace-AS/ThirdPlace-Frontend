@@ -4,13 +4,17 @@
 
 import {
   DURATION_STEPS,
+  placeById,
   places,
+  ratingOf,
+  reviewsForExperience,
+  type MockExperience,
   type MockPlace,
   type TimeWindow,
   type Vibe,
 } from "@/fixtures";
 
-import { placeMatchesQuery } from "./mapSearch";
+import { experienceMatchesQuery, placeMatchesQuery } from "./mapSearch";
 
 // Price range bounds derived from the MOCK fixtures (not a pricing contract).
 export const PRICE_FLOOR = 0;
@@ -168,5 +172,96 @@ export function activeExtraFilterCount(f: MapFilters): number {
     (f.time !== null ? 1 : 0) +
     (f.openNowOnly ? 1 : 0) +
     (f.hasSpots ? 1 : 0)
+  );
+}
+
+// ── Experiences (Phase 12 H5c: one filter pipeline for the map and Sveip) ──
+// Every facet reads a field the experience has (H2) or, for venue facts
+// (distance, facilities, accessibility), the place it is held at. An
+// experience without a venue has no distance (it passes the distance cap)
+// and no facilities or accessibility to match (it fails those). "Åpent nå"
+// is opening hours, a place concept: experiences pass it.
+
+const startHour = (when: string): number | null => {
+  const m = /(\d{1,2}):\d{2}$/.exec(when);
+  return m ? Number(m[1]) : null;
+};
+
+/** "morgen" before 12, "ettermiddag" 12–17, "kveld" after 17. */
+export function timeOfDayFor(when: string): string | null {
+  const h = startHour(when);
+  if (h === null) return null;
+  return h < 12 ? "morgen" : h < 17 ? "ettermiddag" : "kveld";
+}
+
+const lower = (list: readonly string[]) => list.map((x) => x.toLowerCase());
+
+export function applyExperienceFilters(
+  all: MockExperience[],
+  query: string,
+  f: MapFilters,
+): MockExperience[] {
+  const q = query.trim().toLowerCase();
+  const out = all.filter((e) => {
+    if (e.status === "cancelled") return false;
+    const place = placeById(e.placeId);
+    if (f.types.length > 0 && !f.types.some((t) => e.types.includes(t)))
+      return false;
+    if (f.maxDistanceM !== null && place && place.distanceM > f.maxDistanceM)
+      return false;
+    const price = e.priceNok ?? 0;
+    if (price < f.priceMin || price > f.priceMax) return false;
+    if (f.durationMaxMin < DURATION_NO_CAP && e.durationMin > f.durationMaxMin)
+      return false;
+    if (
+      f.vibes.length > 0 &&
+      !f.vibes.some((v) => (e.vibes as readonly string[]).includes(v))
+    )
+      return false;
+    if (f.minRating !== null) {
+      const { score, count } = ratingOf(reviewsForExperience(e.id));
+      if (count === 0 || score < f.minRating) return false;
+    }
+    if (
+      f.tags.length > 0 &&
+      !(place && f.tags.every((t) => place.tags.includes(t)))
+    )
+      return false;
+    if (
+      f.audiences.length > 0 &&
+      !f.audiences.some((a) => e.audiences.includes(a))
+    )
+      return false;
+    if (f.timeOfDay.length > 0) {
+      const tod = timeOfDayFor(e.when);
+      if (tod === null || !f.timeOfDay.includes(tod)) return false;
+    }
+    if (f.languages.length > 0) {
+      const have = lower(e.languages);
+      if (!lower(f.languages).some((l) => have.includes(l))) return false;
+    }
+    if (
+      f.accessibility.length > 0 &&
+      !(place && f.accessibility.every((a) => place.accessibility.includes(a)))
+    )
+      return false;
+    if (f.time !== null && e.day !== f.time) return false;
+    if (f.hasSpots && e.capacity - e.going <= 0) return false;
+    if (q !== "" && !experienceMatchesQuery(e, q) && !"opplevelse".includes(q))
+      return false;
+    return true;
+  });
+  return sortExperiences(out, f.ratingSort);
+}
+
+/** "Sorter" for experiences: by review score or count (demo ordering). */
+export function sortExperiences(
+  list: MockExperience[],
+  sort: RatingSort | null,
+): MockExperience[] {
+  if (sort === null) return list;
+  const r = (e: MockExperience) => ratingOf(reviewsForExperience(e.id));
+  return [...list].sort((a, b) =>
+    sort === "best" ? r(b).score - r(a).score : r(b).count - r(a).count,
   );
 }

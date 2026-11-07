@@ -334,6 +334,7 @@ export function MapFilterSheet({
   query = "",
   mode,
   savedIds,
+  count,
   onClose,
   onApply,
 }: {
@@ -343,12 +344,17 @@ export function MapFilterSheet({
   /** Active discovery mode + saved ids: the count runs the list's pipeline. */
   mode: DiscoveryMode;
   savedIds: readonly string[];
+  /** Another surface's count for a draft (Sveip: the deck it will show). */
+  count?: (draft: MapFilters) => number;
   onClose: () => void;
   onApply: (f: MapFilters) => void;
 }) {
   // Large "Filtre" at the top of the content; the header takes the title
   // once it has scrolled away (benchmark F2).
   const [headerTitle, setHeaderTitle] = useState(false);
+  // A reopened sheet starts at its top, so the big title shows again and the
+  // header must not repeat it (it kept "Filtre" from the last scroll).
+  if (!visible && headerTitle) setHeaderTitle(false);
   return (
     <Sheet
       visible={visible}
@@ -364,6 +370,7 @@ export function MapFilterSheet({
           query={query}
           mode={mode}
           savedIds={savedIds}
+          count={count}
           onClose={onClose}
           onApply={onApply}
           onTitleScrolledAway={setHeaderTitle}
@@ -380,6 +387,7 @@ function FilterBody({
   query,
   mode,
   savedIds,
+  count,
   onClose,
   onApply,
   onTitleScrolledAway,
@@ -388,6 +396,7 @@ function FilterBody({
   query: string;
   mode: DiscoveryMode;
   savedIds: readonly string[];
+  count?: (draft: MapFilters) => number;
   onClose: () => void;
   onApply: (f: MapFilters) => void;
   onTitleScrolledAway: (away: boolean) => void;
@@ -404,14 +413,16 @@ function FilterBody({
   // pipeline as the list (countResults), so N is what the list will show.
   const resultCount = useMemo(
     () =>
-      countResults({
-        mode,
-        allPlaces: places,
-        query,
-        filters: draft,
-        savedIds,
-      }),
-    [mode, query, draft, savedIds],
+      count
+        ? count(draft)
+        : countResults({
+            mode,
+            allPlaces: places,
+            query,
+            filters: draft,
+            savedIds,
+          }),
+    [count, mode, query, draft, savedIds],
   );
 
   const durationIndex = Math.max(

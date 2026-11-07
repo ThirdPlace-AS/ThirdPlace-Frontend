@@ -24,7 +24,11 @@ import {
   type ModeResult,
 } from "../types/mapPresentation";
 
-import { applyFilters, type MapFilters } from "./mapFilters";
+import {
+  applyExperienceFilters,
+  applyFilters,
+  type MapFilters,
+} from "./mapFilters";
 import { experienceMatchesQuery } from "./mapSearch";
 
 function placeToItem(p: MockPlace): DiscoveryItem {
@@ -81,6 +85,9 @@ export type AdapterInput = {
   // Only experiences with free spots (capacity - going > 0). Applies to
   // experiences. false = no constraint.
   hasSpots?: boolean;
+  // The full filter set: experiences then go through the same facets as the
+  // places (applyExperienceFilters); time/hasSpots above are then ignored.
+  filters?: MapFilters;
 };
 
 // Resolves the active discovery mode into the items to show on the map + list.
@@ -91,13 +98,18 @@ export function resultForMode({
   savedIds,
   time = null,
   hasSpots = false,
+  filters,
 }: AdapterInput): ModeResult {
   const placeItems = places.map(placeToItem);
-  // Experiences after the Når / Ledige plasser / search filters.
-  const filteredExperiences = experiences
-    .filter((e) => time === null || e.day === time)
-    .filter((e) => !hasSpots || e.capacity - e.going > 0)
-    .filter((e) => experienceMatchesText(e, query));
+  // Experiences after the same filters as the places (H5c: one pipeline
+  // for the map and Sveip); without filters, the Når / Ledige plasser /
+  // search filters only.
+  const filteredExperiences = filters
+    ? applyExperienceFilters(experiences, query, filters)
+    : experiences
+        .filter((e) => time === null || e.day === time)
+        .filter((e) => !hasSpots || e.capacity - e.going > 0)
+        .filter((e) => experienceMatchesText(e, query));
   const liveItems = filteredExperiences
     .filter((e) => e.status === "open" || e.status === "waitlist")
     .map(experienceToItem);
@@ -194,5 +206,6 @@ export function countResults({
     savedIds,
     time: filters.time,
     hasSpots: filters.hasSpots,
+    filters,
   }).items.length;
 }

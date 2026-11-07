@@ -230,3 +230,7 @@ PDF p5–p8 draw a dark round "+". The founder chose a TikTok-style add button i
 ### Founder decision: Gruppe in Legg til (2026-11-06)
 
 PDF p10 "Hva vil du legge til?" offers Sted and Opplevelse. The founder added **Gruppe**: Om gruppen (navn, beskrivelse, interesser) → Område → Bilder (minst to) → Hvem kan bli med (Åpen / Lukket / Kun invitasjon, the chat's own words) → Se over → "Gruppen er opprettet" with "Se gruppen" (`/group/[id]`) and "Til gruppechatten" (the new chat is at the top of Chat). A published experience joins the map and gets its chat; "Se opplevelsen" opens its page. The experience flow has an optional step "Hva skjer underveis?" (Hva er inkludert, Hva dere skal gjøre) so every section of the experience page has a source. Everything lives in memory for the session (`src/fixtures/created.ts`). Ledger 0242.
+
+### Sveip Filtre = the map's Filtre (user 2026-11-06)
+
+PDF p7 draws a smaller swipe filter (modes, interests, Når, ledige plasser). The user asked for Sveip's filter to be identical to the map's: Sveip opens the same `MapFilterSheet` (same sections, order and footer "Fjern alt / Vis N resultater"), where N is the deck it will show for the active tab. The modes stay as the top-bar tabs. Experiences go through one pipeline on both surfaces (`applyExperienceFilters`): every facet reads a field the experience has, or its venue for distance, facilities and accessibility. Ledger 0243.

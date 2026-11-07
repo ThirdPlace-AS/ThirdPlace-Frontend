@@ -11,7 +11,7 @@ import { markerId } from "@/components/map/types/mapPresentation";
 import { SignInPrompt } from "@/components/SignInPrompt";
 import { showToast } from "@/components/Toast";
 import { EmptyState } from "@/components/states/StateView";
-import { places } from "@/fixtures";
+import { places, type MockPlace } from "@/fixtures";
 import { libImage, photosForPlace } from "@/fixtures/images";
 import { PhotoCarousel } from "./PhotoCarousel";
 import { media } from "@/theme";
@@ -24,8 +24,11 @@ import { formatRating } from "@/lib/format";
 // shows up in Lagret and the map's Lagret mode. No ranking or interest
 // signal is recorded (BLOCKED_CONTRACT_GAP).
 export function PlaceDeck({
+  items = places,
   onExhausted,
 }: {
+  /** Places after Sveip's filters (default: every place). */
+  items?: MockPlace[];
   onExhausted?: (done: boolean) => void;
 }) {
   const insets = useSafeAreaInsets();
@@ -33,7 +36,7 @@ export function PlaceDeck({
   const { isSaved, toggle } = useMapSaved();
   const { isGuest } = useGuestMode();
   const [signIn, setSignIn] = useState(false);
-  const place = places[index];
+  const place = items[index];
   const done = !place;
   useEffect(() => {
     onExhausted?.(done);

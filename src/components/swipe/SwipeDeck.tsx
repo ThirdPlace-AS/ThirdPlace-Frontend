@@ -33,7 +33,12 @@ import { Sheet } from "@/components/Sheet";
 import { useGuestMode } from "@/components/map/hooks/useGuestMode";
 import { SignInPrompt } from "@/components/SignInPrompt";
 import { EmptyState } from "@/components/states/StateView";
-import { chatForExperience, type MockExperience } from "@/fixtures";
+import {
+  chatForExperience,
+  experiences,
+  places,
+  type MockExperience,
+} from "@/fixtures";
 import { showToastAfterSheet } from "@/components/Toast";
 import { confirmToast } from "@/copy";
 import { useNotificationReads } from "@/hooks/useNotificationReads";
@@ -47,12 +52,14 @@ import { PlaceDeck } from "./PlaceDeck";
 import { SwipeActions } from "./SwipeActions";
 import { SwipeCard, SWIPE_CONTENT_BOTTOM } from "./SwipeCard";
 import { SwipeFilterBar, type SwipeMode } from "./SwipeFilterBar";
+import { MapFilterSheet } from "@/components/map/MapFilterSheet";
 import {
-  applySwipeFilters,
-  DEFAULT_SWIPE_FILTERS,
-  SwipeFilterSheet,
-  type SwipeFilters,
-} from "./SwipeFilterSheet";
+  activeExtraFilterCount,
+  applyExperienceFilters,
+  applyFilters,
+  DEFAULT_FILTERS,
+  type MapFilters,
+} from "@/components/map/services/mapFilters";
 import { useSwipeDeck } from "./useSwipeDeck";
 import { Illustration } from "@/components/illustrations/Illustration";
 
@@ -73,15 +80,26 @@ export function SwipeDeck() {
   // (BLOCKED_CONTRACT_GAP). "Steder" (place cards) is
   // not built yet and shows an honest empty state. Local filtering
   // (tags/when/availability) lives in the Filtre sheet.
-  const [filters, setFilters] = useState<SwipeFilters>(DEFAULT_SWIPE_FILTERS);
-  const mode = filters.mode;
-  const setMode = (m: SwipeMode) => setFilters((f) => ({ ...f, mode: m }));
+  const [mode, setMode] = useState<SwipeMode>("forYou");
+  // Filtre is the map's sheet with the map's pipeline (user 2026-11-06: the
+  // Sveip filter must be identical to the map's); Sveip keeps its own state.
+  const [filters, setFilters] = useState<MapFilters>(DEFAULT_FILTERS);
   const [filtersOpen, setFiltersOpen] = useState(false);
+  // "Vis N resultater" = the deck it will show for the active tab.
+  const countFor = (draft: MapFilters) =>
+    mode === "places"
+      ? applyFilters(places, "", draft).length
+      : applyExperienceFilters(experiences, "", draft).length;
+  const placeItems = useMemo(
+    () => applyFilters(places, "", filters),
+    [filters],
+  );
   const { unread: unreadNotifs } = useNotificationReads();
 
   const filterKey = JSON.stringify(filters);
   const filter = useMemo(
-    () => (e: MockExperience) => applySwipeFilters([e], filters).length === 1,
+    () => (e: MockExperience) =>
+      applyExperienceFilters([e], "", filters).length === 1,
     [filterKey], // eslint-disable-line react-hooks/exhaustive-deps
   );
 
@@ -314,7 +332,7 @@ export function SwipeDeck() {
     <>
       <View className="flex-1 bg-ink">
         {mode === "places" ? (
-          <PlaceDeck onExhausted={setPlacesDone} />
+          <PlaceDeck items={placeItems} onExhausted={setPlacesDone} />
         ) : deck.done ? (
           // PDF p8 "Du har sett alt for nå" — light screen, two actions.
           <View
@@ -327,7 +345,7 @@ export function SwipeDeck() {
                 title="Ingen treff"
                 message="Ingen opplevelser passer filtrene dine. Prøv andre filtre."
                 actionLabel="Nullstill filtre"
-                onAction={() => setFilters(DEFAULT_SWIPE_FILTERS)}
+                onAction={() => setFilters(DEFAULT_FILTERS)}
                 secondaryLabel="Utforsk kartet"
                 onSecondary={() => router.navigate("/map")}
               />
@@ -444,11 +462,7 @@ export function SwipeDeck() {
             mode={mode}
             onSelectMode={setMode}
             onOpenFilters={() => setFiltersOpen(true)}
-            filterActive={
-              filters.tags.length > 0 ||
-              filters.when !== null ||
-              filters.hasSpots
-            }
+            filterActive={activeExtraFilterCount(filters) > 0}
             onOpenNotifications={() => router.push("/notifications" as Href)}
             unreadCount={unreadNotifs}
             onLight={mode === "places" ? placesDone : deck.done}
@@ -459,11 +473,17 @@ export function SwipeDeck() {
         {/* Filtre — looks like the map's Filtre sheet (muted sheet, white Section
           cards, "Fjern alt + Vis N" footer), carrying the swipe's own modes +
           interests plus the data-backed Når/availability facets. */}
-        <SwipeFilterSheet
+        <MapFilterSheet
           visible={filtersOpen}
-          value={filters}
+          filters={filters}
+          mode="forYou"
+          savedIds={[]}
+          count={countFor}
           onClose={() => setFiltersOpen(false)}
-          onApply={setFilters}
+          onApply={(next) => {
+            setFilters(next);
+            setFiltersOpen(false);
+          }}
         />
 
         {/* Notifications — the same demo sheet the map uses (bell in the top bar). */}

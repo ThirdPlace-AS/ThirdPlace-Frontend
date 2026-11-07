@@ -94,6 +94,7 @@ export default function MapScreen() {
     savedIds: saved.savedIds,
     time: filters.filters.time,
     hasSpots: filters.filters.hasSpots,
+    filters: filters.filters,
   });
   const selection = useMapSelection();
   const camera = useMapCamera();
