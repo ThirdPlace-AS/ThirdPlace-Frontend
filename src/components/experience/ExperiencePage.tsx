@@ -1,21 +1,20 @@
-// Experience page body (Phase 11 G5), shared by the map's experience detail
-// and the Sveip expanded detail. Layout, order and feel follow the founder's
-// reference video (benchmark only): inset photo gallery that opens a
-// full-screen viewer, centred title and description, a status line, small
-// chips, icon rows, "Flere opplevelser i området", "Om verten" and footer
-// links. ThirdPlace content the video does not have stays and is restyled to
-// fit (founder, 2026-11-06): status pill · when · påmeldt, Lagre / Del /
-// Rapporter, Se deltakere, Gruppe, Sjekk inn (GPS), Administrer (vert).
-// Built only from fixture fields: no rating, reviews, itinerary or
-// availability (BLOCKED_CONTRACT_GAP). The join action lives in the host's
-// floating ExperienceJoinBar card.
+// Experience page body (Phase 11 G5, rebuilt in Phase 12 H4), shared by the
+// map's experience sheet/page and the Sveip page. Order, look and behaviour
+// follow the founder's reference video (benchmark only): inset gallery →
+// centred title, description, rating line and chips → icon rows (host, where,
+// duration + language, what's included, latest review, participants, group)
+// → Vurderinger → … → footer links. Founder rule (2026-11-06): no fact
+// appears twice; everything a creator enters in Legg til shows once. The join
+// action lives in the host's floating ExperienceJoinBar card.
 import type { Href } from "expo-router";
 import { useState } from "react";
 import { ScrollView, View, useWindowDimensions } from "react-native";
 import { Gesture, GestureDetector } from "react-native-gesture-handler";
 
-import { BlockSheet } from "@/components/actions/ActionSheets";
+import { BlockSheet, ReportSheet } from "@/components/actions/ActionSheets";
 import { Button } from "@/components/Button";
+import { ReviewsSection } from "@/components/reviews/ReviewsSection";
+import { sortReviews } from "@/components/reviews/reviewSort";
 import {
   Avatar,
   Chip,
@@ -26,15 +25,21 @@ import {
   Pressable as UIPressable,
   type IconName,
 } from "@/components/ui";
-import { chats, groupById, placeById, type MockExperience } from "@/fixtures";
+import {
+  chats,
+  groupById,
+  placeById,
+  ratingOf,
+  reviewsForExperience,
+  type MockExperience,
+} from "@/fixtures";
 import { libImage } from "@/fixtures/images";
+import { formatRating } from "@/lib/format";
 
-import { DetailActions } from "../map/content/DetailActions";
 import { useExperienceJoin } from "../map/hooks/useExperienceJoin";
 import { PhotoPager } from "../map/PhotoPager";
 import type { SheetTarget } from "../map/sheetTypes";
-import { markerId } from "../map/types/mapPresentation";
-import { STATUS_META, hostPerson, moreExperiences } from "./experienceMeta";
+import { areaFor, hostPerson, moreExperiences } from "./experienceMeta";
 
 export type ExperiencePageProps = {
   exp: MockExperience;
@@ -42,9 +47,49 @@ export type ExperiencePageProps = {
   onOpen: (target: SheetTarget) => void;
   /** Opens another experience ("Flere opplevelser i området"). */
   onOpenExperience: (id: string) => void;
-  /** Leaves to another route (host profile, chat). */
+  /** Leaves to another route (host profile, chat, all reviews). */
   onNavigate: (href: Href) => void;
 };
+
+/** "1 time" → "Ca. 1 time"; "Hele dagen" stays. */
+export function durationLabel(exp: Pick<MockExperience, "duration">): string {
+  return exp.duration === "Hele dagen" ? exp.duration : `Ca. ${exp.duration}`;
+}
+
+/** ["a", "b", "c"] → "a, b og c". */
+export function joinList(items: readonly string[]): string {
+  return items.length > 1
+    ? `${items.slice(0, -1).join(", ")} og ${items[items.length - 1]}`
+    : (items[0] ?? "");
+}
+
+/** ["Norsk", "Engelsk"] → "Holdes på norsk og engelsk". */
+export function languageLabel(exp: Pick<MockExperience, "languages">): string {
+  const list = joinList(exp.languages.map((x) => x.toLowerCase()));
+  return `Holdes på ${list || "norsk"}`;
+}
+
+/** ["En kopp kaffe", "Litt bakst"] → "En kopp kaffe og litt bakst". */
+export function includedLabel(exp: Pick<MockExperience, "included">): string {
+  return joinList(
+    exp.included.map((x, i) =>
+      i === 0 ? x : x.charAt(0).toLowerCase() + x.slice(1),
+    ),
+  );
+}
+
+/** Vibes first, then tags that are not already a vibe (no chip twice). */
+export function experienceChips(
+  exp: Pick<MockExperience, "vibes" | "tags">,
+): string[] {
+  const seen = new Set<string>();
+  return [...exp.vibes, ...exp.tags].filter((c) => {
+    const k = c.toLowerCase();
+    if (seen.has(k)) return false;
+    seen.add(k);
+    return true;
+  });
+}
 
 export function ExperiencePage({
   exp,
@@ -56,13 +101,17 @@ export function ExperiencePage({
     exp.id,
     exp.status === "joined" ? "joined" : "none",
   );
-  const [blockOpen, setBlockOpen] = useState(false);
+  const [sheet, setSheet] = useState<"report" | "block" | null>(null);
   const place = placeById(exp.placeId);
   const group = groupById(exp.groupId);
   const host = hostPerson(exp);
-  const status = STATUS_META[exp.status];
+  const hostName = host?.name ?? exp.host;
   const going = exp.going + (user === "joined" ? 1 : 0);
+  const reviews = reviewsForExperience(exp.id);
+  const { score, count } = ratingOf(reviews);
+  const latest = sortReviews(reviews, "newest")[0];
   const more = moreExperiences(exp);
+  const reviewsHref = `/experience/${exp.id}/reviews` as Href;
   const dm = host
     ? chats.find(
         (c) =>
@@ -82,64 +131,85 @@ export function ExperiencePage({
         <Text variant="body" tone="muted" className="text-center">
           {exp.about}
         </Text>
-        <View className="mt-1 flex-row flex-wrap items-center justify-center gap-x-2 gap-y-1">
-          <View className={`rounded-full px-2.5 py-0.5 ${status.className}`}>
-            <Text variant="caption" weight="semibold" tone="onInk">
-              {status.label}
+        {count > 0 ? (
+          <UIPressable
+            accessibilityRole="link"
+            accessibilityLabel={`${formatRating(score)} av 5, ${count} vurderinger. Vis alle`}
+            onPress={() => onNavigate(reviewsHref)}
+            hitSlop={8}
+            contentClassName="mt-1 flex-row items-center gap-1"
+          >
+            <Icon name="star" size="sm" tone="ink" />
+            <Text variant="label" weight="semibold">
+              {formatRating(score)}
             </Text>
-          </View>
-          <Text variant="label" weight="medium">
-            {exp.when}
-          </Text>
-          <Text variant="label" tone="muted">
-            · {going}/{exp.capacity} påmeldt
-          </Text>
-        </View>
-        {exp.tags.length > 0 ? (
-          <View className="mt-1 flex-row flex-wrap justify-center gap-2">
-            {exp.tags.map((t) => (
-              <Chip key={t} label={t} size="sm" />
-            ))}
-          </View>
+            <Text variant="label" tone="muted">
+              ·
+            </Text>
+            <Text variant="label" weight="semibold" className="underline">
+              {count} vurderinger
+            </Text>
+          </UIPressable>
         ) : null}
+        <View className="mt-1 flex-row flex-wrap justify-center gap-2">
+          {experienceChips(exp).map((c) => (
+            <Chip key={c} label={c} size="sm" />
+          ))}
+        </View>
       </View>
-
-      <DetailActions
-        markerId={markerId("experience", exp.id)}
-        title={exp.title}
-      />
 
       <View className="h-px bg-line" />
 
-      {/* Icon rows (the reference's host / place / time / included rows). */}
+      {/* Icon rows (the reference's host / where / time / included / review). */}
       <View className="gap-1">
         <InfoRow
           leading={
             <Avatar
-              name={exp.host}
+              name={hostName}
               source={host ? libImage(host.avatar) : undefined}
               size="sm"
               decorative
             />
           }
-          title={`Vert: ${host?.name ?? exp.host}`}
-          subtitle="Arrangerer opplevelsen"
+          title={`Vert: ${hostName}`}
+          subtitle={
+            host?.area ? `Bor på ${host.area}` : "Arrangerer opplevelsen"
+          }
           onPress={
             host ? () => onNavigate(`/creator/${host.id}` as Href) : undefined
           }
         />
-        {place ? (
+        <InfoRow
+          icon="location-outline"
+          title={place?.name ?? exp.meetingPoint.name}
+          subtitle={`${areaFor(exp.meetingPoint.coord)}, Oslo`}
+          onPress={
+            place ? () => onOpen({ kind: "place", id: place.id }) : undefined
+          }
+        />
+        <InfoRow
+          icon="time-outline"
+          title={durationLabel(exp)}
+          subtitle={languageLabel(exp)}
+        />
+        <InfoRow
+          icon="clipboard-outline"
+          title="Hva er inkludert"
+          subtitle={includedLabel(exp)}
+          lines={2}
+        />
+        {latest ? (
           <InfoRow
-            icon="location-outline"
-            title={place.name}
-            subtitle={place.address}
-            onPress={() => onOpen({ kind: "place", id: place.id })}
+            icon="chatbox-ellipses-outline"
+            title="Siste anmeldelse"
+            subtitle={`«${latest.text}» · ${latest.when}`}
+            lines={2}
+            onPress={() => onNavigate(reviewsHref)}
           />
         ) : null}
-        <InfoRow icon="time-outline" title={exp.when} subtitle={exp.day} />
         <InfoRow
           icon="people-outline"
-          title={`${going} av ${exp.capacity} påmeldt`}
+          title={`${going} av ${exp.capacity} plasser tatt`}
           subtitle="Se deltakere"
           onPress={() => onOpen({ kind: "attendees", id: exp.id })}
         />
@@ -151,13 +221,14 @@ export function ExperiencePage({
             onPress={() => onOpen({ kind: "group", id: group.id })}
           />
         ) : null}
-        <InfoRow
-          icon="tp-arrival"
-          title="Sjekk inn (GPS)"
-          subtitle="Når du er på stedet"
-          onPress={() => onOpen({ kind: "checkin", id: exp.id })}
-        />
       </View>
+
+      <View className="h-px bg-line" />
+
+      <ReviewsSection
+        reviews={reviews}
+        onShowAll={() => onNavigate(reviewsHref)}
+      />
 
       {more.length > 0 ? (
         <View className="gap-3">
@@ -167,35 +238,45 @@ export function ExperiencePage({
           <ScrollView
             horizontal
             showsHorizontalScrollIndicator={false}
+            snapToInterval={188}
+            decelerationRate="fast"
             // Plain style: the gap and fixed card width must hold on a
             // cold start (className on the scroll content was dropped).
             contentContainerStyle={{ gap: 12 }}
           >
-            {more.map((e) => (
-              <UIPressable
-                key={e.id}
-                accessibilityRole="button"
-                accessibilityLabel={`${e.title}, ${e.when}`}
-                onPress={() => onOpenExperience(e.id)}
-                style={{ width: 176 }}
-                contentClassName="gap-1.5"
-                pressedScale={0.98}
-              >
-                <LoadingImage
-                  thumb
-                  source={e.photos[0]}
-                  contentFit="cover"
-                  transition={150}
-                  style={{ width: 176, height: 132, borderRadius: 16 }}
-                />
-                <Text variant="label" weight="semibold" numberOfLines={1}>
-                  {e.title}
-                </Text>
-                <Text variant="caption" tone="muted" numberOfLines={1}>
-                  {e.when}
-                </Text>
-              </UIPressable>
-            ))}
+            {more.map((e) => {
+              const r = ratingOf(reviewsForExperience(e.id));
+              return (
+                <UIPressable
+                  key={e.id}
+                  accessibilityRole="button"
+                  accessibilityLabel={`${e.title}, ${e.category}`}
+                  onPress={() => onOpenExperience(e.id)}
+                  style={{ width: 176 }}
+                  contentClassName="gap-1.5"
+                  pressedScale={0.98}
+                >
+                  <LoadingImage
+                    thumb
+                    source={e.photos[0]}
+                    contentFit="cover"
+                    transition={150}
+                    style={{ width: 176, height: 176, borderRadius: 16 }}
+                  />
+                  <Text variant="label" weight="semibold" numberOfLines={2}>
+                    {e.title}
+                  </Text>
+                  <Text variant="caption" tone="muted" numberOfLines={1}>
+                    {`${e.category} · ${e.duration}`}
+                  </Text>
+                  <Text variant="caption" tone="muted" numberOfLines={1}>
+                    {`${e.priceNok ? `${e.priceNok} kr` : "Gratis"}${
+                      r.count ? ` · ★ ${formatRating(r.score)}` : ""
+                    }`}
+                  </Text>
+                </UIPressable>
+              );
+            })}
           </ScrollView>
         </View>
       ) : null}
@@ -208,13 +289,13 @@ export function ExperiencePage({
         <View className="gap-3 rounded-lg border border-line bg-surface p-4">
           <View className="flex-row items-center gap-3">
             <Avatar
-              name={host?.name ?? exp.host}
+              name={hostName}
               source={host ? libImage(host.avatar) : undefined}
               size="lg"
               decorative
             />
             <View className="flex-1">
-              <Text variant="title">{host?.name ?? exp.host}</Text>
+              <Text variant="title">{hostName}</Text>
               <Text variant="caption" tone="muted">
                 {host ? `Vert · ${host.area}` : "Vert"}
               </Text>
@@ -226,7 +307,7 @@ export function ExperiencePage({
             </Text>
           ) : null}
           <Button
-            label="Send melding"
+            label={`Send melding til ${hostName.split(" ")[0]}`}
             variant="secondary"
             onPress={() =>
               onNavigate((dm ? `/chat/${dm.id}` : "/chat") as Href)
@@ -240,22 +321,32 @@ export function ExperiencePage({
       {/* Footer links. */}
       <View className="gap-1">
         <FooterLink
+          icon="tp-arrival"
+          label="Sjekk inn når du er der"
+          onPress={() => onOpen({ kind: "checkin", id: exp.id })}
+        />
+        <FooterLink
           icon="settings-outline"
           label="Administrer (vert)"
           onPress={() => onOpen({ kind: "host", id: exp.id })}
         />
         <FooterLink
+          icon="flag-outline"
+          label="Rapporter opplevelsen"
+          onPress={() => setSheet("report")}
+        />
+        <FooterLink
           icon="ban-outline"
-          label={`Blokker ${host?.name.split(" ")[0] ?? exp.host}`}
-          onPress={() => setBlockOpen(true)}
+          label={`Blokker ${hostName.split(" ")[0]}`}
+          onPress={() => setSheet("block")}
         />
       </View>
 
-      {blockOpen ? (
-        <BlockSheet
-          name={host?.name ?? exp.host}
-          onClose={() => setBlockOpen(false)}
-        />
+      {sheet === "report" ? (
+        <ReportSheet onClose={() => setSheet(null)} />
+      ) : null}
+      {sheet === "block" ? (
+        <BlockSheet name={hostName} onClose={() => setSheet(null)} />
       ) : null}
     </View>
   );
@@ -302,12 +393,14 @@ function InfoRow({
   leading,
   title,
   subtitle,
+  lines = 1,
   onPress,
 }: {
   icon?: IconName;
   leading?: React.ReactNode;
   title: string;
   subtitle?: string;
+  lines?: number;
   onPress?: () => void;
 }) {
   const body = (
@@ -320,7 +413,7 @@ function InfoRow({
           {title}
         </Text>
         {subtitle ? (
-          <Text variant="caption" tone="muted" numberOfLines={1}>
+          <Text variant="caption" tone="muted" numberOfLines={lines}>
             {subtitle}
           </Text>
         ) : null}

@@ -1,25 +1,12 @@
-// Pure helpers for the experience page (Phase 11 G5). Everything is derived
-// from existing fixture fields — no rating, reviews, itinerary or other data
-// the fixtures do not have (BLOCKED_CONTRACT_GAP).
+// Pure helpers for the experience page (Phase 11 G5, Phase 12 H4): host,
+// area and nearby experiences, all derived from MOCK fixture fields.
 import {
   OSLO_AREAS,
   experiences,
   people,
-  type ExperienceStatus,
   type MockExperience,
   type MockPerson,
 } from "@/fixtures";
-
-export const STATUS_META: Record<
-  ExperienceStatus,
-  { label: string; className: string }
-> = {
-  open: { label: "Åpen", className: "bg-success" },
-  waitlist: { label: "Venteliste", className: "bg-warning" },
-  full: { label: "Fullt", className: "bg-muted" },
-  joined: { label: "Påmeldt", className: "bg-emberStrong" },
-  cancelled: { label: "Avlyst", className: "bg-danger" },
-};
 
 /** The fixture person who hosts this experience (linked by id, never by name). */
 export function hostPerson(

@@ -1,12 +1,19 @@
-// Phase 11 G5: the experience page follows the reference video's layout, but
-// the founder required that every ThirdPlace-specific item stays (2026-11-06):
-// status pill, when, påmeldt, host, about, tags, Lagre / Del / Rapporter,
-// Se deltakere, Gruppe, Sjekk inn, Administrer (vert) and the join card.
+// Phase 12 H4: the experience page follows the founder's reference video and
+// shows every fact once (founder 2026-11-06): rating line under the
+// description, icon rows for host / where / duration + language / what's
+// included / latest review / participants, a Vurderinger section, and no
+// duplicated "when"/"påmeldt"/Lagre-Del-Rapporter row.
 import { describe, expect, it, jest } from "@jest/globals";
 import { fireEvent, render, screen } from "@testing-library/react-native";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 
-import { ExperiencePage } from "@/components/experience/ExperiencePage";
+import {
+  durationLabel,
+  ExperiencePage,
+  experienceChips,
+  includedLabel,
+  languageLabel,
+} from "@/components/experience/ExperiencePage";
 import {
   areaFor,
   experienceCaption,
@@ -14,7 +21,8 @@ import {
   moreExperiences,
 } from "@/components/experience/experienceMeta";
 import { ExperienceJoinBar } from "@/components/map/content/ExperienceJoinBar";
-import { experienceById, placeById } from "@/fixtures";
+import { experienceById, ratingOf, reviewsForExperience } from "@/fixtures";
+import { formatRating } from "@/lib/format";
 
 const METRICS = {
   frame: { x: 0, y: 0, width: 360, height: 640 },
@@ -28,54 +36,81 @@ function wrapper({ children }: { children: React.ReactNode }) {
 
 const e1 = experienceById("e1")!;
 
+function renderPage(
+  over: Partial<React.ComponentProps<typeof ExperiencePage>> = {},
+) {
+  return render(
+    <ExperiencePage
+      exp={e1}
+      onOpen={jest.fn()}
+      onOpenExperience={jest.fn()}
+      onNavigate={jest.fn()}
+      {...over}
+    />,
+    { wrapper },
+  );
+}
+
 describe("ExperiencePage", () => {
-  it("keeps every ThirdPlace-specific item", () => {
-    render(
-      <ExperiencePage
-        exp={e1}
-        onOpen={jest.fn()}
-        onOpenExperience={jest.fn()}
-        onNavigate={jest.fn()}
-      />,
-      { wrapper },
-    );
+  it("shows what the creator entered, each once", () => {
+    renderPage();
+    const reviews = reviewsForExperience("e1");
+    const { score, count } = ratingOf(reviews);
     for (const text of [
       e1.title,
       e1.about,
-      "Åpen",
-      e1.when,
-      "Lagre",
-      "Del",
-      "Rapporter",
+      formatRating(score),
+      `${count} vurderinger`,
+      durationLabel(e1),
+      languageLabel(e1),
+      "Hva er inkludert",
+      includedLabel(e1),
+      "Siste anmeldelse",
+      `${e1.going} av ${e1.capacity} plasser tatt`,
       "Se deltakere",
       "Morgenkaffe-gjengen",
-      "Sjekk inn (GPS)",
-      "Administrer (vert)",
+      "Vis alle vurderinger",
+      "Slik fungerer vurderinger",
       "Flere opplevelser i området",
       "Om verten",
-      ...e1.tags,
+      "Sjekk inn når du er der",
+      "Administrer (vert)",
+      "Rapporter opplevelsen",
+      ...experienceChips(e1),
     ]) {
       expect(screen.getAllByText(text).length).toBeGreaterThan(0);
     }
-    expect(screen.getAllByText(/påmeldt/).length).toBeGreaterThan(0);
     expect(screen.getByText(/^Vert: /)).toBeTruthy();
+    // Section title "★ 4,7 · 3 vurderinger".
+    expect(
+      screen.getByText(`★ ${formatRating(score)} · ${count} vurderinger`),
+    ).toBeTruthy();
   });
 
-  it("opens sub-views through onOpen", () => {
+  it("does not repeat facts the old page showed twice", () => {
+    renderPage();
+    // When lives in Tilgjengelighet / the join card, not in a status line.
+    expect(screen.queryByText(e1.when)).toBeNull();
+    expect(screen.queryByText(/påmeldt/)).toBeNull();
+    expect(screen.queryByText("Åpen")).toBeNull();
+    // Lagre / Del moved to the sheet header and top bar.
+    expect(screen.queryByText("Lagre")).toBeNull();
+    expect(screen.queryByText("Del")).toBeNull();
+    // Each chip once, even when a tag is also a vibe.
+    const chips = experienceChips(e1);
+    expect(new Set(chips.map((c) => c.toLowerCase())).size).toBe(chips.length);
+  });
+
+  it("opens sub-views and pages", () => {
     const onOpen = jest.fn();
-    render(
-      <ExperiencePage
-        exp={e1}
-        onOpen={onOpen}
-        onOpenExperience={jest.fn()}
-        onNavigate={jest.fn()}
-      />,
-      { wrapper },
-    );
+    const onNavigate = jest.fn();
+    renderPage({ onOpen, onNavigate });
     fireEvent.press(screen.getByRole("button", { name: /Se deltakere/ }));
     expect(onOpen).toHaveBeenCalledWith({ kind: "attendees", id: "e1" });
     fireEvent.press(screen.getByText("Administrer (vert)"));
     expect(onOpen).toHaveBeenCalledWith({ kind: "host", id: "e1" });
+    fireEvent.press(screen.getByText("Vis alle vurderinger"));
+    expect(onNavigate).toHaveBeenCalledWith("/experience/e1/reviews");
   });
 
   it("the join card shows price and the join action", () => {
@@ -85,16 +120,26 @@ describe("ExperiencePage", () => {
   });
 });
 
+describe("labels", () => {
+  it("duration and language read as in the reference", () => {
+    expect(durationLabel({ duration: "1 time" })).toBe("Ca. 1 time");
+    expect(durationLabel({ duration: "Hele dagen" })).toBe("Hele dagen");
+    expect(languageLabel({ languages: ["Norsk"] })).toBe("Holdes på norsk");
+    expect(languageLabel({ languages: ["Norsk", "Engelsk"] })).toBe(
+      "Holdes på norsk og engelsk",
+    );
+  });
+});
+
 describe("experienceMeta", () => {
   it("finds the host by id link, not by name", () => {
     expect(hostPerson(e1)?.hostsExperienceId).toBe("e1");
     expect(hostPerson({ id: "nope" })).toBeUndefined();
   });
 
-  it("captions with the first tag and the nearest area", () => {
-    const place = placeById(e1.placeId)!;
+  it("captions with the category and the meeting point's area", () => {
     expect(experienceCaption(e1)).toBe(
-      `${e1.tags[0]} · ${areaFor(place.coord)}`,
+      `${e1.category} · ${areaFor(e1.meetingPoint.coord)}`,
     );
     expect(areaFor([10.758, 59.9227])).toBe("Grünerløkka");
   });

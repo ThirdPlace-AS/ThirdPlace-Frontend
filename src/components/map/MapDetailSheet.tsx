@@ -295,6 +295,9 @@ export const MapDetailSheet = forwardRef<
                   title={topIsExperience ? undefined : titleFor(top)}
                   onBack={nested ? onBack : undefined}
                   onClose={onClose}
+                  actions={
+                    topIsExperience ? <ShareSave experienceId={top.id} /> : null
+                  }
                 />
               </View>
             </Animated.View>
@@ -371,6 +374,43 @@ function PageHandle({ animatedIndex }: BottomSheetHandleProps) {
 
 // The reference page's top bar: back (to 60 %), small centred caption, share
 // and save. Grows in with the drag; tappable only once the page is settled.
+/** Del + Lagre for an experience: in the page top bar, and next to ✕ in the
+ *  sheet header at the lower snaps (they left the page body: no fact twice). */
+function ShareSave({ experienceId }: { experienceId: string }) {
+  const exp = experienceById(experienceId);
+  const { isGuest } = useGuestMode();
+  const { isSaved, toggle } = useMapSaved();
+  const [promptOpen, setPromptOpen] = useState(false);
+  if (!exp) return null;
+  const key = markerId("experience", exp.id);
+  const saved = isSaved(key);
+  return (
+    <>
+      <IconButton
+        icon="share-outline"
+        label="Del"
+        onPress={() =>
+          void Share.share({
+            message: `${exp.title} på ThirdPlace: thirdplace.app/experience/${exp.id}`,
+          }).catch(() => {})
+        }
+      />
+      <HeartToggle
+        selected={saved}
+        variant="ghost"
+        haptic={!isGuest}
+        label={saved ? "Fjern fra lagret" : "Lagre"}
+        onToggle={() => (isGuest ? setPromptOpen(true) : toggle(key))}
+      />
+      <SignInPrompt
+        visible={promptOpen}
+        onClose={() => setPromptOpen(false)}
+        action="lagre"
+      />
+    </>
+  );
+}
+
 function PageTopBar({
   animatedIndex,
   topPad,
@@ -385,9 +425,6 @@ function PageTopBar({
   onBack: () => void;
 }) {
   const exp = experienceById(experienceId);
-  const { isGuest } = useGuestMode();
-  const { isSaved, toggle } = useMapSaved();
-  const [promptOpen, setPromptOpen] = useState(false);
   const full = topPad + PAGE_BAR_ROW;
   const a = useAnimatedStyle(() => {
     const t = interpolate(
@@ -399,8 +436,6 @@ function PageTopBar({
     return { height: full * t, opacity: t };
   }, [full]);
   if (!exp) return null;
-  const key = markerId("experience", exp.id);
-  const saved = isSaved(key);
   return (
     <Animated.View
       pointerEvents={interactive ? "auto" : "none"}
@@ -420,28 +455,8 @@ function PageTopBar({
         >
           {experienceCaption(exp)}
         </Text>
-        <IconButton
-          icon="share-outline"
-          label="Del"
-          onPress={() =>
-            void Share.share({
-              message: `${exp.title} på ThirdPlace: thirdplace.app/experience/${exp.id}`,
-            }).catch(() => {})
-          }
-        />
-        <HeartToggle
-          selected={saved}
-          variant="ghost"
-          haptic={!isGuest}
-          label={saved ? "Fjern fra lagret" : "Lagre"}
-          onToggle={() => (isGuest ? setPromptOpen(true) : toggle(key))}
-        />
+        <ShareSave experienceId={exp.id} />
       </View>
-      <SignInPrompt
-        visible={promptOpen}
-        onClose={() => setPromptOpen(false)}
-        action="lagre"
-      />
     </Animated.View>
   );
 }

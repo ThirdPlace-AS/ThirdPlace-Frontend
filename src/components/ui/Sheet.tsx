@@ -72,16 +72,19 @@ export function SheetHeader({
   onBack,
   tone = "light",
   divider = false,
+  actions,
 }: {
   title?: string;
   onClose?: () => void;
   onBack?: () => void;
   tone?: SheetTone;
   divider?: boolean;
+  /** Extra icon buttons before ✕ (e.g. Del + Lagre on an experience). */
+  actions?: ReactNode;
 }) {
   const dark = tone === "dark";
   const variant = dark ? "mediaSubtle" : "ghost";
-  if (!title && !onClose && !onBack) return null;
+  if (!title && !onClose && !onBack && !actions) return null;
   return (
     <View
       className={`flex-row items-center gap-sm ${
@@ -111,6 +114,7 @@ export function SheetHeader({
       >
         {title ?? ""}
       </Text>
+      {actions}
       {onClose ? (
         <IconButton
           icon="close"
