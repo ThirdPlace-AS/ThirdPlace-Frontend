@@ -77,7 +77,7 @@ export default function AccountSwitch() {
         ))}
         <UIPressable
           accessibilityRole="button"
-          onPress={() => router.replace("/settings")}
+          onPress={() => router.replace("/settings" as Href)}
           contentClassName="items-center rounded-md bg-surfaceMuted py-2.5"
         >
           <Text variant="label" weight="semibold">

@@ -16,13 +16,9 @@ import {
   type IconName,
 } from "@/components/ui";
 import { GuestLock } from "@/components/GuestLock";
-import { Input } from "@/components/Input";
-import { Sheet } from "@/components/Sheet";
 import { SignInPrompt } from "@/components/SignInPrompt";
 import { useGuestMode } from "@/components/map/hooks/useGuestMode";
 import { tagIcon } from "@/components/swipe/SwipeCard";
-import { showToastAfterSheet } from "@/components/Toast";
-import { confirmToast } from "@/copy";
 import { experienceById, placeById, profile } from "@/fixtures";
 import {
   coverForPlace,
@@ -46,7 +42,6 @@ const TABS: { key: Tab; label: string }[] = [
 export default function ProfileScreen() {
   const { isGuest } = useGuestMode();
   const [tab, setTab] = useState<Tab>("experiences");
-  const [editOpen, setEditOpen] = useState(false);
   const [signIn, setSignIn] = useState(false);
 
   return (
@@ -71,7 +66,7 @@ export default function ProfileScreen() {
               <HeaderIcon
                 icon="settings-outline"
                 label="Innstillinger"
-                onPress={() => router.push("/settings")}
+                onPress={() => router.push("/settings" as Href)}
               />
             </>
           }
@@ -86,7 +81,7 @@ export default function ProfileScreen() {
               accessibilityRole="button"
               accessibilityLabel="Rediger profil"
               accessibilityHint={`${profile.name}, ${profile.age}`}
-              onPress={() => setEditOpen(true)}
+              onPress={() => router.push("/profile/edit" as Href)}
               pressedScale={0.99}
               contentClassName="flex-row items-center gap-4"
             >
@@ -143,7 +138,6 @@ export default function ProfileScreen() {
         )}
       </ScrollView>
 
-      <EditProfileSheet visible={editOpen} onClose={() => setEditOpen(false)} />
       <SignInPrompt
         visible={signIn}
         onClose={() => setSignIn(false)}
@@ -408,37 +402,5 @@ function ReviewsList() {
         );
       })}
     </View>
-  );
-}
-
-// Rediger profil (PDF p13: Navn, Bio, Interesser, Språk). Fields edit locally;
-// "Lagre" confirms (BLOCKED_CONTRACT_GAP: no profile backend).
-function EditProfileSheet({
-  visible,
-  onClose,
-}: {
-  visible: boolean;
-  onClose: () => void;
-}) {
-  const [name, setName] = useState(profile.name);
-  const [bio, setBio] = useState(profile.bio);
-  const [lang, setLang] = useState("Norsk, Engelsk");
-  return (
-    <Sheet visible={visible} onClose={onClose} title="Rediger profil">
-      <View className="gap-3">
-        <Input label="Navn" value={name} onChangeText={setName} />
-        <Input label="Bio" value={bio} onChangeText={setBio} multiline />
-        <Input label="Språk" value={lang} onChangeText={setLang} />
-
-        <Button
-          label="Lagre"
-          variant="ink"
-          onPress={() => {
-            onClose();
-            showToastAfterSheet(confirmToast.profileSaved);
-          }}
-        />
-      </View>
-    </Sheet>
   );
 }

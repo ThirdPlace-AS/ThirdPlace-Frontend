@@ -1,4 +1,4 @@
-import type { ReactNode } from "react";
+import { useState, type ReactNode } from "react";
 import { View } from "react-native";
 import {
   Icon,
@@ -95,5 +95,30 @@ export function ToggleRow({
       </View>
       <Switch value={value} onValueChange={onValueChange} label={label} />
     </UIPressable>
+  );
+}
+
+/** A card of toggle rows with local state (settings pages, export sheet). */
+export function ToggleList({
+  items,
+  initial,
+}: {
+  items: { label: string; hint?: string; icon: IconName }[];
+  initial: Record<string, boolean>;
+}) {
+  const [state, setState] = useState(initial);
+  return (
+    <View className="overflow-hidden rounded-lg border border-line bg-surface">
+      {items.map((i) => (
+        <ToggleRow
+          key={i.label}
+          icon={i.icon}
+          label={i.label}
+          hint={i.hint}
+          value={!!state[i.label]}
+          onValueChange={(v) => setState((st) => ({ ...st, [i.label]: v }))}
+        />
+      ))}
+    </View>
   );
 }
