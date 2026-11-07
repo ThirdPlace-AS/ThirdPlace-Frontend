@@ -16,14 +16,20 @@ export const DEFAULT_HINTS: Hints = {
 let hints: Hints = DEFAULT_HINTS;
 // At most one hint per app session (screen benchmark: tips that pile up get
 // dismissed unread). Kept in memory only: a new session may show the next.
-let sessionHint: HintKey | null = null;
+let sessionHint: string | null = null;
 
 /** True when `key` may show now: not seen yet and no other hint has shown
  *  this session. Takes the session's slot for `key`. */
 export function claimHint(key: HintKey): boolean {
   if (hints[key]) return false;
-  if (sessionHint !== null && sessionHint !== key) return false;
-  sessionHint = key;
+  return claimSessionSlot(key);
+}
+
+/** The session's one slot for anything shown once (a hint, or "Nytt i
+ *  ThirdPlace"): true if `id` has it or takes it now. */
+export function claimSessionSlot(id: string): boolean {
+  if (sessionHint !== null && sessionHint !== id) return false;
+  sessionHint = id;
   return true;
 }
 

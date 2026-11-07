@@ -2,6 +2,7 @@ import { resetBlocked } from "@/lib/blocked";
 import { resetMyProfile } from "@/lib/myProfile";
 import { resetTo } from "@/lib/navigation";
 import { resetPreferences } from "@/lib/preferences";
+import { resetPrivacyPrefs } from "@/lib/privacyPrefs";
 import { resetSignupProgress } from "@/lib/signupProgress";
 
 /**
@@ -15,5 +16,6 @@ export function signOut() {
   resetMyProfile();
   resetPreferences();
   resetBlocked();
+  resetPrivacyPrefs();
   resetTo("/welcome");
 }

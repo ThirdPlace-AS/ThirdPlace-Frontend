@@ -55,6 +55,7 @@ import {
   useMapSelection,
 } from "@/components/map/hooks/useMapSelection";
 import { SignInPrompt } from "@/components/SignInPrompt";
+import { WhatsNewOnFocus } from "@/components/WhatsNewSheet";
 import {
   ItemActionsSheet,
   ShareSheet,
@@ -610,6 +611,8 @@ export default function MapScreen() {
         onRequest={handleRequestLocation}
         onSelectArea={handleSelectArea}
       />
+      {/* "Nytt i ThirdPlace" once after an update (Phase 18). */}
+      <WhatsNewOnFocus />
       {/* Persistent Google-Maps-style peek: city + weather header, drag up for
           the Airbnb list of the active mode. Rendered BEFORE the detail sheet so
           it sits behind it — while a marker detail is open the sheet collapses

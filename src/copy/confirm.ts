@@ -10,6 +10,7 @@ const ok = "checkmark-circle-outline" as const;
 export const confirmToast = {
   profileSaved: { title: "Profilen er oppdatert", icon: ok },
   preferencesSaved: { title: "Preferansene er lagret", icon: ok },
+  privacyChecked: { title: "Personvernsjekken er ferdig", icon: ok },
   accountSaved: { title: "Kontoinformasjonen er oppdatert", icon: ok },
   passwordChanged: { title: "Passordet er endret", icon: ok },
   sessionSignedOut: { title: "Enheten er logget ut", icon: ok },

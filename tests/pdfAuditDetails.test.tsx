@@ -1,11 +1,12 @@
 // Phase 14 audit details: Personvern carries p21's data-sharing toggles, and
 // check-in at the place reads "Du er fremme!" (p7).
-import { describe, expect, it, jest } from "@jest/globals";
-import { fireEvent, render, screen } from "@testing-library/react-native";
+import { afterEach, describe, expect, it, jest } from "@jest/globals";
+import { act, fireEvent, render, screen } from "@testing-library/react-native";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 
 import { CheckinContent } from "@/components/map/content/CheckinContent";
 import PrivacyScreen from "@/features/settings/PrivacyScreen";
+import { resetPrivacyPrefs } from "@/lib/privacyPrefs";
 
 jest.mock("expo-router", () => ({
   router: { push: jest.fn(), back: jest.fn(), canGoBack: () => true },
@@ -20,6 +21,10 @@ function wrapper({ children }: { children: React.ReactNode }) {
     <SafeAreaProvider initialMetrics={METRICS}>{children}</SafeAreaProvider>
   );
 }
+
+// The Personvern switches are one shared store (Phase 18): start each test
+// from the drawn defaults.
+afterEach(() => act(() => resetPrivacyPrefs()));
 
 describe("Personvern (PDF p19 + p21)", () => {
   it("has the p21 data-sharing toggles, as drawn", () => {

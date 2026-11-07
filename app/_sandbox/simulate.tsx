@@ -1,3 +1,4 @@
+import { router, type Href } from "expo-router";
 import { useState } from "react";
 import { ScrollView, View } from "react-native";
 
@@ -6,9 +7,11 @@ import { Button } from "@/components/Button";
 import { ListRow, Screen, Switch, Text } from "@/components/ui";
 import { RouteHeader } from "@/components/RouteHeader";
 import { setDevSimulation, useDevSimulation } from "@/lib/devSimulation";
+import { simulateUpdate } from "@/lib/whatsNew";
 
 // Dev-only: switches for states that need a real network or GPS to appear
-// (map offline/error, a slow load, check-in distance). Not linked from product UI; open
+// (map offline/error, a slow load, check-in distance), and "Nytt i
+// ThirdPlace", which shows only after an app update. Not linked from product UI; open
 // with `thirdplace://_sandbox/simulate`. System screens stay reachable via
 // `thirdplace://state/<kind>`.
 export default function SimulateSandbox() {
@@ -62,6 +65,19 @@ export default function SimulateSandbox() {
           subtitle="Skjermen kaster en feil, så krasjskjermen («Noe gikk galt») vises."
         />
         <CrashTrigger />
+        <ListRow
+          variant="card"
+          title="Nytt i ThirdPlace"
+          subtitle="Som om telefonen sist kjørte en eldre versjon: arket vises på kartet."
+        />
+        <Button
+          label="Vis på kartet"
+          variant="secondary"
+          onPress={() => {
+            simulateUpdate();
+            router.navigate("/map" as Href);
+          }}
+        />
         <View className="h-2" />
       </ScrollView>
     </Screen>

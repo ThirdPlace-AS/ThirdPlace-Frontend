@@ -1,6 +1,7 @@
 // Phase 15: device settings (Kartlag choice, Tilgjengelighet) survive a
 // restart through AsyncStorage; Phase 16 adds which one-time hints the phone
-// has shown. Nothing else is stored.
+// has shown; Phase 18 the app version it last ran ("Nytt i ThirdPlace").
+// Nothing else is stored.
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { beforeEach, describe, expect, it, jest } from "@jest/globals";
 
@@ -27,12 +28,14 @@ import {
   restoreMapChoice,
   setMapType,
 } from "@/lib/mapChoice";
+import { appVersion, restoreWhatsNew } from "@/lib/whatsNew";
 
 const saved = async () =>
   JSON.parse((await AsyncStorage.getItem(DEVICE_SETTINGS_KEY)) ?? "{}") as {
     map?: unknown;
     a11y?: unknown;
     hints?: unknown;
+    whatsNew?: unknown;
   };
 
 beforeEach(async () => {
@@ -41,6 +44,7 @@ beforeEach(async () => {
   restoreMapChoice(undefined);
   resetA11yPrefs();
   restoreHints(undefined);
+  restoreWhatsNew(undefined);
 });
 
 describe("device settings", () => {
@@ -70,6 +74,8 @@ describe("device settings", () => {
       map: { mapType: "terrain", style: null },
       a11y: { ...DEFAULT_A11Y_PREFS, reduceMotion: true },
       hints: DEFAULT_HINTS,
+      // A first install records its version (src/lib/whatsNew.ts).
+      whatsNew: appVersion() ?? undefined,
     });
   });
 

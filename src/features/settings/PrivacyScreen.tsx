@@ -2,125 +2,88 @@ import { router, type Href } from "expo-router";
 import { useState } from "react";
 import { ScrollView } from "react-native";
 
-import { Screen } from "@/components/ui";
+import { ListRow, Screen } from "@/components/ui";
 import { RouteHeader } from "@/components/RouteHeader";
 import { SignInPrompt } from "@/components/SignInPrompt";
 import { useGuestMode } from "@/components/map/hooks/useGuestMode";
-import { blockedCount, useBlocked } from "@/lib/blocked";
-import { setShowMeAsAttendee, useShowMeAsAttendee } from "@/lib/going";
 
 import { ExportSheet } from "./ExportSheet";
-import { NavRow, SettingsSection, ToggleRow } from "./settingsUi";
+import { FindYouRows, SeeYouRows, SharingRows } from "./privacyRows";
+import { NavRow, SettingsSection } from "./settingsUi";
 
-// Personvern, per the design (PDF p19, p21): SYNLIGHET toggles, DATADELING
+// Personvern (PDF p19, p21). Phase 18 (founder, screen benchmark): the
+// p19 SYNLIGHET rows are grouped by question, "Hvem kan se deg" and "Hvem
+// kan finne og kontakte deg" (with Blokkerte brukere, moved up from DATA),
+// and a "Personvernsjekk" walks through them one group at a time. DATADELING
 // (p21 "Data og personvern": Del aktivitet med venner, Personalisert innhold,
-// Analytiske data; no hints, since what each one changes is not specified;
-// "Vis profilen for alle" and "Vis på kartet" are the Synlighet rows), then
-// DATA — Blokkerte brukere and Slett konto (pages since Phase 12 H4c) and
-// GDPR: Last ned dine data (the shared export sheet). Every control is local
-// and writes nothing; nothing is exported or deleted.
+// Analytiske data; no hints, since what each one changes is not specified)
+// and DATA (GDPR: Last ned dine data, Slett konto) stay as drawn. The
+// switches are one in-memory store (src/lib/privacyPrefs.ts) and write
+// nothing; nothing is exported or deleted.
 // BLOCKED_CONTRACT_GAP: no consent store, visibility gate, export or deletion
 // backend — the real visibility/consent model is not certified.
 export default function PrivacyScreen() {
-  const blocked = useBlocked();
-  // Phase 16 (founder 2026-11-07): off until you choose it; shared with the
-  // experience cards (src/lib/going.ts), in memory like the other switches.
-  const showMe = useShowMeAsAttendee();
-  const [mapVisible, setMapVisible] = useState(true);
-  const [profileVisible, setProfileVisible] = useState(true);
-  const [discoverable, setDiscoverable] = useState(false);
-  // PDF p21 "Data og personvern": data sharing (on, on, off as drawn).
-  const [shareActivity, setShareActivity] = useState(true);
-  const [personalised, setPersonalised] = useState(true);
-  const [analytics, setAnalytics] = useState(false);
   const [exportOpen, setExportOpen] = useState(false);
-  // Data actions are account-only; guests get the sign-in prompt instead.
+  // Account actions; guests get the sign-in prompt instead.
   const { isGuest } = useGuestMode();
-  const [signIn, setSignIn] = useState(false);
-  const gated = (open: () => void) => () =>
-    isGuest ? setSignIn(true) : open();
+  const [signIn, setSignIn] = useState<string | null>(null);
+  const gated = (action: string, open: () => void) => () =>
+    isGuest ? setSignIn(action) : open();
 
   return (
     <Screen edges={["top"]}>
       <RouteHeader title="Personvern" />
       <ScrollView contentContainerClassName="gap-5 px-gutter py-4 pb-12">
-        <SettingsSection title="Synlighet">
-          <ToggleRow
-            icon="map-outline"
-            label="Synlig på kartet"
-            value={mapVisible}
-            onValueChange={setMapVisible}
-          />
-          <ToggleRow
-            icon="person-outline"
-            label="Offentlig profil"
-            hint="Alle kan se profilen din"
-            value={profileVisible}
-            onValueChange={setProfileVisible}
-          />
-          <ToggleRow
-            icon="search-outline"
-            label="Vis i Utforsk folk"
-            hint="Andre kan finne deg basert på felles interesser"
-            value={discoverable}
-            onValueChange={setDiscoverable}
-          />
-          <ToggleRow
-            icon="people-circle-outline"
-            label="Vis meg som deltaker"
-            hint="Bildet ditt vises på opplevelser du er med på. Alle telles uansett."
-            value={showMe}
-            onValueChange={setShowMeAsAttendee}
+        <ListRow
+          variant="card"
+          icon="shield-checkmark-outline"
+          title="Personvernsjekk"
+          subtitle="Gå gjennom hvem som ser deg og hva du deler"
+          onPress={gated("gå gjennom personvernet", () =>
+            router.push("/settings/privacy-check" as Href),
+          )}
+        />
+
+        <SettingsSection title="Hvem kan se deg">
+          <SeeYouRows />
+        </SettingsSection>
+
+        <SettingsSection title="Hvem kan finne og kontakte deg">
+          <FindYouRows
+            onBlocked={gated("administrere dataene dine", () =>
+              router.push("/settings/blocked" as Href),
+            )}
           />
         </SettingsSection>
 
         <SettingsSection title="Datadeling">
-          <ToggleRow
-            icon="people-outline"
-            label="Del aktivitet med venner"
-            value={shareActivity}
-            onValueChange={setShareActivity}
-          />
-          <ToggleRow
-            icon="sparkles-outline"
-            label="Personalisert innhold"
-            value={personalised}
-            onValueChange={setPersonalised}
-          />
-          <ToggleRow
-            icon="analytics-outline"
-            label="Analytiske data"
-            value={analytics}
-            onValueChange={setAnalytics}
-          />
+          <SharingRows />
         </SettingsSection>
 
         <SettingsSection title="Data">
           <NavRow
-            icon="ban-outline"
-            label="Blokkerte brukere"
-            value={String(blockedCount(blocked))}
-            onPress={gated(() => router.push("/settings/blocked" as Href))}
-          />
-          <NavRow
             icon="download-outline"
             label="GDPR: Last ned dine data"
-            onPress={gated(() => setExportOpen(true))}
+            onPress={gated("administrere dataene dine", () =>
+              setExportOpen(true),
+            )}
           />
           <NavRow
             icon="trash-outline"
             label="Slett konto"
             danger
-            onPress={gated(() => router.push("/settings/delete" as Href))}
+            onPress={gated("administrere dataene dine", () =>
+              router.push("/settings/delete" as Href),
+            )}
           />
         </SettingsSection>
       </ScrollView>
 
       <ExportSheet visible={exportOpen} onClose={() => setExportOpen(false)} />
       <SignInPrompt
-        visible={signIn}
-        onClose={() => setSignIn(false)}
-        action="administrere dataene dine"
+        visible={signIn !== null}
+        onClose={() => setSignIn(null)}
+        action={signIn ?? ""}
       />
     </Screen>
   );
