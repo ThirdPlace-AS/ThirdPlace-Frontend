@@ -279,7 +279,7 @@ export function CollabContractScreen() {
   return (
     <Page title="Kontrakt">
       <View className="gap-2 rounded-md border border-line bg-surface p-4">
-        <Text variant="micro" weight="semibold" tone="muted">
+        <Text variant="title" accessibilityRole="header">
           Samarbeidsavtale
         </Text>
         <Text variant="label" weight="regular">

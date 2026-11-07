@@ -268,7 +268,7 @@ export default function GroupSwipeScreen() {
           ))}
           {filters.length || time ? (
             <View className="gap-2 rounded-md border border-line bg-surface p-3">
-              <Text variant="micro" weight="semibold" tone="muted">
+              <Text variant="title" accessibilityRole="header">
                 Økt-innstillinger
               </Text>
               <View className="flex-row flex-wrap gap-2">

@@ -214,7 +214,7 @@ export function ChatInviteScreen() {
         onChange={setQ}
         placeholder="Søk brukere …"
       />
-      <Text variant="micro" weight="semibold" tone="muted">
+      <Text variant="title" accessibilityRole="header">
         Del invitasjonslenke
       </Text>
       <View className="gap-0.5 rounded-md border border-line bg-surface p-3">
@@ -239,7 +239,7 @@ export function ChatInviteScreen() {
           QR-kode
         </Text>
       </View>
-      <Text variant="micro" weight="semibold" tone="muted">
+      <Text variant="title" accessibilityRole="header">
         Foreslåtte
       </Text>
       {people

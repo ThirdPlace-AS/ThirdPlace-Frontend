@@ -78,7 +78,7 @@ export default function SystemState() {
             body="Kontoen din er stengt midlertidig fordi du har brutt retningslinjene våre."
           >
             <View className="gap-1 rounded-md border border-line bg-surface p-3">
-              <Text variant="micro" weight="semibold" tone="muted">
+              <Text variant="title" accessibilityRole="header">
                 Hva kan du gjøre
               </Text>
               <Text variant="label" weight="semibold">

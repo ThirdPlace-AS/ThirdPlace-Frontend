@@ -106,7 +106,7 @@ export function AccountScreen() {
         label="Aldersverifisering"
         href="/age-verification"
       />
-      <Text variant="micro" weight="semibold" tone="muted" className="pt-1">
+      <Text variant="title" accessibilityRole="header" className="pt-1">
         Aktive økter
       </Text>
       <Session
@@ -164,7 +164,7 @@ export function LinkedAccountsScreen() {
 export function NotificationSettingsScreen() {
   return (
     <Page title="Varsler">
-      <Text variant="micro" weight="semibold" tone="muted">
+      <Text variant="title" accessibilityRole="header">
         Push
       </Text>
       <ToggleList
@@ -198,7 +198,7 @@ export function NotificationSettingsScreen() {
           },
         ]}
       />
-      <Text variant="micro" weight="semibold" tone="muted">
+      <Text variant="title" accessibilityRole="header">
         Stille timer
       </Text>
       <ToggleList
@@ -241,7 +241,7 @@ export function LanguageScreen() {
           </UIPressable>
         ))}
       </View>
-      <Text variant="micro" weight="semibold" tone="muted" className="pt-2">
+      <Text variant="title" accessibilityRole="header" className="pt-2">
         Region
       </Text>
       <View className="overflow-hidden rounded-lg border border-line bg-surface">
@@ -269,7 +269,7 @@ export function AccessibilitySettingsScreen() {
           { label: "Skjermleser-optimalisert", icon: "ear-outline" },
         ]}
       />
-      <Text variant="micro" weight="semibold" tone="muted">
+      <Text variant="title" accessibilityRole="header">
         Kart
       </Text>
       <ToggleList
@@ -297,7 +297,7 @@ export function HelpScreen() {
   ];
   return (
     <Page title="Hjelp og støtte">
-      <Text variant="micro" weight="semibold" tone="muted">
+      <Text variant="title" accessibilityRole="header">
         Vanlige spørsmål
       </Text>
       <View className="overflow-hidden rounded-lg border border-line bg-surface">

@@ -52,7 +52,7 @@ export default function AgeVerificationScreen() {
           tilgang.
         </Text>
 
-        <Text variant="micro" weight="semibold" tone="muted">
+        <Text variant="title" accessibilityRole="header">
           Verifiseringsmetode
         </Text>
         {METHODS.map((m) => (
@@ -79,7 +79,7 @@ export default function AgeVerificationScreen() {
           </UIPressable>
         ))}
 
-        <Text variant="micro" weight="semibold" tone="muted">
+        <Text variant="title" accessibilityRole="header">
           Fordeler
         </Text>
         {BENEFITS.map((b) => (

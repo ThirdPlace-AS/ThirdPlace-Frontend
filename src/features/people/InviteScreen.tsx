@@ -47,7 +47,7 @@ export default function InviteScreen() {
         <Text variant="caption" tone="muted">
           Del ThirdPlace med vennene dine.
         </Text>
-        <Text variant="micro" weight="semibold" tone="muted">
+        <Text variant="title" accessibilityRole="header">
           Din kode
         </Text>
         <View className="items-center rounded-lg border border-line bg-surface py-5">
@@ -82,7 +82,7 @@ export default function InviteScreen() {
           onPress={() => router.push("/invite-contacts")}
         />
 
-        <Text variant="micro" weight="semibold" tone="muted">
+        <Text variant="title" accessibilityRole="header">
           Aktivitet
         </Text>
         <View className="flex-row gap-2">
@@ -101,7 +101,7 @@ export default function InviteScreen() {
           ))}
         </View>
 
-        <Text variant="micro" weight="semibold" tone="muted">
+        <Text variant="title" accessibilityRole="header">
           Belønninger
         </Text>
         {REWARDS.map((r) => (

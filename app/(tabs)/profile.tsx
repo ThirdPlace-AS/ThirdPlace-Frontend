@@ -389,7 +389,7 @@ function ReviewsList() {
             </View>
             <Text
               variant="caption"
-              tone="ember"
+              tone="ink"
               accessibilityLabel={`${r.stars} av 5 stjerner`}
             >
               {"★".repeat(r.stars)}

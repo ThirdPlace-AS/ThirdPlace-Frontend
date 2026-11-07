@@ -35,12 +35,37 @@ export function Header({
   trailing?: ReactNode;
   /** Hairline under the header (default: on for "default", off for "large"). */
   border?: boolean;
-  /** "large" = tab-root title (h1), e.g. Chat, Profil. */
-  size?: "default" | "large";
+  /** "large" = tab-root title (h1), e.g. Chat, Profil. "page" = a pushed
+   *  hub page: back button row, then the title large on its own line. */
+  size?: "default" | "large" | "page";
   /** Apply the screen gutter (off when the parent is already padded). */
   inset?: boolean;
 }) {
   const large = size === "large";
+  if (size === "page") {
+    return (
+      <View className={`gap-3 pb-2 ${inset ? "px-gutter" : ""}`}>
+        <View className="min-h-12 flex-row items-center justify-between">
+          {back === false ? (
+            <View />
+          ) : (
+            <IconButton
+              icon="chevron-back"
+              label="Tilbake"
+              variant="outline"
+              onPress={onBack}
+            />
+          )}
+          {trailing ? (
+            <View className="flex-row items-center gap-xs">{trailing}</View>
+          ) : null}
+        </View>
+        <Text variant="h1" accessibilityRole="header" numberOfLines={2}>
+          {title}
+        </Text>
+      </View>
+    );
+  }
   const showBack = back ?? !large;
   const showBorder = border ?? !large;
   return (

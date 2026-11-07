@@ -100,7 +100,7 @@ export default function ChatScreen() {
 
         {active.length > 0 ? (
           <View className="gap-2">
-            <Text variant="micro" weight="semibold" tone="muted">
+            <Text variant="title" accessibilityRole="header">
               Aktive samtaler
             </Text>
             {active.map((c) => (

@@ -83,7 +83,7 @@ export default function CreatorProfileScreen() {
           </View>
         </View>
 
-        <Text variant="micro" weight="semibold" tone="muted">
+        <Text variant="title" accessibilityRole="header">
           Kommende
         </Text>
         {hosted ? (
@@ -100,7 +100,7 @@ export default function CreatorProfileScreen() {
             Ingen kommende opplevelser.
           </Text>
         )}
-        <Text variant="micro" weight="semibold" tone="muted">
+        <Text variant="title" accessibilityRole="header">
           Tidligere
         </Text>
         <Text variant="caption" tone="muted">

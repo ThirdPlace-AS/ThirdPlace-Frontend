@@ -246,3 +246,7 @@ PDF p7–p8 draw the Steder tab as a separate place deck. The user asked for pla
 ### Founder decision: onboarding first, verification last (2026-11-06)
 
 PDF p1–p3 order register → code → onboarding. The founder chose: "Kom i gang" on the welcome screen goes straight to onboarding (the 18+ birthday gate stays early, in "Dette er deg"); after the last onboarding step comes "Lag kontoen din" (e-mail/password or Google/Apple), then "Sjekk innboksen", then the map. The business branch ends the same way. "Registrer deg" from Logg inn keeps the old order (account, code, onboarding). Back from "Lag kontoen din" returns to the last onboarding step with the answers kept. `src/lib/signupProgress.ts` tracks the two steps; logging out resets it. Register and verify-code live in the root stack so the session start clears the whole sign-up stack. Ledger 0246.
+
+### Modernised page tops and sections (H7, 2026-11-07)
+
+Layout modernised by founder decision (same content and PDF order): hub pages (Innstillinger, Personvern, Betaling, Lagret, Mine planer, Marketplace, Mine listings, Arbeidsflate, Utbetalinger, Innleveringer, Inviter, Importer, Samarbeid, Bli Skaper, skaperprofil, Aldersverifisering, Totrinnsbekreftelse) show the back button, then a large title; section labels are sentence-case titles instead of grey capitals (28 places, incl. the Chat tab's "Aktive samtaler"); settings rows run edge to edge. Ledger 0247.

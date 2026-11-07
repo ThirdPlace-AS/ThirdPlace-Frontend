@@ -52,7 +52,7 @@ export default function TwoFactor() {
 
         {on ? (
           <>
-            <Text variant="micro" weight="semibold" tone="muted">
+            <Text variant="title" accessibilityRole="header">
               Metode
             </Text>
             {methods.map((m) => {
@@ -92,7 +92,7 @@ export default function TwoFactor() {
 
             {method === "app" ? (
               <>
-                <Text variant="micro" weight="semibold" tone="muted">
+                <Text variant="title" accessibilityRole="header">
                   QR-kode
                 </Text>
                 <View className="items-center gap-2 rounded-lg border border-line bg-surface p-5">

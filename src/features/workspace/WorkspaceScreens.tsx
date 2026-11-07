@@ -234,7 +234,7 @@ export function WorkspaceAnalytics() {
             </View>
           ))}
         </View>
-        <Text variant="micro" weight="semibold" tone="muted">
+        <Text variant="title" accessibilityRole="header">
           Visninger siste periode
         </Text>
         <View
@@ -262,7 +262,7 @@ export function WorkspaceCalendar() {
     <Screen edges={["top"]}>
       <RouteHeader title="Kalender" />
       <ScrollView contentContainerClassName="gap-3 px-gutter py-4 pb-12">
-        <Text variant="micro" weight="semibold" tone="muted">
+        <Text variant="title" accessibilityRole="header">
           Kommende
         </Text>
         {upcoming.map((e) => (

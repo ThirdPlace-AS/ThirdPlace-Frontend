@@ -162,7 +162,7 @@ export function SubmissionsScreen() {
 
 function Section({ children }: { children: string }) {
   return (
-    <Text variant="micro" weight="semibold" tone="muted">
+    <Text variant="title" accessibilityRole="header">
       {children}
     </Text>
   );

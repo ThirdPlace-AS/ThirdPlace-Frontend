@@ -20,7 +20,7 @@ const PAY_STEPS: { label: string; done: boolean }[] = [
   { label: "Utbetalt", done: false },
 ];
 
-// Rows of the PDF's TRANSAKSJON block. Values stay "—": money is structure
+// Rows of the PDF's Transaksjon block. Values stay "—": money is structure
 // only (no amounts, fees or payout timing are shown as real).
 const TRANSACTION_ROWS = [
   "Bruttobeløp",
@@ -30,7 +30,7 @@ const TRANSACTION_ROWS = [
 ];
 
 // Betalingsstatus (PDF p18): status card, the steps as a timeline,
-// TRANSAKSJON, UTBETALING and KNYTTET TIL, in the PDF's order.
+// Transaksjon, Utbetaling and Knyttet til, in the PDF's order.
 export function PaymentStatusScreen() {
   const next = PAY_STEPS.find((s) => !s.done);
   return (
@@ -56,8 +56,8 @@ export function PaymentStatusScreen() {
         </View>
 
         <View>
-          <Text variant="micro" weight="semibold" tone="muted" className="pb-2">
-            TIDSLINJE
+          <Text variant="title" accessibilityRole="header" className="pb-2">
+            Tidslinje
           </Text>
           {PAY_STEPS.map((s, i) => (
             <View key={s.label} className="flex-row gap-3">
@@ -88,8 +88,8 @@ export function PaymentStatusScreen() {
         </View>
 
         <View className="gap-2">
-          <Text variant="micro" weight="semibold" tone="muted">
-            TRANSAKSJON
+          <Text variant="title" accessibilityRole="header">
+            Transaksjon
           </Text>
           <View className="overflow-hidden rounded-lg border border-line bg-surface">
             {TRANSACTION_ROWS.map((label, i) => (
@@ -111,8 +111,8 @@ export function PaymentStatusScreen() {
         </View>
 
         <View className="gap-2">
-          <Text variant="micro" weight="semibold" tone="muted">
-            UTBETALING
+          <Text variant="title" accessibilityRole="header">
+            Utbetaling
           </Text>
           <View className="gap-0.5 rounded-lg border border-line bg-surface p-4">
             <Text variant="label" weight="semibold">
@@ -125,8 +125,8 @@ export function PaymentStatusScreen() {
         </View>
 
         <View className="gap-2">
-          <Text variant="micro" weight="semibold" tone="muted">
-            KNYTTET TIL
+          <Text variant="title" accessibilityRole="header">
+            Knyttet til
           </Text>
           <UIPressable
             accessibilityRole="button"

@@ -8,6 +8,7 @@ import {
   Pressable as UIPressable,
 } from "@/components/ui";
 import { Switch } from "@/components/ui/Switch";
+import { gutterPx } from "@/theme";
 
 // Shared building blocks for the Settings + Privacy routes. All inert/demo:
 // toggles keep local state only and persist nothing (BLOCKED_CONTRACT_GAP — no
@@ -21,15 +22,14 @@ export function SettingsSection({
   children: ReactNode;
 }) {
   return (
-    <View className="gap-2">
+    <View className="gap-1">
       {title ? (
-        <Text variant="micro" weight="semibold" tone="muted" className="px-1">
+        <Text variant="title" accessibilityRole="header">
           {title}
         </Text>
       ) : null}
-      <View className="overflow-hidden rounded-lg border border-line bg-surface">
-        {children}
-      </View>
+      {/* Rows run edge to edge (hairlines full width), text on the gutter. */}
+      <View style={{ marginHorizontal: -gutterPx }}>{children}</View>
     </View>
   );
 }
@@ -81,7 +81,7 @@ export function ToggleRow({
       accessible={false}
       haptic="selection"
       onPress={() => onValueChange(!value)}
-      contentClassName="flex-row items-center gap-3 border-b border-line px-4 py-3"
+      contentClassName="flex-row items-center gap-3 border-b border-line px-gutter py-3.5"
       pressedScale={0.99}
     >
       <Icon name={icon} size="md" tone="ink" />
@@ -108,7 +108,7 @@ export function ToggleList({
 }) {
   const [state, setState] = useState(initial);
   return (
-    <View className="overflow-hidden rounded-lg border border-line bg-surface">
+    <View style={{ marginHorizontal: -gutterPx }}>
       {items.map((i) => (
         <ToggleRow
           key={i.label}
