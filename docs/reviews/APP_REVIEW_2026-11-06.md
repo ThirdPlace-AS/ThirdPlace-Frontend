@@ -404,3 +404,27 @@ After Phase 12 the founder asked what was left. The answer had four parts: PDF s
 **TalkBack, what it says now** (excerpts from TalkBack's own log): the map reads "Endre størrelse, Slider, Sveip opp for å vise mer, eller ned for å vise mindre.", "Oslo", "20 treff", "Søk steder og opplevelser, Button", "Filtre, Button", "Varsler, 3 uleste, Button"; the experience page "Morgenkaffe & prat, 2 bilder. Åpne bildene", "4,7 av 5, 3 vurderinger. Vis alle, Link", "Ca. 1 time, Holdes på norsk og engelsk", "Steg 1 av 4: Hils på de andre, Button"; Følgere "Følg tilbake Maria Movik, Button"; Preferanser rows as radio buttons. Role words are English because the emulator's system language is English.
 
 **Still open after Phase 13.** Founder approvals that stay open by choice: type sizes and motion values marked provisional (FA-1), For deg and Venner as same-for-everyone lists (FA-2), the mock filter bands (FA-3), the category pin colours and the pink active-tab label. Contract-blocked (V2.2 not imported): real accounts, keeping anything after a restart, real joins and waitlists, payments and payouts, search, push and notification preferences, ranking, friend presence and business verification; a new account still shows the fixture profile's activity and follow lists. Not possible on this PC: iOS, the Play Store listing behind "Oppdater nå", and real-phone checks (compass heading, haptic feel, real GPS, 60 fps). In the dev build only: Expo's tools bubble overlaps some right-edge controls, and a full reload while the map streams location can crash the dev client.
+
+## 14. Addendum: Phase 14, Kartlag after a reference and the missing-screen audit (7 November 2026)
+
+The founder sent a screenshot of another map app's layer sheet, asked for Kartlag to look like it, and asked for a search for screens still missing.
+
+| What                               | What changed                                                                                                                                                                                                                                                                                                                                                                                                                                                                             | Commit · ledger |
+| ---------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------- |
+| Kartlag like the reference         | Centred title, a "Kartstil" section with ⓘ, and every base map as a preview tile in a three-column grid (Auto, Daggry, Dag, Skumring, Natt) with the name under it and a pink ring on the one in use. The style names were English (Dawn / Day / Dusk / Night). The previews are crops of our own Studio styles; Auto shows day next to night, and ⓘ gives its schedule. The reference's second section (that app's own capture overlays) has no ThirdPlace counterpart and is left out. | 6bf4560 · 0260  |
+| Missing: Marketplace-analyse (p18) | New page from Marketplace's "Analyse" (it used to open the workspace Analyse): Uke / Måned / Total, Listing-visninger, Forespørsler, Konverteringsrate, Snitt svartid, Samarbeid initiert, Fullførte, the request chart, Topplistinger and the average rating given. Every figure is computed from the published listings and the collaboration history. Samarbeidshistorikk now follows p18 (counts, Alle / Fullførte / Avsluttede, statuses; amounts left out).                        | d333f5a · 0261  |
+| Missing details (p21, p7)          | Personvern gains p21's Datadeling toggles (Del aktivitet med venner, Personalisert innhold, Analytiske data). Check-in at the place reads p7's "Du er fremme!".                                                                                                                                                                                                                                                                                                                          | 681eb69 · 0262  |
+
+**How the audit was done.** Every screen title on PDF p1–p28 (from the screen inventory) was searched for in the code; the few with no match were checked against the rendered PDF pages. Besides the three rows above, nothing is missing. Left out on purpose and recorded: p24 "Fullfører betaling …" and "Du er med!" (a card number and a processing step; payments are structure only), the p21 "Personvernerklæring" link (no statement text exists), and p25's separate "Velg dato og tid" picker (Legg til picks date and time inline).
+
+**Kartlag: Natt in use, ⓘ open, Auto in use in dark mode:**
+
+![Kartlag light, with the Auto explanation, and dark](img/p14_kartlag.png)
+
+**Marketplace-analyse and Samarbeidshistorikk, light and dark:**
+
+![Marketplace-analyse and Samarbeidshistorikk](img/p14_marketplace.png)
+
+**Personvern with Datadeling, and "Du er fremme!":**
+
+![Personvern and check-in](img/p14_details.png)
