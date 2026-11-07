@@ -43,7 +43,7 @@ import type {
 } from "@/components/map/types/mapPresentation";
 import { useMapArea } from "@/components/map/hooks/useMapArea";
 import { useMapCamera } from "@/components/map/hooks/useMapCamera";
-import { inArea } from "@/components/map/services/bounds";
+import { inArea, type AreaReader } from "@/components/map/services/bounds";
 import { countResults } from "@/components/map/services/mapFixtureAdapter";
 import { useTimeOfDayStyle } from "@/components/map/hooks/useTimeOfDayStyle";
 import { useMapLocation } from "@/components/map/hooks/useMapLocation";
@@ -281,14 +281,18 @@ export default function MapScreen() {
     [setDiscoveryMode],
   );
 
-  const searchThisArea = () => {
-    const applied = areaSearch.apply();
-    if (!applied) return;
-    const n = discovery.allItems.filter((i) => inArea(i.coord, applied)).length;
+  // The pill searches what the map shows when it is tapped (read from the
+  // native map), so a camera move in between never leaves an old area.
+  const areaReaderRef = useRef<AreaReader | null>(null);
+  const searchThisArea = async () => {
+    const seen = await areaReaderRef.current?.().catch(() => null);
+    if (!seen) return;
+    areaSearch.apply(seen);
+    const n = discovery.allItems.filter((i) => inArea(i.coord, seen)).length;
     AccessibilityInfo.announceForAccessibility(`${n} treff i dette området`);
   };
   const showAreaPill =
-    !!areaSearch.offer &&
+    areaSearch.offered &&
     !loading &&
     !errored &&
     !browseFull &&
@@ -359,7 +363,8 @@ export default function MapScreen() {
         terrain={basemap.terrain}
         ornamentBottom={browsePeekClearance + 8}
         darkBasemap={darkBasemap}
-        onCameraSettled={areaSearch.settled}
+        onUserMoved={areaSearch.moved}
+        areaReaderRef={areaReaderRef}
         obscured={{ top: topH, bottom: browsePeekClearance }}
         recenterSignal={camera.recenterSignal}
         recenterZoom={camera.recenterZoom}

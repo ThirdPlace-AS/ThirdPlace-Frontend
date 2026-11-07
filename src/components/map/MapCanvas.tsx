@@ -6,7 +6,7 @@ import { env } from "@/lib/env";
 import { elevation, palette } from "@/theme";
 
 import type { MapStylePeriod } from "./mapStyles";
-import type { MapArea } from "./services/bounds";
+import type { AreaReader } from "./services/bounds";
 import { clusterByGrid, projectToUnit } from "./services/softClustering";
 import type { DiscoveryItem } from "./types/mapPresentation";
 import { markerPaint } from "./pinStyle";
@@ -58,9 +58,10 @@ type MapProps = {
   // and titles flip so they stay visible (pinStyle.ts). SoftMap follows the
   // theme.
   darkBasemap?: boolean;
-  // The native map came to rest (area shown, moved by the user or not).
-  // SoftMap has no camera, so it never calls it.
-  onCameraSettled?: (area: MapArea, byUser: boolean) => void;
+  // The user moved the native map and it came to rest; the reader gives the
+  // part of the map on screen. SoftMap has no camera, so neither is used.
+  onUserMoved?: () => void;
+  areaReaderRef?: { current: AreaReader | null };
   // Bands the screen covers (top controls, browse peek), in dp.
   obscured?: { top: number; bottom: number };
 };
@@ -303,7 +304,8 @@ export function MapCanvas({
   terrain,
   ornamentBottom,
   darkBasemap = false,
-  onCameraSettled,
+  onUserMoved,
+  areaReaderRef,
   obscured,
   height = 160,
   fill = false,
@@ -334,7 +336,8 @@ export function MapCanvas({
           terrain={terrain}
           ornamentBottom={ornamentBottom}
           darkBasemap={darkBasemap}
-          onCameraSettled={onCameraSettled}
+          onUserMoved={onUserMoved}
+          areaReaderRef={areaReaderRef}
           obscured={obscured}
         />
       ) : (

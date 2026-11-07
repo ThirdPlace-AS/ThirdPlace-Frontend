@@ -54,32 +54,34 @@ describe("area helpers", () => {
 });
 
 describe("useMapArea", () => {
-  it("only a move by the user offers the search", () => {
+  it("a move by the user offers the search; nothing else does", () => {
     const { result } = renderHook(() => useMapArea());
-    const a = around(first.coord);
-    act(() => result.current.settled(a, false));
-    expect(result.current.offer).toBeNull();
-    act(() => result.current.settled(a, true));
-    expect(result.current.offer).toEqual(a);
-    // While offered, the app's own moves refresh the area it would search.
-    const b = around(first.coord, 0.01);
-    act(() => result.current.settled(b, false));
-    expect(result.current.offer).toEqual(b);
+    expect(result.current.offered).toBe(false);
+    act(() => result.current.moved());
+    expect(result.current.offered).toBe(true);
   });
 
-  it("searching applies the offered area and hides the pill; Vis alle lifts it", () => {
+  it("searching applies the area read at the tap and hides the pill", () => {
     const { result } = renderHook(() => useMapArea());
     const a = around(first.coord);
-    act(() => result.current.settled(a, true));
-    let applied: MapArea | null = null;
-    act(() => {
-      applied = result.current.apply();
-    });
-    expect(applied).toEqual(a);
+    act(() => result.current.moved());
+    act(() => result.current.apply(a));
     expect(result.current.area).toEqual(a);
-    expect(result.current.offer).toBeNull();
+    expect(result.current.offered).toBe(false);
+    // Moving again offers a new search; the current area stays meanwhile.
+    act(() => result.current.moved());
+    expect(result.current.offered).toBe(true);
+    expect(result.current.area).toEqual(a);
+  });
+
+  it("Vis alle, Posisjon, Hvor or a focus link lift the area and the offer", () => {
+    const { result } = renderHook(() => useMapArea());
+    act(() => result.current.apply(around(first.coord)));
+    act(() => result.current.moved());
     act(() => result.current.clear());
     expect(result.current.area).toBeNull();
+    // No pill left behind to search an old part of the map.
+    expect(result.current.offered).toBe(false);
   });
 });
 

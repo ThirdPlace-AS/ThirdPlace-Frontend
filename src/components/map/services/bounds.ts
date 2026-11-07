@@ -30,6 +30,9 @@ export type MapArea = {
   north: number;
 };
 
+/** Reads the part of the map on screen now (null when it cannot). */
+export type AreaReader = () => Promise<MapArea | null>;
+
 /** The area between two corners ([lng, lat]), in either order: the map
  *  hands back its top-left and bottom-right visible corners. */
 export function areaFromCorners(

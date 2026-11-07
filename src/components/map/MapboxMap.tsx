@@ -30,7 +30,12 @@ import {
   TERRAIN_VECTOR_URL,
   terrainPaint,
 } from "./terrainStyle";
-import { areaFromCorners, boundsOf, type MapArea } from "./services/bounds";
+import {
+  areaFromCorners,
+  boundsOf,
+  type AreaReader,
+  type MapArea,
+} from "./services/bounds";
 import { USER_PUCK } from "./userPuck";
 import { markerIcon, type MarkerGlyph } from "./services/markerIcon";
 import type { DiscoveryItem } from "./types/mapPresentation";
@@ -78,7 +83,8 @@ export function MapboxMap({
   terrain = false,
   ornamentBottom = 8,
   darkBasemap = false,
-  onCameraSettled,
+  onUserMoved,
+  areaReaderRef,
   obscured,
 }: {
   markers: DiscoveryItem[];
@@ -100,11 +106,13 @@ export function MapboxMap({
    *  browse sheet's peek never covers them (Mapbox attribution terms). */
   ornamentBottom?: number;
   darkBasemap?: boolean;
-  /** The map came to rest: the area it shows, and whether the user moved
-   *  it (pan or pinch) or the app did ("Søk i dette området"). */
-  onCameraSettled?: (area: MapArea, byUser: boolean) => void;
+  /** The user moved the map (pan, pinch, double-tap zoom) and it came to
+   *  rest ("Søk i dette området"). The app's own camera moves never call it. */
+  onUserMoved?: () => void;
+  /** Filled with a reader for the part of the map on screen right now. */
+  areaReaderRef?: { current: AreaReader | null };
   /** Bands of the map the screen covers (dp): the top controls and the
-   *  browse peek. The settled area is what lies between them. */
+   *  browse peek. The area read is what lies between them. */
   obscured?: { top: number; bottom: number };
 }) {
   const paint = pinPaint(pin, darkBasemap);
@@ -126,6 +134,15 @@ export function MapboxMap({
     ]);
     return areaFromCorners([nw, se]);
   };
+  // The screen reads the area when the pill is tapped, so it is always what
+  // the map shows at that moment.
+  useEffect(() => {
+    if (!areaReaderRef) return;
+    areaReaderRef.current = readVisibleArea;
+    return () => {
+      areaReaderRef.current = null;
+    };
+  });
   const relief = terrainPaint(darkBasemap);
   const cameraRef = useRef<Camera>(null);
   // The basemap config (POIs off) mounts once the current style has loaded,
@@ -134,7 +151,18 @@ export function MapboxMap({
   // lightPreset reset every style to day (the night basemap never showed).
   const [loadedStyle, setLoadedStyle] = useState<string | null>(null);
   const currentStyle = styleURL ?? Mapbox.StyleURL.Street;
+  // Where the map opens (then the camera is the user's): north up, flat.
+  const [firstView] = useState(() => ({
+    centerCoordinate: center,
+    zoomLevel: 13,
+    heading: 0,
+    pitch: 0,
+  }));
 
+  // Fly only when asked (Posisjon, an area): the centre at that moment. It
+  // used to re-run on every centre change too, and the GPS watch gives the
+  // centre a new array on each fix, so after Posisjon the map kept flying
+  // back to the user and nothing else could be browsed (found in Phase 16).
   useEffect(() => {
     if (recenterSignal === undefined || recenterSignal === 0) return;
     cameraRef.current?.setCamera({
@@ -144,7 +172,7 @@ export function MapboxMap({
       animationDuration: motion.duration.recenter,
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [recenterSignal, center]);
+  }, [recenterSignal]);
 
   useEffect(() => {
     if (fittedThisSession || loadedStyle === null) return;
@@ -363,30 +391,23 @@ export function MapboxMap({
             setNativeCoord([l.coords.longitude, l.coords.latitude])
           }
         />
-        {/* Tells a pan or pinch by the user (lastGestureType) from the app's
-          own camera moves, once the map has been still for a moment. */}
-        {onCameraSettled ? (
+        {/* Reports when a user gesture has come to rest. It only follows the
+            gestures plugin (pans, pinches, double-tap zoom, their flings),
+            never the app's own setCamera / flyTo, so app moves offer nothing. */}
+        {onUserMoved ? (
           <CameraGestureObserver
             quietPeriodMs={250}
             onMapSteady={(e) => {
-              if (e.nativeEvent.reason !== "steady") return;
-              const byUser = !!e.nativeEvent.lastGestureType;
-              readVisibleArea()
-                .then((area) => {
-                  if (area) onCameraSettled(area, byUser);
-                })
-                .catch(() => undefined);
+              if (e.nativeEvent.reason === "steady") onUserMoved();
             }}
           />
         ) : null}
-        <Camera
-          ref={cameraRef}
-          zoomLevel={13}
-          centerCoordinate={center}
-          heading={0}
-          pitch={0}
-          animationDuration={0}
-        />
+        {/* The first view only (defaultSettings). As controlled props, a
+            new centre array re-applied the camera: the GPS watch makes one
+            per fix, so after Posisjon the map kept jumping back to the user
+            (found in Phase 16). Moves go through cameraRef. */}
+        <Camera ref={cameraRef} defaultSettings={firstView} />
+
         <Images>
           <MapImage name="cluster-box">
             <View style={{ width: 44, height: 44 }} />
