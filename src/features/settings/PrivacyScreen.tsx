@@ -6,9 +6,9 @@ import { Screen } from "@/components/ui";
 import { RouteHeader } from "@/components/RouteHeader";
 import { SignInPrompt } from "@/components/SignInPrompt";
 import { useGuestMode } from "@/components/map/hooks/useGuestMode";
+import { blockedCount, useBlocked } from "@/lib/blocked";
 
 import { ExportSheet } from "./ExportSheet";
-import { BLOCKED_COUNT } from "./SettingsPages";
 import { NavRow, SettingsSection, ToggleRow } from "./settingsUi";
 
 // Personvern, per the design (PDF p19, p21): SYNLIGHET toggles, DATADELING
@@ -21,6 +21,7 @@ import { NavRow, SettingsSection, ToggleRow } from "./settingsUi";
 // BLOCKED_CONTRACT_GAP: no consent store, visibility gate, export or deletion
 // backend — the real visibility/consent model is not certified.
 export default function PrivacyScreen() {
+  const blocked = useBlocked();
   const [mapVisible, setMapVisible] = useState(true);
   const [profileVisible, setProfileVisible] = useState(true);
   const [discoverable, setDiscoverable] = useState(false);
@@ -88,7 +89,7 @@ export default function PrivacyScreen() {
           <NavRow
             icon="ban-outline"
             label="Blokkerte brukere"
-            value={String(BLOCKED_COUNT)}
+            value={String(blockedCount(blocked))}
             onPress={gated(() => router.push("/settings/blocked" as Href))}
           />
           <NavRow

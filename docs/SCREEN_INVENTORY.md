@@ -132,19 +132,19 @@ Approved by the founder in the Phase 10 review (AskUserQuestion). Each is local 
 
 ## Realignment progress (2026-11-05)
 
-| Slice                        | PDF          | Result                                      | Ledger     |
-| ---------------------------- | ------------ | ------------------------------------------- | ---------- |
-| Map modes + default          | p5           | ok — Trending, For deg default, search copy | 0108, 0117 |
-| Guest cannot send chat       | spec §4      | ok                                          | 0109       |
-| Swipe tabs + actions + empty | p7–p8        | ok — Steder place cards still to build      | 0110       |
-| Tab bar                      | p5–p8        | ok                                          | 0111       |
-| Profile + invented removal   | p12, p22     | ok — Lagret not yet linked                  | 0112       |
-| Add flows                    | p10–p12      | ok — Innleveringer, map pin, upload pending | 0113       |
-| Onboarding + 18+             | p2–p3        | ok — business branch pending                | 0114       |
-| Chat list/thread             | p9–p10       | ok — info, members, invite pending          | 0115       |
-| Settings + privacy           | p19–p21, p28 | ok — payouts, sessions screen pending       | 0116       |
-| Notifications + verification | p7, p20      | ok                                          | 0117       |
-| Marketplace B2B + Bli Skaper | p14–p16      | partial — collaboration flow pending        | 0118       |
+| Slice                        | PDF          | Result                                                                               | Ledger     |
+| ---------------------------- | ------------ | ------------------------------------------------------------------------------------ | ---------- |
+| Map modes + default          | p5           | ok — Trending, For deg default, search copy                                          | 0108, 0117 |
+| Guest cannot send chat       | spec §4      | ok                                                                                   | 0109       |
+| Swipe tabs + actions + empty | p7–p8        | ok — Steder place cards still to build                                               | 0110       |
+| Tab bar                      | p5–p8        | ok                                                                                   | 0111       |
+| Profile + invented removal   | p12, p22     | ok — Lagret not yet linked                                                           | 0112       |
+| Add flows                    | p10–p12      | ok — Innleveringer, map pin, upload pending                                          | 0113       |
+| Onboarding + 18+             | p2–p3        | ok — business branch pending                                                         | 0114       |
+| Chat list/thread             | p9–p10       | ok — info, members, invite pending                                                   | 0115       |
+| Settings + privacy           | p19–p21, p28 | ok — Passord and session sign-out on Kontoinformasjon (0266); payouts structure only | 0116, 0266 |
+| Notifications + verification | p7, p20      | ok                                                                                   | 0117       |
+| Marketplace B2B + Bli Skaper | p14–p16      | partial — collaboration flow pending                                                 | 0118       |
 
 Every item in "Invented in the app" above has been removed or replaced.
 
@@ -320,3 +320,10 @@ The founder asked for a choice between satellite, terrain and the standard map. 
 - **Crash screen**: the root error boundary uses the p26 error state ("Noe gikk galt", "Prøv igjen", "Til kartet"; p26's "Feilkode" line is left out, since no error codes exist).
 - **Shared links**: `join/<slug>` opens the chat a chat invite names or the experience the p26 invite page names; `i/<code>` (Inviter venner) opens Welcome from outside the app and the map from inside it. Only the `thirdplace://` scheme is wired.
 - **Dev screens** (`_sandbox`) are no longer reachable in release builds.
+
+### PDF p19 details and fixes (2026-11-07)
+
+- **Kontoinformasjon** now has p19's Passord field ("•••••••• · Endre", to a new **Endre passord** page with the p1 "Lag nytt passord" fields and 8-character minimum plus the current password) and p19's session controls: "Logg ut" on the other device and "Logg ut alle andre enheter".
+- **Posisjon**: when location is turned off, "Åpne innstillinger" opens the phone's settings for the app.
+- **Chat** with no chats shows p26's "Her starter praten" (the search-miss text only appears for a search); **Varsler** with nothing in it says "Ingen varsler ennå".
+- **Slett konto** signs you out like Logg ut; **Blokker** adds the person to Blokkerte brukere and the count on Personvern; a direct message's chat info has no "Inviter"; **Forlat** in chat info asks first and the chat leaves the list.

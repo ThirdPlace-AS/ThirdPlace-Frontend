@@ -23,7 +23,9 @@ import {
 } from "@/components/ui";
 import { confirmToast } from "@/copy";
 import { useMyProfile } from "@/lib/myProfile";
+import { setBlocked, useBlocked } from "@/lib/blocked";
 import { goBackOr } from "@/lib/navigation";
+import { signOut } from "@/lib/signOut";
 
 import { NavRow, ToggleList } from "./settingsUi";
 
@@ -31,10 +33,13 @@ function Session({
   icon,
   name,
   meta,
+  onSignOut,
 }: {
   icon: IconName;
   name: string;
   meta: string;
+  /** Other devices (PDF p19): "Logg ut". This device has none. */
+  onSignOut?: () => void;
 }) {
   return (
     <View className="flex-row items-center gap-3 rounded-md border border-line bg-surface p-3">
@@ -47,9 +52,74 @@ function Session({
           {meta}
         </Text>
       </View>
+      {onSignOut ? (
+        <UIPressable
+          accessibilityRole="button"
+          accessibilityLabel={`Logg ut ${name}`}
+          onPress={onSignOut}
+          haptic="selection"
+          hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
+        >
+          <Text variant="label" weight="semibold">
+            Logg ut
+          </Text>
+        </UIPressable>
+      ) : null}
     </View>
   );
 }
+
+// Passord on Kontoinformasjon (PDF p19): "•••••••• · Endre", drawn like the
+// fields above it.
+function PasswordRow() {
+  return (
+    <View className="gap-1.5">
+      <Text variant="label" weight="semibold">
+        Passord
+      </Text>
+      <UIPressable
+        accessibilityRole="button"
+        accessibilityLabel="Passord. Endre"
+        onPress={() => router.push("/settings/password" as Href)}
+        pressedScale={0.99}
+        contentClassName="min-h-12 flex-row items-center gap-2 rounded-md border border-line bg-surface px-3"
+      >
+        <Text variant="body" className="flex-1" numberOfLines={1}>
+          {"•".repeat(8)}
+        </Text>
+        <Text variant="label" weight="semibold">
+          Endre
+        </Text>
+      </UIPressable>
+    </View>
+  );
+}
+
+type DeviceSession = {
+  id: string;
+  icon: IconName;
+  name: string;
+  meta: string;
+  current?: boolean;
+};
+
+// MOCK sessions (no session API: BLOCKED_CONTRACT_GAP); signing a device out
+// only removes its row here.
+const SESSIONS: DeviceSession[] = [
+  {
+    id: "this",
+    icon: "phone-portrait-outline",
+    name: "Denne enheten",
+    meta: "Oslo · nå",
+    current: true,
+  },
+  {
+    id: "chrome",
+    icon: "laptop-outline",
+    name: "Chrome · Windows",
+    meta: "Sist aktiv for 2 dager siden",
+  },
+];
 
 function LinkRow({
   icon,
@@ -80,6 +150,7 @@ function LinkRow({
 export function AccountScreen() {
   const [email, setEmail] = useState("ola@epost.no");
   const [phone, setPhone] = useState("+47 912 34 567");
+  const [sessions, setSessions] = useState(SESSIONS);
   return (
     <FormPage
       title="Kontoinformasjon"
@@ -96,6 +167,7 @@ export function AccountScreen() {
     >
       <Input label="E-post" value={email} onChangeText={setEmail} />
       <Input label="Telefon" value={phone} onChangeText={setPhone} />
+      <PasswordRow />
       <LinkRow
         icon="shield-checkmark-outline"
         label="Totrinnsbekreftelse"
@@ -109,16 +181,102 @@ export function AccountScreen() {
       <Text variant="title" accessibilityRole="header" className="pt-1">
         Aktive økter
       </Text>
-      <Session
-        icon="phone-portrait-outline"
-        name="Denne enheten"
-        meta="Oslo · nå"
+      {sessions.map((s) => (
+        <Session
+          key={s.id}
+          icon={s.icon}
+          name={s.name}
+          meta={s.meta}
+          onSignOut={
+            s.current
+              ? undefined
+              : () => {
+                  setSessions((list) => list.filter((x) => x.id !== s.id));
+                  showToast(confirmToast.sessionSignedOut);
+                }
+          }
+        />
+      ))}
+      {sessions.some((s) => !s.current) ? (
+        <UIPressable
+          accessibilityRole="button"
+          onPress={() => {
+            setSessions((list) => list.filter((x) => x.current));
+            showToast(confirmToast.otherSessionsSignedOut);
+          }}
+          haptic="selection"
+          hitSlop={{ top: 12, bottom: 12, left: 8, right: 8 }}
+          className="self-start"
+        >
+          <Text variant="label" weight="semibold" tone="danger">
+            Logg ut alle andre enheter
+          </Text>
+        </UIPressable>
+      ) : null}
+    </FormPage>
+  );
+}
+
+// Endre passord, from Passord on Kontoinformasjon. The fields and the
+// 8-character minimum follow "Lag nytt passord" (PDF p1), plus the current
+// password. MOCK: checked here and discarded; nothing is stored
+// (BLOCKED_CONTRACT_GAP).
+export function ChangePasswordScreen() {
+  const [current, setCurrent] = useState("");
+  const [pw, setPw] = useState("");
+  const [again, setAgain] = useState("");
+  const short = pw.length > 0 && pw.length < 8;
+  const mismatch = again.length > 0 && again !== pw;
+  const ok = current.length > 0 && pw.length >= 8 && again === pw;
+  return (
+    <FormPage
+      title="Endre passord"
+      footer={
+        <Button
+          label="Lagre nytt passord"
+          variant="ink"
+          disabled={!ok}
+          onPress={() => {
+            goBackOr("/settings/account" as Href);
+            showToast(confirmToast.passwordChanged);
+          }}
+        />
+      }
+    >
+      <Input
+        label="Nåværende passord"
+        secureTextEntry
+        value={current}
+        onChangeText={setCurrent}
       />
-      <Session
-        icon="laptop-outline"
-        name="Chrome · Windows"
-        meta="Sist aktiv for 2 dager siden"
-      />
+      <View className="gap-1">
+        <Input
+          label="Nytt passord"
+          placeholder="Minst 8 tegn"
+          secureTextEntry
+          value={pw}
+          onChangeText={setPw}
+        />
+        {short ? (
+          <Text variant="caption" tone="danger">
+            Passordet må ha minst 8 tegn.
+          </Text>
+        ) : null}
+      </View>
+      <View className="gap-1">
+        <Input
+          label="Bekreft passord"
+          placeholder="Gjenta passordet"
+          secureTextEntry
+          value={again}
+          onChangeText={setAgain}
+        />
+        {mismatch ? (
+          <Text variant="caption" tone="danger">
+            Passordene er ikke like.
+          </Text>
+        ) : null}
+      </View>
     </FormPage>
   );
 }
@@ -316,35 +474,19 @@ export function HelpScreen() {
   );
 }
 
-const BLOCKED = [
-  {
-    name: "Anonym bruker",
-    why: "Upassende meldinger",
-    when: "Blokkert 10. juli",
-  },
-  { name: "SpamKonto42", why: "Spam i gruppechat", when: "Blokkert 28. juni" },
-];
-export const BLOCKED_COUNT = BLOCKED.length;
-
-// Blokkerte brukere (PDF p21). Avblokkér flips the row locally.
+// Blokkerte brukere (PDF p21): the shared block list (src/lib/blocked.ts),
+// so a Blokker elsewhere shows up here. Avblokkér / Angre flip the row.
 export function BlockedUsersScreen() {
-  const [unblocked, setUnblocked] = useState<ReadonlySet<string>>(new Set());
-  const toggle = (name: string) =>
-    setUnblocked((s) => {
-      const next = new Set(s);
-      if (next.has(name)) next.delete(name);
-      else next.add(name);
-      return next;
-    });
+  const list = useBlocked();
   return (
     <Page title="Blokkerte brukere">
       <Text variant="caption" tone="muted">
         Blokkerte brukere kan ikke se profilen din, sende meldinger eller finne
         deg.
       </Text>
-      {BLOCKED.map((b) => (
+      {list.map((b) => (
         <View
-          key={b.name}
+          key={b.key}
           className="flex-row items-center gap-3 rounded-md border border-line bg-surface p-3"
         >
           <View className="flex-1">
@@ -352,26 +494,24 @@ export function BlockedUsersScreen() {
               {b.name}
             </Text>
             <Text variant="caption" tone="muted">
-              {unblocked.has(b.name) ? "Ikke blokkert" : `${b.why} · ${b.when}`}
+              {b.blocked ? b.detail : "Ikke blokkert"}
             </Text>
           </View>
           <UIPressable
             accessibilityRole="button"
             accessibilityLabel={
-              unblocked.has(b.name)
-                ? `Blokker ${b.name} igjen`
-                : `Avblokkér ${b.name}`
+              b.blocked ? `Avblokkér ${b.name}` : `Blokker ${b.name} igjen`
             }
             haptic="selection"
             hitSlop={{ top: 14, bottom: 14, left: 10, right: 10 }}
-            onPress={() => toggle(b.name)}
+            onPress={() => setBlocked(b.key, !b.blocked)}
           >
             <Text
               variant="caption"
               weight="semibold"
-              tone={unblocked.has(b.name) ? "ink" : "ember"}
+              tone={b.blocked ? "ember" : "ink"}
             >
-              {unblocked.has(b.name) ? "Angre" : "Avblokkér"}
+              {b.blocked ? "Avblokkér" : "Angre"}
             </Text>
           </UIPressable>
         </View>
@@ -396,7 +536,8 @@ export function DeleteAccountScreen() {
             variant="secondary"
             disabled={confirm.trim() !== "SLETT"}
             onPress={() => {
-              goBackOr("/privacy" as Href);
+              // Deleting ends the session like Logg ut (Phase 15).
+              signOut();
               showToast(confirmToast.accountDeleted);
             }}
           />

@@ -1,4 +1,4 @@
-import { View } from "react-native";
+import { Linking, View } from "react-native";
 
 import { Icon, Text } from "@/components/ui";
 import { Button } from "@/components/Button";
@@ -79,6 +79,16 @@ export function MapLocationSheet({
           variant="ink"
           disabled={status === "requesting"}
           onPress={onRequest}
+        />
+      ) : null}
+
+      {/* Once location is turned off, the system will not ask again: the
+          phone's settings for the app are the way back (Phase 15). */}
+      {denied ? (
+        <Button
+          label="Åpne innstillinger"
+          variant="secondary"
+          onPress={() => void Linking.openSettings()}
         />
       ) : null}
 

@@ -191,7 +191,11 @@ export default function PersonScreen() {
       </Sheet>
       {sub === "report" ? <ReportSheet onClose={() => setSub(null)} /> : null}
       {sub === "block" ? (
-        <BlockSheet name={person.name} onClose={() => setSub(null)} />
+        <BlockSheet
+          name={person.name}
+          personId={person.id}
+          onClose={() => setSub(null)}
+        />
       ) : null}
       <SignInPrompt
         visible={signIn !== null}

@@ -129,7 +129,7 @@ export default function ChatScreen() {
           ) : null,
         )}
 
-        {visible.length === 0 ? (
+        {visible.length === 0 && q ? (
           <EmptyState
             fill={false}
             icon="search"
@@ -137,6 +137,16 @@ export default function ChatScreen() {
             message={`Ingen samtaler matcher «${query.trim()}».`}
             actionLabel="Tøm søk"
             onAction={() => setQuery("")}
+          />
+        ) : visible.length === 0 ? (
+          // No chats yet: the PDF p26 empty state.
+          <EmptyState
+            fill={false}
+            icon="chatbubble-outline"
+            title="Her starter praten"
+            message="Bli med på noe som skjer, så møter du folk som er der."
+            actionLabel="Finn en opplevelse"
+            onAction={() => router.navigate("/swipe")}
           />
         ) : null}
 

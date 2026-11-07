@@ -9,6 +9,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
 import { Pressable, View } from "react-native";
 
+import { EmptyState } from "@/components/states/StateView";
 import { Icon, Page, Text, Pressable as UIPressable } from "@/components/ui";
 import { notificationTimeLabel, type NotificationType } from "@/fixtures";
 import { useNotificationReads } from "@/hooks/useNotificationReads";
@@ -46,6 +47,13 @@ export default function NotificationsScreen() {
         </Pressable>
       }
     >
+      {items.length === 0 ? (
+        <EmptyState
+          fill={false}
+          icon="notifications-outline"
+          title="Ingen varsler ennå"
+        />
+      ) : null}
       {items.map((n) => {
         const isRead = readIds.has(n.id);
         return (

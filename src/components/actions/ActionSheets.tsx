@@ -8,6 +8,7 @@ import { Input } from "@/components/Input";
 import { Sheet } from "@/components/Sheet";
 import { showToastAfterSheet } from "@/components/Toast";
 import { blockedToast, confirmToast } from "@/copy";
+import { blockPerson } from "@/lib/blocked";
 
 // Shared action sheets, per the design (PDF p23): Del, Rapporter, Blokkere,
 // Forlate opplevelsen, Bli med på ventelisten. BLOCKED_CONTRACT_GAP: no share
@@ -126,7 +127,15 @@ export function ReportSheet({ onClose }: Base) {
 }
 
 // Blokkere (p23).
-export function BlockSheet({ name, onClose }: Base & { name: string }) {
+export function BlockSheet({
+  name,
+  personId,
+  onClose,
+}: Base & {
+  name: string;
+  /** Adds the person to Blokkerte brukere (src/lib/blocked.ts). */
+  personId?: string;
+}) {
   const first = name.split(" ")[0];
   return (
     <Sheet visible onClose={onClose} title={`Blokkere ${first}?`}>
@@ -140,6 +149,7 @@ export function BlockSheet({ name, onClose }: Base & { name: string }) {
           label="Blokker"
           variant="secondary"
           onPress={() => {
+            if (personId) blockPerson(personId, name);
             onClose();
             showToastAfterSheet(blockedToast(first ?? name));
           }}
@@ -152,11 +162,12 @@ export function BlockSheet({ name, onClose }: Base & { name: string }) {
 
 // Forlate opplevelsen (p23).
 export function LeaveSheet({
+  title = "Forlate opplevelsen?",
   onClose,
   onConfirm,
-}: Base & { onConfirm: () => void }) {
+}: Base & { title?: string; onConfirm: () => void }) {
   return (
-    <Sheet visible onClose={onClose} title="Forlate opplevelsen?">
+    <Sheet visible onClose={onClose} title={title}>
       <View className="gap-3">
         <Button
           label="Forlat"

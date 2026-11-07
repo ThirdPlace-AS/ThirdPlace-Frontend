@@ -11,6 +11,9 @@ export const confirmToast = {
   profileSaved: { title: "Profilen er oppdatert", icon: ok },
   preferencesSaved: { title: "Preferansene er lagret", icon: ok },
   accountSaved: { title: "Kontoinformasjonen er oppdatert", icon: ok },
+  passwordChanged: { title: "Passordet er endret", icon: ok },
+  sessionSignedOut: { title: "Enheten er logget ut", icon: ok },
+  otherSessionsSignedOut: { title: "Andre enheter er logget ut", icon: ok },
   chatCreated: { title: "Chatten er opprettet", icon: "chatbubbles-outline" },
   exportRequested: {
     title: "Eksporten er bestilt",

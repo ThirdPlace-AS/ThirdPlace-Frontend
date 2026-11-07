@@ -9,10 +9,10 @@ import { router, useLocalSearchParams, type Href } from "expo-router";
 import { useState } from "react";
 import { Pressable, View } from "react-native";
 
-import { ReportSheet } from "@/components/actions/ActionSheets";
+import { LeaveSheet, ReportSheet } from "@/components/actions/ActionSheets";
 import { Button } from "@/components/Button";
 import { SearchField } from "@/components/pickers/Pickers";
-import { showToast } from "@/components/Toast";
+import { showToast, showToastAfterSheet } from "@/components/Toast";
 import {
   Avatar,
   EmptyState,
@@ -35,6 +35,7 @@ import {
 } from "@/fixtures";
 import { libImage, libThumb, smallImage } from "@/fixtures/images";
 import { chatInviteSlug } from "@/lib/entityRoutes";
+import { leaveChat } from "@/lib/joinedChats";
 
 const ROLES = ["Vert · Admin", "Deltar", "Venn", "Kun i chatten"];
 export const membersOf = (chat: MockChat) =>
@@ -71,6 +72,7 @@ function Missing({ title }: { title: string }) {
 export function ChatInfoScreen() {
   const chat = useRouteChat();
   const [report, setReport] = useState(false);
+  const [leave, setLeave] = useState(false);
   const [viewer, setViewer] = useState<number | null>(null);
   if (!chat) return <Missing title="Chat-info" />;
   const exp = chat.pinnedExperienceId
@@ -80,10 +82,8 @@ export function ChatInfoScreen() {
   const act = (label: string) => {
     if (label === "Inviter") router.push(`/chat/${chat.id}/invite` as Href);
     else if (label === "Rapporter") setReport(true);
-    else if (label === "Forlat") {
-      router.navigate("/chat");
-      showToast({ title: "Du har forlatt chatten", icon: "exit-outline" });
-    } else showToast(confirmToast.muted);
+    else if (label === "Forlat") setLeave(true);
+    else showToast(confirmToast.muted);
   };
   return (
     <Page title={chat.name}>
@@ -139,7 +139,10 @@ export function ChatInfoScreen() {
       <View className="flex-row gap-2">
         {[
           { icon: "notifications-off-outline" as const, label: "Demp" },
-          { icon: "person-add-outline" as const, label: "Inviter" },
+          // A direct message has two people: nobody to invite.
+          ...(chat.type === "dm"
+            ? []
+            : [{ icon: "person-add-outline" as const, label: "Inviter" }]),
           { icon: "exit-outline" as const, label: "Forlat" },
           { icon: "flag-outline" as const, label: "Rapporter" },
         ].map((a) => (
@@ -160,6 +163,20 @@ export function ChatInfoScreen() {
       </View>
 
       {report ? <ReportSheet onClose={() => setReport(false)} /> : null}
+      {leave ? (
+        <LeaveSheet
+          title="Forlate chatten?"
+          onClose={() => setLeave(false)}
+          onConfirm={() => {
+            leaveChat(chat.id);
+            router.navigate("/chat");
+            showToastAfterSheet({
+              title: "Du har forlatt chatten",
+              icon: "exit-outline",
+            });
+          }}
+        />
+      ) : null}
       <PhotoViewer
         photos={SHARED}
         index={viewer}

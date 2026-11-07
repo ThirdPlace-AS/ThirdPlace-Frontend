@@ -386,7 +386,11 @@ export function ExperiencePage({
         <ReportSheet onClose={() => setSheet(null)} />
       ) : null}
       {sheet === "block" ? (
-        <BlockSheet name={hostName} onClose={() => setSheet(null)} />
+        <BlockSheet
+          name={hostName}
+          personId={host?.id}
+          onClose={() => setSheet(null)}
+        />
       ) : null}
     </View>
   );

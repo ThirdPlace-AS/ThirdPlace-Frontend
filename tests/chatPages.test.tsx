@@ -12,6 +12,7 @@ import {
 } from "@/features/chat/ChatInfoScreens";
 import NewChatScreen from "@/features/chat/NewChatScreen";
 import { chatById, chats } from "@/fixtures";
+import { isMember, resetJoinedChats } from "@/lib/joinedChats";
 
 const mockPush = jest.fn();
 const mockNavigate = jest.fn();
@@ -24,8 +25,9 @@ jest.mock("expo-router", () => ({
     replace: jest.fn(),
     canGoBack: () => true,
   },
-  useLocalSearchParams: () => ({ id: "c1" }),
+  useLocalSearchParams: () => ({ id: mockChatId }),
 }));
+let mockChatId = "c1";
 
 const METRICS = {
   frame: { x: 0, y: 0, width: 360, height: 640 },
@@ -41,6 +43,8 @@ beforeEach(() => {
   mockPush.mockClear();
   mockNavigate.mockClear();
   mockBack.mockClear();
+  mockChatId = "c1";
+  resetJoinedChats();
 });
 
 describe("chat pages", () => {
@@ -57,10 +61,24 @@ describe("chat pages", () => {
     expect(screen.queryByText(/arkiveres/)).toBeNull();
   });
 
-  it("leaving the chat returns to the chat list", () => {
+  it("leaving asks first, then leaves the chat and returns to the list", () => {
     render(<ChatInfoScreen />, { wrapper });
     fireEvent.press(screen.getByRole("button", { name: "Forlat" }));
+    expect(mockNavigate).not.toHaveBeenCalled();
+    expect(screen.getByText("Forlate chatten?")).toBeTruthy();
+    const buttons = screen.getAllByRole("button", { name: "Forlat" });
+    fireEvent.press(buttons[buttons.length - 1]!);
     expect(mockNavigate).toHaveBeenCalledWith("/chat");
+    expect(isMember(c1, new Set())).toBe(false);
+  });
+
+  it("a direct message has no Inviter", () => {
+    const dm = chats.find((c) => c.type === "dm");
+    if (!dm) throw new Error("no direct message in the fixtures");
+    mockChatId = dm.id;
+    render(<ChatInfoScreen />, { wrapper });
+    expect(screen.queryByRole("button", { name: "Inviter" })).toBeNull();
+    expect(screen.getByRole("button", { name: "Forlat" })).toBeTruthy();
   });
 
   it("members filter by name", () => {
