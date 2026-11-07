@@ -138,3 +138,8 @@ and [MAP_DELIVERABLES.md](MAP_DELIVERABLES.md) for journeys + completion classes
 ## Phase 14 changes (2026-11-07)
 
 - Kartlag is a grid of style previews (founder reference): Auto first, Norwegian names, pink ring on the style in use, ⓘ explains Auto's schedule (0260).
+
+## Phase 15 changes (2026-11-07)
+
+- Kartlag has a Karttype section: Standard, Satellitt (Mapbox Standard Satellite with the same light preset; pins get the dark-map paint at every hour) and Terreng (hill shading from Terrain-DEM v1 and contour lines with metre labels from Terrain v2 in the style's bottom slot). The sheet stays open on a pick; ⓘ also says that Auto shows night in dark mode (0264).
+- The Mapbox logo and ⓘ sit above the browse peek (they were under it); the Satellitt preview loads live from the Static Images API instead of being stored; cluster counts are self-lit like their bubbles (0264).

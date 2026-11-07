@@ -1,7 +1,13 @@
-// Phase 14: Kartlag as a grid of map-style previews (founder reference,
-// 2026-11-07). Auto first, Norwegian names, one radio selection, ⓘ explains Auto.
+// Kartlag: Karttype (Standard / Satellitt / Terreng, Phase 15) above Kartstil
+// (Auto + four times of day, Phase 14), Norwegian names, one radio selection
+// per group, the sheet stays open on a pick, ⓘ explains Auto.
 import { describe, expect, it, jest } from "@jest/globals";
-import { fireEvent, render, screen } from "@testing-library/react-native";
+import {
+  fireEvent,
+  render,
+  screen,
+  within,
+} from "@testing-library/react-native";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 
 import { MapLayerSheet } from "@/components/map/MapLayerSheet";
@@ -20,35 +26,53 @@ function setup(auto: boolean) {
   const onClose = jest.fn();
   const onSelect = jest.fn();
   const onEnableAuto = jest.fn();
+  const onSelectType = jest.fn();
   render(
     <MapLayerSheet
       visible
       active="style2"
       auto={auto}
+      mapType="standard"
       onClose={onClose}
       onSelect={onSelect}
       onEnableAuto={onEnableAuto}
+      onSelectType={onSelectType}
     />,
     { wrapper },
   );
-  // Tiles size themselves from the grid's width.
-  fireEvent(screen.getByLabelText("Kartstil"), "layout", {
-    nativeEvent: { layout: { width: 328, height: 300, x: 0, y: 0 } },
+  // Tiles size themselves from the sheet body's width.
+  fireEvent(screen.getByTestId("kartlag-body"), "layout", {
+    nativeEvent: { layout: { width: 328, height: 600, x: 0, y: 0 } },
   });
-  return { onClose, onSelect, onEnableAuto };
+  return { onClose, onSelect, onEnableAuto, onSelectType };
 }
 
+const radiosIn = (group: string) =>
+  within(screen.getByLabelText(group))
+    .getAllByRole("radio")
+    .map((r) => r.props.accessibilityLabel);
+
 describe("Kartlag", () => {
-  it("shows Auto and the four styles with Norwegian names", () => {
+  it("shows Karttype first, then Auto and the four styles", () => {
     setup(false);
-    const names = screen
-      .getAllByRole("radio")
-      .map((r) => r.props.accessibilityLabel);
-    expect(names).toEqual(["Auto", "Daggry", "Dag", "Skumring", "Natt"]);
+    expect(radiosIn("Karttype")).toEqual(["Standard", "Satellitt", "Terreng"]);
+    expect(radiosIn("Kartstil")).toEqual([
+      "Auto",
+      "Daggry",
+      "Dag",
+      "Skumring",
+      "Natt",
+    ]);
   });
 
-  it("marks only the style in use", () => {
+  it("marks the type and the style in use", () => {
     setup(false);
+    expect(
+      screen.getByRole("radio", { name: "Standard" }).props.accessibilityState,
+    ).toMatchObject({ checked: true });
+    expect(
+      screen.getByRole("radio", { name: "Satellitt" }).props.accessibilityState,
+    ).toMatchObject({ checked: false });
     expect(
       screen.getByRole("radio", { name: "Dag" }).props.accessibilityState,
     ).toMatchObject({ checked: true });
@@ -67,19 +91,27 @@ describe("Kartlag", () => {
     ).toMatchObject({ checked: false });
   });
 
-  it("picking a style selects it and closes; Auto turns the clock back on", () => {
-    const { onClose, onSelect, onEnableAuto } = setup(false);
+  it("picks change the map and keep the sheet open", () => {
+    const { onClose, onSelect, onEnableAuto, onSelectType } = setup(false);
+    fireEvent.press(screen.getByRole("radio", { name: "Satellitt" }));
+    expect(onSelectType).toHaveBeenCalledWith("satellite");
     fireEvent.press(screen.getByRole("radio", { name: "Natt" }));
     expect(onSelect).toHaveBeenCalledWith("style4");
-    expect(onClose).toHaveBeenCalledTimes(1);
     fireEvent.press(screen.getByRole("radio", { name: "Auto" }));
     expect(onEnableAuto).toHaveBeenCalledTimes(1);
+    expect(onClose).not.toHaveBeenCalled();
   });
 
-  it("ⓘ explains Auto", () => {
+  it("ⓘ explains Auto, including dark mode", () => {
     setup(false);
     expect(screen.queryByText(/bytter kartstil etter tiden/)).toBeNull();
     fireEvent.press(screen.getByLabelText("Om Auto"));
     expect(screen.getByText(/bytter kartstil etter tiden/)).toBeTruthy();
+    expect(screen.getByText(/mørk modus, viser Auto natt/)).toBeTruthy();
+  });
+
+  it("credits the map sources under the previews", () => {
+    setup(false);
+    expect(screen.getByText(/© Mapbox © OpenStreetMap/)).toBeTruthy();
   });
 });

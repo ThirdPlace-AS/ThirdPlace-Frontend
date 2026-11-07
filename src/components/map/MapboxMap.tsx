@@ -1,13 +1,17 @@
 import Mapbox, {
   Camera,
   CircleLayer,
+  HillshadeLayer,
   Image as MapImage,
   Images,
+  LineLayer,
   MapView,
+  RasterDemSource,
   ShapeSource,
   StyleImport,
   SymbolLayer,
   UserLocation,
+  VectorSource,
 } from "@rnmapbox/maps";
 import type { FeatureCollection, Point } from "geojson";
 import { useEffect, useMemo, useRef, useState } from "react";
@@ -17,8 +21,14 @@ import { MAP_CENTER } from "@/fixtures";
 import { Icon } from "@/components/ui";
 import { motion, palette } from "@/theme";
 
-import { periodForUrl } from "./mapStyles";
+import type { MapStylePeriod } from "./mapStyles";
 import { markerPaint, pinPaint } from "./pinStyle";
+import {
+  INDEX_CONTOUR,
+  TERRAIN_DEM_URL,
+  TERRAIN_VECTOR_URL,
+  terrainPaint,
+} from "./terrainStyle";
 import { boundsOf } from "./services/bounds";
 import { USER_PUCK } from "./userPuck";
 import { markerIcon, type MarkerGlyph } from "./services/markerIcon";
@@ -63,6 +73,9 @@ export function MapboxMap({
   onMapPress,
   focusCoord,
   styleURL,
+  lightPreset = "day",
+  terrain = false,
+  ornamentBottom = 8,
   darkBasemap = false,
 }: {
   markers: DiscoveryItem[];
@@ -76,13 +89,21 @@ export function MapboxMap({
   onMapPress?: () => void;
   focusCoord?: [number, number] | null;
   styleURL?: string;
+  /** Light preset of the base map (Kartstil), applied via the basemap config. */
+  lightPreset?: MapStylePeriod;
+  /** Terreng: hill shading + contour lines over the style. */
+  terrain?: boolean;
+  /** Distance of the Mapbox logo and ⓘ from the map's bottom edge, so the
+   *  browse sheet's peek never covers them (Mapbox attribution terms). */
+  ornamentBottom?: number;
   darkBasemap?: boolean;
 }) {
   const paint = pinPaint(pin, darkBasemap);
+  const relief = terrainPaint(darkBasemap);
   const cameraRef = useRef<Camera>(null);
   // The basemap config (POIs off) mounts once the current style has loaded,
-  // and repeats the style's own light preset: the four ThirdPlace styles are
-  // Mapbox Standard with dawn/day/dusk/night presets, and a config without
+  // and repeats the light preset: the ThirdPlace Studio styles and Mapbox
+  // Standard Satellite take dawn/day/dusk/night presets, and a config without
   // lightPreset reset every style to day (the night basemap never showed).
   const [loadedStyle, setLoadedStyle] = useState<string | null>(null);
   const currentStyle = styleURL ?? Mapbox.StyleURL.Street;
@@ -189,6 +210,8 @@ export function MapboxMap({
       style={{ flex: 1 }}
       styleURL={currentStyle}
       scaleBarEnabled={false}
+      logoPosition={{ bottom: ornamentBottom, left: 8 }}
+      attributionPosition={{ bottom: ornamentBottom, left: 92 }}
       // Tap on empty map (a marker tap is consumed by the ShapeSource below and
       // does not fire this) — collapses the sheet + dismisses the keyboard.
       onPress={() => onMapPress?.()}
@@ -196,18 +219,89 @@ export function MapboxMap({
     >
       {/* Hide the basemap's own POI icons/labels (hospital crosses, theatre
           masks …): in the same colours as our pins they competed with them
-          (review M20). The ThirdPlace Studio styles import Mapbox Standard as
-          "basemap"; if a style does not, the config is ignored. */}
+          (review M20). The ThirdPlace Studio styles and Standard Satellite
+          import Mapbox Standard as "basemap"; if a style does not, the
+          config is ignored. Keyed by style + preset: Satellitt keeps one URL
+          for every time of day. */}
       {loadedStyle === currentStyle ? (
         <StyleImport
-          key={currentStyle}
+          key={`${currentStyle}:${lightPreset}`}
           id="basemap"
           existing
           config={{
             showPointOfInterestLabels: false,
-            lightPreset: periodForUrl(currentStyle),
+            lightPreset,
           }}
         />
+      ) : null}
+      {/* Terreng: hill shading and contour lines in the style's bottom slot
+          (above land and water, under roads, labels and our pins). Re-added
+          after every style load, since a new style drops custom layers. */}
+      {loadedStyle === currentStyle && terrain ? (
+        <RasterDemSource
+          key={`dem:${currentStyle}`}
+          id="tp-dem"
+          url={TERRAIN_DEM_URL}
+          tileSize={512}
+          maxZoomLevel={14}
+        >
+          <HillshadeLayer
+            id="tp-hillshade"
+            slot="bottom"
+            style={{
+              hillshadeExaggeration: 0.65,
+              hillshadeShadowColor: relief.hillShadow,
+              hillshadeHighlightColor: relief.hillHighlight,
+              hillshadeAccentColor: relief.hillAccent,
+            }}
+          />
+        </RasterDemSource>
+      ) : null}
+      {loadedStyle === currentStyle && terrain ? (
+        <VectorSource
+          key={`contours:${currentStyle}`}
+          id="tp-contours"
+          url={TERRAIN_VECTOR_URL}
+        >
+          <LineLayer
+            id="tp-contour"
+            sourceLayerID="contour"
+            slot="bottom"
+            minZoomLevel={11}
+            style={{
+              lineColor: relief.contour,
+              lineOpacity: [
+                "case",
+                [">=", ["get", "index"], INDEX_CONTOUR],
+                0.75,
+                0.4,
+              ],
+              lineWidth: [
+                "case",
+                [">=", ["get", "index"], INDEX_CONTOUR],
+                1.1,
+                0.6,
+              ],
+            }}
+          />
+          <SymbolLayer
+            id="tp-contour-label"
+            sourceLayerID="contour"
+            slot="bottom"
+            minZoomLevel={13}
+            filter={[">=", ["get", "index"], INDEX_CONTOUR]}
+            style={{
+              symbolPlacement: "line",
+              textField: ["concat", ["to-string", ["get", "ele"]], " m"],
+              textSize: 10,
+              textColor: relief.labelText,
+              textHaloColor: relief.labelHalo,
+              textHaloWidth: 1,
+              textEmissiveStrength: 1,
+              textMaxAngle: 30,
+            }}
+          />
+        </VectorSource>
       ) : null}
       {/* The native puck follows each style's light preset (it looked
           different on every basemap), so it only reports the position here;
@@ -369,6 +463,8 @@ export function MapboxMap({
             textField: ["get", "point_count_abbreviated"],
             textSize: 12,
             textColor: paint.clusterText,
+            // Self-lit like the bubble, so dusk/night never dims the count.
+            textEmissiveStrength: 1,
             // Always draw the count: label collision dropped it when a pin
             // title ran into the bubble, leaving an empty circle.
             textAllowOverlap: true,

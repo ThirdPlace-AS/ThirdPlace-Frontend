@@ -89,6 +89,13 @@ const mapPalette = {
   velvaere: "#484848",
   labelLight: "#F7F7F7",
   labelHaloDark: "#121212",
+  // Terreng (hill shading + contour lines over the Standard style).
+  hillShadow: "#4A3D30",
+  hillHighlight: "#FFFFFF",
+  hillAccent: "#6B5A48",
+  contour: "#A0825F",
+  contourLabel: "#6E5840",
+  contourLabelNight: "#E8DCCB",
 };
 
 /** Airbnb's primary-button gradient (left → right). White text passes AA

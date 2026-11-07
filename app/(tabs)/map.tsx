@@ -27,7 +27,11 @@ import {
 import { MapFilterSheet } from "@/components/map/MapFilterSheet";
 import { MapLayerSheet } from "@/components/map/MapLayerSheet";
 import { MapLocationSheet } from "@/components/map/MapLocationSheet";
-import { periodForKey, styleUrlFor } from "@/components/map/mapStyles";
+import {
+  basemapFor,
+  DEFAULT_MAP_TYPE,
+  type MapType,
+} from "@/components/map/mapStyles";
 import { StatusBarStyle } from "@/components/ui/StatusBarStyle";
 import type {
   DiscoveryItem,
@@ -78,11 +82,13 @@ export default function MapScreen() {
     selectStyle,
     enableAuto,
   } = useTimeOfDayStyle();
-  // The dusk/night basemaps are dark whatever the app theme, so the status-bar
-  // icons go light over them; the themed SoftMap follows the theme.
-  const darkBasemap =
-    canUseMapbox &&
-    (periodForKey(styleKey) === "night" || periodForKey(styleKey) === "dusk");
+  // Kartlag: map type (Standard / Satellitt / Terreng) x time-of-day style.
+  const [mapType, setMapType] = useState<MapType>(DEFAULT_MAP_TYPE);
+  const basemap = basemapFor(mapType, styleKey);
+  // Satellitt and the dusk/night basemaps are dark whatever the app theme, so
+  // pin titles and status-bar icons go light over them; the themed SoftMap
+  // follows the theme.
+  const darkBasemap = canUseMapbox && basemap.dark;
   // Bumped to force the browse sheet to expand (SoftMap cluster tap).
   const [browseExpand, setBrowseExpand] = useState(0);
 
@@ -306,7 +312,10 @@ export default function MapScreen() {
         onMapPress={handleMapPress}
         onClusterPress={() => setBrowseExpand((n) => n + 1)}
         focusCoord={focusCoord}
-        styleURL={styleUrlFor(styleKey)}
+        styleURL={basemap.url}
+        lightPreset={basemap.period}
+        terrain={basemap.terrain}
+        ornamentBottom={browsePeekClearance + 8}
         darkBasemap={darkBasemap}
         recenterSignal={camera.recenterSignal}
         recenterZoom={camera.recenterZoom}
@@ -474,9 +483,11 @@ export default function MapScreen() {
         visible={layerOpen}
         active={styleKey}
         auto={styleAuto}
+        mapType={mapType}
         onClose={() => setLayerOpen(false)}
         onSelect={selectStyle}
         onEnableAuto={enableAuto}
+        onSelectType={setMapType}
       />
       <MapLocationSheet
         visible={locationOpen}

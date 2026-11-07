@@ -1,18 +1,19 @@
-// Base-map styles for the layer switcher. Raw Mapbox style URLs (the same values
-// the StyleURL enum holds) so this module stays free of the native-only
-// `@rnmapbox/maps` import and can be used by the plain screen/sheet code too.
-// The native MapView accepts a style URL string directly.
+// Base maps for the map tab, on two axes (founder 2026-11-07):
+// - a map TYPE: Standard, Satellitt or Terreng;
+// - a time-of-day STYLE: Daggry, Dag, Skumring, Natt, or Auto (follow the clock).
+// Raw Mapbox style URLs, so this module stays free of the native-only
+// `@rnmapbox/maps` import and plain screen/sheet code can use it.
 //
-// >>> USE YOUR OWN MAPBOX STYLES <<<
-// Replace each `url` below with one of YOUR Mapbox Studio styles
-// (`mapbox://styles/<your-username>/<your-style-id>`), and rename `key`/`label`
-// to taste. Add or remove entries freely — the layer sheet and the type derive
-// from this array. The FIRST entry is the default map. Your public token
-// (EXPO_PUBLIC_MAPBOX_TOKEN, pk.*) must have access to these styles.
+// Standard and Terreng use ThirdPlace's own Mapbox Studio styles below: Mapbox
+// Standard with one light preset each (`/draft` revisions; publish them before
+// production). Satellitt is Mapbox's public Standard Satellite style, which
+// takes the same `basemap` config (light preset, POI labels). Terreng adds hill
+// shading and contour lines on top of the Studio style (MapboxMap).
+// The public token (EXPO_PUBLIC_MAPBOX_TOKEN, pk.*) must be able to read them.
 
 // Time-of-day period a style represents. Drives the auto (follow-the-clock)
 // base-map switch. Tagged explicitly on each entry below — do NOT infer it from
-// the label or array order, since the header invites renaming/reordering.
+// the label or array order.
 export type MapStylePeriod = "dawn" | "day" | "dusk" | "night";
 
 export const MAP_STYLES = [
@@ -51,11 +52,6 @@ export const MAP_STYLES = [
 // Key union derived from the array above, so changing the styles stays type-safe.
 export type MapStyleKey = (typeof MAP_STYLES)[number]["key"];
 
-/** Period of a style URL (default: day for any URL not in MAP_STYLES). */
-export function periodForUrl(url: string | undefined): MapStylePeriod {
-  return MAP_STYLES.find((s) => s.url === url)?.period ?? "day";
-}
-
 export function periodForKey(key: MapStyleKey): MapStylePeriod {
   return (MAP_STYLES.find((s) => s.key === key) ?? MAP_STYLES[0]).period;
 }
@@ -85,4 +81,44 @@ export function styleKeyForHour(hour: number): MapStyleKey {
 export function autoStyleKey(hour: number, dark: boolean): MapStyleKey {
   if (!dark) return styleKeyForHour(hour);
   return (MAP_STYLES.find((s) => s.period === "night") ?? MAP_STYLES[0]).key;
+}
+
+// ---- Map type (Karttype) ----
+
+export const MAP_TYPES = [
+  { key: "standard", label: "Standard" },
+  { key: "satellite", label: "Satellitt" },
+  { key: "terrain", label: "Terreng" },
+] as const;
+
+export type MapType = (typeof MAP_TYPES)[number]["key"];
+
+export const DEFAULT_MAP_TYPE: MapType = "standard";
+
+export const STANDARD_SATELLITE_URL =
+  "mapbox://styles/mapbox/standard-satellite";
+
+export type Basemap = {
+  url: string;
+  /** Light preset, repeated in the `basemap` import config (MapboxMap). */
+  period: MapStylePeriod;
+  /** Dark under the pins: light pin titles and status-bar icons. */
+  dark: boolean;
+  /** Hill shading and contour lines on top (Terreng). */
+  terrain: boolean;
+};
+
+/** The base map for a type and a time-of-day style. */
+export function basemapFor(type: MapType, key: MapStyleKey): Basemap {
+  const period = periodForKey(key);
+  if (type === "satellite") {
+    // Imagery is mid-to-dark at every hour, so the pins get the dark-map paint.
+    return { url: STANDARD_SATELLITE_URL, period, dark: true, terrain: false };
+  }
+  return {
+    url: styleUrlFor(key),
+    period,
+    dark: period === "dusk" || period === "night",
+    terrain: type === "terrain",
+  };
 }

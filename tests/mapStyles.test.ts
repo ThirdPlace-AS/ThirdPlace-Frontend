@@ -2,11 +2,14 @@ import { describe, expect, it } from "@jest/globals";
 
 import {
   autoStyleKey,
+  basemapFor,
   MAP_STYLES,
+  MAP_TYPES,
   periodForHour,
-  periodForUrl,
+  STANDARD_SATELLITE_URL,
   styleKeyForHour,
 } from "@/components/map/mapStyles";
+import { terrainPaint } from "@/components/map/terrainStyle";
 
 describe("periodForHour", () => {
   it("maps band boundaries", () => {
@@ -52,10 +55,50 @@ describe("autoStyleKey", () => {
   });
 });
 
-describe("periodForUrl (basemap config repeats the style's light preset)", () => {
-  it("maps each ThirdPlace style URL to its period, unknown URLs to day", () => {
-    for (const s of MAP_STYLES) expect(periodForUrl(s.url)).toBe(s.period);
-    expect(periodForUrl("mapbox://styles/mapbox/streets-v12")).toBe("day");
-    expect(periodForUrl(undefined)).toBe("day");
+describe("Karttype (founder 2026-11-07)", () => {
+  it("offers Standard, Satellitt and Terreng in that order", () => {
+    expect(MAP_TYPES.map((t) => t.label)).toEqual([
+      "Standard",
+      "Satellitt",
+      "Terreng",
+    ]);
+  });
+
+  it("Standard is the Studio style with its own light preset", () => {
+    for (const s of MAP_STYLES) {
+      const b = basemapFor("standard", s.key);
+      expect(b.url).toBe(s.url);
+      expect(b.period).toBe(s.period);
+      expect(b.terrain).toBe(false);
+      expect(b.dark).toBe(s.period === "dusk" || s.period === "night");
+    }
+  });
+
+  it("Satellitt keeps one style URL, takes the preset and is always dark", () => {
+    for (const s of MAP_STYLES) {
+      const b = basemapFor("satellite", s.key);
+      expect(b.url).toBe(STANDARD_SATELLITE_URL);
+      expect(b.period).toBe(s.period);
+      expect(b.dark).toBe(true);
+      expect(b.terrain).toBe(false);
+    }
+  });
+
+  it("Terreng is the Studio style with relief on top", () => {
+    for (const s of MAP_STYLES) {
+      const b = basemapFor("terrain", s.key);
+      expect(b.url).toBe(s.url);
+      expect(b.period).toBe(s.period);
+      expect(b.terrain).toBe(true);
+      expect(b.dark).toBe(s.period === "dusk" || s.period === "night");
+    }
+  });
+
+  it("contour labels turn light on a dark halo over a dark map", () => {
+    const day = terrainPaint(false);
+    const night = terrainPaint(true);
+    expect(night.labelText).not.toBe(day.labelText);
+    expect(night.labelHalo).not.toBe(day.labelHalo);
+    for (const v of Object.values(day)) expect(v).toMatch(/^#[0-9A-F]{6}$/i);
   });
 });

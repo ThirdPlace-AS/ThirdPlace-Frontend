@@ -5,6 +5,7 @@ import { Platform, Pressable, View } from "react-native";
 import { env } from "@/lib/env";
 import { elevation, palette } from "@/theme";
 
+import type { MapStylePeriod } from "./mapStyles";
 import { clusterByGrid, projectToUnit } from "./services/softClustering";
 import type { DiscoveryItem } from "./types/mapPresentation";
 import { markerPaint } from "./pinStyle";
@@ -45,10 +46,16 @@ type MapProps = {
   // Coordinate of the selected marker to pan/center the camera onto (above the
   // detail sheet), Google-Maps style. SoftMap ignores it.
   focusCoord?: [number, number] | null;
-  // Mapbox base-map style URL (layer switcher). SoftMap ignores it.
+  // Mapbox base-map style URL (Kartlag). SoftMap ignores it.
   styleURL?: string;
-  // True while the native basemap is in its dusk/night style: clusters flip
-  // to white so they stay visible (pinStyle.ts). SoftMap follows the theme.
+  // Kartstil light preset and Terreng overlays (Kartlag). SoftMap ignores them.
+  lightPreset?: MapStylePeriod;
+  terrain?: boolean;
+  // Bottom offset of the Mapbox logo + ⓘ (above the browse peek).
+  ornamentBottom?: number;
+  // True while the native basemap is dark (Satellitt, dusk, night): clusters
+  // and titles flip so they stay visible (pinStyle.ts). SoftMap follows the
+  // theme.
   darkBasemap?: boolean;
 };
 
@@ -286,6 +293,9 @@ export function MapCanvas({
   onClusterPress,
   focusCoord,
   styleURL,
+  lightPreset,
+  terrain,
+  ornamentBottom,
   darkBasemap = false,
   height = 160,
   fill = false,
@@ -312,6 +322,9 @@ export function MapCanvas({
           onMapPress={onMapPress}
           focusCoord={focusCoord}
           styleURL={styleURL}
+          lightPreset={lightPreset}
+          terrain={terrain}
+          ornamentBottom={ornamentBottom}
           darkBasemap={darkBasemap}
         />
       ) : (

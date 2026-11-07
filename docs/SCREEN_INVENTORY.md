@@ -307,3 +307,9 @@ The founder sent a screenshot of another map app's layer sheet and asked for Kar
 ### Missing-screen audit (2026-11-07)
 
 Every screen named on PDF p1–p28 was checked against the code by its title. Built in this phase: Marketplace-analyse (p18, 0261) and the p18 collaboration history. Completed: Personvern now carries p21's "Datadeling" (Del aktivitet med venner, Personalisert innhold, Analytiske data; no hints, since what each changes is not specified; "Vis profilen for alle" and "Vis på kartet" are the existing Synlighet rows), and check-in at the place reads p7's "Du er fremme!" (0262; p7's "verifisert-merket" line is a rule and is left out). Left out on purpose: p24 "Fullfører betaling …" and "Du er med!" (a card number and a processing step; payments are structure only and no processing → success flow is shown), the p21 "Personvernerklæring" link (no statement text exists), and p25's separate "Velg dato og tid" picker (Legg til picks date and time inline).
+
+## Phase 15 (2026-11-07)
+
+### Founder decision: Karttype in Kartlag
+
+The founder asked for a choice between satellite, terrain and the standard map. Kartlag now has a "Karttype" section above "Kartstil" with three preview tiles: Standard (the map as before), Satellitt (Mapbox Standard Satellite: imagery with road and place names; shop and POI icons stay hidden as on Standard) and Terreng (our map with hill shading and contour lines with metre labels). Kartstil (Auto, Daggry, Dag, Skumring, Natt) works with every type, night included. A pick no longer closes the sheet, so both can be chosen in one go; ✕, the scrim or back close it. This supersedes ledger 0260's note that no map-content toggles were added. The spec says nothing about base maps (it asks for Mapbox attribution, BP L153): the Mapbox logo and ⓘ now sit above the browse sheet's peek, and the sheet credits the preview sources.
