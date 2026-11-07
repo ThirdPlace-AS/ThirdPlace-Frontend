@@ -165,6 +165,8 @@ UI-only suggestions, ordered by how much they close the gap to the leaders for a
 
 Needs a decision first: who's going (faces), friends on the map, light waves, message requests (privacy rules); add to calendar (native module and a rebuild).
 
+**Status (Phase 16, 7 November 2026):** the founder chose to build items 1–5, add to calendar, and who's going with an opt-in per person; all are built (ledger 0275–0280, APP_REVIEW §17). Still open: friends on the map, light waves, message requests, polls, co-hosts, the Legg til preview card and "Folk du har møtt".
+
 ## Sources
 
 - Airbnb, [Introducing social features for Airbnb Experiences](https://news.airbnb.com/introducing-social-features-for-airbnb-experiences) and [2025 Summer Release](https://news.airbnb.com/airbnb-2025-summer-release).

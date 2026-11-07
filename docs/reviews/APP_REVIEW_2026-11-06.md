@@ -653,3 +653,44 @@ Needs a decision first: who's going (faces), friends on the map, light waves, me
 ![Opplevelse, Varsler, Lagret, Mine planer, Oppdag folk](img/bench_sections_2.png)
 
 ![Marketplace, Workspace, Innstillinger, Kartlag](img/bench_sections_3.png)
+
+## 17. Addendum: Phase 16, the section-benchmark suggestions built (7 November 2026)
+
+The founder asked for the Legg til button to turn grey when another tab is open, and for each section to be compared with the leading apps in its field (§16). From that comparison the founder chose to build the four UI groups, "add to calendar" (a new native module, so the dev client was rebuilt), and who's going with an opt-in per person, like Airbnb.
+
+| What                 | What changed                                                                                                                                                                                                                                                                                                                                                                                                                                            | Commit · ledger |
+| -------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------- |
+| Legg til grey        | The centre button is grey like the other idle tabs while another tab is open; its colours come back when Legg til is open.                                                                                                                                                                                                                                                                                                                              | db44ce6 · 0273  |
+| Section benchmark    | §16 and `docs/reviews/SECTION_BENCHMARK_2026-11-07.md`: each section against two or three leading apps, with what to build and what needs a decision.                                                                                                                                                                                                                                                                                                   | 1e1039a · 0274  |
+| Chat                 | Long-press a message for a reaction row and "Svar"; swipe a message right to reply with a quote; the Chat tab counts the chats with unread messages, and opening a chat reads it.                                                                                                                                                                                                                                                                       | 5811183 · 0275  |
+| Map and directions   | "Søk i dette området" after a pan or pinch: the pins, the browse list, its count and Filtre's "Vis N resultater" follow the part of the map between the top controls and the browse peek; an empty area offers "Vis alle". "Veibeskrivelse" on places, in the map's place sheet and at "Hvor vi møtes" opens the phone's maps app. On the way the map became north up and flat (the Studio styles carried a saved camera, bearing 13.6° and pitch 14°). | a06c99e · 0276  |
+| Plans and Varsler    | Countdown chips ("I kveld", "I dag", "I morgen", "Om 4 dager") on upcoming plans and Profil's Neste plan; Varsler under "I dag" / "Denne uka" / "Tidligere", with "Følg tilbake" on follow notices.                                                                                                                                                                                                                                                     | 48cca29 · 0277  |
+| Create, swipe, hosts | "Start fra en tidligere opplevelse" fills a new experience from one you host, except the time; a one-time "Slik sveiper du" card on Sveip, remembered by the phone; "I dag" on the workspace hub (today's times, the next 7 days, the listing waitlists).                                                                                                                                                                                               | a30c119 · 0278  |
+| Who's going          | A face only for people who chose "Vis meg som deltaker" (a new Personvern switch, off by default); "N skal" counts everyone. On the Sveip card, the map's browse card and the join card, all following your own join; "Se deltakere" names the host and the people who opted in, then "og N andre".                                                                                                                                                     | 2c64f8c · 0279  |
+| Add to calendar      | "Legg til i kalender" on the experience page (the chosen time) and on upcoming plans opens the phone's calendar app with the title, time, meeting point and link filled in; the app asks for no calendar permission.                                                                                                                                                                                                                                    | 81ddb58 · 0280  |
+
+**Still open from §16** (each needs a decision or the contract): friends on the map and "light waves" (privacy rules), message requests, polls and co-hosts, a "Slik ser det ut" preview card in Legg til, and "Folk du har møtt" (attendance).
+
+**Chat: the unread count on the tab, a reaction row with "Svar", a reply with its quote:**
+
+![Chat badge, reactions, reply](img/p16_chat.png)
+
+**Søk i dette området: the pill after a pan, 2 treff in the area, an empty area, Veibeskrivelse on a place:**
+
+![Search this area and directions](img/p16_map.png)
+
+**Mine planer and Neste plan count down; Varsler by day, before and after "Følg tilbake":**
+
+![Plans and Varsler](img/p16_plans.png)
+
+**Start from a past experience, the filled step, the Sveip hint, "I dag" on the hub:**
+
+![Create, swipe hint, hub](img/p16_create.png)
+
+**Who's going: the Sveip card, the Personvern switch, joined with my face first, Se deltakere:**
+
+![Who's going](img/p16_going.png)
+
+**Legg til i kalender, next to "Se alle tider" (on the emulator the calendar app asks for a Google account before it shows the filled-in event):**
+
+![Add to calendar](img/p16_calendar.png)
