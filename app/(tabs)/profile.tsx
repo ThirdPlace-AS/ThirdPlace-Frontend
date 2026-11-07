@@ -4,6 +4,7 @@ import { useState } from "react";
 import { ScrollView, View } from "react-native";
 
 import { Button } from "@/components/Button";
+import { CountdownChip, planCountdown } from "@/components/CountdownChip";
 import {
   Header,
   Icon,
@@ -216,11 +217,13 @@ function Stat({
 
 // "Neste plan" (approved addition, 2026-11-06): the first upcoming plan from
 // the same fixture Mine planer reads (no second attendance truth, spec §11),
-// with its "when" label as written: no countdown, no reminder copy.
+// with its "when" label as written. Phase 16 (founder, after the section
+// benchmark) adds the countdown chip from Mine planer; still no reminder copy.
 function NextPlanCard() {
   const next = profile.plans.find((p) => p.state === "upcoming");
   const exp = next ? experienceById(next.experienceId) : undefined;
   if (!exp) return null;
+  const countdown = planCountdown(exp);
   return (
     <View className="gap-2">
       <View className="flex-row items-center justify-between">
@@ -241,6 +244,9 @@ function NextPlanCard() {
         variant="card"
         title={exp.title}
         subtitle={exp.when}
+        accessibilityLabel={`Neste plan: ${exp.title}, ${exp.when}${
+          countdown ? `, ${countdown.toLowerCase()}` : ""
+        }`}
         leading={
           <Image
             source={smallImage(exp.photos[0])}
@@ -249,7 +255,7 @@ function NextPlanCard() {
             accessible={false}
           />
         }
-        trailing={null}
+        trailing={<CountdownChip exp={exp} />}
         onPress={() => router.push(`/experience/${exp.id}` as Href)}
       />
     </View>

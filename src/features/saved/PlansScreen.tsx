@@ -5,6 +5,7 @@ import { FlatList, Pressable, ScrollView, View } from "react-native";
 import { RateSheet, SpotOfferSheet } from "@/components/actions/ActionSheets";
 import { Pressable as UIPressable, Screen, Text } from "@/components/ui";
 import { Chip } from "@/components/Chip";
+import { CountdownChip, planCountdown } from "@/components/CountdownChip";
 import { RouteHeader } from "@/components/RouteHeader";
 import { EmptyState } from "@/components/states/StateView";
 import {
@@ -81,20 +82,28 @@ export default function PlansScreen() {
         renderItem={({ item }) => {
           const exp = experienceById(item.experienceId);
           if (!exp) return null;
+          // Upcoming plans count down (Phase 16): "I morgen", "Om 4 dager".
+          const countdown =
+            item.state === "upcoming" ? planCountdown(exp) : null;
           return (
             <View className="gap-0.5 rounded-lg border border-line bg-surface p-3.5">
               {/* Title + meta open the experience page; the plan
                   actions below stay separate buttons. */}
               <UIPressable
                 accessibilityRole="link"
-                accessibilityLabel={`${exp.title}, ${exp.when}`}
+                accessibilityLabel={`${exp.title}, ${exp.when}${
+                  countdown ? `, ${countdown.toLowerCase()}` : ""
+                }`}
                 onPress={() => router.push(`/experience/${exp.id}` as Href)}
                 pressedScale={0.99}
                 contentClassName="gap-0.5"
               >
-                <Text variant="body" weight="semibold">
-                  {exp.title}
-                </Text>
+                <View className="flex-row items-start gap-2">
+                  <Text variant="body" weight="semibold" className="flex-1">
+                    {exp.title}
+                  </Text>
+                  {countdown ? <CountdownChip exp={exp} /> : null}
+                </View>
                 <Text variant="caption" tone="muted">
                   {exp.when} · {item.note}
                 </Text>

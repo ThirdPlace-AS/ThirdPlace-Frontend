@@ -81,3 +81,20 @@ export function shortSessionLabel(d: Date, now: Date): string {
   const day = (DAYS[d.getDay()] ?? "").slice(0, 3);
   return `${day}. ${d.getDate()}. ${MONTHS_SHORT[d.getMonth()]} ${clock(d)}`;
 }
+
+function startOfDay(d: Date) {
+  return new Date(d.getFullYear(), d.getMonth(), d.getDate());
+}
+
+/** Countdown for a plan (Phase 16, after the section benchmark): "I kveld"
+ *  (today from 17:00), "I dag", "I morgen", "Om 3 dager". Null once it has
+ *  started. Calendar days, so 23:00 tonight → 08:00 tomorrow is "I morgen". */
+export function countdownLabel(start: Date, now: Date): string | null {
+  if (start.getTime() <= now.getTime()) return null;
+  const days = Math.round(
+    (startOfDay(start).getTime() - startOfDay(now).getTime()) / 86_400_000,
+  );
+  if (days === 0) return start.getHours() >= 17 ? "I kveld" : "I dag";
+  if (days === 1) return "I morgen";
+  return `Om ${days} dager`;
+}
