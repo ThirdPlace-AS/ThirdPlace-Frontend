@@ -19,6 +19,7 @@ import {
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { Button } from "@/components/Button";
+import { AddToCalendarLink } from "@/components/AddToCalendarLink";
 import { DirectionsButton } from "@/components/DirectionsButton";
 import { useGuestMode } from "@/components/map/hooks/useGuestMode";
 import { SignInPrompt } from "@/components/SignInPrompt";
@@ -266,16 +267,24 @@ export function AvailabilitySection({ exp }: { exp: MockExperience }) {
           );
         })}
       </ScrollView>
-      <Pressable
-        accessibilityRole="button"
-        onPress={() => setSheetAt(chosenId ?? sessions[0]?.id ?? null)}
-        hitSlop={8}
-        className="self-start"
-      >
-        <Text variant="label" weight="semibold" className="underline">
-          Se alle tider
-        </Text>
-      </Pressable>
+      <View className="flex-row flex-wrap items-center gap-x-6 gap-y-2">
+        <Pressable
+          accessibilityRole="button"
+          onPress={() => setSheetAt(chosenId ?? sessions[0]?.id ?? null)}
+          hitSlop={8}
+          className="self-start"
+        >
+          <Text variant="label" weight="semibold" className="underline">
+            Se alle tider
+          </Text>
+        </Pressable>
+        {/* Phase 16: the chosen time (or the next one) in the phone's
+            calendar app. */}
+        <AddToCalendarLink
+          exp={exp}
+          session={sessions.find((s) => s.id === chosenId) ?? sessions[0]}
+        />
+      </View>
       <SessionSheet
         exp={exp}
         sessions={sessions}

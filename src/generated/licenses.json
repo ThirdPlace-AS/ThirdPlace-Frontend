@@ -435,6 +435,17 @@
       "shared": false
     },
     {
+      "name": "expo-calendar",
+      "version": "57.0.6",
+      "license": "MIT",
+      "copyright": [
+        "Copyright (c) 2015-present 650 Industries, Inc. (aka Expo)"
+      ],
+      "author": null,
+      "text": "f1083e4aa4",
+      "shared": false
+    },
+    {
       "name": "expo-constants",
       "version": "57.0.23",
       "license": "MIT",

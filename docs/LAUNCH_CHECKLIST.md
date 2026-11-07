@@ -44,6 +44,6 @@ The master spec asks for these before production (LIB L33736â€“33747, FG L10606â
 
 ## Checks still to run (frontend)
 
-- iOS build and test (not possible on this PC).
+- iOS build and test (not possible on this PC), including "Legg til i kalender" (write-only calendar text on iOS 17+; check what older iOS versions ask).
 - Real phones: compass heading, haptics, real GPS, 60 fps, TalkBack and VoiceOver.
 - Dependency alerts on the repo (Dependabot: 25 open, 4 high, at Phase 13; the npm audit task from Phase 13).

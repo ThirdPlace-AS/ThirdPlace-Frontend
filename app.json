@@ -20,7 +20,11 @@
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#FF385C"
-      }
+      },
+      "blockedPermissions": [
+        "android.permission.READ_CALENDAR",
+        "android.permission.WRITE_CALENDAR"
+      ]
     },
     "web": {
       "bundler": "metro",
@@ -41,7 +45,16 @@
           "backgroundColor": "#FF385C"
         }
       ],
-      "@rnmapbox/maps"
+      "@rnmapbox/maps",
+      [
+        "expo-calendar",
+        {
+          "calendarPermission": "ThirdPlace legger opplevelser du velger inn i kalenderen din.",
+          "writeOnlyAccess": true,
+          "writeOnlyCalendarPermission": "ThirdPlace legger opplevelser du velger inn i kalenderen din.",
+          "remindersPermission": false
+        }
+      ]
     ],
     "experiments": {
       "typedRoutes": true

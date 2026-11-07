@@ -5,6 +5,7 @@ import { FlatList, Pressable, ScrollView, View } from "react-native";
 import { RateSheet, SpotOfferSheet } from "@/components/actions/ActionSheets";
 import { Pressable as UIPressable, Screen, Text } from "@/components/ui";
 import { Chip } from "@/components/Chip";
+import { AddToCalendarLink } from "@/components/AddToCalendarLink";
 import { CountdownChip, planCountdown } from "@/components/CountdownChip";
 import { RouteHeader } from "@/components/RouteHeader";
 import { EmptyState } from "@/components/states/StateView";
@@ -12,6 +13,7 @@ import {
   chatForExperience,
   experienceById,
   profile,
+  sessionsFor,
   type MockPlanState,
 } from "@/fixtures";
 import { Illustration } from "@/components/illustrations/Illustration";
@@ -127,12 +129,29 @@ export default function PlansScreen() {
               {item.state === "upcoming"
                 ? (() => {
                     const chat = chatForExperience(exp.id);
-                    return chat ? (
-                      <PlanAction
-                        label="Til samtalen"
-                        onPress={() => router.push(`/chat/${chat.id}` as Href)}
-                      />
-                    ) : null;
+                    const now = new Date();
+                    const next = sessionsFor(exp, now).find(
+                      (s) => s.start.getTime() > now.getTime(),
+                    );
+                    return (
+                      <View className="flex-row flex-wrap gap-x-5">
+                        {chat ? (
+                          <PlanAction
+                            label="Til samtalen"
+                            onPress={() =>
+                              router.push(`/chat/${chat.id}` as Href)
+                            }
+                          />
+                        ) : null}
+                        {/* Phase 16: the plan's next time in the phone's
+                            calendar app. */}
+                        <AddToCalendarLink
+                          exp={exp}
+                          session={next}
+                          tone="ember"
+                        />
+                      </View>
+                    );
                   })()
                 : null}
             </View>
