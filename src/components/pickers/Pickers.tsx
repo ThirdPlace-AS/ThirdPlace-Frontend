@@ -14,7 +14,7 @@ import {
 } from "@/components/illustrations/CategoryArt";
 import { Sheet } from "@/components/Sheet";
 import { people, places, type MockPerson, type MockPlace } from "@/fixtures";
-import { libImage } from "@/fixtures/images";
+import { libThumb } from "@/fixtures/images";
 
 // Shared pickers (PDF p24–p25): Velg sted, Velg kategori, Søk brukere. Search
 // over fixture data only — no geocoding or user directory exists
@@ -176,7 +176,7 @@ export function UserSearch({
             pressedScale={0.99}
           >
             <Image
-              source={libImage(p.avatar)}
+              source={libThumb(p.avatar)}
               style={{ height: 36, width: 36, borderRadius: 18 }}
             />
             <View className="flex-1">

@@ -24,7 +24,12 @@ import { tagIcon } from "@/components/swipe/SwipeCard";
 import { showToastAfterSheet } from "@/components/Toast";
 import { confirmToast } from "@/copy";
 import { experienceById, placeById, profile } from "@/fixtures";
-import { coverForPlace, libImage } from "@/fixtures/images";
+import {
+  coverForPlace,
+  libImage,
+  libThumb,
+  smallImage,
+} from "@/fixtures/images";
 
 type Tab = "experiences" | "places" | "reviews";
 const TABS: { key: Tab; label: string }[] = [
@@ -211,7 +216,7 @@ function NextPlanCard() {
         subtitle={exp.when}
         leading={
           <Image
-            source={exp.photos[0]}
+            source={smallImage(exp.photos[0])}
             contentFit="cover"
             style={{ height: 44, width: 44, borderRadius: 10 }}
             accessible={false}
@@ -360,7 +365,7 @@ function PlacesList() {
             subtitle={`${place.category} · ${v.when}`}
             leading={
               <Image
-                source={libImage(coverForPlace(place))}
+                source={libThumb(coverForPlace(place))}
                 contentFit="cover"
                 transition={150}
                 style={{ height: 40, width: 40, borderRadius: 8 }}

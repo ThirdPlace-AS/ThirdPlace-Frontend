@@ -24,7 +24,7 @@ import {
   type MockListing,
   type MockListingType,
 } from "@/fixtures";
-import { libImage } from "@/fixtures/images";
+import { libImage, libThumb } from "@/fixtures/images";
 import { Gallery } from "@/components/map/Gallery";
 import { gutterPx, useThemeColors } from "@/theme";
 
@@ -238,7 +238,7 @@ function ListingCard({
       pressedScale={0.99}
     >
       <Image
-        source={libImage(listing.cover)}
+        source={libThumb(listing.cover)}
         contentFit="cover"
         transition={150}
         style={{ height: 88, width: 88, borderRadius: 12 }}

@@ -11,7 +11,7 @@ import { EmptyState } from "@/components/states/StateView";
 import { useMapSaved } from "@/components/map/hooks/useMapSaved";
 import { useGuestMode } from "@/components/map/hooks/useGuestMode";
 import { businessById, experienceById, placeById } from "@/fixtures";
-import { coverForPlace, libImage } from "@/fixtures/images";
+import { coverForPlace, libThumb } from "@/fixtures/images";
 import { Illustration } from "@/components/illustrations/Illustration";
 import { formatRating } from "@/lib/format";
 
@@ -165,7 +165,7 @@ export default function SavedScreen() {
               leading={
                 place ? (
                   <Image
-                    source={libImage(coverForPlace(place))}
+                    source={libThumb(coverForPlace(place))}
                     contentFit="cover"
                     style={{ height: 48, width: 48, borderRadius: 10 }}
                     accessible={false}

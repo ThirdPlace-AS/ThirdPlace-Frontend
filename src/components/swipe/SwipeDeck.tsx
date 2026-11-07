@@ -112,13 +112,13 @@ export function SwipeDeck() {
   // actual title row instead of a brittle magic offset (F11).
   const [arrowY, setArrowY] = useState<number | null>(null);
 
-  // Preload only the photos that can appear next — the current card + the one
-  // behind it — instead of blocking the first paint on decoding every card's
-  // images (F10). The deck renders immediately; PhotoCarousel shows a neutral
-  // backdrop for the beat before a photo decodes.
+  // Preload only the photos that can appear next — the current card and the
+  // two behind it (H0b) — instead of blocking the first paint on decoding
+  // every card's images (F10). The deck renders immediately; PhotoCarousel
+  // paints each photo's blurred preview until the file has decoded.
   useEffect(() => {
     const mods = deck.window
-      .slice(0, 2)
+      .slice(0, 3)
       .flatMap((e) => e.photos) as unknown as number[];
     if (mods.length) Asset.loadAsync(mods).catch(() => {});
     // eslint-disable-next-line react-hooks/exhaustive-deps

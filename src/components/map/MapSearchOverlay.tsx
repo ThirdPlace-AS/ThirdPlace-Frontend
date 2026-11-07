@@ -13,7 +13,7 @@ import {
 } from "@/components/ui";
 import { Chip } from "@/components/Chip";
 import { experienceById, placeById } from "@/fixtures";
-import { coverForPlace, libImage } from "@/fixtures/images";
+import { coverForPlace, libThumb, smallImage } from "@/fixtures/images";
 import { SearchBar } from "@/components/SearchBar";
 
 import { useRecentSearches } from "./hooks/useRecentSearches";
@@ -305,7 +305,9 @@ function RecentlyViewed({
       {viewed.map((v) => {
         const place = v.kind === "place" ? placeById(v.id) : undefined;
         const exp = v.kind === "experience" ? experienceById(v.id) : undefined;
-        const src = place ? libImage(coverForPlace(place)) : exp?.photos[0];
+        const src = place
+          ? libThumb(coverForPlace(place))
+          : exp?.photos[0] && smallImage(exp.photos[0]);
         return (
           <UIPressable
             key={`${v.kind}:${v.id}`}

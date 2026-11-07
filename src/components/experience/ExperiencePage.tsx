@@ -182,6 +182,7 @@ export function ExperiencePage({
                 pressedScale={0.98}
               >
                 <LoadingImage
+                  thumb
                   source={e.photos[0]}
                   contentFit="cover"
                   transition={150}

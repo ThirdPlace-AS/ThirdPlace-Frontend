@@ -1,6 +1,8 @@
 // Avatar (docs/design/DESIGN_SYSTEM.md §4) — photo or initials in a circle,
 // token sizes only. `name` gives the accessible label and the initials fallback.
 import { Image, type ImageProps } from "expo-image";
+
+import { imagePreview, smallImage } from "@/fixtures/images";
 import { View } from "react-native";
 
 import type { IconSize } from "@/theme";
@@ -77,7 +79,11 @@ export function Avatar({
     >
       {source ? (
         <Image
-          source={source}
+          // Avatars are small: the ≤256 px portrait file, blurred preview first.
+          source={smallImage(source)}
+          placeholder={imagePreview(source)}
+          placeholderContentFit="cover"
+          cachePolicy="memory-disk"
           contentFit="cover"
           // Faces sit in the upper part of portrait photos; a centred crop
           // of a full-body shot shrank the face to a dot.

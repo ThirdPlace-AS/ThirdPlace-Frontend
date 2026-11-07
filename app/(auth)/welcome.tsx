@@ -7,11 +7,11 @@ import { StatusBarStyle } from "@/components/ui/StatusBarStyle";
 import { Button } from "@/components/Button";
 import { LogoMark } from "@/components/Logo";
 import { useGuestMode } from "@/components/map/hooks/useGuestMode";
-import { libImage } from "@/fixtures/images";
+import { imagePreview, swipeImage } from "@/fixtures/images";
 import { resetTo } from "@/lib/navigation";
 import { Text } from "@/components/ui";
 
-// Welcome (PDF p1): a full-bleed venue photo with the ThirdPlace mark, and a
+// Welcome (PDF p1): a full-bleed café photo with the ThirdPlace mark, and a
 // bottom card — "Velkommen hjem", the pitch, "Kom i gang" (→ register),
 // "Fortsett som gjest" and "Allerede medlem? Logg inn". The photo is bundled
 // sample art (no media contract).
@@ -21,7 +21,11 @@ export default function Welcome() {
     <View className="flex-1 bg-ink">
       <StatusBarStyle style="light" />
       <Image
-        source={libImage("venue-cafe")}
+        // A portrait photo: the landscape venue shot was stretched ~3× to
+        // fill the screen and looked soft.
+        source={swipeImage("e1-1")}
+        placeholder={imagePreview(swipeImage("e1-1"))}
+        placeholderContentFit="cover"
         contentFit="cover"
         style={{ position: "absolute", top: 0, right: 0, bottom: 0, left: 0 }}
         accessibilityIgnoresInvertColors

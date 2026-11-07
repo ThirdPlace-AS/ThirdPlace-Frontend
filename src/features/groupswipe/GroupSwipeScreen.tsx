@@ -37,7 +37,7 @@ import {
   type MockExperience,
   type MockPerson,
 } from "@/fixtures";
-import { libImage } from "@/fixtures/images";
+import { libImage, libThumb } from "@/fixtures/images";
 
 type Phase = "setup" | "lobby" | "swipe" | "match";
 
@@ -167,7 +167,7 @@ export default function GroupSwipeScreen() {
                       className={`rounded-full border-2 p-0.5 ${on ? "border-ink" : "border-transparent"}`}
                     >
                       <Image
-                        source={libImage(p.avatar)}
+                        source={libThumb(p.avatar)}
                         style={{ height: 48, width: 48, borderRadius: 24 }}
                       />
                       {on ? (

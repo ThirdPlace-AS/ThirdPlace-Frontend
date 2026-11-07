@@ -1,14 +1,15 @@
+import { Image } from "expo-image";
 import { useState } from "react";
 import { media } from "@/theme";
 import {
   ActivityIndicator,
-  Image,
   Pressable,
   StyleSheet,
   View,
   type ImageSourcePropType,
 } from "react-native";
 
+import { imagePreview } from "@/fixtures/images";
 import { useLoadPhase } from "@/hooks/useLoadPhase";
 
 // Full-bleed photo carousel for a swipe card. Tinder-style: segmented progress
@@ -77,10 +78,17 @@ export function PhotoCarousel({
           <ActivityIndicator color={media.onMedia} />
         </View>
       ) : null}
+      {/* expo-image: the blurred preview paints at once, decoded photos stay
+          in memory (the deck re-shows the same cards), and the top card's
+          photo loads first. */}
       <Image
         source={photos[idx]}
-        resizeMode="cover"
-        className="w-full h-full"
+        placeholder={imagePreview(photos[idx])}
+        placeholderContentFit="cover"
+        contentFit="cover"
+        cachePolicy="memory-disk"
+        priority={interactive ? "high" : "normal"}
+        style={StyleSheet.absoluteFill}
         accessibilityIgnoresInvertColors
         onLoad={() => setLoaded(photos[idx] ?? null)}
       />

@@ -28,7 +28,7 @@ import { experiences, PERSONAS, type MockPersonaKey } from "@/fixtures";
 import { checkBirthday, formatBirthdayInput } from "@/features/onboarding/age";
 import { UnderageScreen } from "@/features/onboarding/UnderageScreen";
 import { resetTo } from "@/lib/navigation";
-import { libImage } from "@/fixtures/images";
+import { libThumb } from "@/fixtures/images";
 import { showToast } from "@/components/Toast";
 import { confirmToast } from "@/copy";
 
@@ -284,7 +284,7 @@ export default function Onboarding() {
                   <View className="h-24 w-24 items-center justify-center overflow-hidden rounded-full bg-surfaceMuted">
                     {photo ? (
                       <Image
-                        source={libImage("person-ola")}
+                        source={libThumb("person-ola")}
                         contentFit="cover"
                         style={{ width: 96, height: 96 }}
                       />

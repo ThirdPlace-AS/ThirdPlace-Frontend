@@ -8,7 +8,7 @@
 
 import type { ImageSourcePropType } from "react-native";
 
-import type { LibraryKey } from "./images";
+import { swipeImage, type LibraryKey } from "./images";
 
 export const PLACE_CATEGORIES = [
   "Alle",
@@ -832,10 +832,7 @@ export const experiences: MockExperience[] = [
     about: "Uformell morgenkaffe for alle. Bare å møte opp.",
     // Each card carries only its OWN two on-theme photos (MOCK demo art, no
     // canonical media contract); `scrims` is parallel to `photos`.
-    photos: [
-      require("../../assets/swipe/e1-1.jpg"),
-      require("../../assets/swipe/e1-2.jpg"),
-    ],
+    photos: [swipeImage("e1-1"), swipeImage("e1-2")],
     scrims: ["#28241E", "#221F19"],
   },
   {
@@ -851,10 +848,7 @@ export const experiences: MockExperience[] = [
     day: "Helg",
     tags: ["Bøker", "Diskusjon"],
     about: "Månedlig lesesirkel. Denne gang nordisk krim.",
-    photos: [
-      require("../../assets/swipe/e2-1.jpg"),
-      require("../../assets/swipe/e2-2.jpg"),
-    ],
+    photos: [swipeImage("e2-1"), swipeImage("e2-2")],
     scrims: ["#422F17", "#3B2F29"],
   },
   {
@@ -870,10 +864,7 @@ export const experiences: MockExperience[] = [
     day: "Denne uka",
     tags: ["Vin", "Smaking"],
     about: "Guidet smaking av fem naturviner med småretter.",
-    photos: [
-      require("../../assets/swipe/e3-1.jpg"),
-      require("../../assets/swipe/e3-2.jpg"),
-    ],
+    photos: [swipeImage("e3-1"), swipeImage("e3-2")],
     scrims: ["#38312F", "#222327"],
   },
   {
@@ -889,10 +880,7 @@ export const experiences: MockExperience[] = [
     day: "Denne uka",
     tags: ["Trening", "Løping"],
     about: "Rolig fellesjogg på 5 km. Alle tempo velkommen.",
-    photos: [
-      require("../../assets/swipe/e4-1.jpg"),
-      require("../../assets/swipe/e4-2.jpg"),
-    ],
+    photos: [swipeImage("e4-1"), swipeImage("e4-2")],
     scrims: ["#100A0A", "#302718"],
   },
   {
@@ -909,10 +897,7 @@ export const experiences: MockExperience[] = [
     day: "I morgen",
     tags: ["Spill", "Sosialt"],
     about: "Strategispill og kortspill. Nybegynnere lærer bort.",
-    photos: [
-      require("../../assets/swipe/e5-1.jpg"),
-      require("../../assets/swipe/e5-2.jpg"),
-    ],
+    photos: [swipeImage("e5-1"), swipeImage("e5-2")],
     scrims: ["#2B1B1D", "#1B1A17"],
   },
   {
@@ -928,10 +913,7 @@ export const experiences: MockExperience[] = [
     day: "I dag",
     tags: ["Foto", "Kultur"],
     about: "Vi går en runde og fanger gatelivet. Ta med kamera.",
-    photos: [
-      require("../../assets/swipe/e6-1.jpg"),
-      require("../../assets/swipe/e6-2.jpg"),
-    ],
+    photos: [swipeImage("e6-1"), swipeImage("e6-2")],
     scrims: ["#1D201E", "#0A0A0A"],
   },
 ];

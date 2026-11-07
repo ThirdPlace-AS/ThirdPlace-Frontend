@@ -32,6 +32,7 @@ import {
 import { Input } from "@/components/Input";
 import { CategoryPicker, PlacePicker } from "@/components/pickers/Pickers";
 import { experienceById, experiences, OSLO_AREAS, places } from "@/fixtures";
+import { smallImage } from "@/fixtures/images";
 
 import {
   type AddDraft,
@@ -451,7 +452,7 @@ function StepBody({
                   className="w-[31.5%]"
                 >
                   <Image
-                    source={src}
+                    source={smallImage(src)}
                     contentFit="cover"
                     style={{ aspectRatio: 1, width: "100%", borderRadius: 10 }}
                   />

@@ -21,7 +21,7 @@ import {
   people,
   type MockChat,
 } from "@/fixtures";
-import { libImage } from "@/fixtures/images";
+import { libImage, libThumb, smallImage } from "@/fixtures/images";
 import { showToastAfterSheet } from "@/components/Toast";
 import { confirmToast } from "@/copy";
 import { router } from "expo-router";
@@ -150,7 +150,7 @@ function InfoSheet({
               className="flex-1"
             >
               <Image
-                source={src}
+                source={smallImage(src)}
                 contentFit="cover"
                 style={{ aspectRatio: 1, width: "100%", borderRadius: 10 }}
               />
@@ -293,7 +293,7 @@ function InviteSheet({
               className="flex-row items-center gap-3 rounded-md border border-line bg-surface p-3"
             >
               <Image
-                source={libImage(p.avatar)}
+                source={libThumb(p.avatar)}
                 style={{ height: 36, width: 36, borderRadius: 18 }}
               />
               <Text variant="label" weight="semibold" className="flex-1">

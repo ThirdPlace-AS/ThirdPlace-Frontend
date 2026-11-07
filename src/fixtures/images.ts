@@ -1,5 +1,13 @@
 import type { ImageSourcePropType } from "react-native";
 
+import {
+  LIBRARY_FULL,
+  LIBRARY_SMALL,
+  PLACEHOLDER,
+  SWIPE_FULL,
+  SWIPE_SMALL,
+} from "./imageAssets.generated";
+
 // ── Bundled image library (MOCK demo art — NOT a canonical media contract) ──
 // BLOCKED_CONTRACT_GAP: ThirdPlace has no media-rights / asset model. These are
 // curated photos from Unsplash (used under the Unsplash License), bundled locally
@@ -9,67 +17,63 @@ import type { ImageSourcePropType } from "react-native";
 // `group-*` for group/activity covers; `market-*` for marketplace listings.
 // None of these depict the real people or venues named in the fixtures.
 
-export const LIBRARY = {
-  // People (avatar portraits)
-  "person-ola": require("../../assets/library/person-ola.jpg"),
-  "person-maria": require("../../assets/library/person-maria.jpg"),
-  "person-jonas": require("../../assets/library/person-jonas.jpg"),
-  "person-ase": require("../../assets/library/person-ase.jpg"),
-  "person-sofie": require("../../assets/library/person-sofie.jpg"),
-  "person-erik": require("../../assets/library/person-erik.jpg"),
-  "person-nina": require("../../assets/library/person-nina.jpg"),
-  // Venues / places
-  "venue-cafe": require("../../assets/library/venue-cafe.jpg"),
-  "venue-bar": require("../../assets/library/venue-bar.jpg"),
-  "venue-restaurant": require("../../assets/library/venue-restaurant.jpg"),
-  "venue-books": require("../../assets/library/venue-books.jpg"),
-  "venue-gallery": require("../../assets/library/venue-gallery.jpg"),
-  "venue-outdoor": require("../../assets/library/venue-outdoor.jpg"),
-  "venue-workshop": require("../../assets/library/venue-workshop.jpg"),
-  "venue-music": require("../../assets/library/venue-music.jpg"),
-  // Phase 11 (2026-11-06): second photos per place (credits in
-  // assets/library/CREDITS.md)
-  "venue-cafe-2": require("../../assets/library/venue-cafe-2.jpg"),
-  "venue-books-2": require("../../assets/library/venue-books-2.jpg"),
-  "venue-bar-2": require("../../assets/library/venue-bar-2.jpg"),
-  "bike-repair-1": require("../../assets/library/bike-repair-1.jpg"),
-  "bike-repair-2": require("../../assets/library/bike-repair-2.jpg"),
-  "river-1": require("../../assets/library/river-1.jpg"),
-  "river-2": require("../../assets/library/river-2.jpg"),
-  "pottery-1": require("../../assets/library/pottery-1.jpg"),
-  "pottery-2": require("../../assets/library/pottery-2.jpg"),
-  "food-1": require("../../assets/library/food-1.jpg"),
-  "garden-1": require("../../assets/library/garden-1.jpg"),
-  "garden-2": require("../../assets/library/garden-2.jpg"),
-  "yoga-1": require("../../assets/library/yoga-1.jpg"),
-  "yoga-2": require("../../assets/library/yoga-2.jpg"),
-  "sail-1": require("../../assets/library/sail-1.jpg"),
-  "sail-2": require("../../assets/library/sail-2.jpg"),
-  "gallery-2": require("../../assets/library/gallery-2.jpg"),
-  "arch-1": require("../../assets/library/arch-1.jpg"),
-  "arch-2": require("../../assets/library/arch-2.jpg"),
-  "spice-1": require("../../assets/library/spice-1.jpg"),
-  "spice-2": require("../../assets/library/spice-2.jpg"),
-  "salon-1": require("../../assets/library/salon-1.jpg"),
-  "salon-2": require("../../assets/library/salon-2.jpg"),
-  // Groups / activities
-  "group-run": require("../../assets/library/group-run.jpg"),
-  "group-wine": require("../../assets/library/group-wine.jpg"),
-  "group-climb": require("../../assets/library/group-climb.jpg"),
-  "group-coffee": require("../../assets/library/group-coffee.jpg"),
-  "group-books": require("../../assets/library/group-books.jpg"),
-  "group-wine-2": require("../../assets/library/group-wine-2.jpg"),
-  // Marketplace listings
-  "market-ceramics": require("../../assets/library/market-ceramics.jpg"),
-  "market-plant": require("../../assets/library/market-plant.jpg"),
-  "market-bike": require("../../assets/library/market-bike.jpg"),
-  "market-vinyl": require("../../assets/library/market-vinyl.jpg"),
-} as const;
+// The photos themselves live in the generated manifest (WebP, two sizes plus a
+// blurred preview each; scripts/build-image-manifest.js). Keys are semantic:
+// person-* portraits, venue-* place covers, group-* activities, market-*.
+export const LIBRARY = LIBRARY_FULL;
 
 export type LibraryKey = keyof typeof LIBRARY;
 
+/** Full photo (≤1080 px): galleries, cards, the photo viewer. */
 export function libImage(key: LibraryKey): ImageSourcePropType {
-  return LIBRARY[key];
+  return LIBRARY_FULL[key];
+}
+
+/** Small photo (≤480 px, portraits 256 px): rails, thumbnails, rows, avatars. */
+export function libThumb(key: LibraryKey): ImageSourcePropType {
+  return LIBRARY_SMALL[key];
+}
+
+export type SwipeKey = keyof typeof SWIPE_FULL;
+
+/** Sveip experience photos (full-screen cards keep 1350 px). */
+export function swipeImage(key: SwipeKey): ImageSourcePropType {
+  return SWIPE_FULL[key];
+}
+
+// Any bundled photo → its small file and its blurred preview, so components
+// that only hold a source (experience photos, gallery pages) can ask for the
+// lighter file or paint the preview while the photo decodes. Keyed by the
+// require() value (an asset id on device, a module object in tests).
+const SMALL_BY_SOURCE = new Map<unknown, ImageSourcePropType>();
+const PREVIEW_BY_SOURCE = new Map<unknown, string>();
+function index<K extends string>(
+  dir: string,
+  full: Record<K, ImageSourcePropType>,
+  small: Record<K, ImageSourcePropType>,
+) {
+  for (const key of Object.keys(full) as K[]) {
+    const preview = PLACEHOLDER[`${dir}/${key}`];
+    SMALL_BY_SOURCE.set(full[key], small[key]);
+    if (preview) {
+      PREVIEW_BY_SOURCE.set(full[key], preview);
+      PREVIEW_BY_SOURCE.set(small[key], preview);
+    }
+  }
+}
+index("library", LIBRARY_FULL, LIBRARY_SMALL);
+index("swipe", SWIPE_FULL, SWIPE_SMALL);
+
+/** The small file for a bundled photo; other sources come back unchanged. */
+export function smallImage<T>(source: T): T {
+  return (SMALL_BY_SOURCE.get(source) as T | undefined) ?? source;
+}
+
+/** Blurred 16 px preview of a bundled photo as an expo-image `placeholder`
+ * (painted on the first frames while the photo decodes), if it has one. */
+export function imagePreview(source: unknown): { uri: string } | undefined {
+  const uri = PREVIEW_BY_SOURCE.get(source);
+  return uri ? { uri } : undefined;
 }
 
 // Map a place category to a sensible library cover (MOCK — presentational only).
