@@ -8,6 +8,7 @@ import {
   places,
   ratingOf,
   reviewsForExperience,
+  TIME_OF_DAY,
   type MockExperience,
   type MockPlace,
   type TimeWindow,
@@ -15,7 +16,14 @@ import {
   placeRating,
 } from "@/fixtures";
 
+import { formatRating } from "@/lib/format";
+
 import { experienceMatchesQuery, placeMatchesQuery } from "./mapSearch";
+import {
+  MARKER_LABEL,
+  markerCategoryFor,
+  type MarkerCategory,
+} from "./markerCategory";
 
 // Price range bounds derived from the MOCK fixtures (not a pricing contract).
 export const PRICE_FLOOR = 0;
@@ -45,6 +53,9 @@ export const DEFAULT_GUESTS: GuestCounts = {
 };
 
 export type MapFilters = {
+  // "Kategori": the map pins' eight categories (OR match). Phase 18, from
+  // the screen benchmark: quick chips on the map, the same colours as the pins.
+  categories: MarkerCategory[];
   types: string[]; // "Opplevelsestype" (OR match)
   whereArea: string | null; // "Where?" selected Oslo area — recenters, does NOT filter
   dateStart: string | null; // "When?" demo range start (ISO) — does NOT filter
@@ -68,6 +79,7 @@ export type MapFilters = {
 };
 
 export const DEFAULT_FILTERS: MapFilters = {
+  categories: [],
   types: [],
   whereArea: null,
   dateStart: null,
@@ -115,6 +127,11 @@ export function applyFilters(
 ): MockPlace[] {
   const q = query.trim().toLowerCase();
   return all.filter((p) => {
+    if (
+      f.categories.length > 0 &&
+      !f.categories.includes(markerCategoryFor({ kind: "place", id: p.id }))
+    )
+      return false;
     if (f.types.length > 0 && !f.types.some((t) => p.types.includes(t)))
       return false;
     if (f.maxDistanceM !== null && p.distanceM > f.maxDistanceM) return false;
@@ -161,6 +178,7 @@ export function applyFilters(
 // narrow results, so they must not inflate the badge.
 export function activeExtraFilterCount(f: MapFilters): number {
   return (
+    (f.categories.length > 0 ? 1 : 0) +
     (f.types.length > 0 ? 1 : 0) +
     (f.maxDistanceM !== null ? 1 : 0) +
     (f.priceMin > PRICE_FLOOR || f.priceMax < PRICE_CEIL ? 1 : 0) +
@@ -208,6 +226,13 @@ export function applyExperienceFilters(
   const q = query.trim().toLowerCase();
   const out = all.filter((e) => {
     if (e.status === "cancelled") return false;
+    if (
+      f.categories.length > 0 &&
+      !f.categories.includes(
+        markerCategoryFor({ kind: "experience", id: e.id }),
+      )
+    )
+      return false;
     const place = placeById(e.placeId);
     if (f.types.length > 0 && !f.types.some((t) => e.types.includes(t)))
       return false;
@@ -268,4 +293,102 @@ export function sortExperiences(
   return [...list].sort((a, b) =>
     sort === "best" ? r(b).score - r(a).score : r(b).count - r(a).count,
   );
+}
+
+// ── Applied filters as chips (Phase 18, from the screen benchmark) ──
+// Each narrowing filter, one chip per value, in the words the Filtre sheet
+// uses, with what removing it leaves. Feeds the chips row on the map and the
+// "Fjern «…»" choices when nothing matches. Demo-only axes (Hvor, dates,
+// guests) do not narrow results and get no chip.
+export type AppliedFilterChip = {
+  key: string;
+  label: string;
+  remove: (f: MapFilters) => MapFilters;
+};
+
+const distanceLabel = (m: number) =>
+  m < 1000 ? `${m} m` : `${formatRating(m / 1000).replace(/,0$/, "")} km`;
+const capitalise = (t: string) => t.charAt(0).toUpperCase() + t.slice(1);
+
+export function appliedFilterChips(f: MapFilters): AppliedFilterChip[] {
+  const out: AppliedFilterChip[] = [];
+  const each = <K extends keyof MapFilters>(
+    key: K,
+    values: readonly string[],
+    label: (v: string) => string = (v) => v,
+  ) => {
+    for (const v of values)
+      out.push({
+        key: `${String(key)}:${v}`,
+        label: label(v),
+        remove: (g) => ({
+          ...g,
+          [key]: (g[key] as unknown as string[]).filter((x) => x !== v),
+        }),
+      });
+  };
+  each("categories", f.categories, (c) => MARKER_LABEL[c as MarkerCategory]);
+  if (f.time !== null)
+    out.push({
+      key: "time",
+      label: f.time,
+      remove: (g) => ({ ...g, time: null }),
+    });
+  each(
+    "timeOfDay",
+    f.timeOfDay,
+    (k) => TIME_OF_DAY.find((t) => t.key === k)?.label ?? k,
+  );
+  each("types", f.types);
+  if (f.hasSpots)
+    out.push({
+      key: "hasSpots",
+      label: "Ledige plasser",
+      remove: (g) => ({ ...g, hasSpots: false }),
+    });
+  if (f.openNowOnly)
+    out.push({
+      key: "openNowOnly",
+      label: "Åpent nå",
+      remove: (g) => ({ ...g, openNowOnly: false }),
+    });
+  if (f.maxDistanceM !== null)
+    out.push({
+      key: "maxDistanceM",
+      label: `Innen ${distanceLabel(f.maxDistanceM)}`,
+      remove: (g) => ({ ...g, maxDistanceM: null }),
+    });
+  if (f.priceMin > PRICE_FLOOR || f.priceMax < PRICE_CEIL)
+    out.push({
+      key: "price",
+      label: `kr ${f.priceMin}–${f.priceMax}`,
+      remove: (g) => ({ ...g, priceMin: PRICE_FLOOR, priceMax: PRICE_CEIL }),
+    });
+  if (f.durationMaxMin < DURATION_NO_CAP)
+    out.push({
+      key: "duration",
+      label: `Inntil ${
+        DURATION_STEPS.find((d) => d.min === f.durationMaxMin)?.label ??
+        `${f.durationMaxMin} min`
+      }`,
+      remove: (g) => ({ ...g, durationMaxMin: DURATION_NO_CAP }),
+    });
+  each("vibes", f.vibes);
+  if (f.minRating !== null)
+    out.push({
+      key: "minRating",
+      label: `★ ${formatRating(f.minRating)}+`,
+      remove: (g) => ({ ...g, minRating: null }),
+    });
+  if (f.ratingSort !== null)
+    out.push({
+      key: "ratingSort",
+      label: f.ratingSort === "best" ? "Høyest vurdert" : "Flest anmeldelser",
+      remove: (g) => ({ ...g, ratingSort: null }),
+    });
+  each("tags", f.tags);
+  each("audiences", f.audiences);
+  each("languages", f.languages, capitalise);
+  each("accessibility", f.accessibility);
+  return out;
 }

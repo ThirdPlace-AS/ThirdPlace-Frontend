@@ -48,6 +48,8 @@ import {
   PRICE_STEP,
   type RatingSort,
 } from "./services/mapFilters";
+import { CategoryChip } from "./MapQuickChips";
+import { MARKER_CATEGORIES } from "./services/markerCategory";
 import { TypeChip } from "./TypeChip";
 import type { DiscoveryMode } from "./types/mapPresentation";
 
@@ -651,6 +653,27 @@ function FilterBody({
             400 ms deferral made the lower half settle 1.2–1.4 s after the tap
             (0.02–0.33 s without it), so it was removed (Phase 10). */}
         <>
+          {/* Kategori (Phase 18): the map pins' eight categories, the same
+              choice as the quick chips on the map. */}
+          <Section title="Kategori">
+            <View className="flex-row flex-wrap gap-2">
+              {MARKER_CATEGORIES.map((c) => (
+                <CategoryChip
+                  key={c}
+                  category={c}
+                  selected={draft.categories.includes(c)}
+                  onPress={() =>
+                    setDraft((d) => ({
+                      ...d,
+                      categories: d.categories.includes(c)
+                        ? d.categories.filter((x) => x !== c)
+                        : [...d.categories, c],
+                    }))
+                  }
+                />
+              ))}
+            </View>
+          </Section>
           {/* Tid på dagen (moved out of the "Når?" card) */}
           <Section title="Tid på dagen">
             <View>

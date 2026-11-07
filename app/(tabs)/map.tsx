@@ -20,6 +20,15 @@ import {
 import { Illustration } from "@/components/illustrations/Illustration";
 import { canUseMapbox, MapCanvas } from "@/components/map/MapCanvas";
 import { DiscoveryModeTabs } from "@/components/map/DiscoveryModeTabs";
+import { AppliedChip, MapQuickChips } from "@/components/map/MapQuickChips";
+import {
+  appliedFilterChips,
+  type MapFilters,
+} from "@/components/map/services/mapFilters";
+import {
+  MARKER_CATEGORIES,
+  type MarkerCategory,
+} from "@/components/map/services/markerCategory";
 import {
   MapDetailSheet,
   type MapDetailSheetHandle,
@@ -117,10 +126,11 @@ export default function MapScreen() {
   // /map?focus=<kind>:<id>&at=<stamp> (e.g. "Vis på kartet" in the Steder
   // deck) opens that item's detail once per request; the stamp tells repeat
   // taps apart because the tab stays mounted.
-  const { focus, at, q } = useLocalSearchParams<{
+  const { focus, at, q, cat } = useLocalSearchParams<{
     focus?: string;
     at?: string;
     q?: string;
+    cat?: string;
   }>();
   const focusKey = focus ? `${focus}:${at ?? ""}` : undefined;
   const [focusedKey, setFocusedKey] = useState<string | undefined>(undefined);
@@ -137,6 +147,18 @@ export default function MapScreen() {
   if (queryKey && queryKey !== queriedKey) {
     setQueriedKey(queryKey);
     filters.setQuery(q ?? "");
+  }
+  // /map?cat=<category>&at=<stamp> (a category on the empty search page,
+  // Phase 18): shows that category, once per tap.
+  const catKey = cat !== undefined ? `${cat}:${at ?? ""}` : undefined;
+  const [catDoneKey, setCatDoneKey] = useState<string | undefined>(undefined);
+  if (catKey && catKey !== catDoneKey) {
+    setCatDoneKey(catKey);
+    if ((MARKER_CATEGORIES as readonly string[]).includes(cat ?? ""))
+      filters.setFilters({
+        ...filters.filters,
+        categories: [cat as MarkerCategory],
+      });
   }
   const { setMode: setDiscoveryMode } = discovery;
 
@@ -272,6 +294,10 @@ export default function MapScreen() {
     [setDiscoveryMode],
   );
 
+  // A quick chip edits the same filters as Filtre (no Hvor recentre).
+  const handleQuickFilters = (next: MapFilters) => filters.setFilters(next);
+  const appliedChips = appliedFilterChips(filters.filters);
+
   const handleApplyFilters = (next: typeof filters.filters) => {
     haptics.light();
     // "Where?" recenters the map to the chosen Oslo area (demo — reuses the
@@ -404,6 +430,11 @@ export default function MapScreen() {
         </View>
 
         <DiscoveryModeTabs mode={discovery.mode} onChange={handleModeChange} />
+        {/* Applied filters and the pin categories as quick chips (Phase 18). */}
+        <MapQuickChips
+          filters={filters.filters}
+          onChange={handleQuickFilters}
+        />
       </View>
 
       {/* Map tools (layer + location) docked bottom-right. Historically these
@@ -478,6 +509,19 @@ export default function MapScreen() {
             actionLabel="Nullstill"
             onAction={filters.reset}
           />
+          {/* Name what to drop instead of only resetting everything
+              (Airbnb's no-results state; Phase 18). */}
+          {appliedChips.length > 0 ? (
+            <View className="flex-row flex-wrap justify-center gap-2 px-4 pb-6 pt-1">
+              {appliedChips.slice(0, 4).map((c) => (
+                <AppliedChip
+                  key={c.key}
+                  label={c.label}
+                  onRemove={() => filters.setFilters(c.remove(filters.filters))}
+                />
+              ))}
+            </View>
+          ) : null}
         </MapStateCard>
       ) : null}
 

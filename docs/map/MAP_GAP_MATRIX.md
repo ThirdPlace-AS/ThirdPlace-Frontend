@@ -150,3 +150,8 @@ and [MAP_DELIVERABLES.md](MAP_DELIVERABLES.md) for journeys + completion classes
 - Each style opens north up and flat (0276): heading and pitch reset to 0 on every style load, because the Studio styles were saved with bearing 13.6° and pitch 14° and the camera took that over. The rotate and tilt lock that came with the area search was lifted in 0283 (founder): the gestures are on again; there is no compass.
 - "Veibeskrivelse" on places and meeting points hands the coordinate to the phone's maps app (0276, `src/lib/directions.ts`).
 - After Posisjon the map no longer pulls back to the user (0282, an older bug found while testing the area pill): the recenter effect ran on every new centre array, which the GPS watch gives on each fix, and the camera's controlled `centerCoordinate` / `zoomLevel` props re-applied whenever the screen re-rendered (the area pill appearing was enough). The camera now takes its first view from `defaultSettings`, and Posisjon or an area flies once per `recenterSignal`.
+
+## Phase 18 changes (2026-11-07)
+
+- Quick chips under the mode chips (`MapQuickChips`): applied filters with an ✕, then the eight pin categories (`MARKER_CATEGORIES`, pin colours), chosen first. `categories` is a new `MapFilters` axis (OR) applied in `applyFilters` / `applyExperienceFilters`, so the list, `countResults`, Filtre's badge and Sveip agree; `appliedFilterChips()` names each applied value in the sheet's words. Empty results offer "Fjern «…»" per filter. `/map?cat=<kategori>&at=<stamp>` applies a category from the search page. The first fitted view keeps 230 dp at the top for the extra row (was 190).
+- Long-press on a browse card: Lagre / Fjern fra Lagret, Del, Veibeskrivelse (`ItemActionsSheet`).
