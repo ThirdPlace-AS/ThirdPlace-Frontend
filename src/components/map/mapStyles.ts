@@ -18,26 +18,26 @@ export type MapStylePeriod = "dawn" | "day" | "dusk" | "night";
 export const MAP_STYLES = [
   {
     key: "style1",
-    label: "Dawn",
+    label: "Daggry",
     period: "dawn",
     url: "mapbox://styles/thirdplace/cmmi50o1q002d01qw5mq0a2qh/draft",
   },
   {
     key: "style2",
-    label: "Day",
+    label: "Dag",
     period: "day",
     url: "mapbox://styles/thirdplace/cmvew4hcb00he01qua2pq2yiq/draft",
   },
   {
     key: "style3",
-    label: "Dusk",
+    label: "Skumring",
     period: "dusk",
     url: "mapbox://styles/thirdplace/cmvew6af7005601s8ec9i93ud/draft",
   },
 
   {
     key: "style4",
-    label: "Night",
+    label: "Natt",
     period: "night",
     url: "mapbox://styles/thirdplace/cmvew7d0300bc01s6cbc10o2w/draft",
   },

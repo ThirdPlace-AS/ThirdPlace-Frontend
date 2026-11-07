@@ -134,3 +134,7 @@ and [MAP_DELIVERABLES.md](MAP_DELIVERABLES.md) for journeys + completion classes
 - Photo pagers in browse cards and galleries no longer expose an empty scroller to TalkBack (0257).
 - One rating per place: the place sheet, browse cards, the rating filter and the best / most sorts count the place's reviews (`placeRating`); the stored rating and count are gone (0258).
 - Varsler cards open what they name (0255); the release build was timed on the emulator (0257).
+
+## Phase 14 changes (2026-11-07)
+
+- Kartlag is a grid of style previews (founder reference): Auto first, Norwegian names, pink ring on the style in use, ⓘ explains Auto's schedule (0260).

@@ -73,6 +73,7 @@ export function SheetHeader({
   tone = "light",
   divider = false,
   actions,
+  center = false,
 }: {
   title?: string;
   onClose?: () => void;
@@ -81,6 +82,8 @@ export function SheetHeader({
   divider?: boolean;
   /** Extra icon buttons before ✕ (e.g. Del + Lagre on an experience). */
   actions?: ReactNode;
+  /** Centred title (a picker such as Kartlag), not the default left. */
+  center?: boolean;
 }) {
   const dark = tone === "dark";
   const variant = dark ? "mediaSubtle" : "ghost";
@@ -110,7 +113,7 @@ export function SheetHeader({
         weight="bold"
         tone={dark ? "onMedia" : "ink"}
         numberOfLines={1}
-        className="flex-1"
+        className={center ? "flex-1 text-center" : "flex-1"}
       >
         {title ?? ""}
       </Text>
@@ -159,6 +162,8 @@ export type SheetProps = {
   surfaceTone?: "default" | "muted";
   /** Tall (~92 %) sheet whose children own a scroll area + sticky footer. */
   fullHeight?: boolean;
+  /** Centre the title (pickers such as Kartlag). */
+  centerTitle?: boolean;
   children: ReactNode;
 };
 
@@ -170,6 +175,7 @@ export function Sheet({
   tone = "light",
   surfaceTone = "default",
   fullHeight = false,
+  centerTitle = false,
   children,
 }: SheetProps) {
   const dark = tone === "dark";
@@ -297,6 +303,7 @@ export function Sheet({
                     onBack={onBack}
                     onClose={fullHeight ? onClose : undefined}
                     divider={fullHeight}
+                    center={centerTitle}
                   />
                 </View>
               </GestureDetector>

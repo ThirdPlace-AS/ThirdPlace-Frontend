@@ -292,3 +292,9 @@ Layout modernised by founder decision (same content and PDF order): hub pages (I
 ### One rating per place (found in the TalkBack pass)
 
 - The map's place sheet, its reviews view, browse cards, Lagret, the rating filter and the Trending sort read a stored rating and review count (Oslo Kaffebar "4,6 (128)") while the place page and Sveip counted the place's reviews ("4,5 · 2 vurderinger"). The stored fields are gone; every surface uses the place's reviews, and the place sheet's star is ink like the page's.
+
+## Phase 14 (2026-11-07)
+
+### Founder decision: Kartlag after a reference screenshot
+
+The founder sent a screenshot of another map app's layer sheet and asked for Kartlag to look like it. Kartlag now has a centred title, a "Kartstil" section with ⓘ, and the base maps as preview tiles in a three-column grid (Auto, Daggry, Dag, Skumring, Natt), the name under each tile and a pink ring on the one in use. The style names are Norwegian (they were Dawn / Day / Dusk / Night). The reference's second section (its own capture overlays) has no ThirdPlace counterpart and is left out. The previews are crops of our own Studio styles (`assets/map-styles`).
