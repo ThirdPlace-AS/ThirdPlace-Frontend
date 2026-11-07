@@ -19,8 +19,13 @@ import { SafeAreaProvider } from "react-native-safe-area-context";
 
 import { useGuestMode } from "@/components/map/hooks/useGuestMode";
 import NotificationsScreen from "@/features/notifications/NotificationsScreen";
-import { MOCK_NOTIFICATIONS, notificationGroup } from "@/fixtures";
+import {
+  MOCK_NOTIFICATIONS,
+  NOTIFICATION_GROUPS,
+  notificationGroup,
+} from "@/fixtures";
 import { resetNotificationReads } from "@/hooks/useNotificationReads";
+import { collapseNotifications } from "@/lib/collapseNotifications";
 import { resetFollowing } from "@/lib/following";
 
 const mockPush = jest.fn();
@@ -82,10 +87,17 @@ describe("Følg tilbake", () => {
     expect(mockPush).not.toHaveBeenCalled();
   });
 
-  it("only follow notices get the button", () => {
+  it("only a card of one new follower gets the button", () => {
     render(<NotificationsScreen />, { wrapper });
-    const follows = MOCK_NOTIFICATIONS.filter((n) => n.type === "follow");
-    expect(screen.getAllByText("Følg tilbake")).toHaveLength(follows.length);
+    // Phase 18: new followers in the same time group share one card (which
+    // opens Følgere), so the button sits on single-follower cards only.
+    const single = NOTIFICATION_GROUPS.flatMap((g) =>
+      collapseNotifications(
+        MOCK_NOTIFICATIONS.filter((n) => notificationGroup(n.minutesAgo) === g),
+      ),
+    ).filter((e) => e.items.length === 1 && e.items[0]?.type === "follow");
+    expect(single.length).toBeGreaterThan(0);
+    expect(screen.getAllByText("Følg tilbake")).toHaveLength(single.length);
   });
 
   it("a guest is asked to sign in instead", () => {

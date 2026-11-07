@@ -3283,6 +3283,18 @@ export const MOCK_NOTIFICATIONS: MockNotification[] = [
     target: { kind: "experience", id: "e2" },
     thumbnailTint: "#4A5A7A",
   },
+  // n8 and n9 (Phase 18): two more followers this week (both in
+  // profile.followerIds), so Varsler shows same-kind notices collapsed.
+  {
+    id: "n8",
+    type: "follow",
+    actorName: "Erik Haug",
+    actorInitials: "EH",
+    text: "begynte å følge deg.",
+    minutesAgo: 4000,
+    read: true,
+    target: { kind: "person", id: "u5" },
+  },
   {
     id: "n5",
     type: "review",
@@ -3303,6 +3315,16 @@ export const MOCK_NOTIFICATIONS: MockNotification[] = [
     minutesAgo: 6000,
     read: true,
     target: { kind: "person", id: "u6" },
+  },
+  {
+    id: "n9",
+    type: "follow",
+    actorName: "Tom Tangen",
+    actorInitials: "TT",
+    text: "begynte å følge deg.",
+    minutesAgo: 7000,
+    read: true,
+    target: { kind: "person", id: "u7" },
   },
   {
     id: "n7",
