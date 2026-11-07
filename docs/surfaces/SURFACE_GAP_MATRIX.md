@@ -27,7 +27,7 @@ rule was invented.
 | Kart (Map)                  | `app/(tabs)/map.tsx`                   | `src/components/map/*`                  | demo-complete                        | DemoNote, SignInPrompt, DEMO modes      | see Map matrix                              | emulator, tests | ≤ 0083, 0108, 0161 (design system)     |
 | Sveip (Swipe)               | `app/(tabs)/swipe.tsx`                 | `src/components/swipe/*`                | demo-complete (Steder cards pending) | DemoNote, SignInPrompt, join-chat sheet | ranking/personalization, join, report/block | emulator, tests | 0104, 0110, 0120, 0162 (design system) |
 | Legg til (Add) — center CTA | `app/(tabs)/add.tsx`                   | `src/features/add/AddWizard.tsx`        | demo-complete                        | IKKE SENDT / IKKE PUBLISERT end states  | publish, moderation, capacity/pricing       | emulator, tests | 0111, 0113                             |
-| Chat                        | `app/(tabs)/chat.tsx`, `app/chat/[id]` | chat list + thread                      | demo-complete (info/members pending) | guests read-only; archived read-only    | chat types, access modes, delivery/receipts | emulator        | 0109, 0115, 0163 (design system)       |
+| Chat                        | `app/(tabs)/chat.tsx`, `app/chat/[id]` | chat list + thread                      | demo-complete                        | guests read-only; archived read-only    | chat types, access modes, delivery/receipts | emulator        | 0109, 0115, 0163 (design system)       |
 | Profil                      | `app/(tabs)/profile.tsx`               | profile (PDF p12) + Lagret, Mine planer | demo-complete                        | DemoBadge on counts + Veien til Skaper  | identity, follow graph, creator criteria    | emulator        | 0112, 0119                             |
 
 ## Nested routes (realigned to the PDF, 2026-11-05)
@@ -155,9 +155,11 @@ Founder list: no demo markers, white background, ≥2 photos, marker icons, vide
 
 Founder decision 2026-11-06: content you read, browse or fill in is a page, not a sheet.
 
-| Surface         | Route                           | Opened from                                                                                      | Status                                 | Ledger |
-| --------------- | ------------------------------- | ------------------------------------------------------------------------------------------------ | -------------------------------------- | ------ |
-| Experience page | `app/experience/[id]/index.tsx` | Sveip expand, Lagret, Mine planer, Profil "Neste plan", chat pin, "Flere opplevelser", deep link | demo-complete                          | 0235   |
-| Place page      | `app/place/[id]/index.tsx`      | experience page, Lagret, deep link                                                               | demo-complete (H5d restyles)           | 0235   |
-| Group page      | `app/group/[id]/index.tsx`      | experience page, deep link                                                                       | demo-complete                          | 0235   |
-| Person page     | `app/people/[id].tsx`           | Oppdag folk                                                                                      | demo-complete; follow shared in memory | 0235   |
+| Surface                         | Route                                                 | Opened from                                                                                      | Status                                          | Ledger |
+| ------------------------------- | ----------------------------------------------------- | ------------------------------------------------------------------------------------------------ | ----------------------------------------------- | ------ |
+| Experience page                 | `app/experience/[id]/index.tsx`                       | Sveip expand, Lagret, Mine planer, Profil "Neste plan", chat pin, "Flere opplevelser", deep link | demo-complete                                   | 0235   |
+| Place page                      | `app/place/[id]/index.tsx`                            | experience page, Lagret, deep link                                                               | demo-complete (H5d restyles)                    | 0235   |
+| Group page                      | `app/group/[id]/index.tsx`                            | experience page, deep link                                                                       | demo-complete                                   | 0235   |
+| Person page                     | `app/people/[id].tsx`                                 | Oppdag folk                                                                                      | demo-complete; follow shared in memory          | 0235   |
+| Chat info / Medlemmer / Inviter | `app/chat/[id]/info.tsx`, `members.tsx`, `invite.tsx` | chat thread ⓘ, info page                                                                         | demo-complete; actions confirm in product voice | 0236   |
+| Arkiverte chatter / Ny chat     | `app/chat/archived.tsx`, `app/chat/new.tsx`           | Chat tab link / ✎ button                                                                         | demo-complete                                   | 0236   |

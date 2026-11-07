@@ -1,8 +1,7 @@
-import { router } from "expo-router";
+import { router, type Href } from "expo-router";
 import { useMemo, useState } from "react";
 import { ScrollView, View } from "react-native";
 
-import { Button } from "@/components/Button";
 import {
   Header,
   Icon,
@@ -10,26 +9,15 @@ import {
   Screen,
   SearchBar,
   Accordion,
-  Avatar,
   Pressable as UIPressable,
   Text,
   EmptyState,
 } from "@/components/ui";
-import { Chip } from "@/components/Chip";
-import { Input } from "@/components/Input";
-import { UserSearch } from "@/components/pickers/Pickers";
 import { NotificationsSheet } from "@/components/NotificationsSheet";
+import { ChatRow } from "@/features/chat/ChatRow";
 import { isMember, useJoinedChats } from "@/lib/joinedChats";
 import { useNotificationReads } from "@/hooks/useNotificationReads";
-import { Sheet } from "@/components/Sheet";
-import { showToastAfterSheet } from "@/components/Toast";
-import { confirmToast } from "@/copy";
-import {
-  CHAT_ACCESS_LABEL,
-  chats,
-  type MockChat,
-  type MockChatAccess,
-} from "@/fixtures";
+import { chats, type MockChat } from "@/fixtures";
 
 // Chat tab, laid out per the design (PDF p9): search, "Aktive samtaler", then
 // collapsible Opplevelser / Steder groups, a pencil FAB for "Ny chat" (p10) and
@@ -39,10 +27,8 @@ import {
 export default function ChatScreen() {
   const [query, setQuery] = useState("");
   const [open, setOpen] = useState<Record<string, boolean>>({});
-  const [newOpen, setNewOpen] = useState(false);
   const [notifOpen, setNotifOpen] = useState(false);
   const { unread: unreadNotifs } = useNotificationReads();
-  const [archOpen, setArchOpen] = useState(false);
 
   const q = query.trim().toLowerCase();
   // Experience and place chats the viewer has not joined stay out of the list.
@@ -157,7 +143,7 @@ export default function ChatScreen() {
           <UIPressable
             accessibilityRole="button"
             hitSlop={{ top: 5, bottom: 5, left: 8, right: 8 }}
-            onPress={() => setArchOpen(true)}
+            onPress={() => router.push("/chat/archived" as Href)}
             contentClassName="flex-row items-center gap-3 px-1 py-2"
           >
             <Icon name="archive-outline" size="md" tone="muted" />
@@ -175,188 +161,14 @@ export default function ChatScreen() {
         variant="ink"
         size="xl"
         haptic="light"
-        onPress={() => setNewOpen(true)}
+        onPress={() => router.push("/chat/new" as Href)}
         className="absolute bottom-5 right-5"
       />
 
-      <NewChatSheet visible={newOpen} onClose={() => setNewOpen(false)} />
-      <Sheet
-        visible={archOpen}
-        onClose={() => setArchOpen(false)}
-        title="Arkiverte chatter"
-      >
-        <View className="gap-2">
-          <Text variant="caption" tone="muted">
-            Bare lesing. Du kan ikke sende nye meldinger.
-          </Text>
-          {archived.map((c) => (
-            <ChatRow
-              key={c.id}
-              chat={{
-                ...c,
-                last: `${c.archivedNote ?? "Arkivert"} · ${c.last}`,
-              }}
-              onPress={() => {
-                setArchOpen(false);
-                openChat(c);
-              }}
-            />
-          ))}
-        </View>
-      </Sheet>
       <NotificationsSheet
         visible={notifOpen}
         onClose={() => setNotifOpen(false)}
       />
     </Screen>
-  );
-}
-
-function ChatRow({ chat, onPress }: { chat: MockChat; onPress: () => void }) {
-  const icon =
-    chat.type === "experience"
-      ? "tp-experience"
-      : chat.type === "place" || chat.type === "business"
-        ? "cafe-outline"
-        : null;
-  const unread = chat.unread > 0 ? `, ${chat.unread} uleste` : "";
-  return (
-    <UIPressable
-      accessibilityRole="button"
-      accessibilityLabel={`${chat.name}, ${chat.last}, ${chat.time}${unread}`}
-      onPress={onPress}
-      pressedScale={0.99}
-      contentClassName="flex-row items-center gap-md rounded-lg bg-surface px-md py-md"
-    >
-      <Avatar
-        name={chat.name}
-        initials={chat.initials}
-        icon={icon ?? undefined}
-        size="md"
-        decorative
-      />
-      {/* Unread rows read as unread: bold name, ink preview and time. */}
-      <View className="flex-1 gap-0.5">
-        <Text
-          variant="body"
-          weight={chat.unread > 0 ? "bold" : "semibold"}
-          numberOfLines={1}
-        >
-          {chat.name}
-        </Text>
-        <Text
-          variant="caption"
-          tone={chat.unread > 0 ? "ink" : "muted"}
-          weight={chat.unread > 0 ? "medium" : "regular"}
-          numberOfLines={1}
-        >
-          {chat.last}
-        </Text>
-      </View>
-      <View className="items-end gap-1">
-        <Text
-          variant="caption"
-          tone={chat.unread > 0 ? "ink" : "muted"}
-          weight={chat.unread > 0 ? "semibold" : "regular"}
-        >
-          {chat.time}
-        </Text>
-        {chat.unread > 0 ? (
-          <View className="h-5 min-w-5 items-center justify-center rounded-full bg-emberStrong px-1.5">
-            <Text
-              variant="micro"
-              weight="bold"
-              tone="onEmber"
-              className="normal-case"
-            >
-              {String(chat.unread)}
-            </Text>
-          </View>
-        ) : (
-          <View className="h-5" />
-        )}
-      </View>
-    </UIPressable>
-  );
-}
-
-// "Ny chat" (PDF p10): Navn, Type (Åpen / Lukket / Kun invitasjon).
-// "Opprett chat" confirms (BLOCKED_CONTRACT_GAP: no chat creation contract).
-function NewChatSheet({
-  visible,
-  onClose,
-}: {
-  visible: boolean;
-  onClose: () => void;
-}) {
-  const [name, setName] = useState("");
-  const [access, setAccess] = useState<MockChatAccess>("open");
-  const [members, setMembers] = useState<string[]>([]);
-  const [search, setSearch] = useState(false);
-  return (
-    <Sheet visible={visible} onClose={onClose} title="Ny chat">
-      <View className="gap-4">
-        <Input
-          label="Navn"
-          placeholder="F.eks. «Løpegjengen på Løkka»"
-          value={name}
-          onChangeText={setName}
-          maxLength={50}
-        />
-        <View className="gap-2">
-          <Text variant="label" weight="semibold">
-            Type
-          </Text>
-          <View className="flex-row flex-wrap gap-2">
-            {(Object.keys(CHAT_ACCESS_LABEL) as MockChatAccess[]).map((a) => (
-              <Chip
-                key={a}
-                label={CHAT_ACCESS_LABEL[a]}
-                selected={access === a}
-                onPress={() => setAccess(a)}
-              />
-            ))}
-          </View>
-        </View>
-        <View className="gap-2">
-          <Text variant="label" weight="semibold">
-            Medlemmer
-          </Text>
-          {members.length ? (
-            <Text variant="label" weight="regular">
-              {members.join(", ")}
-            </Text>
-          ) : null}
-          <UIPressable
-            accessibilityRole="button"
-            onPress={() => setSearch(true)}
-            className="self-start"
-            contentClassName="flex-row items-center gap-2 rounded-full border border-line bg-surface px-3 py-2"
-            pressedScale={0.99}
-          >
-            <Icon name="person-add-outline" size="sm" tone="ink" />
-            <Text variant="label">Legg til</Text>
-          </UIPressable>
-        </View>
-        {search ? (
-          <UserSearch
-            onPick={(p) =>
-              setMembers((m) => (m.includes(p.name) ? m : [...m, p.name]))
-            }
-            onClose={() => setSearch(false)}
-          />
-        ) : null}
-
-        <Button
-          label="Opprett chat"
-          variant="ink"
-          disabled={name.trim().length === 0}
-          onPress={() => {
-            onClose();
-            showToastAfterSheet(confirmToast.chatCreated);
-          }}
-        />
-      </View>
-    </Sheet>
   );
 }

@@ -26,7 +26,6 @@ import {
   messagesForChat,
   type MockMessage,
 } from "@/fixtures";
-import { ChatInfoSheets } from "@/features/chat/ChatInfoSheets";
 import { duration, useThemeColors } from "@/theme";
 import { fontFamilyFor } from "@/theme/fonts";
 import { haptics } from "@/lib/haptics";
@@ -46,9 +45,6 @@ export default function ChatThreadScreen() {
   // messages). The composer is replaced by a sign-in entry point.
   const { isGuest } = useGuestMode();
   const [promptOpen, setPromptOpen] = useState(false);
-  const [panel, setPanel] = useState<"info" | "members" | "invite" | null>(
-    null,
-  );
   const listRef = useRef<FlatList<MockMessage>>(null);
   // Open at the newest message and follow every send (the list used to open
   // at the oldest message and new bubbles landed out of view).
@@ -126,7 +122,7 @@ export default function ChatThreadScreen() {
           icon="information-circle-outline"
           label="Chat-info"
           size="sm"
-          onPress={() => setPanel("info")}
+          onPress={() => router.push(`/chat/${chat.id}/info` as Href)}
         />
       </View>
 
@@ -219,7 +215,6 @@ export default function ChatThreadScreen() {
           </View>
         )}
       </KeyboardAvoidingView>
-      <ChatInfoSheets chat={chat} panel={panel} onPanel={setPanel} />
       <SignInPrompt
         visible={promptOpen}
         onClose={() => setPromptOpen(false)}
