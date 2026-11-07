@@ -19,6 +19,7 @@ import { Chip } from "@/components/Chip";
 import { Input } from "@/components/Input";
 import { UserSearch } from "@/components/pickers/Pickers";
 import { NotificationsSheet } from "@/components/NotificationsSheet";
+import { isMember, useJoinedChats } from "@/lib/joinedChats";
 import { useNotificationReads } from "@/hooks/useNotificationReads";
 import { Sheet } from "@/components/Sheet";
 import { showToastAfterSheet } from "@/components/Toast";
@@ -44,16 +45,19 @@ export default function ChatScreen() {
   const [archOpen, setArchOpen] = useState(false);
 
   const q = query.trim().toLowerCase();
+  // Experience and place chats the viewer has not joined stay out of the list.
+  const joined = useJoinedChats();
   const visible = useMemo(
     () =>
       chats.filter(
         (c) =>
           c.status === "active" &&
+          isMember(c, joined) &&
           (!q ||
             c.name.toLowerCase().includes(q) ||
             c.last.toLowerCase().includes(q)),
       ),
-    [q],
+    [q, joined],
   );
   const archived = chats.filter((c) => c.status === "archived");
   const groups = [

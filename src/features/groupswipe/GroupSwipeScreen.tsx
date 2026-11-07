@@ -30,7 +30,7 @@ import { SignInPrompt } from "@/components/SignInPrompt";
 import { useGuestMode } from "@/components/map/hooks/useGuestMode";
 import { useMapSaved } from "@/components/map/hooks/useMapSaved";
 import {
-  chats,
+  chatForExperience,
   experienceById,
   experiences,
   people,
@@ -88,9 +88,7 @@ export default function GroupSwipeScreen() {
   const cardImgH = Math.round(Math.min(300, winH * 0.3));
   const matchImgH = Math.round(Math.min(200, winH * 0.24));
   // The example chat pinned to the matched experience, if one exists.
-  const matchChat = card
-    ? chats.find((c) => c.pinnedExperienceId === card.id)
-    : undefined;
+  const matchChat = card ? chatForExperience(card.id) : undefined;
   const title = name.trim() || "Gruppe-sveip";
 
   // Lobby: simulated friends become ready one by one (labelled as a

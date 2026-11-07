@@ -184,11 +184,11 @@ export function SwipeCard({
         </Text>
 
         <View style={{ gap: 6 }}>
-          {place ? (
-            <InfoRow icon="location-outline">
-              {`${place.name} · ${place.distance}`}
-            </InfoRow>
-          ) : null}
+          <InfoRow icon="location-outline">
+            {place
+              ? `${place.name} · ${place.distance}`
+              : exp.meetingPoint.name}
+          </InfoRow>
           <InfoRow icon="calendar-outline">{exp.when}</InfoRow>
           <InfoRow icon="people-outline">
             {experienceAvailability(exp).label}

@@ -5,7 +5,6 @@ import {
   OSLO_AREAS,
   experiences,
   people,
-  placeById,
   type ExperienceStatus,
   type MockExperience,
   type MockPerson,
@@ -41,22 +40,18 @@ export function areaFor(coord: [number, number]): string {
   return best?.name ?? "Oslo";
 }
 
-/** Small caption for the page top bar: "Kaffe · Grünerløkka". */
+/** Small caption for the page top bar: "Sosialt · Grünerløkka". */
 export function experienceCaption(exp: MockExperience): string {
-  const place = placeById(exp.placeId);
-  const kind = exp.tags[0] ?? "Opplevelse";
-  return place ? `${kind} · ${areaFor(place.coord)}` : kind;
+  return `${exp.category} · ${areaFor(exp.meetingPoint.coord)}`;
 }
 
-/** Other experiences to suggest, nearest first (cancelled ones left out). */
+/** Other experiences to suggest, nearest meeting point first (cancelled ones
+ *  left out). */
 export function moreExperiences(exp: MockExperience, n = 6): MockExperience[] {
-  const here = placeById(exp.placeId)?.coord;
+  const here = exp.meetingPoint.coord;
   return experiences
     .filter((e) => e.id !== exp.id && e.status !== "cancelled")
-    .map((e) => ({
-      e,
-      d: here ? dist2(placeById(e.placeId)?.coord ?? here, here) : 0,
-    }))
+    .map((e) => ({ e, d: dist2(e.meetingPoint.coord, here) }))
     .sort((a, b) => a.d - b.d)
     .slice(0, n)
     .map((x) => x.e);

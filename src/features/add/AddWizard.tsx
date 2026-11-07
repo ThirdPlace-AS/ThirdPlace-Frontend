@@ -31,7 +31,20 @@ import {
 } from "@/components/illustrations/CategoryArt";
 import { Input } from "@/components/Input";
 import { CategoryPicker, PlacePicker } from "@/components/pickers/Pickers";
-import { experienceById, experiences, OSLO_AREAS, places } from "@/fixtures";
+import {
+  CANCELLATION_OPTIONS,
+  DURATION_OPTIONS,
+  ENERGY_LEVELS,
+  EXPERIENCE_ACCESS,
+  EXPERIENCE_CATEGORIES,
+  EXPERIENCE_LANGUAGES,
+  EXPERIENCE_VIBES,
+  experienceById,
+  experiences,
+  OSLO_AREAS,
+  places,
+  REPEAT_OPTIONS,
+} from "@/fixtures";
 import { smallImage } from "@/fixtures/images";
 
 import {
@@ -56,14 +69,6 @@ const PLACE_CATEGORIES = [
   "Kultur",
   "Verksted",
 ];
-const EXPERIENCE_CATEGORIES = [
-  "Kurs & smaking",
-  "Musikk",
-  "Tur & friluft",
-  "Kunst & kultur",
-  "Sport & trening",
-  "Sosialt",
-];
 const PLACE_FEATURES = [
   "Har åpningstider",
   "Rullestolvennlig",
@@ -71,24 +76,15 @@ const PLACE_FEATURES = [
   "Parkering tilgjengelig",
 ];
 const START_TIMES = ["10:00", "14:00", "18:00", "20:00"];
-const DURATIONS = ["1 time", "2 timer", "3 timer", "Hele dagen"];
-const REPEATS = ["Gjentas ikke", "Ukentlig", "Månedlig"];
-const ACCESS = ["Alle", "Godkjennes av deg", "Kun invitasjon"];
-const CANCELLATION = [
-  "Gratis frem til 24 t før",
-  "Gratis frem til 48 t før",
-  "Ingen refusjon",
-];
-const VIBES = [
-  "Rolig",
-  "Lærerikt",
-  "Sosialt",
-  "Hands-on",
-  "Koselig",
-  "Kreativt",
-];
-const ENERGY = ["Lavt", "Middels", "Høyt"];
-const LANGUAGES = ["Norsk", "Engelsk"];
+// What a creator can enter for an experience: the same option lists the
+// fixtures use, so every experience page section has a source.
+const DURATIONS = DURATION_OPTIONS;
+const REPEATS = REPEAT_OPTIONS;
+const ACCESS = EXPERIENCE_ACCESS;
+const CANCELLATION = CANCELLATION_OPTIONS;
+const VIBES = EXPERIENCE_VIBES;
+const ENERGY = ENERGY_LEVELS;
+const LANGUAGES = EXPERIENCE_LANGUAGES;
 // Places a host could pick for an experience (MOCK — no ownership model).
 const HOST_PLACES = places.slice(0, 2);
 
@@ -746,7 +742,7 @@ function CategoryField({
   value,
   onChange,
 }: {
-  options: string[];
+  options: readonly string[];
   value: string | null;
   onChange: (c: string) => void;
 }) {
@@ -797,7 +793,7 @@ function ChipRow({
   selected,
   onPress,
 }: {
-  options: string[];
+  options: readonly string[];
   selected: string[];
   onPress: (v: string) => void;
 }) {

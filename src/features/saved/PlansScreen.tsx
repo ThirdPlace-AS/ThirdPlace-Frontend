@@ -12,7 +12,7 @@ import { Chip } from "@/components/Chip";
 import { RouteHeader } from "@/components/RouteHeader";
 import { EmptyState } from "@/components/states/StateView";
 import {
-  chats,
+  chatForExperience,
   experienceById,
   people,
   profile,
@@ -133,9 +133,7 @@ export default function PlansScreen() {
                   joining does not grant chat membership (spec §12). */}
               {item.state === "upcoming"
                 ? (() => {
-                    const chat = chats.find(
-                      (c) => c.pinnedExperienceId === exp.id,
-                    );
+                    const chat = chatForExperience(exp.id);
                     return chat ? (
                       <PlanAction
                         label="Til samtalen"

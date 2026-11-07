@@ -34,13 +34,14 @@ import { useGuestMode } from "@/components/map/hooks/useGuestMode";
 import { NotificationsSheet } from "@/components/NotificationsSheet";
 import { SignInPrompt } from "@/components/SignInPrompt";
 import { EmptyState } from "@/components/states/StateView";
-import { chats, type MockExperience } from "@/fixtures";
+import { chatForExperience, type MockExperience } from "@/fixtures";
 import { ExperiencePageOverlay } from "@/components/experience/ExperiencePageOverlay";
 import { showToastAfterSheet } from "@/components/Toast";
 import { confirmToast } from "@/copy";
 import { useNotificationReads } from "@/hooks/useNotificationReads";
 import { markViewed } from "@/components/map/hooks/useRecentlyViewed";
 import { haptics } from "@/lib/haptics";
+import { joinChat } from "@/lib/joinedChats";
 import { motion, useThemeColors, media } from "@/theme";
 
 import { decideCommit, rotationFor, type SwipeAction } from "./deckLogic";
@@ -777,10 +778,11 @@ function JoinChatSheet({
   const close = onClose;
   const join = () => {
     if (!exp) return;
-    const chat = chats.find((c) => c.pinnedExperienceId === exp.id);
+    const chat = chatForExperience(exp.id);
     onClose();
     haptics.light();
     if (chat) {
+      joinChat(chat.id);
       setTimeout(() => router.push(`/chat/${chat.id}`), 260);
     } else {
       showToastAfterSheet(confirmToast.joinedChat);

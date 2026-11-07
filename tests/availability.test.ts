@@ -1,10 +1,11 @@
 import { describe, expect, it } from "@jest/globals";
 
 import { experienceAvailability } from "@/components/swipe/availability";
-import { type MockExperience } from "@/fixtures";
+import { experiences, type MockExperience } from "@/fixtures";
 
 // Single source of truth for availability wording (card + detail). Pure helper.
 const base: MockExperience = {
+  ...experiences[0]!,
   id: "x",
   title: "T",
   host: "H",

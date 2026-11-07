@@ -4,6 +4,8 @@ Photos added in Phase 11 (2026-11-06) were downloaded from Unsplash under the [U
 
 Since Phase 12 (2026-11-07) every photo is stored as WebP in two sizes, `<name>.webp` (long edge ≤ 1080 px; Sveip photos ≤ 1350 px) and `<name>-sm.webp` (≤ 480 px, portraits ≤ 256 px), made by `scripts/build-image-manifest.js` from the original downloads (kept in git history).
 
+`person-tom` and `person-per` (Phase 12) are crops of photos already in the set (`group-coffee` and the Sveip photo `e6-1`); nothing new was downloaded.
+
 Photos added before Phase 11 (`person-*`, `venue-cafe/bar/restaurant/books/gallery/outdoor/workshop/music`, `group-run/wine/climb`, `market-*`) are also Unsplash License photos; their individual sources were not recorded when they were added.
 
 | File               | Photographer        | Source                                                                                                |

@@ -8,7 +8,7 @@
 
 import type { ImageSourcePropType } from "react-native";
 
-import { swipeImage, type LibraryKey } from "./images";
+import { libImage, swipeImage, type LibraryKey } from "./images";
 
 export const PLACE_CATEGORIES = [
   "Alle",
@@ -790,12 +790,74 @@ export const EXPERIENCE_STATUSES = [
 ] as const;
 export type ExperienceStatus = (typeof EXPERIENCE_STATUSES)[number];
 
+// ── What a creator enters for an experience (Legg til, PDF p11–p12) ─────────
+// MOCK option lists, shared by the Add wizard and the experience fixtures so
+// every page section has a source. Not a contract taxonomy.
+export const EXPERIENCE_CATEGORIES = [
+  "Kurs & smaking",
+  "Musikk",
+  "Tur & friluft",
+  "Kunst & kultur",
+  "Sport & trening",
+  "Sosialt",
+] as const;
+export type ExperienceCategory = (typeof EXPERIENCE_CATEGORIES)[number];
+export const DURATION_OPTIONS = [
+  "1 time",
+  "2 timer",
+  "3 timer",
+  "Hele dagen",
+] as const;
+export type DurationOption = (typeof DURATION_OPTIONS)[number];
+export const REPEAT_OPTIONS = ["Gjentas ikke", "Ukentlig", "Månedlig"] as const;
+export type RepeatOption = (typeof REPEAT_OPTIONS)[number];
+export const EXPERIENCE_ACCESS = [
+  "Alle",
+  "Godkjennes av deg",
+  "Kun invitasjon",
+] as const;
+export type ExperienceAccess = (typeof EXPERIENCE_ACCESS)[number];
+export const CANCELLATION_OPTIONS = [
+  "Gratis frem til 24 t før",
+  "Gratis frem til 48 t før",
+  "Ingen refusjon",
+] as const;
+export type CancellationOption = (typeof CANCELLATION_OPTIONS)[number];
+export const EXPERIENCE_VIBES = [
+  "Rolig",
+  "Lærerikt",
+  "Sosialt",
+  "Hands-on",
+  "Koselig",
+  "Kreativt",
+] as const;
+export type ExperienceVibe = (typeof EXPERIENCE_VIBES)[number];
+export const ENERGY_LEVELS = ["Lavt", "Middels", "Høyt"] as const;
+export type EnergyLevel = (typeof ENERGY_LEVELS)[number];
+export const EXPERIENCE_LANGUAGES = ["Norsk", "Engelsk"] as const;
+
+/** Where the group meets (MOCK). The map pin of an experience sits here. */
+export type MockMeetingPoint = {
+  name: string;
+  address: string;
+  coord: [number, number]; // [lng, lat]
+};
+
+/** One step of "Hva dere skal gjøre" (MOCK creator content). */
+export type MockItineraryStep = {
+  title: string;
+  text: string;
+  photo: ImageSourcePropType;
+};
+
 export type MockExperience = {
   id: string;
   title: string;
   host: string;
   when: string;
-  placeId: string;
+  // Venue the experience is held at; absent for outdoor meetups (the
+  // meeting point says where).
+  placeId?: string;
   groupId: string;
   status: ExperienceStatus;
   capacity: number;
@@ -814,6 +876,21 @@ export type MockExperience = {
   // image it covers. MOCK/presentational — not a contract field, no canonical
   // colour source (BLOCKED_CONTRACT_GAP).
   scrims: string[];
+  // What the creator entered in Legg til (MOCK; PDF p11–p12).
+  category: ExperienceCategory;
+  duration: DurationOption;
+  durationMin: number;
+  languages: string[]; // EXPERIENCE_LANGUAGES labels
+  included: string[];
+  vibes: ExperienceVibe[];
+  energy: EnergyLevel;
+  access: ExperienceAccess;
+  cancellation: CancellationOption;
+  repeat: RepeatOption;
+  types: string[]; // "Opplevelsestype" filter labels (EXPERIENCE_TYPE_LABELS)
+  audiences: string[]; // "Passer for" filter labels (AUDIENCE_LABELS)
+  meetingPoint: MockMeetingPoint;
+  itinerary: MockItineraryStep[];
 };
 
 export const experiences: MockExperience[] = [
@@ -834,6 +911,45 @@ export const experiences: MockExperience[] = [
     // canonical media contract); `scrims` is parallel to `photos`.
     photos: [swipeImage("e1-1"), swipeImage("e1-2")],
     scrims: ["#28241E", "#221F19"],
+    category: "Sosialt",
+    duration: "1 time",
+    durationMin: 60,
+    languages: ["Norsk", "Engelsk"],
+    included: ["En kopp kaffe eller te", "Litt hjemmebakst"],
+    vibes: ["Rolig", "Sosialt", "Koselig"],
+    energy: "Lavt",
+    access: "Alle",
+    cancellation: "Gratis frem til 24 t før",
+    repeat: "Ukentlig",
+    types: ["Måltider"],
+    audiences: ["Alenereisende", "Førstegangsbesøkende", "Lokalkjente"],
+    meetingPoint: {
+      name: "Oslo Kaffebar, langbordet innerst",
+      address: "Thorvald Meyers gate 12, 0555 Oslo",
+      coord: [10.7584, 59.9231],
+    },
+    itinerary: [
+      {
+        title: "Hils på de andre",
+        text: "Vi samles ved langbordet innerst og tar en kort presentasjonsrunde.",
+        photo: libImage("venue-cafe"),
+      },
+      {
+        title: "Kaffe og bakst",
+        text: "Bestill det du vil ha. En kopp og litt hjemmebakst er med.",
+        photo: swipeImage("e1-1"),
+      },
+      {
+        title: "Prat rundt bordet",
+        text: "Vi deler oss i små grupper, så alle kommer til orde.",
+        photo: swipeImage("e1-2"),
+      },
+      {
+        title: "En tur rundt plassen",
+        text: "De som vil, går en kort runde rundt Olaf Ryes plass etterpå.",
+        photo: libImage("group-coffee"),
+      },
+    ],
   },
   {
     id: "e2",
@@ -850,6 +966,45 @@ export const experiences: MockExperience[] = [
     about: "Månedlig lesesirkel. Denne gang nordisk krim.",
     photos: [swipeImage("e2-1"), swipeImage("e2-2")],
     scrims: ["#422F17", "#3B2F29"],
+    category: "Kunst & kultur",
+    duration: "2 timer",
+    durationMin: 120,
+    languages: ["Norsk"],
+    included: ["Te og kaffe", "Leselisten for høsten"],
+    vibes: ["Rolig", "Lærerikt", "Koselig"],
+    energy: "Lavt",
+    access: "Godkjennes av deg",
+    cancellation: "Gratis frem til 48 t før",
+    repeat: "Månedlig",
+    types: ["Kulturelle aktiviteter"],
+    audiences: ["Lokalkjente", "Alenereisende"],
+    meetingPoint: {
+      name: "Grünerløkka Bokcafé, lesesalen",
+      address: "Markveien 35, 0554 Oslo",
+      coord: [10.7609, 59.9254],
+    },
+    itinerary: [
+      {
+        title: "Te og velkommen",
+        text: "Vi finner plass i lesesalen og hører hvordan alle likte boka.",
+        photo: libImage("venue-books"),
+      },
+      {
+        title: "Samtale om månedens bok",
+        text: "Åse leder samtalen med noen spørsmål vi tar en runde på.",
+        photo: swipeImage("e2-1"),
+      },
+      {
+        title: "Neste bok velges",
+        text: "Alle kan foreslå en bok. Vi stemmer før vi går.",
+        photo: swipeImage("e2-2"),
+      },
+      {
+        title: "Fri prat",
+        text: "De som vil, blir sittende og prater litt til.",
+        photo: libImage("venue-books-2"),
+      },
+    ],
   },
   {
     id: "e3",
@@ -866,13 +1021,51 @@ export const experiences: MockExperience[] = [
     about: "Guidet smaking av fem naturviner med småretter.",
     photos: [swipeImage("e3-1"), swipeImage("e3-2")],
     scrims: ["#38312F", "#222327"],
+    category: "Kurs & smaking",
+    duration: "2 timer",
+    durationMin: 120,
+    languages: ["Norsk", "Engelsk"],
+    included: ["Fem naturviner", "Småretter", "Vann"],
+    vibes: ["Lærerikt", "Sosialt"],
+    energy: "Lavt",
+    access: "Alle",
+    cancellation: "Gratis frem til 24 t før",
+    repeat: "Månedlig",
+    types: ["Prøvesmakinger"],
+    audiences: ["Par", "Store grupper"],
+    meetingPoint: {
+      name: "Kork & Kanne Vinbar, baren",
+      address: "Vulkan 12, 0178 Oslo",
+      coord: [10.7515, 59.9273],
+    },
+    itinerary: [
+      {
+        title: "Velkommen ved baren",
+        text: "Tom forteller kort om naturvin og hvordan kvelden er lagt opp.",
+        photo: libImage("venue-bar"),
+      },
+      {
+        title: "Fem viner, fem historier",
+        text: "Vi smaker én vin om gangen og hører hvor den kommer fra.",
+        photo: swipeImage("e3-1"),
+      },
+      {
+        title: "Småretter som passer",
+        text: "Til hver vin kommer en liten rett som får fram smaken.",
+        photo: swipeImage("e3-2"),
+      },
+      {
+        title: "Kveldens favoritt",
+        text: "Vi stemmer over favoritten og deler tips om hvor den kan kjøpes.",
+        photo: libImage("group-wine"),
+      },
+    ],
   },
   {
     id: "e4",
     title: "Kveldsjogg i Frognerparken",
     host: "Jonas B.",
     when: "Tir 18:00",
-    placeId: "p1",
     groupId: "g1",
     status: "open",
     capacity: 15,
@@ -882,6 +1075,45 @@ export const experiences: MockExperience[] = [
     about: "Rolig fellesjogg på 5 km. Alle tempo velkommen.",
     photos: [swipeImage("e4-1"), swipeImage("e4-2")],
     scrims: ["#100A0A", "#302718"],
+    category: "Sport & trening",
+    duration: "1 time",
+    durationMin: 60,
+    languages: ["Norsk", "Engelsk"],
+    included: ["Oppvarming og uttøyning", "Refleksvest å låne"],
+    vibes: ["Sosialt"],
+    energy: "Middels",
+    access: "Alle",
+    cancellation: "Gratis frem til 24 t før",
+    repeat: "Ukentlig",
+    types: ["Trening", "Friluftsliv"],
+    audiences: ["Alenereisende", "Store grupper"],
+    meetingPoint: {
+      name: "Monolitten, Frognerparken",
+      address: "Kirkeveien 21, 0268 Oslo",
+      coord: [10.7006, 59.927],
+    },
+    itinerary: [
+      {
+        title: "Oppvarming ved Monolitten",
+        text: "Ti minutter rolig oppvarming før vi løper.",
+        photo: libImage("group-run"),
+      },
+      {
+        title: "5 km i rolig tempo",
+        text: "Vi løper samlet, og den raskeste venter på resten ved svingene.",
+        photo: swipeImage("e4-1"),
+      },
+      {
+        title: "Rundt dammene",
+        text: "Andre halvdel går langs dammene og tilbake til Monolitten.",
+        photo: swipeImage("e4-2"),
+      },
+      {
+        title: "Uttøyning og prat",
+        text: "Vi tøyer ut sammen og avtaler neste tur.",
+        photo: libImage("river-2"),
+      },
+    ],
   },
   {
     id: "e5",
@@ -899,13 +1131,46 @@ export const experiences: MockExperience[] = [
     about: "Strategispill og kortspill. Nybegynnere lærer bort.",
     photos: [swipeImage("e5-1"), swipeImage("e5-2")],
     scrims: ["#2B1B1D", "#1B1A17"],
+    category: "Sosialt",
+    duration: "3 timer",
+    durationMin: 180,
+    languages: ["Norsk", "Engelsk"],
+    included: ["Spill og regler", "Snacks"],
+    vibes: ["Sosialt", "Hands-on"],
+    energy: "Lavt",
+    access: "Alle",
+    cancellation: "Gratis frem til 24 t før",
+    repeat: "Ukentlig",
+    types: ["Kulturelle aktiviteter"],
+    audiences: ["Store grupper", "Førstegangsbesøkende"],
+    meetingPoint: {
+      name: "Grünerløkka Bokcafé, spillbordene",
+      address: "Markveien 35, 0554 Oslo",
+      coord: [10.76, 59.9246],
+    },
+    itinerary: [
+      {
+        title: "Velg et spill",
+        text: "Hylla har både korte kortspill og lengre strategispill.",
+        photo: swipeImage("e5-1"),
+      },
+      {
+        title: "Vi lærer bort reglene",
+        text: "Nina eller en av de faste forklarer reglene før vi starter.",
+        photo: swipeImage("e5-2"),
+      },
+      {
+        title: "Turnering for de som vil",
+        text: "Siste time spiller de som vil en liten turnering.",
+        photo: libImage("venue-books"),
+      },
+    ],
   },
   {
     id: "e6",
     title: "Fotovandring på Grünerløkka",
     host: "Per O.",
     when: "I dag 11:00",
-    placeId: "p3",
     groupId: "g3",
     status: "waitlist",
     capacity: 10,
@@ -915,11 +1180,50 @@ export const experiences: MockExperience[] = [
     about: "Vi går en runde og fanger gatelivet. Ta med kamera.",
     photos: [swipeImage("e6-1"), swipeImage("e6-2")],
     scrims: ["#1D201E", "#0A0A0A"],
+    category: "Kunst & kultur",
+    duration: "2 timer",
+    durationMin: 120,
+    languages: ["Norsk", "Engelsk"],
+    included: ["Tips om komposisjon", "Bildegjennomgang til slutt"],
+    vibes: ["Kreativt", "Lærerikt"],
+    energy: "Middels",
+    access: "Alle",
+    cancellation: "Gratis frem til 24 t før",
+    repeat: "Ukentlig",
+    types: ["Fotografering", "Arkitektur"],
+    audiences: ["Alenereisende", "Par"],
+    meetingPoint: {
+      name: "Fontenen på Olaf Ryes plass",
+      address: "Olaf Ryes plass, 0552 Oslo",
+      coord: [10.7589, 59.9237],
+    },
+    itinerary: [
+      {
+        title: "Oppmøte ved fontenen",
+        text: "Per viser noen enkle grep for bedre bilder med det du har.",
+        photo: swipeImage("e6-1"),
+      },
+      {
+        title: "Gatelivet på Løkka",
+        text: "Vi går gjennom bakgårder og gater og stopper der lyset er fint.",
+        photo: swipeImage("e6-2"),
+      },
+      {
+        title: "Langs Akerselva",
+        text: "Elva gir speilinger og bruer å jobbe med.",
+        photo: libImage("river-1"),
+      },
+      {
+        title: "Vi ser på bildene",
+        text: "Til slutt viser alle et par bilder og får tips.",
+        photo: libImage("arch-1"),
+      },
+    ],
   },
 ];
 
-export function placeById(id: string): MockPlace | undefined {
-  return places.find((p) => p.id === id);
+export function placeById(id: string | undefined): MockPlace | undefined {
+  return id ? places.find((p) => p.id === id) : undefined;
 }
 export function businessForPlace(placeId: string): MockBusiness | undefined {
   return businesses.find((b) => b.placeId === placeId);
@@ -956,10 +1260,41 @@ export const attendeesByExperience: Record<string, MockAttendee[]> = {
     { id: "a7", name: "Per Olsen", initials: "PO", isHost: false },
   ],
   e3: [{ id: "a8", name: "Tom Tangen", initials: "TT", isHost: true }],
+  e4: [{ id: "a9", name: "Jonas Berg", initials: "JB", isHost: true }],
+  e5: [{ id: "a10", name: "Nina Dahl", initials: "ND", isHost: true }],
+  e6: [{ id: "a11", name: "Per Olsen", initials: "PO", isHost: true }],
 };
 
+// Neighbours that fill each attendee list up to the experience's `going`,
+// so "Se deltakere" shows exactly as many people as the page says are going.
+const ATTENDEE_POOL: [name: string, initials: string][] = [
+  ["Sofie Lind", "SL"],
+  ["Erik Haug", "EH"],
+  ["Kari Nilsen", "KN"],
+  ["Ola Hansen", "OH"],
+  ["Ingrid Solberg", "IS"],
+  ["Lars Eide", "LE"],
+  ["Hanne Moe", "HM"],
+  ["Ali Khan", "AK"],
+  ["Emma Lie", "EL"],
+  ["Jonas Berg", "JB"],
+  ["Nina Dahl", "ND"],
+  ["Tom Tangen", "TT"],
+  ["Åse Kvam", "ÅK"],
+  ["Maria Movik", "MM"],
+  ["Per Olsen", "PO"],
+  ["Mona Berg", "MB"],
+];
+
 export function attendeesForExperience(expId: string): MockAttendee[] {
-  return attendeesByExperience[expId] ?? [];
+  const list = [...(attendeesByExperience[expId] ?? [])];
+  const going = experienceById(expId)?.going ?? list.length;
+  for (const [name, initials] of ATTENDEE_POOL) {
+    if (list.length >= going) break;
+    if (list.some((a) => a.name === name)) continue;
+    list.push({ id: `${expId}-${initials}`, name, initials, isHost: false });
+  }
+  return list;
 }
 
 export type MockReview = {
@@ -996,10 +1331,466 @@ export const reviews: MockReview[] = [
     when: "3 dager siden",
     text: "Koselig bokkafé med et godt utvalg.",
   },
+  {
+    id: "r4",
+    placeId: "p2",
+    author: "Erik H.",
+    rating: 5,
+    when: "1 uke siden",
+    text: "Rolig sted å lese. Kaffen er god og ingen maser.",
+  },
+  {
+    id: "r5",
+    placeId: "p3",
+    author: "Sofie L.",
+    rating: 4,
+    when: "2 uker siden",
+    text: "Godt utvalg av naturvin. Kan bli trangt fredag kveld.",
+  },
+  {
+    id: "r6",
+    placeId: "p3",
+    author: "Jonas B.",
+    rating: 5,
+    when: "1 måned siden",
+    text: "Kunnskapsrike folk bak baren.",
+  },
+  {
+    id: "r7",
+    placeId: "p4",
+    author: "Erik H.",
+    rating: 5,
+    when: "1 uke siden",
+    text: "Fikk fikset girene på en halvtime og lærte litt selv.",
+  },
+  {
+    id: "r8",
+    placeId: "p4",
+    author: "Kari N.",
+    rating: 5,
+    when: "3 uker siden",
+    text: "Vennlige folk. Ta med sykkelen og spør om hjelp.",
+  },
+  {
+    id: "r9",
+    placeId: "p5",
+    author: "Ingrid S.",
+    rating: 5,
+    when: "2 uker siden",
+    text: "Fin tur langs elva med mye å se.",
+  },
+  {
+    id: "r10",
+    placeId: "p5",
+    author: "Per O.",
+    rating: 4,
+    when: "1 måned siden",
+    text: "Fint, men glatt på steinene etter regn.",
+  },
+  {
+    id: "r11",
+    placeId: "p6",
+    author: "Nina D.",
+    rating: 5,
+    when: "5 dager siden",
+    text: "Rolig verksted og god hjelp ved dreieskiva.",
+  },
+  {
+    id: "r12",
+    placeId: "p6",
+    author: "Maria M.",
+    rating: 4,
+    when: "1 måned siden",
+    text: "Morsomt, men glaseringen tar tid før koppen er ferdig.",
+  },
+  {
+    id: "r13",
+    placeId: "p7",
+    author: "Ola H.",
+    rating: 5,
+    when: "1 uke siden",
+    text: "Tre stopp og mye god mat. Kom sulten.",
+  },
+  {
+    id: "r14",
+    placeId: "p7",
+    author: "Ingrid S.",
+    rating: 4,
+    when: "2 måneder siden",
+    text: "Litt venting mellom stoppene.",
+  },
+  {
+    id: "r15",
+    placeId: "p8",
+    author: "Kari N.",
+    rating: 5,
+    when: "3 dager siden",
+    text: "Guiden kunne mye om plantene i Palmehuset.",
+  },
+  {
+    id: "r16",
+    placeId: "p8",
+    author: "Erik H.",
+    rating: 4,
+    when: "1 måned siden",
+    text: "Fint, men ta med varme klær ute.",
+  },
+  {
+    id: "r17",
+    placeId: "p9",
+    author: "Sofie L.",
+    rating: 5,
+    when: "1 uke siden",
+    text: "Rolige timer og god plass på matta.",
+  },
+  {
+    id: "r18",
+    placeId: "p9",
+    author: "Nina D.",
+    rating: 5,
+    when: "3 uker siden",
+    text: "Fin start på dagen.",
+  },
+  {
+    id: "r19",
+    placeId: "p10",
+    author: "Jonas B.",
+    rating: 5,
+    when: "2 uker siden",
+    text: "Fin tur på fjorden. Mannskapet forklarte alt.",
+  },
+  {
+    id: "r20",
+    placeId: "p10",
+    author: "Maria M.",
+    rating: 4,
+    when: "1 måned siden",
+    text: "Kaldt på vannet, så ta med lue.",
+  },
+  {
+    id: "r21",
+    placeId: "p11",
+    author: "Per O.",
+    rating: 5,
+    when: "4 dager siden",
+    text: "Guiden fikk bildene til å leve. Verdt kvelden.",
+  },
+  {
+    id: "r22",
+    placeId: "p11",
+    author: "Ola H.",
+    rating: 4,
+    when: "3 uker siden",
+    text: "Mye folk, men god omvisning.",
+  },
+  {
+    id: "r23",
+    placeId: "p12",
+    author: "Erik H.",
+    rating: 4,
+    when: "2 uker siden",
+    text: "Lærerikt om hvordan Bjørvika ble bygget.",
+  },
+  {
+    id: "r24",
+    placeId: "p12",
+    author: "Sofie L.",
+    rating: 4,
+    when: "2 måneder siden",
+    text: "Interessant, men litt kort.",
+  },
+  {
+    id: "r25",
+    placeId: "p13",
+    author: "Nina D.",
+    rating: 5,
+    when: "1 uke siden",
+    text: "Lærte å blande garam masala fra bunnen.",
+  },
+  {
+    id: "r26",
+    placeId: "p13",
+    author: "Kari N.",
+    rating: 5,
+    when: "1 måned siden",
+    text: "Fikk med krydder hjem. Koselig gjeng.",
+  },
+  {
+    id: "r27",
+    placeId: "p14",
+    author: "Ingrid S.",
+    rating: 5,
+    when: "2 uker siden",
+    text: "Rolig salong og hyggelige folk.",
+  },
+  {
+    id: "r28",
+    placeId: "p14",
+    author: "Maria M.",
+    rating: 4,
+    when: "1 måned siden",
+    text: "Fornøyd, men det var vanskelig å få time.",
+  },
 ];
 
 export function reviewsForPlace(placeId: string): MockReview[] {
   return reviews.filter((r) => r.placeId === placeId);
+}
+
+// ── Experience reviews (MOCK; founder request 2026-11-06). The rating line's
+// count and score are derived from this list (reviewsForExperience), never
+// stored separately. Not a review contract (BLOCKED_CONTRACT_GAP).
+export type MockExperienceReview = {
+  id: string;
+  experienceId: string;
+  author: string;
+  area: string;
+  rating: number;
+  when: string;
+  text: string;
+};
+
+export const experienceReviews: MockExperienceReview[] = [
+  {
+    id: "er1",
+    experienceId: "e1",
+    author: "Kari N.",
+    area: "Sagene",
+    rating: 5,
+    when: "1 uke siden",
+    text: "Fin start på dagen. Maria får alle med i praten uten at det blir kleint.",
+  },
+  {
+    id: "er2",
+    experienceId: "e1",
+    author: "Ola H.",
+    area: "Grünerløkka",
+    rating: 5,
+    when: "2 uker siden",
+    text: "Kom alene og gikk derfra med to nye bekjente. Kaffen var god også.",
+  },
+  {
+    id: "er3",
+    experienceId: "e1",
+    author: "Ingrid S.",
+    area: "Tøyen",
+    rating: 4,
+    when: "1 måned siden",
+    text: "Hyggelig, men litt trangt rundt bordet da vi var mange.",
+  },
+  {
+    id: "er4",
+    experienceId: "e2",
+    author: "Per O.",
+    area: "Torshov",
+    rating: 5,
+    when: "3 dager siden",
+    text: "Gode samtaler og folk som faktisk har lest boka.",
+  },
+  {
+    id: "er5",
+    experienceId: "e2",
+    author: "Sofie L.",
+    area: "St. Hanshaugen",
+    rating: 5,
+    when: "3 uker siden",
+    text: "Åse leder samtalen rolig og lar alle slippe til.",
+  },
+  {
+    id: "er6",
+    experienceId: "e2",
+    author: "Erik H.",
+    area: "Grønland",
+    rating: 4,
+    when: "2 måneder siden",
+    text: "Fin gjeng. Litt for kort tid til å komme gjennom alt.",
+  },
+  {
+    id: "er7",
+    experienceId: "e3",
+    author: "Nina D.",
+    area: "Torshov",
+    rating: 5,
+    when: "2 uker siden",
+    text: "Tom forklarer uten å bli høytidelig. Lærte mye om hvordan vinene lages.",
+  },
+  {
+    id: "er8",
+    experienceId: "e3",
+    author: "Jonas B.",
+    area: "Tøyen",
+    rating: 4,
+    when: "1 måned siden",
+    text: "Spennende viner. Smårettene var små, så spis litt før du kommer.",
+  },
+  {
+    id: "er9",
+    experienceId: "e3",
+    author: "Maria M.",
+    area: "Grünerløkka",
+    rating: 5,
+    when: "2 måneder siden",
+    text: "En av de beste kveldene i høst.",
+  },
+  {
+    id: "er10",
+    experienceId: "e4",
+    author: "Sofie L.",
+    area: "Majorstuen",
+    rating: 5,
+    when: "4 dager siden",
+    text: "Rolig tempo som lovet. Ingen blir hengende alene bak.",
+  },
+  {
+    id: "er11",
+    experienceId: "e4",
+    author: "Erik H.",
+    area: "Frogner",
+    rating: 4,
+    when: "2 uker siden",
+    text: "Fin runde i parken. Mørkt om kvelden, så ta med refleks.",
+  },
+  {
+    id: "er12",
+    experienceId: "e4",
+    author: "Kari N.",
+    area: "Sagene",
+    rating: 5,
+    when: "1 måned siden",
+    text: "Endelig en løpegruppe der det er lov å prate underveis.",
+  },
+  {
+    id: "er13",
+    experienceId: "e5",
+    author: "Ola H.",
+    area: "Grünerløkka",
+    rating: 5,
+    when: "1 uke siden",
+    text: "Nina lærte oss tre nye spill på én kveld. Veldig hyggelig.",
+  },
+  {
+    id: "er14",
+    experienceId: "e5",
+    author: "Ingrid S.",
+    area: "Tøyen",
+    rating: 4,
+    when: "3 uker siden",
+    text: "Bra utvalg av spill. Kan bli litt høylytt mot slutten.",
+  },
+  {
+    id: "er15",
+    experienceId: "e5",
+    author: "Per O.",
+    area: "Torshov",
+    rating: 5,
+    when: "1 måned siden",
+    text: "Perfekt for oss som er nye i byen.",
+  },
+  {
+    id: "er16",
+    experienceId: "e6",
+    author: "Jonas B.",
+    area: "Tøyen",
+    rating: 5,
+    when: "5 dager siden",
+    text: "Per ser motiver overalt. Jeg tok bedre bilder med mobilen enn på lenge.",
+  },
+  {
+    id: "er17",
+    experienceId: "e6",
+    author: "Sofie L.",
+    area: "St. Hanshaugen",
+    rating: 5,
+    when: "2 uker siden",
+    text: "Fint tempo og gode tips underveis.",
+  },
+  {
+    id: "er18",
+    experienceId: "e6",
+    author: "Kari N.",
+    area: "Sagene",
+    rating: 4,
+    when: "1 måned siden",
+    text: "Lærerikt. Skulle gjerne hatt litt mer tid på slutten.",
+  },
+];
+
+export function reviewsForExperience(id: string): MockExperienceReview[] {
+  return experienceReviews.filter((r) => r.experienceId === id);
+}
+
+/** Average stars and count of a review list (what the rating line shows). */
+export function ratingOf(list: readonly { rating: number }[]): {
+  score: number;
+  count: number;
+} {
+  const count = list.length;
+  const score = count ? list.reduce((s, r) => s + r.rating, 0) / count : 0;
+  return { score, count };
+}
+
+// ── Sessions (MOCK): the upcoming times of an experience, from its `when`
+// (the first session) and `repeat`, relative to `now`, so availability, the
+// join card and the "Når" filter agree and never show stale dates. Places
+// left: the first session uses `going`; later ones are demo values. Not a
+// booking contract (BLOCKED_CONTRACT_GAP).
+export type MockSession = {
+  id: string;
+  start: Date;
+  end: Date;
+  spotsLeft: number;
+};
+
+const WEEKDAY_SHORT = ["Søn", "Man", "Tir", "Ons", "Tor", "Fre", "Lør"];
+const WHEN_RE =
+  /^(I dag|I morgen|Man|Tir|Ons|Tor|Fre|Lør|Søn)\s+(\d{1,2}):(\d{2})$/;
+
+/** Start of the first session described by a `when` label ("Ons 09:00"). */
+export function firstSessionStart(when: string, now: Date): Date | null {
+  const m = WHEN_RE.exec(when);
+  if (!m) return null;
+  const d = new Date(now);
+  d.setHours(Number(m[2]), Number(m[3]), 0, 0);
+  if (m[1] === "I dag") return d;
+  if (m[1] === "I morgen") {
+    d.setDate(d.getDate() + 1);
+    return d;
+  }
+  let diff = (WEEKDAY_SHORT.indexOf(m[1] ?? "") - now.getDay() + 7) % 7;
+  if (diff === 0 && d.getTime() <= now.getTime()) diff = 7;
+  d.setDate(d.getDate() + diff);
+  return d;
+}
+
+const LATER_FILL = [0.5, 0.25, 0.75];
+
+export function sessionsFor(
+  exp: MockExperience,
+  now: Date = new Date(),
+  count = 4,
+): MockSession[] {
+  const first = firstSessionStart(exp.when, now);
+  if (!first) return [];
+  const stepDays = exp.repeat === "Månedlig" ? 28 : 7;
+  const total = exp.repeat === "Gjentas ikke" ? 1 : count;
+  return Array.from({ length: total }, (_, i) => {
+    const start = new Date(first);
+    start.setDate(first.getDate() + i * stepDays);
+    const end = new Date(start.getTime() + exp.durationMin * 60_000);
+    const taken =
+      i === 0
+        ? exp.going
+        : Math.min(
+            exp.capacity - 1,
+            Math.round(exp.capacity * (LATER_FILL[(i - 1) % 3] ?? 0.5)),
+          );
+    return {
+      id: `${exp.id}-s${i + 1}`,
+      start,
+      end,
+      spotsLeft: Math.max(0, exp.capacity - taken),
+    };
+  });
 }
 
 export type MockGroup = {
@@ -1088,6 +1879,11 @@ export type MockChat = {
   status: "active" | "archived";
   // An experience chat is pinned to its experience.
   pinnedExperienceId?: string;
+  // A place / business chat belongs to its place.
+  placeId?: string;
+  // false = the viewer is not in it yet: hidden from the chat list until they
+  // join from the experience or place page (or Sveip). Absent = a member.
+  member?: boolean;
   members?: number; // MOCK count, not real social proof
   initials: string;
   archivedNote?: string; // e.g. "avsluttet 12. juli"
@@ -1139,6 +1935,7 @@ export const chats: MockChat[] = [
     type: "place",
     access: "open",
     status: "active",
+    placeId: "p2",
     members: 34,
     initials: "GB",
   },
@@ -1151,6 +1948,7 @@ export const chats: MockChat[] = [
     type: "business",
     access: "open",
     status: "active",
+    placeId: "p1",
     members: 58,
     initials: "OK",
   },
@@ -1168,7 +1966,259 @@ export const chats: MockChat[] = [
     initials: "NS",
     archivedNote: "avsluttet 12. juli",
   },
+  // Chats the viewer can join (H2): one per experience and one per place.
+  // c23 = this autumn's naturvin evenings (c6 above is July's, archived).
+  {
+    id: "c23",
+    name: "Naturvin-smaking",
+    last: "Tom: Torsdag smaker vi fem viner fra Loire.",
+    time: "Ons",
+    unread: 0,
+    type: "experience",
+    access: "open",
+    status: "active",
+    pinnedExperienceId: "e3",
+    member: false,
+    members: 12,
+    initials: "NS",
+  },
+  {
+    id: "c7",
+    name: "Lesesirkel: nordisk krim",
+    last: "Per: Har noen en ekstra kopi å låne bort?",
+    time: "Fre",
+    unread: 0,
+    type: "experience",
+    access: "closed",
+    status: "active",
+    pinnedExperienceId: "e2",
+    member: false,
+    members: 10,
+    initials: "LK",
+  },
+  {
+    id: "c8",
+    name: "Kveldsjogg i Frognerparken",
+    last: "Sofie: Jeg er med på tirsdag.",
+    time: "Man",
+    unread: 0,
+    type: "experience",
+    access: "open",
+    status: "active",
+    pinnedExperienceId: "e4",
+    member: false,
+    members: 7,
+    initials: "KF",
+  },
+  {
+    id: "c9",
+    name: "Brettspillkveld",
+    last: "Nina: Klart, bare meld henne på også.",
+    time: "I går",
+    unread: 0,
+    type: "experience",
+    access: "open",
+    status: "active",
+    pinnedExperienceId: "e5",
+    member: false,
+    members: 6,
+    initials: "BK",
+  },
+  {
+    id: "c10",
+    name: "Fotovandring på Grünerløkka",
+    last: "Kari: Gleder meg!",
+    time: "09:12",
+    unread: 0,
+    type: "experience",
+    access: "open",
+    status: "active",
+    pinnedExperienceId: "e6",
+    member: false,
+    members: 10,
+    initials: "FG",
+  },
+  {
+    id: "c11",
+    name: "Kork & Kanne Vinbar",
+    last: "Noen som vil dele en flaske fredag?",
+    time: "Fre",
+    unread: 0,
+    type: "place",
+    access: "open",
+    status: "active",
+    placeId: "p3",
+    member: false,
+    members: 41,
+    initials: "KK",
+  },
+  {
+    id: "c12",
+    name: "Sofienberg Sykkelverksted",
+    last: "Takk for hjelpen med girene.",
+    time: "I går",
+    unread: 0,
+    type: "place",
+    access: "open",
+    status: "active",
+    placeId: "p4",
+    member: false,
+    members: 23,
+    initials: "SS",
+  },
+  {
+    id: "c13",
+    name: "Akerselva Vandring",
+    last: "Flott høstvær i dag.",
+    time: "Fre",
+    unread: 0,
+    type: "place",
+    access: "open",
+    status: "active",
+    placeId: "p5",
+    member: false,
+    members: 18,
+    initials: "AV",
+  },
+  {
+    id: "c14",
+    name: "Vulkan Keramikkstudio",
+    last: "Ovnen er full til fredag.",
+    time: "I går",
+    unread: 0,
+    type: "place",
+    access: "open",
+    status: "active",
+    placeId: "p6",
+    member: false,
+    members: 27,
+    initials: "VK",
+  },
+  {
+    id: "c15",
+    name: "Grünerløkka Mattur",
+    last: "Bakeriet var et høydepunkt.",
+    time: "Fre",
+    unread: 0,
+    type: "place",
+    access: "open",
+    status: "active",
+    placeId: "p7",
+    member: false,
+    members: 35,
+    initials: "GM",
+  },
+  {
+    id: "c16",
+    name: "Botanisk Hage Omvisning",
+    last: "Kaktusene blomstrer nå.",
+    time: "I går",
+    unread: 0,
+    type: "place",
+    access: "open",
+    status: "active",
+    placeId: "p8",
+    member: false,
+    members: 29,
+    initials: "BH",
+  },
+  {
+    id: "c17",
+    name: "Takåsen Yogastudio",
+    last: "Husk egen matte hvis du har.",
+    time: "Fre",
+    unread: 0,
+    type: "place",
+    access: "open",
+    status: "active",
+    placeId: "p9",
+    member: false,
+    members: 22,
+    initials: "TY",
+  },
+  {
+    id: "c18",
+    name: "Oslofjord Seiltur",
+    last: "Varme klær anbefales.",
+    time: "I går",
+    unread: 0,
+    type: "place",
+    access: "open",
+    status: "active",
+    placeId: "p10",
+    member: false,
+    members: 16,
+    initials: "OS",
+  },
+  {
+    id: "c19",
+    name: "Munch-galleriet Kveldstur",
+    last: "Utstillingen var verdt turen.",
+    time: "Fre",
+    unread: 0,
+    type: "place",
+    access: "open",
+    status: "active",
+    placeId: "p11",
+    member: false,
+    members: 48,
+    initials: "MG",
+  },
+  {
+    id: "c20",
+    name: "Barcode Arkitekturtur",
+    last: "Lærerikt om byutviklingen.",
+    time: "I går",
+    unread: 0,
+    type: "place",
+    access: "open",
+    status: "active",
+    placeId: "p12",
+    member: false,
+    members: 14,
+    initials: "BA",
+  },
+  {
+    id: "c21",
+    name: "Grønland Krydderverksted",
+    last: "Takk for oppskriften på garam masala.",
+    time: "Fre",
+    unread: 0,
+    type: "place",
+    access: "open",
+    status: "active",
+    placeId: "p13",
+    member: false,
+    members: 31,
+    initials: "GK",
+  },
+  {
+    id: "c22",
+    name: "Frogner Skjønnhetssalong",
+    last: "Hyggelig betjening som alltid.",
+    time: "I går",
+    unread: 0,
+    type: "place",
+    access: "open",
+    status: "active",
+    placeId: "p14",
+    member: false,
+    members: 19,
+    initials: "FS",
+  },
 ];
+
+/** The chat of an experience (pinned to it), if it has one. */
+export function chatForExperience(expId: string): MockChat | undefined {
+  return chats.find(
+    (c) => c.pinnedExperienceId === expId && c.status === "active",
+  );
+}
+
+/** The chat that belongs to a place, if it has one. */
+export function chatForPlace(placeId: string): MockChat | undefined {
+  return chats.find((c) => c.placeId === placeId && c.status === "active");
+}
 
 // MOCK message logs per chat (DEMO ONLY — no realtime, no delivery/read state).
 // BLOCKED_CONTRACT_GAP: no certified message DTO. `mine` flags the demo viewer's
@@ -1288,6 +2338,328 @@ export const messagesByChat: Record<string, MockMessage[]> = {
       initials: "NI",
       text: "Takk for en fantastisk kveld!",
       time: "12. juli",
+      mine: false,
+    },
+  ],
+  c23: [
+    {
+      id: "m300",
+      author: "Tom",
+      initials: "TT",
+      text: "Torsdag smaker vi fem viner fra Loire.",
+      time: "Ons",
+      mine: false,
+    },
+    {
+      id: "m301",
+      author: "Ingrid",
+      initials: "IS",
+      text: "Blir det småretter i år også?",
+      time: "Ons",
+      mine: false,
+    },
+    {
+      id: "m302",
+      author: "Tom",
+      initials: "TT",
+      text: "Ja, én til hver vin.",
+      time: "Ons",
+      mine: false,
+    },
+  ],
+  c7: [
+    {
+      id: "m200",
+      author: "Åse",
+      initials: "ÅK",
+      text: "Neste bok er «Snømannen». Vi tar første halvdel søndag.",
+      time: "Fre",
+      mine: false,
+    },
+    {
+      id: "m201",
+      author: "Per",
+      initials: "PO",
+      text: "Har noen en ekstra kopi å låne bort?",
+      time: "Fre",
+      mine: false,
+    },
+  ],
+  c8: [
+    {
+      id: "m202",
+      author: "Jonas",
+      initials: "JB",
+      text: "Vi møtes ved Monolitten 17:55. Ta med refleks.",
+      time: "Man",
+      mine: false,
+    },
+    {
+      id: "m203",
+      author: "Sofie",
+      initials: "SL",
+      text: "Jeg er med på tirsdag.",
+      time: "Man",
+      mine: false,
+    },
+  ],
+  c9: [
+    {
+      id: "m204",
+      author: "Nina",
+      initials: "ND",
+      text: "Denne uka spiller vi Wingspan og Codenames.",
+      time: "I går",
+      mine: false,
+    },
+    {
+      id: "m205",
+      author: "Ola",
+      initials: "OH",
+      text: "Kan jeg ta med en venn?",
+      time: "I går",
+      mine: false,
+    },
+    {
+      id: "m206",
+      author: "Nina",
+      initials: "ND",
+      text: "Klart, bare meld henne på også.",
+      time: "I går",
+      mine: false,
+    },
+  ],
+  c10: [
+    {
+      id: "m207",
+      author: "Per",
+      initials: "PO",
+      text: "Mobilkamera holder fint. Vi starter ved fontenen.",
+      time: "09:10",
+      mine: false,
+    },
+    {
+      id: "m208",
+      author: "Kari",
+      initials: "KN",
+      text: "Gleder meg!",
+      time: "09:12",
+      mine: false,
+    },
+  ],
+  c11: [
+    {
+      id: "m209",
+      author: "Kork & Kanne Vinbar",
+      initials: "KK",
+      text: "Ny naturvin fra Loire på glass denne uka.",
+      time: "Fre",
+      mine: false,
+    },
+    {
+      id: "m210",
+      author: "Kari",
+      initials: "KN",
+      text: "Noen som vil dele en flaske fredag?",
+      time: "Fre",
+      mine: false,
+    },
+  ],
+  c12: [
+    {
+      id: "m211",
+      author: "Sofienberg Sykkelverksted",
+      initials: "SS",
+      text: "Åpent verksted torsdag kl. 17.",
+      time: "I går",
+      mine: false,
+    },
+    {
+      id: "m212",
+      author: "Ola",
+      initials: "OH",
+      text: "Takk for hjelpen med girene.",
+      time: "I går",
+      mine: false,
+    },
+  ],
+  c13: [
+    {
+      id: "m213",
+      author: "Akerselva Vandring",
+      initials: "AV",
+      text: "Søndagsrunde fra Vaterland kl. 12.",
+      time: "Fre",
+      mine: false,
+    },
+    {
+      id: "m214",
+      author: "Sofie",
+      initials: "SL",
+      text: "Flott høstvær i dag.",
+      time: "Fre",
+      mine: false,
+    },
+  ],
+  c14: [
+    {
+      id: "m215",
+      author: "Vulkan Keramikkstudio",
+      initials: "VK",
+      text: "Glaseringskveld onsdag. Ta med egne ting.",
+      time: "I går",
+      mine: false,
+    },
+    {
+      id: "m216",
+      author: "Erik",
+      initials: "EH",
+      text: "Ovnen er full til fredag.",
+      time: "I går",
+      mine: false,
+    },
+  ],
+  c15: [
+    {
+      id: "m217",
+      author: "Grünerløkka Mattur",
+      initials: "GM",
+      text: "Ny rute med tre stopp på Løkka.",
+      time: "Fre",
+      mine: false,
+    },
+    {
+      id: "m218",
+      author: "Ingrid",
+      initials: "IS",
+      text: "Bakeriet var et høydepunkt.",
+      time: "Fre",
+      mine: false,
+    },
+  ],
+  c16: [
+    {
+      id: "m219",
+      author: "Botanisk Hage Omvisning",
+      initials: "BH",
+      text: "Omvisning i Palmehuset lørdag.",
+      time: "I går",
+      mine: false,
+    },
+    {
+      id: "m220",
+      author: "Nina",
+      initials: "ND",
+      text: "Kaktusene blomstrer nå.",
+      time: "I går",
+      mine: false,
+    },
+  ],
+  c17: [
+    {
+      id: "m221",
+      author: "Takåsen Yogastudio",
+      initials: "TY",
+      text: "Rolig yin-time søndag kveld.",
+      time: "Fre",
+      mine: false,
+    },
+    {
+      id: "m222",
+      author: "Kari",
+      initials: "KN",
+      text: "Husk egen matte hvis du har.",
+      time: "Fre",
+      mine: false,
+    },
+  ],
+  c18: [
+    {
+      id: "m223",
+      author: "Oslofjord Seiltur",
+      initials: "OS",
+      text: "Siste tur før vinteropplag 15. november.",
+      time: "I går",
+      mine: false,
+    },
+    {
+      id: "m224",
+      author: "Ola",
+      initials: "OH",
+      text: "Varme klær anbefales.",
+      time: "I går",
+      mine: false,
+    },
+  ],
+  c19: [
+    {
+      id: "m225",
+      author: "Munch-galleriet Kveldstur",
+      initials: "MG",
+      text: "Kveldsomvisning torsdag kl. 19.",
+      time: "Fre",
+      mine: false,
+    },
+    {
+      id: "m226",
+      author: "Sofie",
+      initials: "SL",
+      text: "Utstillingen var verdt turen.",
+      time: "Fre",
+      mine: false,
+    },
+  ],
+  c20: [
+    {
+      id: "m227",
+      author: "Barcode Arkitekturtur",
+      initials: "BA",
+      text: "Neste tur starter ved Operaen.",
+      time: "I går",
+      mine: false,
+    },
+    {
+      id: "m228",
+      author: "Erik",
+      initials: "EH",
+      text: "Lærerikt om byutviklingen.",
+      time: "I går",
+      mine: false,
+    },
+  ],
+  c21: [
+    {
+      id: "m229",
+      author: "Grønland Krydderverksted",
+      initials: "GK",
+      text: "Kurs i indisk krydderblanding lørdag.",
+      time: "Fre",
+      mine: false,
+    },
+    {
+      id: "m230",
+      author: "Ingrid",
+      initials: "IS",
+      text: "Takk for oppskriften på garam masala.",
+      time: "Fre",
+      mine: false,
+    },
+  ],
+  c22: [
+    {
+      id: "m231",
+      author: "Frogner Skjønnhetssalong",
+      initials: "FS",
+      text: "Ledige timer fredag ettermiddag.",
+      time: "I går",
+      mine: false,
+    },
+    {
+      id: "m232",
+      author: "Nina",
+      initials: "ND",
+      text: "Hyggelig betjening som alltid.",
+      time: "I går",
       mine: false,
     },
   ],
@@ -1457,6 +2829,7 @@ export const people: MockPerson[] = [
     bio: "Løper, syklist og kaffedrikker. Ofte på kafeen på hjørnet.",
     mutuals: 2,
     interests: ["Løping", "Sykkel", "Kaffe"],
+    hostsExperienceId: "e4",
   },
   {
     id: "u3",
@@ -1498,6 +2871,29 @@ export const people: MockPerson[] = [
     bio: "Naturvin, lange turer og helgeklatring.",
     mutuals: 2,
     interests: ["Vin", "Natur", "Klatring"],
+    hostsExperienceId: "e5",
+  },
+  {
+    id: "u7",
+    name: "Tom Tangen",
+    handle: "@tomt",
+    avatar: "person-tom",
+    area: "Vulkan",
+    bio: "Jobber med vin og liker å forklare hvordan den lages. Vert for naturvinkveldene.",
+    mutuals: 1,
+    interests: ["Vin", "Mat", "Reiser"],
+    hostsExperienceId: "e3",
+  },
+  {
+    id: "u8",
+    name: "Per Olsen",
+    handle: "@perfoto",
+    avatar: "person-per",
+    area: "Grünerløkka",
+    bio: "Fotograf som liker gatelivet på Løkka. Viser gjerne enkle grep for bedre bilder.",
+    mutuals: 0,
+    interests: ["Foto", "Byvandring", "Kaffe"],
+    hostsExperienceId: "e6",
   },
 ];
 

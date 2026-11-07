@@ -28,7 +28,9 @@ export const LIBRARY_FULL = {
   "person-maria": require("../../assets/library/person-maria.webp"),
   "person-nina": require("../../assets/library/person-nina.webp"),
   "person-ola": require("../../assets/library/person-ola.webp"),
+  "person-per": require("../../assets/library/person-per.webp"),
   "person-sofie": require("../../assets/library/person-sofie.webp"),
+  "person-tom": require("../../assets/library/person-tom.webp"),
   "pottery-1": require("../../assets/library/pottery-1.webp"),
   "pottery-2": require("../../assets/library/pottery-2.webp"),
   "river-1": require("../../assets/library/river-1.webp"),
@@ -82,7 +84,9 @@ export const LIBRARY_SMALL: Record<
   "person-maria": require("../../assets/library/person-maria-sm.webp"),
   "person-nina": require("../../assets/library/person-nina-sm.webp"),
   "person-ola": require("../../assets/library/person-ola-sm.webp"),
+  "person-per": require("../../assets/library/person-per-sm.webp"),
   "person-sofie": require("../../assets/library/person-sofie-sm.webp"),
+  "person-tom": require("../../assets/library/person-tom-sm.webp"),
   "pottery-1": require("../../assets/library/pottery-1-sm.webp"),
   "pottery-2": require("../../assets/library/pottery-2-sm.webp"),
   "river-1": require("../../assets/library/river-1-sm.webp"),
@@ -189,8 +193,12 @@ export const PLACEHOLDER: Record<string, string> = {
     "data:image/webp;base64,UklGRloAAABXRUJQVlA4IE4AAAAwAgCdASoQABAAA4BaJbACdLoAAwXAzsBEQAD+vwRHdiM7NBJkNo85amlFPNNBy1xAmml5YUJUJrRiO9uVpbUsmZP5jfBkMR4Pzf7rkAA=",
   "library/person-ola":
     "data:image/webp;base64,UklGRnAAAABXRUJQVlA4IGQAAAAwAgCdASoQABAAA4BaJZgCdH8AEjJTzL2DAAD+fGsggeXo5ByrTIX57PiKhRnKwN2IAN4fzjXNj2YPECUDGrioVtMBDbfkN4vpPgJ/8rinhq2x7uIeulyFZvZBIfWAgHoVyOAA",
+  "library/person-per":
+    "data:image/webp;base64,UklGRm4AAABXRUJQVlA4IGIAAAAwAgCdASoQABAAA4BaJYgCdAEVYjvq//cQvAD+7Jj+g75AywwroNtTsjQRKqbE+ZUK4Mx50Mm0niEgS6YKJJr5uv2Ft9hu5ixkps3GdpnntrA9bF7tHNRJDYza7IrCWebAAA==",
   "library/person-sofie":
     "data:image/webp;base64,UklGRmoAAABXRUJQVlA4IF4AAADQAQCdASoQABAAA4BaJbACdACDN09zmAD8WjyotOFPmmtuSWQRM8zMO1agDxvG5a9XWxhZNjrF+3AJ/rM+wixZmojGwCMEiwsqOpxZ8joXpSrG/EGiGE4uGFyApYAA",
+  "library/person-tom":
+    "data:image/webp;base64,UklGRngAAABXRUJQVlA4IGwAAAAwAgCdASoQABAAA4BaJQBOgBuH3PkBYMM2AAD2t6wo3riS6VftJB9APXiQYu/kvyZvDkA5d/pD8ziWLZcylug2VmpCK4luR6dGucnbVjYUyXf5XTX0MD3GDDKTD1KJvgnugbC89MkobL4QAAA=",
   "library/pottery-1":
     "data:image/webp;base64,UklGRm4AAABXRUJQVlA4IGIAAADwAQCdASoQAAoAA4BaJYwCdADpmQLlb6QA/usj21xF6+ILQxkur2r0P43eggRKdLb8hmb8bKqNLCoNz3KuTrYsQUJzyBuQowD3bYzJy8WmoD1OIoRruZ/AvPhXhJfVSCAAAA==",
   "library/pottery-2":

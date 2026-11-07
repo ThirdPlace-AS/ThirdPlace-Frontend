@@ -97,7 +97,7 @@ export function CategoryPicker({
   onPick,
   onClose,
 }: {
-  options: string[];
+  options: readonly string[];
   value: string | null;
   onPick: (c: string) => void;
   onClose: () => void;
