@@ -225,7 +225,7 @@ p5 Map: marker glyphs (0218), galleries in browse cards and place/business/group
 
 ### Founder decision: TikTok-style "Legg til" (2026-11-06)
 
-PDF p5–p8 draw a dark round "+". The founder chose a TikTok-style add button in ThirdPlace colours: an ink rounded rectangle with a white "+", an ember layer peeking out on the left and a light-grey one on the right (in dark mode the button is white and the right layer muted grey). The "Legg til" label stays under it like the other tabs. Ledger 0241.
+PDF p5–p8 draw a dark round "+". The founder chose a TikTok-style add button in ThirdPlace colours: an ink rounded rectangle with a white "+", an ember layer peeking out on the left and a light-grey one on the right (in dark mode the button is white and the right layer muted grey). The "Legg til" label stays under it like the other tabs. Ledger 0241. Since 2026-11-07 (founder) the button is grey like the other idle tabs while another tab is open, and shows these colours while Legg til is open.
 
 ### Founder decision: Gruppe in Legg til (2026-11-06)
 

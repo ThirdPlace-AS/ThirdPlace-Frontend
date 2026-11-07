@@ -30,10 +30,16 @@ function icon(idle: IconName, active: IconName) {
 // left and a grey one on the right, with the "Legg til" label underneath
 // like the other tabs. In dark mode ink is white, so the right layer uses the
 // muted grey to stay visible against the white button and the dark bar.
+// While Legg til is not the open tab the button is grey like the other idle
+// tabs (founder 2026-11-07): a muted rectangle with both side layers in the
+// line grey. The colours come back while the tab is open.
 const ADD_BUTTON = { w: 40, h: 28, peek: 3 } as const;
-function AddIcon() {
+function AddIcon({ focused }: { focused: boolean }) {
   const dark = useScheme() === "dark";
   const { w, h, peek } = ADD_BUTTON;
+  const leftLayer = focused ? "bg-ember" : "bg-line";
+  const rightLayer = focused && dark ? "bg-muted" : "bg-line";
+  const face = focused ? "bg-ink" : "bg-muted";
   return (
     <View
       accessible={false}
@@ -41,15 +47,15 @@ function AddIcon() {
       className="items-center justify-center"
     >
       <View
-        className="absolute rounded-sm bg-ember"
+        className={`absolute rounded-sm ${leftLayer}`}
         style={{ left: 0, width: w, height: h }}
       />
       <View
-        className={`absolute rounded-sm ${dark ? "bg-muted" : "bg-line"}`}
+        className={`absolute rounded-sm ${rightLayer}`}
         style={{ right: 0, width: w, height: h }}
       />
       <View
-        className="items-center justify-center rounded-sm bg-ink"
+        className={`items-center justify-center rounded-sm ${face}`}
         style={{ width: w, height: h }}
       >
         <Icon name="add" size="md" tone="onInk" />
