@@ -11,7 +11,10 @@ import { ExportSheet } from "./ExportSheet";
 import { BLOCKED_COUNT } from "./SettingsPages";
 import { NavRow, SettingsSection, ToggleRow } from "./settingsUi";
 
-// Personvern, per the design (PDF p19, p21): SYNLIGHET toggles, then
+// Personvern, per the design (PDF p19, p21): SYNLIGHET toggles, DATADELING
+// (p21 "Data og personvern": Del aktivitet med venner, Personalisert innhold,
+// Analytiske data; no hints, since what each one changes is not specified;
+// "Vis profilen for alle" and "Vis på kartet" are the Synlighet rows), then
 // DATA — Blokkerte brukere and Slett konto (pages since Phase 12 H4c) and
 // GDPR: Last ned dine data (the shared export sheet). Every control is local
 // and writes nothing; nothing is exported or deleted.
@@ -21,6 +24,10 @@ export default function PrivacyScreen() {
   const [mapVisible, setMapVisible] = useState(true);
   const [profileVisible, setProfileVisible] = useState(true);
   const [discoverable, setDiscoverable] = useState(false);
+  // PDF p21 "Data og personvern": data sharing (on, on, off as drawn).
+  const [shareActivity, setShareActivity] = useState(true);
+  const [personalised, setPersonalised] = useState(true);
+  const [analytics, setAnalytics] = useState(false);
   const [exportOpen, setExportOpen] = useState(false);
   // Data actions are account-only; guests get the sign-in prompt instead.
   const { isGuest } = useGuestMode();
@@ -53,6 +60,27 @@ export default function PrivacyScreen() {
             hint="Andre kan finne deg basert på felles interesser"
             value={discoverable}
             onValueChange={setDiscoverable}
+          />
+        </SettingsSection>
+
+        <SettingsSection title="Datadeling">
+          <ToggleRow
+            icon="people-outline"
+            label="Del aktivitet med venner"
+            value={shareActivity}
+            onValueChange={setShareActivity}
+          />
+          <ToggleRow
+            icon="sparkles-outline"
+            label="Personalisert innhold"
+            value={personalised}
+            onValueChange={setPersonalised}
+          />
+          <ToggleRow
+            icon="analytics-outline"
+            label="Analytiske data"
+            value={analytics}
+            onValueChange={setAnalytics}
           />
         </SettingsSection>
 

@@ -48,14 +48,14 @@ export function CheckinContent({ id }: { id: string }) {
           {checkedIn
             ? "Du er sjekket inn"
             : near
-              ? "Du er i nærheten (~40 m)"
+              ? "Du er fremme!"
               : "For langt unna (~1,2 km)"}
         </Text>
         <Text variant="caption" tone="muted" className="text-center">
           {checkedIn
             ? "God tur!"
             : near
-              ? "Du kan sjekke inn nå."
+              ? "Du er rundt 40 m unna. Du kan sjekke inn nå."
               : "Kom nærmere stedet for å sjekke inn."}
         </Text>
       </View>
