@@ -1,7 +1,20 @@
 import { router, useLocalSearchParams, type Href } from "expo-router";
-import { useRef, useState } from "react";
-import { FlatList, KeyboardAvoidingView, TextInput, View } from "react-native";
-import Animated, { FadeInDown } from "react-native-reanimated";
+import { useEffect, useMemo, useRef, useState } from "react";
+import {
+  FlatList,
+  KeyboardAvoidingView,
+  Pressable,
+  TextInput,
+  View,
+} from "react-native";
+import { Gesture, GestureDetector } from "react-native-gesture-handler";
+import Animated, {
+  FadeInDown,
+  runOnJS,
+  useAnimatedStyle,
+  useSharedValue,
+  withSpring,
+} from "react-native-reanimated";
 import { useReducedMotion } from "@/hooks/useReducedMotion";
 
 import {
@@ -22,28 +35,47 @@ import {
   chatById,
   experienceById,
   messagesForChat,
-  type MockMessage,
 } from "@/fixtures";
+import { markChatRead } from "@/lib/chatReads";
+import {
+  REACTIONS,
+  sendMessage,
+  toggleReaction,
+  useThread,
+  type Reply,
+  type ThreadMessage,
+} from "@/lib/chatThreads";
 import { duration, useThemeColors } from "@/theme";
 import { fontFamilyFor } from "@/theme/fonts";
 import { haptics } from "@/lib/haptics";
 
 // Chat conversation. BLOCKED_CONTRACT_GAP: no realtime/messaging
-// backend, no delivery or read receipts. The composer echoes locally so the UI
-// is explorable; nothing is stored or delivered.
+// backend, no delivery or read receipts. What the viewer sends, replies to and
+// reacts with is kept for the session (src/lib/chatThreads.ts); nothing is
+// delivered. Phase 16 (founder, after the section benchmark): long-press a
+// message for reactions and "Svar", or swipe it right to reply with a quote.
 export default function ChatThreadScreen() {
   const colors = useThemeColors();
   const { id } = useLocalSearchParams<{ id: string }>();
   const chat = chatById(id ?? "");
-  const [messages, setMessages] = useState<MockMessage[]>(() =>
-    messagesForChat(id ?? ""),
+  const thread = useThread(id ?? "");
+  const messages = useMemo<ThreadMessage[]>(
+    () => [...messagesForChat(id ?? ""), ...thread.sent],
+    [id, thread.sent],
   );
   const [draft, setDraft] = useState("");
+  const [replyTo, setReplyTo] = useState<Reply | null>(null);
+  // The message whose reaction row is open (long press).
+  const [menuFor, setMenuFor] = useState<string | null>(null);
+  // Opening the thread reads it: its unread count and the Chat tab badge drop.
+  useEffect(() => {
+    if (id) markChatRead(id);
+  }, [id]);
   // Guests may read but not send (master spec §4: guests cannot send
   // messages). The composer is replaced by a sign-in entry point.
   const { isGuest } = useGuestMode();
   const [promptOpen, setPromptOpen] = useState(false);
-  const listRef = useRef<FlatList<MockMessage>>(null);
+  const listRef = useRef<FlatList<ThreadMessage>>(null);
   // Open at the newest message and follow every send (the list used to open
   // at the oldest message and new bubbles landed out of view).
   const sentCount = useRef(0);
@@ -70,20 +102,17 @@ export default function ChatThreadScreen() {
   const send = () => {
     const text = draft.trim();
     if (!text) return;
-    setMessages((prev) => [
-      ...prev,
-      {
-        id: `local-${prev.length}`,
-        author: "Ola",
-        initials: "OL",
-        text,
-        time: "Nå",
-        mine: true,
-      },
-    ]);
+    sendMessage(chat.id, text, replyTo ?? undefined);
     setDraft("");
+    setReplyTo(null);
+    setMenuFor(null);
     sentCount.current += 1;
     haptics.light();
+  };
+  const startReply = (m: ThreadMessage) => {
+    setMenuFor(null);
+    setReplyTo({ author: m.mine ? "deg selv" : m.author, text: m.text });
+    haptics.selection();
   };
 
   return (
@@ -164,6 +193,8 @@ export default function ChatThreadScreen() {
           onContentSizeChange={() =>
             listRef.current?.scrollToEnd({ animated: sentCount.current > 0 })
           }
+          onScrollBeginDrag={() => setMenuFor(null)}
+          keyboardShouldPersistTaps="handled"
           ListEmptyComponent={
             <View className="flex-1 items-center justify-center py-10">
               <Text variant="caption" tone="muted" className="text-center">
@@ -171,7 +202,23 @@ export default function ChatThreadScreen() {
               </Text>
             </View>
           }
-          renderItem={({ item }) => <Bubble message={item} />}
+          renderItem={({ item }) => (
+            <Bubble
+              message={item}
+              reaction={thread.reactions[item.id]}
+              menuOpen={menuFor === item.id}
+              onToggleMenu={() =>
+                setMenuFor((cur) => (cur === item.id ? null : item.id))
+              }
+              onReact={(emoji) => {
+                toggleReaction(chat.id, item.id, emoji);
+                setMenuFor(null);
+                haptics.selection();
+              }}
+              onReply={() => startReply(item)}
+              canReply={chat.status !== "archived" && !isGuest}
+            />
+          )}
         />
 
         {chat.status === "archived" ? (
@@ -190,6 +237,25 @@ export default function ChatThreadScreen() {
           </View>
         ) : (
           <View className="gap-2 border-t border-line px-gutter pb-2 pt-2.5">
+            {replyTo ? (
+              <View className="flex-row items-center gap-2 rounded-md bg-surfaceMuted py-2 pl-3 pr-1">
+                <View className="flex-1 border-l-2 border-ember pl-2">
+                  <Text variant="caption" weight="semibold">
+                    Svarer {replyTo.author}
+                  </Text>
+                  <Text variant="caption" tone="muted" numberOfLines={1}>
+                    {replyTo.text}
+                  </Text>
+                </View>
+                <IconButton
+                  icon="close"
+                  label="Avbryt svaret"
+                  size="sm"
+                  variant="ghost"
+                  onPress={() => setReplyTo(null)}
+                />
+              </View>
+            ) : null}
             <View className="flex-row items-end gap-2">
               <TextInput
                 accessibilityLabel="Melding"
@@ -224,7 +290,25 @@ export default function ChatThreadScreen() {
   );
 }
 
-function Bubble({ message }: { message: MockMessage }) {
+const REPLY_SWIPE = 56;
+
+function Bubble({
+  message,
+  reaction,
+  menuOpen,
+  onToggleMenu,
+  onReact,
+  onReply,
+  canReply,
+}: {
+  message: ThreadMessage;
+  reaction: string | undefined;
+  menuOpen: boolean;
+  onToggleMenu: () => void;
+  onReact: (emoji: string) => void;
+  onReply: () => void;
+  canReply: boolean;
+}) {
   const reduced = useReducedMotion();
   // Only messages written in this session slide in from the composer; the
   // fixture history is already there. No delivered/read ticks (no backend).
@@ -232,13 +316,52 @@ function Bubble({ message }: { message: MockMessage }) {
     message.id.startsWith("local-") && !reduced
       ? FadeInDown.duration(duration.base)
       : undefined;
-  if (message.mine) {
-    return (
-      <Animated.View
-        entering={entering}
-        style={{ alignSelf: "flex-end", maxWidth: "80%" }}
-      >
+  // Swipe right to reply (WhatsApp / Instagram): the bubble follows the
+  // finger a little and springs back; past the threshold it quotes.
+  const x = useSharedValue(0);
+  const pan = Gesture.Pan()
+    .enabled(canReply)
+    .activeOffsetX(14)
+    .failOffsetY([-12, 12])
+    .onUpdate((e) => {
+      x.value = Math.max(0, Math.min(e.translationX, 72));
+    })
+    .onEnd(() => {
+      if (x.value >= REPLY_SWIPE) runOnJS(onReply)();
+      x.value = reduced ? 0 : withSpring(0);
+    });
+  const slide = useAnimatedStyle(() => ({
+    transform: [{ translateX: x.value }],
+  }));
+  const mine = message.mine;
+  const label = `${mine ? "Du" : message.author}: ${message.text}, ${message.time}${
+    reaction ? `, reaksjon ${reaction}` : ""
+  }`;
+
+  const body = (
+    <Pressable
+      onLongPress={() => {
+        haptics.selection();
+        onToggleMenu();
+      }}
+      delayLongPress={280}
+      accessibilityLabel={label}
+      accessibilityHint="Hold for å reagere eller svare"
+      accessibilityActions={
+        canReply
+          ? [
+              { name: "react", label: "Reager" },
+              { name: "reply", label: "Svar" },
+            ]
+          : [{ name: "react", label: "Reager" }]
+      }
+      onAccessibilityAction={(e) =>
+        e.nativeEvent.actionName === "reply" ? onReply() : onToggleMenu()
+      }
+    >
+      {mine ? (
         <View className="rounded-lg rounded-br-sm bg-ink px-3.5 py-2.5">
+          {message.replyTo ? <Quote reply={message.replyTo} onInk /> : null}
           <Text variant="body" tone="onInk">
             {message.text}
           </Text>
@@ -246,26 +369,145 @@ function Bubble({ message }: { message: MockMessage }) {
             {message.time}
           </Text>
         </View>
-      </Animated.View>
-    );
-  }
+      ) : (
+        <View className="rounded-lg rounded-bl-sm border border-line bg-surface px-3.5 py-2.5">
+          <Text variant="caption" weight="semibold" tone="muted">
+            {message.author}
+          </Text>
+          {message.replyTo ? <Quote reply={message.replyTo} /> : null}
+          <Text variant="body">{message.text}</Text>
+          <Text variant="caption" tone="muted" className="pt-0.5">
+            {message.time}
+          </Text>
+        </View>
+      )}
+    </Pressable>
+  );
+
   return (
-    <View className="max-w-[82%] flex-row items-end gap-2 self-start">
-      <Avatar
-        name={message.author}
-        initials={message.initials}
-        size="sm"
-        decorative
-      />
-      <View className="rounded-lg rounded-bl-sm border border-line bg-surface px-3.5 py-2.5">
-        <Text variant="caption" weight="semibold" tone="muted">
-          {message.author}
-        </Text>
-        <Text variant="body">{message.text}</Text>
-        <Text variant="caption" tone="muted" className="pt-0.5">
-          {message.time}
-        </Text>
-      </View>
+    <Animated.View
+      entering={entering}
+      style={{
+        alignSelf: mine ? "flex-end" : "flex-start",
+        maxWidth: mine ? "80%" : "82%",
+        gap: 4,
+      }}
+    >
+      {menuOpen ? (
+        <ReactionBar
+          current={reaction}
+          onReact={onReact}
+          onReply={canReply ? onReply : undefined}
+          alignEnd={mine}
+        />
+      ) : null}
+      <GestureDetector gesture={pan}>
+        <Animated.View style={slide}>
+          {mine ? (
+            body
+          ) : (
+            <View className="flex-row items-end gap-2">
+              <Avatar
+                name={message.author}
+                initials={message.initials}
+                size="sm"
+                decorative
+              />
+              <View className="shrink">{body}</View>
+            </View>
+          )}
+        </Animated.View>
+      </GestureDetector>
+      {reaction ? (
+        <Pressable
+          accessibilityRole="button"
+          accessibilityLabel={`Fjern reaksjonen ${reaction}`}
+          onPress={() => onReact(reaction)}
+          hitSlop={8}
+          className={`rounded-full border border-line bg-surface px-1.5 py-0.5 ${
+            mine ? "self-end" : "ml-10 self-start"
+          }`}
+        >
+          <Text variant="caption">{reaction}</Text>
+        </Pressable>
+      ) : null}
+    </Animated.View>
+  );
+}
+
+// The quoted message inside a reply.
+function Quote({ reply, onInk = false }: { reply: Reply; onInk?: boolean }) {
+  return (
+    <View
+      className={`mb-1.5 rounded-sm border-l-2 px-2 py-1 ${
+        onInk ? "border-onInk bg-onInk/15" : "border-ember bg-surfaceMuted"
+      }`}
+    >
+      <Text
+        variant="caption"
+        weight="semibold"
+        tone={onInk ? "onInk" : "ink"}
+        numberOfLines={1}
+      >
+        {reply.author}
+      </Text>
+      <Text
+        variant="caption"
+        tone={onInk ? "onInk" : "muted"}
+        numberOfLines={2}
+      >
+        {reply.text}
+      </Text>
+    </View>
+  );
+}
+
+// Long press: a reaction row and "Svar", over the message.
+function ReactionBar({
+  current,
+  onReact,
+  onReply,
+  alignEnd,
+}: {
+  current: string | undefined;
+  onReact: (emoji: string) => void;
+  onReply?: () => void;
+  alignEnd: boolean;
+}) {
+  return (
+    <View
+      accessibilityRole="toolbar"
+      accessibilityLabel="Reager på meldingen"
+      className={`flex-row items-center gap-0.5 rounded-full border border-line bg-surface px-1.5 py-1 ${
+        alignEnd ? "self-end" : "self-start"
+      }`}
+    >
+      {REACTIONS.map((r) => (
+        <Pressable
+          key={r}
+          accessibilityRole="button"
+          accessibilityLabel={`Reager med ${r}`}
+          accessibilityState={{ selected: current === r }}
+          onPress={() => onReact(r)}
+          className={`h-9 w-9 items-center justify-center rounded-full ${
+            current === r ? "bg-surfaceMuted" : ""
+          }`}
+        >
+          <Text variant="title">{r}</Text>
+        </Pressable>
+      ))}
+      {onReply ? (
+        <Pressable
+          accessibilityRole="button"
+          accessibilityLabel="Svar"
+          onPress={onReply}
+          className="h-9 items-center justify-center rounded-full px-2.5"
+        >
+          <Text variant="label" weight="semibold">
+            Svar
+          </Text>
+        </Pressable>
+      ) : null}
     </View>
   );
 }

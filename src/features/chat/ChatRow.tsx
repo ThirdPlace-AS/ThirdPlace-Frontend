@@ -4,6 +4,7 @@ import { View } from "react-native";
 
 import { Avatar, Pressable as UIPressable, Text } from "@/components/ui";
 import type { MockChat } from "@/fixtures";
+import { unreadOf, useChatReads } from "@/lib/chatReads";
 
 export function ChatRow({
   chat,
@@ -18,7 +19,9 @@ export function ChatRow({
       : chat.type === "place" || chat.type === "business"
         ? "cafe-outline"
         : null;
-  const unread = chat.unread > 0 ? `, ${chat.unread} uleste` : "";
+  // Opening a chat reads it this session (src/lib/chatReads.ts).
+  const count = unreadOf(chat, useChatReads());
+  const unread = count > 0 ? `, ${count} uleste` : "";
   return (
     <UIPressable
       accessibilityRole="button"
@@ -38,15 +41,15 @@ export function ChatRow({
       <View className="flex-1 gap-0.5">
         <Text
           variant="body"
-          weight={chat.unread > 0 ? "bold" : "semibold"}
+          weight={count > 0 ? "bold" : "semibold"}
           numberOfLines={1}
         >
           {chat.name}
         </Text>
         <Text
           variant="caption"
-          tone={chat.unread > 0 ? "ink" : "muted"}
-          weight={chat.unread > 0 ? "medium" : "regular"}
+          tone={count > 0 ? "ink" : "muted"}
+          weight={count > 0 ? "medium" : "regular"}
           numberOfLines={1}
         >
           {chat.last}
@@ -55,12 +58,12 @@ export function ChatRow({
       <View className="items-end gap-1">
         <Text
           variant="caption"
-          tone={chat.unread > 0 ? "ink" : "muted"}
-          weight={chat.unread > 0 ? "semibold" : "regular"}
+          tone={count > 0 ? "ink" : "muted"}
+          weight={count > 0 ? "semibold" : "regular"}
         >
           {chat.time}
         </Text>
-        {chat.unread > 0 ? (
+        {count > 0 ? (
           <View className="h-5 min-w-5 items-center justify-center rounded-full bg-emberStrong px-1.5">
             <Text
               variant="micro"
@@ -68,7 +71,7 @@ export function ChatRow({
               tone="onEmber"
               className="normal-case"
             >
-              {String(chat.unread)}
+              {String(count)}
             </Text>
           </View>
         ) : (

@@ -4,6 +4,7 @@ import { Tabs } from "expo-router/js-tabs";
 import { View, type ColorValue } from "react-native";
 
 import { Icon, type IconName } from "@/components/ui";
+import { useUnreadChatCount } from "@/lib/chatReads";
 import { haptics } from "@/lib/haptics";
 import { useScheme, useThemeColors } from "@/theme";
 import { fontFamilyFor } from "@/theme/fonts";
@@ -69,6 +70,8 @@ function AddIcon({ focused }: { focused: boolean }) {
 // scene (above the bar), so the bar simply stays put on every screen.
 export default function TabsLayout() {
   const colors = useThemeColors();
+  // Chats with unread messages (Phase 16, the WhatsApp / Instagram tab badge).
+  const unreadChats = useUnreadChatCount();
   return (
     <Tabs
       screenOptions={{
@@ -109,6 +112,17 @@ export default function TabsLayout() {
         options={{
           title: "Chat",
           tabBarIcon: icon("chatbubbles-outline", "chatbubbles"),
+          tabBarBadge: unreadChats > 0 ? unreadChats : undefined,
+          tabBarBadgeStyle: {
+            backgroundColor: colors.emberStrong,
+            color: colors.onEmber,
+            fontFamily: fontFamilyFor("bold"),
+            fontSize: 11,
+          },
+          tabBarAccessibilityLabel:
+            unreadChats > 0
+              ? `Chat, ${unreadChats} ${unreadChats === 1 ? "ulest samtale" : "uleste samtaler"}`
+              : "Chat",
         }}
       />
       <Tabs.Screen
