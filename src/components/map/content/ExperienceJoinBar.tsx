@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { View } from "react-native";
 
 import {
@@ -9,17 +9,20 @@ import {
 import { Button } from "@/components/Button";
 import { SignInPrompt } from "@/components/SignInPrompt";
 import { Text } from "@/components/ui";
-import { experienceById } from "@/fixtures";
+import { experienceById, sessionsFor } from "@/fixtures";
+import { shortSessionLabel } from "@/lib/dates";
 import { haptics } from "@/lib/haptics";
+
+import { useExperienceSession } from "../../experience/useExperienceSession";
 
 import { useExperienceJoin } from "../hooks/useExperienceJoin";
 import { useGuestMode } from "../hooks/useGuestMode";
 
-// Pinned action bar of the experience detail sheet (PDF p6): price or
-// "Gratis" and places left on the left, the join action on the right, so
-// "Bli med" is reachable at every snap (it used to sit at the end of the
-// scroll, out of sight at the peek). Join / waitlist / leave are local demo
-// state only (BLOCKED_CONTRACT_GAP); guests get the sign-in prompt.
+// Pinned action bar of the experience detail sheet (PDF p6), the reference
+// video's floating card: price or "Gratis", the picked time (or the next
+// one) and its places left on the left, the pink join pill on the right.
+// Join / waitlist / leave act on the picked time; they are local demo state
+// only (BLOCKED_CONTRACT_GAP); guests get the sign-in prompt.
 export function ExperienceJoinBar({ id }: { id: string }) {
   const experience = experienceById(id);
   const [user, setUser] = useExperienceJoin(
@@ -28,6 +31,13 @@ export function ExperienceJoinBar({ id }: { id: string }) {
   );
   const { isGuest } = useGuestMode();
   const [promptOpen, setPromptOpen] = useState(false);
+  const [chosenId] = useExperienceSession(id);
+  const [now] = useState(() => new Date());
+  const sessions = useMemo(
+    () => (experience ? sessionsFor(experience, now, 8) : []),
+    [experience, now],
+  );
+  const session = sessions.find((s) => s.id === chosenId) ?? sessions[0];
   // PDF p23: leaving, paying and joining the waitlist confirm in a sheet.
   const [confirm, setConfirm] = useState<"leave" | "waitlist" | "pay" | null>(
     null,
@@ -40,6 +50,15 @@ export function ExperienceJoinBar({ id }: { id: string }) {
     haptics.light();
     setUser("joined");
   };
+  // Places left at the picked time (the viewer's own seat counts once joined).
+  const left = Math.max(
+    0,
+    (session?.spotsLeft ?? experience.capacity - experience.going) -
+      (user === "joined" ? 1 : 0),
+  );
+  const when = session
+    ? shortSessionLabel(session.start, now)
+    : experience.when;
 
   const primary = (() => {
     if (user === "joined")
@@ -48,7 +67,7 @@ export function ExperienceJoinBar({ id }: { id: string }) {
       return { label: "Meld av venteliste", action: () => setUser("none") };
     if (experience.status === "cancelled")
       return { label: "Avlyst", action: undefined, disabled: true };
-    if (experience.status === "full" || experience.status === "waitlist")
+    if (left <= 0)
       return {
         label: "Meld på venteliste",
         action: gated(() => setConfirm("waitlist")),
@@ -58,9 +77,6 @@ export function ExperienceJoinBar({ id }: { id: string }) {
     return { label: "Bli med", action: gated(join) };
   })();
 
-  const going = experience.going + (user === "joined" ? 1 : 0);
-  const left = Math.max(0, experience.capacity - going);
-
   return (
     <View className="flex-row items-center gap-3">
       <View className="flex-1">
@@ -69,17 +85,16 @@ export function ExperienceJoinBar({ id }: { id: string }) {
         </Text>
         <Text variant="caption" tone="muted" numberOfLines={1}>
           {user === "joined"
-            ? "Du er påmeldt"
+            ? `Du er påmeldt · ${when}`
             : user === "waitlisted"
-              ? "Du står på venteliste"
-              : left > 0
-                ? `${left} plasser igjen`
-                : "Fullt"}
+              ? `Venteliste · ${when}`
+              : `${when} · ${left > 0 ? `${left} igjen` : "Fullt"}`}
         </Text>
       </View>
       <View style={{ minWidth: 150 }}>
         <Button
           label={primary.label}
+          rounded="full"
           variant={user === "none" ? "ember" : "secondary"}
           disabled={primary.disabled}
           onPress={primary.action}
@@ -95,7 +110,7 @@ export function ExperienceJoinBar({ id }: { id: string }) {
       {confirm === "pay" && experience.priceNok ? (
         <PaySheet
           title={experience.title}
-          when={experience.when}
+          when={when}
           priceNok={experience.priceNok}
           onClose={() => setConfirm(null)}
           onJoined={() => setUser("joined")}

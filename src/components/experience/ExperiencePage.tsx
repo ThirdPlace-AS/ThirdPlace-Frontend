@@ -39,6 +39,13 @@ import { formatRating } from "@/lib/format";
 import { useExperienceJoin } from "../map/hooks/useExperienceJoin";
 import { PhotoPager } from "../map/PhotoPager";
 import type { SheetTarget } from "../map/sheetTypes";
+import {
+  AvailabilitySection,
+  ChatSection,
+  ItinerarySection,
+  MeetingSection,
+  ThingsToKnowSection,
+} from "./ExperienceSections";
 import { areaFor, hostPerson, moreExperiences } from "./experienceMeta";
 
 export type ExperiencePageProps = {
@@ -225,10 +232,30 @@ export function ExperiencePage({
 
       <View className="h-px bg-line" />
 
+      <ItinerarySection exp={exp} />
+
+      <View className="h-px bg-line" />
+
       <ReviewsSection
         reviews={reviews}
         onShowAll={() => onNavigate(reviewsHref)}
       />
+
+      <View className="h-px bg-line" />
+
+      <AvailabilitySection exp={exp} />
+
+      <View className="h-px bg-line" />
+
+      <MeetingSection
+        exp={exp}
+        hostName={hostName}
+        onShowOnMap={() =>
+          onNavigate(`/map?focus=experience:${exp.id}&at=${Date.now()}` as Href)
+        }
+      />
+
+      <ChatSection exp={exp} onNavigate={onNavigate} />
 
       {more.length > 0 ? (
         <View className="gap-3">
@@ -281,40 +308,45 @@ export function ExperiencePage({
         </View>
       ) : null}
 
-      {/* Om verten. */}
-      <View className="gap-3">
+      {/* Om verten: a centred card, then the bio and the message button, as
+          in the reference. */}
+      <View className="gap-4">
         <Text variant="h2" accessibilityRole="header">
           Om verten
         </Text>
-        <View className="gap-3 rounded-lg border border-line bg-surface p-4">
-          <View className="flex-row items-center gap-3">
-            <Avatar
-              name={hostName}
-              source={host ? libImage(host.avatar) : undefined}
-              size="lg"
-              decorative
-            />
-            <View className="flex-1">
-              <Text variant="title">{hostName}</Text>
-              <Text variant="caption" tone="muted">
-                {host ? `Vert · ${host.area}` : "Vert"}
-              </Text>
-            </View>
-          </View>
-          {host?.bio ? (
-            <Text variant="label" weight="regular">
-              {host.bio}
-            </Text>
-          ) : null}
-          <Button
-            label={`Send melding til ${hostName.split(" ")[0]}`}
-            variant="secondary"
-            onPress={() =>
-              onNavigate((dm ? `/chat/${dm.id}` : "/chat") as Href)
-            }
+        <UIPressable
+          accessibilityRole="button"
+          accessibilityLabel={`${hostName}, vert. Se profilen`}
+          onPress={
+            host ? () => onNavigate(`/creator/${host.id}` as Href) : undefined
+          }
+          pressedScale={0.99}
+          contentClassName="items-center gap-2 rounded-xl border border-line bg-surface px-4 py-6"
+        >
+          <Avatar
+            name={hostName}
+            source={host ? libImage(host.avatar) : undefined}
+            size="xl"
+            decorative
           />
-        </View>
+          <Text variant="title" className="text-center">
+            {hostName}
+          </Text>
+          <Text variant="caption" tone="muted">
+            {host ? `Vert · ${host.area}` : "Vert"}
+          </Text>
+        </UIPressable>
+        {host?.bio ? <Text variant="body">{host.bio}</Text> : null}
+        <Button
+          label={`Send melding til ${hostName.split(" ")[0]}`}
+          variant="secondary"
+          onPress={() => onNavigate((dm ? `/chat/${dm.id}` : "/chat") as Href)}
+        />
       </View>
+
+      <View className="h-px bg-line" />
+
+      <ThingsToKnowSection exp={exp} />
 
       <View className="h-px bg-line" />
 

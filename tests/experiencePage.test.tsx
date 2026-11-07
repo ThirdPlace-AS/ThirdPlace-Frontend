@@ -4,7 +4,13 @@
 // included / latest review / participants, a Vurderinger section, and no
 // duplicated "when"/"påmeldt"/Lagre-Del-Rapporter row.
 import { describe, expect, it, jest } from "@jest/globals";
-import { fireEvent, render, screen } from "@testing-library/react-native";
+import {
+  act,
+  fireEvent,
+  render,
+  renderHook,
+  screen,
+} from "@testing-library/react-native";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 
 import {
@@ -20,9 +26,27 @@ import {
   hostPerson,
   moreExperiences,
 } from "@/components/experience/experienceMeta";
+import {
+  ChatSection,
+  MeetingSection,
+  thingsToKnow,
+} from "@/components/experience/ExperienceSections";
+import {
+  resetExperienceSessions,
+  useExperienceSession,
+} from "@/components/experience/useExperienceSession";
 import { ExperienceJoinBar } from "@/components/map/content/ExperienceJoinBar";
-import { experienceById, ratingOf, reviewsForExperience } from "@/fixtures";
+import { useGuestMode } from "@/components/map/hooks/useGuestMode";
+import {
+  chatForExperience,
+  experienceById,
+  ratingOf,
+  reviewsForExperience,
+  sessionsFor,
+} from "@/fixtures";
+import { shortSessionLabel } from "@/lib/dates";
 import { formatRating } from "@/lib/format";
+import { resetJoinedChats } from "@/lib/joinedChats";
 
 const METRICS = {
   frame: { x: 0, y: 0, width: 360, height: 640 },
@@ -148,5 +172,119 @@ describe("experienceMeta", () => {
     const more = moreExperiences(e1);
     expect(more.some((e) => e.id === e1.id)).toBe(false);
     expect(more.every((e) => e.status !== "cancelled")).toBe(true);
+  });
+});
+
+describe("ExperiencePage sections (H4b)", () => {
+  it("has every section of the reference, each once", () => {
+    renderPage();
+    for (const text of [
+      "Hva dere skal gjøre",
+      ...e1.itinerary.map((s) => s.title),
+      "Ledige tider",
+      "Se alle tider",
+      "Tilgjengelighet",
+      "Hvor vi møtes",
+      e1.meetingPoint.name,
+      e1.meetingPoint.address,
+      "Har du spørsmål?",
+      "Samtalen",
+      "Ting å vite",
+      "Krav til deltakere",
+      "Aktivitetsnivå",
+      "Avbestilling",
+    ]) {
+      expect(screen.getAllByText(text)).toHaveLength(1);
+    }
+  });
+
+  it("things to know come from the creator's choices and the 18+ rule", () => {
+    const items = thingsToKnow(e1);
+    const krav = items.find((k) => k.key === "krav")!;
+    expect(krav.summary).toContain("Fra 18 år");
+    const cancel = items.find((k) => k.key === "avbestilling")!;
+    expect(cancel.summary).toBe(e1.cancellation);
+    expect(cancel.detail[0]?.text).toContain("Verten har valgt");
+    const e4 = experienceById("e4")!;
+    const a11y = thingsToKnow(e4).find((k) => k.key === "tilgjengelighet")!;
+    expect(a11y.summary).toBe("Utendørs møtested");
+  });
+
+  it("the join card follows the picked time", () => {
+    const now = new Date();
+    const later = sessionsFor(e1, now, 8)[2]!;
+    const { result } = renderHook(() => useExperienceSession("e1"));
+    act(() => result.current[1](later.id));
+    render(<ExperienceJoinBar id="e1" />, { wrapper });
+    expect(
+      screen.getByText(new RegExp(shortSessionLabel(later.start, now))),
+    ).toBeTruthy();
+    act(() => resetExperienceSessions());
+  });
+
+  it("Samtalen joins the experience's chat and opens it", () => {
+    const e2 = experienceById("e2")!;
+    const chat = chatForExperience("e2")!;
+    expect(chat.member).toBe(false);
+    const onNavigate = jest.fn();
+    render(<ChatSection exp={e2} onNavigate={onNavigate} />, { wrapper });
+    fireEvent.press(screen.getByText("Bli med i samtalen"));
+    expect(onNavigate).toHaveBeenCalledWith(`/chat/${chat.id}`);
+    expect(screen.getByText("Åpne samtalen")).toBeTruthy();
+    act(() => resetJoinedChats());
+  });
+
+  it("guests are asked to sign in before joining or messaging the host", () => {
+    const guest = renderHook(() => useGuestMode());
+    act(() => guest.result.current.setGuest(true));
+    try {
+      const e2 = experienceById("e2")!;
+      const onNavigate = jest.fn();
+      render(<ChatSection exp={e2} onNavigate={onNavigate} />, { wrapper });
+      fireEvent.press(screen.getByText("Bli med i samtalen"));
+      expect(onNavigate).not.toHaveBeenCalled();
+      expect(screen.getByText(/for å bli med i samtalen/)).toBeTruthy();
+
+      render(
+        <MeetingSection
+          exp={e1}
+          hostName="Maria Movik"
+          onShowOnMap={jest.fn()}
+        />,
+        { wrapper },
+      );
+      fireEvent.press(screen.getByText("Har du spørsmål?"));
+      expect(screen.getByText(/for å sende melding til verten/)).toBeTruthy();
+      expect(screen.queryByText("Spør Maria")).toBeNull();
+    } finally {
+      act(() => guest.result.current.setGuest(false));
+    }
+  });
+
+  it("the ask-host message needs 20 characters before Send", () => {
+    render(
+      <MeetingSection
+        exp={e1}
+        hostName="Maria Movik"
+        onShowOnMap={jest.fn()}
+      />,
+      { wrapper },
+    );
+    fireEvent.press(screen.getByText("Har du spørsmål?"));
+    expect(screen.getByText("Spør Maria")).toBeTruthy();
+    expect(screen.getByText("0/20 tegn")).toBeTruthy();
+    // The pill also reads "Send melding"; the sheet's button comes last.
+    const send = () => screen.getAllByText("Send melding").at(-1)!;
+    const field = screen.getByPlaceholderText(
+      "Si kort hvem du er og hva du lurer på.",
+    );
+    fireEvent.changeText(field, "Hei");
+    // Too short: Send does nothing (a send would clear the text).
+    fireEvent.press(send());
+    expect(screen.getByText("3/20 tegn")).toBeTruthy();
+    fireEvent.changeText(field, "Kan jeg ta med hunden?");
+    expect(screen.getByText("20/20 tegn")).toBeTruthy();
+    fireEvent.press(send());
+    expect(screen.queryByText("20/20 tegn")).toBeNull();
   });
 });
