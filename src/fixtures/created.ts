@@ -1,5 +1,6 @@
-// Things the viewer creates in Legg til this session (Phase 12 H5b): groups,
-// their group chats and published experiences. They are registered into the
+// Things the viewer creates this session: groups, their group chats and
+// published experiences from Legg til (Phase 12 H5b), and direct messages
+// started from a person's page (Phase 13). They are registered into the
 // in-memory fixture lists, so every existing lookup (groupById, chatById,
 // experienceById, sessionsFor, the map adapter) finds them without a
 // store-aware variant; `useCreatedVersion()` lets lists re-render when
@@ -135,6 +136,40 @@ export function createGroup(input: NewGroupInput): {
   createdIds.chats.add(chatId);
   bump();
   return { groupId, chatId };
+}
+
+/** "Maria Movik" → "Maria M." (how the chat list names a direct message). */
+const shortName = (name: string) => {
+  const [first, last] = name.trim().split(/\s+/);
+  return last ? `${first} ${last[0]}.` : (first ?? name);
+};
+
+/**
+ * Melding on a person's page (PDF p13): the direct message with that person,
+ * or a new empty one at the top of the chat list. Returns the chat id.
+ */
+export function directChatFor(person: { id: string; name: string }): string {
+  const existing = chats.find(
+    (c) => c.type === "dm" && c.personId === person.id,
+  );
+  if (existing) return existing.id;
+  seq += 1;
+  const chatId = `dx${seq}`;
+  chats.unshift({
+    id: chatId,
+    name: shortName(person.name),
+    last: "Ingen meldinger ennå",
+    time: "Nå",
+    unread: 0,
+    type: "dm",
+    access: "invite_only",
+    status: "active",
+    initials: initialsOf(person.name),
+    personId: person.id,
+  });
+  createdIds.chats.add(chatId);
+  bump();
+  return chatId;
 }
 
 export type NewExperienceInput = {

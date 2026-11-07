@@ -258,3 +258,7 @@ Layout modernised by founder decision (same content and PDF order): hub pages (I
 - **Preferanser** (`/settings/preferences`): the onboarding's preference rows plus Gruppestørrelse, in the PDF's order; Lagre keeps the choices for the session and confirms. PDF p13 draws the page without an entry point, so it sits in Innstillinger under Konto (decision recorded here). Left out: "Endringer oppdaterer anbefalingene dine." and "Score beregnes på nytt når du lagrer": how preferences feed recommendations is an unspecified ranking rule.
 - **Rediger profil**: now has the PDF's photo with "Bytt bilde", Interesser with "+ Legg til" and Språk. Lagre updates the profile everywhere it shows (Profil, Kontoinformasjon, Koblede kontoer, the account switcher, the business hub). There is no media upload contract, so "Bytt bilde" can only add the bundled portrait or remove the photo, as onboarding's "Legg til profilbilde" does.
 - **Onboarding answers carry over**: name, age, bio, interests, photo and preferences from onboarding now show on Profil, Rediger profil and Preferanser for the rest of the session.
+
+### Person page (p13, "other user")
+
+- Laid out as PDF p13: photo, name, handle and area, bio, interest chips with the shared ones marked ("Felles interesser"), "Offentlige opplevelser", then **Følg** and **Melding**. Melding opens the direct message with that person, or starts an empty one at the top of Chat (in memory). Rapporter and Blokker moved behind the ••• in the header, as the PDF draws it. No age is shown: the fixtures have none for other people.

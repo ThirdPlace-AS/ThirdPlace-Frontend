@@ -1896,6 +1896,8 @@ export type MockChat = {
   pinnedExperienceId?: string;
   // A place / business chat belongs to its place.
   placeId?: string;
+  // A direct message: the person it is with (`people`).
+  personId?: string;
   // false = the viewer is not in it yet: hidden from the chat list until they
   // join from the experience or place page (or Sveip). Absent = a member.
   member?: boolean;
@@ -1927,6 +1929,7 @@ export const chats: MockChat[] = [
     type: "dm",
     access: "invite_only",
     status: "active",
+    personId: "u1", // Maria Movik
     initials: "MM",
   },
   {
