@@ -1531,3 +1531,40 @@ Ranked by what they add for people meeting at ThirdPlace against the work; all *
 | Vipps as the payment method when payments come                  | Founder + Contract | Vipps, Spond           |
 | Photos from the phone in Legg til (picker, permission, uploads) | Founder + Contract | Instagram, Snapchat    |
 | Notification ask after joining                                  | Contract           | Duolingo               |
+
+## 19. Addendum: Phase 18, the screen-benchmark picks built (7 November 2026)
+
+From §18 the founder chose all four groups: finding things, joining and plans, profile and settings, and chat, groups and alerts. None of it is drawn in the PDF, so each item is a founder decision, built on fixtures in product voice, with no new rules, counts or payments. Each slice has its own commit and ledger line (0286 to 0293).
+
+| What                        | What changed                                                                                                                                                                                                                                                                                                                                                                                                      | Commit · ledger |
+| --------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------- |
+| Tips and quick actions      | A one-time tip for the two hidden gestures: holding a message (first chat a signed-in person opens) and holding the Profil tab (account switch). One tip per session at most, and "Skjønner" or the gesture ends it for good. A long press on a map browse card offers Lagre, Del and Veibeskrivelse; on a Lagret row, Fjern fra Lagret, Del and Vis på kartet. Screen readers get the same through "Flere valg". | d6c7456 · 0286  |
+| Categories and filter chips | Quick chips under the mode chips on Kart: every applied filter with an ✕, then the eight pin categories in their pin colours. The same choice is a new "Kategori" section in Filtre (so Sveip has it too). An empty map names what to drop ("Mat og drikke ✕"); the search page shows the categories while it is empty.                                                                                           | ae6c67e · 0287  |
+| Joining and plans           | "Du er med" after joining: the time, where to meet, Legg til i kalender, Veibeskrivelse and Til samtalen. Mine planer gets a month view with a dot on each day that has a plan. Når gets "I kveld" and "± 1 dag" for one picked day, and a picked day or period now keeps only experiences with a time in it. "Få hjelp" on plans and on the experience page opens a support form with the experience filled in.  | 5d27cd9 · 0288  |
+| Profile                     | "Fullfør profilen" on Profil while a Rediger profil field is empty (photo, bio, interests, languages). "Vis meg som deltaker" is deliberately not a step, since it is a privacy choice. Rediger profil gets "Forhåndsvis" (the unsaved draft as others see a person page) and asks "Forkaste endringene?" before leaving with changes.                                                                            | 916b4da · 0289  |
+| Settings                    | "Søk i innstillinger" finds rows and what their pages hold. Personvern is grouped as "Hvem kan se deg" and "Hvem kan finne og kontakte deg" (Blokkerte brukere moved up; no new contact rules). "Personvernsjekk" walks the same switches in three steps. "Nytt i ThirdPlace" shows once on the map after an app update, never on a first install; its text is a draft for the founder.                           | 9f5b4ce · 0290  |
+| Chat                        | A long press on a chat offers "Fest øverst" / "Løsne" and "Merk som lest"; pinned chats lead the list under "Festet". A thread opened with unread messages shows a "Nye meldinger" line above the first of them.                                                                                                                                                                                                  | ff786b6 · 0291  |
+| Varsler                     | Chips filter the list (Alle, Invitasjoner, Følgere). New followers in a time group share one card ("Erik Haug og 2 andre begynte å følge deg.", which opens Følgere), and joins collapse per experience. Two MOCK follow notices from existing followers were added so the card shows.                                                                                                                            | 47400a4 · 0292  |
+| Groups, rating, feedback    | The group page leads with "Neste møte" and shows "Regler" in the group's own words; the Gruppe wizard gets an optional "Regler for gruppen" field. A sent "Hvordan var det?" stays on the past plan ("Din vurdering: ★ 4 · Verten"). Hjelp og støtte gets "Send tilbakemelding".                                                                                                                                  | 125dd63 · 0293  |
+
+**For the founder:**
+
+- "Nytt i ThirdPlace" text (`src/copy/whatsNew.ts`) is a draft that names this version's features; rewrite it before a release. It only shows after a version bump (app.json is 0.0.0), or through the dev sandbox.
+- The fixtures link "Kveldsjogg i Frognerparken" to Morgenkaffe-gjengen, so that group's "Neste møte" is a jog. Moving the experience to a group of its own is a data change for later.
+- Not built from §18 because they need a decision: Hinge-style profile prompts, a "Hvem kan sende deg melding" choice (a messaging rule), compliment phrases beyond the PDF's "Hva var bra?" chips, and anything that sends support cases, feedback or reviews anywhere.
+
+**Finding things: the chat tip, long-press actions on a browse card, category chips, and "Fjern «…»" on an empty map:**
+
+![Tips, quick actions and category chips](img/p18_find.png)
+
+**Joining and plans: "Du er med", the month view in Mine planer, "I kveld" in Når, and help that starts from a plan:**
+
+![Joining and plans](img/p18_plans.png)
+
+**Profile and settings: "Fullfør profilen", "Forhåndsvis", "Forkaste endringene?", Personvern by question, Personvernsjekk, and "Nytt i ThirdPlace":**
+
+![Profile and settings](img/p18_profile.png)
+
+**Chat, groups and alerts: "Festet", "Nye meldinger", collapsed Varsler, the group page, a kept rating, and "Send tilbakemelding":**
+
+![Chat, groups and alerts](img/p18_chat.png)
