@@ -7,10 +7,10 @@ import { View, type LayoutChangeEvent } from "react-native";
 import Animated, {
   Easing,
   useAnimatedStyle,
-  useReducedMotion,
   useSharedValue,
   withTiming,
 } from "react-native-reanimated";
+import { useReducedMotion } from "@/hooks/useReducedMotion";
 
 import { duration, easing } from "@/theme";
 

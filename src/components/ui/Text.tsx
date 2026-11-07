@@ -4,6 +4,8 @@
 // (custom fonts need one family per weight on Android).
 import { Text as RNText, type TextProps as RNTextProps } from "react-native";
 
+import { useTextScale } from "@/lib/a11yPrefs";
+import { fontSizes } from "@/theme";
 import { fontFamilyFor, type FontWeight } from "@/theme/fonts";
 
 export type TextVariant =
@@ -64,6 +66,18 @@ const TONE_CLASS: Record<TextTone, string> = {
   onMedia: "text-onMedia",
 };
 
+// Size and line height per variant (tokens.js fontSize), for "Større tekst"
+// (Tilgjengelighet, Phase 15): the class sets the normal size, a style scales
+// it. The phone's own font size still applies on top (allowFontScaling).
+const px = (v: string | undefined) => parseFloat(v ?? "0");
+function scaled(variant: TextVariant, scale: number) {
+  const [size, meta] = fontSizes[variant] ?? ["16px", {}];
+  return {
+    fontSize: px(size) * scale,
+    lineHeight: px(meta.lineHeight) * scale || undefined,
+  };
+}
+
 /** Headings get the header role by default so screen readers can jump between them. */
 const HEADING: ReadonlySet<TextVariant> = new Set(["display", "h1", "h2"]);
 
@@ -84,6 +98,7 @@ export function Text({
   ...rest
 }: TextProps) {
   const fontFamily = fontFamilyFor(weight ?? DEFAULT_WEIGHT[variant]);
+  const scale = useTextScale();
   return (
     <RNText
       accessibilityRole={
@@ -92,7 +107,12 @@ export function Text({
       className={`${VARIANT_CLASS[variant]} ${TONE_CLASS[tone]}${
         className ? ` ${className}` : ""
       }`}
-      style={[{ fontFamily }, style]}
+      style={[
+        scale === 1
+          ? { fontFamily }
+          : { fontFamily, ...scaled(variant, scale) },
+        style,
+      ]}
       {...rest}
     />
   );

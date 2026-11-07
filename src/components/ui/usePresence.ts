@@ -12,10 +12,10 @@ import { useEffect, useState } from "react";
 import {
   Easing,
   runOnJS,
-  useReducedMotion,
   useSharedValue,
   withTiming,
 } from "react-native-reanimated";
+import { useReducedMotion } from "@/hooks/useReducedMotion";
 
 import { duration, easing, presentation } from "@/theme";
 

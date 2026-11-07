@@ -8,6 +8,7 @@ const tokens = require("./tokens.js") as {
   colors: Record<string, string>;
   radius: Record<string, string>;
   spacing: Record<string, string>;
+  fontSize: Record<string, [string, { lineHeight?: string }]>;
 };
 
 export const palette = tokens.palette;
@@ -18,6 +19,8 @@ export const mapPalette = tokens.mapPalette;
 /** Light hex values (back-compat). Prefer `useThemeColors()` for native colour props. */
 export const colors = tokens.colors;
 export const radius = tokens.radius;
+/** Type scale per Text variant: [size, { lineHeight }] in px strings. */
+export const fontSizes = tokens.fontSize;
 export const spacing = tokens.spacing;
 /** Screen side padding in dp, for styles that need the number (e.g. a
  * negative margin so a horizontal chip row bleeds to the screen edge). */

@@ -173,7 +173,7 @@ Easing curves (`easing.*`, cubic-bezier): `standard` 0.2, 0, 0, 1 · `enter` 0.0
 - Photos (Phase 12): every bundled photo is WebP in two sizes plus a 16 px blurred preview (`scripts/build-image-manifest.js` → `src/fixtures/imageAssets.generated.ts`). Full size (`libImage`) for galleries, cards and the viewer; small (`libThumb`, `smallImage(src)`, `<LoadingImage thumb>`) for rails, rows, thumbnails; avatars pick the small file themselves. `LoadingImage`, `Avatar` and the Sveip carousel paint the preview at once and keep decoded photos in memory (`cachePolicy="memory-disk"`). Add a photo: drop the JPEG in `assets/library`, run `node scripts/build-image-manifest.js --convert`.
 - No fake waits: a screen with nothing to load shows its content at once (`useMockResource({ immediate })`); loading states appear only on a real reload.
 
-Motion explains a change (where something came from, what it became); it never delays navigation. Every animated hook checks `useReducedMotion()` and falls back to an opacity change or none.
+Motion explains a change (where something came from, what it became); it never delays navigation. Every animated hook checks `useReducedMotion()` (from `@/hooks/useReducedMotion`: the phone's setting or Tilgjengelighet's "Reduser bevegelse", which also switches Reanimated's global setting) and falls back to an opacity change or none.
 
 ### Microinteraction patterns
 

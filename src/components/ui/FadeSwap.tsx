@@ -7,7 +7,8 @@
 // dropped on a cold start, CLAUDE.md); put visual classes on the children.
 import type { ReactNode } from "react";
 import type { StyleProp, ViewStyle } from "react-native";
-import Animated, { FadeIn, useReducedMotion } from "react-native-reanimated";
+import Animated, { FadeIn } from "react-native-reanimated";
+import { useReducedMotion } from "@/hooks/useReducedMotion";
 
 import { duration } from "@/theme/motion";
 

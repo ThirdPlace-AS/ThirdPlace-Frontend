@@ -4,11 +4,11 @@
 import { useEffect, useRef } from "react";
 import Animated, {
   useAnimatedStyle,
-  useReducedMotion,
   useSharedValue,
   withSequence,
   withSpring,
 } from "react-native-reanimated";
+import { useReducedMotion } from "@/hooks/useReducedMotion";
 
 import { spring } from "@/theme";
 

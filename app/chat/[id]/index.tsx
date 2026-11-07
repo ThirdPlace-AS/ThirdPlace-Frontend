@@ -1,10 +1,8 @@
 import { router, useLocalSearchParams, type Href } from "expo-router";
 import { useRef, useState } from "react";
 import { FlatList, KeyboardAvoidingView, TextInput, View } from "react-native";
-import Animated, {
-  FadeInDown,
-  useReducedMotion,
-} from "react-native-reanimated";
+import Animated, { FadeInDown } from "react-native-reanimated";
+import { useReducedMotion } from "@/hooks/useReducedMotion";
 
 import {
   Avatar,

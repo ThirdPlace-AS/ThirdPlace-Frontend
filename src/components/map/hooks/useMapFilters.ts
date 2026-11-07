@@ -1,6 +1,7 @@
 import { useCallback, useMemo, useState } from "react";
 
 import { places } from "@/fixtures";
+import { getA11yPrefs, useA11yPrefs, withWheelchair } from "@/lib/a11yPrefs";
 
 import {
   activeExtraFilterCount,
@@ -15,7 +16,19 @@ import {
 // screen stays a thin composition.
 export function useMapFilters() {
   const [query, setQuery] = useState("");
-  const [filters, setFilters] = useState<MapFilters>(DEFAULT_FILTERS);
+  // "Vis kun rullestolvennlige" (Tilgjengelighet) starts the map with the
+  // step-free filter on and adds or removes it when switched.
+  const { wheelchairOnly } = useA11yPrefs();
+  const [filters, setFilters] = useState<MapFilters>(() =>
+    withWheelchair(DEFAULT_FILTERS, getA11yPrefs().wheelchairOnly),
+  );
+  // Adjusted while rendering when the switch changes (React's pattern for
+  // state that follows a changing input), not in an effect.
+  const [seen, setSeen] = useState(wheelchairOnly);
+  if (seen !== wheelchairOnly) {
+    setSeen(wheelchairOnly);
+    setFilters((f) => withWheelchair(f, wheelchairOnly));
+  }
 
   const filteredPlaces = useMemo(
     () => sortPlaces(applyFilters(places, query, filters), filters.ratingSort),
@@ -25,7 +38,7 @@ export function useMapFilters() {
 
   const reset = useCallback(() => {
     setQuery("");
-    setFilters(DEFAULT_FILTERS);
+    setFilters(withWheelchair(DEFAULT_FILTERS, getA11yPrefs().wheelchairOnly));
   }, []);
 
   return {

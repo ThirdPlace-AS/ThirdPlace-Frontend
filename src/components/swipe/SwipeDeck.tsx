@@ -20,12 +20,12 @@ import Animated, {
   Easing,
   runOnJS,
   useAnimatedStyle,
-  useReducedMotion,
   useSharedValue,
   withSpring,
   withTiming,
   type SharedValue,
 } from "react-native-reanimated";
+import { useReducedMotion } from "@/hooks/useReducedMotion";
 
 import { Icon, Text } from "@/components/ui";
 import { Button } from "@/components/Button";
@@ -40,6 +40,7 @@ import { useNotificationReads } from "@/hooks/useNotificationReads";
 import { markViewed } from "@/components/map/hooks/useRecentlyViewed";
 import { haptics } from "@/lib/haptics";
 import { joinChat } from "@/lib/joinedChats";
+import { getA11yPrefs, useA11yPrefs, withWheelchair } from "@/lib/a11yPrefs";
 import { motion, useThemeColors, media } from "@/theme";
 
 import { decideCommit, rotationFor, type SwipeAction } from "./deckLogic";
@@ -82,7 +83,17 @@ export function SwipeDeck() {
   const [mode, setMode] = useState<SwipeMode>("forYou");
   // Filtre is the map's sheet with the map's pipeline (user 2026-11-06: the
   // Sveip filter must be identical to the map's); Sveip keeps its own state.
-  const [filters, setFilters] = useState<MapFilters>(DEFAULT_FILTERS);
+  // Starts with the step-free filter when "Vis kun rullestolvennlige" is on
+  // (Tilgjengelighet), like the map.
+  const { wheelchairOnly } = useA11yPrefs();
+  const [filters, setFilters] = useState<MapFilters>(() =>
+    withWheelchair(DEFAULT_FILTERS, getA11yPrefs().wheelchairOnly),
+  );
+  const [seenWheelchair, setSeenWheelchair] = useState(wheelchairOnly);
+  if (seenWheelchair !== wheelchairOnly) {
+    setSeenWheelchair(wheelchairOnly);
+    setFilters((f) => withWheelchair(f, wheelchairOnly));
+  }
   const [filtersOpen, setFiltersOpen] = useState(false);
   // "Vis N resultater" = the deck it will show for the active tab.
   const countFor = (draft: MapFilters) =>
@@ -343,7 +354,9 @@ export function SwipeDeck() {
                     : "Ingen opplevelser passer filtrene dine. Prøv andre filtre."
                 }
                 actionLabel="Nullstill filtre"
-                onAction={() => setFilters(DEFAULT_FILTERS)}
+                onAction={() =>
+                  setFilters(withWheelchair(DEFAULT_FILTERS, wheelchairOnly))
+                }
                 secondaryLabel="Utforsk kartet"
                 onSecondary={() => router.navigate("/map")}
               />

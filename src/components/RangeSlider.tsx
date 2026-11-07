@@ -13,10 +13,10 @@ import { useEffect, useRef, useState } from "react";
 import { type LayoutChangeEvent, PanResponder, View } from "react-native";
 import Animated, {
   useAnimatedStyle,
-  useReducedMotion,
   useSharedValue,
   withSpring,
 } from "react-native-reanimated";
+import { useReducedMotion } from "@/hooks/useReducedMotion";
 
 import { motion, useThemeColors, elevation } from "@/theme";
 

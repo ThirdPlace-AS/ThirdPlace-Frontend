@@ -5,11 +5,11 @@ import { useEffect } from "react";
 import { View } from "react-native";
 import Animated, {
   useAnimatedStyle,
-  useReducedMotion,
   useSharedValue,
   withRepeat,
   withTiming,
 } from "react-native-reanimated";
+import { useReducedMotion } from "@/hooks/useReducedMotion";
 
 import { duration } from "@/theme";
 

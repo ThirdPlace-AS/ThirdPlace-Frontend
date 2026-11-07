@@ -1,7 +1,8 @@
 // FollowButton (docs/design/DESIGN_SYSTEM.md §5) — "Følg" (ink pill) morphs to
 // "Følger" (quiet muted pill). The label cross-fades; a selection haptic
 // confirms the tap. Following is local demo state wherever it is used.
-import Animated, { FadeIn, useReducedMotion } from "react-native-reanimated";
+import Animated, { FadeIn } from "react-native-reanimated";
+import { useReducedMotion } from "@/hooks/useReducedMotion";
 
 import { duration } from "@/theme";
 

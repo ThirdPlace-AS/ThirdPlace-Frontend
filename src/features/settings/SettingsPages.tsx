@@ -22,12 +22,14 @@ import {
   type IconName,
 } from "@/components/ui";
 import { confirmToast } from "@/copy";
+import { gutterPx } from "@/theme";
 import { useMyProfile } from "@/lib/myProfile";
+import { setA11yPrefs, useA11yPrefs } from "@/lib/a11yPrefs";
 import { setBlocked, useBlocked } from "@/lib/blocked";
 import { goBackOr } from "@/lib/navigation";
 import { signOut } from "@/lib/signOut";
 
-import { NavRow, ToggleList } from "./settingsUi";
+import { NavRow, ToggleList, ToggleRow } from "./settingsUi";
 
 function Session({
   icon,
@@ -411,36 +413,43 @@ export function LanguageScreen() {
   );
 }
 
-// Tilgjengelighet (PDF p19).
+// Tilgjengelighet (PDF p19). Since Phase 15 each switch changes the app
+// (src/lib/a11yPrefs.ts): Større tekst enlarges every Text, Reduser bevegelse
+// turns animations off, Vis kun rullestolvennlige starts the map and Sveip
+// with the step-free filter. p19's "Høy kontrast" and "Skjermleser-
+// optimalisert" are hidden until their behaviour is defined (founder
+// 2026-11-07); the phone's own screen reader works throughout.
 export function AccessibilitySettingsScreen() {
+  const prefs = useA11yPrefs();
   return (
     <Page title="Tilgjengelighet">
-      <ToggleList
-        initial={{ "Reduser bevegelse": false }}
-        items={[
-          { label: "Større tekst", icon: "text-outline" },
-          { label: "Høy kontrast", icon: "contrast-outline" },
-          {
-            label: "Reduser bevegelse",
-            hint: "Demper animasjoner",
-            icon: "pause-circle-outline",
-          },
-          { label: "Skjermleser-optimalisert", icon: "ear-outline" },
-        ]}
-      />
+      <View style={{ marginHorizontal: -gutterPx }}>
+        <ToggleRow
+          icon="text-outline"
+          label="Større tekst"
+          value={prefs.largerText}
+          onValueChange={(v) => setA11yPrefs({ largerText: v })}
+        />
+        <ToggleRow
+          icon="pause-circle-outline"
+          label="Reduser bevegelse"
+          hint="Demper animasjoner"
+          value={prefs.reduceMotion}
+          onValueChange={(v) => setA11yPrefs({ reduceMotion: v })}
+        />
+      </View>
       <Text variant="title" accessibilityRole="header">
         Kart
       </Text>
-      <ToggleList
-        initial={{}}
-        items={[
-          {
-            label: "Vis kun rullestolvennlige",
-            hint: "Filtrerer steder automatisk",
-            icon: "accessibility-outline",
-          },
-        ]}
-      />
+      <View style={{ marginHorizontal: -gutterPx }}>
+        <ToggleRow
+          icon="accessibility-outline"
+          label="Vis kun rullestolvennlige"
+          hint="Filtrerer steder automatisk"
+          value={prefs.wheelchairOnly}
+          onValueChange={(v) => setA11yPrefs({ wheelchairOnly: v })}
+        />
+      </View>
     </Page>
   );
 }

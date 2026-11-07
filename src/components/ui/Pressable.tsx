@@ -22,11 +22,11 @@ import {
 } from "react-native";
 import Animated, {
   useAnimatedStyle,
-  useReducedMotion,
   useSharedValue,
   withSpring,
   withTiming,
 } from "react-native-reanimated";
+import { useReducedMotion } from "@/hooks/useReducedMotion";
 
 import { haptics } from "@/lib/haptics";
 import { duration, spring } from "@/theme";

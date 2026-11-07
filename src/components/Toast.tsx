@@ -1,11 +1,8 @@
 import { Ionicons } from "@expo/vector-icons";
 import { useEffect, useSyncExternalStore } from "react";
 import { View } from "react-native";
-import Animated, {
-  FadeInUp,
-  FadeOutUp,
-  useReducedMotion,
-} from "react-native-reanimated";
+import Animated, { FadeInUp, FadeOutUp } from "react-native-reanimated";
+import { useReducedMotion } from "@/hooks/useReducedMotion";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { Icon, Pressable, Text } from "@/components/ui";

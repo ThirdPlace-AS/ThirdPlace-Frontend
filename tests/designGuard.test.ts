@@ -128,6 +128,15 @@ describe("design-system guard", () => {
     expect(fmt(hits)).toEqual([]);
   });
 
+  it("reduced motion only through @/hooks/useReducedMotion (it adds Tilgjengelighet's switch)", () => {
+    const hits = scan(
+      (line) =>
+        /useReducedMotion/.test(line) && /react-native-reanimated/.test(line),
+      (file) => !file.endsWith("hooks/useReducedMotion.ts"),
+    );
+    expect(fmt(hits)).toEqual([]);
+  });
+
   it("display decimals only through src/lib/format.ts (nb-NO comma)", () => {
     const hits = scan(
       (line) => /\.toFixed\(/.test(line),
