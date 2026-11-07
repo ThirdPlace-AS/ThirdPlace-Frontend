@@ -1,3 +1,30 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* Light colour variables — fallback only. ThemeRoot (src/theme/ThemeRoot.tsx)
+   sets the active scheme. Generated from src/theme/tokens.js; kept in sync by
+   tests/themeTokens.test.ts. */
+:root {
+  --c-background: 255 255 255;
+  --c-surface: 255 255 255;
+  --c-surface-raised: 255 255 255;
+  --c-surface-muted: 247 247 247;
+  --c-line: 221 221 221;
+  --c-ink: 34 34 34;
+  --c-on-ink: 255 255 255;
+  --c-muted: 106 106 106;
+  --c-ember: 255 56 92;
+  --c-on-ember: 255 255 255;
+  --c-ember-strong: 227 28 95;
+  --c-success: 0 138 5;
+  --c-on-success: 255 255 255;
+  --c-danger: 193 53 21;
+  --c-warning: 176 80 8;
+  --c-scrim: 0 0 0;
+  --c-on-media: 255 255 255;
+  --c-ember-text: 218 18 73;
+  --c-success-text: 0 138 5;
+  --c-danger-text: 193 53 21;
+  --c-warning-text: 176 80 8;
+}
