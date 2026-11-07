@@ -12,7 +12,7 @@ import {
 } from "@/components/ui";
 import { Chip } from "@/components/Chip";
 import { RouteHeader } from "@/components/RouteHeader";
-import { listings } from "@/fixtures";
+import { listingById, myListingStates } from "@/fixtures";
 
 // Mine listings, per the design (PDF p16); Ny / Rediger listing are form
 // pages (/my-listings/new, /my-listings/[id]/edit, Phase 12 H4c).
@@ -22,10 +22,11 @@ import { listings } from "@/fixtures";
 // no listing entity, publishing or pricing contract — nothing is published or
 // saved, and no view/request counts are shown (no invented social proof).
 const TABS = ["Aktive", "Utkast", "Avsluttede"] as const;
-const MINE = listings.slice(0, 3).map((l, i) => ({
-  ...l,
-  state: (i === 2 ? "Utkast" : "Aktive") as (typeof TABS)[number],
-}));
+// The same list Marketplace-analyse counts (fixtures `myListingStates`).
+const MINE = Object.entries(myListingStates).flatMap(([id, state]) => {
+  const l = listingById(id);
+  return l ? [{ ...l, state }] : [];
+});
 
 export default function MyListingsScreen() {
   const [tab, setTab] = useState<(typeof TABS)[number]>("Aktive");

@@ -95,7 +95,7 @@ export default function MarketplaceScreen() {
               <UIPressable
                 accessibilityRole="button"
                 hitSlop={{ top: 12, bottom: 12, left: 8, right: 8 }}
-                onPress={() => router.push("/workspace/analytics" as Href)}
+                onPress={() => router.push("/marketplace/analytics" as Href)}
                 contentClassName="flex-row items-center gap-1.5"
               >
                 <Icon name="stats-chart-outline" size="sm" tone="ink" />

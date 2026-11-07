@@ -2,7 +2,16 @@ import { useState } from "react";
 import { Pressable, ScrollView, View } from "react-native";
 
 import { router, type Href } from "expo-router";
-import { Icon, Screen, Text, Pressable as UIPressable } from "@/components/ui";
+import {
+  Badge,
+  ChipGroup,
+  Icon,
+  Screen,
+  Text,
+  Pressable as UIPressable,
+} from "@/components/ui";
+import { collabHistory } from "@/fixtures";
+import { collabMonth } from "@/features/marketplace/marketplaceStats";
 import { RateSheet } from "@/components/actions/ActionSheets";
 import { RouteHeader } from "@/components/RouteHeader";
 
@@ -151,61 +160,87 @@ export function PaymentStatusScreen() {
   );
 }
 
-const HISTORY = [
-  { title: "Jazzkveld", partner: "Oslo Kaffebar", when: "Juni", rated: false },
-  {
-    title: "Latte art-kurs",
-    partner: "Grünerløkka Bokcafé",
-    when: "Mai",
-    rated: true,
-  },
-];
+// Samarbeidshistorikk (PDF p18): "N fullførte · M avsluttede" from the list,
+// Alle / Fullførte / Avsluttede, each collaboration with partner, month and
+// status, and "Vurder samarbeid" on a finished one you have not rated. The
+// PDF's amounts are left out (money is structure only).
+const HISTORY_TABS = ["Alle", "Fullførte", "Avsluttede"] as const;
 
 export function CollabHistoryScreen() {
+  const [tab, setTab] = useState<(typeof HISTORY_TABS)[number]>("Alle");
   const [rate, setRate] = useState<string | null>(null);
-  // Rated in this session (local only; the page note says it is an example).
+  // Rated in this session (local only).
   const [ratedHere, setRatedHere] = useState<ReadonlySet<string>>(new Set());
+  const done = collabHistory.filter((c) => c.status === "Fullført").length;
+  const ended = collabHistory.length - done;
+  const rows = collabHistory.filter((c) =>
+    tab === "Alle"
+      ? true
+      : tab === "Fullførte"
+        ? c.status === "Fullført"
+        : c.status === "Avsluttet",
+  );
   return (
     <Screen edges={["top"]}>
       <RouteHeader title="Samarbeidshistorikk" />
       <ScrollView contentContainerClassName="gap-3 px-gutter py-4 pb-12">
-        {HISTORY.map((h) => (
-          <View
-            key={h.title}
-            className="gap-1 rounded-lg border border-line bg-surface p-4"
-          >
-            <Text variant="body" weight="semibold">
-              {h.title}
-            </Text>
-            <Text variant="caption" tone="muted">
-              {h.partner} · {h.when}
-            </Text>
-            {h.rated || ratedHere.has(h.partner) ? (
-              <Text variant="caption" weight="semibold" tone="success">
-                ✓ Vurdert
-              </Text>
-            ) : (
-              <Pressable
-                hitSlop={{ top: 12, bottom: 12, left: 8, right: 8 }}
-                accessibilityRole="button"
-                onPress={() => setRate(h.partner)}
-              >
-                <Text variant="label" weight="semibold" tone="ember">
-                  Vurder samarbeid
+        <Text variant="caption" tone="muted">
+          {done} fullførte · {ended} avsluttede
+        </Text>
+        <ChipGroup
+          label="Vis"
+          options={HISTORY_TABS}
+          value={tab}
+          onChange={(t) => setTab(t as (typeof HISTORY_TABS)[number])}
+        />
+        {rows.map((c) => {
+          const rated = !!c.rating || ratedHere.has(c.id);
+          return (
+            <View
+              key={c.id}
+              className="gap-1.5 rounded-lg border border-line bg-surface p-4"
+            >
+              <View className="flex-row items-start justify-between gap-3">
+                <Text variant="body" weight="semibold" className="flex-1">
+                  {c.title}
                 </Text>
-              </Pressable>
-            )}
-          </View>
-        ))}
+                <Badge
+                  kind="status"
+                  tone={c.status === "Fullført" ? "success" : "danger"}
+                  label={c.status}
+                />
+              </View>
+              <Text variant="caption" tone="muted">
+                med {c.partner} · {collabMonth(c.daysAgo)}
+              </Text>
+              {c.status !== "Fullført" ? null : rated ? (
+                <Text variant="caption" weight="semibold" tone="success">
+                  Vurdert
+                </Text>
+              ) : (
+                <Pressable
+                  hitSlop={{ top: 12, bottom: 12, left: 8, right: 8 }}
+                  accessibilityRole="button"
+                  onPress={() => setRate(c.id)}
+                  className="self-start"
+                >
+                  <Text variant="label" weight="semibold" tone="ember">
+                    Vurder samarbeid
+                  </Text>
+                </Pressable>
+              )}
+            </View>
+          );
+        })}
       </ScrollView>
       {rate ? (
         <RateSheet
-          title={rate}
+          title={collabHistory.find((c) => c.id === rate)?.partner ?? ""}
           heading="Vurder samarbeid"
           chips={TRAITS}
           chipsLabel="Hva fungerte?"
           onClose={() => setRate(null)}
-          onSent={() => setRatedHere((s) => new Set(s).add(rate))}
+          onSent={() => setRatedHere((r) => new Set(r).add(rate))}
         />
       ) : null}
     </Screen>

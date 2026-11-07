@@ -3079,6 +3079,120 @@ export function listingById(id: string): MockListing | undefined {
   return listings.find((l) => l.id === id);
 }
 
+// ── Marketplace-analyse and Samarbeidshistorikk (PDF p18), MOCK ─────────────
+// Only the owner sees these. Every figure on Marketplace-analyse is computed
+// from the lists below (src/features/marketplace/marketplaceStats.ts): views
+// and requests from the published listings' numbers, collaborations and the
+// average rating from the history. BLOCKED_CONTRACT_GAP: no analytics,
+// collaboration or rating backend.
+export type StatsRange = "Uke" | "Måned" | "Total";
+export const STATS_RANGES: readonly StatsRange[] = ["Uke", "Måned", "Total"];
+
+export type MyListingState = "Aktive" | "Utkast" | "Avsluttede";
+/** The viewer's own listings (Mine listings) and their state. */
+export const myListingStates: Readonly<Record<string, MyListingState>> = {
+  m1: "Aktive",
+  m2: "Aktive",
+  m3: "Utkast",
+};
+
+/** Views and requests per published listing and range. */
+export const listingStats: Readonly<
+  Record<string, Record<StatsRange, { views: number; requests: number }>>
+> = {
+  m1: {
+    Uke: { views: 38, requests: 2 },
+    Måned: { views: 124, requests: 8 },
+    Total: { views: 431, requests: 26 },
+  },
+  m2: {
+    Uke: { views: 21, requests: 1 },
+    Måned: { views: 87, requests: 5 },
+    Total: { views: 298, requests: 14 },
+  },
+};
+
+/** Average time to answer a request, in hours. */
+export const replyHours: Readonly<Record<StatsRange, number>> = {
+  Uke: 3,
+  Måned: 4,
+  Total: 5,
+};
+
+/** Shape of "Forespørsler" over the range (relative bar heights, no values). */
+export const requestBars: Readonly<Record<StatsRange, number[]>> = {
+  Uke: [30, 55, 40, 70, 45, 60, 85],
+  Måned: [35, 50, 42, 60, 58, 66, 52, 72, 78, 92],
+  Total: [40, 46, 52, 48, 61, 58, 67, 72, 70, 79, 84, 90],
+};
+
+export type MockCollab = {
+  id: string;
+  title: string;
+  partner: string;
+  /** How long ago it ended (relative, so the list never goes stale). */
+  daysAgo: number;
+  status: "Fullført" | "Avsluttet";
+  /** Your rating of the partner, when given. */
+  rating?: number;
+};
+
+export const collabHistory: MockCollab[] = [
+  {
+    id: "ch1",
+    title: "Jazzkveld på Blå",
+    partner: "Oslo Kaffebar",
+    daysAgo: 5,
+    status: "Fullført",
+  },
+  {
+    id: "ch2",
+    title: "Kaffekurs: Latte art",
+    partner: "Grünerløkka Bokcafé",
+    daysAgo: 19,
+    status: "Fullført",
+    rating: 5,
+  },
+  {
+    id: "ch3",
+    title: "Vinsmaking for nybegynnere",
+    partner: "Kork & Kanne Vinbar",
+    daysAgo: 26,
+    status: "Avsluttet",
+  },
+  {
+    id: "ch4",
+    title: "Keramikk-kveld",
+    partner: "Vulkan Keramikkstudio",
+    daysAgo: 48,
+    status: "Fullført",
+    rating: 5,
+  },
+  {
+    id: "ch5",
+    title: "Brunsj og yoga",
+    partner: "Takåsen Yogastudio",
+    daysAgo: 75,
+    status: "Fullført",
+    rating: 4,
+  },
+  {
+    id: "ch6",
+    title: "Fotowalk langs Akerselva",
+    partner: "Akerselva Vandring",
+    daysAgo: 110,
+    status: "Fullført",
+    rating: 5,
+  },
+  {
+    id: "ch7",
+    title: "Krydderkurs",
+    partner: "Grønland Krydderverksted",
+    daysAgo: 160,
+    status: "Avsluttet",
+  },
+];
+
 // ── Notifications (MOCK — static demo activity, no real push/inbox) ──────────
 // BLOCKED_CONTRACT_GAP: not a real notification feed. `minutesAgo` is a MOCK
 // relative offset (demo), not a stored timestamp. Rendered Instagram-style.

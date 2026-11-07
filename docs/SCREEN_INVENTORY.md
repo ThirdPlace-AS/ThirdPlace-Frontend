@@ -298,3 +298,8 @@ Layout modernised by founder decision (same content and PDF order): hub pages (I
 ### Founder decision: Kartlag after a reference screenshot
 
 The founder sent a screenshot of another map app's layer sheet and asked for Kartlag to look like it. Kartlag now has a centred title, a "Kartstil" section with ⓘ, and the base maps as preview tiles in a three-column grid (Auto, Daggry, Dag, Skumring, Natt), the name under each tile and a pink ring on the one in use. The style names are Norwegian (they were Dawn / Day / Dusk / Night). The reference's second section (its own capture overlays) has no ThirdPlace counterpart and is left out. The previews are crops of our own Studio styles (`assets/map-styles`).
+
+### Marketplace-analyse and Samarbeidshistorikk (p18)
+
+- **Marketplace-analyse** (`/marketplace/analytics`), opened from "Analyse" on Marketplace (which used to open the workspace's Analyse): Uke / Måned / Total, Listing-visninger, Forespørsler, Konverteringsrate, Snitt svartid, Samarbeid initiert, Fullførte, the shape of requests over the period, Topplistinger and the average rating you have given. Every figure is computed from the fixture lists: views and requests from the published listings (the same list as Mine listings), collaborations and the rating from the collaboration history. MOCK numbers, seen only by the owner, like the workspace Analyse page.
+- **Samarbeidshistorikk** follows p18: "N fullførte · M avsluttede" from the list, Alle / Fullførte / Avsluttede, status per collaboration and the month it ended. The PDF's amounts are left out (money is structure only).
