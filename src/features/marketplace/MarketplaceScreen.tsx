@@ -15,37 +15,29 @@ import { Button } from "@/components/Button";
 import { Chip } from "@/components/Chip";
 import { RouteHeader } from "@/components/RouteHeader";
 import { Sheet } from "@/components/Sheet";
-import { SignInPrompt } from "@/components/SignInPrompt";
-import { useGuestMode } from "@/components/map/hooks/useGuestMode";
 import {
   LISTING_TYPES,
-  listingById,
   listings,
   type MockListing,
   type MockListingType,
 } from "@/fixtures";
-import { libImage, libThumb } from "@/fixtures/images";
-import { Gallery } from "@/components/map/Gallery";
+import { libThumb } from "@/fixtures/images";
 import { gutterPx, useThemeColors } from "@/theme";
 
 // Marketplace, per the design (PDF p15–p16) and master spec §13: a B2B
 // collaboration space where creators, businesses and enterprises offer
 // venues, hosting, sponsorships and brand deals. Search + type chips (Alle /
-// Venue / Skaper / Sponsing / Co-hosting / Brand), listing cards, and a detail
-// sheet with "Send forespørsel" / "Lagre". BLOCKED_CONTRACT_GAP: no offers,
+// Venue / Skaper / Sponsing / Co-hosting / Brand), listing cards; a listing
+// opens as a page (/marketplace/[id], Phase 12 H4c). BLOCKED_CONTRACT_GAP: no offers,
 // contracts or payments exist — nothing is sent, saved or signed.
 export default function MarketplaceScreen() {
   const colors = useThemeColors();
-  const { isGuest } = useGuestMode();
   const [query, setQuery] = useState("");
   const [type, setType] = useState<MockListingType | null>(null);
   // Filtre (PDF p16): only facets the fixtures carry — 'Kun gratis' reads
   // the display terms; no invented price logic.
   const [freeOnly, setFreeOnly] = useState(false);
   const [filterOpen, setFilterOpen] = useState(false);
-  const [selectedId, setSelectedId] = useState<string | null>(null);
-  const [signIn, setSignIn] = useState(false);
-  const selected = selectedId ? listingById(selectedId) : undefined;
 
   const q = query.trim().toLowerCase();
   const data = useMemo(
@@ -79,7 +71,7 @@ export default function MarketplaceScreen() {
             <UIPressable
               hitSlop={{ top: 12, bottom: 12, left: 8, right: 8 }}
               accessibilityRole="button"
-              onPress={() => router.push("/my-listings")}
+              onPress={() => router.push("/my-listings" as Href)}
               className="self-start"
               contentClassName="flex-row items-center gap-2"
             >
@@ -160,19 +152,13 @@ export default function MarketplaceScreen() {
           />
         }
         renderItem={({ item }) => (
-          <ListingCard listing={item} onPress={() => setSelectedId(item.id)} />
+          <ListingCard
+            listing={item}
+            onPress={() => router.push(`/marketplace/${item.id}` as Href)}
+          />
         )}
       />
 
-      <ListingSheet
-        listing={selected}
-        onClose={() => setSelectedId(null)}
-        onGuest={() => {
-          setSelectedId(null);
-          setSignIn(true);
-        }}
-        isGuest={isGuest}
-      />
       <Sheet
         visible={filterOpen}
         onClose={() => setFilterOpen(false)}
@@ -214,11 +200,6 @@ export default function MarketplaceScreen() {
           />
         </View>
       </Sheet>
-      <SignInPrompt
-        visible={signIn}
-        onClose={() => setSignIn(false)}
-        action="sende forespørsler i Marketplace"
-      />
     </Screen>
   );
 }
@@ -258,106 +239,5 @@ function ListingCard({
         </Text>
       </View>
     </UIPressable>
-  );
-}
-
-function ListingSheet({
-  listing,
-  onClose,
-  onGuest,
-  isGuest,
-}: {
-  listing: MockListing | undefined;
-  onClose: () => void;
-  onGuest: () => void;
-  isGuest: boolean;
-}) {
-  const [notice, setNotice] = useState<"save" | null>(null);
-  const close = () => {
-    setNotice(null);
-    onClose();
-  };
-  return (
-    <Sheet
-      visible={listing !== undefined}
-      onClose={close}
-      title={listing?.title ?? ""}
-    >
-      {listing ? (
-        <View className="gap-4">
-          <Gallery
-            photos={listing.photos.map(libImage)}
-            height={180}
-            label={listing.title}
-          />
-          <Badge kind="status" label={listing.type} />
-          <Text variant="label" weight="regular">
-            {listing.description}
-          </Text>
-          <View className="overflow-hidden rounded-md border border-line bg-surface">
-            {[{ label: "Pris", value: listing.terms }, ...listing.details].map(
-              (d) => (
-                <View
-                  key={d.label}
-                  className="flex-row justify-between border-b border-line px-3.5 py-3"
-                >
-                  <Text variant="caption" tone="muted">
-                    {d.label}
-                  </Text>
-                  <Text variant="label">{d.value}</Text>
-                </View>
-              ),
-            )}
-          </View>
-          <View className="flex-row flex-wrap gap-2">
-            {listing.tags.map((t) => (
-              <View key={t} className="rounded-full bg-surfaceMuted px-3 py-1">
-                <Text variant="caption" weight="medium">
-                  {t}
-                </Text>
-              </View>
-            ))}
-          </View>
-          <View className="flex-row items-center gap-3 rounded-md border border-line bg-surface p-3">
-            <Icon name="tp-business" size="md" tone="ink" />
-            <View className="flex-1">
-              <Text variant="label" weight="semibold">
-                {listing.owner}
-              </Text>
-              <Text variant="caption" tone="muted">
-                {listing.ownerMeta}
-              </Text>
-            </View>
-          </View>
-
-          <View className="flex-row gap-3">
-            <View className="flex-1">
-              <Button
-                label="Send forespørsel"
-                variant="ink"
-                onPress={() => {
-                  if (isGuest) return onGuest();
-                  close();
-                  router.push({
-                    pathname: "/collab/new",
-                    params: { listing: listing.id },
-                  });
-                }}
-              />
-            </View>
-            <View className="w-28">
-              <Button
-                label={notice ? "Lagret" : "Lagre"}
-                icon={notice ? "bookmark" : "bookmark-outline"}
-                variant="secondary"
-                onPress={() =>
-                  isGuest ? onGuest() : setNotice((n) => (n ? null : "save"))
-                }
-              />
-            </View>
-          </View>
-        </View>
-      ) : null}
-    </Sheet>
   );
 }

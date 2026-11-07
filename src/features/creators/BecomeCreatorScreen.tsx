@@ -118,7 +118,7 @@ export default function BecomeCreatorScreen() {
         <Button
           label="Se Marketplace"
           variant="secondary"
-          onPress={() => router.push("/marketplace")}
+          onPress={() => router.push("/marketplace" as Href)}
         />
       </ScrollView>
     </Screen>

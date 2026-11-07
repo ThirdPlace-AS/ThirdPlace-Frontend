@@ -9,7 +9,9 @@ import {
 
 import {
   ChipGroup,
+  FormPage,
   Icon,
+  Page,
   Screen,
   StickyFooter,
   Text,
@@ -18,16 +20,12 @@ import {
 } from "@/components/ui";
 import { Button } from "@/components/Button";
 import { haptics } from "@/lib/haptics";
-import {
-  showToast,
-  showToastAfterSheet,
-  type ToastInput,
-} from "@/components/Toast";
+import { showToast, type ToastInput } from "@/components/Toast";
 import { confirmToast } from "@/copy";
 import { Input } from "@/components/Input";
 import { RouteHeader } from "@/components/RouteHeader";
-import { Sheet } from "@/components/Sheet";
 import { listingById, listings } from "@/fixtures";
+import { goBackOr } from "@/lib/navigation";
 
 // Collaboration flow, per the design (PDF p16–p18): Nytt samarbeid →
 // Innkommende tilbud (Godta / Avslå / Mottilbud) → Samarbeid (parter,
@@ -90,7 +88,7 @@ export function NewCollabScreen() {
         </ScrollView>
         <StickyFooter safeBottom>
           <Button
-            label="Send forespørsel →"
+            label="Send forespørsel"
             variant="ink"
             disabled={msg.trim().length === 0}
             onPress={() => {
@@ -118,7 +116,6 @@ const TIMELINE: { label: string; meta: string; done: boolean }[] = [
 ];
 
 export function CollabDetailScreen() {
-  const [panel, setPanel] = useState<"offer" | "contract" | null>(null);
   return (
     <Screen edges={["top"]}>
       <RouteHeader title="Jazz-samarbeid" />
@@ -176,12 +173,12 @@ export function CollabDetailScreen() {
           <Button
             label="Kontrakt"
             variant="ink"
-            onPress={() => setPanel("contract")}
+            onPress={() => router.push("/collab/contract" as Href)}
           />
           <Button
             label="Innkommende tilbud"
             variant="secondary"
-            onPress={() => setPanel("offer")}
+            onPress={() => router.push("/collab/offer" as Href)}
           />
         </View>
         <View className="flex-row gap-3">
@@ -201,47 +198,29 @@ export function CollabDetailScreen() {
           </View>
         </View>
       </ScrollView>
-      {panel === "offer" ? <OfferSheet onClose={() => setPanel(null)} /> : null}
-      {panel === "contract" ? (
-        <ContractSheet onClose={() => setPanel(null)} />
-      ) : null}
     </Screen>
   );
 }
 
-// Innkommende tilbud + Mottilbud (p17).
-function OfferSheet({ onClose }: { onClose: () => void }) {
+// Innkommende tilbud + Mottilbud (p17), a page since Phase 12 H4c.
+export function CollabOfferScreen() {
   const [counter, setCounter] = useState(false);
   const [split, setSplit] = useState("50 / 50");
   const finish = (t: ToastInput) => {
-    onClose();
-    showToastAfterSheet(t);
+    goBackOr("/collab" as Href);
+    showToast(t);
   };
   return (
-    <Sheet
-      visible
-      onClose={onClose}
+    <FormPage
       title={counter ? "Mottilbud" : "Innkommende tilbud"}
-    >
-      <View className="gap-3">
-        <View className="gap-0.5 rounded-md border border-line bg-surface p-3">
-          <Text variant="label" weight="semibold">
-            Maria Movik
-          </Text>
-          <Text variant="caption" tone="muted">
-            Co-hosting · Primær/sekundær · 70 % / 30 %
-          </Text>
-        </View>
-        {counter ? (
-          <>
-            <Label>Din inntektsdeling</Label>
-            <ChipRow options={SPLITS} value={split} onChange={setSplit} />
-            <Button
-              label="Send mottilbud →"
-              variant="ink"
-              onPress={() => finish(confirmToast.counterSent)}
-            />
-          </>
+      onBack={counter ? () => setCounter(false) : undefined}
+      footer={
+        counter ? (
+          <Button
+            label="Send mottilbud"
+            variant="ink"
+            onPress={() => finish(confirmToast.counterSent)}
+          />
         ) : (
           <View className="flex-row gap-3">
             <View className="flex-1">
@@ -259,69 +238,80 @@ function OfferSheet({ onClose }: { onClose: () => void }) {
               />
             </View>
           </View>
-        )}
-        {!counter ? (
-          <Pressable
-            accessibilityRole="button"
-            onPress={() => setCounter(true)}
-          >
-            <Text
-              variant="label"
-              weight="semibold"
-              tone="ember"
-              className="text-center"
-            >
-              Send mottilbud
-            </Text>
-          </Pressable>
-        ) : null}
+        )
+      }
+    >
+      <View className="gap-0.5 rounded-md border border-line bg-surface p-3">
+        <Text variant="label" weight="semibold">
+          Maria Movik
+        </Text>
+        <Text variant="caption" tone="muted">
+          Co-hosting · Primær/sekundær · 70 % / 30 %
+        </Text>
       </View>
-    </Sheet>
+      {counter ? (
+        <>
+          <Label>Din inntektsdeling</Label>
+          <ChipRow options={SPLITS} value={split} onChange={setSplit} />
+        </>
+      ) : (
+        <Pressable
+          accessibilityRole="button"
+          onPress={() => setCounter(true)}
+          hitSlop={8}
+        >
+          <Text
+            variant="label"
+            weight="semibold"
+            className="text-center underline"
+          >
+            Send mottilbud
+          </Text>
+        </Pressable>
+      )}
+    </FormPage>
   );
 }
 
-// Kontrakt + Signer kontrakt (p17–p18).
-function ContractSheet({ onClose }: { onClose: () => void }) {
+// Kontrakt + Signer kontrakt (p17–p18), a page since Phase 12 H4c.
+export function CollabContractScreen() {
   const [signed, setSigned] = useState(false);
   return (
-    <Sheet visible onClose={onClose} title="Kontrakt">
-      <View className="gap-3">
-        <View className="gap-2 rounded-md border border-line bg-surface p-4">
-          <Text variant="micro" weight="semibold" tone="muted">
-            Samarbeidsavtale
+    <Page title="Kontrakt">
+      <View className="gap-2 rounded-md border border-line bg-surface p-4">
+        <Text variant="micro" weight="semibold" tone="muted">
+          Samarbeidsavtale
+        </Text>
+        <Text variant="label" weight="regular">
+          Mellom Maria Movik og Oslo Kaffebar
+        </Text>
+        {[
+          "1. Samarbeidstype: Co-hosting (primær/sekundær)",
+          "2. Opplevelse: Jazzkveld, 1. august",
+          "3. Inntektsdeling: 70 % / 30 %",
+          "4. Ansvar: lokale + utstyr / innhold og promotering",
+          "5. Varighet: engangshendelse",
+        ].map((c) => (
+          <Text key={c} variant="caption">
+            {c}
           </Text>
-          <Text variant="label" weight="regular">
-            Mellom Maria Movik og Oslo Kaffebar
-          </Text>
-          {[
-            "1. Samarbeidstype: Co-hosting (primær/sekundær)",
-            "2. Opplevelse: Jazzkveld, 1. august",
-            "3. Inntektsdeling: 70 % / 30 %",
-            "4. Ansvar: lokale + utstyr / innhold og promotering",
-            "5. Varighet: engangshendelse",
-          ].map((c) => (
-            <Text key={c} variant="caption">
-              {c}
-            </Text>
-          ))}
-        </View>
-        <UIPressable
-          accessibilityRole="button"
-          onPress={() => {
-            if (!signed) haptics.light();
-            setSigned(true);
-          }}
-          contentClassName="items-center rounded-md border-2 border-dashed border-line py-6"
-          pressedScale={0.99}
-        >
-          <Text variant="caption" tone="muted">
-            {signed ? "✓ Signert" : "Trykk for å signere"}
-          </Text>
-        </UIPressable>
-
-        <Button label="Lukk" variant="secondary" onPress={onClose} />
+        ))}
       </View>
-    </Sheet>
+      <UIPressable
+        accessibilityRole="button"
+        accessibilityState={{ checked: signed }}
+        onPress={() => {
+          if (!signed) haptics.light();
+          setSigned(true);
+        }}
+        contentClassName="items-center rounded-md border-2 border-dashed border-line py-6"
+        pressedScale={0.99}
+      >
+        <Text variant="caption" tone={signed ? "ink" : "muted"}>
+          {signed ? "✓ Signert" : "Trykk for å signere"}
+        </Text>
+      </UIPressable>
+    </Page>
   );
 }
 

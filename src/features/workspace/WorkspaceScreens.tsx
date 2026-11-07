@@ -64,7 +64,7 @@ export function WorkspaceHub() {
           icon="people-outline"
           title="Marketplace"
           hint="Samarbeid med skapere og bedrifter"
-          onPress={() => router.push("/marketplace")}
+          onPress={() => router.push("/marketplace" as Href)}
         />
         <View className="flex-row items-center gap-3 rounded-lg bg-surfaceMuted p-4">
           <Icon name="person-circle-outline" size="xl" tone="ink" />
