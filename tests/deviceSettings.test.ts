@@ -1,7 +1,7 @@
 // Phase 15: device settings (Kartlag choice, Tilgjengelighet) survive a
 // restart through AsyncStorage; nothing else is stored.
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { beforeEach, describe, expect, it } from "@jest/globals";
+import { beforeEach, describe, expect, it, jest } from "@jest/globals";
 
 import {
   DEFAULT_A11Y_PREFS,
@@ -78,5 +78,19 @@ describe("device settings", () => {
     await hydrateDeviceSettings();
     expect(getMapChoice()).toEqual(DEFAULT_MAP_CHOICE);
     expect(getA11yPrefs()).toEqual(DEFAULT_A11Y_PREFS);
+  });
+
+  it("a build without the native module starts with the defaults", async () => {
+    await jest.isolateModulesAsync(async () => {
+      jest.doMock("@react-native-async-storage/async-storage", () => {
+        throw new Error(
+          "[@RNC/AsyncStorage]: NativeModule: AsyncStorage is null.",
+        );
+      });
+      type Mod = typeof import("@/lib/deviceSettings");
+      // eslint-disable-next-line @typescript-eslint/no-require-imports
+      const ds: Mod = require("@/lib/deviceSettings");
+      await expect(ds.hydrateDeviceSettings()).resolves.toBeUndefined();
+    });
   });
 });

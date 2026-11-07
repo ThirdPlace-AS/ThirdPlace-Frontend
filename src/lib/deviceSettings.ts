@@ -1,4 +1,3 @@
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useSyncExternalStore } from "react";
 
 import {
@@ -23,6 +22,24 @@ import {
 // every change.
 export const DEVICE_SETTINGS_KEY = "thirdplace:device-settings:v1";
 
+// AsyncStorage is loaded lazily and guarded, like expo-haptics
+// (src/lib/haptics.ts): the package throws as soon as it loads in a build
+// without its native module (a dev client built before Phase 15), which would
+// stop the app before its first screen. Without it, choices are simply not
+// kept and the defaults apply.
+type Storage = {
+  getItem(key: string): Promise<string | null>;
+  setItem(key: string, value: string): Promise<void>;
+};
+let storage: Storage | null = null;
+try {
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
+  const mod = require("@react-native-async-storage/async-storage");
+  storage = (mod?.default ?? mod) as Storage;
+} catch {
+  storage = null;
+}
+
 type Saved = { map?: Partial<MapChoice>; a11y?: Partial<A11yPrefs> };
 
 let ready = false;
@@ -37,7 +54,7 @@ function emitReady() {
 
 function write() {
   const saved: Saved = { map: getMapChoice(), a11y: getA11yPrefs() };
-  AsyncStorage.setItem(DEVICE_SETTINGS_KEY, JSON.stringify(saved)).catch(() => {
+  storage?.setItem(DEVICE_SETTINGS_KEY, JSON.stringify(saved)).catch(() => {
     // A full or locked store only means the choice is not kept.
   });
 }
@@ -56,7 +73,7 @@ function parse(raw: string | null): Saved {
  *  call more than once; resolves even if the phone's storage fails. */
 export function hydrateDeviceSettings(): Promise<void> {
   if (started) return started;
-  started = AsyncStorage.getItem(DEVICE_SETTINGS_KEY)
+  started = (storage?.getItem(DEVICE_SETTINGS_KEY) ?? Promise.resolve(null))
     .then((raw) => {
       const saved = parse(raw);
       restoreMapChoice(saved.map);
