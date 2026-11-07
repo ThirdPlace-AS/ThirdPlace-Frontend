@@ -27,7 +27,7 @@ import {
   Screen,
   Text,
 } from "@/components/ui";
-import { experienceById, people } from "@/fixtures";
+import { experienceById, people, profile } from "@/fixtures";
 import { directChatFor } from "@/fixtures/created";
 import { libImage } from "@/fixtures/images";
 import { toggleFollow, useFollowing } from "@/lib/following";
@@ -157,6 +157,11 @@ export default function PersonScreen() {
               following={isFollowing}
               onPress={() =>
                 isGuest ? setSignIn("følge folk") : toggleFollow(person.id)
+              }
+              followLabel={
+                profile.followerIds.includes(person.id)
+                  ? "Følg tilbake"
+                  : "Følg"
               }
               name={person.name}
               size="md"

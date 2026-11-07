@@ -1,14 +1,18 @@
 // Varsler (PDF p20), a page since Phase 12 H4c (a list you browse): cards
 // with a category glyph, name, one-line detail, time and an unread dot, and
 // "Merk alle lest" in the header. Read state is the shared in-memory store
-// (useNotificationReads), so the bell badges drop as items are read.
+// (useNotificationReads), so the bell badges drop as items are read. A tap
+// marks the card read and opens what it names (Phase 13: the person,
+// experience, group or reviews in the fixtures).
 // BLOCKED_CONTRACT_GAP: no push, inbox or notification feed exists.
 import { Ionicons } from "@expo/vector-icons";
+import { router } from "expo-router";
 import { Pressable, View } from "react-native";
 
 import { Icon, Page, Text, Pressable as UIPressable } from "@/components/ui";
 import { notificationTimeLabel, type NotificationType } from "@/fixtures";
 import { useNotificationReads } from "@/hooks/useNotificationReads";
+import { notificationHref } from "@/lib/entityRoutes";
 
 const TYPE_ICON: Record<NotificationType, keyof typeof Ionicons.glyphMap> = {
   join: "people-outline",
@@ -49,7 +53,11 @@ export default function NotificationsScreen() {
             key={n.id}
             accessibilityRole="button"
             accessibilityLabel={`${n.actorName} ${n.text}${isRead ? "" : ", ulest"}`}
-            onPress={() => markRead(n.id)}
+            accessibilityHint="Åpner det varselet gjelder"
+            onPress={() => {
+              markRead(n.id);
+              router.push(notificationHref(n.target));
+            }}
             contentClassName={`flex-row items-start gap-3 rounded-lg border bg-surface p-3.5 ${
               isRead ? "border-line" : "border-ink"
             }`}

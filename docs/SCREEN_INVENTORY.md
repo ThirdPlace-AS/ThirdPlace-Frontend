@@ -272,3 +272,8 @@ Layout modernised by founder decision (same content and PDF order): hub pages (I
 ### Marketplace Venteliste (p18)
 
 - **Venteliste** (`/my-listings/[id]/waitlist`), for a listing you own: "<listing> · n på venteliste" (n = list length), Kapasitet with a bar ("Fullt (5 av 5 samarbeid)"), rows numbered in the order people joined with role and date, and "Tilby" per row, which opens Nytt samarbeid with that partner filled in. Reached from a "Venteliste (n)" link on the listing in Mine listings. Left out: the PDF's "Auto-godta" tag (an acceptance rule nobody has specified).
+
+### Varsler opens its item
+
+- A notification now opens what it names (the person who followed you, the experience someone joined or you were invited to, the reading group, a place's reviews) and is marked read. The targets are part of the fixture cards; resolving them from a real feed stays contract-blocked.
+- On a follower's page the button reads "Følg tilbake", as in the Følgere list.

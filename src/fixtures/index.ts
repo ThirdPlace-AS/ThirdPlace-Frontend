@@ -3121,6 +3121,13 @@ export type MockNotification = {
   minutesAgo: number; // MOCK relative time, not a real timestamp
   read: boolean;
   thumbnailTint?: string; // MOCK media placeholder tint (hex); no real images
+  // What a tap opens: the fixture the notification names (src/lib/entityRoutes.ts).
+  target: NotificationTarget;
+};
+
+export type NotificationTarget = {
+  kind: "person" | "experience" | "group" | "place" | "reviews" | "chat";
+  id: string;
 };
 
 export const MOCK_NOTIFICATIONS: MockNotification[] = [
@@ -3132,6 +3139,7 @@ export const MOCK_NOTIFICATIONS: MockNotification[] = [
     text: "begynte å følge deg.",
     minutesAgo: 25,
     read: false,
+    target: { kind: "person", id: "u2" },
   },
   {
     id: "n2",
@@ -3141,6 +3149,7 @@ export const MOCK_NOTIFICATIONS: MockNotification[] = [
     text: "ble med på «Morgenkaffe & prat».",
     minutesAgo: 120,
     read: false,
+    target: { kind: "experience", id: "e1" },
     thumbnailTint: "#3B5B4A",
   },
   {
@@ -3151,6 +3160,7 @@ export const MOCK_NOTIFICATIONS: MockNotification[] = [
     text: "Ny melding i gruppa.",
     minutesAgo: 480,
     read: true,
+    target: { kind: "group", id: "g2" },
   },
   {
     id: "n4",
@@ -3160,6 +3170,7 @@ export const MOCK_NOTIFICATIONS: MockNotification[] = [
     text: "inviterte deg til «Lesesirkel: nordisk krim».",
     minutesAgo: 2880,
     read: false,
+    target: { kind: "experience", id: "e2" },
     thumbnailTint: "#4A5A7A",
   },
   {
@@ -3170,6 +3181,7 @@ export const MOCK_NOTIFICATIONS: MockNotification[] = [
     text: "fikk en ny anmeldelse.",
     minutesAgo: 4320,
     read: true,
+    target: { kind: "reviews", id: "p1" },
     thumbnailTint: "#7A5A3B",
   },
   {
@@ -3180,6 +3192,7 @@ export const MOCK_NOTIFICATIONS: MockNotification[] = [
     text: "begynte å følge deg.",
     minutesAgo: 6000,
     read: true,
+    target: { kind: "person", id: "u6" },
   },
   {
     id: "n7",
@@ -3189,6 +3202,7 @@ export const MOCK_NOTIFICATIONS: MockNotification[] = [
     text: "ble med på «Naturvin-smaking».",
     minutesAgo: 14400,
     read: true,
+    target: { kind: "experience", id: "e3" },
     thumbnailTint: "#5A4A7A",
   },
 ];

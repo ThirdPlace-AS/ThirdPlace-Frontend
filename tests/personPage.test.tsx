@@ -88,7 +88,8 @@ describe("person page (PDF p13)", () => {
   it("Følg uses the shared following store", () => {
     const f = renderHook(() => useFollowing());
     render(<PersonScreen />, { wrapper });
-    fireEvent.press(screen.getByLabelText("Følg Maria Movik"));
+    // Maria follows you, so the button offers to follow back.
+    fireEvent.press(screen.getByLabelText("Følg tilbake Maria Movik"));
     expect(f.result.current.has("u1")).toBe(true);
   });
 
