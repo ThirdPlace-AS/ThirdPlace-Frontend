@@ -33,12 +33,7 @@ import { Sheet } from "@/components/Sheet";
 import { useGuestMode } from "@/components/map/hooks/useGuestMode";
 import { SignInPrompt } from "@/components/SignInPrompt";
 import { EmptyState } from "@/components/states/StateView";
-import {
-  chatForExperience,
-  experiences,
-  places,
-  type MockExperience,
-} from "@/fixtures";
+import { experiences, places } from "@/fixtures";
 import { showToastAfterSheet } from "@/components/Toast";
 import { confirmToast } from "@/copy";
 import { useNotificationReads } from "@/hooks/useNotificationReads";
@@ -48,7 +43,6 @@ import { joinChat } from "@/lib/joinedChats";
 import { motion, useThemeColors, media } from "@/theme";
 
 import { decideCommit, rotationFor, type SwipeAction } from "./deckLogic";
-import { PlaceDeck } from "./PlaceDeck";
 import { SwipeActions } from "./SwipeActions";
 import { SwipeCard, SWIPE_CONTENT_BOTTOM } from "./SwipeCard";
 import { SwipeFilterBar, type SwipeMode } from "./SwipeFilterBar";
@@ -61,6 +55,11 @@ import {
   type MapFilters,
 } from "@/components/map/services/mapFilters";
 import { useSwipeDeck } from "./useSwipeDeck";
+import {
+  experienceToDeckItem,
+  placeToDeckItem,
+  type DeckItem,
+} from "./deckItems";
 import { Illustration } from "@/components/illustrations/Illustration";
 
 const G = motion.gesture;
@@ -90,28 +89,31 @@ export function SwipeDeck() {
     mode === "places"
       ? applyFilters(places, "", draft).length
       : applyExperienceFilters(experiences, "", draft).length;
-  const placeItems = useMemo(
-    () => applyFilters(places, "", filters),
-    [filters],
-  );
+
   const { unread: unreadNotifs } = useNotificationReads();
 
-  const filterKey = JSON.stringify(filters);
-  const filter = useMemo(
-    () => (e: MockExperience) =>
-      applyExperienceFilters([e], "", filters).length === 1,
+  // One deck for every tab (H5d): experiences or places as the same card
+  // model, after the same filters as the map. Switching tab or filters resets
+  // the deck to its top.
+  const filterKey = `${mode}:${JSON.stringify(filters)}`;
+  const items = useMemo<DeckItem[]>(
+    () =>
+      mode === "places"
+        ? applyFilters(places, "", filters).map(placeToDeckItem)
+        : applyExperienceFilters(experiences, "", filters).map(
+            experienceToDeckItem,
+          ),
     [filterKey], // eslint-disable-line react-hooks/exhaustive-deps
   );
 
-  const deck = useSwipeDeck({ filter, filterKey });
+  const deck = useSwipeDeck({ items, filterKey });
   const reduced = useReducedMotion();
   const { isGuest } = useGuestMode();
   const [size, setSize] = useState({ w: screenW, h: screenH });
   // When a guest tries an account-only action (join/save), we show the sign-in
   // prompt instead of committing. `nope` (pass), share and undo stay open.
   const [signInFor, setSignInFor] = useState<string | null>(null);
-  const [joinChatFor, setJoinChatFor] = useState<MockExperience | null>(null);
-  const [placesDone, setPlacesDone] = useState(false);
+  const [joinChatFor, setJoinChatFor] = useState<DeckItem | null>(null);
   // Guards a second commit while a card is still flying off (F3) — without it a
   // rapid second drag clobbers the in-flight exit and strands/double-advances.
   const [busy, setBusy] = useState(false);
@@ -180,8 +182,8 @@ export function SwipeDeck() {
     }
     haptics.light();
     setBusy(true);
-    // PDF p8: a like (♥ / right swipe) offers "Bli med i samtalen" — joining
-    // the experience's chat is a separate, explicit step.
+    // PDF p8: a like (♥ / right swipe) offers "Bli med i samtalen", joining
+    // the item's chat as a separate, explicit step (a place is also saved).
     if (action === "like") setJoinChatFor(card);
 
     if (reduced) {
@@ -306,13 +308,7 @@ export function SwipeDeck() {
 
   // Web keyboard alternative: ← nope, → like, ↑ save, Backspace undo.
   useEffect(() => {
-    if (
-      Platform.OS !== "web" ||
-      deck.done ||
-      mode === "places" ||
-      joinChatFor !== null
-    )
-      return;
+    if (Platform.OS !== "web" || deck.done || joinChatFor !== null) return;
     const onKey = (ev: KeyboardEvent) => {
       if (busy) return;
       if (ev.key === "ArrowLeft") commit("nope");
@@ -326,14 +322,12 @@ export function SwipeDeck() {
   }, [deck.done, deck.index, reduced, busy, mode, joinChatFor]);
 
   // Render behind→front so the top card (slot 0) sits on top.
-  const slots = deck.window.map((exp, n) => ({ exp, n })).reverse();
+  const slots = deck.window.map((item, n) => ({ item, n })).reverse();
 
   return (
     <>
       <View className="flex-1 bg-ink">
-        {mode === "places" ? (
-          <PlaceDeck items={placeItems} onExhausted={setPlacesDone} />
-        ) : deck.done ? (
+        {deck.done ? (
           // PDF p8 "Du har sett alt for nå" — light screen, two actions.
           <View
             className="flex-1 justify-center bg-background"
@@ -343,7 +337,11 @@ export function SwipeDeck() {
               <EmptyState
                 icon="albums-outline"
                 title="Ingen treff"
-                message="Ingen opplevelser passer filtrene dine. Prøv andre filtre."
+                message={
+                  mode === "places"
+                    ? "Ingen steder passer filtrene dine. Prøv andre filtre."
+                    : "Ingen opplevelser passer filtrene dine. Prøv andre filtre."
+                }
                 actionLabel="Nullstill filtre"
                 onAction={() => setFilters(DEFAULT_FILTERS)}
                 secondaryLabel="Utforsk kartet"
@@ -370,11 +368,11 @@ export function SwipeDeck() {
               setSize({ w: width, h: height });
             }}
           >
-            {slots.map(({ exp, n }) =>
+            {slots.map(({ item, n }) =>
               n === 0 ? (
                 <TopCard
-                  key={exp.id}
-                  exp={exp}
+                  key={`${item.kind}:${item.id}`}
+                  item={item}
                   pan={pan}
                   tx={tx}
                   ty={ty}
@@ -386,13 +384,13 @@ export function SwipeDeck() {
                   onInfoTop={setArrowY}
                   onExpand={() => {
                     markViewed({
-                      kind: "experience",
-                      id: exp.id,
-                      title: exp.title,
+                      kind: item.kind,
+                      id: item.id,
+                      title: item.title,
                     });
                     // The full page is a route (Phase 12 H4c); the deck keeps
                     // its place underneath while it is open.
-                    router.push(`/experience/${exp.id}` as Href);
+                    router.push(`/${item.kind}/${item.id}` as Href);
                   }}
                 />
               ) : (
@@ -401,7 +399,11 @@ export function SwipeDeck() {
                 // swipes off, the finished card is revealed with no info/gradient
                 // pop-in. The deeper card (n===2) stays minimal (fully occluded, so
                 // its overlays would be pure overdraw — F10).
-                <BehindCard key={exp.id} exp={exp} ready={n === 1} />
+                <BehindCard
+                  key={`${item.kind}:${item.id}`}
+                  item={item}
+                  ready={n === 1}
+                />
               ),
             )}
 
@@ -431,13 +433,12 @@ export function SwipeDeck() {
                 onSave={() => commit("save")}
                 onLike={() => commit("like")}
                 onShare={() => {
-                  // Local OS share of the current experience's title. No backend —
-                  // just the device share sheet with mock-fixture text, so it is a
-                  // real, honest action (not a faked server success).
+                  // The device share sheet with the card's title and link
+                  // (no backend), like the experience page's share.
                   const c = deck.current;
                   if (!c) return;
                   void Share.share({
-                    message: `${c.title} — ThirdPlace`,
+                    message: `${c.title} på ThirdPlace: thirdplace.app/${c.kind}/${c.id}`,
                   }).catch(() => {});
                 }}
                 tx={tx}
@@ -465,7 +466,7 @@ export function SwipeDeck() {
             filterActive={activeExtraFilterCount(filters) > 0}
             onOpenNotifications={() => router.push("/notifications" as Href)}
             unreadCount={unreadNotifs}
-            onLight={mode === "places" ? placesDone : deck.done}
+            onLight={deck.done}
             onOpenGroup={() => router.push("/group-swipe")}
           />
         </View>
@@ -488,7 +489,10 @@ export function SwipeDeck() {
 
         {/* Notifications — the same demo sheet the map uses (bell in the top bar). */}
 
-        <JoinChatSheet exp={joinChatFor} onClose={() => setJoinChatFor(null)} />
+        <JoinChatSheet
+          item={joinChatFor}
+          onClose={() => setJoinChatFor(null)}
+        />
 
         {/* Account gate for guest join/save (also used by the detail's CTAs). */}
         <SignInPrompt
@@ -502,7 +506,7 @@ export function SwipeDeck() {
 }
 
 function TopCard({
-  exp,
+  item,
   pan,
   tx,
   ty,
@@ -514,7 +518,7 @@ function TopCard({
   onInfoTop,
   onExpand,
 }: {
-  exp: MockExperience;
+  item: DeckItem;
   pan: PanGesture;
   tx: SharedValue<number>;
   ty: SharedValue<number>;
@@ -556,7 +560,7 @@ function TopCard({
             style,
           ]}
         >
-          <SwipeCard exp={exp} interactive onInfoTop={onInfoTop} />
+          <SwipeCard item={item} interactive onInfoTop={onInfoTop} />
           {reduced ? null : <Wash tx={tx} ty={ty} w={w} h={h} />}
           <Stamps tx={tx} ty={ty} w={w} h={h} reduced={reduced} />
         </Animated.View>
@@ -597,7 +601,7 @@ function TopCard({
 // near its base (the reference pivots low, not around the center).
 const CARD_PIVOT = "50% 80%";
 
-function BehindCard({ exp, ready }: { exp: MockExperience; ready: boolean }) {
+function BehindCard({ item, ready }: { item: DeckItem; ready: boolean }) {
   // The next card sits FULL-SIZE directly under the top card (no peek/scale/fade),
   // so when the top card leaves it is simply already there — a seamless 1:1 swap
   // with no grow-in. `ready` (the immediate next card) renders its FULL content
@@ -606,7 +610,7 @@ function BehindCard({ exp, ready }: { exp: MockExperience; ready: boolean }) {
   // avoid pure overdraw (F10). Non-interactive either way (photo 0, no stepping).
   return (
     <View pointerEvents="none" style={StyleSheet.absoluteFill}>
-      <SwipeCard exp={exp} interactive={false} minimal={!ready} />
+      <SwipeCard item={item} interactive={false} minimal={!ready} />
     </View>
   );
 }
@@ -779,34 +783,34 @@ function Stamps({
 // else confirms. The PDF's "N personer snakker …" count is left out (no real
 // social proof). BLOCKED_CONTRACT_GAP: no chat membership contract.
 function JoinChatSheet({
-  exp,
+  item,
   onClose,
 }: {
-  exp: MockExperience | null;
+  item: DeckItem | null;
   onClose: () => void;
 }) {
   const close = onClose;
   const join = () => {
-    if (!exp) return;
-    const chat = chatForExperience(exp.id);
+    if (!item) return;
     onClose();
     haptics.light();
-    if (chat) {
-      joinChat(chat.id);
-      setTimeout(() => router.push(`/chat/${chat.id}`), 260);
+    if (item.chatId) {
+      joinChat(item.chatId);
+      const id = item.chatId;
+      setTimeout(() => router.push(`/chat/${id}` as Href), 260);
     } else {
       showToastAfterSheet(confirmToast.joinedChat);
     }
   };
   return (
-    <Sheet visible={exp !== null} onClose={close} title="Bli med i samtalen">
-      {exp ? (
+    <Sheet visible={item !== null} onClose={close} title="Bli med i samtalen">
+      {item ? (
         <View className="gap-3">
           <Text variant="body" weight="semibold">
-            {exp.title}
+            {item.title}
           </Text>
           <Text variant="caption" tone="muted">
-            {exp.when}
+            {item.subtitle}
           </Text>
           {/* PDF p8 line "Chat er gratis — billett kjøper du når du vil." is
               left out: it states a payment rule (CLAUDE.md governance). */}

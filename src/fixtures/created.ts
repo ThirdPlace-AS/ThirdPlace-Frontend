@@ -8,6 +8,8 @@
 import { useSyncExternalStore } from "react";
 import type { ImageSourcePropType } from "react-native";
 
+import { media } from "@/theme/media";
+
 import type { LibraryKey } from "./images";
 import {
   chats,
@@ -203,7 +205,8 @@ export function createExperience(input: NewExperienceInput): string {
     tags: [input.category],
     about: input.about.trim(),
     photos: input.photos,
-    scrims: input.photos.map(() => "#222222"),
+    // No sampled tint for picked photos: the media base keeps text legible.
+    scrims: input.photos.map(() => media.base),
     category: input.category as ExperienceCategory,
     duration: input.duration as DurationOption,
     durationMin: durationMinutes(input.duration),

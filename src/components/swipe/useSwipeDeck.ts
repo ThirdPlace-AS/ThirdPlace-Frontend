@@ -2,7 +2,7 @@ import { useCallback, useMemo, useRef, useState } from "react";
 
 import { useMapSaved } from "@/components/map/hooks/useMapSaved";
 import { markerId } from "@/components/map/types/mapPresentation";
-import { experiences, type MockExperience } from "@/fixtures";
+import { experiences } from "@/fixtures";
 
 import {
   applyAction,
@@ -12,44 +12,40 @@ import {
   type SwipeAction,
   type DeckState,
 } from "./deckLogic";
+import { experienceToDeckItem, type DeckItem } from "./deckItems";
+
+const ALL_EXPERIENCES = (): DeckItem[] =>
+  experiences.filter((e) => e.status !== "cancelled").map(experienceToDeckItem);
 
 // JS-side deck state for the swipe surface (index + one-level undo + save).
 // Gesture/animation lives in SwipeDeck; this owns the plain state so it stays
 // testable and the shared Saved store ([useMapSaved]) is reused — a swipe-save
 // also shows up in the map's "Lagret" mode. DEMO only: resets on reload.
 //
-// An optional local `filter` narrows which experiences enter the deck (the top
-// filter bar — real local demo filtering, no invented ranking). `filterKey` is
-// a stable string identity of the filter; when it changes the deck resets to
-// the top. Both are optional so the no-arg call (and the tests) are unchanged.
+// The deck runs over DeckItems (Phase 12 H5d): experiences or places, already
+// filtered by the caller. `filterKey` is a stable identity of the tab +
+// filters; when it changes the deck resets to the top. Both are optional, so
+// the no-arg call (and the tests) get every experience that is not cancelled.
 export function useSwipeDeck(opts?: {
-  filter?: (e: MockExperience) => boolean;
+  items?: DeckItem[];
   filterKey?: string;
 }) {
-  const filter = opts?.filter;
   const filterKey = opts?.filterKey ?? "";
-  // Cancelled experiences never enter the deck; everything else is swipeable,
-  // subject to the optional local filter.
-  const deck = useMemo<MockExperience[]>(
-    () =>
-      experiences.filter(
-        (e) => e.status !== "cancelled" && (filter ? filter(e) : true),
-      ),
-    [filter],
-  );
+  const given = opts?.items;
+  const deck = useMemo<DeckItem[]>(() => given ?? ALL_EXPERIENCES(), [given]);
   const [state, setState] = useState<DeckState>(initialDeck);
   const { isSaved, toggle } = useMapSaved();
 
-  // Reset to the top of the deck whenever the active filter changes. Done in the
-  // render phase (not an effect) — the recommended way to reset state on an
-  // input change, and it avoids a cascading re-render.
+  // Reset to the top of the deck whenever the tab or filters change. Done in
+  // the render phase (not an effect) — the recommended way to reset state on
+  // an input change, and it avoids a cascading re-render.
   const prevFilterKey = useRef(filterKey);
   if (prevFilterKey.current !== filterKey) {
     prevFilterKey.current = filterKey;
     setState(initialDeck);
   }
 
-  const savedKey = (e: MockExperience) => markerId("experience", e.id);
+  const savedKey = (i: DeckItem) => markerId(i.kind, i.id);
 
   // Whether the last committed swipe actually added to Saved. Undo only removes
   // what this swipe added — an item saved earlier (e.g. from the map) stays.
@@ -59,7 +55,11 @@ export function useSwipeDeck(opts?: {
     (action: SwipeAction) => {
       const card = deck[state.index];
       lastAddedSave.current = false;
-      if (card && action === "save" && !isSaved(savedKey(card))) {
+      // Save = swipe up / bookmark. A like on a place also saves it (founder
+      // 2026-11-06: place ♥ = save + join the place's chat).
+      const saves =
+        action === "save" || (action === "like" && card?.kind === "place");
+      if (card && saves && !isSaved(savedKey(card))) {
         toggle(savedKey(card));
         lastAddedSave.current = true;
       }
@@ -73,7 +73,7 @@ export function useSwipeDeck(opts?: {
     if (!last) return;
     // Side effects stay outside the state updater (updaters may be replayed).
     const card = deck[last.index];
-    if (card && last.action === "save" && lastAddedSave.current) {
+    if (card && lastAddedSave.current) {
       if (isSaved(savedKey(card))) toggle(savedKey(card));
     }
     lastAddedSave.current = false;

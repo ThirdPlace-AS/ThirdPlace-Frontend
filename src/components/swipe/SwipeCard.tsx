@@ -6,9 +6,9 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { MetaRow, Text } from "@/components/ui";
 import { media } from "@/theme";
-import { places, type MockExperience } from "@/fixtures";
+import type { IconName } from "@/components/ui";
 
-import { experienceAvailability } from "./availability";
+import type { DeckItem } from "./deckItems";
 import { PhotoCarousel } from "./PhotoCarousel";
 
 // Leading icon per tag — still used by the Filtre sheet's interest chips.
@@ -29,13 +29,7 @@ export const tagIcon = (t: string): keyof typeof Ionicons.glyphMap =>
   TAG_ICONS[t] ?? "pricetag-outline";
 
 // One icon + text meta row (location / date / spots). White, bright, single-line.
-function InfoRow({
-  icon,
-  children,
-}: {
-  icon: keyof typeof Ionicons.glyphMap;
-  children: string;
-}) {
+function InfoRow({ icon, children }: { icon: IconName; children: string }) {
   return <MetaRow icon={icon} text={children} tone="media" numberOfLines={1} />;
 }
 
@@ -90,12 +84,13 @@ export const SWIPE_CONTENT_BOTTOM = 120;
 // so the deck can align the expand arrow to the actual title row.
 
 export function SwipeCard({
-  exp,
+  item,
   interactive = true,
   minimal = false,
   onInfoTop,
 }: {
-  exp: MockExperience;
+  /** An experience or a place, as one card model (deckItems.ts). */
+  item: DeckItem;
   interactive?: boolean;
   minimal?: boolean;
   onInfoTop?: (y: number) => void;
@@ -105,9 +100,8 @@ export function SwipeCard({
   // longer changes per photo. Behind/exiting cards rest on photo 0.
   const [photo, setPhoto] = useState(0);
   const idx = interactive ? photo : 0;
-  const place = places.find((p) => p.id === exp.placeId) ?? null;
   // Per-photo scrim tint so the bottom gradient blends with the image it covers.
-  const scrim = exp.scrims[idx] ?? media.base;
+  const scrim = item.scrims[idx] ?? media.base;
 
   // Occluded peek card — cover image only, no overlays (overdraw saving).
   if (minimal) {
@@ -116,7 +110,11 @@ export function SwipeCard({
         style={[StyleSheet.absoluteFill, { borderRadius: 16 }]}
         className="overflow-hidden bg-ink"
       >
-        <PhotoCarousel photos={exp.photos} interactive={false} variant="card" />
+        <PhotoCarousel
+          photos={item.photos}
+          interactive={false}
+          variant="card"
+        />
       </View>
     );
   }
@@ -127,7 +125,7 @@ export function SwipeCard({
       className="overflow-hidden bg-ink"
     >
       <PhotoCarousel
-        photos={exp.photos}
+        photos={item.photos}
         interactive={interactive}
         onIndexChange={setPhoto}
         indicatorTop={insets.top + 52}
@@ -164,7 +162,8 @@ export function SwipeCard({
       {/* Honesty marker — stays on every card, below the top bar. */}
 
       {/* ─── Bottom info overlay — one consolidated block, bottom-anchored ─────
-          name → location · distance → when → spots/status → interest pills.
+          name → three info lines (experience: where, when, places left;
+          place: category · distance, rating, opening hours) → chips.
           Reports its resolved top Y so the deck can pin the expand arrow to the
           title row (the block height varies with title lines / meta / pills). */}
       <View
@@ -180,22 +179,18 @@ export function SwipeCard({
           accessibilityRole="header"
           accessibilityLiveRegion={interactive ? "polite" : "none"}
         >
-          {exp.title}
+          {item.title}
         </Text>
 
         <View style={{ gap: 6 }}>
-          <InfoRow icon="location-outline">
-            {place
-              ? `${place.name} · ${place.distance}`
-              : exp.meetingPoint.name}
-          </InfoRow>
-          <InfoRow icon="calendar-outline">{exp.when}</InfoRow>
-          <InfoRow icon="people-outline">
-            {experienceAvailability(exp).label}
-          </InfoRow>
+          {item.lines.map((l) => (
+            <InfoRow key={l.icon} icon={l.icon}>
+              {l.text}
+            </InfoRow>
+          ))}
         </View>
 
-        {exp.tags.length > 0 ? <TagPills tags={exp.tags} /> : null}
+        {item.chips.length > 0 ? <TagPills tags={item.chips} /> : null}
       </View>
     </View>
   );
