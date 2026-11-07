@@ -48,9 +48,9 @@ describe("resultForMode", () => {
 
   it("trending sorts places by mock review count desc", () => {
     const r = resultForMode({ ...base, mode: "trending" });
-    // p11 (Munch-galleriet Kveldstur) has the most reviews in fixtures.
-    expect(r.items[0]?.id).toBe("p11");
+    // Counts are the lengths of each item's review list (no stored counts).
     const reviews = r.items.map((i) => i.reviewCount ?? 0);
+    expect(reviews.every((n) => n > 0)).toBe(true);
     expect([...reviews].sort((a, b) => b - a)).toEqual(reviews);
   });
 

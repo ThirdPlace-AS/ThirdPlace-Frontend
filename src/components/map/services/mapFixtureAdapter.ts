@@ -15,6 +15,7 @@ import {
   type MockExperience,
   type MockPlace,
   type TimeWindow,
+  placeRating,
 } from "@/fixtures";
 
 import {
@@ -41,8 +42,8 @@ function placeToItem(p: MockPlace): DiscoveryItem {
     title: p.name,
     subtitle: p.distance,
     meta: `${"kr".repeat(p.priceLevel)} · ${p.openNow ? "Åpent" : "Stengt"}`,
-    rating: p.rating,
-    reviewCount: p.reviews,
+    rating: placeRating(p.id).score,
+    reviewCount: placeRating(p.id).count,
     tags: p.vibes,
   };
 }
@@ -127,8 +128,8 @@ export function resultForMode({
       };
 
     case "trending": {
-      // Demo popularity = mock review count (places: stored count;
-      // experiences: their review list). Not a real metric.
+      // Demo popularity = the length of each item's MOCK review list (places
+      // and experiences alike). Not a real metric.
       const reviewCount = (i: DiscoveryItem) => i.reviewCount ?? 0;
       return {
         items: [...placeItems, ...allExperienceItems].sort(

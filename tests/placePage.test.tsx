@@ -52,7 +52,8 @@ describe("PlacePage", () => {
     expect(screen.getAllByText(`${count} vurderinger`).length).toBeGreaterThan(
       0,
     );
-    expect(screen.queryByText(new RegExp(`\\(${p1.reviews}\\)`))).toBeNull();
+    // No stored count anywhere (the old fixtures said e.g. "(128)").
+    expect(screen.queryByText(/\(\d{3,}\)/)).toBeNull();
   });
 
   it("links to all reviews, writing a review and nearby places", () => {

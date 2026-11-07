@@ -8,6 +8,7 @@ import {
   experiencesForPlace,
   placeById,
   priceBandFor,
+  placeRating,
 } from "@/fixtures";
 import { libImage, photosForPlace } from "@/fixtures/images";
 import { formatRating } from "@/lib/format";
@@ -28,18 +29,19 @@ export function PlaceContent({ id, push }: { id: string; push: PushFn }) {
   }
   const business = businessForPlace(place.id);
   const exps = experiencesForPlace(place.id);
+  const rating = placeRating(place.id);
 
   return (
     <View className="gap-4">
       {/* Peek line: rating · distance · open · category */}
       <View className="flex-row flex-wrap items-center gap-x-3 gap-y-1">
         <View className="flex-row items-center gap-1">
-          <Icon name="star" size="sm" tone="ember" />
+          <Icon name="star" size="sm" tone="ink" />
           <Text variant="label" weight="semibold">
-            {formatRating(place.rating)}
+            {formatRating(rating.score)}
           </Text>
           <Text variant="caption" tone="muted">
-            ({place.reviews})
+            ({rating.count})
           </Text>
         </View>
         <Text variant="caption" tone="muted">
@@ -162,12 +164,13 @@ export function PlaceContent({ id, push }: { id: string; push: PushFn }) {
         <Card>
           <View className="flex-row items-center justify-between">
             <View className="flex-row items-center gap-1">
-              <Icon name="star" size="sm" tone="ember" />
+              <Icon name="star" size="sm" tone="ink" />
               <Text variant="body" weight="semibold">
-                {formatRating(place.rating)}
+                {formatRating(rating.score)}
               </Text>
               <Text variant="caption" tone="muted">
-                · {place.reviews} anmeldelser
+                · {rating.count}{" "}
+                {rating.count === 1 ? "vurdering" : "vurderinger"}
               </Text>
             </View>
             <Icon name="chevron-forward" size="md" tone="muted" />

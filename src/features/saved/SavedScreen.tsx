@@ -10,7 +10,12 @@ import { showToast } from "@/components/Toast";
 import { EmptyState } from "@/components/states/StateView";
 import { useMapSaved } from "@/components/map/hooks/useMapSaved";
 import { useGuestMode } from "@/components/map/hooks/useGuestMode";
-import { businessById, experienceById, placeById } from "@/fixtures";
+import {
+  businessById,
+  experienceById,
+  placeById,
+  placeRating,
+} from "@/fixtures";
 import { coverForPlace, libThumb } from "@/fixtures/images";
 import { Illustration } from "@/components/illustrations/Illustration";
 import { formatRating } from "@/lib/format";
@@ -55,7 +60,7 @@ export default function SavedScreen() {
                   key,
                   kind: "place",
                   title: p.name,
-                  meta: `Sted · ★ ${formatRating(p.rating)}`,
+                  meta: `Sted · ★ ${formatRating(placeRating(p.id).score)}`,
                   placeId: p.id,
                 },
               ]

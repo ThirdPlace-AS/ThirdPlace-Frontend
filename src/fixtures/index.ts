@@ -248,8 +248,8 @@ export type MockPlace = {
   priceNok: number; // MOCK typical spend in NOK (drives price bands), not real
   vibes: Vibe[]; // MOCK vibe tags, not a canonical taxonomy
   blurb: string;
-  rating: number;
-  reviews: number;
+  // No stored rating or review count: both come from the place's reviews
+  // (placeRating), so every surface shows the same numbers.
   openNow: boolean;
   tags: string[];
   about: string;
@@ -280,8 +280,6 @@ export const places: MockPlace[] = [
     priceNok: 60,
     vibes: ["Rolig", "Koselig"],
     blurb: "Lun nabolagskafé med spesialkaffe.",
-    rating: 4.6,
-    reviews: 128,
     openNow: true,
     tags: [
       "Spesialkaffe",
@@ -314,8 +312,6 @@ export const places: MockPlace[] = [
     priceNok: 80,
     vibes: ["Rolig", "Intim"],
     blurb: "Bøker, te og stille kroker.",
-    rating: 4.8,
-    reviews: 86,
     openNow: true,
     tags: ["Bøker", "Te", "Stille", "Vegansk"],
     about: "Vegger av bøker, dyp sofa og en tekanne som aldri går tom.",
@@ -342,8 +338,6 @@ export const places: MockPlace[] = [
     priceNok: 250,
     vibes: ["Sosial", "Energisk", "Romantisk", "Livlig", "Luksuriøs"],
     blurb: "Naturvin og småretter.",
-    rating: 4.4,
-    reviews: 203,
     openNow: false,
     tags: ["Naturvin", "Småretter", "Sosialt", "Uteservering", "Live musikk"],
     about: "Liten vinbar på Vulkan med skiftende glass og delbare retter.",
@@ -369,8 +363,6 @@ export const places: MockPlace[] = [
     priceNok: 150,
     vibes: ["Rolig", "Kreativ"],
     blurb: "Fiks sykkelen mens du venter.",
-    rating: 4.9,
-    reviews: 54,
     openNow: true,
     tags: ["Sykkel", "Reparasjon", "Drop-in", "Parkering"],
     about:
@@ -397,8 +389,6 @@ export const places: MockPlace[] = [
     priceNok: 0,
     vibes: ["Rolig", "Koselig"],
     blurb: "Gratis guidet elvevandring.",
-    rating: 4.7,
-    reviews: 41,
     openNow: true,
     tags: ["Natur", "Gratis", "Drop-in", "Hundevennlig", "Barnevennlig"],
     about:
@@ -425,8 +415,6 @@ export const places: MockPlace[] = [
     priceNok: 420,
     vibes: ["Koselig", "Intim", "Kreativ", "Romantisk"],
     blurb: "Dreieskive for nybegynnere.",
-    rating: 4.8,
-    reviews: 67,
     openNow: true,
     tags: ["Kurs", "Håndverk", "Wifi"],
     about:
@@ -453,8 +441,6 @@ export const places: MockPlace[] = [
     priceNok: 680,
     vibes: ["Sosial", "Energisk", "Livlig", "Luksuriøs"],
     blurb: "Smak deg gjennom nabolaget.",
-    rating: 4.6,
-    reviews: 152,
     openNow: true,
     tags: [
       "Mat",
@@ -488,8 +474,6 @@ export const places: MockPlace[] = [
     priceNok: 95,
     vibes: ["Rolig", "Koselig"],
     blurb: "Guidet tur blant sjeldne planter.",
-    rating: 4.5,
-    reviews: 98,
     openNow: false,
     tags: ["Natur", "Guidet", "Barnevennlig"],
     about:
@@ -520,8 +504,6 @@ export const places: MockPlace[] = [
     priceNok: 210,
     vibes: ["Rolig", "Intim"],
     blurb: "Morgenyoga med utsikt.",
-    rating: 4.9,
-    reviews: 74,
     openNow: true,
     tags: ["Trening", "Velvære", "Drop-in", "Parkering"],
     about:
@@ -548,8 +530,6 @@ export const places: MockPlace[] = [
     priceNok: 1650,
     vibes: ["Energisk", "Sosial"],
     blurb: "Halvdags seiltur på fjorden.",
-    rating: 4.7,
-    reviews: 39,
     openNow: true,
     tags: ["Natur", "Guidet", "Eksklusivt", "Parkering"],
     about:
@@ -576,8 +556,6 @@ export const places: MockPlace[] = [
     priceNok: 320,
     vibes: ["Intim", "Koselig"],
     blurb: "Kveldsomvisning uten kø.",
-    rating: 4.6,
-    reviews: 221,
     openNow: false,
     tags: ["Kunst", "Guidet", "Tilgjengelig"],
     about:
@@ -615,8 +593,6 @@ export const places: MockPlace[] = [
     priceNok: 120,
     vibes: ["Energisk", "Sosial"],
     blurb: "Gå i de nye høyhusene.",
-    rating: 4.3,
-    reviews: 63,
     openNow: true,
     tags: ["Arkitektur", "Guidet", "Gå"],
     about:
@@ -643,8 +619,6 @@ export const places: MockPlace[] = [
     priceNok: 260,
     vibes: ["Sosial", "Koselig"],
     blurb: "Lag din egen krydderblanding.",
-    rating: 4.8,
-    reviews: 88,
     openNow: true,
     tags: ["Mat", "Kurs", "Håndverk"],
     about:
@@ -671,8 +645,6 @@ export const places: MockPlace[] = [
     priceNok: 540,
     vibes: ["Rolig", "Intim"],
     blurb: "Ansiktsbehandling og ro.",
-    rating: 4.5,
-    reviews: 112,
     openNow: false,
     tags: ["Velvære", "Booking", "Rolig"],
     about:
@@ -1538,6 +1510,11 @@ export const reviews: MockReview[] = [
 
 export function reviewsForPlace(placeId: string): MockReview[] {
   return reviews.filter((r) => r.placeId === placeId);
+}
+
+/** A place's rating and review count, from its reviews (one source). */
+export function placeRating(placeId: string): { score: number; count: number } {
+  return ratingOf(reviewsForPlace(placeId));
 }
 
 // ── Experience reviews (MOCK; founder request 2026-11-06). The rating line's

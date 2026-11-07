@@ -12,6 +12,7 @@ import {
   type MockPlace,
   type TimeWindow,
   type Vibe,
+  placeRating,
 } from "@/fixtures";
 
 import { experienceMatchesQuery, placeMatchesQuery } from "./mapSearch";
@@ -98,8 +99,10 @@ export function sortPlaces(
   if (sort === null) return list;
   const by =
     sort === "best"
-      ? (a: MockPlace, b: MockPlace) => b.rating - a.rating
-      : (a: MockPlace, b: MockPlace) => b.reviews - a.reviews;
+      ? (a: MockPlace, b: MockPlace) =>
+          placeRating(b.id).score - placeRating(a.id).score
+      : (a: MockPlace, b: MockPlace) =>
+          placeRating(b.id).count - placeRating(a.id).count;
   return [...list].sort(by);
 }
 
@@ -120,7 +123,8 @@ export function applyFilters(
       return false;
     if (f.vibes.length > 0 && !f.vibes.some((v) => p.vibes.includes(v)))
       return false;
-    if (f.minRating !== null && p.rating < f.minRating) return false;
+    if (f.minRating !== null && placeRating(p.id).score < f.minRating)
+      return false;
     if (f.tags.length > 0 && !f.tags.every((t) => p.tags.includes(t)))
       return false;
     if (

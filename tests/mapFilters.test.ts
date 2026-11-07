@@ -6,7 +6,7 @@ import {
   DEFAULT_FILTERS,
   sortPlaces,
 } from "@/components/map/services/mapFilters";
-import { places } from "@/fixtures";
+import { places, placeRating } from "@/fixtures";
 
 describe("applyFilters — Airbnb-style filters", () => {
   it("types OR-match against place.types", () => {
@@ -67,7 +67,7 @@ describe("applyFilters — Airbnb-style filters", () => {
       ...DEFAULT_FILTERS,
       minRating: 4.5,
     });
-    expect(res.every((p) => p.rating >= 4.5)).toBe(true);
+    expect(res.every((p) => placeRating(p.id).score >= 4.5)).toBe(true);
   });
 
   it("tags require every selected amenity (AND match)", () => {
@@ -119,13 +119,13 @@ describe("applyFilters — Airbnb-style filters", () => {
 describe("sortPlaces", () => {
   it("'best' orders by rating desc", () => {
     const res = sortPlaces(places, "best");
-    const r = res.map((p) => p.rating);
+    const r = res.map((p) => placeRating(p.id).score);
     expect([...r].sort((a, b) => b - a)).toEqual(r);
   });
 
   it("'most' orders by reviews desc", () => {
     const res = sortPlaces(places, "most");
-    const n = res.map((p) => p.reviews);
+    const n = res.map((p) => placeRating(p.id).count);
     expect([...n].sort((a, b) => b - a)).toEqual(n);
   });
 
