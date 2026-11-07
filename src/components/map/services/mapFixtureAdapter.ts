@@ -31,7 +31,6 @@ import {
   type MapFilters,
 } from "./mapFilters";
 import { experienceMatchesQuery } from "./mapSearch";
-import { inArea, type MapArea } from "./bounds";
 import { goingLine } from "@/lib/going";
 
 function placeToItem(p: MockPlace): DiscoveryItem {
@@ -189,8 +188,7 @@ export function resultForMode({
  * the same pipeline the map screen runs (filters → mode rules), so the Filtre
  * footer's "Vis N resultater" always equals the list (benchmark F11). Before,
  * the footer counted places only, so Når / Ledige plasser and the experience
- * modes never changed N. With "Søk i dette området" applied (`area`), only
- * what lies in that part of the map counts, as in the list.
+ * modes never changed N.
  */
 export function countResults({
   mode,
@@ -198,16 +196,14 @@ export function countResults({
   query,
   filters,
   savedIds,
-  area = null,
 }: {
   mode: DiscoveryMode;
   allPlaces: MockPlace[];
   query: string;
   filters: MapFilters;
   savedIds: readonly string[];
-  area?: MapArea | null;
 }): number {
-  const items = resultForMode({
+  return resultForMode({
     mode,
     places: applyFilters(allPlaces, query, filters),
     query,
@@ -215,8 +211,5 @@ export function countResults({
     time: filters.time,
     hasSpots: filters.hasSpots,
     filters,
-  }).items;
-  return area
-    ? items.filter((i) => inArea(i.coord, area)).length
-    : items.length;
+  }).items.length;
 }

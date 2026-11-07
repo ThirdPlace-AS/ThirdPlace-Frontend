@@ -6,7 +6,6 @@ import { env } from "@/lib/env";
 import { elevation, palette } from "@/theme";
 
 import type { MapStylePeriod } from "./mapStyles";
-import type { AreaReader } from "./services/bounds";
 import { clusterByGrid, projectToUnit } from "./services/softClustering";
 import type { DiscoveryItem } from "./types/mapPresentation";
 import { markerPaint } from "./pinStyle";
@@ -58,12 +57,6 @@ type MapProps = {
   // and titles flip so they stay visible (pinStyle.ts). SoftMap follows the
   // theme.
   darkBasemap?: boolean;
-  // The user moved the native map and it came to rest; the reader gives the
-  // part of the map on screen. SoftMap has no camera, so neither is used.
-  onUserMoved?: () => void;
-  areaReaderRef?: { current: AreaReader | null };
-  // Bands the screen covers (top controls, browse peek), in dp.
-  obscured?: { top: number; bottom: number };
 };
 
 // User-location puck for the SoftMap fallback: an ember dot with a white ring
@@ -304,9 +297,6 @@ export function MapCanvas({
   terrain,
   ornamentBottom,
   darkBasemap = false,
-  onUserMoved,
-  areaReaderRef,
-  obscured,
   height = 160,
   fill = false,
 }: MapProps & { height?: number; fill?: boolean }) {
@@ -336,9 +326,6 @@ export function MapCanvas({
           terrain={terrain}
           ornamentBottom={ornamentBottom}
           darkBasemap={darkBasemap}
-          onUserMoved={onUserMoved}
-          areaReaderRef={areaReaderRef}
-          obscured={obscured}
         />
       ) : (
         <SoftMap

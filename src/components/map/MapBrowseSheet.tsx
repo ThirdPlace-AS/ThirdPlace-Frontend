@@ -57,8 +57,6 @@ export function MapBrowseSheet({
   loading = false,
   loadingSlow = false,
   onPeekHeight,
-  areaActive = false,
-  onFullChange,
 }: {
   items: DiscoveryItem[];
   selectedMarkerId: string | null;
@@ -77,11 +75,6 @@ export function MapBrowseSheet({
   loadingSlow?: boolean;
   /** Measured peek height, so map tools can sit just above it. */
   onPeekHeight?: (h: number) => void;
-  /** The list is limited to the searched part of the map. */
-  areaActive?: boolean;
-  /** The list reached (or left) its full height: the map screen hides its
-   *  "Søk i dette området" pill, which would sit on the list. */
-  onFullChange?: (full: boolean) => void;
 }) {
   const chrome = useSheetChrome();
   // Peek = handle + the measured city/weather header, so no card photo shows
@@ -98,14 +91,6 @@ export function MapBrowseSheet({
   // `pillInteractive` gates touches so the invisible pill never swallows taps
   // on the cards below while it is faded out.
   const [pillInteractive, setPillInteractive] = useState(false);
-  const onFullChangeRef = useRef(onFullChange);
-  useEffect(() => {
-    onFullChangeRef.current = onFullChange;
-  }, [onFullChange]);
-  const setFull = useCallback((full: boolean) => {
-    setPillInteractive(full);
-    onFullChangeRef.current?.(full);
-  }, []);
   const pillStyle = useAnimatedStyle(() => {
     const progress = interpolate(
       browseAnimatedIndex.value,
@@ -129,7 +114,7 @@ export function MapBrowseSheet({
     (progress, prev) => {
       const active = progress > 0.6;
       if (active !== (prev != null && prev > 0.6)) {
-        runOnJS(setFull)(active);
+        runOnJS(setPillInteractive)(active);
       }
     },
   );
@@ -224,7 +209,7 @@ export function MapBrowseSheet({
                   B1). No sort claim: there is no ranking contract. */}
               {loading ? null : (
                 <Text variant="caption" tone="muted">
-                  {items.length} treff{areaActive ? " i dette området" : ""}
+                  {items.length} treff
                 </Text>
               )}
             </View>

@@ -19,7 +19,6 @@ module.exports = {
   },
   MapView: Noop,
   Camera: Noop,
-  CameraGestureObserver: Noop,
   UserLocation: Noop,
   PointAnnotation: Noop,
   MarkerView: Noop,
