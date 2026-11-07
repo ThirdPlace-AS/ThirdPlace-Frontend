@@ -127,3 +127,10 @@ and [MAP_DELIVERABLES.md](MAP_DELIVERABLES.md) for journeys + completion classes
 - One filter pipeline: `applyExperienceFilters` runs every Filtre facet over experiences (venue facts from the venue), used by the map adapter, the count and Sveip; Sveip opens the same `MapFilterSheet` with a `count(draft)` (0243).
 - Pages, not modals: the map's search is the `/search` page (a submit returns `?q=…&at=…`, a pick `?focus=…`); Varsler is `/notifications`; "Skriv anmeldelse" is `/review/[kind]/[id]`; from the experience sheet, place, group, other experiences and all reviews open as pages over the map (0235, 0240). Map pins keep their detail sheet.
 - The experience sheet's page gains the video's sections (rating line, reviews, steps, times, meeting point with "Vis på kartet", chat, things to know) (0233, 0234).
+
+## Phase 13 changes (2026-11-07)
+
+- TalkBack: the browse and detail sheets no longer speak the bottom-sheet library's English; the handle is "Endre størrelse" (swipe up or down to show more or less, `src/components/map/sheetA11y.tsx`) and the backdrop is "Lukk" (0257).
+- Photo pagers in browse cards and galleries no longer expose an empty scroller to TalkBack (0257).
+- One rating per place: the place sheet, browse cards, the rating filter and the best / most sorts count the place's reviews (`placeRating`); the stored rating and count are gone (0258).
+- Varsler cards open what they name (0255); the release build was timed on the emulator (0257).
