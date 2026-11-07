@@ -10,6 +10,8 @@ import {
   Badge,
 } from "@/components/ui";
 import { byStart } from "@/features/workspace/calendarOrder";
+import { hubToday } from "@/features/workspace/hubToday";
+import { clock } from "@/lib/dates";
 import { Chip } from "@/components/Chip";
 import { RouteHeader } from "@/components/RouteHeader";
 import { businesses, experiences } from "@/fixtures";
@@ -38,6 +40,7 @@ export function WorkspaceHub() {
             {BIZ?.verified ? "Verifisert bedrift" : "Ikke verifisert"}
           </Text>
         </View>
+        <TodayCard />
         <HubCard
           icon="trending-up-outline"
           title="Dashbord"
@@ -139,6 +142,73 @@ export function WorkspaceHub() {
         </View>
       </ScrollView>
     </Screen>
+  );
+}
+
+// "I dag" (Phase 16, after the section benchmark): what needs the host today,
+// from Kalender's list and Mine listings' waitlists (src/features/workspace/
+// hubToday.ts). Each line opens where it is handled.
+function TodayCard() {
+  const now = new Date();
+  const { today, week, waiting } = hubToday(experiences, now);
+  return (
+    <View className="gap-1 rounded-lg border border-line bg-surface p-4">
+      <Text variant="label" weight="semibold" accessibilityRole="header">
+        I dag
+      </Text>
+      {today.length === 0 ? (
+        <Text variant="caption" tone="muted" className="py-1">
+          Ingen opplevelser i dag.
+        </Text>
+      ) : (
+        today.map(({ exp, start }) => (
+          <TodayRow
+            key={exp.id}
+            icon="time-outline"
+            label={`${clock(start)} · ${exp.title}`}
+            onPress={() => router.push(`/experience/${exp.id}` as Href)}
+          />
+        ))
+      )}
+      <TodayRow
+        icon="calendar-outline"
+        label={`${week} ${week === 1 ? "opplevelse" : "opplevelser"} de neste 7 dagene`}
+        onPress={() => router.push("/workspace/calendar")}
+      />
+      {waiting > 0 ? (
+        <TodayRow
+          icon="people-outline"
+          label={`${waiting} på venteliste i Mine listings`}
+          onPress={() => router.push("/my-listings" as Href)}
+        />
+      ) : null}
+    </View>
+  );
+}
+
+function TodayRow({
+  icon,
+  label,
+  onPress,
+}: {
+  icon: keyof typeof Ionicons.glyphMap;
+  label: string;
+  onPress: () => void;
+}) {
+  return (
+    <UIPressable
+      accessibilityRole="button"
+      accessibilityLabel={label}
+      onPress={onPress}
+      contentClassName="flex-row items-center gap-2 py-1.5"
+      pressedScale={0.99}
+    >
+      <Icon name={icon} size="sm" tone="muted" />
+      <Text variant="caption" className="flex-1" numberOfLines={1}>
+        {label}
+      </Text>
+      <Icon name="chevron-forward" size="sm" tone="muted" />
+    </UIPressable>
   );
 }
 

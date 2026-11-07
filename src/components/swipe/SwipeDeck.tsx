@@ -23,11 +23,12 @@ import Animated, {
   useSharedValue,
   withSpring,
   withTiming,
+  FadeIn,
   type SharedValue,
 } from "react-native-reanimated";
 import { useReducedMotion } from "@/hooks/useReducedMotion";
 
-import { Icon, Text } from "@/components/ui";
+import { Icon, Text, type IconName } from "@/components/ui";
 import { Button } from "@/components/Button";
 import { Sheet } from "@/components/Sheet";
 import { useGuestMode } from "@/components/map/hooks/useGuestMode";
@@ -39,9 +40,10 @@ import { confirmToast } from "@/copy";
 import { useNotificationReads } from "@/hooks/useNotificationReads";
 import { markViewed } from "@/components/map/hooks/useRecentlyViewed";
 import { haptics } from "@/lib/haptics";
+import { markHintSeen, useHintSeen } from "@/lib/hints";
 import { joinChat } from "@/lib/joinedChats";
 import { getA11yPrefs, useA11yPrefs, withWheelchair } from "@/lib/a11yPrefs";
-import { motion, useThemeColors, media } from "@/theme";
+import { elevation, motion, useThemeColors, media } from "@/theme";
 
 import { decideCommit, rotationFor, type SwipeAction } from "./deckLogic";
 import { SwipeActions } from "./SwipeActions";
@@ -119,6 +121,7 @@ export function SwipeDeck() {
 
   const deck = useSwipeDeck({ items, filterKey });
   const reduced = useReducedMotion();
+  const hintSeen = useHintSeen("swipeGestures");
   const { isGuest } = useGuestMode();
   const [size, setSize] = useState({ w: screenW, h: screenH });
   // When a guest tries an account-only action (join/save), we show the sign-in
@@ -178,6 +181,8 @@ export function SwipeDeck() {
   const commit = (action: SwipeAction, vx = 0, vy = 0) => {
     const card = deck.current;
     if (!card) return;
+    // A first swipe or button press means the gestures are known.
+    markHintSeen("swipeGestures");
     if (busy) {
       if (vx === 0 && vy === 0) pendingTap.value = action;
       return;
@@ -419,6 +424,14 @@ export function SwipeDeck() {
                 />
               ),
             )}
+
+            {/* Phase 16 (after the section benchmark): a one-time hint for the
+                gestures, until "Skjønner" or the first swipe. Kept per
+                phone (src/lib/hints.ts). Swipes beside it still reach the
+                card. */}
+            {!hintSeen && size.h > 0 ? (
+              <SwipeHint onDone={() => markHintSeen("swipeGestures")} />
+            ) : null}
 
             {/* Bottom action row — overlaid on the card's bottom gradient. */}
             <View
@@ -839,5 +852,49 @@ function JoinChatSheet({
         </View>
       ) : null}
     </Sheet>
+  );
+}
+
+// The one-time gesture hint: what a swipe does, then "Skjønner".
+function SwipeHint({ onDone }: { onDone: () => void }) {
+  const reduced = useReducedMotion();
+  const rows: { icon: IconName; text: string }[] = [
+    { icon: "heart", text: "Sveip til høyre hvis du liker det" },
+    { icon: "close", text: "Til venstre for å hoppe over" },
+    { icon: "bookmark-outline", text: "Opp for å lagre" },
+    { icon: "images-outline", text: "Trykk på bildet for flere bilder" },
+  ];
+  return (
+    <View
+      pointerEvents="box-none"
+      className="items-center justify-center px-8"
+      style={[StyleSheet.absoluteFill, { zIndex: 40, elevation: 40 }]}
+    >
+      <Animated.View
+        entering={reduced ? undefined : FadeIn.duration(motion.duration.base)}
+        style={{ width: "100%", maxWidth: 360 }}
+      >
+        <View className="gap-3 rounded-xl bg-surface p-5" style={elevation.e3}>
+          <Text variant="title" weight="semibold" accessibilityRole="header">
+            Slik sveiper du
+          </Text>
+          {rows.map((r) => (
+            <View key={r.text} className="flex-row items-center gap-3">
+              <View className="h-9 w-9 items-center justify-center rounded-full bg-surfaceMuted">
+                <Icon
+                  name={r.icon}
+                  size="md"
+                  tone={r.icon === "heart" ? "ember" : "ink"}
+                />
+              </View>
+              <Text variant="body" className="flex-1">
+                {r.text}
+              </Text>
+            </View>
+          ))}
+          <Button label="Skjønner" size="sm" onPress={onDone} />
+        </View>
+      </Animated.View>
+    </View>
   );
 }

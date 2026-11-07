@@ -1,5 +1,6 @@
 // Phase 15: device settings (Kartlag choice, Tilgjengelighet) survive a
-// restart through AsyncStorage; nothing else is stored.
+// restart through AsyncStorage; Phase 16 adds which one-time hints the phone
+// has shown. Nothing else is stored.
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { beforeEach, describe, expect, it, jest } from "@jest/globals";
 
@@ -9,6 +10,7 @@ import {
   resetA11yPrefs,
   setA11yPrefs,
 } from "@/lib/a11yPrefs";
+import { getHints, markHintSeen, restoreHints } from "@/lib/hints";
 import {
   DEVICE_SETTINGS_KEY,
   hydrateDeviceSettings,
@@ -25,6 +27,7 @@ const saved = async () =>
   JSON.parse((await AsyncStorage.getItem(DEVICE_SETTINGS_KEY)) ?? "{}") as {
     map?: unknown;
     a11y?: unknown;
+    hints?: unknown;
   };
 
 beforeEach(async () => {
@@ -32,6 +35,7 @@ beforeEach(async () => {
   await AsyncStorage.clear();
   restoreMapChoice(undefined);
   resetA11yPrefs();
+  restoreHints(undefined);
 });
 
 describe("device settings", () => {
@@ -60,7 +64,20 @@ describe("device settings", () => {
     expect(await saved()).toEqual({
       map: { mapType: "terrain", style: null },
       a11y: { ...DEFAULT_A11Y_PREFS, reduceMotion: true },
+      hints: { swipeGestures: false },
     });
+  });
+
+  it("remember a hint the phone has shown", async () => {
+    await hydrateDeviceSettings();
+    markHintSeen("swipeGestures");
+    await new Promise((r) => setTimeout(r, 0));
+    expect((await saved()).hints).toEqual({ swipeGestures: true });
+    // A restart: stop saving first, then the in-memory hint starts unseen.
+    resetDeviceSettings();
+    restoreHints(undefined);
+    await hydrateDeviceSettings();
+    expect(getHints().swipeGestures).toBe(true);
   });
 
   it("fall back to defaults for unreadable or unknown values", async () => {

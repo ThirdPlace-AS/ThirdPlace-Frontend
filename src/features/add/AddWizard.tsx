@@ -22,6 +22,7 @@ import {
   Text,
   IconButton,
   FadeSwap,
+  Sheet,
 } from "@/components/ui";
 import { Button } from "@/components/Button";
 import { haptics } from "@/lib/haptics";
@@ -29,6 +30,7 @@ import {
   CategoryArt,
   hasCategoryArt,
 } from "@/components/illustrations/CategoryArt";
+import { areaFor } from "@/components/experience/experienceMeta";
 import { Input } from "@/components/Input";
 import { CategoryPicker, PlacePicker } from "@/components/pickers/Pickers";
 import {
@@ -47,8 +49,13 @@ import {
   places,
   REPEAT_OPTIONS,
   type MockChatAccess,
+  type MockExperience,
 } from "@/fixtures";
-import { createExperience, createGroup } from "@/fixtures/created";
+import {
+  createExperience,
+  createGroup,
+  hostedExperiences,
+} from "@/fixtures/created";
 import { libThumb, smallImage, type LibraryKey } from "@/fixtures/images";
 
 import {
@@ -56,6 +63,7 @@ import {
   type AddKind,
   advanceHint,
   canAdvance,
+  draftCopyOf,
   draftFromExperience,
   EMPTY_DRAFT,
   minPhotos,
@@ -415,6 +423,7 @@ function StepBody({
   const isPlace = draft.kind === "place";
   const isGroup = draft.kind === "group";
   const [picker, setPicker] = useState(false);
+  const [startFrom, setStartFrom] = useState(false);
   const [newItem, setNewItem] = useState("");
   switch (step) {
     case "about":
@@ -456,6 +465,41 @@ function StepBody({
               : "Grunnleggende om opplevelsen din."
           }
         >
+          {/* Phase 16: hosts start from one of their experiences instead of
+              typing it again; offered while the step is still empty. */}
+          {!isPlace &&
+          !draft.title &&
+          !draft.summary &&
+          hostedExperiences().length > 0 ? (
+            <UIPressable
+              accessibilityRole="button"
+              accessibilityHint="Fyller inn fra en du har holdt før"
+              onPress={() => setStartFrom(true)}
+              contentClassName="flex-row items-center gap-3 rounded-lg border border-line bg-surface p-3.5"
+              pressedScale={0.99}
+            >
+              <View className="h-10 w-10 items-center justify-center rounded-full bg-surfaceMuted">
+                <Icon name="copy-outline" size="md" tone="ink" />
+              </View>
+              <View className="flex-1">
+                <Text variant="label" weight="semibold">
+                  Start fra en tidligere opplevelse
+                </Text>
+                <Text variant="caption" tone="muted">
+                  Det du skrev sist blir fylt inn. Du velger ny tid.
+                </Text>
+              </View>
+              <Icon name="chevron-forward" size="md" tone="muted" />
+            </UIPressable>
+          ) : null}
+          <StartFromSheet
+            visible={startFrom}
+            onClose={() => setStartFrom(false)}
+            onPick={(e) => {
+              patch(copyOf(e));
+              haptics.light();
+            }}
+          />
           <Input
             label="Navn"
             placeholder={
@@ -1081,6 +1125,62 @@ function SubmittedState({
         </View>
       </View>
     </Screen>
+  );
+}
+
+// "Start fra en tidligere opplevelse": the copy, with the photos that are
+// in the pool and the place (or area) it happened in.
+function copyOf(e: MockExperience): AddDraft {
+  const place = e.placeId ? places.find((p) => p.id === e.placeId) : undefined;
+  return draftCopyOf(e, {
+    area: place?.name ?? areaFor(e.meetingPoint.coord),
+    photos: e.photos.map((p) => PHOTO_POOL.indexOf(p)).filter((i) => i >= 0),
+  });
+}
+
+// A short choice, so a sheet: the experiences you host, newest first.
+function StartFromSheet({
+  visible,
+  onClose,
+  onPick,
+}: {
+  visible: boolean;
+  onClose: () => void;
+  onPick: (e: MockExperience) => void;
+}) {
+  return (
+    <Sheet visible={visible} onClose={onClose} title="Start fra en tidligere">
+      <View className="gap-2">
+        {hostedExperiences().map((e) => (
+          <UIPressable
+            key={e.id}
+            accessibilityRole="button"
+            accessibilityLabel={`${e.title}, ${e.category}, ${e.when}`}
+            onPress={() => {
+              onClose();
+              onPick(e);
+            }}
+            contentClassName="flex-row items-center gap-3 rounded-lg border border-line bg-surface p-3"
+            pressedScale={0.99}
+          >
+            <Image
+              source={smallImage(e.photos[0])}
+              contentFit="cover"
+              style={{ width: 48, height: 48, borderRadius: 10 }}
+              accessible={false}
+            />
+            <View className="flex-1">
+              <Text variant="label" weight="semibold" numberOfLines={1}>
+                {e.title}
+              </Text>
+              <Text variant="caption" tone="muted" numberOfLines={1}>
+                {e.category} · {e.when}
+              </Text>
+            </View>
+          </UIPressable>
+        ))}
+      </View>
+    </Sheet>
   );
 }
 

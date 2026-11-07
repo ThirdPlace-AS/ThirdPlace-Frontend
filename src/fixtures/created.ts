@@ -63,6 +63,21 @@ export function useCreatedVersion(): number {
   );
 }
 
+/** The experiences the viewer hosts: what they published this session
+ *  (newest first), then Profil's "Arrangert" list. For "Start fra en
+ *  tidligere opplevelse" in Legg til (Phase 16). */
+export function hostedExperiences(): MockExperience[] {
+  const ids = [
+    ...[...createdIds.experiences].reverse(),
+    ...profile.activity
+      .filter((a) => a.role === "Arrangert")
+      .map((a) => a.experienceId),
+  ];
+  return [...new Set(ids)]
+    .map((id) => experiences.find((e) => e.id === id))
+    .filter((e): e is MockExperience => !!e);
+}
+
 /** Test helper: forget everything created this session. */
 export function resetCreated() {
   const drop = <T extends { id: string }>(list: T[], ids: Set<string>) => {

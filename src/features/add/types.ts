@@ -3,7 +3,7 @@
 // (BLOCKED_NOT_V22_CERTIFIED / BLOCKED_CONTRACT_GAP). All state is in-memory and
 // discarded on reload — there is no backend to submit or publish to.
 
-import type { MockChatAccess } from "@/fixtures";
+import type { MockChatAccess, MockExperience } from "@/fixtures";
 
 // The Add menu (PDF p10 "Hva vil du legge til?") offers Sted and Opplevelse;
 // Gruppe was added by the founder (2026-11-06).
@@ -121,6 +121,55 @@ export function draftFromExperience(e: {
     title: e.title,
     summary: e.about,
     capacity: String(e.capacity),
+  };
+}
+
+// "Start fra en tidligere opplevelse" (Phase 16, after the section benchmark:
+// Meetup copies an event, Airbnb duplicates a listing): a new draft with what
+// one of your experiences says, except when it happens, so the host only
+// picks a new time. `photos` are indexes into the wizard's pool, `area` the
+// place or area it happened in.
+export function draftCopyOf(
+  e: Pick<
+    MockExperience,
+    | "title"
+    | "about"
+    | "category"
+    | "meetingPoint"
+    | "duration"
+    | "repeat"
+    | "capacity"
+    | "priceNok"
+    | "access"
+    | "cancellation"
+    | "vibes"
+    | "energy"
+    | "languages"
+    | "included"
+    | "itinerary"
+  >,
+  extra: { area: string | null; photos: number[] },
+): AddDraft {
+  return {
+    ...EMPTY_DRAFT,
+    kind: "experience",
+    title: e.title,
+    summary: e.about,
+    category: e.category,
+    area: extra.area,
+    meetingPoint: e.meetingPoint.name === extra.area ? "" : e.meetingPoint.name,
+    photos: extra.photos,
+    duration: e.duration,
+    repeat: e.repeat,
+    capacity: String(e.capacity),
+    price: e.priceNok ? String(e.priceNok) : "",
+    access: e.access,
+    cancellation: e.cancellation,
+    vibes: [...e.vibes],
+    energy: e.energy,
+    languages: [...e.languages],
+    included: [...e.included],
+    steps: e.itinerary.map((s) => s.title),
   };
 }
 
