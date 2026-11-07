@@ -272,7 +272,7 @@ function KindMenu({ onPick }: { onPick: (k: AddKind) => void }) {
         >
           <Icon name="link-outline" size="sm" tone="ember" />
           <Text variant="label" weight="semibold" tone="ember">
-            Importer fra lenke →
+            Importer fra lenke
           </Text>
         </UIPressable>
         {rows.map((r) => (

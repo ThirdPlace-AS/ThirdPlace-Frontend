@@ -169,7 +169,7 @@ function PlanAction({
       hitSlop={{ top: 10, bottom: 10, left: 8, right: 8 }}
     >
       <Text variant="label" weight="semibold" tone="ember" className="pt-1">
-        {label} →
+        {label}
       </Text>
     </Pressable>
   );

@@ -571,8 +571,9 @@ function TopCard({
           zIndex: 20,
         }}
       >
-        {/* Filled up-arrow in a dark circle, like the reference's expand affordance. */}
-        <Icon name="arrow-up" size="md" tone="onMedia" />
+        {/* "i" in a dark circle opens the full page (founder 2026-11-06: no
+            arrows on buttons). */}
+        <Icon name="information" size="md" tone="onMedia" />
       </Pressable>
     </View>
   );

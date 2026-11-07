@@ -204,7 +204,9 @@ export default function ChatThreadScreen() {
                 multiline
               />
               <IconButton
-                icon="arrow-up"
+                // A paper plane, not an arrow (founder 2026-11-06: no
+                // arrows on buttons).
+                icon="send"
                 label="Send"
                 variant={draft.trim() ? "ink" : "filled"}
                 tone={draft.trim() ? "onInk" : "muted"}

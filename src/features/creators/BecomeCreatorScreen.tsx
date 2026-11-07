@@ -86,7 +86,7 @@ export default function BecomeCreatorScreen() {
                   feedback="none"
                 >
                   <Text variant="label" weight="semibold" tone="ember">
-                    {next.label} →
+                    {next.label}
                   </Text>
                 </UIPressable>
               ) : null}

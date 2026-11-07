@@ -191,7 +191,7 @@ export function CollabHistoryScreen() {
                 onPress={() => setRate(h.partner)}
               >
                 <Text variant="label" weight="semibold" tone="ember">
-                  Vurder samarbeid →
+                  Vurder samarbeid
                 </Text>
               </Pressable>
             )}

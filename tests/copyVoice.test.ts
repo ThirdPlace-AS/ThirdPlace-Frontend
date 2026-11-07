@@ -2,6 +2,9 @@
 // owns is extracted by scripts/extract-copy.js; this test keeps it sounding
 // like a person wrote it. A PDF line keeps an em dash only if the founder
 // signs it off (PDF_EM_DASH below).
+import fs from "fs";
+import path from "path";
+
 import { describe, expect, it } from "@jest/globals";
 
 // eslint-disable-next-line @typescript-eslint/no-require-imports
@@ -51,6 +54,35 @@ describe("copy voice", () => {
   it("no doubled punctuation or shouting", () => {
     const hits = COPY.filter((c) => /!!|\?\?|!\?|\?!/.test(c.text));
     expect(hits.map(where)).toEqual([]);
+  });
+
+  it("no arrows on buttons or links (founder 2026-11-06)", () => {
+    const hits = COPY.filter((c) => /[→←]/.test(c.text));
+    expect(hits.map(where)).toEqual([]);
+  });
+
+  it("no arrows in JSX text the extractor cannot see (templates)", () => {
+    const hits: string[] = [];
+    const walk = (dir: string) => {
+      for (const e of fs.readdirSync(dir, { withFileTypes: true })) {
+        const p = path.join(dir, e.name);
+        if (e.isDirectory()) walk(p);
+        else if (/\.tsx$/.test(e.name)) {
+          // Comments may use arrows; strings and JSX text may not. Block
+          // comments are blanked (line numbers kept), line comments cut.
+          fs.readFileSync(p, "utf8")
+            .replace(/\/\*[\s\S]*?\*\//g, (m) => m.replace(/[^\n]/g, " "))
+            .split(/\r?\n/)
+            .forEach((line, i) => {
+              const t = line.replace(/(^|\s)\/\/.*$/, "").trim();
+              if (/[→←]/.test(t)) hits.push(`${p}:${i + 1}  ${t}`);
+            });
+        }
+      }
+    };
+    walk(path.join(__dirname, "..", "app"));
+    walk(path.join(__dirname, "..", "src"));
+    expect(hits).toEqual([]);
   });
 
   it("the PDF allowlist only lists lines that still exist", () => {

@@ -47,7 +47,7 @@ const TIMES = ["1–2 timer", "Hele kvelden", "Hele dagen"];
 const AGREED_ID = "e3";
 const LOBBY_STEP_MS = 500;
 
-// Gruppe-sveip, per the design (PDF p8–p9): Start gruppe-sveip →
+// Gruppe-sveip, per the design (PDF p8–p9): Start gruppe-sveip
 // lobby (who is ready) → shared deck ("Hvem har sveipet?") → "Dere matcher!".
 // BLOCKED_CONTRACT_GAP: there is no group-swipe session, invite or matching
 // contract. Friends are fixture people and their readiness and votes are
@@ -238,7 +238,7 @@ export default function GroupSwipeScreen() {
           </ScrollView>
           <StickyFooter>
             <Button
-              label="Start gruppe-sveip →"
+              label="Start gruppe-sveip"
               variant="ink"
               disabled={invited.length === 0}
               onPress={() => {
@@ -415,7 +415,7 @@ export default function GroupSwipeScreen() {
           </View>
 
           <Button
-            label="Åpne chatten →"
+            label="Åpne chatten"
             variant="ink"
             onPress={() =>
               matchChat

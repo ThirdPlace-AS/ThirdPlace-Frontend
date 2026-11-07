@@ -86,7 +86,7 @@ export default function CreatorWelcomeScreen() {
       {/* Pinned: on a 640 dp phone the CTA used to sit under the fold. */}
       <StickyFooter>
         <Button
-          label="Utforsk ditt nye hjem →"
+          label="Utforsk ditt nye hjem"
           variant="ink"
           onPress={() => router.replace("/marketplace" as Href)}
         />

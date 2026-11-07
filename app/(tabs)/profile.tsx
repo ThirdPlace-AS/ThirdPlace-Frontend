@@ -200,7 +200,7 @@ function NextPlanCard() {
           onPress={() => router.push("/plans")}
         >
           <Text variant="label" weight="semibold" tone="ember">
-            Alle planer →
+            Alle planer
           </Text>
         </UIPressable>
       </View>

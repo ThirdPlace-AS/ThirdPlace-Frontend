@@ -77,7 +77,7 @@ export default function MarketplaceScreen() {
             >
               <Icon name="albums-outline" size="sm" tone="ember" />
               <Text variant="label" weight="semibold" tone="ember">
-                Mine listings →
+                Mine listings
               </Text>
             </UIPressable>
             <View className="flex-row gap-4">
