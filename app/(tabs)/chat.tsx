@@ -13,21 +13,31 @@ import {
   Text,
   EmptyState,
 } from "@/components/ui";
+import { ItemActionsSheet } from "@/components/actions/ActionSheets";
 import { ChatRow } from "@/features/chat/ChatRow";
 import { useCreatedVersion } from "@/fixtures/created";
 import { isMember, useJoinedChats } from "@/lib/joinedChats";
 import { useNotificationReads } from "@/hooks/useNotificationReads";
+import { markChatRead, unreadOf, useChatReads } from "@/lib/chatReads";
+import { togglePinnedChat, usePinnedChats } from "@/lib/pinnedChats";
 import { chats, type MockChat } from "@/fixtures";
 
 // Chat tab, laid out per the design (PDF p9): search, "Aktive samtaler", then
 // collapsible Opplevelser / Steder groups, a pencil FAB for "Ny chat" (p10) and
-// a link to "Arkiverte chatter" (read-only, p10). DEMO ONLY: no realtime or
+// a link to "Arkiverte chatter" (read-only, p10). Phase 18 (founder, screen
+// benchmark: WhatsApp, Telegram): a long press on a chat offers "Fest øverst"
+// / "Løsne" and "Merk som lest"; pinned chats lead the list under "Festet"
+// and leave their other section (src/lib/pinnedChats.ts, in memory). DEMO
+// ONLY: no realtime or
 // messaging backend; chat types / access modes are display labels
 // (BLOCKED_CONTRACT_GAP).
 export default function ChatScreen() {
   const [query, setQuery] = useState("");
   const [open, setOpen] = useState<Record<string, boolean>>({});
   const { unread: unreadNotifs } = useNotificationReads();
+  const pins = usePinnedChats();
+  const reads = useChatReads();
+  const [actionsFor, setActionsFor] = useState<MockChat | null>(null);
 
   const q = query.trim().toLowerCase();
   // Experience and place chats the viewer has not joined stay out of the list.
@@ -47,18 +57,25 @@ export default function ChatScreen() {
     [q, joined, created],
   );
   const archived = chats.filter((c) => c.status === "archived");
+  const isPinned = (c: MockChat) => pins.includes(c.id);
+  const pinnedChats = pins.flatMap((id) => {
+    const c = visible.find((x) => x.id === id);
+    return c ? [c] : [];
+  });
   const groups = [
     {
       key: "experience",
       label: "Opplevelser",
       icon: "tp-experience" as const,
-      items: visible.filter((c) => c.type === "experience"),
+      items: visible.filter((c) => c.type === "experience" && !isPinned(c)),
     },
     {
       key: "place",
       label: "Steder",
       icon: "location-outline" as const,
-      items: visible.filter((c) => c.type === "place" || c.type === "business"),
+      items: visible.filter(
+        (c) => (c.type === "place" || c.type === "business") && !isPinned(c),
+      ),
     },
   ];
   // "Aktive samtaler": everything that is not filed under a group below
@@ -66,10 +83,21 @@ export default function ChatScreen() {
   // unread messages.
   const grouped = (c: MockChat) =>
     c.type === "experience" || c.type === "place" || c.type === "business";
-  const active = visible.filter((c) => !grouped(c) || c.unread > 0);
+  const active = visible.filter(
+    (c) => !isPinned(c) && (!grouped(c) || c.unread > 0),
+  );
 
   const openChat = (c: MockChat) =>
     router.push({ pathname: "/chat/[id]", params: { id: c.id } });
+  const row = (c: MockChat) => (
+    <ChatRow
+      key={c.id}
+      chat={c}
+      pinned={isPinned(c)}
+      onPress={() => openChat(c)}
+      onLongPress={() => setActionsFor(c)}
+    />
+  );
 
   return (
     <Screen edges={["top"]}>
@@ -98,14 +126,21 @@ export default function ChatScreen() {
           accessibilityLabel="Søk i samtaler"
         />
 
+        {pinnedChats.length > 0 ? (
+          <View className="gap-2">
+            <Text variant="title" accessibilityRole="header">
+              Festet
+            </Text>
+            {pinnedChats.map(row)}
+          </View>
+        ) : null}
+
         {active.length > 0 ? (
           <View className="gap-2">
             <Text variant="title" accessibilityRole="header">
               Aktive samtaler
             </Text>
-            {active.map((c) => (
-              <ChatRow key={c.id} chat={c} onPress={() => openChat(c)} />
-            ))}
+            {active.map(row)}
           </View>
         ) : null}
 
@@ -120,11 +155,7 @@ export default function ChatScreen() {
               open={!!open[g.key] || !!q}
               onToggle={() => setOpen((s) => ({ ...s, [g.key]: !s[g.key] }))}
             >
-              <View className="gap-2 px-2 pb-2">
-                {g.items.map((c) => (
-                  <ChatRow key={c.id} chat={c} onPress={() => openChat(c)} />
-                ))}
-              </View>
+              <View className="gap-2 px-2 pb-2">{g.items.map(row)}</View>
             </Accordion>
           ) : null,
         )}
@@ -175,6 +206,35 @@ export default function ChatScreen() {
         onPress={() => router.push("/chat/new" as Href)}
         className="absolute bottom-5 right-5"
       />
+
+      {actionsFor ? (
+        <ItemActionsSheet
+          title={actionsFor.name}
+          actions={[
+            isPinned(actionsFor)
+              ? {
+                  label: "Løsne",
+                  icon: "remove-circle-outline",
+                  onPress: () => togglePinnedChat(actionsFor.id),
+                }
+              : {
+                  label: "Fest øverst",
+                  icon: "pin-outline",
+                  onPress: () => togglePinnedChat(actionsFor.id),
+                },
+            ...(unreadOf(actionsFor, reads) > 0
+              ? [
+                  {
+                    label: "Merk som lest",
+                    icon: "checkmark-done-outline" as const,
+                    onPress: () => markChatRead(actionsFor.id),
+                  },
+                ]
+              : []),
+          ]}
+          onClose={() => setActionsFor(null)}
+        />
+      ) : null}
     </Screen>
   );
 }

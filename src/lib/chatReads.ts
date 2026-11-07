@@ -41,6 +41,10 @@ export function useChatReads(): ReadonlySet<string> {
   );
 }
 
+export function getChatReads(): ReadonlySet<string> {
+  return read;
+}
+
 /** Unread messages left in a chat after this session's reads. */
 export function unreadOf(chat: MockChat, readSet: ReadonlySet<string>): number {
   return readSet.has(chat.id) ? 0 : chat.unread;
@@ -55,4 +59,21 @@ export function useUnreadChatCount(): number {
     (c) =>
       c.status === "active" && isMember(c, joined) && unreadOf(c, readSet) > 0,
   ).length;
+}
+
+/** Where "Nye meldinger" goes (Phase 18): the first of the last `unread`
+ *  messages from others, or null when nothing was unread. */
+export function firstUnreadId(
+  messages: readonly { id: string; mine: boolean }[],
+  unread: number,
+): string | null {
+  let left = unread;
+  let at: string | null = null;
+  for (let i = messages.length - 1; i >= 0 && left > 0; i--) {
+    const m = messages[i];
+    if (!m || m.mine) continue;
+    at = m.id;
+    left -= 1;
+  }
+  return at;
 }

@@ -36,7 +36,12 @@ import {
   experienceById,
   messagesForChat,
 } from "@/fixtures";
-import { markChatRead } from "@/lib/chatReads";
+import {
+  firstUnreadId,
+  getChatReads,
+  markChatRead,
+  unreadOf,
+} from "@/lib/chatReads";
 import { claimHint, markHintSeen, useHintSeen } from "@/lib/hints";
 import { HintBanner } from "@/components/HintBanner";
 import {
@@ -69,6 +74,16 @@ export default function ChatThreadScreen() {
   const [replyTo, setReplyTo] = useState<Reply | null>(null);
   // The message whose reaction row is open (long press).
   const [menuFor, setMenuFor] = useState<string | null>(null);
+  // "Nye meldinger" (Phase 18, WhatsApp / Telegram): a line above the first
+  // message that was unread when the thread opened. Counted before opening
+  // reads it, and kept while the thread is open.
+  const [unreadAtOpen] = useState(() =>
+    chat ? unreadOf(chat, getChatReads()) : 0,
+  );
+  const newFrom = useMemo(
+    () => firstUnreadId(messagesForChat(id ?? ""), unreadAtOpen),
+    [id, unreadAtOpen],
+  );
   // Opening the thread reads it: its unread count and the Chat tab badge drop.
   useEffect(() => {
     if (id) markChatRead(id);
@@ -224,19 +239,22 @@ export default function ChatThreadScreen() {
             </View>
           }
           renderItem={({ item }) => (
-            <Bubble
-              message={item}
-              reaction={thread.reactions[item.id]}
-              menuOpen={menuFor === item.id}
-              onToggleMenu={() => toggleMenu(item.id)}
-              onReact={(emoji) => {
-                toggleReaction(chat.id, item.id, emoji);
-                setMenuFor(null);
-                haptics.selection();
-              }}
-              onReply={() => startReply(item)}
-              canReply={chat.status !== "archived" && !isGuest}
-            />
+            <View className="gap-3">
+              {item.id === newFrom ? <NewMessagesLine /> : null}
+              <Bubble
+                message={item}
+                reaction={thread.reactions[item.id]}
+                menuOpen={menuFor === item.id}
+                onToggleMenu={() => toggleMenu(item.id)}
+                onReact={(emoji) => {
+                  toggleReaction(chat.id, item.id, emoji);
+                  setMenuFor(null);
+                  haptics.selection();
+                }}
+                onReply={() => startReply(item)}
+                canReply={chat.status !== "archived" && !isGuest}
+              />
+            </View>
           )}
         />
 
@@ -306,6 +324,19 @@ export default function ChatThreadScreen() {
         action="skrive i chatten"
       />
     </Screen>
+  );
+}
+
+// Above the first message that was unread when the thread opened.
+function NewMessagesLine() {
+  return (
+    <View className="flex-row items-center gap-2 py-1">
+      <View className="h-px flex-1 bg-line" />
+      <Text variant="caption" weight="semibold" tone="ember">
+        Nye meldinger
+      </Text>
+      <View className="h-px flex-1 bg-line" />
+    </View>
   );
 }
 
