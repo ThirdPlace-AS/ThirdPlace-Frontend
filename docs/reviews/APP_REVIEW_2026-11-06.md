@@ -428,3 +428,40 @@ The founder sent a screenshot of another map app's layer sheet, asked for Kartla
 **Personvern with Datadeling, and "Du er fremme!":**
 
 ![Personvern and check-in](img/p14_details.png)
+
+## 15. Addendum: Phase 15, Karttype and the screens the docs did not have (7 November 2026)
+
+The founder asked for a choice between satellite, terrain and the standard map, and which screens the app needs that the docs do not have; then, asked what else to consider, added three more items.
+
+| What                           | What changed                                                                                                                                                                                                                                                                                                                                                                                                         | Commit · ledger |
+| ------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------- |
+| Karttype                       | Kartlag gets "Karttype" above "Kartstil": Standard, Satellitt (Mapbox Standard Satellite with the same light preset) and Terreng (hill shading and contour lines with metre labels over our map, so Auto and night still work). A pick keeps the sheet open. The Mapbox logo and ⓘ moved above the browse sheet's peek, and the sheet credits its sources; the satellite preview loads live instead of being stored. | 3519b5f · 0264  |
+| Broken links and crashes       | A Norwegian "Fant ikke siden" page instead of expo-router's English screen; a crash screen with p26's "Noe gikk galt" and "Prøv igjen"; shared `join/…` links open their chat or experience and `i/…` invite links open Welcome or the map; the dev screens no longer open in release builds.                                                                                                                        | 299d21d · 0265  |
+| PDF p19 and small fixes        | Kontoinformasjon gets p19's Passord field (Endre passord page) and session sign-out. Denied location offers "Åpne innstillinger". Chat and Varsler have empty states. Slett konto signs you out; Blokker fills Blokkerte brukere; a DM has no "Inviter"; Forlat asks first.                                                                                                                                          | 1721c9c · 0266  |
+| Spec-safe wording              | Lines that stated rules the master spec contradicts are gone (deletion permanence, report anonymity, location as required, map visibility, an export e-mail, a Skaper application that approved itself); Del regningen, the Belønninger tiers and the payout schedule are hidden as V1 non-goals. A test keeps them out.                                                                                             | bce316b · 0267  |
+| Tilgjengelighet                | Større tekst, Reduser bevegelse and Vis kun rullestolvennlige now change the app; Høy kontrast and Skjermleser-optimalisert are hidden until defined.                                                                                                                                                                                                                                                                | 9afc57d · 0268  |
+| Choices kept on the phone      | The map type and style and the Tilgjengelighet switches survive a restart (AsyncStorage; the dev client was rebuilt). Account data stays in memory.                                                                                                                                                                                                                                                                  | c718e98 · 0269  |
+| Om ThirdPlace and Lisenser     | The app version and every open-source package in the bundle with its own licence text, plus font, map and photo credits.                                                                                                                                                                                                                                                                                             | 937a341 · 0270  |
+| Launch checklist and spec gaps | `docs/LAUNCH_CHECKLIST.md` (texts, store forms, services, safety, open decisions, checks) and `docs/surfaces/SPEC_SURFACE_GAPS.md` (what the spec asks for beyond the PDF, and why it is blocked).                                                                                                                                                                                                                   | 0271            |
+
+**Which screens the docs did not have.** Built now: the not-found and crash screens, shared-link routes, Om ThirdPlace and Lisenser, and p19's password and session controls. Waiting for texts: Brukervilkår, Personvernerklæring, Retningslinjer for fellesskapet, Skaper/selger-vilkår, payment and refund terms, and web pages for account deletion and support. Waiting for the contract: appeals and report status, consent, data-request status, receipts and refunds, check-in problem states, Skaper and business-claim progress, subscriptions and people / business search (SPEC_SURFACE_GAPS A1–A20).
+
+**Karttype: the sheet, Satellitt, Terreng by day and at night:**
+
+![Karttype sheet, Satellitt, Terreng day and night](img/p15_karttype.png)
+
+**After a restart: the chosen map and larger text are still there:**
+
+![Map and Kartlag after a restart](img/p15_persist.png)
+
+**Fant ikke siden, Noe gikk galt, a join link opening its chat:**
+
+![Not found, crash screen, join link](img/p15_safety.png)
+
+**Kontoinformasjon (p19), Endre passord, Tilgjengelighet, a licence:**
+
+![Account, password, accessibility, licence](img/p15_settings.png)
+
+**Spec-safe screens: Utbetalinger, Inviter venner, Slett konto, Personvern:**
+
+![Payouts, invite, delete account, privacy](img/p15_spec.png)
