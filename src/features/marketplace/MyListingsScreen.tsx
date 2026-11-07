@@ -17,7 +17,8 @@ import { listings } from "@/fixtures";
 // Mine listings, per the design (PDF p16); Ny / Rediger listing are form
 // pages (/my-listings/new, /my-listings/[id]/edit, Phase 12 H4c).
 // Tabs Aktive / Utkast / Avsluttede over the user's example listings, a
-// pencil per row to edit, and a "+" for a new listing. BLOCKED_CONTRACT_GAP:
+// pencil per row to edit, a "Venteliste (n)" link on a full listing (PDF p18)
+// and a "+" for a new listing. BLOCKED_CONTRACT_GAP:
 // no listing entity, publishing or pricing contract — nothing is published or
 // saved, and no view/request counts are shown (no invented social proof).
 const TABS = ["Aktive", "Utkast", "Avsluttede"] as const;
@@ -62,6 +63,25 @@ export default function MyListingsScreen() {
                 {l.title}
               </Text>
               <Badge kind="status" label={l.type} />
+              {l.waitlist && l.waitlist.length > 0 ? (
+                <Pressable
+                  accessibilityRole="link"
+                  accessibilityLabel={`Venteliste for ${l.title}, ${l.waitlist.length} venter`}
+                  onPress={() =>
+                    router.push(`/my-listings/${l.id}/waitlist` as Href)
+                  }
+                  hitSlop={{ top: 8, bottom: 8 }}
+                  className="self-start"
+                >
+                  <Text
+                    variant="caption"
+                    weight="semibold"
+                    className="underline"
+                  >
+                    Venteliste ({l.waitlist.length})
+                  </Text>
+                </Pressable>
+              ) : null}
             </View>
             <Pressable
               accessibilityRole="button"

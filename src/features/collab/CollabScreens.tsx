@@ -37,7 +37,11 @@ const HOSTING = ["Likeverdig 50/50", "Primær / sekundær"];
 const SPLITS = ["50 / 50", "60 / 40", "70 / 30"];
 
 export function NewCollabScreen() {
-  const { listing: listingId } = useLocalSearchParams<{ listing?: string }>();
+  // From a listing's Venteliste, "Tilby" passes the partner (PDF p18).
+  const { listing: listingId, partner } = useLocalSearchParams<{
+    listing?: string;
+    partner?: string;
+  }>();
   const listing = listingById(listingId ?? "") ?? listings[0];
   const [type, setType] = useState("Co-hosting");
   // Defaults agree with each other and with the design example (PDF p16:
@@ -65,6 +69,16 @@ export function NewCollabScreen() {
               {listing?.owner} · {listing?.type}
             </Text>
           </View>
+          {partner ? (
+            <>
+              <Label>Partner</Label>
+              <View className="rounded-md border border-line bg-surface p-3">
+                <Text variant="label" weight="semibold">
+                  {partner}
+                </Text>
+              </View>
+            </>
+          ) : null}
           <Label>Samarbeidstype</Label>
           <ChipRow options={TYPES} value={type} onChange={setType} />
           <Label>Hosting-type</Label>

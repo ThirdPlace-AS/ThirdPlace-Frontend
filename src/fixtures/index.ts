@@ -2957,6 +2957,19 @@ export type MockListing = {
   tags: string[];
   details: { label: string; value: string }[]; // MOCK display rows
   description: string;
+  // The owner's Venteliste (PDF p18): how many collaborations the listing
+  // takes, how many are taken, and who waits, in the order they joined. MOCK;
+  // the count shown is the list length. No auto-accept or queue rule.
+  capacity?: number;
+  taken?: number;
+  waitlist?: MockWaitlistEntry[];
+};
+
+export type MockWaitlistEntry = {
+  name: string;
+  role: "Skaper" | "Bedrift" | "Venue";
+  avatar: LibraryKey;
+  joined: string; // MOCK display label, e.g. "Påmeldt 12. juli"
 };
 
 export const listings: MockListing[] = [
@@ -2977,6 +2990,46 @@ export const listings: MockListing[] = [
     ],
     description:
       "Koselig lokale i hjertet av Grünerløkka. Perfekt for intime konserter, smakinger eller workshops.",
+    capacity: 5,
+    taken: 5,
+    waitlist: [
+      {
+        name: "Sofie Lind",
+        role: "Skaper",
+        avatar: "person-sofie",
+        joined: "Påmeldt 12. juli",
+      },
+      {
+        name: "Erik Haug",
+        role: "Skaper",
+        avatar: "person-erik",
+        joined: "Påmeldt 14. juli",
+      },
+      {
+        name: "Sentrum Scene",
+        role: "Venue",
+        avatar: "venue-bar",
+        joined: "Påmeldt 15. juli",
+      },
+      {
+        name: "Per Olsen",
+        role: "Skaper",
+        avatar: "person-per",
+        joined: "Påmeldt 18. juli",
+      },
+      {
+        name: "Blå Stasjon",
+        role: "Bedrift",
+        avatar: "venue-bar-2",
+        joined: "Påmeldt 20. juli",
+      },
+      {
+        name: "Nina Dahl",
+        role: "Skaper",
+        avatar: "person-nina",
+        joined: "Påmeldt 22. juli",
+      },
+    ],
   },
   {
     id: "m2",
