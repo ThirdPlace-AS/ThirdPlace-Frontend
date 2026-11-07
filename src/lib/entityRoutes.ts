@@ -1,7 +1,7 @@
 import type { Href } from "expo-router";
 
 import type { SheetTarget } from "@/components/map/sheetTypes";
-import type { NotificationTarget } from "@/fixtures";
+import { chats, experienceById, type NotificationTarget } from "@/fixtures";
 
 // Full entities are pages (Phase 12 H4c, user 2026-11-06: "not every page
 // needs to be a modal"). A detail target that is a whole place, experience or
@@ -22,6 +22,23 @@ export function routeFor(t: SheetTarget): Href | null {
     default:
       return null;
   }
+}
+
+/** The slug a chat's invite link carries (thirdplace.app/join/<slug>). */
+export function chatInviteSlug(name: string): string {
+  return name.toLowerCase().replace(/[^a-z0-9]+/g, "-");
+}
+
+/**
+ * What a shared join link opens (Phase 15): the chat whose invite slug it
+ * carries, or the experience (the PDF p26 invite page links join/<experience
+ * id>). Null when neither exists, so the caller shows "Fant ikke siden".
+ */
+export function joinHref(slug: string): Href | null {
+  const chat = chats.find((c) => chatInviteSlug(c.name) === slug);
+  if (chat) return `/chat/${chat.id}` as Href;
+  if (experienceById(slug)) return `/experience/${slug}` as Href;
+  return null;
 }
 
 /**

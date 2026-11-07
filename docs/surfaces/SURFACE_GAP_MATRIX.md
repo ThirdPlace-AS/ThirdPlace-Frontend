@@ -183,3 +183,15 @@ PDF screens that were still missing, built on fixtures (2026-11-07).
 | Venteliste (p18, owner)   | `app/my-listings/[id]/waitlist.tsx`            | Mine listings, "Venteliste (n)" | demo-complete; count = list length, capacity bar, "Tilby" opens Nytt samarbeid with the partner; "Auto-godta" left out        | 0254   |
 | Marketplace-analyse (p18) | `app/marketplace/analytics.tsx`                | Marketplace "Analyse"           | demo-complete; every figure computed from the published listings and the collaboration history (MOCK)                         | 0261   |
 | Preferanser (p13)         | `app/settings/preferences.tsx`                 | Innstillinger, Konto            | demo-complete; shared in-memory store (`src/lib/preferences.ts`), onboarding answers carried over                             | 0251   |
+
+## Phase 15 routes (2026-11-07)
+
+Screens an app needs that the PDF does not draw (founder, 2026-11-07), plus the PDF p19 details that were missing.
+
+| Surface                            | Route                                     | Opened from                              | Status                                                                                                                               |
+| ---------------------------------- | ----------------------------------------- | ---------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------ |
+| Fant ikke siden                    | `app/+not-found.tsx`                      | any link to a page that does not exist   | demo-complete; replaces expo-router's English screen; "Til kartet"                                                                   |
+| Crash screen (p26 "Noe gikk galt") | root `ErrorBoundary` in `app/_layout.tsx` | any render error                         | demo-complete; "Prøv igjen" retries, "Til kartet" leaves; works without the providers it replaces; dev switch in `_sandbox/simulate` |
+| Join link                          | `app/join/[slug].tsx`                     | shared chat invite link, p26 invite page | demo-complete; opens the chat or experience, else Fant ikke siden; `thirdplace://` only (https app links need the domain)            |
+| Personal invite link               | `app/i/[code].tsx`                        | Inviter venner "Del via …"               | demo-complete; Welcome when opened from outside the app, the map from inside it; the code does nothing (rewards off)                 |
+| Dev screens                        | `app/_sandbox/_layout.tsx`                | `thirdplace://_sandbox/…`                | release builds redirect to the map                                                                                                   |

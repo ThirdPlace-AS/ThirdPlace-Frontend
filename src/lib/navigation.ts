@@ -14,3 +14,12 @@ export function goBackOr(fallback: Href = "/map") {
   if (router.canGoBack()) router.back();
   else router.replace(fallback);
 }
+
+type NavState = { routes?: { name: string; state?: unknown }[] } | undefined;
+
+/** Whether a route name is anywhere in a navigation state (expo-router nests
+ *  the app under "__root", so every level is checked). */
+export function hasRoute(state: unknown, name: string): boolean {
+  const routes = (state as NavState)?.routes ?? [];
+  return routes.some((r) => r.name === name || hasRoute(r.state, name));
+}

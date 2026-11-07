@@ -313,3 +313,10 @@ Every screen named on PDF p1–p28 was checked against the code by its title. Bu
 ### Founder decision: Karttype in Kartlag
 
 The founder asked for a choice between satellite, terrain and the standard map. Kartlag now has a "Karttype" section above "Kartstil" with three preview tiles: Standard (the map as before), Satellitt (Mapbox Standard Satellite: imagery with road and place names; shop and POI icons stay hidden as on Standard) and Terreng (our map with hill shading and contour lines with metre labels). Kartstil (Auto, Daggry, Dag, Skumring, Natt) works with every type, night included. A pick no longer closes the sheet, so both can be chosen in one go; ✕, the scrim or back close it. This supersedes ledger 0260's note that no map-content toggles were added. The spec says nothing about base maps (it asks for Mapbox attribution, BP L153): the Mapbox logo and ⓘ now sit above the browse sheet's peek, and the sheet credits the preview sources.
+
+### Screens the PDF does not draw (founder, 2026-11-07)
+
+- **Fant ikke siden** (`app/+not-found.tsx`): what an unknown link opens; it showed expo-router's English "Unmatched Route" before.
+- **Crash screen**: the root error boundary uses the p26 error state ("Noe gikk galt", "Prøv igjen", "Til kartet"; p26's "Feilkode" line is left out, since no error codes exist).
+- **Shared links**: `join/<slug>` opens the chat a chat invite names or the experience the p26 invite page names; `i/<code>` (Inviter venner) opens Welcome from outside the app and the map from inside it. Only the `thirdplace://` scheme is wired.
+- **Dev screens** (`_sandbox`) are no longer reachable in release builds.

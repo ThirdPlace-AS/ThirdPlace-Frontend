@@ -18,6 +18,10 @@ import { useThemeColors } from "@/theme";
 import { fontAssets } from "@/theme/fonts";
 import { ThemeRoot } from "@/theme/ThemeRoot";
 
+// A crash anywhere below shows the p26 "Noe gikk galt" screen with "Prøv
+// igjen" instead of a blank or red screen (Phase 15).
+export { CrashScreen as ErrorBoundary } from "@/features/system/CrashScreen";
+
 export default function RootLayout() {
   // Preload the Ionicons glyph font before first paint. Without this the icon
   // font loads lazily on web and every icon renders blank (tofu) for a frame —

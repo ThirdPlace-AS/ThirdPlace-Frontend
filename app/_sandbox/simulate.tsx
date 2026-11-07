@@ -1,4 +1,7 @@
+import { useState } from "react";
 import { ScrollView, View } from "react-native";
+
+import { Button } from "@/components/Button";
 
 import { ListRow, Screen, Switch, Text } from "@/components/ui";
 import { RouteHeader } from "@/components/RouteHeader";
@@ -53,8 +56,24 @@ export default function SimulateSandbox() {
             />
           }
         />
+        <ListRow
+          variant="card"
+          title="Krasj"
+          subtitle="Skjermen kaster en feil, så krasjskjermen («Noe gikk galt») vises."
+        />
+        <CrashTrigger />
         <View className="h-2" />
       </ScrollView>
     </Screen>
+  );
+}
+
+// Throws while rendering, so the root error boundary (CrashScreen) takes
+// over. Dev only, like the rest of this screen.
+function CrashTrigger() {
+  const [crash, setCrash] = useState(false);
+  if (crash) throw new Error("Simulert krasj (dev)");
+  return (
+    <Button label="Krasj" variant="secondary" onPress={() => setCrash(true)} />
   );
 }

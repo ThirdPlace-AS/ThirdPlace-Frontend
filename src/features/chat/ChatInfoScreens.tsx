@@ -34,6 +34,7 @@ import {
   type MockChat,
 } from "@/fixtures";
 import { libImage, libThumb, smallImage } from "@/fixtures/images";
+import { chatInviteSlug } from "@/lib/entityRoutes";
 
 const ROLES = ["Vert · Admin", "Deltar", "Venn", "Kun i chatten"];
 export const membersOf = (chat: MockChat) =>
@@ -205,7 +206,7 @@ export function ChatInviteScreen() {
   const [q, setQ] = useState("");
   const [done, setDone] = useState<string[]>([]);
   if (!chat) return <Missing title="Inviter til chat" />;
-  const slug = chat.name.toLowerCase().replace(/[^a-z0-9]+/g, "-");
+  const slug = chatInviteSlug(chat.name);
   return (
     <Page title="Inviter til chat">
       <SearchField
