@@ -143,3 +143,9 @@ and [MAP_DELIVERABLES.md](MAP_DELIVERABLES.md) for journeys + completion classes
 
 - Kartlag has a Karttype section: Standard, Satellitt (Mapbox Standard Satellite with the same light preset; pins get the dark-map paint at every hour) and Terreng (hill shading from Terrain-DEM v1 and contour lines with metre labels from Terrain v2 in the style's bottom slot). The sheet stays open on a pick; ⓘ also says that Auto shows night in dark mode (0264).
 - The Mapbox logo and ⓘ sit above the browse peek (they were under it); the Satellitt preview loads live from the Static Images API instead of being stored; cluster counts are self-lit like their bubbles (0264).
+
+## Phase 16 changes (2026-11-07)
+
+- "Søk i dette området" (0276): rnmapbox's `CameraGestureObserver` reports when the map settles and whether a pan or pinch moved it; `MapboxMap` then reads the two corners of the part the user sees (`getCoordinateFromView`, between the top controls and the browse peek) and `useMapArea` offers the pill. Applied, the area filters the pins, the browse list and count, and Filtre's count (`area` in `useMapDiscovery` / `countResults`). Client-side over the fixtures; a real area search is part of the search contract (blocked).
+- The map is locked north up and flat (0276): `rotateEnabled` / `pitchEnabled` off, heading and pitch reset to 0 on every style load. The Studio styles were saved with bearing 13.6° and pitch 14°, which the camera took over, so the map had been slightly turned and tilted since the styles came in.
+- "Veibeskrivelse" on places and meeting points hands the coordinate to the phone's maps app (0276, `src/lib/directions.ts`).

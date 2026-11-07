@@ -10,6 +10,7 @@ import { useState } from "react";
 import { ScrollView, View } from "react-native";
 
 import { ReportSheet } from "@/components/actions/ActionSheets";
+import { DirectionsButton } from "@/components/DirectionsButton";
 import {
   ChatSection,
   KnowSection,
@@ -199,13 +200,16 @@ export function PlacePage({
         <Text variant="h2" accessibilityRole="header">
           Hvor du finner oss
         </Text>
-        <View className="gap-0.5">
-          <Text variant="label" weight="semibold">
-            {place.name}
-          </Text>
-          <Text variant="caption" tone="muted">
-            {place.address}
-          </Text>
+        <View className="flex-row items-start gap-3">
+          <View className="flex-1 gap-0.5">
+            <Text variant="label" weight="semibold">
+              {place.name}
+            </Text>
+            <Text variant="caption" tone="muted">
+              {place.address}
+            </Text>
+          </View>
+          <DirectionsButton coord={place.coord} name={place.name} />
         </View>
         <MeetingMap
           coord={place.coord}

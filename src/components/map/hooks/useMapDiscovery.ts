@@ -2,6 +2,7 @@ import { useMemo, useState } from "react";
 
 import type { MockPlace, TimeWindow } from "@/fixtures";
 import type { MapFilters } from "../services/mapFilters";
+import { inArea, type MapArea } from "../services/bounds";
 import { useCreatedVersion } from "@/fixtures/created";
 
 import { resultForMode } from "../services/mapFixtureAdapter";
@@ -18,6 +19,7 @@ export function useMapDiscovery({
   time = null,
   hasSpots = false,
   filters,
+  area = null,
   initial = "forYou",
 }: {
   places: MockPlace[];
@@ -27,6 +29,8 @@ export function useMapDiscovery({
   hasSpots?: boolean;
   /** The full filter set: experiences go through the same facets. */
   filters?: MapFilters;
+  /** "Søk i dette området": only what lies in this part of the map. */
+  area?: MapArea | null;
   initial?: DiscoveryMode;
 }) {
   const [mode, setMode] = useState<DiscoveryMode>(initial);
@@ -40,5 +44,12 @@ export function useMapDiscovery({
     [mode, places, query, savedIds, time, hasSpots, filters, created],
   );
 
-  return { mode, setMode, ...result };
+  const items = useMemo(
+    () =>
+      area ? result.items.filter((i) => inArea(i.coord, area)) : result.items,
+    [result.items, area],
+  );
+
+  // allItems: the same list before the area limit (for "Vis alle").
+  return { mode, setMode, ...result, items, allItems: result.items };
 }

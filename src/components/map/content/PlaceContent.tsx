@@ -2,6 +2,7 @@ import { View } from "react-native";
 
 import { Icon, MetaRow, Text, Pressable as UIPressable } from "@/components/ui";
 import { Card } from "@/components/Card";
+import { DirectionsButton } from "@/components/DirectionsButton";
 import { Chip } from "@/components/Chip";
 import {
   businessForPlace,
@@ -86,6 +87,7 @@ export function PlaceContent({ id, push }: { id: string; push: PushFn }) {
           {place.specialHours ? (
             <MetaRow icon="calendar-outline" text={place.specialHours} />
           ) : null}
+          <DirectionsButton coord={place.coord} name={place.name} />
         </View>
       </Card>
 

@@ -20,3 +20,44 @@ export function boundsOf(
     [minLng, minLat],
   ];
 }
+
+/** A part of the map in degrees: what the map showed when the user stopped
+ *  panning (Phase 16, "Søk i dette området"). */
+export type MapArea = {
+  west: number;
+  south: number;
+  east: number;
+  north: number;
+};
+
+/** The area between two corners ([lng, lat]), in either order: the map
+ *  hands back its top-left and bottom-right visible corners. */
+export function areaFromCorners(
+  corners: readonly (readonly number[])[],
+): MapArea | null {
+  const [a, b] = corners;
+  if (!a || !b || a.length < 2 || b.length < 2) return null;
+  const [lngA, latA] = a as [number, number];
+  const [lngB, latB] = b as [number, number];
+  if (![lngA, latA, lngB, latB].every(Number.isFinite)) return null;
+  return {
+    west: Math.min(lngA, lngB),
+    east: Math.max(lngA, lngB),
+    south: Math.min(latA, latB),
+    north: Math.max(latA, latB),
+  };
+}
+
+/** True when the coordinate ([lng, lat]) lies in the area, edges included. */
+export function inArea(
+  coord: readonly [number, number],
+  area: MapArea,
+): boolean {
+  const [lng, lat] = coord;
+  return (
+    lng >= area.west &&
+    lng <= area.east &&
+    lat >= area.south &&
+    lat <= area.north
+  );
+}

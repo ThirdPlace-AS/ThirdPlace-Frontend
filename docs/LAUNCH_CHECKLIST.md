@@ -23,7 +23,7 @@ The master spec asks for these before production (LIB L33736–33747, FG L10606�
 
 ## Services and configuration (ops and backend)
 
-- **Mapbox:** publish the four Studio styles (`src/components/map/mapStyles.ts` uses `/draft` revisions); restrict the public token to the app; the secret `sk.` token stays out of bundles (CI checks it).
+- **Mapbox:** publish the four Studio styles (`src/components/map/mapStyles.ts` uses `/draft` revisions), saved with bearing 0 and pitch 0 (the drafts carry 13.6° and 14°; the app resets them on load, but the published styles should match); restrict the public token to the app; the secret `sk.` token stays out of bundles (CI checks it).
 - **Sign-in:** real Google and Apple sign-in (client IDs, redirect URIs).
 - **Push notifications:** `expo-notifications`, FCM / APNs keys, the permission flow, and the "push is off" state the spec asks for.
 - **Crash reporting** (for example Sentry), with a consent decision: the crash screen ("Noe gikk galt") reports nowhere today.

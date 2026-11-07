@@ -5,7 +5,14 @@ import {
   type Href,
 } from "expo-router";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { BackHandler, Keyboard, useWindowDimensions, View } from "react-native";
+import {
+  AccessibilityInfo,
+  BackHandler,
+  Keyboard,
+  useWindowDimensions,
+  View,
+} from "react-native";
+import Animated, { FadeIn, FadeOut } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import {
@@ -34,7 +41,10 @@ import type {
   DiscoveryItem,
   DiscoveryMode,
 } from "@/components/map/types/mapPresentation";
+import { useMapArea } from "@/components/map/hooks/useMapArea";
 import { useMapCamera } from "@/components/map/hooks/useMapCamera";
+import { inArea } from "@/components/map/services/bounds";
+import { countResults } from "@/components/map/services/mapFixtureAdapter";
 import { useTimeOfDayStyle } from "@/components/map/hooks/useTimeOfDayStyle";
 import { useMapLocation } from "@/components/map/hooks/useMapLocation";
 import { USER_PUCK } from "@/components/map/userPuck";
@@ -51,10 +61,11 @@ import { MapBrowseSheet } from "@/components/map/MapBrowseSheet";
 import { MOCK_WEATHER, OSLO_AREAS, places } from "@/fixtures";
 import { useMockResource } from "@/hooks/useMockResource";
 import { useLoadPhase } from "@/hooks/useLoadPhase";
+import { useReducedMotion } from "@/hooks/useReducedMotion";
 import { useNotificationReads } from "@/hooks/useNotificationReads";
 import { haptics } from "@/lib/haptics";
 import { setDevSimulation, useDevSimulation } from "@/lib/devSimulation";
-import { elevation } from "@/theme";
+import { duration, elevation } from "@/theme";
 
 // Map discovery surface. Thin composition over feature hooks:
 // filters/search, discovery mode, selection (detail sheet), camera, location.
@@ -89,6 +100,15 @@ export default function MapScreen() {
   const darkBasemap = canUseMapbox && basemap.dark;
   // Bumped to force the browse sheet to expand (SoftMap cluster tap).
   const [browseExpand, setBrowseExpand] = useState(0);
+  // The browse list at full height covers where the area pill would sit.
+  const [browseFull, setBrowseFull] = useState(false);
+  const reduced = useReducedMotion();
+
+  // "Søk i dette området" (Phase 16, after the section benchmark): a pan or
+  // pinch offers to limit the list (and its count) to the part of the map
+  // the user sees, between the top controls and the browse peek.
+  const areaSearch = useMapArea();
+  const [topH, setTopH] = useState(0);
 
   const filters = useMapFilters();
   const saved = useMapSaved();
@@ -99,6 +119,7 @@ export default function MapScreen() {
     time: filters.filters.time,
     hasSpots: filters.filters.hasSpots,
     filters: filters.filters,
+    area: areaSearch.area,
   });
   const selection = useMapSelection();
   const camera = useMapCamera();
@@ -120,8 +141,12 @@ export default function MapScreen() {
   if (focusKey && focusKey !== focusedKey) {
     setFocusedKey(focusKey);
     const [kind, id] = (focus ?? "").split(":");
-    if ((kind === "place" || kind === "experience") && id)
+    if ((kind === "place" || kind === "experience") && id) {
+      // The item may lie outside a searched part of the map: lift it, so
+      // its pin is there and the camera can go to it.
+      areaSearch.clear();
       selection.openTarget({ kind, id });
+    }
   }
   // /map?q=<text>&at=<stamp> (submitted on the /search page) applies the
   // text as the map's search filter, once per submit.
@@ -256,13 +281,28 @@ export default function MapScreen() {
     [setDiscoveryMode],
   );
 
+  const searchThisArea = () => {
+    const applied = areaSearch.apply();
+    if (!applied) return;
+    const n = discovery.allItems.filter((i) => inArea(i.coord, applied)).length;
+    AccessibilityInfo.announceForAccessibility(`${n} treff i dette området`);
+  };
+  const showAreaPill =
+    !!areaSearch.offer &&
+    !loading &&
+    !errored &&
+    !browseFull &&
+    selection.sheetStack.length === 0;
+
   const handleApplyFilters = (next: typeof filters.filters) => {
     haptics.light();
     // "Where?" recenters the map to the chosen Oslo area (demo — reuses the
-    // manual-area fallback; it does not refilter the mock distances).
+    // manual-area fallback; it does not refilter the mock distances). A new
+    // "where" replaces a searched part of the map.
     if (next.whereArea && next.whereArea !== filters.filters.whereArea) {
       const area = OSLO_AREAS.find((a) => a.name === next.whereArea);
       if (area) {
+        areaSearch.clear();
         location.selectArea(area);
         camera.recenter();
       }
@@ -273,6 +313,9 @@ export default function MapScreen() {
   // "Posisjon": fly to the user and zoom in (street level); without a fix,
   // ask for it, or fall back to the manual-area sheet.
   const handleLocationPress = async () => {
+    // Going to the user (or a chosen area) lifts a searched part of the map:
+    // the list shows everything again.
+    areaSearch.clear();
     if (location.status === "granted" && location.coord) {
       camera.recenter(USER_PUCK.locateZoom);
     } else if (location.status === "granted") {
@@ -294,6 +337,7 @@ export default function MapScreen() {
   };
 
   const handleSelectArea = (a: Parameters<typeof location.selectArea>[0]) => {
+    areaSearch.clear();
     location.selectArea(a);
     camera.recenter();
     setLocationOpen(false);
@@ -315,6 +359,8 @@ export default function MapScreen() {
         terrain={basemap.terrain}
         ornamentBottom={browsePeekClearance + 8}
         darkBasemap={darkBasemap}
+        onCameraSettled={areaSearch.settled}
+        obscured={{ top: topH, bottom: browsePeekClearance }}
         recenterSignal={camera.recenterSignal}
         recenterZoom={camera.recenterZoom}
         center={location.center}
@@ -325,6 +371,9 @@ export default function MapScreen() {
       {/* Floating top controls: search + notifications, then discovery modes.
           Gutter is applied per-row so the chip row can scroll edge-to-edge. */}
       <View
+        // box-none: the gaps between the rows reach the map.
+        pointerEvents="box-none"
+        onLayout={(e) => setTopH(Math.round(e.nativeEvent.layout.height))}
         className="absolute top-0 left-0 right-0 gap-2 pb-2"
         style={{ paddingTop: insets.top + 8 }}
       >
@@ -387,6 +436,37 @@ export default function MapScreen() {
 
         <DiscoveryModeTabs mode={discovery.mode} onChange={handleModeChange} />
       </View>
+
+      {/* "Søk i dette området": centred under the mode chips once the user
+          has moved the map. Layout on the plain View, fade on the animated
+          one (className on Animated views is lost on a cold start). */}
+      {showAreaPill ? (
+        <View
+          pointerEvents="box-none"
+          className="absolute left-0 right-0 items-center"
+          style={{ top: topH }}
+        >
+          <Animated.View
+            entering={reduced ? undefined : FadeIn.duration(duration.fast)}
+            exiting={reduced ? undefined : FadeOut.duration(duration.fast)}
+          >
+            <UIPressable
+              accessibilityRole="button"
+              accessibilityLabel="Søk i dette området"
+              accessibilityHint="Viser bare det som er på kartet nå"
+              haptic="selection"
+              onPress={searchThisArea}
+              contentClassName="flex-row items-center gap-2 rounded-full bg-surface px-4 py-2.5"
+              contentStyle={elevation.e2}
+            >
+              <Icon name="search" size="sm" tone="ink" />
+              <Text variant="label" weight="semibold">
+                Søk i dette området
+              </Text>
+            </UIPressable>
+          </Animated.View>
+        </View>
+      ) : null}
 
       {/* Map tools (layer + location) docked bottom-right. Historically these
           lived in the top cluster because floating buttons over the BOTTOM of
@@ -452,14 +532,25 @@ export default function MapScreen() {
       {/* Empty overlay — no results for the current mode/filters */}
       {noResults ? (
         <MapStateCard>
-          <EmptyState
-            fill={false}
-            icon="search"
-            title="Ingen treff"
-            message={discovery.emptyMessage}
-            actionLabel="Nullstill"
-            onAction={filters.reset}
-          />
+          {areaSearch.area && discovery.allItems.length > 0 ? (
+            <EmptyState
+              fill={false}
+              icon="map-outline"
+              title="Ingen treff i dette området"
+              message="Flytt kartet og søk igjen, eller vis alle treff."
+              actionLabel="Vis alle"
+              onAction={areaSearch.clear}
+            />
+          ) : (
+            <EmptyState
+              fill={false}
+              icon="search"
+              title="Ingen treff"
+              message={discovery.emptyMessage}
+              actionLabel="Nullstill"
+              onAction={filters.reset}
+            />
+          )}
         </MapStateCard>
       ) : null}
 
@@ -469,6 +560,21 @@ export default function MapScreen() {
         query={filters.query}
         mode={discovery.mode}
         savedIds={saved.savedIds}
+        // With a searched part of the map, "Vis N resultater" counts only
+        // what lies in it, as the list will.
+        count={
+          areaSearch.area
+            ? (draft) =>
+                countResults({
+                  mode: discovery.mode,
+                  allPlaces: places,
+                  query: filters.query,
+                  filters: draft,
+                  savedIds: saved.savedIds,
+                  area: areaSearch.area,
+                })
+            : undefined
+        }
         onClose={() => setFilterOpen(false)}
         onApply={handleApplyFilters}
       />
@@ -509,7 +615,13 @@ export default function MapScreen() {
           onSelect={handleSelectItem}
           isSaved={saved.isSaved}
           onToggleSave={handleToggleSave}
-          emptyMessage={discovery.emptyMessage}
+          emptyMessage={
+            areaSearch.area
+              ? "Ingen treff i dette området."
+              : discovery.emptyMessage
+          }
+          areaActive={!!areaSearch.area}
+          onFullChange={setBrowseFull}
           areaLabel={location.areaLabel}
           weather={MOCK_WEATHER}
           hidden={selection.sheetStack.length > 0}

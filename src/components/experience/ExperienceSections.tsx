@@ -19,6 +19,7 @@ import {
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { Button } from "@/components/Button";
+import { DirectionsButton } from "@/components/DirectionsButton";
 import { useGuestMode } from "@/components/map/hooks/useGuestMode";
 import { SignInPrompt } from "@/components/SignInPrompt";
 import { showToastAfterSheet } from "@/components/Toast";
@@ -425,13 +426,17 @@ export function MeetingSection({
       <Text variant="h2" accessibilityRole="header">
         Hvor vi møtes
       </Text>
-      <View className="gap-0.5">
-        <Text variant="label" weight="semibold">
-          {mp.name}
-        </Text>
-        <Text variant="caption" tone="muted">
-          {mp.address}
-        </Text>
+      <View className="flex-row items-start gap-3">
+        <View className="flex-1 gap-0.5">
+          <Text variant="label" weight="semibold">
+            {mp.name}
+          </Text>
+          <Text variant="caption" tone="muted">
+            {mp.address}
+          </Text>
+        </View>
+        {/* Phase 16 (benchmark): the route in the phone's maps app. */}
+        <DirectionsButton coord={mp.coord} name={mp.name} />
       </View>
       <MeetingMap coord={mp.coord} onShowOnMap={onShowOnMap} />
       <Pressable
