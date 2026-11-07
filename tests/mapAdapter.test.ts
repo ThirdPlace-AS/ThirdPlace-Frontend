@@ -8,17 +8,43 @@ import {
   countResults,
   resultForMode,
 } from "@/components/map/services/mapFixtureAdapter";
+import { boundsOf } from "@/components/map/services/bounds";
+import { markerId } from "@/components/map/types/mapPresentation";
 import { experiences, places } from "@/fixtures";
 
 const base = { places, query: "", savedIds: [] as string[] };
 
 describe("resultForMode", () => {
-  it("explore returns all places, not demo", () => {
+  it("explore returns every place and every bookable experience", () => {
     const r = resultForMode({ ...base, mode: "explore" });
-    expect(r.items).toHaveLength(places.length);
-    expect(r.items.every((i) => i.kind === "place")).toBe(true);
+    const live = experiences.filter((e) => e.status !== "cancelled");
+    expect(r.items).toHaveLength(places.length + live.length);
+    expect(r.items.filter((i) => i.kind === "place")).toHaveLength(
+      places.length,
+    );
+    expect(r.items.filter((i) => i.kind === "experience")).toHaveLength(
+      live.length,
+    );
     expect(r.demo).toBe(false);
   });
+
+  it("experience pins sit at their meeting point", () => {
+    const r = resultForMode({ ...base, mode: "explore" });
+    for (const e of experiences) {
+      const item = r.items.find((i) => i.id === e.id);
+      expect(item?.coord).toEqual(e.meetingPoint.coord);
+    }
+  });
+
+  it.each(["forYou", "trending", "saved"] as const)(
+    "%s can hold both places and experiences",
+    (mode) => {
+      const savedIds = [markerId("place", "p1"), markerId("experience", "e1")];
+      const r = resultForMode({ ...base, mode, savedIds });
+      expect(r.items.some((i) => i.kind === "place")).toBe(true);
+      expect(r.items.some((i) => i.kind === "experience")).toBe(true);
+    },
+  );
 
   it("trending sorts places by mock review count desc", () => {
     const r = resultForMode({ ...base, mode: "trending" });
@@ -129,10 +155,11 @@ describe("countResults (Filtre footer = list, benchmark F11)", () => {
     expect(withSpots).toBeLessThanOrEqual(all);
   });
 
-  it("place modes count the filtered places", () => {
+  it("For deg counts the filtered places plus the experiences", () => {
     const filters = { ...DEFAULT_FILTERS, minRating: 4.5 };
     expect(countResults({ ...base, mode: "forYou", filters })).toBe(
-      applyFilters(places, "", filters).length,
+      applyFilters(places, "", filters).length +
+        experiences.filter((e) => e.status !== "cancelled").length,
     );
   });
 
@@ -156,5 +183,23 @@ describe("countResults (Filtre footer = list, benchmark F11)", () => {
       }).items.length;
       expect(countResults({ ...base, mode, filters })).toBe(list);
     }
+  });
+});
+
+describe("boundsOf (first map view fits every pin)", () => {
+  it("spans every place and meeting point", () => {
+    const r = resultForMode({ ...base, mode: "forYou" });
+    const b = boundsOf(r.items.map((i) => i.coord))!;
+    const [[maxLng, maxLat], [minLng, minLat]] = b;
+    for (const i of r.items) {
+      expect(i.coord[0]).toBeGreaterThanOrEqual(minLng);
+      expect(i.coord[0]).toBeLessThanOrEqual(maxLng);
+      expect(i.coord[1]).toBeGreaterThanOrEqual(minLat);
+      expect(i.coord[1]).toBeLessThanOrEqual(maxLat);
+    }
+  });
+
+  it("needs at least two points", () => {
+    expect(boundsOf([[10.7, 59.9]])).toBeNull();
   });
 });

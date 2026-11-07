@@ -2,12 +2,16 @@
 // so it is unit-testable and safe. NO backend, NO ranking contract: "trending" is
 // a demo sort by mock review count, "For You" / "Friends" are non-personalized
 // demo shells (flagged `demo`). See docs/map/MAP_BLOCKERS.md.
+//
+// Founder (2026-11-06): every place and experience shows on the map. For deg,
+// Utforsk, Trending and Lagret list places AND experiences; Live stays
+// experiences only. Experience pins sit at their meeting point.
 
 import {
   experiences,
-  MAP_CENTER,
-  placeById,
   places as allPlaces,
+  ratingOf,
+  reviewsForExperience,
   type MockExperience,
   type MockPlace,
   type TimeWindow,
@@ -40,12 +44,14 @@ function placeToItem(p: MockPlace): DiscoveryItem {
 }
 
 function experienceToItem(e: MockExperience): DiscoveryItem {
-  const coord = placeById(e.placeId)?.coord ?? MAP_CENTER;
   return {
     markerId: markerId("experience", e.id),
     kind: "experience",
     id: e.id,
-    coord,
+    coord: e.meetingPoint.coord,
+    // Rating and count come from the experience's review list (as on its page).
+    rating: ratingOf(reviewsForExperience(e.id)).score,
+    reviewCount: reviewsForExperience(e.id).length,
     category: "Opplevelse",
     title: e.title,
     subtitle: e.when,
@@ -87,30 +93,39 @@ export function resultForMode({
   hasSpots = false,
 }: AdapterInput): ModeResult {
   const placeItems = places.map(placeToItem);
-  const liveItems = experiences
-    .filter((e) => e.status === "open" || e.status === "waitlist")
+  // Experiences after the Når / Ledige plasser / search filters.
+  const filteredExperiences = experiences
     .filter((e) => time === null || e.day === time)
     .filter((e) => !hasSpots || e.capacity - e.going > 0)
-    .filter((e) => experienceMatchesText(e, query))
+    .filter((e) => experienceMatchesText(e, query));
+  const liveItems = filteredExperiences
+    .filter((e) => e.status === "open" || e.status === "waitlist")
+    .map(experienceToItem);
+  // Every bookable experience (not cancelled), for the modes that show all.
+  const allExperienceItems = filteredExperiences
+    .filter((e) => e.status !== "cancelled")
     .map(experienceToItem);
 
   switch (mode) {
     case "explore":
       return {
-        items: placeItems,
+        items: [...placeItems, ...allExperienceItems],
         demo: false,
-        emptyMessage: "Ingen steder i dette området. Juster søk eller filtre.",
+        emptyMessage: "Ingenting her i dette området. Juster søk eller filtre.",
       };
 
-    case "trending":
-      // Demo popularity = mock review count. Not a real metric.
+    case "trending": {
+      // Demo popularity = mock review count (places: stored count;
+      // experiences: their review list). Not a real metric.
+      const reviewCount = (i: DiscoveryItem) => i.reviewCount ?? 0;
       return {
-        items: [...places]
-          .sort((a, b) => b.reviews - a.reviews)
-          .map(placeToItem),
+        items: [...placeItems, ...allExperienceItems].sort(
+          (a, b) => reviewCount(b) - reviewCount(a),
+        ),
         demo: false,
         emptyMessage: "Ingenting trender her akkurat nå.",
       };
+    }
 
     case "live":
       return {
@@ -121,7 +136,7 @@ export function resultForMode({
 
     case "forYou":
       return {
-        items: placeItems,
+        items: [...placeItems, ...allExperienceItems],
         demo: true,
         emptyMessage: "Ingen anbefalinger å vise.",
       };

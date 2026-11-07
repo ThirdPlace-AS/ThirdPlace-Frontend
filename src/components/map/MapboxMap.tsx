@@ -19,6 +19,7 @@ import { motion, palette } from "@/theme";
 
 import { periodForUrl } from "./mapStyles";
 import { isExperience, pinPaint } from "./pinStyle";
+import { boundsOf } from "./services/bounds";
 import { USER_PUCK } from "./userPuck";
 import { markerIcon, type MarkerGlyph } from "./services/markerIcon";
 import type { DiscoveryItem } from "./types/mapPresentation";
@@ -42,6 +43,13 @@ const pin = palette.light as unknown as Record<
   "ink" | "surface" | "onInk" | "ember" | "success" | "warning",
   string
 >;
+
+// The first map of a session fits every marker on screen (founder: "all
+// places and experiences need to be shown"); after that the camera stays
+// where the user left it.
+let fittedThisSession = false;
+// Room for the search bar + mode chips above and the browse peek below.
+const FIT_PADDING = { top: 190, right: 48, bottom: 140, left: 48 };
 
 export function MapboxMap({
   markers,
@@ -89,6 +97,24 @@ export function MapboxMap({
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [recenterSignal, center]);
+
+  useEffect(() => {
+    if (fittedThisSession || loadedStyle === null) return;
+    const bounds = boundsOf(markers.map((m) => m.coord));
+    if (!bounds) return;
+    fittedThisSession = true;
+    cameraRef.current?.fitBounds(
+      bounds[0],
+      bounds[1],
+      [
+        FIT_PADDING.top,
+        FIT_PADDING.right,
+        FIT_PADDING.bottom,
+        FIT_PADDING.left,
+      ],
+      motion.duration.recenter,
+    );
+  }, [loadedStyle, markers]);
 
   // The user's position for the puck: the app's own fix (after "Posisjon")
   // or, before that, the native location updates (OS permission granted).
@@ -243,8 +269,10 @@ export function MapboxMap({
         id="discovery"
         shape={shape}
         cluster
-        clusterRadius={50}
-        clusterMaxZoomLevel={16}
+        // Only pins that would overlap merge (a pin is ~26 dp wide); at the
+        // fitted city view the old 50 px folded whole neighbourhoods.
+        clusterRadius={24}
+        clusterMaxZoomLevel={15}
         onPress={(e) => {
           const f = e.features?.[0];
           if (!f) return;

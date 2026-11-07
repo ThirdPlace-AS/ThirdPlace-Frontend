@@ -5,12 +5,14 @@
 
 import type { DiscoveryItem } from "../types/mapPresentation";
 
-// A fixed demo bounding box around central Oslo (MOCK — not geodata).
+// A fixed demo bounding box around central Oslo (MOCK — not geodata). Wide
+// enough for every place and meeting point (Frognerparken to Botanisk hage,
+// Grünerløkka to the fjord), so the fallback map shows everything too.
 export const SOFT_BBOX = {
-  minLng: 10.74,
-  maxLng: 10.78,
-  minLat: 59.915,
-  maxLat: 59.93,
+  minLng: 10.695,
+  maxLng: 10.775,
+  minLat: 59.9,
+  maxLat: 59.932,
 } as const;
 
 export type Point = { x: number; y: number };
@@ -40,7 +42,7 @@ export type SoftCluster = {
 // the same cell merge into one cluster with a count. Deterministic (input order).
 export function clusterByGrid(
   items: DiscoveryItem[],
-  cell = 0.08,
+  cell = 0.04,
 ): SoftCluster[] {
   const buckets = new Map<string, SoftCluster>();
   for (const item of items) {

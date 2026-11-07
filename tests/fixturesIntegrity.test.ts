@@ -13,7 +13,24 @@ import {
   placeById,
   places,
   profile,
+  CANCELLATION_OPTIONS,
+  DURATION_OPTIONS,
+  ENERGY_LEVELS,
+  EXPERIENCE_ACCESS,
+  EXPERIENCE_CATEGORIES,
+  EXPERIENCE_LANGUAGES,
+  EXPERIENCE_VIBES,
+  REPEAT_OPTIONS,
+  attendeesForExperience,
+  chatForExperience,
+  chatForPlace,
+  firstSessionStart,
+  ratingOf,
+  reviewsForExperience,
+  reviewsForPlace,
+  sessionsFor,
 } from "@/fixtures";
+import { hostPerson } from "@/components/experience/experienceMeta";
 import {
   LIBRARY,
   coverForPlace,
@@ -146,25 +163,6 @@ describe("photo galleries", () => {
 });
 
 // ── Phase 12 H2: every experience and place carries all its data ──────────
-import {
-  CANCELLATION_OPTIONS,
-  DURATION_OPTIONS,
-  ENERGY_LEVELS,
-  EXPERIENCE_ACCESS,
-  EXPERIENCE_CATEGORIES,
-  EXPERIENCE_LANGUAGES,
-  EXPERIENCE_VIBES,
-  REPEAT_OPTIONS,
-  attendeesForExperience,
-  chatForExperience,
-  chatForPlace,
-  firstSessionStart,
-  ratingOf,
-  reviewsForExperience,
-  reviewsForPlace,
-  sessionsFor,
-} from "@/fixtures";
-import { hostPerson } from "@/components/experience/experienceMeta";
 
 describe("experiences carry everything a creator enters", () => {
   it.each(experiences.map((e) => [e.id, e] as const))("%s", (_id, e) => {

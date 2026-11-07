@@ -1,8 +1,11 @@
 import { describe, expect, it } from "@jest/globals";
 
-import { clusterByGrid } from "@/components/map/services/softClustering";
+import {
+  clusterByGrid,
+  SOFT_BBOX,
+} from "@/components/map/services/softClustering";
 import type { DiscoveryItem } from "@/components/map/types/mapPresentation";
-import { places } from "@/fixtures";
+import { experiences, places } from "@/fixtures";
 
 // Build DiscoveryItem-shaped points from the demo places' coords.
 const items: DiscoveryItem[] = places.map((p) => ({
@@ -27,5 +30,20 @@ describe("clusterByGrid", () => {
   it("merges points that share a grid cell at a coarse cell size", () => {
     const clusters = clusterByGrid(items, 1);
     expect(clusters.length).toBeLessThan(items.length);
+  });
+});
+
+describe("fallback map box", () => {
+  it("holds every place and meeting point without clamping", () => {
+    const coords = [
+      ...places.map((p) => p.coord),
+      ...experiences.map((e) => e.meetingPoint.coord),
+    ];
+    for (const [lng, lat] of coords) {
+      expect(lng).toBeGreaterThan(SOFT_BBOX.minLng);
+      expect(lng).toBeLessThan(SOFT_BBOX.maxLng);
+      expect(lat).toBeGreaterThan(SOFT_BBOX.minLat);
+      expect(lat).toBeLessThan(SOFT_BBOX.maxLat);
+    }
   });
 });
