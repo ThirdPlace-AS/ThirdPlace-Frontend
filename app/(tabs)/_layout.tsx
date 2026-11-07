@@ -5,7 +5,7 @@ import { View, type ColorValue } from "react-native";
 
 import { Icon, type IconName } from "@/components/ui";
 import { haptics } from "@/lib/haptics";
-import { useThemeColors } from "@/theme";
+import { useScheme, useThemeColors } from "@/theme";
 import { fontFamilyFor } from "@/theme/fonts";
 
 // Outline when idle, filled when active — the usual iOS/Android tab convention.
@@ -25,12 +25,35 @@ function icon(idle: IconName, active: IconName) {
   return Comp;
 }
 
-// Center "Legg til" per the design (PDF p5–p8): a dark round "+" with the
-// "Legg til" label underneath, like the other tabs.
+// Center "Legg til": TikTok-style in our colours (founder 2026-11-06) — an
+// ink rounded rectangle with a white "+", an ember layer peeking out on the
+// left and a grey one on the right, with the "Legg til" label underneath
+// like the other tabs. In dark mode ink is white, so the right layer uses the
+// muted grey to stay visible against the white button and the dark bar.
+const ADD_BUTTON = { w: 40, h: 28, peek: 3 } as const;
 function AddIcon() {
+  const dark = useScheme() === "dark";
+  const { w, h, peek } = ADD_BUTTON;
   return (
-    <View className="h-9 w-9 items-center justify-center rounded-full bg-ink">
-      <Icon name="add" size="lg" tone="onInk" />
+    <View
+      accessible={false}
+      style={{ width: w + peek * 2, height: h }}
+      className="items-center justify-center"
+    >
+      <View
+        className="absolute rounded-sm bg-ember"
+        style={{ left: 0, width: w, height: h }}
+      />
+      <View
+        className={`absolute rounded-sm ${dark ? "bg-muted" : "bg-line"}`}
+        style={{ right: 0, width: w, height: h }}
+      />
+      <View
+        className="items-center justify-center rounded-sm bg-ink"
+        style={{ width: w, height: h }}
+      >
+        <Icon name="add" size="md" tone="onInk" />
+      </View>
     </View>
   );
 }

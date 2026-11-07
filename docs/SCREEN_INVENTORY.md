@@ -222,3 +222,7 @@ p5 Map: marker glyphs (0218), galleries in browse cards and place/business/group
 | Varsler                                                                                                      | p20          | sheet (map, chat, Sveip bells)       | `/notifications` (Merk alle lest in the header)                                                                    | 0240   |
 | Søk (map)                                                                                                    | p5           | full-screen overlay                  | `/search`; a submit returns to the map with the query, a pick returns with the item open (a group opens its page)  | 0240   |
 | Skriv anmeldelse                                                                                             | p6           | sheet                                | `/review/[kind]/[id]` (form page, ink stars)                                                                       | 0240   |
+
+### Founder decision: TikTok-style "Legg til" (2026-11-06)
+
+PDF p5–p8 draw a dark round "+". The founder chose a TikTok-style add button in ThirdPlace colours: an ink rounded rectangle with a white "+", an ember layer peeking out on the left and a light-grey one on the right (in dark mode the button is white and the right layer muted grey). The "Legg til" label stays under it like the other tabs. Ledger 0241.
