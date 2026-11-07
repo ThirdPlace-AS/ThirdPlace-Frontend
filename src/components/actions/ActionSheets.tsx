@@ -77,6 +77,56 @@ export function ShareSheet({
   );
 }
 
+// Long-press on a card or row (Phase 18, screen benchmark: iOS context
+// menus, WhatsApp): the item's quick actions without opening it. Only the
+// actions passed in show. Each closes this sheet first; anything that opens
+// another sheet or leaves the screen waits for the close (Modal swap rule).
+export type ItemAction = {
+  label: string;
+  icon: keyof typeof Ionicons.glyphMap;
+  onPress: () => void;
+  /** Opens another sheet or navigates: run after this sheet has closed. */
+  afterClose?: boolean;
+};
+
+export function ItemActionsSheet({
+  title,
+  subtitle,
+  actions,
+  onClose,
+}: Base & { title: string; subtitle?: string; actions: ItemAction[] }) {
+  return (
+    <Sheet visible onClose={onClose} title={title}>
+      <View className="gap-1">
+        {subtitle ? (
+          <Text variant="caption" tone="muted" className="pb-2">
+            {subtitle}
+          </Text>
+        ) : null}
+        {actions.map((a) => (
+          <UIPressable
+            key={a.label}
+            accessibilityRole="button"
+            onPress={() => {
+              onClose();
+              if (a.afterClose) setTimeout(a.onPress, 240);
+              else a.onPress();
+            }}
+            contentClassName="flex-row items-center gap-3 rounded-md py-3"
+          >
+            <View className="h-10 w-10 items-center justify-center rounded-full bg-surfaceMuted">
+              <Icon name={a.icon} size="md" tone="ink" />
+            </View>
+            <Text variant="body" className="flex-1">
+              {a.label}
+            </Text>
+          </UIPressable>
+        ))}
+      </View>
+    </Sheet>
+  );
+}
+
 const REASONS = [
   "Upassende innhold",
   "Spam eller svindel",

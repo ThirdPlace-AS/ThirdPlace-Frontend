@@ -10,7 +10,12 @@ import {
   resetA11yPrefs,
   setA11yPrefs,
 } from "@/lib/a11yPrefs";
-import { getHints, markHintSeen, restoreHints } from "@/lib/hints";
+import {
+  DEFAULT_HINTS,
+  getHints,
+  markHintSeen,
+  restoreHints,
+} from "@/lib/hints";
 import {
   DEVICE_SETTINGS_KEY,
   hydrateDeviceSettings,
@@ -64,7 +69,7 @@ describe("device settings", () => {
     expect(await saved()).toEqual({
       map: { mapType: "terrain", style: null },
       a11y: { ...DEFAULT_A11Y_PREFS, reduceMotion: true },
-      hints: { swipeGestures: false },
+      hints: DEFAULT_HINTS,
     });
   });
 
@@ -72,7 +77,10 @@ describe("device settings", () => {
     await hydrateDeviceSettings();
     markHintSeen("swipeGestures");
     await new Promise((r) => setTimeout(r, 0));
-    expect((await saved()).hints).toEqual({ swipeGestures: true });
+    expect((await saved()).hints).toEqual({
+      ...DEFAULT_HINTS,
+      swipeGestures: true,
+    });
     // A restart: stop saving first, then the in-memory hint starts unseen.
     resetDeviceSettings();
     restoreHints(undefined);

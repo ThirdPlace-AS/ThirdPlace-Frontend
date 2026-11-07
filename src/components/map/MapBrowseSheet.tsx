@@ -49,6 +49,7 @@ export function MapBrowseSheet({
   onSelect,
   isSaved,
   onToggleSave,
+  onItemActions,
   emptyMessage,
   areaLabel,
   weather,
@@ -63,6 +64,8 @@ export function MapBrowseSheet({
   onSelect: (item: DiscoveryItem) => void;
   isSaved: (markerId: string) => boolean;
   onToggleSave: (item: DiscoveryItem) => void;
+  /** Long-press on a card: quick actions (Phase 18). */
+  onItemActions?: (item: DiscoveryItem) => void;
   emptyMessage: string;
   areaLabel: string | null;
   weather: MockWeather;
@@ -137,16 +140,22 @@ export function MapBrowseSheet({
   // selected/saved state actually changed.
   const onSelectRef = useRef(onSelect);
   const onToggleSaveRef = useRef(onToggleSave);
+  const onItemActionsRef = useRef(onItemActions);
   useEffect(() => {
     onSelectRef.current = onSelect;
     onToggleSaveRef.current = onToggleSave;
-  }, [onSelect, onToggleSave]);
+    onItemActionsRef.current = onItemActions;
+  }, [onSelect, onToggleSave, onItemActions]);
   const handleSelect = useCallback(
     (item: DiscoveryItem) => onSelectRef.current(item),
     [],
   );
   const handleToggleSave = useCallback(
     (item: DiscoveryItem) => onToggleSaveRef.current(item),
+    [],
+  );
+  const handleActions = useCallback(
+    (item: DiscoveryItem) => onItemActionsRef.current?.(item),
     [],
   );
   const renderItem = useCallback(
@@ -157,9 +166,10 @@ export function MapBrowseSheet({
         saved={isSaved(item.markerId)}
         onSelect={handleSelect}
         onToggleSave={handleToggleSave}
+        onActions={handleActions}
       />
     ),
-    [selectedMarkerId, isSaved, handleSelect, handleToggleSave],
+    [selectedMarkerId, isSaved, handleSelect, handleToggleSave, handleActions],
   );
 
   const cityLine = areaLabel ? `${MAP_CITY} · ${areaLabel}` : MAP_CITY;
@@ -306,12 +316,14 @@ const BrowseCard = memo(function BrowseCard({
   saved,
   onSelect,
   onToggleSave,
+  onActions,
 }: {
   item: DiscoveryItem;
   selected: boolean;
   saved: boolean;
   onSelect: (item: DiscoveryItem) => void;
   onToggleSave: (item: DiscoveryItem) => void;
+  onActions: (item: DiscoveryItem) => void;
 }) {
   const photos = photosForItem(item);
   const marker = markerCategoryFor(item);
@@ -325,6 +337,13 @@ const BrowseCard = memo(function BrowseCard({
         accessibilityState={{ selected }}
         accessibilityLabel={`${item.title}, ${MARKER_LABEL[marker]}, ${item.subtitle}`}
         onPress={() => onSelect(item)}
+        // Quick actions (Phase 18); screen readers get them as "Flere valg".
+        onLongPress={() => onActions(item)}
+        delayLongPress={320}
+        accessibilityActions={[{ name: "longpress", label: "Flere valg" }]}
+        onAccessibilityAction={(e) => {
+          if (e.nativeEvent.actionName === "longpress") onActions(item);
+        }}
         contentClassName="gap-3"
       >
         {/* Hero: bundled photo (placeholder when an item has none). */}

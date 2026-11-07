@@ -6,6 +6,7 @@ import { type ColorValue } from "react-native";
 import { Icon, type IconName } from "@/components/ui";
 import { useUnreadChatCount } from "@/lib/chatReads";
 import { haptics } from "@/lib/haptics";
+import { markHintSeen } from "@/lib/hints";
 import { useThemeColors } from "@/theme";
 import { fontFamilyFor } from "@/theme/fonts";
 
@@ -95,6 +96,8 @@ export default function TabsLayout() {
         listeners={{
           tabLongPress: () => {
             haptics.selection();
+            // Found the gesture: its one-time tip is no longer needed.
+            markHintSeen("profileSwitch");
             router.push("/account-switch");
           },
         }}

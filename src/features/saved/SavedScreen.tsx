@@ -7,6 +7,10 @@ import { HeartToggle, ListRow, Screen } from "@/components/ui";
 import { Chip } from "@/components/Chip";
 import { RouteHeader } from "@/components/RouteHeader";
 import { showToast } from "@/components/Toast";
+import {
+  ItemActionsSheet,
+  ShareSheet,
+} from "@/components/actions/ActionSheets";
 import { EmptyState } from "@/components/states/StateView";
 import { useMapSaved } from "@/components/map/hooks/useMapSaved";
 import { useGuestMode } from "@/components/map/hooks/useGuestMode";
@@ -47,6 +51,24 @@ export default function SavedScreen() {
     k.startsWith("experience:"),
   ).length;
   const [filter, setFilter] = useState<Kind | null>(null);
+  // Long-press on a row (Phase 18): Fjern, Del, Vis på kartet.
+  const [actionsFor, setActionsFor] = useState<{
+    key: string;
+    title: string;
+  } | null>(null);
+  const [shareFor, setShareFor] = useState<{
+    key: string;
+    title: string;
+  } | null>(null);
+  const unsave = (key: string, title: string) => {
+    toggle(key);
+    showToast({
+      title: "Fjernet fra Lagret",
+      body: title,
+      icon: "bookmark-outline",
+      action: { label: "Angre", onPress: () => toggle(key) },
+    });
+  };
 
   const rows = useMemo<Row[]>(
     () =>
@@ -160,6 +182,9 @@ export default function SavedScreen() {
               variant="card"
               title={item.title}
               subtitle={item.meta}
+              onLongPress={() =>
+                setActionsFor({ key: item.key, title: item.title })
+              }
               // Places and experiences open their page; a business opens
               // its detail on the map (it has no page of its own).
               onPress={() => {
@@ -190,24 +215,50 @@ export default function SavedScreen() {
                   variant="ghost"
                   size="sm"
                   label={`Fjern ${item.title} fra lagret`}
-                  onToggle={() => {
-                    toggle(item.key);
-                    showToast({
-                      title: "Fjernet fra Lagret",
-                      body: item.title,
-                      icon: "bookmark-outline",
-                      action: {
-                        label: "Angre",
-                        onPress: () => toggle(item.key),
-                      },
-                    });
-                  }}
+                  onToggle={() => unsave(item.key, item.title)}
                 />
               }
             />
           );
         }}
       />
+      {actionsFor ? (
+        <ItemActionsSheet
+          title={actionsFor.title}
+          onClose={() => setActionsFor(null)}
+          actions={[
+            {
+              label: "Fjern fra Lagret",
+              icon: "bookmark-outline",
+              afterClose: true,
+              onPress: () => unsave(actionsFor.key, actionsFor.title),
+            },
+            {
+              label: "Del",
+              icon: "share-outline",
+              afterClose: true,
+              onPress: () => setShareFor(actionsFor),
+            },
+            {
+              label: "Vis på kartet",
+              icon: "map-outline",
+              afterClose: true,
+              onPress: () =>
+                router.navigate({
+                  pathname: "/map",
+                  params: { focus: actionsFor.key, at: String(Date.now()) },
+                }),
+            },
+          ]}
+        />
+      ) : null}
+      {shareFor ? (
+        <ShareSheet
+          title={shareFor.title}
+          slug={shareFor.key.replace(":", "/")}
+          onClose={() => setShareFor(null)}
+        />
+      ) : null}
     </Screen>
   );
 }

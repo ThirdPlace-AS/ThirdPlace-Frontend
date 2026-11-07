@@ -17,6 +17,8 @@ import {
   type IconName,
 } from "@/components/ui";
 import { GuestLock } from "@/components/GuestLock";
+import { HintBanner } from "@/components/HintBanner";
+import { claimHint, markHintSeen, useHintSeen } from "@/lib/hints";
 import { SignInPrompt } from "@/components/SignInPrompt";
 import { useGuestMode } from "@/components/map/hooks/useGuestMode";
 import { tagIcon } from "@/components/swipe/SwipeCard";
@@ -49,6 +51,11 @@ export default function ProfileScreen() {
   const counts = useProfileCounts();
   const [tab, setTab] = useState<Tab>("experiences");
   const [signIn, setSignIn] = useState(false);
+  const switchHintSeen = useHintSeen("profileSwitch");
+  const [switchHintClaimed] = useState(
+    () => !isGuest && claimHint("profileSwitch"),
+  );
+  const showSwitchHint = switchHintClaimed && !switchHintSeen && !isGuest;
 
   return (
     <Screen edges={["top"]}>
@@ -82,6 +89,15 @@ export default function ProfileScreen() {
           <GuestProfile onSignIn={() => setSignIn(true)} />
         ) : (
           <>
+            {/* One-time tip for the hidden long-press on the Profil tab
+                (account switch, PDF p27; Phase 18). */}
+            {showSwitchHint ? (
+              <HintBanner
+                icon="swap-horizontal-outline"
+                text="Hold inne Profil nederst for å bytte konto."
+                onDone={() => markHintSeen("profileSwitch")}
+              />
+            ) : null}
             {/* Header — tapping it opens Rediger profil (PDF p13). */}
             <UIPressable
               accessibilityRole="button"

@@ -37,6 +37,8 @@ import {
   messagesForChat,
 } from "@/fixtures";
 import { markChatRead } from "@/lib/chatReads";
+import { claimHint, markHintSeen, useHintSeen } from "@/lib/hints";
+import { HintBanner } from "@/components/HintBanner";
 import {
   REACTIONS,
   sendMessage,
@@ -75,6 +77,15 @@ export default function ChatThreadScreen() {
   // messages). The composer is replaced by a sign-in entry point.
   const { isGuest } = useGuestMode();
   const [promptOpen, setPromptOpen] = useState(false);
+  // One-time tip for the hidden long-press (Phase 18): signed-in people, the
+  // first thread they open, unless another tip showed this session.
+  const hintSeen = useHintSeen("chatLongPress");
+  const [hintClaimed] = useState(() => !isGuest && claimHint("chatLongPress"));
+  const showHint = hintClaimed && !hintSeen && chat?.status !== "archived";
+  const toggleMenu = (messageId: string) => {
+    markHintSeen("chatLongPress");
+    setMenuFor((cur) => (cur === messageId ? null : messageId));
+  };
   const listRef = useRef<FlatList<ThreadMessage>>(null);
   // Open at the newest message and follow every send (the list used to open
   // at the oldest message and new bubbles landed out of view).
@@ -179,6 +190,16 @@ export default function ChatThreadScreen() {
         </UIPressable>
       ) : null}
 
+      {showHint ? (
+        <View className="px-gutter pt-3">
+          <HintBanner
+            icon="hand-left-outline"
+            text="Hold inne en melding for å reagere eller svare."
+            onDone={() => markHintSeen("chatLongPress")}
+          />
+        </View>
+      ) : null}
+
       <KeyboardAvoidingView
         className="flex-1"
         // Edge-to-edge Android does not resize for the keyboard either.
@@ -207,9 +228,7 @@ export default function ChatThreadScreen() {
               message={item}
               reaction={thread.reactions[item.id]}
               menuOpen={menuFor === item.id}
-              onToggleMenu={() =>
-                setMenuFor((cur) => (cur === item.id ? null : item.id))
-              }
+              onToggleMenu={() => toggleMenu(item.id)}
               onReact={(emoji) => {
                 toggleReaction(chat.id, item.id, emoji);
                 setMenuFor(null);

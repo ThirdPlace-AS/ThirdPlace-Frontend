@@ -51,6 +51,7 @@ export function ListRow({
   trailing,
   chevron,
   onPress,
+  onLongPress,
   variant = "plain",
   danger = false,
   accessibilityLabel,
@@ -70,6 +71,9 @@ export function ListRow({
   /** Show a chevron (defaults to on when the row is pressable). */
   chevron?: boolean;
   onPress?: () => void;
+  /** Quick actions (Phase 18). Also offered to screen readers as the
+   *  "Flere valg" action, since a long press is hard to find there. */
+  onLongPress?: () => void;
   variant?: ListRowVariant;
   /** Destructive row (e.g. "Slett konto"). */
   danger?: boolean;
@@ -117,9 +121,21 @@ export function ListRow({
   return (
     <Pressable
       onPress={onPress}
+      onLongPress={onLongPress}
+      delayLongPress={320}
       accessibilityRole="button"
       accessibilityLabel={accessibilityLabel ?? title}
       accessibilityHint={accessibilityHint}
+      accessibilityActions={
+        onLongPress ? [{ name: "longpress", label: "Flere valg" }] : undefined
+      }
+      onAccessibilityAction={
+        onLongPress
+          ? (e) => {
+              if (e.nativeEvent.actionName === "longpress") onLongPress();
+            }
+          : undefined
+      }
       pressedScale={0.99}
       contentClassName={shell}
     >

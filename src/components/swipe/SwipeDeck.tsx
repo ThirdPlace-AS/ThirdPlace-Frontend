@@ -1,7 +1,14 @@
-import { router, type Href } from "expo-router";
+import { router, useFocusEffect, type Href } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import { Asset } from "expo-asset";
-import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
+import {
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import {
   Platform,
   Pressable,
@@ -40,7 +47,7 @@ import { confirmToast } from "@/copy";
 import { useNotificationReads } from "@/hooks/useNotificationReads";
 import { markViewed } from "@/components/map/hooks/useRecentlyViewed";
 import { haptics } from "@/lib/haptics";
-import { markHintSeen, useHintSeen } from "@/lib/hints";
+import { claimHint, markHintSeen, useHintSeen } from "@/lib/hints";
 import { joinChat } from "@/lib/joinedChats";
 import { getA11yPrefs, useA11yPrefs, withWheelchair } from "@/lib/a11yPrefs";
 import { elevation, motion, useThemeColors, media } from "@/theme";
@@ -122,6 +129,16 @@ export function SwipeDeck() {
   const deck = useSwipeDeck({ items, filterKey });
   const reduced = useReducedMotion();
   const hintSeen = useHintSeen("swipeGestures");
+  // One tip per session across the app (Phase 18): the deck claims it when
+  // the tab is actually in front, unless another tip already showed. Not at
+  // mount: the map pre-renders this tab in the background (R28), which would
+  // otherwise use up the session's tip before anyone saw it.
+  const [hintClaimed, setHintClaimed] = useState(false);
+  useFocusEffect(
+    useCallback(() => {
+      if (claimHint("swipeGestures")) setHintClaimed(true);
+    }, []),
+  );
   const { isGuest } = useGuestMode();
   const [size, setSize] = useState({ w: screenW, h: screenH });
   // When a guest tries an account-only action (join/save), we show the sign-in
@@ -429,7 +446,7 @@ export function SwipeDeck() {
                 gestures, until "Skjønner" or the first swipe. Kept per
                 phone (src/lib/hints.ts). Swipes beside it still reach the
                 card. */}
-            {!hintSeen && size.h > 0 ? (
+            {hintClaimed && !hintSeen && size.h > 0 ? (
               <SwipeHint onDone={() => markHintSeen("swipeGestures")} />
             ) : null}
 
