@@ -1,16 +1,14 @@
-import { useState } from "react";
+import { router, type Href } from "expo-router";
 import { View } from "react-native";
 
 import { Icon, Text } from "@/components/ui";
 import { Button } from "@/components/Button";
 import { Card } from "@/components/Card";
-import { WriteReviewSheet } from "@/components/WriteReviewSheet";
 import { placeById, reviewsForPlace } from "@/fixtures";
 import { formatRating } from "@/lib/format";
 
 export function ReviewsContent({ id }: { id: string }) {
   const place = placeById(id);
-  const [writing, setWriting] = useState(false);
   const list = place ? reviewsForPlace(place.id) : [];
 
   return (
@@ -58,13 +56,7 @@ export function ReviewsContent({ id }: { id: string }) {
       <Button
         label="Skriv anmeldelse"
         variant="ember"
-        onPress={() => setWriting(true)}
-      />
-
-      <WriteReviewSheet
-        placeName={place?.name ?? "stedet"}
-        visible={writing}
-        onClose={() => setWriting(false)}
+        onPress={() => router.push(`/review/place/${id}` as Href)}
       />
     </View>
   );

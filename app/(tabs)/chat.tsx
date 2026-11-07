@@ -13,7 +13,6 @@ import {
   Text,
   EmptyState,
 } from "@/components/ui";
-import { NotificationsSheet } from "@/components/NotificationsSheet";
 import { ChatRow } from "@/features/chat/ChatRow";
 import { isMember, useJoinedChats } from "@/lib/joinedChats";
 import { useNotificationReads } from "@/hooks/useNotificationReads";
@@ -27,7 +26,6 @@ import { chats, type MockChat } from "@/fixtures";
 export default function ChatScreen() {
   const [query, setQuery] = useState("");
   const [open, setOpen] = useState<Record<string, boolean>>({});
-  const [notifOpen, setNotifOpen] = useState(false);
   const { unread: unreadNotifs } = useNotificationReads();
 
   const q = query.trim().toLowerCase();
@@ -85,7 +83,7 @@ export default function ChatScreen() {
               icon="notifications-outline"
               label="Varsler"
               badge={unreadNotifs}
-              onPress={() => setNotifOpen(true)}
+              onPress={() => router.push("/notifications" as Href)}
             />
           }
         />
@@ -163,11 +161,6 @@ export default function ChatScreen() {
         haptic="light"
         onPress={() => router.push("/chat/new" as Href)}
         className="absolute bottom-5 right-5"
-      />
-
-      <NotificationsSheet
-        visible={notifOpen}
-        onClose={() => setNotifOpen(false)}
       />
     </Screen>
   );

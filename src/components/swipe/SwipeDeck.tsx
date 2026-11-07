@@ -31,7 +31,6 @@ import { Icon, Text } from "@/components/ui";
 import { Button } from "@/components/Button";
 import { Sheet } from "@/components/Sheet";
 import { useGuestMode } from "@/components/map/hooks/useGuestMode";
-import { NotificationsSheet } from "@/components/NotificationsSheet";
 import { SignInPrompt } from "@/components/SignInPrompt";
 import { EmptyState } from "@/components/states/StateView";
 import { chatForExperience, type MockExperience } from "@/fixtures";
@@ -78,7 +77,6 @@ export function SwipeDeck() {
   const mode = filters.mode;
   const setMode = (m: SwipeMode) => setFilters((f) => ({ ...f, mode: m }));
   const [filtersOpen, setFiltersOpen] = useState(false);
-  const [notifOpen, setNotifOpen] = useState(false);
   const { unread: unreadNotifs } = useNotificationReads();
 
   const filterKey = JSON.stringify(filters);
@@ -451,7 +449,7 @@ export function SwipeDeck() {
               filters.when !== null ||
               filters.hasSpots
             }
-            onOpenNotifications={() => setNotifOpen(true)}
+            onOpenNotifications={() => router.push("/notifications" as Href)}
             unreadCount={unreadNotifs}
             onLight={mode === "places" ? placesDone : deck.done}
             onOpenGroup={() => router.push("/group-swipe")}
@@ -469,10 +467,6 @@ export function SwipeDeck() {
         />
 
         {/* Notifications — the same demo sheet the map uses (bell in the top bar). */}
-        <NotificationsSheet
-          visible={notifOpen}
-          onClose={() => setNotifOpen(false)}
-        />
 
         <JoinChatSheet exp={joinChatFor} onClose={() => setJoinChatFor(null)} />
 

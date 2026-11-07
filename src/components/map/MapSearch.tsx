@@ -6,7 +6,6 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import {
   Icon,
   IconButton,
-  Overlay,
   type IconName,
   Text,
   Pressable as UIPressable,
@@ -24,56 +23,19 @@ import {
   type SearchResult,
 } from "./services/mapSearch";
 
-// Full-screen search overlay. Deterministic fixture search only (no network, no
-// stored history — CB-8). Focused field → recent searches (empty query) or
-// grouped results (På kartet / Opplevelser / Grupper). Selecting a result opens
-// it; submitting applies the text as the map search filter.
-export function MapSearchOverlay({
-  visible,
+// Map search (Phase 12 H4c: the /search page, was a full-screen overlay).
+// Deterministic fixture search only (no network, no stored history — CB-8).
+// Focused field → recent searches and "Nylig sett" (empty query) or grouped
+// results (På kartet / Opplevelser / Grupper). The page decides where a
+// submit or a pick goes (back to the map with the query, or the item).
+export function MapSearch({
   initialQuery,
-  onClose,
-  onSubmit,
-  onSelect,
-}: {
-  visible: boolean;
-  initialQuery: string;
-  onClose: () => void;
-  onSubmit: (q: string) => void;
-  onSelect: (r: SearchResult) => void;
-}) {
-  // Closing fully disengages search: drop the keyboard, then close. The map's
-  // search is a button (not an input), so there is no field to refocus behind us.
-  const close = () => {
-    Keyboard.dismiss();
-    onClose();
-  };
-  return (
-    // The Overlay mounts the body only while open, so query state seeds fresh
-    // from `initialQuery` on each open (no setState-in-effect).
-    <Overlay
-      visible={visible}
-      onClose={close}
-      enter="fade"
-      className="bg-background"
-    >
-      <SearchBody
-        initialQuery={initialQuery}
-        onClose={close}
-        onSubmit={onSubmit}
-        onSelect={onSelect}
-      />
-    </Overlay>
-  );
-}
-
-function SearchBody({
-  initialQuery,
-  onClose,
+  onBack,
   onSubmit,
   onSelect,
 }: {
   initialQuery: string;
-  onClose: () => void;
+  onBack: () => void;
   onSubmit: (q: string) => void;
   onSelect: (r: SearchResult) => void;
 }) {
@@ -88,20 +50,19 @@ function SearchBody({
 
   const submit = (q: string) => {
     add(q);
+    Keyboard.dismiss();
     onSubmit(q);
-    onClose();
   };
 
   const pick = (r: SearchResult) => {
     add(r.title);
+    Keyboard.dismiss();
     onSelect(r);
-    onClose();
   };
 
   return (
     <View className="flex-1 bg-background">
-      {/* Full-screen search: opaque, edge-to-edge (covers the map + tab bar).
-          Closes via the back arrow, Android back, or on submit/select. */}
+      {/* Full-screen search page: back arrow or Android back leaves it. */}
       <View
         className="flex-1"
         style={{
@@ -111,7 +72,14 @@ function SearchBody({
       >
         {/* Header: back + search field */}
         <View className="flex-row items-center gap-2 px-gutter pb-2">
-          <IconButton icon="chevron-back" label="Tilbake" onPress={onClose} />
+          <IconButton
+            icon="chevron-back"
+            label="Tilbake"
+            onPress={() => {
+              Keyboard.dismiss();
+              onBack();
+            }}
+          />
           <View className="flex-1">
             <SearchBar
               placeholder="Søk steder, opplevelser, grupper"
@@ -154,7 +122,6 @@ function SearchBody({
                     title: v.title,
                     subtitle: "",
                   });
-                  onClose();
                 }}
               />
             </>

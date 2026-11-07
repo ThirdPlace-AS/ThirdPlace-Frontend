@@ -1,4 +1,9 @@
-import { router, useFocusEffect, useLocalSearchParams } from "expo-router";
+import {
+  router,
+  useFocusEffect,
+  useLocalSearchParams,
+  type Href,
+} from "expo-router";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { BackHandler, Keyboard, useWindowDimensions, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -22,7 +27,6 @@ import {
 import { MapFilterSheet } from "@/components/map/MapFilterSheet";
 import { MapLayerSheet } from "@/components/map/MapLayerSheet";
 import { MapLocationSheet } from "@/components/map/MapLocationSheet";
-import { MapSearchOverlay } from "@/components/map/MapSearchOverlay";
 import { periodForKey, styleUrlFor } from "@/components/map/mapStyles";
 import { StatusBarStyle } from "@/components/ui/StatusBarStyle";
 import type {
@@ -40,7 +44,6 @@ import {
   mapBackAction,
   useMapSelection,
 } from "@/components/map/hooks/useMapSelection";
-import { NotificationsSheet } from "@/components/NotificationsSheet";
 import { SignInPrompt } from "@/components/SignInPrompt";
 import { useGuestMode } from "@/components/map/hooks/useGuestMode";
 import { MapBrowseSheet } from "@/components/map/MapBrowseSheet";
@@ -67,8 +70,6 @@ export default function MapScreen() {
   const [peekH, setPeekH] = useState<number | null>(null);
   const browsePeekClearance = peekH ?? Math.round(windowHeight * 0.12);
   const [filterOpen, setFilterOpen] = useState(false);
-  const [notifOpen, setNotifOpen] = useState(false);
-  const [searchOpen, setSearchOpen] = useState(false);
   const [locationOpen, setLocationOpen] = useState(false);
   const [layerOpen, setLayerOpen] = useState(false);
   const {
@@ -104,7 +105,11 @@ export default function MapScreen() {
   // /map?focus=<kind>:<id>&at=<stamp> (e.g. "Vis på kartet" in the Steder
   // deck) opens that item's detail once per request; the stamp tells repeat
   // taps apart because the tab stays mounted.
-  const { focus, at } = useLocalSearchParams<{ focus?: string; at?: string }>();
+  const { focus, at, q } = useLocalSearchParams<{
+    focus?: string;
+    at?: string;
+    q?: string;
+  }>();
   const focusKey = focus ? `${focus}:${at ?? ""}` : undefined;
   const [focusedKey, setFocusedKey] = useState<string | undefined>(undefined);
   if (focusKey && focusKey !== focusedKey) {
@@ -113,11 +118,19 @@ export default function MapScreen() {
     if ((kind === "place" || kind === "experience") && id)
       selection.openTarget({ kind, id });
   }
+  // /map?q=<text>&at=<stamp> (submitted on the /search page) applies the
+  // text as the map's search filter, once per submit.
+  const queryKey = q !== undefined ? `${q}:${at ?? ""}` : undefined;
+  const [queriedKey, setQueriedKey] = useState<string | undefined>(undefined);
+  if (queryKey && queryKey !== queriedKey) {
+    setQueriedKey(queryKey);
+    filters.setQuery(q ?? "");
+  }
   const { setMode: setDiscoveryMode } = discovery;
 
   // Android back key: an open detail sheet steps back / closes first, so back
   // does not leave the map with the sheet still up. Only while the map is
-  // focused; Modal sheets (Filtre, search, …) handle back themselves.
+  // focused; Modal sheets (Filtre, Kartlag, …) handle back themselves.
   const sheetDepth = selection.sheetStack.length;
   const detailRef = useRef<MapDetailSheetHandle>(null);
   const [detailIsPage, setDetailIsPage] = useState(false);
@@ -317,7 +330,12 @@ export default function MapScreen() {
             <UIPressable
               accessibilityRole="button"
               accessibilityLabel="Søk steder og opplevelser"
-              onPress={() => setSearchOpen(true)}
+              onPress={() =>
+                router.push({
+                  pathname: "/search",
+                  params: { q: filters.query },
+                } as Href)
+              }
               className="flex-1"
               contentClassName="flex-row items-center h-full gap-2 pl-3"
             >
@@ -355,7 +373,7 @@ export default function MapScreen() {
             variant="outline"
             size="lg"
             badge={unreadNotifs}
-            onPress={() => setNotifOpen(true)}
+            onPress={() => router.push("/notifications" as Href)}
           />
         </View>
 
@@ -446,10 +464,6 @@ export default function MapScreen() {
         onClose={() => setFilterOpen(false)}
         onApply={handleApplyFilters}
       />
-      <NotificationsSheet
-        visible={notifOpen}
-        onClose={() => setNotifOpen(false)}
-      />
       <SignInPrompt
         visible={signInOpen}
         onClose={() => setSignInOpen(false)}
@@ -471,13 +485,6 @@ export default function MapScreen() {
         selectedAreaName={location.area?.name ?? null}
         onRequest={handleRequestLocation}
         onSelectArea={handleSelectArea}
-      />
-      <MapSearchOverlay
-        visible={searchOpen}
-        initialQuery={filters.query}
-        onClose={() => setSearchOpen(false)}
-        onSubmit={filters.setQuery}
-        onSelect={(r) => selection.openTarget({ kind: r.kind, id: r.id })}
       />
       {/* Persistent Google-Maps-style peek: city + weather header, drag up for
           the Airbnb list of the active mode. Rendered BEFORE the detail sheet so
