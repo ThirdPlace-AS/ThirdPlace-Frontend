@@ -84,7 +84,7 @@ adb shell am start -a android.intent.action.VIEW \
 - Screenshot: `adb exec-out screencap -p` (strip bytes before `\x89PNG`). Find tap targets with `adb shell uiautomator dump //sdcard/u.xml`. In Git Bash prefix device paths with `//` (MSYS path mangling). Modal content may render a beat after a tap — wait before capturing.
 - The host is RAM-constrained: emulator ANRs ("isn't responding", even for System UI) are usually CPU/RAM starvation, not app bugs — confirm via `adb root` + `adb shell cat //data/anr/<newest>` (main thread in `MainActivity.<init>` with no app frames = environment). Killing the process on port 8090 can also kill the adb server (`adb devices` restarts it).
 - A full JS reload while the map streams location can crash the dev client natively (`@rnmapbox/maps` 10.3.8 emits through a stale callback: `OutOfMemoryError: bad_array_new_length` in `RNMBXLocationModule`). Production has no in-app reload, so only dev hits it: keep route files to a default export (a named non-component export forces Fast Refresh to reload) and cold start instead of reloading.
-- The dev build predates newer native deps (latest Expo patch bump); real GPS/haptics need a fresh `npx expo run:android`.
+- The dev client was rebuilt in Phase 12 (ledger 0227, 0229) and includes expo-location and expo-haptics. Rebuild with `npx expo run:android` after any native dependency, Reanimated static flag or native `app.json` change.
 
 ## PR / change management
 

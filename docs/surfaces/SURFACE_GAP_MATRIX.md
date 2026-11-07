@@ -36,15 +36,15 @@ Directory routes with no PDF page (`experiences`, `places`, `groups`,
 `businesses`, `creators`) and the Profile "Oppdag" hub were **removed**
 (ledger 0112). Their detail content still lives in the map sheets.
 
-| Surface       | Route / entry                                                          | PDF      | Status                           | Markers                                                                                                                                                                     | Ledger           |
-| ------------- | ---------------------------------------------------------------------- | -------- | -------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------- |
-| Oppdag folk   | `app/people/index.tsx` (Profil → Venner), person `app/people/[id].tsx` | p22      | partial (no filter/invite)       | follow = DemoNote; guest SignInPrompt                                                                                                                                       | 0089, 0112, 0235 |
-| Bli Skaper    | `app/become-creator.tsx`                                               | p14      | demo-complete                    | illustrative requirements, apply sends nothing; apply muted until all are met (PDF p14); "Du er nå Skaper!" is `app/creator-welcome.tsx`, reachable by deep link for review | 0118, 0174, 0181 |
-| Marketplace   | `app/marketplace/index.tsx`                                            | p15–p16  | partial (list; detail is a page) | B2B; request/save DemoNote; guest SignInPrompt                                                                                                                              | 0118             |
-| Notifications | `app/notifications.tsx` (map / chat / swipe bell)                      | p20      | demo-complete                    | DemoNote (no push/inbox); shared read state, bells drop (0208)                                                                                                              | 0117             |
-| Settings      | `app/settings/index.tsx`                                               | p19–p20  | demo-complete                    | sub-screens are pages (0237)                                                                                                                                                | 0116             |
-| Privacy       | `app/privacy.tsx`                                                      | p19, p21 | demo-complete                    | blocked/delete are pages, export a sheet (0237)                                                                                                                             | 0116             |
-| Payments      | `app/payments.tsx`                                                     | p20      | demo-complete (structure-only)   | no input fields, no card data, no transactions                                                                                                                              | 0096, 0099       |
+| Surface       | Route / entry                                                          | PDF      | Status                                                         | Markers                                                                                                                                                                     | Ledger                 |
+| ------------- | ---------------------------------------------------------------------- | -------- | -------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------- |
+| Oppdag folk   | `app/people/index.tsx` (Profil → Venner), person `app/people/[id].tsx` | p22      | demo-complete (Filter folk, Inviter venner, Inviter kontakter) | follow in the shared in-memory store; guest SignInPrompt                                                                                                                    | 0089, 0112, 0128, 0235 |
+| Bli Skaper    | `app/become-creator.tsx`                                               | p14      | demo-complete                                                  | illustrative requirements, apply sends nothing; apply muted until all are met (PDF p14); "Du er nå Skaper!" is `app/creator-welcome.tsx`, reachable by deep link for review | 0118, 0174, 0181       |
+| Marketplace   | `app/marketplace/index.tsx`                                            | p15–p16  | partial (the listing owner's Venteliste, p18, is missing)      | B2B; request and save confirm in product voice; guest SignInPrompt                                                                                                          | 0118, 0238             |
+| Notifications | `app/notifications.tsx` (map / chat / swipe bell)                      | p20      | demo-complete                                                  | DemoNote (no push/inbox); shared read state, bells drop (0208)                                                                                                              | 0117                   |
+| Settings      | `app/settings/index.tsx`                                               | p19–p20  | demo-complete                                                  | sub-screens are pages (0237)                                                                                                                                                | 0116                   |
+| Privacy       | `app/privacy.tsx`                                                      | p19, p21 | demo-complete                                                  | blocked/delete are pages, export a sheet (0237)                                                                                                                             | 0116                   |
+| Payments      | `app/payments.tsx`                                                     | p20      | demo-complete (structure-only)                                 | no input fields, no card data, no transactions                                                                                                                              | 0096, 0099             |
 
 ## Phase 3 routes (PDF screens, 2026-11-05)
 
@@ -76,15 +76,15 @@ Directory routes with no PDF page (`experiences`, `places`, `groups`,
 
 ## Cross-cutting
 
-| Concern                     | Where                                        | Status   | Notes                                                                                                                                     | Ledger     |
-| --------------------------- | -------------------------------------------- | -------- | ----------------------------------------------------------------------------------------------------------------------------------------- | ---------- |
-| Brand logo / app icon       | `src/components/Logo.tsx`, `assets/`         | complete | SVG mark, provisional ember token                                                                                                         | 0084       |
-| Imagery                     | `src/fixtures/images.ts` (Unsplash, bundled) | complete | per-place covers; none depict the named venues/people                                                                                     | 0099       |
-| Honesty copy                | `src/copy/demo.ts` + `DemoNote`              | partial  | DemoNote text never repeats "Demo —"; many slice-specific notes stay inline                                                               | 0103, 0118 |
-| Session-boundary navigation | `src/lib/navigation.ts` `resetTo`            | complete | back after logout/onboarding exits instead of returning to a signed-in screen                                                             | 0102       |
-| Tab bar                     | `app/(tabs)/_layout.tsx`                     | complete | center CTA, filled-when-active icons                                                                                                      | 0101       |
-| CI secret check             | `.github/workflows/ci.yml`                   | complete | anchored `sk.` grep (asset-hash false positive)                                                                                           | 0100       |
-| Persistence of demo state   | in-memory stores                             | blocked  | saved/guest/recent searches, notification reads, experience joins and Nylig sett reset on reload — persistence is contract-blocked (CB-5) | —          |
+| Concern                     | Where                                        | Status   | Notes                                                                                                                                     | Ledger |
+| --------------------------- | -------------------------------------------- | -------- | ----------------------------------------------------------------------------------------------------------------------------------------- | ------ |
+| Brand logo / app icon       | `src/components/Logo.tsx`, `assets/`         | complete | SVG mark, provisional ember token                                                                                                         | 0084   |
+| Imagery                     | `src/fixtures/images.ts` (Unsplash, bundled) | complete | per-place covers; none depict the named venues/people                                                                                     | 0099   |
+| Honesty copy                | `src/copy/confirm.ts` (`confirmToast`)       | done     | demo markers removed app-wide (0215); one product-voice confirmation per action                                                           | 0215   |
+| Session-boundary navigation | `src/lib/navigation.ts` `resetTo`            | complete | back after logout/onboarding exits instead of returning to a signed-in screen                                                             | 0102   |
+| Tab bar                     | `app/(tabs)/_layout.tsx`                     | complete | center CTA, filled-when-active icons                                                                                                      | 0101   |
+| CI secret check             | `.github/workflows/ci.yml`                   | complete | anchored `sk.` grep (asset-hash false positive)                                                                                           | 0100   |
+| Persistence of demo state   | in-memory stores                             | blocked  | saved/guest/recent searches, notification reads, experience joins and Nylig sett reset on reload — persistence is contract-blocked (CB-5) | —      |
 
 ## Known gaps (not done)
 
@@ -96,7 +96,7 @@ Directory routes with no PDF page (`experiences`, `places`, `groups`,
 - **Native verification outstanding** for real GPS/heading and haptics on a
   physical device (see `docs/map/MAP_BLOCKERS.md`, NV register).
 - **iOS keyboard layouts unverified** — `KeyboardAvoidingView` padding (0201) was checked on Android only.
-- **PDF screens still missing** — see the list at the end of `docs/SCREEN_INVENTORY.md`.
+- **PDF screens still missing** — p13 Preferanser, Følgere / Følger and Venner, and p18 Marketplace Venteliste (status per page in `docs/SCREEN_INVENTORY.md`, "Pages").
 
 ## Phase 6 review (2026-11-06)
 
