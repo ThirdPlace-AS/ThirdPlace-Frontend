@@ -24,6 +24,11 @@ import { MAP_CITY, type MockWeather } from "@/fixtures";
 import { formatRating } from "@/lib/format";
 import { PhotoPager } from "./PhotoPager";
 import { photosForItem } from "./services/itemCover";
+import {
+  MARKER_LABEL,
+  markerCategoryFor,
+  markerFill,
+} from "./services/markerCategory";
 import type { DiscoveryItem } from "./types/mapPresentation";
 
 // Airbnb-style persistent "browse" sheet. Always peeks (handle + header,
@@ -306,6 +311,7 @@ const BrowseCard = memo(function BrowseCard({
   onToggleSave: (item: DiscoveryItem) => void;
 }) {
   const photos = photosForItem(item);
+  const marker = markerCategoryFor(item);
   return (
     // Card wrapper is a View; the save heart is a SIBLING of the
     // select Pressable (never nested) — nested <button> is invalid
@@ -314,7 +320,7 @@ const BrowseCard = memo(function BrowseCard({
       <UIPressable
         accessibilityRole="button"
         accessibilityState={{ selected }}
-        accessibilityLabel={`${item.title}, ${item.category}, ${item.subtitle}`}
+        accessibilityLabel={`${item.title}, ${MARKER_LABEL[marker]}, ${item.subtitle}`}
         onPress={() => onSelect(item)}
         contentClassName="gap-3"
       >
@@ -333,11 +339,16 @@ const BrowseCard = memo(function BrowseCard({
             <Icon name="image-outline" size="2xl" tone="muted" />
           )}
 
-          {/* Top-left: category chip. */}
+          {/* Top-left: category chip, with the pin's colour as a dot so a
+              card and its map pin read as the same thing. */}
           <View className="absolute left-3 top-3">
-            <View className="px-3 py-1 rounded-full bg-surface">
+            <View className="flex-row items-center gap-1.5 rounded-full bg-surface px-3 py-1">
+              <View
+                className="h-2 w-2 rounded-full"
+                style={{ backgroundColor: markerFill(marker) }}
+              />
               <Text variant="caption" weight="semibold">
-                {item.category}
+                {MARKER_LABEL[marker]}
               </Text>
             </View>
           </View>

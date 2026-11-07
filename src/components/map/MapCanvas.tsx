@@ -3,14 +3,23 @@ import type { ComponentType } from "react";
 import { Platform, Pressable, View } from "react-native";
 
 import { env } from "@/lib/env";
-import { elevation } from "@/theme";
+import { elevation, palette } from "@/theme";
 
 import { clusterByGrid, projectToUnit } from "./services/softClustering";
 import type { DiscoveryItem } from "./types/mapPresentation";
-import { isExperience, softPin } from "./pinStyle";
+import { markerPaint } from "./pinStyle";
 import { USER_PUCK } from "./userPuck";
 import { markerIcon } from "./services/markerIcon";
 import { Icon, Text } from "@/components/ui";
+
+// Pins sit on the map, not the app surface: the light palette in every theme
+// (as the native pins), category fills from pinStyle.
+const PIN = palette.light as unknown as {
+  ink: string;
+  surface: string;
+  onInk: string;
+  ember: string;
+};
 
 type MapProps = {
   markers: DiscoveryItem[];
@@ -222,13 +231,19 @@ function SoftMap({
           >
             <View
               className={`items-center justify-center rounded-full border-2 ${
-                softPin(item.category).body
-              } ${selected ? "h-10 w-10 border-ember" : "h-8 w-8"}`}
+                selected ? "h-10 w-10" : "h-8 w-8"
+              }`}
+              // Same paint as the native pins (category fill, kind ring);
+              // the selected pin gets the brand ring.
+              style={{
+                backgroundColor: markerPaint(item, PIN).fill,
+                borderColor: selected ? PIN.ember : markerPaint(item, PIN).ring,
+              }}
             >
               <Icon
                 name={markerIcon(item)}
                 size="sm"
-                tone={isExperience(item.category) ? "onInk" : "ink"}
+                color={markerPaint(item, PIN).glyph}
               />
             </View>
             {/* Title label under the pin (un-clustered markers only). The pill

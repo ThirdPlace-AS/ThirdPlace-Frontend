@@ -18,7 +18,7 @@ import { Icon } from "@/components/ui";
 import { motion, palette } from "@/theme";
 
 import { periodForUrl } from "./mapStyles";
-import { isExperience, pinPaint } from "./pinStyle";
+import { markerPaint, pinPaint } from "./pinStyle";
 import { boundsOf } from "./services/bounds";
 import { USER_PUCK } from "./userPuck";
 import { markerIcon, type MarkerGlyph } from "./services/markerIcon";
@@ -154,18 +154,18 @@ export function MapboxMap({
     });
   }, [focusKey, focusCoord]);
 
-  // Each pin carries a glyph that matches it (markerIcon). Glyphs render as
-  // map images from RN views: ink on the white place pins, white on the ink
-  // experience pins (one image per glyph + tone actually on the map).
+  // Each pin: fill by marker category, ring by kind, and a glyph that
+  // matches it (markerIcon) in white or ink, whichever reads on the fill.
+  // Glyphs render as map images from RN views (one per glyph + tone on the map).
   const { shape, glyphs } = useMemo(() => {
-    const keys = new Map<string, { glyph: MarkerGlyph; dark: boolean }>();
+    const keys = new Map<string, { glyph: MarkerGlyph; color: string }>();
     const fc: FeatureCollection<Point> = {
       type: "FeatureCollection",
       features: markers.map((m) => {
         const glyph = markerIcon(m);
-        const dark = isExperience(m.category);
-        const icon = `${glyph}:${dark ? "on-ink" : "on-white"}`;
-        keys.set(icon, { glyph, dark });
+        const look = markerPaint(m, pin);
+        const icon = `${glyph}:${look.glyphTone}`;
+        keys.set(icon, { glyph, color: look.glyph });
         return {
           type: "Feature",
           id: m.markerId,
@@ -174,6 +174,8 @@ export function MapboxMap({
             category: m.category,
             title: m.title,
             icon,
+            fill: look.fill,
+            ring: look.ring,
           },
           geometry: { type: "Point", coordinates: m.coord },
         };
@@ -224,6 +226,9 @@ export function MapboxMap({
         animationDuration={0}
       />
       <Images>
+        <MapImage name="cluster-box">
+          <View style={{ width: 44, height: 44 }} />
+        </MapImage>
         <MapImage name="user-heading">
           <View
             style={{
@@ -249,18 +254,16 @@ export function MapboxMap({
         {glyphs.map(([key, g]) => (
           <MapImage key={key} name={key}>
             <View
+              // As wide as the pin circle (r 14): the image is the pin's
+              // collision box, which keeps titles off neighbouring pins.
               style={{
-                width: 18,
-                height: 18,
+                width: 28,
+                height: 28,
                 alignItems: "center",
                 justifyContent: "center",
               }}
             >
-              <Icon
-                name={g.glyph}
-                size="sm"
-                color={g.dark ? pin.onInk : pin.ink}
-              />
+              <Icon name={g.glyph} size="sm" color={g.color} />
             </View>
           </MapImage>
         ))}
@@ -292,33 +295,6 @@ export function MapboxMap({
           }
         }}
       >
-        {/* Cluster bubbles */}
-        <CircleLayer
-          id="clusters"
-          filter={["has", "point_count"]}
-          style={{
-            circleColor: paint.clusterFill,
-            circleRadius: ["step", ["get", "point_count"], 16, 5, 20, 10, 26],
-            circleStrokeWidth: 3,
-            circleStrokeColor: paint.clusterStroke,
-            // Fully self-emissive so the Mapbox Standard light preset
-            // (day/dusk/night) never dims the bubble — see `points` below.
-            circleEmissiveStrength: 1,
-          }}
-        />
-        <SymbolLayer
-          id="cluster-count"
-          filter={["has", "point_count"]}
-          style={{
-            textField: ["get", "point_count_abbreviated"],
-            textSize: 12,
-            textColor: paint.clusterText,
-            // Always draw the count: label collision dropped it when a pin
-            // title ran into the bubble, leaving an empty circle.
-            textAllowOverlap: true,
-            textIgnorePlacement: true,
-          }}
-        />
         {/* Invisible enlarged hit target for unclustered points so taps NEAR a
             pin still register (the visible dot is only 8px). ShapeSource.onPress
             hit-tests this layer too. */}
@@ -349,6 +325,60 @@ export function MapboxMap({
             circleEmissiveStrength: 1,
           }}
         />
+        {/* Per-marker title under each un-clustered pin: ink on a white halo by
+            day, light on a dark halo at dusk/night (founder: easier to read at
+            night). Self-lit so the light preset never dims it; Mapbox drops a
+            title that would collide with another pin or title. */}
+        <SymbolLayer
+          id="point-title"
+          filter={["!", ["has", "point_count"]]}
+          style={{
+            textField: ["get", "title"],
+            textSize: 13,
+            textColor: paint.labelText,
+            textHaloColor: paint.labelHalo,
+            textHaloWidth: 1.5,
+            textHaloBlur: 0,
+            textEmissiveStrength: 1,
+            textAnchor: "top",
+            // Below the 19 px selection ring, so a title never sits on the
+            // selected pin.
+            textOffset: [0, 1.9],
+            textAllowOverlap: false,
+            textOptional: true,
+          }}
+        />
+        {/* Cluster bubbles, above the titles (placed first, see point-title). */}
+        <CircleLayer
+          id="clusters"
+          filter={["has", "point_count"]}
+          style={{
+            circleColor: paint.clusterFill,
+            circleRadius: ["step", ["get", "point_count"], 16, 5, 20, 10, 26],
+            circleStrokeWidth: 3,
+            circleStrokeColor: paint.clusterStroke,
+            // Fully self-emissive so the Mapbox Standard light preset
+            // (day/dusk/night) never dims the bubble — see `points` below.
+            circleEmissiveStrength: 1,
+          }}
+        />
+        <SymbolLayer
+          id="cluster-count"
+          filter={["has", "point_count"]}
+          style={{
+            textField: ["get", "point_count_abbreviated"],
+            textSize: 12,
+            textColor: paint.clusterText,
+            // Always draw the count: label collision dropped it when a pin
+            // title ran into the bubble, leaving an empty circle.
+            textAllowOverlap: true,
+            // An invisible bubble-sized icon claims the bubble's space, so a
+            // pin title never draws across a cluster.
+            iconImage: "cluster-box",
+            iconAllowOverlap: true,
+            iconIgnorePlacement: false,
+          }}
+        />
         {/* The pin's glyph, centred on its circle. Emissive like the circles
             so dusk/night presets never dim it. */}
         <SymbolLayer
@@ -357,7 +387,8 @@ export function MapboxMap({
           style={{
             iconImage: ["get", "icon"],
             iconAllowOverlap: true,
-            iconIgnorePlacement: true,
+            // Pins claim their space, so titles never draw over another pin.
+            iconIgnorePlacement: false,
             iconEmissiveStrength: 1,
           }}
         />
@@ -371,29 +402,6 @@ export function MapboxMap({
             circleStrokeWidth: 3,
             circleStrokeColor: pin.ember,
             circleEmissiveStrength: 1,
-          }}
-        />
-        {/* Per-marker title under each un-clustered pin. White halo keeps it
-            legible on any basemap; Mapbox declutters overlaps automatically. */}
-        <SymbolLayer
-          id="point-title"
-          filter={["!", ["has", "point_count"]]}
-          style={{
-            textField: ["get", "title"],
-            textSize: 12,
-            // Dark ink text inside a thick white halo stays readable on ANY
-            // basemap — including a dark/night map, where the halo forms a bright
-            // outline around every glyph.
-            textColor: pin.ink,
-            textHaloColor: pin.surface,
-            textHaloWidth: 2,
-            textHaloBlur: 0.5,
-            textAnchor: "top",
-            // Below the 19 px selection ring, so a title never sits on the
-            // selected pin.
-            textOffset: [0, 1.9],
-            textAllowOverlap: false,
-            textOptional: true,
           }}
         />
       </ShapeSource>

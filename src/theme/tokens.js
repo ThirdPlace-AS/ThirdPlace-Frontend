@@ -72,6 +72,25 @@ const palette = {
   },
 };
 
+/**
+ * Map art (Phase 12 H3b, founder: every marker its own colour by category).
+ * One colour per marker category, from the Okabe–Ito colour-blind-safe set in
+ * Airbnb-like tones; the same in light and dark. Never the brand pink, which
+ * marks the selected pin. `label*`: pin titles, light on dusk/night maps.
+ */
+const mapPalette = {
+  kafe: "#D55E00",
+  mat: "#E69F00",
+  sosialt: "#F0E442",
+  natur: "#009E73",
+  trening: "#56B4E9",
+  kultur: "#0072B2",
+  kreativt: "#CC79A7",
+  velvaere: "#484848",
+  labelLight: "#F7F7F7",
+  labelHaloDark: "#121212",
+};
+
 /** Airbnb's primary-button gradient (left → right). White text passes AA
  * on every stop. Used by Button variant "ember" (expo-linear-gradient). */
 const brandGradient = ["#E61E4D", "#E31C5F", "#D70466"];
@@ -158,6 +177,7 @@ const fontFamily = {
 module.exports = {
   palette,
   brandGradient,
+  mapPalette,
   fontFamily,
   colors,
   themeColors,

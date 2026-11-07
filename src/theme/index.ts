@@ -4,6 +4,7 @@
 const tokens = require("./tokens.js") as {
   palette: { light: Record<string, string>; dark: Record<string, string> };
   brandGradient: [string, string, string];
+  mapPalette: Record<string, string>;
   colors: Record<string, string>;
   radius: Record<string, string>;
   spacing: Record<string, string>;
@@ -12,6 +13,8 @@ const tokens = require("./tokens.js") as {
 export const palette = tokens.palette;
 /** Airbnb button gradient stops (left → right) for Button variant "ember". */
 export const brandGradient = tokens.brandGradient;
+/** Map pin colours per marker category + night label colours (map art). */
+export const mapPalette = tokens.mapPalette;
 /** Light hex values (back-compat). Prefer `useThemeColors()` for native colour props. */
 export const colors = tokens.colors;
 export const radius = tokens.radius;
