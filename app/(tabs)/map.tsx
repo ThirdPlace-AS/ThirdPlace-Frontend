@@ -27,11 +27,8 @@ import {
 import { MapFilterSheet } from "@/components/map/MapFilterSheet";
 import { MapLayerSheet } from "@/components/map/MapLayerSheet";
 import { MapLocationSheet } from "@/components/map/MapLocationSheet";
-import {
-  basemapFor,
-  DEFAULT_MAP_TYPE,
-  type MapType,
-} from "@/components/map/mapStyles";
+import { basemapFor } from "@/components/map/mapStyles";
+import { setMapType, useMapChoice } from "@/lib/mapChoice";
 import { StatusBarStyle } from "@/components/ui/StatusBarStyle";
 import type {
   DiscoveryItem,
@@ -82,8 +79,9 @@ export default function MapScreen() {
     selectStyle,
     enableAuto,
   } = useTimeOfDayStyle();
-  // Kartlag: map type (Standard / Satellitt / Terreng) x time-of-day style.
-  const [mapType, setMapType] = useState<MapType>(DEFAULT_MAP_TYPE);
+  // Kartlag: map type (Standard / Satellitt / Terreng) x time-of-day style,
+  // both kept on the phone (src/lib/mapChoice.ts, deviceSettings.ts).
+  const { mapType } = useMapChoice();
   const basemap = basemapFor(mapType, styleKey);
   // Satellitt and the dusk/night basemaps are dark whatever the app theme, so
   // pin titles and status-bar icons go light over them; the themed SoftMap

@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from "react";
 import { AppState } from "react-native";
 
 import { autoStyleKey, type MapStyleKey } from "@/components/map/mapStyles";
+import { setMapStyle, useMapChoice } from "@/lib/mapChoice";
 import { useScheme } from "@/theme";
 
 // How often the follow-the-clock timer re-checks the current period while the
@@ -23,7 +24,8 @@ const currentHour = () => new Date().getHours();
 export function useTimeOfDayStyle() {
   const dark = useScheme() === "dark";
   const [hour, setHour] = useState(currentHour);
-  const [manualKey, setManualKey] = useState<MapStyleKey | null>(null);
+  // The manual pick lives in the Kartlag choice, kept on the phone (Phase 15).
+  const manualKey = useMapChoice().style;
   const auto = manualKey === null;
   // Auto follows the clock, and the night style while the app is dark.
   const styleKey = manualKey ?? autoStyleKey(hour, dark);
@@ -53,12 +55,12 @@ export function useTimeOfDayStyle() {
   }, [auto, applyCurrent]);
 
   const selectStyle = useCallback((key: MapStyleKey) => {
-    setManualKey(key);
+    setMapStyle(key);
   }, []);
 
   const enableAuto = useCallback(() => {
     setHour(currentHour());
-    setManualKey(null);
+    setMapStyle(null);
   }, []);
 
   return { styleKey, auto, selectStyle, enableAuto };

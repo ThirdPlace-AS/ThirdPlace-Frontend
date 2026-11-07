@@ -41,14 +41,23 @@ function subscribe(l: () => void) {
   };
 }
 
+/** deviceSettings.ts writes the prefs to the phone when they change. */
+export const onA11yPrefsChange = subscribe;
+
 export function setA11yPrefs(next: Partial<A11yPrefs>) {
   prefs = { ...prefs, ...next };
   emit();
 }
 
-/** Tests (and device settings on start-up). */
-export function resetA11yPrefs(to: A11yPrefs = DEFAULT_A11Y_PREFS) {
-  prefs = to;
+/** Tests, and device settings on start-up (unknown values fall back). */
+export function resetA11yPrefs(to: Partial<A11yPrefs> = DEFAULT_A11Y_PREFS) {
+  const pick = (k: keyof A11yPrefs) =>
+    typeof to[k] === "boolean" ? (to[k] as boolean) : DEFAULT_A11Y_PREFS[k];
+  prefs = {
+    reduceMotion: pick("reduceMotion"),
+    largerText: pick("largerText"),
+    wheelchairOnly: pick("wheelchairOnly"),
+  };
   emit();
 }
 

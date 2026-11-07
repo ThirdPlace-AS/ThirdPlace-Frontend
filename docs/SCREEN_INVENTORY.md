@@ -347,3 +347,7 @@ The master spec is the authority on behaviour and policy. These PDF lines stated
 ### Founder decision: Tilgjengelighet does what it says (2026-11-07)
 
 PDF p19's Tilgjengelighet switches were local and changed nothing. Now: **Større tekst** makes every text one step larger (×1.15, on top of the phone's own font size), **Reduser bevegelse** turns the app's animations off (Reanimated's global setting plus the app's reduced-motion checks), and **Vis kun rullestolvennlige** starts the map and Sveip with the "Trinnfri inngang" filter on (p19's hint "Filtrerer steder automatisk"). **Høy kontrast** and **Skjermleser-optimalisert** are hidden until their behaviour is defined; the phone's own screen reader works throughout.
+
+### Founder decision: device choices are kept on the phone (2026-11-07)
+
+The Kartlag map type and style and Tilgjengelighet's switches survive a restart: `src/lib/deviceSettings.ts` keeps them in one AsyncStorage key, read once at start-up behind the root layout's font gate. They are this phone's settings; nothing about the account or its content is stored on the device (that still needs the contract).

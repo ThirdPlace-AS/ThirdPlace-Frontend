@@ -4,6 +4,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { useFonts } from "expo-font";
 import { Stack } from "expo-router";
+import { useEffect } from "react";
 import { LogBox, View } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { ReducedMotionConfig, ReduceMotion } from "react-native-reanimated";
@@ -19,6 +20,10 @@ import { useThemeColors } from "@/theme";
 import { fontAssets } from "@/theme/fonts";
 import { ThemeRoot } from "@/theme/ThemeRoot";
 import { useA11yPrefs } from "@/lib/a11yPrefs";
+import {
+  hydrateDeviceSettings,
+  useDeviceSettingsReady,
+} from "@/lib/deviceSettings";
 
 // A crash anywhere below shows the p26 "Noe gikk galt" screen with "Prøv
 // igjen" instead of a blank or red screen (Phase 15).
@@ -31,6 +36,12 @@ export default function RootLayout() {
   // flashes empty glyphs; the holder uses the theme background to avoid a flash.
   // If the font fails, still render — a blank-forever screen is worse than
   // briefly missing glyphs.
+  // Device settings (map type and style, Tilgjengelighet) load from the phone
+  // behind the same gate, so the first screen already uses them (Phase 15).
+  const settingsReady = useDeviceSettingsReady();
+  useEffect(() => {
+    void hydrateDeviceSettings();
+  }, []);
   const [fontsLoaded, fontError] = useFonts({
     ...Ionicons.font,
     // Brand typeface (src/theme/fonts.ts) — same gate, so text never
@@ -46,7 +57,7 @@ export default function RootLayout() {
       <SafeAreaProvider initialMetrics={initialWindowMetrics}>
         <QueryClientProvider client={queryClient}>
           <ThemeRoot>
-            {fontsLoaded || fontError ? (
+            {(fontsLoaded || fontError) && settingsReady ? (
               <RootStack />
             ) : (
               <View className="flex-1 bg-background" />

@@ -20,3 +20,8 @@ jest.mock("expo-font", () => ({
 
 // Gesture handler: GestureDetector/RootView render as plain views under Jest.
 require("react-native-gesture-handler/jestSetup");
+
+// Device settings (Phase 15) use AsyncStorage: the package's in-memory mock.
+jest.mock("@react-native-async-storage/async-storage", () =>
+  require("@react-native-async-storage/async-storage/jest/async-storage-mock"),
+);
