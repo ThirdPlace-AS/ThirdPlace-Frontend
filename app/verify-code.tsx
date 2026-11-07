@@ -7,11 +7,15 @@ import { CodeInput } from "@/components/auth/CodeInput";
 import { Button } from "@/components/Button";
 import { ScreenHeader } from "@/components/ScreenHeader";
 import { showToast } from "@/components/Toast";
+import { useGuestMode } from "@/components/map/hooks/useGuestMode";
+import { resetTo } from "@/lib/navigation";
+import { markAccountCreated } from "@/lib/signupProgress";
 
 const RESEND_SECONDS = 60;
 
 // One-time-code screens (PDF p2). mode=email: "Sjekk innboksen" after
-// register, continues into onboarding. mode=identity: "Bekreft identiteten"
+// register; it completes the account, then onboarding (or, when onboarding
+// came first, the session) follows. mode=identity: "Bekreft identiteten"
 // after turning on 2FA, returns to settings. BLOCKED_CONTRACT_GAP: no code is
 // sent; any 6 digits are accepted.
 export default function VerifyCode() {
@@ -26,8 +30,17 @@ export default function VerifyCode() {
     return () => clearTimeout(t);
   }, [left]);
 
-  const confirm = () =>
-    identity ? router.back() : router.replace("/onboarding");
+  const { setGuest } = useGuestMode();
+  const confirm = () => {
+    if (identity) return router.back();
+    // The code completes the account: onboarding next, or (after it) the
+    // session starts with a clean stack (session boundary).
+    const nextHref = markAccountCreated();
+    if (nextHref === "/map") {
+      setGuest(false);
+      resetTo("/map");
+    } else router.replace(nextHref);
+  };
 
   return (
     <Screen>

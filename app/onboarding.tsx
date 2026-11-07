@@ -28,6 +28,7 @@ import { experiences, PERSONAS, type MockPersonaKey } from "@/fixtures";
 import { checkBirthday, formatBirthdayInput } from "@/features/onboarding/age";
 import { UnderageScreen } from "@/features/onboarding/UnderageScreen";
 import { resetTo } from "@/lib/navigation";
+import { markOnboarded } from "@/lib/signupProgress";
 import { libThumb } from "@/fixtures/images";
 import { showToast } from "@/components/Toast";
 import { confirmToast } from "@/copy";
@@ -178,8 +179,13 @@ export default function Onboarding() {
       return;
     }
     if (step === STEP_COUNT - 1) {
-      setGuest(false);
-      resetTo("/map");
+      // Answers stay on this screen underneath: back from "Lag kontoen
+      // din" returns here. With an account already made, the session starts.
+      const nextHref = markOnboarded();
+      if (nextHref === "/map") {
+        setGuest(false);
+        resetTo("/map");
+      } else router.push(nextHref);
       return;
     }
     setStep((s) => s + 1);

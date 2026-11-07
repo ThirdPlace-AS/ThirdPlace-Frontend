@@ -7,11 +7,22 @@ import { Button } from "@/components/Button";
 import { Input } from "@/components/Input";
 import { Logo } from "@/components/Logo";
 import { ScreenHeader } from "@/components/ScreenHeader";
+import { useGuestMode } from "@/components/map/hooks/useGuestMode";
 import { resetTo } from "@/lib/navigation";
+import { markAccountCreated, useSignupProgress } from "@/lib/signupProgress";
 
-// Sign-up. BLOCKED_CONTRACT_GAP: no auth backend; the flow continues to
-// code verification and onboarding.
+// Sign-up. From the welcome screen it is the last step after onboarding
+// ("Lag kontoen din"); from "Registrer deg" it comes first and onboarding
+// follows the code. BLOCKED_CONTRACT_GAP: no auth backend.
 export default function Register() {
+  const { onboarded } = useSignupProgress();
+  const { setGuest } = useGuestMode();
+  // A social sign-in creates the account without a code.
+  const social = () => {
+    const nextHref = markAccountCreated();
+    if (nextHref === "/map") setGuest(false);
+    resetTo(nextHref);
+  };
   return (
     <Screen>
       <ScrollView
@@ -23,8 +34,14 @@ export default function Register() {
           <Logo size={48} />
         </View>
         <ScreenHeader
-          title="Bli med i ThirdPlace"
-          subtitle="Finn folk og steder i byen din."
+          // After onboarding this is the last step (founder 2026-11-06).
+          title={onboarded ? "Lag kontoen din" : "Bli med i ThirdPlace"}
+          subtitle={
+            onboarded
+              ? "Siste steg. Så er du klar til å utforske."
+              : "Finn folk og steder i byen din."
+          }
+          showBack={onboarded}
         />
         <View className="gap-4">
           <Input
@@ -43,10 +60,7 @@ export default function Register() {
               })
             }
           />
-          <SocialAuthButtons
-            verb="Fortsett med"
-            onContinue={() => resetTo("/onboarding")}
-          />
+          <SocialAuthButtons verb="Fortsett med" onContinue={social} />
         </View>
         <Text variant="caption" tone="muted" className="px-4 text-center">
           Ved å fortsette godtar du våre vilkår og personvernerklæring.

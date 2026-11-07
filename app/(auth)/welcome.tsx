@@ -52,7 +52,9 @@ export default function Welcome() {
           <Button
             label="Kom i gang"
             variant="ember"
-            onPress={() => router.push("/register")}
+            // Founder 2026-11-06: straight to onboarding; the account and
+            // its verification come at the end (src/lib/signupProgress.ts).
+            onPress={() => router.push("/onboarding")}
           />
           <Button
             label="Fortsett som gjest"

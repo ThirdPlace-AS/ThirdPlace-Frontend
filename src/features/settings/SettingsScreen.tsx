@@ -10,6 +10,7 @@ import { SignInPrompt } from "@/components/SignInPrompt";
 import { useGuestMode } from "@/components/map/hooks/useGuestMode";
 import { profile } from "@/fixtures";
 import { resetTo } from "@/lib/navigation";
+import { resetSignupProgress } from "@/lib/signupProgress";
 
 import { ExportSheet } from "./ExportSheet";
 import { NavRow, SettingsSection } from "./settingsUi";
@@ -122,6 +123,8 @@ export default function SettingsScreen() {
             label="Logg ut"
             onPress={() => {
               setLogoutOpen(false);
+              // A new sign-up after logging out starts from the beginning.
+              resetSignupProgress();
               resetTo("/welcome");
             }}
           />

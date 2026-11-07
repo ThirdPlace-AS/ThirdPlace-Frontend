@@ -50,7 +50,7 @@ Directory routes with no PDF page (`experiences`, `places`, `groups`,
 
 | Surface                      | Route                            | PDF       | Status                         | Markers                          | Ledger     |
 | ---------------------------- | -------------------------------- | --------- | ------------------------------ | -------------------------------- | ---------- |
-| E-post-kode / identitet      | `app/(auth)/verify-code.tsx`     | p2        | demo-complete                  | any 6 digits pass; DemoNote      | 0122       |
+| E-post-kode / identitet      | `app/verify-code.tsx`            | p2        | demo-complete                  | any 6 digits pass; DemoNote      | 0122       |
 | Lag nytt passord             | `app/(auth)/reset-password.tsx`  | p1        | demo-complete                  | nothing stored                   | 0122       |
 | Totrinnsbekreftelse          | `app/two-factor.tsx`             | p2        | demo-complete                  | nothing enabled                  | 0122       |
 | Bedriftsonboarding           | `app/business-onboarding.tsx`    | p3–p5     | demo-complete                  | 18+ gate; nothing created        | 0123, 0133 |
@@ -71,7 +71,7 @@ Directory routes with no PDF page (`experiences`, `places`, `groups`,
 | ---------- | --------------------------------------------------- | ------------- | ------------------------------------ | ------------------------------------ | --------------- | ---------------- |
 | Welcome    | `app/(auth)/welcome.tsx`                            | demo-complete | guest entry sets demo guest mode     | auth                                 | emulator        | 0097             |
 | Login      | `app/(auth)/login.tsx`                              | demo-complete | DemoNote "ingen reell innlogging"    | auth, session                        | emulator        | 0097             |
-| Register   | `app/(auth)/register.tsx`                           | demo-complete | DemoNote "ingen konto opprettes"     | account creation                     | emulator        | 0097             |
+| Register   | `app/register.tsx`                                  | demo-complete | DemoNote "ingen konto opprettes"     | account creation                     | emulator        | 0097             |
 | Onboarding | `app/onboarding.tsx`, `app/business-onboarding.tsx` | demo-complete | 18+ gate in both branches; DemoNotes | interests taxonomy, consent, persona | emulator, tests | 0114, 0123, 0133 |
 
 ## Cross-cutting

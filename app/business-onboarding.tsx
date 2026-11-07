@@ -21,6 +21,7 @@ import { OSLO_AREAS } from "@/fixtures";
 import { checkBirthday, formatBirthdayInput } from "@/features/onboarding/age";
 import { UnderageScreen } from "@/features/onboarding/UnderageScreen";
 import { resetTo } from "@/lib/navigation";
+import { markOnboarded } from "@/lib/signupProgress";
 
 // Business onboarding, per the design (PDF p3–p5). It continues the
 // role step ("1 av 8") with steps 2–8: Personen bak bedriften → Om bedriften →
@@ -102,8 +103,12 @@ export default function BusinessOnboarding() {
       return;
     }
     if (step === TOTAL) {
-      setGuest(false);
-      resetTo("/map");
+      // As the explorer branch: the account comes last (founder 2026-11-06).
+      const nextHref = markOnboarded();
+      if (nextHref === "/map") {
+        setGuest(false);
+        resetTo("/map");
+      } else router.push(nextHref);
     } else setStep((s) => s + 1);
   };
   const cta =
