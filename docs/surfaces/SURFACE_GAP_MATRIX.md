@@ -67,12 +67,12 @@ Directory routes with no PDF page (`experiences`, `places`, `groups`,
 
 ## Entry
 
-| Surface    | Route                                               | Status        | Markers                              | Blocked on                           | Verified        | Ledger           |
-| ---------- | --------------------------------------------------- | ------------- | ------------------------------------ | ------------------------------------ | --------------- | ---------------- |
-| Welcome    | `app/(auth)/welcome.tsx`                            | demo-complete | guest entry sets demo guest mode     | auth                                 | emulator        | 0097             |
-| Login      | `app/(auth)/login.tsx`                              | demo-complete | DemoNote "ingen reell innlogging"    | auth, session                        | emulator        | 0097             |
-| Register   | `app/register.tsx`                                  | demo-complete | DemoNote "ingen konto opprettes"     | account creation                     | emulator        | 0097             |
-| Onboarding | `app/onboarding.tsx`, `app/business-onboarding.tsx` | demo-complete | 18+ gate in both branches; DemoNotes | interests taxonomy, consent, persona | emulator, tests | 0114, 0123, 0133 |
+| Surface    | Route                                               | Status        | Markers                                                                                   | Blocked on                           | Verified        | Ledger                 |
+| ---------- | --------------------------------------------------- | ------------- | ----------------------------------------------------------------------------------------- | ------------------------------------ | --------------- | ---------------------- |
+| Welcome    | `app/(auth)/welcome.tsx`                            | demo-complete | guest entry sets demo guest mode                                                          | auth                                 | emulator        | 0097                   |
+| Login      | `app/(auth)/login.tsx`                              | demo-complete | fields take typing (0256); nothing is checked or sent                                     | auth, session                        | emulator        | 0097, 0256             |
+| Register   | `app/register.tsx`                                  | demo-complete | fields take typing (0256); "Registrer deg" → code → onboarding → map walked on the device | account creation                     | emulator        | 0097, 0246, 0256       |
+| Onboarding | `app/onboarding.tsx`, `app/business-onboarding.tsx` | demo-complete | 18+ gate in both branches; answers carry into the profile and Preferanser (0251)          | interests taxonomy, consent, persona | emulator, tests | 0114, 0123, 0133, 0251 |
 
 ## Cross-cutting
 

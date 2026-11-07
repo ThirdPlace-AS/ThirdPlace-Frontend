@@ -277,3 +277,9 @@ Layout modernised by founder decision (same content and PDF order): hub pages (I
 
 - A notification now opens what it names (the person who followed you, the experience someone joined or you were invited to, the reading group, a place's reviews) and is marked read. The targets are part of the fixture cards; resolving them from a real feed stays contract-blocked.
 - On a follower's page the button reads "Følg tilbake", as in the Følgere list.
+
+### Flows walked on the device (2026-11-07)
+
+- **Legg til → Opplevelse**, every step: name and category (picker), date, 14:00 and 2 timer, Grünerløkka Bokcafé, capacity and price, vibes, an included item and a step, two photos, review → "Opplevelsen er publisert" → "Se opplevelsen" shows the page with the entered facts, and the map lists it (21 treff) and opens it from `?focus=experience:ex1`.
+- **Logg inn → "Registrer deg"** → "Bli med i ThirdPlace" → code → onboarding (all eight steps) → map; Android back from the map leaves the app, and Profil shows the name, age and interests from onboarding.
+- Fixed on the way: the e-mail and password fields on Logg inn, Registrer deg and Glemt passord looked editable but were read-only (no change handler); they now take typing (nothing is checked or sent) and the three screens pad for the keyboard so the button under the fields stays reachable.
