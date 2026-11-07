@@ -5,7 +5,7 @@ import { RouteHeader } from "@/components/RouteHeader";
 import { setDevSimulation, useDevSimulation } from "@/lib/devSimulation";
 
 // Dev-only: switches for states that need a real network or GPS to appear
-// (map offline/error, check-in distance). Not linked from product UI; open
+// (map offline/error, a slow load, check-in distance). Not linked from product UI; open
 // with `thirdplace://_sandbox/simulate`. System screens stay reachable via
 // `thirdplace://state/<kind>`.
 export default function SimulateSandbox() {
@@ -38,6 +38,18 @@ export default function SimulateSandbox() {
               value={sim.checkinFar}
               onValueChange={(v) => setDevSimulation({ checkinFar: v })}
               label="For langt unna ved innsjekk"
+            />
+          }
+        />
+        <ListRow
+          variant="card"
+          title="Treg lasting (3 s)"
+          subtitle="Kartet laster på nytt i 3 sekunder: skjelett de første 2 sekundene, så lasteindikator."
+          trailing={
+            <Switch
+              value={sim.slowLoad}
+              onValueChange={(v) => setDevSimulation({ slowLoad: v })}
+              label="Treg lasting (3 s)"
             />
           }
         />

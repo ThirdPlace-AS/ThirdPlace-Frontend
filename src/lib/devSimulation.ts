@@ -9,9 +9,15 @@ export type DevSimulation = {
   mapOffline: boolean;
   /** Check-in sees the user too far from the place. */
   checkinFar: boolean;
+  /** Map content takes 3 s: skeleton for 2 s, then the loader (§4 rule). */
+  slowLoad: boolean;
 };
 
-let state: DevSimulation = { mapOffline: false, checkinFar: false };
+let state: DevSimulation = {
+  mapOffline: false,
+  checkinFar: false,
+  slowLoad: false,
+};
 const listeners = new Set<() => void>();
 
 export function setDevSimulation(patch: Partial<DevSimulation>) {

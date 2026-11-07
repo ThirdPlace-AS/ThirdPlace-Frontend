@@ -17,7 +17,7 @@ import {
   useState,
 } from "react";
 import { useFocusEffect } from "expo-router";
-import { Share, View } from "react-native";
+import { Share, View, useWindowDimensions } from "react-native";
 import Animated, {
   Extrapolation,
   interpolate,
@@ -72,6 +72,9 @@ import { markerId } from "./types/mapPresentation";
 // the tab bar.
 
 export const PAGE_SNAP = 2;
+// Experience peek: handle + ✕ row + the top of the gallery above the
+// floating join card (≈ 24 + 56 + 120 + 100 dp).
+const EXPERIENCE_PEEK_MIN = 300;
 const PAGE_FROM = 1.7; // animatedIndex where the page chrome starts to show
 
 export type MapDetailSheetHandle = {
@@ -113,9 +116,21 @@ export const MapDetailSheet = forwardRef<
   );
   const root = stack[0];
   const pageCapable = root?.kind === "experience";
+  const { height: winH } = useWindowDimensions();
+  // Short phones (H1, Phase 11 open item): at 35 % of a 640 dp screen only
+  // the handle and ✕ showed above the floating join card. The experience
+  // peek is at least EXPERIENCE_PEEK_MIN dp, so the top of the gallery shows.
+  const compact = winH < 700;
   const snapPoints = useMemo(
-    () => (pageCapable ? ["35%", "60%", "100%"] : ["35%", "60%", "92%"]),
-    [pageCapable],
+    () =>
+      pageCapable
+        ? [
+            Math.max(Math.round(winH * 0.35), EXPERIENCE_PEEK_MIN),
+            "60%",
+            "100%",
+          ]
+        : ["35%", "60%", "92%"],
+    [pageCapable, winH],
   );
 
   const sheetRef = useRef<BottomSheet>(null);
@@ -192,7 +207,9 @@ export const MapDetailSheet = forwardRef<
             }}
           >
             <View
-              className="rounded-lg border border-line bg-surface px-4 py-3"
+              className={`rounded-lg border border-line bg-surface px-4 ${
+                compact ? "py-2" : "py-3"
+              }`}
               style={elevation.e2}
             >
               <ExperienceJoinBar id={footerId} />
@@ -200,7 +217,7 @@ export const MapDetailSheet = forwardRef<
           </View>
         </BottomSheetFooter>
       ) : null,
-    [footerId, pageCapable, insets.bottom],
+    [footerId, pageCapable, insets.bottom, compact],
   );
 
   const renderBackdrop = useCallback(

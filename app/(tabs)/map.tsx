@@ -135,10 +135,11 @@ export default function MapScreen() {
   );
 
   // Mock async load so the surface can show loading/error states (no backend).
-  // `mapOffline` is a dev switch (app/_sandbox/simulate) that forces an error.
-  const { mapOffline: offline } = useDevSimulation();
+  // `mapOffline` is a dev switch (app/_sandbox/simulate) that forces an error;
+  // `slowLoad` makes a load take 3 s so the skeleton → loader hand-off shows.
+  const { mapOffline: offline, slowLoad } = useDevSimulation();
   const { status, reload } = useMockResource(places, {
-    delayMs: 500,
+    delayMs: slowLoad ? 3000 : 500,
     // No fake wait on open: the fixtures are already here. "Prøv igjen" and
     // the dev offline switch still show the loading / error states.
     immediate: true,
@@ -162,6 +163,11 @@ export default function MapScreen() {
     return () => clearTimeout(t);
   }, [status]);
   const errored = status === "error";
+  // Turning the slow-load switch on reloads the map once so the slow path runs.
+  useEffect(() => {
+    if (slowLoad) reload();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [slowLoad]);
 
   const retry = () => {
     setDevSimulation({ mapOffline: false });
