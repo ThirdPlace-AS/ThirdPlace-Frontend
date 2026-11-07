@@ -41,7 +41,7 @@ import {
 } from "@/components/ui";
 import { SignInPrompt } from "@/components/SignInPrompt";
 import { experienceCaption } from "@/components/experience/experienceMeta";
-import { PAGE_BAR_ROW } from "@/components/experience/ExperiencePageOverlay";
+import { PAGE_BAR_ROW } from "@/components/experience/ExperiencePage";
 import { experienceById, placeById } from "@/fixtures";
 import { elevation, gutterPx, useThemeColors } from "@/theme";
 

@@ -198,3 +198,16 @@ the review for the founder.
 ## Phase 11 (2026-11-06)
 
 p5 Map: marker glyphs (0218), galleries in browse cards and place/business/group detail (0217), user puck + Posisjon zoom (0223), loading rule (0222). p6 Experience detail: shared ExperiencePage, full-screen at the top snap (0220, 0221) — layout follows the founder's reference video where the PDF draws a sheet; every PDF item kept. p8 Sveip detail: same page (0220); Steder deck photos (0217). p13 Workspace "Kom i gang" links (0224). p14 Bli Skaper next-step links (0224). p18 Betalingsstatus in PDF order, money as "—" (0224). p24 Bildeviser: shared PhotoViewer (0220).
+
+## Phase 12 (2026-11-07)
+
+### Founder decision: pages, not modals (2026-11-06)
+
+"Not every page needs to be a modal" (app-wide). Where the PDF draws a sheet for content you read, browse or fill in, the app shows a page with a back button; sheets stay for short choices, pickers, confirmations, filters, share/report/block, the sign-in prompt and viewers. Audit of every Sheet/Overlay in the Phase 12 report.
+
+| Surface                                                                            | PDF    | Was                 | Now                                           | Ledger |
+| ---------------------------------------------------------------------------------- | ------ | ------------------- | --------------------------------------------- | ------ |
+| Experience page (Sveip expand, Lagret, Mine planer, chat pin, "Flere opplevelser") | p6, p8 | Overlay / map focus | `/experience/[id]`                            | 0235   |
+| Place page (from an experience, Lagret)                                            | p5–p6  | map sheet only      | `/place/[id]` (map pins still open the sheet) | 0235   |
+| Group page (from an experience)                                                    | p6     | in-sheet sub-view   | `/group/[id]`                                 | 0235   |
+| Person profile (Oppdag folk)                                                       | p22    | "Profil" sheet      | `/people/[id]`                                | 0235   |

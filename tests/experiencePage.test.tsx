@@ -40,6 +40,7 @@ import { useGuestMode } from "@/components/map/hooks/useGuestMode";
 import {
   chatForExperience,
   experienceById,
+  placeById,
   ratingOf,
   reviewsForExperience,
   sessionsFor,
@@ -67,7 +68,6 @@ function renderPage(
     <ExperiencePage
       exp={e1}
       onOpen={jest.fn()}
-      onOpenExperience={jest.fn()}
       onNavigate={jest.fn()}
       {...over}
     />,
@@ -135,6 +135,21 @@ describe("ExperiencePage", () => {
     expect(onOpen).toHaveBeenCalledWith({ kind: "host", id: "e1" });
     fireEvent.press(screen.getByText("Vis alle vurderinger"));
     expect(onNavigate).toHaveBeenCalledWith("/experience/e1/reviews");
+  });
+
+  it("whole places, groups and other experiences open as pages", () => {
+    const onOpen = jest.fn();
+    const onNavigate = jest.fn();
+    renderPage({ onOpen, onNavigate });
+    const place = placeById(e1.placeId)!;
+    fireEvent.press(screen.getByText(place.name));
+    expect(onNavigate).toHaveBeenCalledWith(`/place/${place.id}`);
+    const other = moreExperiences(e1)[0]!;
+    fireEvent.press(
+      screen.getByRole("button", { name: `${other.title}, ${other.category}` }),
+    );
+    expect(onNavigate).toHaveBeenCalledWith(`/experience/${other.id}`);
+    expect(onOpen).not.toHaveBeenCalled();
   });
 
   it("the join card shows price and the join action", () => {

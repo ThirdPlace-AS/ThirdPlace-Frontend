@@ -1,4 +1,4 @@
-import { router } from "expo-router";
+import { router, type Href } from "expo-router";
 import { useState } from "react";
 import { FlatList, View } from "react-native";
 
@@ -6,29 +6,27 @@ import {
   EmptyState,
   FollowButton,
   Header,
-  Icon,
   IconButton,
   Screen,
   Avatar,
   Pressable as UIPressable,
   Text,
 } from "@/components/ui";
-import { BlockSheet } from "@/components/actions/ActionSheets";
 import { Button } from "@/components/Button";
 import { Chip } from "@/components/Chip";
 import { Sheet } from "@/components/Sheet";
 import { SignInPrompt } from "@/components/SignInPrompt";
 import { useGuestMode } from "@/components/map/hooks/useGuestMode";
-import { experienceById, people, profile, type MockPerson } from "@/fixtures";
+import { people, profile, type MockPerson } from "@/fixtures";
 import { libImage } from "@/fixtures/images";
+import { toggleFollow as toggleFollowing, useFollowing } from "@/lib/following";
 
 // People discovery. BLOCKED_CONTRACT_GAP: no person entity, social
 // graph, or follow backend. Following is local demo state (reset on reload) and a
 // guest is sent to the demo sign-in prompt instead of a fake follow success.
 export default function PeopleScreen() {
   const guest = useGuestMode();
-  const [open, setOpen] = useState<MockPerson | null>(null);
-  const [following, setFollowing] = useState<Record<string, boolean>>({});
+  const following = useFollowing();
   const [signIn, setSignIn] = useState(false);
   // PDF p22: Alle / Nærheten / Interesser tabs + "Filter folk" sheet.
   const [tab, setTab] = useState<"all" | "near" | "interests">("all");
@@ -50,7 +48,7 @@ export default function PeopleScreen() {
       setSignIn(true);
       return;
     }
-    setFollowing((f) => ({ ...f, [id]: !f[id] }));
+    toggleFollowing(id);
   };
 
   return (
@@ -79,7 +77,7 @@ export default function PeopleScreen() {
               Folk du kanskje vil bli kjent med.
             </Text>
             {/* The list shows example people with "felles" counts and Følg:
-                say so here, not only inside the person sheet. */}
+                say so here, not only on the person page. */}
 
             <View className="flex-row flex-wrap items-center gap-2">
               <Chip
@@ -127,19 +125,13 @@ export default function PeopleScreen() {
         renderItem={({ item }) => (
           <PersonRow
             person={item}
-            following={!!following[item.id]}
-            onPress={() => setOpen(item)}
+            following={following.has(item.id)}
+            onPress={() => router.push(`/people/${item.id}` as Href)}
             onFollow={() => toggleFollow(item.id)}
           />
         )}
       />
 
-      <PersonDetailSheet
-        person={open}
-        following={open ? !!following[open.id] : false}
-        onFollow={() => open && toggleFollow(open.id)}
-        onClose={() => setOpen(null)}
-      />
       <Sheet
         visible={filterOpen}
         onClose={() => setFilterOpen(false)}
@@ -233,83 +225,5 @@ function PersonRow({
         name={person.name}
       />
     </View>
-  );
-}
-
-function PersonDetailSheet({
-  person,
-  following,
-  onFollow,
-  onClose,
-}: {
-  person: MockPerson | null;
-  following: boolean;
-  onFollow: () => void;
-  onClose: () => void;
-}) {
-  const hosts = person?.hostsExperienceId
-    ? experienceById(person.hostsExperienceId)
-    : undefined;
-  const [block, setBlock] = useState(false);
-  return (
-    <Sheet visible={person !== null} onClose={onClose} title="Profil">
-      {person ? (
-        <View className="gap-4">
-          <View className="items-center gap-2">
-            <Avatar
-              name={person.name}
-              source={libImage(person.avatar)}
-              size="xl"
-            />
-            <Text variant="title" weight="bold">
-              {person.name}
-            </Text>
-            <Text variant="caption" tone="muted">
-              {person.handle} · {person.area}
-            </Text>
-            <Text variant="caption" tone="muted" className="px-4 text-center">
-              {person.bio}
-            </Text>
-          </View>
-
-          <View className="flex-row flex-wrap justify-center gap-2">
-            {person.interests.map((i) => (
-              <Chip key={i} label={i} />
-            ))}
-          </View>
-
-          {hosts ? (
-            <View className="flex-row items-center gap-2 rounded-md border border-line bg-surface px-3 py-2.5">
-              <Icon name="pricetag-outline" size="sm" tone="ember" />
-              <Text
-                variant="label"
-                weight="regular"
-                className="flex-1"
-                numberOfLines={1}
-              >
-                Vert for «{hosts.title}»
-              </Text>
-            </View>
-          ) : null}
-
-          <FollowButton
-            following={following}
-            onPress={onFollow}
-            name={person.name}
-            size="md"
-            fullWidth
-          />
-          <Button
-            label="Blokker"
-            variant="secondary"
-            onPress={() => setBlock(true)}
-          />
-
-          {block ? (
-            <BlockSheet name={person.name} onClose={() => setBlock(false)} />
-          ) : null}
-        </View>
-      ) : null}
-    </Sheet>
   );
 }

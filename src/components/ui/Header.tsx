@@ -6,14 +6,16 @@
 //   <TitleBlock>   large title + subtitle (auth, tab roots), optional back above
 //   <StepHeader>   wizards: back · "N av M" · segmented progress
 //   <StepContent>  wizard step body: large title + subtitle + content
-import { router } from "expo-router";
 import type { ReactNode } from "react";
 import { View } from "react-native";
+
+import { goBackOr } from "@/lib/navigation";
 
 import { IconButton } from "./IconButton";
 import { Text } from "./Text";
 
-const goBack = () => router.back();
+// A page opened cold from a deep link has no history: back goes to the map.
+const goBack = () => goBackOr("/map");
 
 export function Header({
   title,
@@ -25,7 +27,7 @@ export function Header({
   inset = true,
 }: {
   title: string;
-  /** Defaults to router.back(). */
+  /** Defaults to back (or the map when opened from a deep link). */
   onBack?: () => void;
   /** Show the back button (default: on for "default", off for "large"). */
   back?: boolean;

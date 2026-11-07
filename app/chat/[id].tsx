@@ -1,4 +1,4 @@
-import { router, useLocalSearchParams } from "expo-router";
+import { router, useLocalSearchParams, type Href } from "expo-router";
 import { useRef, useState } from "react";
 import { FlatList, KeyboardAvoidingView, TextInput, View } from "react-native";
 import Animated, {
@@ -11,6 +11,7 @@ import {
   EmptyState,
   Icon,
   IconButton,
+  Pressable as UIPressable,
   Screen,
   Text,
 } from "@/components/ui";
@@ -130,9 +131,15 @@ export default function ChatThreadScreen() {
       </View>
 
       {pinned ? (
-        // Informational pin under the header (PDF p9): the experience this
-        // group organizes. Not a link: experience detail is a map sheet.
-        <View className="flex-row items-center gap-2 border-b border-line px-gutter py-2.5">
+        // Pin under the header (PDF p9): the experience this chat organizes.
+        // Opens the experience page (Phase 12 H4c: full entities are pages).
+        <UIPressable
+          accessibilityRole="link"
+          accessibilityLabel={`Festet: ${pinned.title}. Åpne opplevelsen`}
+          onPress={() => router.push(`/experience/${pinned.id}` as Href)}
+          pressedScale={0.99}
+          contentClassName="flex-row items-center gap-2 border-b border-line px-gutter py-2.5"
+        >
           <Icon name="pricetag-outline" size="sm" tone="ember" />
           <Text
             variant="label"
@@ -145,7 +152,8 @@ export default function ChatThreadScreen() {
           <Text variant="caption" tone="muted">
             Festet
           </Text>
-        </View>
+          <Icon name="chevron-forward" size="sm" tone="muted" />
+        </UIPressable>
       ) : null}
 
       <KeyboardAvoidingView

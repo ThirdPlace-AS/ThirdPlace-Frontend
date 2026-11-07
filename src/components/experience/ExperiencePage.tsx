@@ -48,13 +48,16 @@ import {
 } from "./ExperienceSections";
 import { areaFor, hostPerson, moreExperiences } from "./experienceMeta";
 
+/** Height of the page top bar below the status bar (the route page and the
+ *  map sheet's top snap share it so both pages line up). */
+export const PAGE_BAR_ROW = 52;
+
 export type ExperiencePageProps = {
   exp: MockExperience;
-  /** Opens a sub-view (attendees, group, check-in, host tools, place). */
+  /** Opens a short sub-view in a sheet (attendees, check-in, host tools). */
   onOpen: (target: SheetTarget) => void;
-  /** Opens another experience ("Flere opplevelser i området"). */
-  onOpenExperience: (id: string) => void;
-  /** Leaves to another route (host profile, chat, all reviews). */
+  /** Leaves to another page: place, group, another experience, host
+   *  profile, chat, all reviews (Phase 12 H4c: full entities are pages). */
   onNavigate: (href: Href) => void;
 };
 
@@ -101,7 +104,6 @@ export function experienceChips(
 export function ExperiencePage({
   exp,
   onOpen,
-  onOpenExperience,
   onNavigate,
 }: ExperiencePageProps) {
   const [user] = useExperienceJoin(
@@ -191,7 +193,7 @@ export function ExperiencePage({
           title={place?.name ?? exp.meetingPoint.name}
           subtitle={`${areaFor(exp.meetingPoint.coord)}, Oslo`}
           onPress={
-            place ? () => onOpen({ kind: "place", id: place.id }) : undefined
+            place ? () => onNavigate(`/place/${place.id}` as Href) : undefined
           }
         />
         <InfoRow
@@ -225,7 +227,7 @@ export function ExperiencePage({
             icon="people-circle-outline"
             title={group.name}
             subtitle={`Gruppe · ${group.memberCount} medlemmer`}
-            onPress={() => onOpen({ kind: "group", id: group.id })}
+            onPress={() => onNavigate(`/group/${group.id}` as Href)}
           />
         ) : null}
       </View>
@@ -278,7 +280,7 @@ export function ExperiencePage({
                   key={e.id}
                   accessibilityRole="button"
                   accessibilityLabel={`${e.title}, ${e.category}`}
-                  onPress={() => onOpenExperience(e.id)}
+                  onPress={() => onNavigate(`/experience/${e.id}` as Href)}
                   style={{ width: 176 }}
                   contentClassName="gap-1.5"
                   pressedScale={0.98}

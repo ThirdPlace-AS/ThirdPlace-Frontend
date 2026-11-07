@@ -36,15 +36,15 @@ Directory routes with no PDF page (`experiences`, `places`, `groups`,
 `businesses`, `creators`) and the Profile "Oppdag" hub were **removed**
 (ledger 0112). Their detail content still lives in the map sheets.
 
-| Surface       | Route / entry                      | PDF      | Status                         | Markers                                                                                                                                                                     | Ledger           |
-| ------------- | ---------------------------------- | -------- | ------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------- |
-| Oppdag folk   | `app/people.tsx` (Profil → Venner) | p22      | partial (no filter/invite)     | follow = DemoNote; guest SignInPrompt                                                                                                                                       | 0089, 0112       |
-| Bli Skaper    | `app/become-creator.tsx`           | p14      | demo-complete                  | illustrative requirements, apply sends nothing; apply muted until all are met (PDF p14); "Du er nå Skaper!" is `app/creator-welcome.tsx`, reachable by deep link for review | 0118, 0174, 0181 |
-| Marketplace   | `app/marketplace.tsx`              | p15–p16  | partial (list + detail only)   | B2B; request/save DemoNote; guest SignInPrompt                                                                                                                              | 0118             |
-| Notifications | map / chat / swipe bell            | p20      | demo-complete                  | DemoNote (no push/inbox); shared read state, bells drop (0208)                                                                                                              | 0117             |
-| Settings      | `app/settings.tsx`                 | p19–p20  | demo-complete                  | every sheet DemoNote                                                                                                                                                        | 0116             |
-| Privacy       | `app/privacy.tsx`                  | p19, p21 | demo-complete                  | blocked/export/delete DemoNote                                                                                                                                              | 0116             |
-| Payments      | `app/payments.tsx`                 | p20      | demo-complete (structure-only) | no input fields, no card data, no transactions                                                                                                                              | 0096, 0099       |
+| Surface       | Route / entry                                                          | PDF      | Status                         | Markers                                                                                                                                                                     | Ledger           |
+| ------------- | ---------------------------------------------------------------------- | -------- | ------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------- |
+| Oppdag folk   | `app/people/index.tsx` (Profil → Venner), person `app/people/[id].tsx` | p22      | partial (no filter/invite)     | follow = DemoNote; guest SignInPrompt                                                                                                                                       | 0089, 0112, 0235 |
+| Bli Skaper    | `app/become-creator.tsx`                                               | p14      | demo-complete                  | illustrative requirements, apply sends nothing; apply muted until all are met (PDF p14); "Du er nå Skaper!" is `app/creator-welcome.tsx`, reachable by deep link for review | 0118, 0174, 0181 |
+| Marketplace   | `app/marketplace.tsx`                                                  | p15–p16  | partial (list + detail only)   | B2B; request/save DemoNote; guest SignInPrompt                                                                                                                              | 0118             |
+| Notifications | map / chat / swipe bell                                                | p20      | demo-complete                  | DemoNote (no push/inbox); shared read state, bells drop (0208)                                                                                                              | 0117             |
+| Settings      | `app/settings.tsx`                                                     | p19–p20  | demo-complete                  | every sheet DemoNote                                                                                                                                                        | 0116             |
+| Privacy       | `app/privacy.tsx`                                                      | p19, p21 | demo-complete                  | blocked/export/delete DemoNote                                                                                                                                              | 0116             |
+| Payments      | `app/payments.tsx`                                                     | p20      | demo-complete (structure-only) | no input fields, no card data, no transactions                                                                                                                              | 0096, 0099       |
 
 ## Phase 3 routes (PDF screens, 2026-11-05)
 
@@ -150,3 +150,14 @@ Founder list: no demo markers, white background, ≥2 photos, marker icons, vide
 | Sveip deck                                               | Taps during the glide queued; tab pre-rendered after the map loads                                 | 0224             |
 | Betalingsstatus (p18), Bli Skaper (p14), Workspace (p13) | PDF p18 structure (money as "—"); next-step links                                                  | 0224             |
 | `_sandbox/simulate` (dev only)                           | Map offline + check-in distance switches (moved out of product UI)                                 | 0215             |
+
+## Phase 12 pages (2026-11-07)
+
+Founder decision 2026-11-06: content you read, browse or fill in is a page, not a sheet.
+
+| Surface         | Route                           | Opened from                                                                                      | Status                                 | Ledger |
+| --------------- | ------------------------------- | ------------------------------------------------------------------------------------------------ | -------------------------------------- | ------ |
+| Experience page | `app/experience/[id]/index.tsx` | Sveip expand, Lagret, Mine planer, Profil "Neste plan", chat pin, "Flere opplevelser", deep link | demo-complete                          | 0235   |
+| Place page      | `app/place/[id]/index.tsx`      | experience page, Lagret, deep link                                                               | demo-complete (H5d restyles)           | 0235   |
+| Group page      | `app/group/[id]/index.tsx`      | experience page, deep link                                                                       | demo-complete                          | 0235   |
+| Person page     | `app/people/[id].tsx`           | Oppdag folk                                                                                      | demo-complete; follow shared in memory | 0235   |

@@ -1,5 +1,5 @@
 import { Image } from "expo-image";
-import { router } from "expo-router";
+import { router, type Href } from "expo-router";
 import { useMemo, useState } from "react";
 import { FlatList, View } from "react-native";
 
@@ -155,13 +155,17 @@ export default function SavedScreen() {
               variant="card"
               title={item.title}
               subtitle={item.meta}
-              // Opens the saved item on the map (its detail), like a search hit.
-              onPress={() =>
-                router.navigate({
-                  pathname: "/map",
-                  params: { focus: item.key, at: String(Date.now()) },
-                })
-              }
+              // Places and experiences open their page; a business opens
+              // its detail on the map (it has no page of its own).
+              onPress={() => {
+                const id = item.key.slice(item.key.indexOf(":") + 1);
+                if (item.kind === "business")
+                  router.navigate({
+                    pathname: "/map",
+                    params: { focus: item.key, at: String(Date.now()) },
+                  });
+                else router.push(`/${item.kind}/${id}` as Href);
+              }}
               leading={
                 place ? (
                   <Image

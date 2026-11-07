@@ -88,20 +88,12 @@ export default function PlansScreen() {
           if (!exp) return null;
           return (
             <View className="gap-0.5 rounded-lg border border-line bg-surface p-3.5">
-              {/* Title + meta open the experience on the map; the plan
+              {/* Title + meta open the experience page; the plan
                   actions below stay separate buttons. */}
               <UIPressable
                 accessibilityRole="link"
-                accessibilityLabel={`${exp.title}, ${exp.when}. Vis på kartet`}
-                onPress={() =>
-                  router.navigate({
-                    pathname: "/map",
-                    params: {
-                      focus: `experience:${exp.id}`,
-                      at: String(Date.now()),
-                    },
-                  })
-                }
+                accessibilityLabel={`${exp.title}, ${exp.when}`}
+                onPress={() => router.push(`/experience/${exp.id}` as Href)}
                 pressedScale={0.99}
                 contentClassName="gap-0.5"
               >

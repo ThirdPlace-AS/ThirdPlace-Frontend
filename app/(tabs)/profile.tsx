@@ -1,5 +1,5 @@
 import { Image } from "expo-image";
-import { router } from "expo-router";
+import { router, type Href } from "expo-router";
 import { useState } from "react";
 import { ScrollView, View } from "react-native";
 
@@ -112,7 +112,7 @@ export default function ProfileScreen() {
               <UIPressable
                 accessibilityRole="button"
                 accessibilityLabel={`${profile.stats.friends} venner, oppdag folk`}
-                onPress={() => router.push("/people")}
+                onPress={() => router.push("/people" as Href)}
               >
                 <Stat value={profile.stats.friends} label="Venner" />
               </UIPressable>
@@ -223,12 +223,7 @@ function NextPlanCard() {
           />
         }
         trailing={null}
-        onPress={() =>
-          router.navigate({
-            pathname: "/map",
-            params: { focus: `experience:${exp.id}`, at: String(Date.now()) },
-          })
-        }
+        onPress={() => router.push(`/experience/${exp.id}` as Href)}
       />
     </View>
   );

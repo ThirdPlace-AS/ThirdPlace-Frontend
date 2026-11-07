@@ -1,4 +1,4 @@
-import { router } from "expo-router";
+import { router, type Href } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import { Asset } from "expo-asset";
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
@@ -35,7 +35,6 @@ import { NotificationsSheet } from "@/components/NotificationsSheet";
 import { SignInPrompt } from "@/components/SignInPrompt";
 import { EmptyState } from "@/components/states/StateView";
 import { chatForExperience, type MockExperience } from "@/fixtures";
-import { ExperiencePageOverlay } from "@/components/experience/ExperiencePageOverlay";
 import { showToastAfterSheet } from "@/components/Toast";
 import { confirmToast } from "@/copy";
 import { useNotificationReads } from "@/hooks/useNotificationReads";
@@ -92,7 +91,6 @@ export function SwipeDeck() {
   const reduced = useReducedMotion();
   const { isGuest } = useGuestMode();
   const [size, setSize] = useState({ w: screenW, h: screenH });
-  const [expand, setExpand] = useState<MockExperience | null>(null);
   // When a guest tries an account-only action (join/save), we show the sign-in
   // prompt instead of committing. `nope` (pass), share and undo stay open.
   const [signInFor, setSignInFor] = useState<string | null>(null);
@@ -226,7 +224,7 @@ export function SwipeDeck() {
   };
 
   const pan = Gesture.Pan()
-    .enabled(!deck.done && expand === null && !busy)
+    .enabled(!deck.done && !busy)
     .activeOffsetX([-12, 12])
     .activeOffsetY([-12, 12])
     .onUpdate((e) => {
@@ -295,7 +293,6 @@ export function SwipeDeck() {
     if (
       Platform.OS !== "web" ||
       deck.done ||
-      expand !== null ||
       mode === "places" ||
       joinChatFor !== null
     )
@@ -310,7 +307,7 @@ export function SwipeDeck() {
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [deck.done, deck.index, expand, reduced, busy, mode, joinChatFor]);
+  }, [deck.done, deck.index, reduced, busy, mode, joinChatFor]);
 
   // Render behind→front so the top card (slot 0) sits on top.
   const slots = deck.window.map((exp, n) => ({ exp, n })).reverse();
@@ -377,7 +374,9 @@ export function SwipeDeck() {
                       id: exp.id,
                       title: exp.title,
                     });
-                    setExpand(exp);
+                    // The full page is a route (Phase 12 H4c); the deck keeps
+                    // its place underneath while it is open.
+                    router.push(`/experience/${exp.id}` as Href);
                   }}
                 />
               ) : (
@@ -474,10 +473,6 @@ export function SwipeDeck() {
           visible={notifOpen}
           onClose={() => setNotifOpen(false)}
         />
-
-        {/* In-place detail — a full-screen DARK experience sheet (swipe-local, so
-          the shared map detail stays light). Pan is disabled while it is open. */}
-        <ExperiencePageOverlay exp={expand} onClose={() => setExpand(null)} />
 
         <JoinChatSheet exp={joinChatFor} onClose={() => setJoinChatFor(null)} />
 
