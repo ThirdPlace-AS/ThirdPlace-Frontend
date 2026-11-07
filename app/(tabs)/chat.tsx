@@ -14,6 +14,7 @@ import {
   EmptyState,
 } from "@/components/ui";
 import { ChatRow } from "@/features/chat/ChatRow";
+import { useCreatedVersion } from "@/fixtures/created";
 import { isMember, useJoinedChats } from "@/lib/joinedChats";
 import { useNotificationReads } from "@/hooks/useNotificationReads";
 import { chats, type MockChat } from "@/fixtures";
@@ -31,6 +32,7 @@ export default function ChatScreen() {
   const q = query.trim().toLowerCase();
   // Experience and place chats the viewer has not joined stay out of the list.
   const joined = useJoinedChats();
+  const created = useCreatedVersion();
   const visible = useMemo(
     () =>
       chats.filter(
@@ -41,7 +43,8 @@ export default function ChatScreen() {
             c.name.toLowerCase().includes(q) ||
             c.last.toLowerCase().includes(q)),
       ),
-    [q, joined],
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- created: a new group chat joined the list
+    [q, joined, created],
   );
   const archived = chats.filter((c) => c.status === "archived");
   const groups = [

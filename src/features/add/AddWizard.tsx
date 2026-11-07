@@ -1,5 +1,5 @@
 import { Image } from "expo-image";
-import { router, useLocalSearchParams } from "expo-router";
+import { router, useLocalSearchParams, type Href } from "expo-router";
 import { useState } from "react";
 import {
   KeyboardAvoidingView,
@@ -33,6 +33,7 @@ import { Input } from "@/components/Input";
 import { CategoryPicker, PlacePicker } from "@/components/pickers/Pickers";
 import {
   CANCELLATION_OPTIONS,
+  CHAT_ACCESS_LABEL,
   DURATION_OPTIONS,
   ENERGY_LEVELS,
   EXPERIENCE_ACCESS,
@@ -42,10 +43,13 @@ import {
   experienceById,
   experiences,
   OSLO_AREAS,
+  people,
   places,
   REPEAT_OPTIONS,
+  type MockChatAccess,
 } from "@/fixtures";
-import { smallImage } from "@/fixtures/images";
+import { createExperience, createGroup } from "@/fixtures/created";
+import { libThumb, smallImage, type LibraryKey } from "@/fixtures/images";
 
 import {
   type AddDraft,
@@ -54,12 +58,45 @@ import {
   canAdvance,
   draftFromExperience,
   EMPTY_DRAFT,
+  minPhotos,
   type StepKey,
   stepsFor,
 } from "./types";
 
 // Bundled sample art reused as the demo photo pool (MOCK — no media contract).
 const PHOTO_POOL = experiences.flatMap((e) => e.photos).slice(0, 9);
+// A group's gallery uses library photos (groups store library keys).
+const GROUP_POOL: LibraryKey[] = [
+  "group-coffee",
+  "group-books",
+  "group-wine",
+  "group-run",
+  "group-climb",
+  "venue-cafe",
+  "venue-books",
+  "venue-outdoor",
+  "venue-gallery",
+];
+// Interests people already use in their profiles (no new taxonomy).
+const GROUP_INTERESTS = Array.from(
+  new Set(people.flatMap((p) => p.interests)),
+).slice(0, 14);
+// Who can join a group: the chat access modes with the chat's own labels
+// (the group chat header shows the same word).
+const GROUP_ACCESS: { value: MockChatAccess; title: string; hint: string }[] = [
+  { value: "open", title: CHAT_ACCESS_LABEL.open, hint: "Alle kan bli med." },
+  {
+    value: "closed",
+    title: CHAT_ACCESS_LABEL.closed,
+    hint: "Du godkjenner nye medlemmer.",
+  },
+  {
+    value: "invite_only",
+    title: CHAT_ACCESS_LABEL.invite_only,
+    hint: "Bare de du inviterer, kan bli med.",
+  },
+];
+const MAX_STEPS = 5;
 
 const PLACE_CATEGORIES = [
   "Kafé",
@@ -129,6 +166,12 @@ export function AddWizard() {
   const [draft, setDraft] = useState<AddDraft>(EMPTY_DRAFT);
   const [stepIndex, setStepIndex] = useState(0);
   const [submitted, setSubmitted] = useState(false);
+  // Ids of what the submit created (group + its chat, or the experience).
+  const [created, setCreated] = useState<{
+    groupId?: string;
+    chatId?: string;
+    experienceId?: string;
+  }>({});
   // Kalender "Rediger" → /add?edit=<id>&at=<stamp>: seed the draft once per
   // request (the tab stays mounted, so a stamp tells repeat taps apart).
   const { edit, at } = useLocalSearchParams<{ edit?: string; at?: string }>();
@@ -155,10 +198,18 @@ export function AddWizard() {
     setStepIndex(0);
     setSubmitted(false);
     setEditing(false);
+    setCreated({});
   };
 
   if (submitted && draft.kind) {
-    return <SubmittedState draft={draft} editing={editing} onReset={reset} />;
+    return (
+      <SubmittedState
+        draft={draft}
+        editing={editing}
+        created={created}
+        onReset={reset}
+      />
+    );
   }
 
   if (step === "kind") {
@@ -182,6 +233,42 @@ export function AddWizard() {
   const next = () => {
     if (!isLast) return setStepIndex((i) => i + 1);
     haptics.light();
+    if (draft.kind === "group") {
+      setCreated(
+        createGroup({
+          name: draft.title,
+          about: draft.summary,
+          interests: draft.interests,
+          area: draft.area ?? "Oslo",
+          photos: draft.photos.map((i) => GROUP_POOL[i]!),
+          access: draft.groupAccess,
+        }),
+      );
+    } else if (draft.kind === "experience" && !editing) {
+      setCreated({
+        experienceId: createExperience({
+          title: draft.title,
+          about: draft.summary,
+          category: draft.category ?? "Sosialt",
+          area: draft.area ?? "Grünerløkka",
+          meetingPoint: draft.meetingPoint,
+          photos: draft.photos.map((i) => PHOTO_POOL[i]!),
+          date: draft.date ?? "",
+          startTime: draft.startTime ?? "18:00",
+          duration: draft.duration,
+          repeat: draft.repeat,
+          capacity: Number(draft.capacity) || 1,
+          priceNok: Number(draft.price) || 0,
+          access: draft.access,
+          cancellation: draft.cancellation,
+          vibes: draft.vibes,
+          energy: draft.energy,
+          languages: draft.languages,
+          included: draft.included,
+          steps: draft.steps,
+        }),
+      });
+    }
     setSubmitted(true);
   };
 
@@ -216,7 +303,9 @@ export function AddWizard() {
                   ? "Lagre endringer"
                   : draft.kind === "place"
                     ? "Send inn til vurdering"
-                    : "Publiser opplevelsen"
+                    : draft.kind === "group"
+                      ? "Opprett gruppen"
+                      : "Publiser opplevelsen"
             }
             variant={isLast && draft.kind === "experience" ? "ember" : "ink"}
             disabled={!canAdvance(step, draft)}
@@ -244,14 +333,20 @@ function KindMenu({ onPick }: { onPick: (k: AddKind) => void }) {
     {
       kind: "place",
       label: "Sted",
-      hint: "Del en perle — kafé, park, utsiktspunkt",
+      hint: "Del en kafé, en park eller et utsiktspunkt",
       icon: "location-outline",
     },
     {
       kind: "experience",
       label: "Opplevelse",
-      hint: "Arranger noe — stort eller lite",
+      hint: "Arranger noe, stort eller lite",
       icon: "tp-experience",
+    },
+    {
+      kind: "group",
+      label: "Gruppe",
+      hint: "Samle folk rundt noe dere liker",
+      icon: "people-outline",
     },
   ];
   return (
@@ -284,7 +379,13 @@ function KindMenu({ onPick }: { onPick: (k: AddKind) => void }) {
             pressedScale={0.99}
           >
             <View className="h-12 w-12 items-center justify-center">
-              <CategoryArt name={r.label} size={48} />
+              {hasCategoryArt(r.label) ? (
+                <CategoryArt name={r.label} size={48} />
+              ) : (
+                <View className="h-11 w-11 items-center justify-center rounded-full bg-surfaceMuted">
+                  <Icon name={r.icon} size="lg" tone="ink" />
+                </View>
+              )}
             </View>
             <View className="flex-1">
               <Text variant="body" weight="semibold">
@@ -312,9 +413,40 @@ function StepBody({
   patch: (p: Partial<AddDraft>) => void;
 }) {
   const isPlace = draft.kind === "place";
+  const isGroup = draft.kind === "group";
   const [picker, setPicker] = useState(false);
+  const [newItem, setNewItem] = useState("");
   switch (step) {
     case "about":
+      if (isGroup)
+        return (
+          <Shell
+            title="Om gruppen"
+            subtitle="Hva heter gruppen, og hva samles dere om?"
+          >
+            <Input
+              label="Navn"
+              placeholder="F.eks. «Løpegjengen på Løkka»"
+              value={draft.title}
+              onChangeText={(t) => patch({ title: t })}
+              maxLength={50}
+            />
+            <Input
+              label="Beskrivelse"
+              placeholder="Hva gjør dere sammen?"
+              value={draft.summary}
+              onChangeText={(t) => patch({ summary: t })}
+              multiline
+              maxLength={280}
+            />
+            <Label>Interesser</Label>
+            <ChipRow
+              options={GROUP_INTERESTS}
+              selected={draft.interests}
+              onPress={(i) => patch({ interests: toggle(draft.interests, i) })}
+            />
+          </Shell>
+        );
       return (
         <Shell
           title={isPlace ? "Fortell om stedet" : "Hva skjer?"}
@@ -356,8 +488,15 @@ function StepBody({
       );
 
     case "where":
-      return isPlace ? (
-        <Shell title="Hvor er det?" subtitle="Velg området stedet ligger i.">
+      return isPlace || isGroup ? (
+        <Shell
+          title={isGroup ? "Hvor holder dere til?" : "Hvor er det?"}
+          subtitle={
+            isGroup
+              ? "Velg området gruppen møtes i."
+              : "Velg området stedet ligger i."
+          }
+        >
           <ChipRow
             options={OSLO_AREAS.map((a) => a.name)}
             selected={draft.area ? [draft.area] : []}
@@ -426,52 +565,64 @@ function StepBody({
       return (
         <Shell
           title={isPlace ? "Vis det frem" : "Bilder"}
-          subtitle="Legg til minst ett bilde. Første bilde blir hovedbildet."
+          subtitle={
+            minPhotos(draft.kind) > 1
+              ? "Legg til minst to bilder. Første bilde blir hovedbildet."
+              : "Legg til minst ett bilde. Første bilde blir hovedbildet."
+          }
         >
           <View className="flex-row flex-wrap gap-2">
-            {PHOTO_POOL.map((src, i) => {
-              const pos = draft.photos.indexOf(i);
-              return (
-                <Pressable
-                  key={i}
-                  accessibilityRole="button"
-                  accessibilityLabel={`Bilde ${i + 1}`}
-                  accessibilityState={{ selected: pos >= 0 }}
-                  onPress={() =>
-                    patch({
-                      photos:
-                        pos >= 0
-                          ? draft.photos.filter((x) => x !== i)
-                          : [...draft.photos, i],
-                    })
-                  }
-                  className="w-[31.5%]"
-                >
-                  <Image
-                    source={smallImage(src)}
-                    contentFit="cover"
-                    style={{ aspectRatio: 1, width: "100%", borderRadius: 10 }}
-                  />
-                  {pos >= 0 ? (
-                    <View className="absolute right-1.5 top-1.5 h-6 min-w-6 items-center justify-center rounded-full bg-ink px-1.5">
-                      <Text variant="caption" weight="bold" tone="onInk">
-                        {pos + 1}
-                      </Text>
-                    </View>
-                  ) : null}
-                  {pos === 0 ? (
-                    <View className="absolute bottom-1.5 left-1.5 rounded-full bg-ink px-2 py-0.5">
-                      <Text variant="caption" weight="semibold" tone="onInk">
-                        Hovedbilde
-                      </Text>
-                    </View>
-                  ) : null}
-                </Pressable>
-              );
-            })}
+            {(isGroup ? GROUP_POOL.map((k) => libThumb(k)) : PHOTO_POOL).map(
+              (src, i) => {
+                const pos = draft.photos.indexOf(i);
+                return (
+                  <Pressable
+                    key={i}
+                    accessibilityRole="button"
+                    accessibilityLabel={`Bilde ${i + 1}`}
+                    accessibilityState={{ selected: pos >= 0 }}
+                    onPress={() =>
+                      patch({
+                        photos:
+                          pos >= 0
+                            ? draft.photos.filter((x) => x !== i)
+                            : [...draft.photos, i],
+                      })
+                    }
+                    className="w-[31.5%]"
+                  >
+                    <Image
+                      source={smallImage(src)}
+                      contentFit="cover"
+                      style={{
+                        aspectRatio: 1,
+                        width: "100%",
+                        borderRadius: 10,
+                      }}
+                    />
+                    {pos >= 0 ? (
+                      <View className="absolute right-1.5 top-1.5 h-6 min-w-6 items-center justify-center rounded-full bg-ink px-1.5">
+                        <Text variant="caption" weight="bold" tone="onInk">
+                          {pos + 1}
+                        </Text>
+                      </View>
+                    ) : null}
+                    {pos === 0 ? (
+                      <View className="absolute bottom-1.5 left-1.5 rounded-full bg-ink px-2 py-0.5">
+                        <Text variant="caption" weight="semibold" tone="onInk">
+                          Hovedbilde
+                        </Text>
+                      </View>
+                    ) : null}
+                  </Pressable>
+                );
+              },
+            )}
           </View>
           <Text variant="caption" tone="muted">
-            Minst 1 bilde påkrevd · JPG, PNG · maks 10 MB
+            {minPhotos(draft.kind) > 1
+              ? "Minst 2 bilder påkrevd · JPG, PNG · maks 10 MB"
+              : "Minst 1 bilde påkrevd · JPG, PNG · maks 10 MB"}
           </Text>
         </Shell>
       );
@@ -607,6 +758,112 @@ function StepBody({
         </Shell>
       );
 
+    case "plan":
+      return (
+        <Shell
+          title="Hva skjer underveis?"
+          subtitle="Valgfritt. Vises på siden til opplevelsen."
+        >
+          <Label>Hva er inkludert</Label>
+          <View className="flex-row items-end gap-2">
+            <View className="flex-1">
+              <Input
+                label="Legg til noe som er inkludert"
+                placeholder="F.eks. «En kopp kaffe»"
+                value={newItem}
+                onChangeText={setNewItem}
+                maxLength={50}
+              />
+            </View>
+            <View className="pb-0.5">
+              <Button
+                label="Legg til"
+                variant="secondary"
+                disabled={newItem.trim().length < 2}
+                onPress={() => {
+                  patch({ included: [...draft.included, newItem.trim()] });
+                  setNewItem("");
+                }}
+              />
+            </View>
+          </View>
+          {draft.included.length ? (
+            <View className="flex-row flex-wrap gap-2">
+              {draft.included.map((it) => (
+                <UIPressable
+                  key={it}
+                  accessibilityRole="button"
+                  accessibilityLabel={`Fjern ${it}`}
+                  onPress={() =>
+                    patch({
+                      included: draft.included.filter((x) => x !== it),
+                    })
+                  }
+                  contentClassName="flex-row items-center gap-1.5 rounded-full bg-surfaceMuted px-3 py-1.5"
+                >
+                  <Text variant="caption" weight="medium">
+                    {it}
+                  </Text>
+                  <Icon name="close" size="sm" tone="muted" />
+                </UIPressable>
+              ))}
+            </View>
+          ) : null}
+          <Label>Hva dere skal gjøre</Label>
+          {draft.steps.map((st, i) => (
+            <Input
+              key={i}
+              label={`Steg ${i + 1}`}
+              placeholder="F.eks. «Vi møtes og hilser på hverandre»"
+              value={st}
+              onChangeText={(t) =>
+                patch({
+                  steps: draft.steps.map((x, j) => (j === i ? t : x)),
+                })
+              }
+              maxLength={60}
+            />
+          ))}
+          {draft.steps.length < MAX_STEPS ? (
+            <UIPressable
+              accessibilityRole="button"
+              onPress={() => patch({ steps: [...draft.steps, ""] })}
+              className="self-start"
+              contentClassName="flex-row items-center gap-2 rounded-full border border-line bg-surface px-3 py-2"
+              pressedScale={0.99}
+            >
+              <Icon name="add" size="sm" tone="ink" />
+              <Text variant="label">Legg til et steg</Text>
+            </UIPressable>
+          ) : null}
+        </Shell>
+      );
+
+    case "access":
+      return (
+        <Shell
+          title="Hvem kan bli med?"
+          subtitle="Velg hvem som kan bli med i gruppen."
+        >
+          {GROUP_ACCESS.map((a) => (
+            <SelectRow
+              key={a.value}
+              icon={
+                a.value === "open"
+                  ? "earth-outline"
+                  : a.value === "closed"
+                    ? "checkmark-circle-outline"
+                    : "mail-outline"
+              }
+              title={a.title}
+              hint={a.hint}
+              selected={draft.groupAccess === a.value}
+              onPress={() => patch({ groupAccess: a.value })}
+            />
+          ))}
+        </Shell>
+      );
+
     case "review":
       return <ReviewStep draft={draft} />;
 
@@ -617,12 +874,27 @@ function StepBody({
 
 function ReviewStep({ draft }: { draft: AddDraft }) {
   const isPlace = draft.kind === "place";
+  const isGroup = draft.kind === "group";
+  const first = draft.photos[0];
   const cover =
-    draft.photos[0] !== undefined ? PHOTO_POOL[draft.photos[0]] : null;
+    first === undefined
+      ? null
+      : isGroup
+        ? libThumb(GROUP_POOL[first]!)
+        : PHOTO_POOL[first];
   const price =
     draft.price && draft.price !== "0" ? `${draft.price} kr` : "Gratis";
+  const steps = draft.steps.map((x) => x.trim()).filter(Boolean);
   return (
-    <Shell title={isPlace ? "Se over og send inn" : "Klar til å publisere?"}>
+    <Shell
+      title={
+        isPlace
+          ? "Se over og send inn"
+          : isGroup
+            ? "Se over gruppen"
+            : "Klar til å publisere?"
+      }
+    >
       {cover ? (
         <Image
           source={cover}
@@ -635,7 +907,9 @@ function ReviewStep({ draft }: { draft: AddDraft }) {
         <Text variant="caption" tone="muted">
           {isPlace
             ? `${draft.category} · ${draft.area}, Oslo`
-            : `${draft.date ? formatDate(draft.date) : ""} · ${draft.startTime} · ${draft.area}`}
+            : isGroup
+              ? `Gruppe · ${draft.area}, Oslo`
+              : `${draft.date ? formatDate(draft.date) : ""} · ${draft.startTime} · ${draft.area}`}
         </Text>
         {draft.summary ? (
           <Text variant="label" weight="regular" className="pt-1">
@@ -643,7 +917,26 @@ function ReviewStep({ draft }: { draft: AddDraft }) {
           </Text>
         ) : null}
       </View>
-      {isPlace ? null : (
+      {isGroup ? (
+        <>
+          <Fact
+            icon="people-outline"
+            value={
+              GROUP_ACCESS.find((a) => a.value === draft.groupAccess)?.title ??
+              ""
+            }
+          />
+          <View className="flex-row flex-wrap gap-2">
+            {draft.interests.map((v) => (
+              <View key={v} className="rounded-full bg-surfaceMuted px-3 py-1">
+                <Text variant="caption" weight="medium">
+                  {v}
+                </Text>
+              </View>
+            ))}
+          </View>
+        </>
+      ) : isPlace ? null : (
         <>
           <View className="flex-row gap-2">
             <Fact icon="pricetag-outline" value={price} />
@@ -659,6 +952,28 @@ function ReviewStep({ draft }: { draft: AddDraft }) {
               </View>
             ))}
           </View>
+          {draft.included.length ? (
+            <View className="gap-1">
+              <Text variant="label" weight="semibold">
+                Hva er inkludert
+              </Text>
+              <Text variant="label" weight="regular">
+                {draft.included.join(", ")}
+              </Text>
+            </View>
+          ) : null}
+          {steps.length ? (
+            <View className="gap-1">
+              <Text variant="label" weight="semibold">
+                Hva dere skal gjøre
+              </Text>
+              {steps.map((st, i) => (
+                <Text key={i} variant="label" weight="regular">
+                  {`${i + 1}. ${st}`}
+                </Text>
+              ))}
+            </View>
+          ) : null}
         </>
       )}
     </Shell>
@@ -679,13 +994,16 @@ function Fact({ icon, value }: { icon: IconName; value: string }) {
 function SubmittedState({
   draft,
   editing,
+  created,
   onReset,
 }: {
   draft: AddDraft;
   editing: boolean;
+  created: { groupId?: string; chatId?: string; experienceId?: string };
   onReset: () => void;
 }) {
   const isPlace = draft.kind === "place";
+  const isGroup = draft.kind === "group";
   return (
     <Screen edges={["top"]}>
       <View className="flex-1 items-center justify-center gap-5 p-gutter">
@@ -698,7 +1016,9 @@ function SubmittedState({
               ? "Endringene er lagret"
               : isPlace
                 ? "Stedet er sendt inn"
-                : "Opplevelsen er publisert"}
+                : isGroup
+                  ? "Gruppen er opprettet"
+                  : "Opplevelsen er publisert"}
           </Text>
           <Text
             variant="h2"
@@ -708,17 +1028,40 @@ function SubmittedState({
           >
             {draft.title}
           </Text>
-
-          <Text variant="body" tone="muted" className="px-6 text-center">
-            {editing
-              ? "Deltakerne ser den oppdaterte opplevelsen."
-              : isPlace
+          {editing ? null : (
+            <Text variant="body" tone="muted" className="px-6 text-center">
+              {isPlace
                 ? "Du kan følge stedet under Innleveringer."
-                : "Del den med folk du vil ha med."}
-          </Text>
+                : isGroup
+                  ? "Gruppechatten ligger under Chat."
+                  : "Del den med folk du vil ha med."}
+            </Text>
+          )}
         </View>
         <View className="w-full gap-3 pt-2">
-          <Button label="Legg til noe nytt" variant="ink" onPress={onReset} />
+          {isGroup && created.groupId ? (
+            <>
+              <Button
+                label="Se gruppen"
+                variant="ink"
+                onPress={() => router.push(`/group/${created.groupId}` as Href)}
+              />
+              <Button
+                label="Til gruppechatten"
+                variant="secondary"
+                onPress={() => router.push(`/chat/${created.chatId}` as Href)}
+              />
+            </>
+          ) : null}
+          {!isGroup && !isPlace && created.experienceId ? (
+            <Button
+              label="Se opplevelsen"
+              variant="ink"
+              onPress={() =>
+                router.push(`/experience/${created.experienceId}` as Href)
+              }
+            />
+          ) : null}
           {isPlace ? (
             <Button
               label="Se innleveringer"
@@ -726,6 +1069,15 @@ function SubmittedState({
               onPress={() => router.push("/submissions")}
             />
           ) : null}
+          <Button
+            label="Legg til noe nytt"
+            variant={
+              (isGroup && created.groupId) || created.experienceId
+                ? "secondary"
+                : "ink"
+            }
+            onPress={onReset}
+          />
         </View>
       </View>
     </Screen>

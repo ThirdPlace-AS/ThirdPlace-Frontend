@@ -226,3 +226,7 @@ p5 Map: marker glyphs (0218), galleries in browse cards and place/business/group
 ### Founder decision: TikTok-style "Legg til" (2026-11-06)
 
 PDF p5–p8 draw a dark round "+". The founder chose a TikTok-style add button in ThirdPlace colours: an ink rounded rectangle with a white "+", an ember layer peeking out on the left and a light-grey one on the right (in dark mode the button is white and the right layer muted grey). The "Legg til" label stays under it like the other tabs. Ledger 0241.
+
+### Founder decision: Gruppe in Legg til (2026-11-06)
+
+PDF p10 "Hva vil du legge til?" offers Sted and Opplevelse. The founder added **Gruppe**: Om gruppen (navn, beskrivelse, interesser) → Område → Bilder (minst to) → Hvem kan bli med (Åpen / Lukket / Kun invitasjon, the chat's own words) → Se over → "Gruppen er opprettet" with "Se gruppen" (`/group/[id]`) and "Til gruppechatten" (the new chat is at the top of Chat). A published experience joins the map and gets its chat; "Se opplevelsen" opens its page. The experience flow has an optional step "Hva skjer underveis?" (Hva er inkludert, Hva dere skal gjøre) so every section of the experience page has a source. Everything lives in memory for the session (`src/fixtures/created.ts`). Ledger 0242.

@@ -23,9 +23,12 @@ describe("Add flow steps", () => {
     ]);
   });
 
-  it("experience = 7 steps ending in review (Publiser opplevelsen)", () => {
+  // PDF p11–p12: seven steps, plus the optional "plan" step (Phase 12 H5b:
+  // what is included / what you will do) before the photos.
+  it("experience = 7 PDF steps + optional plan, ending in review", () => {
     const s = stepsFor("experience");
-    expect(s).toHaveLength(7);
+    expect(s).toHaveLength(8);
+    expect(s.indexOf("plan")).toBe(s.indexOf("photos") - 1);
     expect(s[0]).toBe("about");
     expect(s[1]).toBe("when");
     expect(s[s.length - 1]).toBe("review");

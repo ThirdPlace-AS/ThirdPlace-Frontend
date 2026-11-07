@@ -891,6 +891,9 @@ export type MockExperience = {
   audiences: string[]; // "Passer for" filter labels (AUDIENCE_LABELS)
   meetingPoint: MockMeetingPoint;
   itinerary: MockItineraryStep[];
+  // Published in Legg til (src/fixtures/created.ts): the first date the
+  // creator picked, so its sessions start there and not on the next weekday.
+  firstDate?: string; // ISO yyyy-mm-dd
 };
 
 export const experiences: MockExperience[] = [
@@ -1762,6 +1765,14 @@ export function firstSessionStart(when: string, now: Date): Date | null {
   return d;
 }
 
+/** A picked date plus the time from a `when` label ("Lør 18:00"). */
+function startOnDate(iso: string, when: string): Date | null {
+  const t = /(\d{1,2}):(\d{2})$/.exec(when);
+  const [y, m, d] = iso.split("-").map(Number);
+  if (!t || !y || !m || !d) return null;
+  return new Date(y, m - 1, d, Number(t[1]), Number(t[2]));
+}
+
 const LATER_FILL = [0.5, 0.25, 0.75];
 
 export function sessionsFor(
@@ -1769,7 +1780,9 @@ export function sessionsFor(
   now: Date = new Date(),
   count = 4,
 ): MockSession[] {
-  const first = firstSessionStart(exp.when, now);
+  const first = exp.firstDate
+    ? startOnDate(exp.firstDate, exp.when)
+    : firstSessionStart(exp.when, now);
   if (!first) return [];
   const stepDays = exp.repeat === "Månedlig" ? 28 : 7;
   const total = exp.repeat === "Gjentas ikke" ? 1 : count;
@@ -1801,6 +1814,8 @@ export type MockGroup = {
   members: string[]; // initials
   cover: LibraryKey; // MOCK demo cover photo (bundled LIBRARY key)
   photos: LibraryKey[]; // MOCK gallery, cover first (at least two)
+  // Created by the viewer in Legg til (src/fixtures/created.ts): they are in it.
+  mine?: boolean;
 };
 
 export const groups: MockGroup[] = [

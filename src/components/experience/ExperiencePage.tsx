@@ -34,7 +34,7 @@ import {
   type MockExperience,
 } from "@/fixtures";
 import { libImage } from "@/fixtures/images";
-import { formatRating } from "@/lib/format";
+import { formatRating, membersLabel } from "@/lib/format";
 
 import { useExperienceJoin } from "../map/hooks/useExperienceJoin";
 import { PhotoPager } from "../map/PhotoPager";
@@ -226,7 +226,7 @@ export function ExperiencePage({
           <InfoRow
             icon="people-circle-outline"
             title={group.name}
-            subtitle={`Gruppe · ${group.memberCount} medlemmer`}
+            subtitle={`Gruppe · ${membersLabel(group.memberCount)}`}
             onPress={() => onNavigate(`/group/${group.id}` as Href)}
           />
         ) : null}

@@ -1,10 +1,13 @@
-// Local draft shape for the Add flows (PDF p10–p12). DEMO-ONLY: nothing here
+// Local draft shape for the Add flows (PDF p10–p12, Gruppe added 2026-11-06). DEMO-ONLY: nothing here
 // maps to a canonical entity, DTO, or publish/moderation/pricing/capacity rule
 // (BLOCKED_NOT_V22_CERTIFIED / BLOCKED_CONTRACT_GAP). All state is in-memory and
 // discarded on reload — there is no backend to submit or publish to.
 
-// The Add menu offers exactly two kinds (PDF p10 "Hva vil du legge til?").
-export type AddKind = "place" | "experience";
+import type { MockChatAccess } from "@/fixtures";
+
+// The Add menu (PDF p10 "Hva vil du legge til?") offers Sted and Opplevelse;
+// Gruppe was added by the founder (2026-11-06).
+export type AddKind = "place" | "experience" | "group";
 
 export type AddDraft = {
   kind: AddKind | null;
@@ -33,6 +36,13 @@ export type AddDraft = {
   vibes: string[];
   energy: string | null;
   languages: string[];
+  // Experience "Plan" (optional; feeds the page's "Hva er inkludert" row and
+  // "Hva dere skal gjøre" section).
+  included: string[];
+  steps: string[];
+  // Group: interests and who can join.
+  interests: string[];
+  groupAccess: MockChatAccess;
 };
 
 export const EMPTY_DRAFT: AddDraft = {
@@ -56,6 +66,10 @@ export const EMPTY_DRAFT: AddDraft = {
   vibes: [],
   energy: null,
   languages: ["Norsk"],
+  included: [],
+  steps: [],
+  interests: [],
+  groupAccess: "open",
 };
 
 export type StepKey =
@@ -67,16 +81,32 @@ export type StepKey =
   | "when"
   | "frame"
   | "mood"
+  | "plan"
+  | "access"
   | "review";
 
-// Step order per the design: place 5 steps (p10–p11), experience 7 (p11–p12).
+// Step order per the design: place 5 steps (p10–p11), experience 7 (p11–p12)
+// plus the optional "plan" step (what's included, what you'll do), group 5.
 export function stepsFor(kind: AddKind | null): StepKey[] {
   if (kind === "place")
     return ["about", "where", "photos", "details", "review"];
   if (kind === "experience")
-    return ["about", "when", "where", "frame", "mood", "photos", "review"];
+    return [
+      "about",
+      "when",
+      "where",
+      "frame",
+      "mood",
+      "plan",
+      "photos",
+      "review",
+    ];
+  if (kind === "group") return ["about", "where", "photos", "access", "review"];
   return ["kind"];
 }
+
+/** Photos a kind needs: a group shows a gallery, so at least two. */
+export const minPhotos = (kind: AddKind | null) => (kind === "group" ? 2 : 1);
 
 // Kalender "Rediger" opens the experience flow pre-filled with what the
 // example experience already says (title, description, capacity).
@@ -100,11 +130,14 @@ export function canAdvance(step: StepKey, d: AddDraft): boolean {
     case "kind":
       return d.kind !== null;
     case "about":
-      return d.title.trim().length >= 3 && d.category !== null;
+      return (
+        d.title.trim().length >= 3 &&
+        (d.kind === "group" ? d.interests.length > 0 : d.category !== null)
+      );
     case "where":
       return d.area !== null;
     case "photos":
-      return d.photos.length > 0;
+      return d.photos.length >= minPhotos(d.kind);
     case "when":
       return d.date !== null && d.startTime !== null;
     case "frame":
@@ -126,11 +159,15 @@ export function advanceHint(step: StepKey, d: AddDraft): string | null {
     case "about":
       return d.title.trim().length < 3
         ? "Navnet trenger minst 3 tegn."
-        : "Velg en kategori.";
+        : d.kind === "group"
+          ? "Velg minst én interesse."
+          : "Velg en kategori.";
     case "where":
       return "Velg et område.";
     case "photos":
-      return "Legg til minst ett bilde.";
+      return d.kind === "group"
+        ? "Legg til minst to bilder."
+        : "Legg til minst ett bilde.";
     case "when":
       return "Velg dato og starttid.";
     case "frame":

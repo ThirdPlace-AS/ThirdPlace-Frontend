@@ -17,3 +17,8 @@ export function formatRating(n: number): string {
 export function formatThreshold(n: number): string {
   return Number.isInteger(n) ? String(n) : formatDecimal(n, 1);
 }
+
+/** "1 medlem", "34 medlemmer". */
+export function membersLabel(n: number): string {
+  return n === 1 ? "1 medlem" : `${n} medlemmer`;
+}

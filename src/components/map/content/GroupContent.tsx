@@ -8,6 +8,7 @@ import { GuestLock } from "@/components/GuestLock";
 import { SignInPrompt } from "@/components/SignInPrompt";
 import { groupById } from "@/fixtures";
 import { libImage } from "@/fixtures/images";
+import { membersLabel } from "@/lib/format";
 import { haptics } from "@/lib/haptics";
 import { Text } from "@/components/ui";
 
@@ -17,7 +18,8 @@ import { useGuestMode } from "../hooks/useGuestMode";
 export function GroupContent({ id }: { id: string }) {
   const group = groupById(id);
   const { isGuest } = useGuestMode();
-  const [member, setMember] = useState(false);
+  // The creator of a group (made in Legg til) is already in it.
+  const [member, setMember] = useState(group?.mine === true);
   const [promptOpen, setPromptOpen] = useState(false);
 
   if (!group) {
@@ -47,7 +49,7 @@ export function GroupContent({ id }: { id: string }) {
         {group.about}
       </Text>
       <Text variant="caption" tone="muted">
-        {group.memberCount} medlemmer
+        {membersLabel(group.memberCount)}
       </Text>
 
       <Card>

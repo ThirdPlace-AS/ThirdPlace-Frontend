@@ -1,6 +1,7 @@
 import { useMemo, useState } from "react";
 
 import type { MockPlace, TimeWindow } from "@/fixtures";
+import { useCreatedVersion } from "@/fixtures/created";
 
 import { resultForMode } from "../services/mapFixtureAdapter";
 import type { DiscoveryMode } from "../types/mapPresentation";
@@ -25,10 +26,13 @@ export function useMapDiscovery({
   initial?: DiscoveryMode;
 }) {
   const [mode, setMode] = useState<DiscoveryMode>(initial);
+  // An experience published in Legg til joins the map right away.
+  const created = useCreatedVersion();
 
   const result = useMemo(
     () => resultForMode({ mode, places, query, savedIds, time, hasSpots }),
-    [mode, places, query, savedIds, time, hasSpots],
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- created: the fixture lists grew
+    [mode, places, query, savedIds, time, hasSpots, created],
   );
 
   return { mode, setMode, ...result };
