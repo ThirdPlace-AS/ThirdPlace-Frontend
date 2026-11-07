@@ -12,7 +12,8 @@ import {
 import { byStart } from "@/features/workspace/calendarOrder";
 import { Chip } from "@/components/Chip";
 import { RouteHeader } from "@/components/RouteHeader";
-import { businesses, experiences, profile } from "@/fixtures";
+import { businesses, experiences } from "@/fixtures";
+import { useMyProfile } from "@/lib/myProfile";
 
 // Business workspace, per the design (PDF p13–p15): the business
 // profile hub (Dashbord, Marketplace, linked personal account, "Kom i gang"),
@@ -22,6 +23,7 @@ import { businesses, experiences, profile } from "@/fixtures";
 const BIZ = businesses[0];
 
 export function WorkspaceHub() {
+  const me = useMyProfile();
   return (
     <Screen edges={["top"]}>
       <RouteHeader title={BIZ?.name ?? "Bedrift"} />
@@ -70,7 +72,7 @@ export function WorkspaceHub() {
           <Icon name="person-circle-outline" size="xl" tone="ink" />
           <View className="flex-1">
             <Text variant="label" weight="semibold">
-              {profile.name}
+              {me.name}
             </Text>
             <Text variant="caption" tone="muted">
               Personlig konto

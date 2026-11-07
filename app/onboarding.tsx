@@ -28,6 +28,12 @@ import { experiences, PERSONAS, type MockPersonaKey } from "@/fixtures";
 import { checkBirthday, formatBirthdayInput } from "@/features/onboarding/age";
 import { UnderageScreen } from "@/features/onboarding/UnderageScreen";
 import { resetTo } from "@/lib/navigation";
+import { OWN_PORTRAIT, updateMyProfile } from "@/lib/myProfile";
+import {
+  INTEREST_OPTIONS,
+  ONBOARDING_PREFERENCES,
+  setPreferences,
+} from "@/lib/preferences";
 import { markOnboarded } from "@/lib/signupProgress";
 import { libThumb } from "@/fixtures/images";
 import { showToast } from "@/components/Toast";
@@ -38,8 +44,9 @@ import { confirmToast } from "@/copy";
 // etter?" → "Hva liker du?" (min 5) → "Dine preferanser" → "Nesten i mål"
 // (permissions) → feed preview. Reached after the (inert) register form.
 // Optional steps can be passed with nothing chosen — skipped means unknown
-// (REG §9). Nothing is stored, no permission is requested and no account is
-// created (BLOCKED_CONTRACT_GAP).
+// (REG §9). Answers stay in memory for the session (src/lib/myProfile.ts,
+// src/lib/preferences.ts); nothing is sent, no permission is requested and no
+// account is created (BLOCKED_CONTRACT_GAP).
 const STEP_COUNT = 8;
 
 const INTENTS = [
@@ -53,30 +60,6 @@ const INTENTS = [
   "Rolig",
   "Familie",
 ];
-const INTERESTS = [
-  "Kaffe",
-  "Jazz",
-  "Løping",
-  "Fotografi",
-  "Keramikk",
-  "Brettspill",
-  "Klatring",
-  "Vin",
-  "Bakst",
-  "Design",
-  "Litteratur",
-  "Yoga",
-  "Sjakk",
-  "Vinyl",
-  "Matlaging",
-  "Fotball",
-  "Kunst",
-  "Padel",
-  "Sopp-tur",
-  "Strikking",
-  "Film",
-  "Tech",
-];
 const MIN_INTERESTS = 5;
 const IDENTITY: { label: string; options: string[] }[] = [
   { label: "Kjønn", options: ["Kvinne", "Mann", "Ikke-binær", "Vil ikke si"] },
@@ -85,12 +68,6 @@ const IDENTITY: { label: string; options: string[] }[] = [
     label: "Planleggingsstil",
     options: ["Spontan", "Fleksibel", "Planlegger"],
   },
-];
-const PREFERENCES: { label: string; options: string[] }[] = [
-  { label: "Sosial komfort", options: ["Liten gruppe", "Middels", "Stor"] },
-  { label: "Forbruksstil", options: ["Budsjett", "Moderat", "Raus"] },
-  { label: "Energinivå", options: ["Rolig", "Balansert", "Høy"] },
-  { label: "Alkohol", options: ["Nei", "Av og til", "Gjerne"] },
 ];
 const DIET = ["Vegetar", "Vegansk", "Glutenfri", "Halal", "Ingen"];
 const PERMISSIONS: {
@@ -181,6 +158,16 @@ export default function Onboarding() {
     if (step === STEP_COUNT - 1) {
       // Answers stay on this screen underneath: back from "Lag kontoen
       // din" returns here. With an account already made, the session starts.
+      // What was picked carries over: Profil, Rediger profil and
+      // Preferanser show it for the rest of the session.
+      setPreferences(prefs);
+      updateMyProfile({
+        name: name.trim(),
+        ...(age.status === "ok" ? { age: age.age } : {}),
+        bio: bio.trim(),
+        interests,
+        avatar: photo ? OWN_PORTRAIT : null,
+      });
       const nextHref = markOnboarded();
       if (nextHref === "/map") {
         setGuest(false);
@@ -395,7 +382,7 @@ export default function Onboarding() {
             {step === 4 ? (
               <Shell title="Hva liker du?" subtitle="Velg minst 5 interesser.">
                 <View className="flex-row flex-wrap gap-2">
-                  {INTERESTS.map((i) => (
+                  {INTEREST_OPTIONS.map((i) => (
                     <Chip
                       key={i}
                       label={i}
@@ -429,7 +416,7 @@ export default function Onboarding() {
                 title="Dine preferanser"
                 subtitle="Velg det som betyr noe for deg."
               >
-                {PREFERENCES.map((g) => (
+                {ONBOARDING_PREFERENCES.map((g) => (
                   <Group key={g.label} label={g.label}>
                     {g.options.map((o) => (
                       <Chip

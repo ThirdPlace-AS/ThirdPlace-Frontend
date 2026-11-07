@@ -20,6 +20,7 @@ import { SignInPrompt } from "@/components/SignInPrompt";
 import { useGuestMode } from "@/components/map/hooks/useGuestMode";
 import { tagIcon } from "@/components/swipe/SwipeCard";
 import { experienceById, placeById, profile } from "@/fixtures";
+import { useMyProfile } from "@/lib/myProfile";
 import {
   coverForPlace,
   libImage,
@@ -41,6 +42,7 @@ const TABS: { key: Tab; label: string }[] = [
 // creator-progression backend — every count is mock and marked as such.
 export default function ProfileScreen() {
   const { isGuest } = useGuestMode();
+  const me = useMyProfile();
   const [tab, setTab] = useState<Tab>("experiences");
   const [signIn, setSignIn] = useState(false);
 
@@ -80,24 +82,26 @@ export default function ProfileScreen() {
             <UIPressable
               accessibilityRole="button"
               accessibilityLabel="Rediger profil"
-              accessibilityHint={`${profile.name}, ${profile.age}`}
+              accessibilityHint={`${me.name}, ${me.age}`}
               onPress={() => router.push("/profile/edit" as Href)}
               pressedScale={0.99}
               contentClassName="flex-row items-center gap-4"
             >
               <Avatar
-                name={profile.name}
-                source={libImage(profile.avatar)}
+                name={me.name}
+                source={me.avatar ? libImage(me.avatar) : undefined}
                 size="xl"
                 decorative
               />
               <View className="flex-1 gap-1">
                 <Text variant="h1" accessibilityRole="text">
-                  {profile.name}, {profile.age}
+                  {me.name}, {me.age}
                 </Text>
-                <Text variant="caption" tone="muted">
-                  {profile.bio}
-                </Text>
+                {me.bio ? (
+                  <Text variant="caption" tone="muted">
+                    {me.bio}
+                  </Text>
+                ) : null}
               </View>
             </UIPressable>
 
@@ -116,7 +120,7 @@ export default function ProfileScreen() {
             </View>
 
             <View className="flex-row flex-wrap gap-2">
-              {profile.interests.map((i) => (
+              {me.interests.map((i) => (
                 <View
                   key={i}
                   className="rounded-full border border-line bg-surface px-3.5 py-1.5"

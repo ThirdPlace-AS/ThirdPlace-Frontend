@@ -53,6 +53,7 @@ describe("settings pages", () => {
     for (const [label, href] of [
       ["Kontoinformasjon", "/settings/account"],
       ["Koblede kontoer", "/settings/linked"],
+      ["Preferanser", "/settings/preferences"],
       ["Varsler", "/settings/notifications"],
       ["Språk og region", "/settings/language"],
       ["Tilgjengelighet", "/settings/accessibility"],

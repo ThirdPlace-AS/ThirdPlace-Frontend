@@ -7,7 +7,8 @@ import {
   Pressable as UIPressable,
   Text,
 } from "@/components/ui";
-import { businesses, profile } from "@/fixtures";
+import { businesses } from "@/fixtures";
+import { useMyProfile } from "@/lib/myProfile";
 
 // Account switcher, per the design (PDF p27): opened with a long press
 // on the Profil tab. Lists the linked accounts — the personal Utforsker
@@ -15,6 +16,7 @@ import { businesses, profile } from "@/fixtures";
 // BLOCKED_CONTRACT_GAP: no linked-account or session model; switching only
 // navigates between demo screens.
 export default function AccountSwitch() {
+  const me = useMyProfile();
   const biz = businesses[0];
   const rows: {
     title: string;
@@ -24,7 +26,7 @@ export default function AccountSwitch() {
     active?: boolean;
   }[] = [
     {
-      title: profile.name,
+      title: me.name,
       hint: "Utforsker",
       icon: "person-circle-outline",
       active: true,

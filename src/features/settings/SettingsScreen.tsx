@@ -9,15 +9,19 @@ import { Sheet } from "@/components/Sheet";
 import { SignInPrompt } from "@/components/SignInPrompt";
 import { useGuestMode } from "@/components/map/hooks/useGuestMode";
 import { profile } from "@/fixtures";
+import { resetMyProfile } from "@/lib/myProfile";
 import { resetTo } from "@/lib/navigation";
+import { resetPreferences } from "@/lib/preferences";
 import { resetSignupProgress } from "@/lib/signupProgress";
 
 import { ExportSheet } from "./ExportSheet";
 import { NavRow, SettingsSection } from "./settingsUi";
 
 // Innstillinger, grouped as in the design (PDF p19): KONTO
-// (Kontoinformasjon, Koblede kontoer) · APP (Varsler, Personvern, Språk og
-// region, Tilgjengelighet) · DATA (Eksporter data, Hjelp og støtte) · Logg ut.
+// (Kontoinformasjon, Koblede kontoer, plus Preferanser: PDF p13 draws that
+// page without an entry, so it sits with the account rows) · APP (Varsler,
+// Personvern, Språk og region, Tilgjengelighet) · DATA (Eksporter data,
+// Hjelp og støtte) · Logg ut.
 // Each row opens its PDF sub-screen (p19–p20, p28) as a page (Phase 12 H4c);
 // Eksporter data and Logg ut are short confirmations and stay sheets. Every
 // toggle is local and persists nothing; nothing is exported, sent or deleted
@@ -47,6 +51,11 @@ export default function SettingsScreen() {
             icon="link-outline"
             label="Koblede kontoer"
             onPress={gated("koble kontoer", go("/settings/linked"))}
+          />
+          <NavRow
+            icon="options-outline"
+            label="Preferanser"
+            onPress={gated("endre preferanser", go("/settings/preferences"))}
           />
           <NavRow
             icon="card-outline"
@@ -123,8 +132,11 @@ export default function SettingsScreen() {
             label="Logg ut"
             onPress={() => {
               setLogoutOpen(false);
-              // A new sign-up after logging out starts from the beginning.
+              // A new sign-up after logging out starts from the beginning,
+              // and the next account starts from its own profile.
               resetSignupProgress();
+              resetMyProfile();
+              resetPreferences();
               resetTo("/welcome");
             }}
           />

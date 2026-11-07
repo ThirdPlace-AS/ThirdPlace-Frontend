@@ -9,6 +9,7 @@ const ok = "checkmark-circle-outline" as const;
 
 export const confirmToast = {
   profileSaved: { title: "Profilen er oppdatert", icon: ok },
+  preferencesSaved: { title: "Preferansene er lagret", icon: ok },
   accountSaved: { title: "Kontoinformasjonen er oppdatert", icon: ok },
   chatCreated: { title: "Chatten er opprettet", icon: "chatbubbles-outline" },
   exportRequested: {

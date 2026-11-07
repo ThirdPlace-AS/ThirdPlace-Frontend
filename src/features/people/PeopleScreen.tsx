@@ -17,7 +17,8 @@ import { Chip } from "@/components/Chip";
 import { Sheet } from "@/components/Sheet";
 import { SignInPrompt } from "@/components/SignInPrompt";
 import { useGuestMode } from "@/components/map/hooks/useGuestMode";
-import { people, profile, type MockPerson } from "@/fixtures";
+import { people, type MockPerson } from "@/fixtures";
+import { useMyProfile } from "@/lib/myProfile";
 import { libImage } from "@/fixtures/images";
 import { toggleFollow as toggleFollowing, useFollowing } from "@/lib/following";
 
@@ -27,6 +28,7 @@ import { toggleFollow as toggleFollowing, useFollowing } from "@/lib/following";
 export default function PeopleScreen() {
   const guest = useGuestMode();
   const following = useFollowing();
+  const me = useMyProfile();
   const [signIn, setSignIn] = useState(false);
   // PDF p22: Alle / Nærheten / Interesser tabs + "Filter folk" sheet.
   const [tab, setTab] = useState<"all" | "near" | "interests">("all");
@@ -34,7 +36,7 @@ export default function PeopleScreen() {
   const [filterTags, setFilterTags] = useState<string[]>([]);
   const allTags = Array.from(new Set(people.flatMap((p) => p.interests)));
   const shared = (p: MockPerson) =>
-    p.interests.filter((i) => profile.interests.includes(i));
+    p.interests.filter((i) => me.interests.includes(i));
   const list = people.filter((p) => {
     if (tab === "near" && p.area !== "Grünerløkka") return false;
     if (tab === "interests" && shared(p).length === 0) return false;

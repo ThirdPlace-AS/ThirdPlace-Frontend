@@ -22,7 +22,7 @@ import {
   type IconName,
 } from "@/components/ui";
 import { confirmToast } from "@/copy";
-import { profile } from "@/fixtures";
+import { useMyProfile } from "@/lib/myProfile";
 import { goBackOr } from "@/lib/navigation";
 
 import { NavRow, ToggleList } from "./settingsUi";
@@ -125,11 +125,12 @@ export function AccountScreen() {
 
 // Koblede kontoer (PDF p20).
 export function LinkedAccountsScreen() {
+  const me = useMyProfile();
   return (
     <Page title="Koblede kontoer">
       <Session
         icon="person-circle-outline"
-        name={profile.name}
+        name={me.name}
         meta="Utforsker · aktiv nå"
       />
       <UIPressable
