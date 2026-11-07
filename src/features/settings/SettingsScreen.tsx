@@ -99,6 +99,16 @@ export default function SettingsScreen() {
           />
         </SettingsSection>
 
+        {/* Om (Phase 15): version and licences. Vilkår, Personvernerklæring
+            and Retningslinjer join this section when their texts exist. */}
+        <SettingsSection title="Om">
+          <NavRow
+            icon="information-circle-outline"
+            label="Om ThirdPlace"
+            onPress={go("/settings/about")}
+          />
+        </SettingsSection>
+
         <Button
           label={guest.isGuest ? "Logg inn" : "Logg ut"}
           variant="secondary"
