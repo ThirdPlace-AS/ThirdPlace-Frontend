@@ -43,6 +43,9 @@ export function PhotoPager({
           showsHorizontalScrollIndicator={false}
           onMomentumScrollEnd={onEnd}
           accessible={false}
+          // Android still exposes a scroller to TalkBack (it read an empty
+          // label); the gallery or card around it carries the label.
+          importantForAccessibility="no-hide-descendants"
         >
           {photos.map((src, i) => (
             <LoadingImage

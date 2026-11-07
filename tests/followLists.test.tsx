@@ -88,7 +88,7 @@ describe("follow lists", () => {
     fireEvent.press(screen.getByLabelText(`${followers} følgere`));
     expect(mockPush).toHaveBeenLastCalledWith("/profile/followers");
     fireEvent.press(
-      screen.getByLabelText(`${profile.followingIds.length} følger`),
+      screen.getByLabelText(`Du følger ${profile.followingIds.length}`),
     );
     expect(mockPush).toHaveBeenLastCalledWith(
       "/profile/followers?tab=following",

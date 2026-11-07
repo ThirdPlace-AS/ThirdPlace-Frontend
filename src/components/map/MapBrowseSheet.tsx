@@ -23,6 +23,7 @@ import { elevation } from "@/theme";
 import { MAP_CITY, type MockWeather } from "@/fixtures";
 import { formatRating } from "@/lib/format";
 import { PhotoPager } from "./PhotoPager";
+import { sheetA11yChrome } from "./sheetA11y";
 import { photosForItem } from "./services/itemCover";
 import {
   MARKER_LABEL,
@@ -184,6 +185,7 @@ export function MapBrowseSheet({
         // an active down-drag; disabling it clamps the gesture at index 0.
         enableOverDrag={false}
         {...chrome}
+        {...sheetA11yChrome}
       >
         {/* Peek header — city (left) + weather (right). Always visible. */}
         <View

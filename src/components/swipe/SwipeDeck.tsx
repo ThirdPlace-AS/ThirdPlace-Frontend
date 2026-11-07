@@ -609,7 +609,13 @@ function BehindCard({ item, ready }: { item: DeckItem; ready: boolean }) {
   // with no pop-in; a deeper, fully-occluded card renders the cover photo only to
   // avoid pure overdraw (F10). Non-interactive either way (photo 0, no stepping).
   return (
-    <View pointerEvents="none" style={StyleSheet.absoluteFill}>
+    <View
+      pointerEvents="none"
+      style={StyleSheet.absoluteFill}
+      // Hidden under the top card: a screen reader reads only the top card.
+      accessibilityElementsHidden
+      importantForAccessibility="no-hide-descendants"
+    >
       <SwipeCard item={item} interactive={false} minimal={!ready} />
     </View>
   );

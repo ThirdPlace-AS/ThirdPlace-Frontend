@@ -119,6 +119,8 @@ export default function ProfileScreen() {
               <Stat
                 value={counts.following}
                 label="Følger"
+                // "3 følger" is ambiguous read aloud (TalkBack pass, 0257).
+                spoken={`Du følger ${counts.following}`}
                 onPress={() =>
                   router.push("/profile/followers?tab=following" as Href)
                 }
@@ -186,16 +188,19 @@ function GuestProfile({ onSignIn }: { onSignIn: () => void }) {
 function Stat({
   value,
   label,
+  spoken,
   onPress,
 }: {
   value: number;
   label: string;
+  /** What a screen reader says, when "<value> <label>" is unclear. */
+  spoken?: string;
   onPress: () => void;
 }) {
   return (
     <UIPressable
       accessibilityRole="button"
-      accessibilityLabel={`${value} ${label.toLowerCase()}`}
+      accessibilityLabel={spoken ?? `${value} ${label.toLowerCase()}`}
       onPress={onPress}
       hitSlop={8}
     >

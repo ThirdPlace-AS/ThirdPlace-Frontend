@@ -478,7 +478,13 @@ export function InfoRow({
       {body}
     </UIPressable>
   ) : (
-    <View className="flex-row items-center gap-3 py-2.5">{body}</View>
+    <View
+      accessible
+      accessibilityLabel={subtitle ? `${title}, ${subtitle}` : title}
+      className="flex-row items-center gap-3 py-2.5"
+    >
+      {body}
+    </View>
   );
 }
 

@@ -50,6 +50,7 @@ import { useGuestMode } from "./hooks/useGuestMode";
 import { useMapSaved } from "./hooks/useMapSaved";
 import { markViewed } from "./hooks/useRecentlyViewed";
 import { DetailContent, titleFor } from "./DetailContentRouter";
+import { backdropA11y, sheetA11yChrome, useSheetHandleA11y } from "./sheetA11y";
 import type { PushFn, SheetTarget } from "./sheetTypes";
 import { markerId } from "./types/mapPresentation";
 
@@ -227,6 +228,7 @@ export const MapDetailSheet = forwardRef<
         appearsOnIndex={1}
         disappearsOnIndex={0}
         pressBehavior="close"
+        {...backdropA11y}
       />
     ),
     [],
@@ -269,6 +271,7 @@ export const MapDetailSheet = forwardRef<
           if (open) onClose();
         }}
         {...chrome}
+        {...sheetA11yChrome}
         {...(pageCapable
           ? { backgroundComponent: PageBackground, handleComponent: PageHandle }
           : null)}
@@ -349,6 +352,7 @@ function PageBackground({ style, animatedIndex }: BottomSheetBackgroundProps) {
 // Grab handle that fades out on the way to the page snap (still draggable).
 function PageHandle({ animatedIndex }: BottomSheetHandleProps) {
   const c = useThemeColors();
+  const a11y = useSheetHandleA11y();
   const a = useAnimatedStyle(() => ({
     opacity: interpolate(
       animatedIndex.value,
@@ -360,7 +364,7 @@ function PageHandle({ animatedIndex }: BottomSheetHandleProps) {
   return (
     <View
       style={{ height: 24, alignItems: "center", justifyContent: "center" }}
-      accessibilityLabel="Dra for å endre størrelse"
+      {...a11y}
     >
       <Animated.View
         style={[
