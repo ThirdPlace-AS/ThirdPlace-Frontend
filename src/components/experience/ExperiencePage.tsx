@@ -8,7 +8,12 @@
 // action lives in the host's floating ExperienceJoinBar card.
 import type { Href } from "expo-router";
 import { useState } from "react";
-import { ScrollView, View, useWindowDimensions } from "react-native";
+import {
+  ScrollView,
+  View,
+  useWindowDimensions,
+  type ImageSourcePropType,
+} from "react-native";
 import { Gesture, GestureDetector } from "react-native-gesture-handler";
 
 import { BlockSheet, ReportSheet } from "@/components/actions/ActionSheets";
@@ -26,6 +31,7 @@ import {
   type IconName,
 } from "@/components/ui";
 import {
+  chatForExperience,
   chats,
   groupById,
   placeById,
@@ -130,7 +136,7 @@ export function ExperiencePage({
 
   return (
     <View className="gap-6">
-      <HeroGallery exp={exp} />
+      <HeroGallery title={exp.title} photos={exp.photos} />
 
       {/* Title block, centred as in the reference. */}
       <View className="items-center gap-2 px-2">
@@ -257,7 +263,7 @@ export function ExperiencePage({
         }
       />
 
-      <ChatSection exp={exp} onNavigate={onNavigate} />
+      <ChatSection chat={chatForExperience(exp.id)} onNavigate={onNavigate} />
 
       {more.length > 0 ? (
         <View className="gap-3">
@@ -388,7 +394,13 @@ export function ExperiencePage({
 
 // Inset gallery (radius 20) that pages with dots; a tap opens the full-screen
 // viewer at the shown photo.
-function HeroGallery({ exp }: { exp: MockExperience }) {
+export function HeroGallery({
+  title,
+  photos,
+}: {
+  title: string;
+  photos: ImageSourcePropType[];
+}) {
   const { width } = useWindowDimensions();
   const [page, setPage] = useState(0);
   const [viewer, setViewer] = useState<number | null>(null);
@@ -403,26 +415,26 @@ function HeroGallery({ exp }: { exp: MockExperience }) {
         <View
           accessible
           accessibilityRole="imagebutton"
-          accessibilityLabel={`${exp.title}, ${exp.photos.length} bilder. Åpne bildene`}
+          accessibilityLabel={`${title}, ${photos.length} bilder. Åpne bildene`}
           accessibilityActions={[{ name: "activate" }]}
           onAccessibilityAction={() => setViewer(page)}
           className="overflow-hidden rounded-xl bg-surfaceMuted"
           style={{ height: Math.round((width - 32) * 0.78) }}
         >
-          <PhotoPager photos={exp.photos} onIndexChange={setPage} />
+          <PhotoPager photos={photos} onIndexChange={setPage} />
         </View>
       </GestureDetector>
       <PhotoViewer
-        photos={exp.photos}
+        photos={photos}
         index={viewer}
         onClose={() => setViewer(null)}
-        label={exp.title}
+        label={title}
       />
     </>
   );
 }
 
-function InfoRow({
+export function InfoRow({
   icon,
   leading,
   title,
@@ -470,7 +482,7 @@ function InfoRow({
   );
 }
 
-function FooterLink({
+export function FooterLink({
   icon,
   label,
   onPress,

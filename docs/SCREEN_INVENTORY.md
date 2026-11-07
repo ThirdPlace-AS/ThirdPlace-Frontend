@@ -238,3 +238,7 @@ PDF p7 draws a smaller swipe filter (modes, interests, Når, ledige plasser). Th
 ### Steder on Sveip = the experience deck (user 2026-11-06)
 
 PDF p7–p8 draw the Steder tab as a separate place deck. The user asked for places on Sveip to look and work exactly like experiences and For deg: every tab is now one deck over a shared card model (photo carousel, title, three info lines, chips, the same gestures, stamps, undo and action bar, the same "i" to the full page). A place card reads category · distance, its rating from its reviews and its opening hours; experiences show places left, never a status word. A like on a place saves it and offers its chat ("Bli med i samtalen"), as founder-approved. Ledger 0244.
+
+### Place page in the video layout (2026-11-07)
+
+`/place/[id]` now mirrors the experience page (same top bar, inset gallery with the photo viewer, centred name and description, rating line from the place's reviews, chips; rows Adresse · Åpningstider · Prisnivå · Siste anmeldelse; Vurderinger; Hvor du finner oss with the map card; Samtalen; Flere steder i nærheten; Ting å vite: tilgjengelighet, spesielle åpningstider, kilde; footer Skriv en anmeldelse · Rapporter stedet). Map pins still open the place in the map sheet. Ledger 0245.

@@ -39,10 +39,10 @@ import { confirmToast } from "@/copy";
 import {
   ACCESSIBILITY_ICONS,
   CHAT_ACCESS_LABEL,
-  chatForExperience,
   messagesForChat,
   placeById,
   sessionsFor,
+  type MockChat,
   type MockExperience,
   type MockItineraryStep,
   type MockSession,
@@ -465,11 +465,14 @@ export function MeetingSection({
 /** Static map card (Mapbox Static Images with the public token; a calm
  *  placeholder without one) with our own pin, like the reference's map card.
  *  No second live map: the page sits in a sheet/Modal over the real map. */
-function MeetingMap({
+export function MeetingMap({
   coord,
+  label = "Møtested",
   onShowOnMap,
 }: {
   coord: [number, number];
+  /** Pin label (experiences: "Møtested"; a place: its name). */
+  label?: string;
   onShowOnMap: () => void;
 }) {
   const { width } = useWindowDimensions();
@@ -484,7 +487,7 @@ function MeetingMap({
   return (
     <Pressable
       accessibilityRole="button"
-      accessibilityLabel="Møtestedet. Vis på kartet"
+      accessibilityLabel={`${label}. Vis på kartet`}
       onPress={onShowOnMap}
       pressedScale={0.99}
       contentClassName="overflow-hidden rounded-xl border border-line bg-surfaceMuted"
@@ -510,8 +513,8 @@ function MeetingMap({
           <View className="h-2.5 w-2.5 rounded-full bg-surface" />
         </View>
         <View className="mt-1 rounded-full bg-surface px-2 py-0.5">
-          <Text variant="caption" weight="semibold">
-            Møtested
+          <Text variant="caption" weight="semibold" numberOfLines={1}>
+            {label}
           </Text>
         </View>
       </View>
@@ -577,13 +580,13 @@ export function AskHostSheet({
 // ── Samtalen ─────────────────────────────────────────────────────────────
 
 export function ChatSection({
-  exp,
+  chat,
   onNavigate,
 }: {
-  exp: MockExperience;
+  /** The experience's or the place's chat (none: no section). */
+  chat: MockChat | undefined;
   onNavigate: (href: Href) => void;
 }) {
-  const chat = chatForExperience(exp.id);
   const joined = useJoinedChats();
   const { isGuest } = useGuestMode();
   const [prompt, setPrompt] = useState(false);
@@ -644,7 +647,7 @@ export function ChatSection({
 
 // ── Ting å vite ──────────────────────────────────────────────────────────
 
-type Know = {
+export type Know = {
   key: string;
   icon: IconName;
   title: string;
@@ -722,7 +725,11 @@ export function thingsToKnow(exp: MockExperience): Know[] {
 }
 
 export function ThingsToKnowSection({ exp }: { exp: MockExperience }) {
-  const items = thingsToKnow(exp);
+  return <KnowSection items={thingsToKnow(exp)} />;
+}
+
+/** "Ting å vite": rows that open a short sheet (experiences and places). */
+export function KnowSection({ items }: { items: Know[] }) {
   const [open, setOpen] = useState<Know | null>(null);
   return (
     <View className="gap-2">

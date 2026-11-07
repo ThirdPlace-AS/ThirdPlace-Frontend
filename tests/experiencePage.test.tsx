@@ -238,11 +238,13 @@ describe("ExperiencePage sections (H4b)", () => {
   });
 
   it("Samtalen joins the experience's chat and opens it", () => {
-    const e2 = experienceById("e2")!;
     const chat = chatForExperience("e2")!;
     expect(chat.member).toBe(false);
     const onNavigate = jest.fn();
-    render(<ChatSection exp={e2} onNavigate={onNavigate} />, { wrapper });
+    render(
+      <ChatSection chat={chatForExperience("e2")} onNavigate={onNavigate} />,
+      { wrapper },
+    );
     fireEvent.press(screen.getByText("Bli med i samtalen"));
     expect(onNavigate).toHaveBeenCalledWith(`/chat/${chat.id}`);
     expect(screen.getByText("Åpne samtalen")).toBeTruthy();
@@ -253,9 +255,11 @@ describe("ExperiencePage sections (H4b)", () => {
     const guest = renderHook(() => useGuestMode());
     act(() => guest.result.current.setGuest(true));
     try {
-      const e2 = experienceById("e2")!;
       const onNavigate = jest.fn();
-      render(<ChatSection exp={e2} onNavigate={onNavigate} />, { wrapper });
+      render(
+        <ChatSection chat={chatForExperience("e2")} onNavigate={onNavigate} />,
+        { wrapper },
+      );
       fireEvent.press(screen.getByText("Bli med i samtalen"));
       expect(onNavigate).not.toHaveBeenCalled();
       expect(screen.getByText(/for å bli med i samtalen/)).toBeTruthy();
