@@ -161,11 +161,13 @@ describe("the catalogue's shape", () => {
   });
 
   it("spreads each interest over at least three towns", () => {
+    // All of the interest's places, a legacy one included (Kaffe's p1,
+    // Yoga's p9, Velvære's p14), so a seed with two places still counts three.
     for (const s of SEEDS) {
       const towns = new Set(
-        (["bedrift", "organisasjon", "byrom"] as const)
-          .map((k) => s[k]?.town)
-          .filter(Boolean),
+        places
+          .filter((p) => p.interestId === s.interest)
+          .map((p) => areaFor(p.coord).name),
       );
       expect(towns.size).toBeGreaterThanOrEqual(3);
     }

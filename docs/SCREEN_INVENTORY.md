@@ -261,7 +261,7 @@ Layout modernised by founder decision (same content and PDF order): hub pages (I
 
 ### Person page (p13, "other user")
 
-- Laid out as PDF p13: photo, name, handle and area, bio, interest chips with the shared ones marked ("Felles interesser"), "Offentlige opplevelser", then **Følg** and **Melding**. Melding opens the direct message with that person, or starts an empty one at the top of Chat (in memory). Rapporter and Blokker moved behind the ••• in the header, as the PDF draws it. No age is shown: the fixtures have none for other people.
+- Laid out as PDF p13: photo, name, handle and area, bio, interest chips with the shared ones marked ("Felles interesser"), "Offentlige opplevelser" (every experience and event the person hosts; Phase 19 B1, it showed only the first), then **Følg** and **Melding**. Melding opens the direct message with that person, or starts an empty one at the top of Chat (in memory). Rapporter and Blokker moved behind the ••• in the header, as the PDF draws it. No age is shown: the fixtures have none for other people.
 
 ### Følgere / Følger and Venner (p13)
 

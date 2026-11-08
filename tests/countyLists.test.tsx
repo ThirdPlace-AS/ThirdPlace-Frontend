@@ -286,7 +286,14 @@ describe("Sveip decks", () => {
           : applyExperienceFilters(experiences, "", DEFAULT_FILTERS, o).length,
       );
     }
-    expect(deckFor(true, DEFAULT_FILTERS, o)[0]!.id).toBe("p-klatring-r");
+    // The first card is the place nearest Sandvika (computed, since each
+    // content batch adds places).
+    const nearest = [...applyFilters(places, "", DEFAULT_FILTERS, o)].sort(
+      (a, b) =>
+        distanceMeters(o.coord, a.coord) - distanceMeters(o.coord, b.coord),
+    )[0]!;
+    expect(deckFor(true, DEFAULT_FILTERS, o)[0]!.id).toBe(nearest.id);
+    expect(areaFor(nearest.coord).name).toBe("Sandvika");
   });
 });
 

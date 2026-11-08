@@ -139,10 +139,13 @@ describe("the Type filter", () => {
     expect(
       screen.getByRole("button", { name: "Byrom" }).props.accessibilityState,
     ).toMatchObject({ selected: true });
-    // Only Kolsås klatrefelt is a byrom so far: one result, in the singular.
     expect(screen.getByText(/^Vis \d+ resultat(er)?$/).props.children).not.toBe(
       before,
     );
+    // Every interest has exactly one byrom, so Byrom plus one activity
+    // (Kolsås klatrefelt for Klatring) is one result, in the singular.
+    fireEvent.press(screen.getAllByRole("button", { name: /^Trening/ })[0]!);
+    fireEvent.press(screen.getByRole("checkbox", { name: "Klatring" }));
     expect(screen.getByText("Vis 1 resultat")).toBeTruthy();
   });
 });

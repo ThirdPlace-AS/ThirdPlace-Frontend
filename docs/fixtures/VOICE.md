@@ -15,7 +15,7 @@ How the interest catalogue's fixtures are written (`src/fixtures/catalog/*.ts`, 
 
 - Businesses, clubs, indoor spaces and events have fictional names. Before using one, make sure it doesn't name a real Oslo or Akershus business or organisation; the test keeps a short list of real institutions out.
 - Outdoor city spaces (parks, lakes, crags, piers, squares) may use their public names. Keep claims modest and general: what kind of place it is, not opening hours, rules or facilities you can't stand behind.
-- People: fictional, and mixed the way Oslo and Akershus are (ages, backgrounds, genders). Reviewers are a first name and an initial; hosts are people in `people` with a portrait.
+- People: fictional, and mixed the way Oslo and Akershus are (ages, backgrounds, genders). Reviewers are a first name and an initial; hosts are people in `people` with a portrait. A new host goes in `src/fixtures/catalog/people.ts` (id `u<n>`, a `person-<name>` portrait credited like the other photos, interests named as in the catalogue); one host usually covers related interests (Henrik Aasen runs Badstue and Bading), and a host's times must not overlap.
 
 ## What not to state
 

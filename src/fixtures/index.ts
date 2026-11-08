@@ -10,6 +10,7 @@ import type { ImageSourcePropType } from "react-native";
 
 import { buildCatalog } from "./catalog/build";
 import type { InterestId } from "./catalog/interests";
+import { CATALOG_PEOPLE } from "./catalog/people";
 import { SEEDS } from "./catalog/seeds";
 import { libImage, swipeImage, type LibraryKey } from "./images";
 
@@ -4094,6 +4095,9 @@ export function visibleNotifications(
 // Built from the hand-written seeds in src/fixtures/catalog and appended after
 // the legacy items (p1, e1, g1 … stay first). Its chats are not joined, so the
 // Chat tab lists one only after the viewer joins it.
+// The hosts the catalogue adds (fictional, with portraits) join `people`
+// first, so every host and contact person resolves.
+people.push(...CATALOG_PEOPLE);
 const CATALOG = buildCatalog(SEEDS, {
   personName: (id) => personById(id)?.name,
   legacyGroupFor: (interest) =>

@@ -61,7 +61,8 @@ export default function PersonScreen() {
     );
   }
 
-  const hosts = experiencesHostedBy(person.id)[0];
+  // Everything the person hosts (catalogue hosts run several, Phase 19).
+  const hosted = experiencesHostedBy(person.id);
   const isFollowing = following.has(person.id);
   const shared = new Set(
     person.interests.filter((i) => me.interests.includes(i)),
@@ -100,7 +101,7 @@ export default function PersonScreen() {
           bio={person.bio}
           interests={person.interests}
           shared={shared}
-          hosted={hosts ? [hosts] : []}
+          hosted={hosted}
           onOpenExperience={(eid) => router.push(`/experience/${eid}` as Href)}
           actions={
             <View className="flex-row gap-3">
