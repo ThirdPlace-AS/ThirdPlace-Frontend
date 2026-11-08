@@ -17,9 +17,11 @@ import { useGuestMode } from "@/components/map/hooks/useGuestMode";
 import {
   businessById,
   experienceById,
+  PLACE_KIND_LABEL,
   placeById,
   placeRating,
 } from "@/fixtures";
+import { experienceTypeLabel } from "@/components/map/services/itemType";
 import { coverForPlace, libThumb } from "@/fixtures/images";
 import { Illustration } from "@/components/illustrations/Illustration";
 import { formatRating } from "@/lib/format";
@@ -31,9 +33,14 @@ type Row = {
   title: string;
   meta: string;
   placeId?: string;
+  // Phase 19: every saved thing opens a page, and "Vis på kartet" focuses a
+  // pin (a saved business shows its place).
+  href: Href;
+  mapKey: string;
 };
 const FILTERS: { key: Kind | null; label: string }[] = [
   { key: null, label: "Alle" },
+  // Bedrifter are places too; Steder holds the clubs and city spaces.
   { key: "place", label: "Steder" },
   { key: "experience", label: "Opplevelser" },
   { key: "business", label: "Bedrifter" },
@@ -80,10 +87,12 @@ export default function SavedScreen() {
             ? [
                 {
                   key,
-                  kind: "place",
+                  kind: p.kind === "bedrift" ? "business" : "place",
                   title: p.name,
-                  meta: `Sted · ★ ${formatRating(placeRating(p.id).score)}`,
+                  meta: `${PLACE_KIND_LABEL[p.kind]} · ★ ${formatRating(placeRating(p.id).score)}`,
                   placeId: p.id,
+                  href: `/place/${p.id}` as Href,
+                  mapKey: key,
                 },
               ]
             : [];
@@ -96,8 +105,10 @@ export default function SavedScreen() {
                   key,
                   kind: "experience",
                   title: e.title,
-                  meta: `Opplevelse · ${e.when}`,
+                  meta: `${experienceTypeLabel(e)} · ${e.when}`,
                   placeId: e.placeId,
+                  href: `/experience/${e.id}` as Href,
+                  mapKey: key,
                 },
               ]
             : [];
@@ -112,6 +123,8 @@ export default function SavedScreen() {
                   title: b.name,
                   meta: `Bedrift · ${b.category}`,
                   placeId: b.placeId,
+                  href: `/place/${b.placeId}` as Href,
+                  mapKey: `place:${b.placeId}`,
                 },
               ]
             : [];
@@ -185,17 +198,8 @@ export default function SavedScreen() {
               onLongPress={() =>
                 setActionsFor({ key: item.key, title: item.title })
               }
-              // Places and experiences open their page; a business opens
-              // its detail on the map (it has no page of its own).
-              onPress={() => {
-                const id = item.key.slice(item.key.indexOf(":") + 1);
-                if (item.kind === "business")
-                  router.navigate({
-                    pathname: "/map",
-                    params: { focus: item.key, at: String(Date.now()) },
-                  });
-                else router.push(`/${item.kind}/${id}` as Href);
-              }}
+              // Everything opens its page (a business opens its place).
+              onPress={() => router.push(item.href)}
               leading={
                 place ? (
                   <Image
@@ -246,7 +250,12 @@ export default function SavedScreen() {
               onPress: () =>
                 router.navigate({
                   pathname: "/map",
-                  params: { focus: actionsFor.key, at: String(Date.now()) },
+                  params: {
+                    focus:
+                      rows.find((r) => r.key === actionsFor.key)?.mapKey ??
+                      actionsFor.key,
+                    at: String(Date.now()),
+                  },
                 }),
             },
           ]}

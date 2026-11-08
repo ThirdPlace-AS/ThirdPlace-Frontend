@@ -381,6 +381,12 @@ export function interestForLabel(label: string): Interest | undefined {
   return BY_WORD.get(label.trim().toLowerCase());
 }
 
+/** The interest's label and older synonyms, lower-cased (for search). */
+export function interestWords(id: string | undefined): string[] {
+  const i = interestById(id);
+  return i ? [i.label, ...(i.synonyms ?? [])].map((w) => w.toLowerCase()) : [];
+}
+
 export function interestsInCategory(cat: InterestCategory): Interest[] {
   return (INTERESTS as readonly Interest[]).filter((i) => i.category === cat);
 }

@@ -5,6 +5,8 @@ import { Card } from "@/components/Card";
 import { DirectionsButton } from "@/components/DirectionsButton";
 import { Chip } from "@/components/Chip";
 import {
+  PLACE_KIND_LABEL,
+  areaFor,
   businessForPlace,
   experiencesForPlace,
   placeById,
@@ -36,7 +38,7 @@ export function PlaceContent({ id, push }: { id: string; push: PushFn }) {
 
   return (
     <View className="gap-4">
-      {/* Peek line: rating · distance · open · category */}
+      {/* Peek line: rating · distance · open · kind and area (Phase 19) */}
       <View className="flex-row flex-wrap items-center gap-x-3 gap-y-1">
         <View className="flex-row items-center gap-1">
           <Icon name="star" size="sm" tone="ink" />
@@ -58,7 +60,7 @@ export function PlaceContent({ id, push }: { id: string; push: PushFn }) {
           · {place.openNow ? "Åpent nå" : "Stengt"}
         </Text>
         <Text variant="caption" tone="muted">
-          · {place.category}
+          · {PLACE_KIND_LABEL[place.kind]} · {areaFor(place.coord).name}
         </Text>
         <Text variant="caption" tone="muted">
           · {priceBandFor(place.priceNok)}

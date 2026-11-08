@@ -8,6 +8,7 @@
 // experiences only. Experience pins sit at their meeting point.
 
 import {
+  areaFor,
   experiences,
   places as allPlaces,
   ratingOf,
@@ -34,6 +35,12 @@ import { experienceMatchesQuery } from "./mapSearch";
 import { goingLine } from "@/lib/going";
 import { distanceLabelFor, getOrigin, type Origin } from "@/lib/origin";
 
+import {
+  experienceType,
+  experienceTypeLabel,
+  placeTypeLabel,
+} from "./itemType";
+
 function placeToItem(p: MockPlace, origin: Origin): DiscoveryItem {
   return {
     markerId: markerId("place", p.id),
@@ -42,8 +49,15 @@ function placeToItem(p: MockPlace, origin: Origin): DiscoveryItem {
     coord: p.coord,
     category: p.category,
     title: p.name,
-    // Measured from the person (src/lib/origin.ts), not typed in.
-    subtitle: distanceLabelFor(p.coord, origin),
+    // Phase 19: "Bedrift · Sandvika · 12 km", the distance measured from
+    // the person (src/lib/origin.ts), not typed in.
+    subtitle: `${placeTypeLabel(p)} · ${areaFor(p.coord).name} · ${distanceLabelFor(
+      p.coord,
+      origin,
+    )}`,
+    type: p.kind,
+    typeLabel: placeTypeLabel(p),
+    area: areaFor(p.coord).name,
     meta: `${"kr".repeat(p.priceLevel)} · ${p.openNow ? "Åpent" : "Stengt"}`,
     rating: placeRating(p.id).score,
     reviewCount: placeRating(p.id).count,
@@ -62,7 +76,11 @@ function experienceToItem(e: MockExperience): DiscoveryItem {
     reviewCount: reviewsForExperience(e.id).length,
     category: "Opplevelse",
     title: e.title,
-    subtitle: e.when,
+    // "Arrangement · Lillestrøm · Lør 12:00" (Phase 19).
+    subtitle: `${experienceTypeLabel(e)} · ${areaFor(e.meetingPoint.coord).name} · ${e.when}`,
+    type: experienceType(e),
+    typeLabel: experienceTypeLabel(e),
+    area: areaFor(e.meetingPoint.coord).name,
     // Who is going (Phase 16): "5 skal · 3 plasser igjen"; the browse card
     // draws it live with the faces (GoingLine).
     meta: goingLine(e),

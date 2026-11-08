@@ -3,14 +3,19 @@
 // overlay shows them: På kartet (places) / Opplevelser / Grupper.
 
 import {
+  areaFor,
   experiences,
   groups,
+  placeRating,
   places,
   type MockExperience,
   type MockGroup,
   type MockPlace,
 } from "@/fixtures";
-import { distanceLabelFor } from "@/lib/origin";
+import { interestWords } from "@/fixtures/catalog/interests";
+import { formatRating } from "@/lib/format";
+
+import { experienceTypeLabel, placeTypeLabel } from "./itemType";
 
 import type { SheetKind } from "../sheetTypes";
 
@@ -39,11 +44,17 @@ function norm(s: string): string {
 // map place filter (applyFilters) and the discovery adapter use the SAME match
 // logic as this overlay search — no divergence between what the overlay shows
 // and what submitting the text narrows on the map.
+// Phase 19: an item also matches its interest (label and older synonyms), so
+// "jazz" finds the jazz club, the festival and the jazz group.
+const interestMatches = (id: string | undefined, q: string) =>
+  interestWords(id).some((w) => w.includes(q));
+
 export function placeMatchesQuery(p: MockPlace, q: string): boolean {
   return (
     p.name.toLowerCase().includes(q) ||
     p.category.toLowerCase().includes(q) ||
-    p.tags.some((t) => t.toLowerCase().includes(q))
+    p.tags.some((t) => t.toLowerCase().includes(q)) ||
+    interestMatches(p.interestId, q)
   );
 }
 
@@ -51,12 +62,17 @@ export function experienceMatchesQuery(e: MockExperience, q: string): boolean {
   return (
     e.title.toLowerCase().includes(q) ||
     e.host.toLowerCase().includes(q) ||
-    e.tags.some((t) => t.toLowerCase().includes(q))
+    e.tags.some((t) => t.toLowerCase().includes(q)) ||
+    interestMatches(e.interestId, q)
   );
 }
 
 function groupMatch(g: MockGroup, q: string): boolean {
-  return g.name.toLowerCase().includes(q) || g.about.toLowerCase().includes(q);
+  return (
+    g.name.toLowerCase().includes(q) ||
+    g.about.toLowerCase().includes(q) ||
+    g.interests.some((i) => interestMatches(i, q))
+  );
 }
 
 // Grouped fixture search. Empty query returns no results (the overlay shows
@@ -72,7 +88,16 @@ export function searchFixtures(query: string): SearchGroups {
       kind: "place",
       id: p.id,
       title: p.name,
-      subtitle: `${p.category} · ${distanceLabelFor(p.coord)}`,
+      // "Bedrift · Sentrum · ★ 4,7" (PDF p5's search rows).
+      subtitle: [
+        placeTypeLabel(p),
+        areaFor(p.coord).name,
+        placeRating(p.id).count
+          ? `★ ${formatRating(placeRating(p.id).score)}`
+          : null,
+      ]
+        .filter(Boolean)
+        .join(" · "),
     }));
 
   const experienceResults: SearchResult[] = experiences
@@ -82,7 +107,7 @@ export function searchFixtures(query: string): SearchGroups {
       kind: "experience",
       id: e.id,
       title: e.title,
-      subtitle: `${e.host} · ${e.when}`,
+      subtitle: `${experienceTypeLabel(e)} · ${areaFor(e.meetingPoint.coord).name} · ${e.when}`,
     }));
 
   const groupResults: SearchResult[] = groups
@@ -92,7 +117,7 @@ export function searchFixtures(query: string): SearchGroups {
       kind: "group",
       id: g.id,
       title: g.name,
-      subtitle: `${g.memberCount} medlemmer`,
+      subtitle: `Gruppe · ${g.memberCount} medlemmer`,
     }));
 
   return {

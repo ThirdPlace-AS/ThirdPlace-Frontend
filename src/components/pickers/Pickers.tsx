@@ -15,7 +15,7 @@ import {
 import { Sheet } from "@/components/Sheet";
 import { people, places, type MockPerson, type MockPlace } from "@/fixtures";
 import { libThumb } from "@/fixtures/images";
-import { distanceLabelFor, useOrigin } from "@/lib/origin";
+import { distanceFromOrigin, distanceLabelFor, useOrigin } from "@/lib/origin";
 
 // Shared pickers (PDF p24–p25): Velg sted, Velg kategori, Søk brukere. Search
 // over fixture data only — no geocoding or user directory exists
@@ -52,11 +52,18 @@ export function PlacePicker({
 }) {
   const [q, setQ] = useState("");
   const origin = useOrigin();
-  const list = places.filter((p) =>
-    `${p.name} ${p.category} ${p.address}`
-      .toLowerCase()
-      .includes(q.trim().toLowerCase()),
-  );
+  // Nearest first (Phase 19: places across Akershus).
+  const list = places
+    .filter((p) =>
+      `${p.name} ${p.category} ${p.address}`
+        .toLowerCase()
+        .includes(q.trim().toLowerCase()),
+    )
+    .sort(
+      (a, b) =>
+        distanceFromOrigin(a.coord, origin) -
+        distanceFromOrigin(b.coord, origin),
+    );
   return (
     <Sheet visible onClose={onClose} title="Velg sted">
       <View className="gap-2">

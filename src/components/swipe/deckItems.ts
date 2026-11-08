@@ -11,7 +11,10 @@ import type { ImageSourcePropType } from "react-native";
 
 import type { IconName } from "@/components/ui";
 import { goingLine } from "@/lib/going";
+import { experienceTypeLabel } from "@/components/map/services/itemType";
 import {
+  PLACE_KIND_LABEL,
+  areaFor,
   chatForExperience,
   chatForPlace,
   placeById,
@@ -68,7 +71,14 @@ export function experienceToDeckItem(e: MockExperience): DeckItem {
           ? `${place.name} · ${distanceLabelFor(place.coord)}`
           : e.meetingPoint.name,
       },
-      { icon: "calendar-outline", text: e.when },
+      {
+        icon: "calendar-outline",
+        // An event says so ("Festival · Lør 10:00", Phase 19).
+        text:
+          e.format === "event"
+            ? `${experienceTypeLabel(e)} · ${e.when}`
+            : e.when,
+      },
       {
         icon: "people-outline",
         text: spotsLine(e),
@@ -97,7 +107,8 @@ export function placeToDeckItem(p: MockPlace): DeckItem {
     lines: [
       {
         icon: "location-outline",
-        text: `${p.category} · ${distanceLabelFor(p.coord)}`,
+        // "Byrom · Kolsås · 12 km" (Phase 19).
+        text: `${PLACE_KIND_LABEL[p.kind]} · ${areaFor(p.coord).name} · ${distanceLabelFor(p.coord)}`,
       },
       {
         icon: "star-outline",
@@ -109,6 +120,6 @@ export function placeToDeckItem(p: MockPlace): DeckItem {
     ],
     chips: p.vibes,
     chatId: chatForPlace(p.id)?.id,
-    subtitle: `${p.category} · ${distanceLabelFor(p.coord)}`,
+    subtitle: `${PLACE_KIND_LABEL[p.kind]} · ${areaFor(p.coord).name} · ${distanceLabelFor(p.coord)}`,
   };
 }

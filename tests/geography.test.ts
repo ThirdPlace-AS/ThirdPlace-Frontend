@@ -148,7 +148,8 @@ describe("the origin", () => {
       savedIds: [],
     });
     const p1 = r.items.find((i) => i.id === "p1")!;
-    expect(p1.subtitle).toMatch(/^\d+ km$/);
+    // "Bedrift · Grünerløkka · 38 km" (S3b: kind and area first).
+    expect(p1.subtitle).toMatch(/^Bedrift · Grünerløkka · \d+ km$/);
     resetOrigin();
     const back = resultForMode({
       mode: "explore",
@@ -156,6 +157,8 @@ describe("the origin", () => {
       query: "",
       savedIds: [],
     });
-    expect(back.items.find((i) => i.id === "p1")!.subtitle).toBe("100 m");
+    expect(back.items.find((i) => i.id === "p1")!.subtitle).toBe(
+      "Bedrift · Grünerløkka · 100 m",
+    );
   });
 });

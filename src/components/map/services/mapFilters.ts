@@ -21,6 +21,7 @@ import {
 import { formatRating } from "@/lib/format";
 import { shortDayMonth } from "@/lib/dates";
 
+import { ITEM_TYPE_LABEL, experienceType, type ItemType } from "./itemType";
 import { experienceMatchesQuery, placeMatchesQuery } from "./mapSearch";
 import {
   MARKER_LABEL,
@@ -70,6 +71,10 @@ export type MapFilters = {
   // "Kategori": the map pins' eight categories (OR match). Phase 18, from
   // the screen benchmark: quick chips on the map, the same colours as the pins.
   categories: MarkerCategory[];
+  // "Type" (Phase 19, founder 2026-11-08): Bedrift, Organisasjon, Byrom,
+  // Opplevelse, Arrangement (OR). Applies to places and experiences alike, so
+  // choosing only Byrom also empties the experience list.
+  kinds: ItemType[];
   types: string[]; // "Opplevelsestype" (OR match)
   whereArea: string | null; // "Where?" selected Oslo area — recenters, does NOT filter
   // "When?" picked dates (ISO). Phase 18: without a quick tile (`time`), they
@@ -98,6 +103,7 @@ export type MapFilters = {
 
 export const DEFAULT_FILTERS: MapFilters = {
   categories: [],
+  kinds: [],
   types: [],
   whereArea: null,
   dateStart: null,
@@ -151,6 +157,7 @@ export function applyFilters(
       !f.categories.includes(markerCategoryFor({ kind: "place", id: p.id }))
     )
       return false;
+    if (f.kinds.length > 0 && !f.kinds.includes(p.kind)) return false;
     if (f.types.length > 0 && !f.types.some((t) => p.types.includes(t)))
       return false;
     if (f.maxDistanceM !== null && p.distanceM > f.maxDistanceM) return false;
@@ -198,6 +205,7 @@ export function applyFilters(
 export function activeExtraFilterCount(f: MapFilters): number {
   return (
     (f.categories.length > 0 ? 1 : 0) +
+    (f.kinds.length > 0 ? 1 : 0) +
     (f.types.length > 0 ? 1 : 0) +
     (f.maxDistanceM !== null ? 1 : 0) +
     (f.priceMin > PRICE_FLOOR || f.priceMax < PRICE_CEIL ? 1 : 0) +
@@ -276,6 +284,8 @@ export function applyExperienceFilters(
         markerCategoryFor({ kind: "experience", id: e.id }),
       )
     )
+      return false;
+    if (f.kinds.length > 0 && !f.kinds.includes(experienceType(e)))
       return false;
     const place = placeById(e.placeId);
     if (f.types.length > 0 && !f.types.some((t) => e.types.includes(t)))
@@ -373,6 +383,7 @@ export function appliedFilterChips(f: MapFilters): AppliedFilterChip[] {
       });
   };
   each("categories", f.categories, (c) => MARKER_LABEL[c as MarkerCategory]);
+  each("kinds", f.kinds, (k) => ITEM_TYPE_LABEL[k as ItemType]);
   if (f.time !== null)
     out.push({
       key: "time",

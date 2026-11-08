@@ -14,8 +14,20 @@ import { hubToday } from "@/features/workspace/hubToday";
 import { clock } from "@/lib/dates";
 import { Chip } from "@/components/Chip";
 import { RouteHeader } from "@/components/RouteHeader";
-import { businesses, experiences } from "@/fixtures";
+import {
+  OWNED_BUSINESS_IDS,
+  businesses,
+  experiences,
+  isCatalogueId,
+} from "@/fixtures";
+
 import { useMyProfile } from "@/lib/myProfile";
+
+// The demo creator's and business's own things: the legacy experiences and
+// whatever they publish in Legg til, never the catalogue's (Phase 19).
+const ownExperiences = () => experiences.filter((e) => !isCatalogueId(e.id));
+const ownBusinesses = () =>
+  businesses.filter((b) => OWNED_BUSINESS_IDS.includes(b.id));
 
 // Business workspace, per the design (PDF p13–p15): the business
 // profile hub (Dashbord, Marketplace, linked personal account, "Kom i gang"),
@@ -150,7 +162,7 @@ export function WorkspaceHub() {
 // hubToday.ts). Each line opens where it is handled.
 function TodayCard() {
   const now = new Date();
-  const { today, week, waiting } = hubToday(experiences, now);
+  const { today, week, waiting } = hubToday(ownExperiences(), now);
   return (
     <View className="gap-1 rounded-lg border border-line bg-surface p-4">
       <Text variant="label" weight="semibold" accessibilityRole="header">
@@ -329,7 +341,9 @@ export function WorkspaceAnalytics() {
 }
 
 export function WorkspaceCalendar() {
-  const upcoming = byStart(experiences.filter((e) => e.status !== "cancelled"));
+  const upcoming = byStart(
+    ownExperiences().filter((e) => e.status !== "cancelled"),
+  );
   return (
     <Screen edges={["top"]}>
       <RouteHeader title="Kalender" />
@@ -381,9 +395,9 @@ export function WorkspaceLocations() {
       <RouteHeader title="Lokasjoner" />
       <ScrollView contentContainerClassName="gap-3 px-gutter py-4 pb-12">
         <Text variant="caption" tone="muted">
-          {businesses.length} lokasjoner
+          {ownBusinesses().length} lokasjoner
         </Text>
-        {businesses.map((b) => (
+        {ownBusinesses().map((b) => (
           <View
             key={b.id}
             className="gap-1 rounded-lg border border-line bg-surface p-4"

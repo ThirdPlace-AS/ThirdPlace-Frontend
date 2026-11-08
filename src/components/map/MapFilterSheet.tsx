@@ -55,6 +55,12 @@ import {
   MARKER_LABEL,
   type MarkerCategory,
 } from "./services/markerCategory";
+import {
+  ITEM_TYPES,
+  ITEM_TYPE_ICON,
+  ITEM_TYPE_LABEL,
+  type ItemType,
+} from "./services/itemType";
 import { TypeChip } from "./TypeChip";
 import type { DiscoveryMode } from "./types/mapPresentation";
 
@@ -211,6 +217,14 @@ const CATEGORY_ITEMS: ChipItem[] = MARKER_CATEGORIES.map((c) => ({
   label: MARKER_LABEL[c],
   icon: MARKER_FILTER_ICON[c],
 }));
+// Type (Phase 19): what the item is, drawn like the other groups.
+const TYPE_ITEMS: ChipItem[] = ITEM_TYPES.map((t) => ({
+  label: ITEM_TYPE_LABEL[t],
+  icon: ITEM_TYPE_ICON[t],
+}));
+const TYPE_BY_LABEL: Record<string, ItemType> = Object.fromEntries(
+  ITEM_TYPES.map((t) => [ITEM_TYPE_LABEL[t], t]),
+);
 const CATEGORY_BY_LABEL: Record<string, MarkerCategory> = Object.fromEntries(
   MARKER_CATEGORIES.map((c) => [MARKER_LABEL[c], c]),
 );
@@ -493,7 +507,7 @@ function FilterBody({
   const footerLabel =
     resultCount === 0
       ? "Ingen tilgjengelige resultater"
-      : `Vis ${resultCount} resultater`;
+      : `Vis ${resultCount} ${resultCount === 1 ? "resultat" : "resultater"}`;
 
   const visibleLangs = langExpanded
     ? LANGUAGES
@@ -733,6 +747,27 @@ function FilterBody({
                   categories: d.categories.includes(c)
                     ? d.categories.filter((x) => x !== c)
                     : [...d.categories, c],
+                }));
+              }}
+            />
+          </Section>
+          {/* Type (Phase 19, founder 2026-11-08): Bedrift, Organisasjon,
+              Byrom, Opplevelse, Arrangement, for places and experiences. */}
+          <Section title="Type">
+            <ChipGroup
+              items={TYPE_ITEMS}
+              selected={(l) => {
+                const t = TYPE_BY_LABEL[l];
+                return t !== undefined && draft.kinds.includes(t);
+              }}
+              onToggle={(l) => {
+                const t = TYPE_BY_LABEL[l];
+                if (!t) return;
+                setDraft((d) => ({
+                  ...d,
+                  kinds: d.kinds.includes(t)
+                    ? d.kinds.filter((x) => x !== t)
+                    : [...d.kinds, t],
                 }));
               }}
             />

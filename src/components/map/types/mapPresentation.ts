@@ -2,6 +2,7 @@
 // map renders them. Nothing here is a canonical contract; it exists so markers,
 // clusters, the preview card, and the list all read from one shape.
 
+import type { ItemType } from "../services/itemType";
 import type { SheetKind } from "../sheetTypes";
 
 // The six documented discovery modes, in the PDF p5 chip order (For deg ·
@@ -47,6 +48,11 @@ export type DiscoveryItem = {
   rating?: number; // MOCK average rating (1–5)
   reviewCount?: number; // MOCK review count
   tags?: string[]; // MOCK vibe / tag chips
+  // Phase 19: what the item is (Bedrift … Arrangement), its label ("Festival"
+  // for a several-day event) and the named area it sits in.
+  type?: ItemType;
+  typeLabel?: string;
+  area?: string;
 };
 
 // Result of resolving a discovery mode over the fixtures.

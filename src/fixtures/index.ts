@@ -1415,6 +1415,15 @@ export const experiences: MockExperience[] = [
   },
 ];
 
+/** Ids the interest catalogue builds ("p-jazz-b", "e-jazz-arr", "g-jazz"). */
+export function isCatalogueId(id: string): boolean {
+  return /^[a-z]-/.test(id);
+}
+
+/** The demo business account's own locations (Arbeidsflate › Lokasjoner):
+ *  every other business on the map belongs to someone else. */
+export const OWNED_BUSINESS_IDS: readonly string[] = ["b1", "b2", "b3", "b4"];
+
 // ── Lookups (Phase 19). With hundreds of items, a `find` or `filter` over a
 // whole array for every pin, card and rating adds up, so lookups go through
 // lazy indexes. An index is rebuilt when its array changes length or after
