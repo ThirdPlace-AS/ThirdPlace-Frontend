@@ -59,9 +59,10 @@ import {
 import { showToast } from "@/components/Toast";
 import { confirmToast } from "@/copy";
 import { openDirections } from "@/lib/directions";
+import { reportFix } from "@/lib/origin";
 import { useGuestMode } from "@/components/map/hooks/useGuestMode";
 import { MapBrowseSheet } from "@/components/map/MapBrowseSheet";
-import { MOCK_WEATHER, OSLO_AREAS, places } from "@/fixtures";
+import { MOCK_WEATHER, AREAS, places } from "@/fixtures";
 import { useMockResource } from "@/hooks/useMockResource";
 import { useLoadPhase } from "@/hooks/useLoadPhase";
 import { useNotificationReads } from "@/hooks/useNotificationReads";
@@ -287,7 +288,7 @@ export default function MapScreen() {
     // "Where?" recenters the map to the chosen Oslo area (demo — reuses the
     // manual-area fallback; it does not refilter the mock distances).
     if (next.whereArea && next.whereArea !== filters.filters.whereArea) {
-      const area = OSLO_AREAS.find((a) => a.name === next.whereArea);
+      const area = AREAS.find((a) => a.name === next.whereArea);
       if (area) {
         location.selectArea(area);
         camera.recenter();
@@ -300,6 +301,8 @@ export default function MapScreen() {
   // ask for it, or fall back to the manual-area sheet.
   const handleLocationPress = async () => {
     if (location.status === "granted" && location.coord) {
+      // Distances follow the phone again from exactly here.
+      reportFix(location.coord, { force: true });
       camera.recenter(USER_PUCK.locateZoom);
     } else if (location.status === "granted") {
       // A manual area replaced the GPS fix — go back to the real position.

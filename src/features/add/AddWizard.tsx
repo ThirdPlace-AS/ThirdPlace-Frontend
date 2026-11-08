@@ -44,7 +44,7 @@ import {
   EXPERIENCE_VIBES,
   experienceById,
   experiences,
-  OSLO_AREAS,
+  AREAS,
   people,
   places,
   REPEAT_OPTIONS,
@@ -543,7 +543,7 @@ function StepBody({
           }
         >
           <ChipRow
-            options={OSLO_AREAS.map((a) => a.name)}
+            options={AREAS.map((a) => a.name)}
             selected={draft.area ? [draft.area] : []}
             onPress={(a) => patch({ area: a })}
           />
@@ -579,7 +579,7 @@ function StepBody({
             <Text variant="caption" tone="muted" className="flex-1">
               {draft.area &&
               !HOST_PLACES.some((p) => p.name === draft.area) &&
-              !OSLO_AREAS.some((a) => a.name === draft.area)
+              !AREAS.some((a) => a.name === draft.area)
                 ? `Valgt: ${draft.area}`
                 : "Søk etter et annet sted …"}
             </Text>
@@ -592,7 +592,7 @@ function StepBody({
           ) : null}
           <Label>Annet sted</Label>
           <ChipRow
-            options={OSLO_AREAS.map((a) => a.name)}
+            options={AREAS.map((a) => a.name)}
             selected={draft.area ? [draft.area] : []}
             onPress={(a) => patch({ area: a })}
           />

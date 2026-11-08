@@ -10,6 +10,7 @@ import {
   type MockGroup,
   type MockPlace,
 } from "@/fixtures";
+import { distanceLabelFor } from "@/lib/origin";
 
 import type { SheetKind } from "../sheetTypes";
 
@@ -71,7 +72,7 @@ export function searchFixtures(query: string): SearchGroups {
       kind: "place",
       id: p.id,
       title: p.name,
-      subtitle: `${p.category} · ${p.distance}`,
+      subtitle: `${p.category} · ${distanceLabelFor(p.coord)}`,
     }));
 
   const experienceResults: SearchResult[] = experiences

@@ -5,7 +5,7 @@ import { Button } from "@/components/Button";
 import { CategoryArt } from "@/components/illustrations/CategoryArt";
 import { Chip } from "@/components/Chip";
 import { Sheet } from "@/components/Sheet";
-import { OSLO_AREAS, type MockArea } from "@/fixtures";
+import { AREAS, type MockArea } from "@/fixtures";
 
 import type { LocationStatus } from "./hooks/useMapLocation";
 
@@ -97,7 +97,7 @@ export function MapLocationSheet({
           Velg område
         </Text>
         <View className="flex-row flex-wrap gap-2">
-          {OSLO_AREAS.map((a) => (
+          {AREAS.map((a) => (
             <Chip
               key={a.name}
               label={a.name}

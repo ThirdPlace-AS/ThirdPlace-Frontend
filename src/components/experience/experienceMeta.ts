@@ -1,12 +1,13 @@
 // Pure helpers for the experience page (Phase 11 G5, Phase 12 H4): host,
 // area and nearby experiences, all derived from MOCK fixture fields.
 import {
-  OSLO_AREAS,
+  areaFor as nearestArea,
   experiences,
   personById,
   type MockExperience,
   type MockPerson,
 } from "@/fixtures";
+import { distanceMeters } from "@/lib/distance";
 
 /** The fixture person who hosts this experience (`hostId`, never by name).
  *  An Arrangement is hosted by its organiser's contact person. */
@@ -16,16 +17,9 @@ export function hostPerson(
   return personById(exp.hostId);
 }
 
-const dist2 = (a: [number, number], b: [number, number]) =>
-  (a[0] - b[0]) ** 2 + (a[1] - b[1]) ** 2;
-
-/** Nearest named Oslo area to a coordinate. */
+/** Name of the nearest named area (Oslo or Akershus) to a coordinate. */
 export function areaFor(coord: [number, number]): string {
-  let best = OSLO_AREAS[0];
-  for (const a of OSLO_AREAS) {
-    if (!best || dist2(a.coord, coord) < dist2(best.coord, coord)) best = a;
-  }
-  return best?.name ?? "Oslo";
+  return nearestArea(coord).name;
 }
 
 /** Small caption for the page top bar: "Sosialt · Grünerløkka". */
@@ -39,7 +33,7 @@ export function moreExperiences(exp: MockExperience, n = 6): MockExperience[] {
   const here = exp.meetingPoint.coord;
   return experiences
     .filter((e) => e.id !== exp.id && e.status !== "cancelled")
-    .map((e) => ({ e, d: dist2(e.meetingPoint.coord, here) }))
+    .map((e) => ({ e, d: distanceMeters(e.meetingPoint.coord, here) }))
     .sort((a, b) => a.d - b.d)
     .slice(0, n)
     .map((x) => x.e);

@@ -32,8 +32,9 @@ import {
 } from "./mapFilters";
 import { experienceMatchesQuery } from "./mapSearch";
 import { goingLine } from "@/lib/going";
+import { distanceLabelFor, getOrigin, type Origin } from "@/lib/origin";
 
-function placeToItem(p: MockPlace): DiscoveryItem {
+function placeToItem(p: MockPlace, origin: Origin): DiscoveryItem {
   return {
     markerId: markerId("place", p.id),
     kind: "place",
@@ -41,7 +42,8 @@ function placeToItem(p: MockPlace): DiscoveryItem {
     coord: p.coord,
     category: p.category,
     title: p.name,
-    subtitle: p.distance,
+    // Measured from the person (src/lib/origin.ts), not typed in.
+    subtitle: distanceLabelFor(p.coord, origin),
     meta: `${"kr".repeat(p.priceLevel)} · ${p.openNow ? "Åpent" : "Stengt"}`,
     rating: placeRating(p.id).score,
     reviewCount: placeRating(p.id).count,
@@ -92,6 +94,9 @@ export type AdapterInput = {
   // The full filter set: experiences then go through the same facets as the
   // places (applyExperienceFilters); time/hasSpots above are then ignored.
   filters?: MapFilters;
+  // Where distances are measured from (Phase 19); defaults to the current
+  // origin (the phone, a picked area or Grünerløkka).
+  origin?: Origin;
 };
 
 // Resolves the active discovery mode into the items to show on the map + list.
@@ -103,8 +108,9 @@ export function resultForMode({
   time = null,
   hasSpots = false,
   filters,
+  origin = getOrigin(),
 }: AdapterInput): ModeResult {
-  const placeItems = places.map(placeToItem);
+  const placeItems = places.map((p) => placeToItem(p, origin));
   // Experiences after the same filters as the places (H5c: one pipeline
   // for the map and Sveip); without filters, the Når / Ledige plasser /
   // search filters only.
@@ -169,7 +175,7 @@ export function resultForMode({
       // an experience's status — hiding a saved item behind a filter reads as
       // "not saved". Cancelled experiences still drop out.
       const saved = [
-        ...allPlaces.map(placeToItem),
+        ...allPlaces.map((p) => placeToItem(p, origin)),
         ...experiences
           .filter((e) => e.status !== "cancelled")
           .map(experienceToItem),

@@ -13,6 +13,7 @@ import {
 } from "@/fixtures";
 import { libImage, photosForPlace } from "@/fixtures/images";
 import { formatRating } from "@/lib/format";
+import { distanceLabelFor, useOrigin } from "@/lib/origin";
 
 import { Gallery } from "../Gallery";
 import type { PushFn } from "../sheetTypes";
@@ -20,6 +21,7 @@ import { markerId } from "../types/mapPresentation";
 import { DetailActions } from "./DetailActions";
 
 export function PlaceContent({ id, push }: { id: string; push: PushFn }) {
+  const origin = useOrigin();
   const place = placeById(id);
   if (!place) {
     return (
@@ -46,7 +48,7 @@ export function PlaceContent({ id, push }: { id: string; push: PushFn }) {
           </Text>
         </View>
         <Text variant="caption" tone="muted">
-          · {place.distance}
+          · {distanceLabelFor(place.coord, origin)}
         </Text>
         <Text
           variant="label"

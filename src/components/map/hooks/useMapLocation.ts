@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 
 import { MAP_CENTER, type MockArea } from "@/fixtures";
+import { reportFix, setOriginArea } from "@/lib/origin";
 
 // expo-location is loaded lazily inside request() so a build that doesn't include
 // the native module doesn't crash at import — the request just resolves to
@@ -61,7 +62,11 @@ export function useMapLocation() {
       const pos = await Location.getCurrentPositionAsync({
         accuracy: Location.Accuracy.Balanced,
       });
-      setCoord([pos.coords.longitude, pos.coords.latitude]);
+      const fix: [number, number] = [pos.coords.longitude, pos.coords.latitude];
+      setCoord(fix);
+      // A fresh request (Posisjon, the location sheet): distances follow the
+      // phone from here.
+      reportFix(fix, { force: true });
       setArea(null);
       setPrecise(pos.coords.accuracy != null && pos.coords.accuracy <= 100);
       setStatus("granted");
@@ -78,7 +83,13 @@ export function useMapLocation() {
           { accuracy: Location.Accuracy.Balanced, distanceInterval: 10 },
           (p) => {
             if (!live()) return;
-            setCoord([p.coords.longitude, p.coords.latitude]);
+            const next: [number, number] = [
+              p.coords.longitude,
+              p.coords.latitude,
+            ];
+            setCoord(next);
+            // Jitter stays out of distances; a real move (> 250 m) counts.
+            reportFix(next);
             setPrecise(p.coords.accuracy != null && p.coords.accuracy <= 100);
           },
         );
@@ -125,6 +136,7 @@ export function useMapLocation() {
     (a: MockArea) => {
       stop();
       setArea(a);
+      setOriginArea(a.coord);
       setCoord(null);
       setPrecise(false);
       setHeading(null);

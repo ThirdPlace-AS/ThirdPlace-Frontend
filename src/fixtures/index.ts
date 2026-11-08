@@ -733,16 +733,18 @@ export const places: MockPlace[] = [
 // Map default camera center (mock — central Oslo).
 export const MAP_CENTER: [number, number] = [10.758, 59.9227];
 
-// Manual-area fallback options when precise GPS is unavailable/denied (MOCK Oslo
-// neighbourhoods — NOT authoritative geodata). Lets guests browse without GPS.
-export type MockArea = { name: string; coord: [number, number] };
-export const OSLO_AREAS: MockArea[] = [
-  { name: "Grünerløkka", coord: [10.758, 59.9227] },
-  { name: "Sentrum", coord: [10.7464, 59.9127] },
-  { name: "Majorstuen", coord: [10.7146, 59.9299] },
-  { name: "Frogner", coord: [10.7052, 59.9212] },
-  { name: "Grønland", coord: [10.7635, 59.9127] },
-];
+// Named areas across Oslo and Akershus (Phase 19): labels, the Hvor picker
+// and the manual-area fallback (src/fixtures/catalog/areas.ts).
+export {
+  AREAS,
+  COVERAGE_BBOX,
+  REGIONS,
+  areaFor,
+  areaLabel,
+  inCoverage,
+  type MockArea,
+  type Region,
+} from "./catalog/areas";
 
 // The demo city shown in the map peek header (MOCK — no reverse-geocode; the
 // real source would be a market/city entity, not yet contract-certified).

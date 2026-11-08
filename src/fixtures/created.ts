@@ -17,7 +17,7 @@ import {
   experiences,
   groups,
   invalidateFixtureIndexes,
-  OSLO_AREAS,
+  AREAS,
   places,
   profile,
   type CancellationOption,
@@ -243,8 +243,7 @@ export function createExperience(input: NewExperienceInput): string {
   const date = new Date(y ?? 2026, (mo ?? 1) - 1, d ?? 1);
   const place = places.find((p) => p.name === input.area);
   const areaCoord =
-    OSLO_AREAS.find((a) => a.name === input.area)?.coord ??
-    OSLO_AREAS[0]!.coord;
+    AREAS.find((a) => a.name === input.area)?.coord ?? AREAS[0]!.coord;
   const exp: MockExperience = {
     id,
     title: input.title.trim(),

@@ -31,6 +31,7 @@ import {
   type IconName,
 } from "@/components/ui";
 import {
+  areaLabel,
   chatForExperience,
   chats,
   groupById,
@@ -52,7 +53,7 @@ import {
   MeetingSection,
   ThingsToKnowSection,
 } from "./ExperienceSections";
-import { areaFor, hostPerson, moreExperiences } from "./experienceMeta";
+import { hostPerson, moreExperiences } from "./experienceMeta";
 
 /** Height of the page top bar below the status bar (the route page and the
  *  map sheet's top snap share it so both pages line up). */
@@ -197,7 +198,7 @@ export function ExperiencePage({
         <InfoRow
           icon="location-outline"
           title={place?.name ?? exp.meetingPoint.name}
-          subtitle={`${areaFor(exp.meetingPoint.coord)}, Oslo`}
+          subtitle={areaLabel(exp.meetingPoint.coord)}
           onPress={
             place ? () => onNavigate(`/place/${place.id}` as Href) : undefined
           }

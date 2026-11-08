@@ -20,7 +20,8 @@ import {
   useSheetChrome,
 } from "@/components/ui";
 import { elevation } from "@/theme";
-import { MAP_CITY, type MockWeather } from "@/fixtures";
+import { areaFor, type MockWeather } from "@/fixtures";
+import { useOrigin } from "@/lib/origin";
 import { formatRating } from "@/lib/format";
 import { GoingLine } from "@/components/GoingLine";
 import { PhotoPager } from "./PhotoPager";
@@ -172,7 +173,10 @@ export function MapBrowseSheet({
     [selectedMarkerId, isSaved, handleSelect, handleToggleSave, handleActions],
   );
 
-  const cityLine = areaLabel ? `${MAP_CITY} · ${areaLabel}` : MAP_CITY;
+  // The municipality the person is in (Phase 19: Oslo and Akershus), then
+  // the picked area or "Min posisjon", as before.
+  const city = areaFor(useOrigin().coord).municipality;
+  const cityLine = areaLabel ? `${city} · ${areaLabel}` : city;
   // The pill is mounted whenever the sheet is live; its own opacity hides it
   // until the sheet nears full extent.
   const showMapPill = !hidden;

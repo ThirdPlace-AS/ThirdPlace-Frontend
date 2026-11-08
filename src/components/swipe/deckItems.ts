@@ -22,6 +22,7 @@ import {
 } from "@/fixtures";
 import { libImage, photosForPlace } from "@/fixtures/images";
 import { formatRating } from "@/lib/format";
+import { distanceLabelFor } from "@/lib/origin";
 import { media } from "@/theme";
 
 export type DeckKind = "experience" | "place";
@@ -63,7 +64,9 @@ export function experienceToDeckItem(e: MockExperience): DeckItem {
     lines: [
       {
         icon: "location-outline",
-        text: place ? `${place.name} · ${place.distance}` : e.meetingPoint.name,
+        text: place
+          ? `${place.name} · ${distanceLabelFor(place.coord)}`
+          : e.meetingPoint.name,
       },
       { icon: "calendar-outline", text: e.when },
       {
@@ -92,7 +95,10 @@ export function placeToDeckItem(p: MockPlace): DeckItem {
     photos,
     scrims: photos.map(() => PLACE_SCRIM),
     lines: [
-      { icon: "location-outline", text: `${p.category} · ${p.distance}` },
+      {
+        icon: "location-outline",
+        text: `${p.category} · ${distanceLabelFor(p.coord)}`,
+      },
       {
         icon: "star-outline",
         text: count
@@ -103,6 +109,6 @@ export function placeToDeckItem(p: MockPlace): DeckItem {
     ],
     chips: p.vibes,
     chatId: chatForPlace(p.id)?.id,
-    subtitle: `${p.category} · ${p.distance}`,
+    subtitle: `${p.category} · ${distanceLabelFor(p.coord)}`,
   };
 }

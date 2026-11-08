@@ -17,7 +17,7 @@ import { Button } from "@/components/Button";
 import { Chip } from "@/components/Chip";
 import { Input } from "@/components/Input";
 import { useGuestMode } from "@/components/map/hooks/useGuestMode";
-import { OSLO_AREAS } from "@/fixtures";
+import { AREAS } from "@/fixtures";
 import { checkBirthday, formatBirthdayInput } from "@/features/onboarding/age";
 import { UnderageScreen } from "@/features/onboarding/UnderageScreen";
 import { resetTo } from "@/lib/navigation";
@@ -226,7 +226,7 @@ export default function BusinessOnboarding() {
                 subtitle="Velg området, og skriv inn adressen."
               >
                 <View className="flex-row flex-wrap gap-2">
-                  {OSLO_AREAS.map((a) => (
+                  {AREAS.map((a) => (
                     <Chip
                       key={a.name}
                       label={a.name}

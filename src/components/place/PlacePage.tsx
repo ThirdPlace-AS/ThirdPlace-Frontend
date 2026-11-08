@@ -22,7 +22,6 @@ import {
   HeroGallery,
   InfoRow,
 } from "@/components/experience/ExperiencePage";
-import { areaFor } from "@/components/experience/experienceMeta";
 import { ReviewsSection } from "@/components/reviews/ReviewsSection";
 import { sortReviews } from "@/components/reviews/reviewSort";
 import {
@@ -33,6 +32,7 @@ import {
   Pressable as UIPressable,
 } from "@/components/ui";
 import {
+  areaLabel,
   chatForPlace,
   places,
   priceBandFor,
@@ -47,6 +47,7 @@ import {
   photosForPlace,
 } from "@/fixtures/images";
 import { formatRating } from "@/lib/format";
+import { distanceLabelFor, useOrigin } from "@/lib/origin";
 
 /** Chips: vibes, then tags not already a vibe (each once). */
 export function placeChips(p: Pick<MockPlace, "vibes" | "tags">): string[] {
@@ -114,6 +115,7 @@ export function PlacePage({
 }) {
   const [report, setReport] = useState(false);
   const reviews = reviewsForPlace(place.id);
+  const origin = useOrigin();
   const { score, count } = ratingOf(reviews);
   const latest = sortReviews(reviews, "newest")[0];
   const reviewsHref = `/place/${place.id}/reviews` as Href;
@@ -165,7 +167,7 @@ export function PlacePage({
         <InfoRow
           icon="location-outline"
           title={place.address}
-          subtitle={`${place.category} · ${areaFor(place.coord)}, Oslo`}
+          subtitle={`${place.category} · ${areaLabel(place.coord)}`}
         />
         <InfoRow
           icon="time-outline"
@@ -257,7 +259,7 @@ export function PlacePage({
                     {p.name}
                   </Text>
                   <Text variant="caption" tone="muted" numberOfLines={1}>
-                    {`${p.category} · ${p.distance}${
+                    {`${p.category} · ${distanceLabelFor(p.coord, origin)}${
                       r.count ? ` · ★ ${formatRating(r.score)}` : ""
                     }`}
                   </Text>

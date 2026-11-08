@@ -2,12 +2,12 @@ import { useState } from "react";
 import { TextInput, View } from "react-native";
 
 import { Icon, Text, Pressable as UIPressable } from "@/components/ui";
-import { OSLO_AREAS } from "@/fixtures";
+import { AREAS } from "@/fixtures";
 import { useThemeColors } from "@/theme";
 
 import { useRecentSearches } from "./hooks/useRecentSearches";
 
-// "Where?" search for the filter sheet. A text field over the MOCK OSLO_AREAS
+// "Where?" search for the filter sheet. A text field over the MOCK AREAS
 // list (no geocoder). Selecting a suggestion sets the area name; the screen
 // recenters the map to it (see map.tsx handleApplyFilters). Not a real search.
 // Layout mirrors the reference Where flow: a tall search box, a "Nylige søk"
@@ -24,8 +24,8 @@ export function WhereField({
   const { recent, add } = useRecentSearches();
   const q = text.trim().toLowerCase();
   const matches = q
-    ? OSLO_AREAS.filter((a) => a.name.toLowerCase().includes(q))
-    : OSLO_AREAS;
+    ? AREAS.filter((a) => a.name.toLowerCase().includes(q))
+    : AREAS;
 
   const choose = (name: string) => {
     add(name);
