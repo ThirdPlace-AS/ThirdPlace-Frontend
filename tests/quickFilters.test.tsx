@@ -133,7 +133,7 @@ describe("applied chips on the map", () => {
 });
 
 describe("Kategori in Filtre", () => {
-  it("draws the categories like the sheet's other groups and filters", () => {
+  it("is one row per category that opens to Alle and filters", () => {
     // One outline icon per category, as Opplevelsestype has.
     expect(
       MARKER_CATEGORIES.every((c) =>
@@ -158,19 +158,21 @@ describe("Kategori in Filtre", () => {
       </SafeAreaProvider>,
     );
     const before = screen.getByText(/^Vis \d+ resultater$/).props.children;
-    // Outline chips are buttons with a selected state, like Opplevelsestype.
-    for (const c of MARKER_CATEGORIES) {
-      expect(
-        screen.getByRole("button", { name: MARKER_LABEL[c] }),
-      ).toBeTruthy();
-    }
-    expect(screen.queryAllByRole("checkbox", { name: "Kafé" })).toHaveLength(0);
-    const kafe = screen.getByRole("button", { name: "Kafé" });
-    fireEvent.press(kafe);
-    expect(
-      screen.getByRole("button", { name: "Kafé" }).props.accessibilityState,
-    ).toMatchObject({ selected: true });
-    expect(screen.getByText(/^Vis \d+ resultater$/).props.children).not.toBe(
+    // Founder 2026-11-08 (review): one row per category, each opening to
+    // "Alle" and its activities (it replaced the chip grid of ad13df1).
+    const rowOf = (label: string) =>
+      screen.getAllByRole("button", { name: new RegExp(`^${label}`) })[0]!;
+    for (const c of MARKER_CATEGORIES)
+      expect(rowOf(MARKER_LABEL[c]).props.accessibilityState).toMatchObject({
+        expanded: false,
+      });
+    fireEvent.press(rowOf("Kafé"));
+    expect(rowOf("Kafé").props.accessibilityState).toMatchObject({
+      expanded: true,
+    });
+    fireEvent.press(screen.getByRole("checkbox", { name: "Alle" }));
+    expect(rowOf("Kafé").props.accessibilityLabel).toBe("Kafé, Alle");
+    expect(screen.getByText(/^Vis \d+ resultat(er)?$/).props.children).not.toBe(
       before,
     );
   });

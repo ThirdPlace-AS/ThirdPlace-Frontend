@@ -219,11 +219,6 @@ function Section({
 // chips off-screen.
 type ChipItem = { label: string; icon: string };
 
-// The eight pin categories as chip items (labels as on the pins' legend).
-const CATEGORY_ITEMS: ChipItem[] = MARKER_CATEGORIES.map((c) => ({
-  label: MARKER_LABEL[c],
-  icon: MARKER_FILTER_ICON[c],
-}));
 // Type (Phase 19): what the item is, drawn like the other groups.
 const TYPE_ITEMS: ChipItem[] = ITEM_TYPES.map((t) => ({
   label: ITEM_TYPE_LABEL[t],
@@ -232,42 +227,94 @@ const TYPE_ITEMS: ChipItem[] = ITEM_TYPES.map((t) => ({
 const TYPE_BY_LABEL: Record<string, ItemType> = Object.fromEntries(
   ITEM_TYPES.map((t) => [ITEM_TYPE_LABEL[t], t]),
 );
-const CATEGORY_BY_LABEL: Record<string, MarkerCategory> = Object.fromEntries(
-  MARKER_CATEGORIES.map((c) => [MARKER_LABEL[c], c]),
-);
-/** A chosen category's activities (Phase 19, founder 2026-11-08), nested
- *  under Kategori so one can filter to a single activity: indented under the
- *  category's name, "Alle" first (the whole category), then every interest
- *  in it. Several picks combine (OR). */
-const ActivityGroup = memo(function ActivityGroup({
+/** Kategori as eight rows (founder 2026-11-08: "open each category as a
+ *  row"): each row opens to "Alle" (the whole category) and its activities,
+ *  so one can filter to a single activity. The row says what is picked.
+ *  Picks combine (OR); leaving the last activity also leaves the category. */
+export function categoryRowState(
+  f: Pick<MapFilters, "categories" | "interests">,
+  category: MarkerCategory,
+) {
+  const items = interestsInCategory(category);
+  const picks = f.interests.filter((i) => items.some((x) => x.id === i));
+  const whole = f.categories.includes(category) && picks.length === 0;
+  const summary = whole
+    ? "Alle"
+    : picks.length === 1
+      ? (interestById(picks[0])?.label ?? "1 valgt")
+      : picks.length > 1
+        ? `${picks.length} valgt`
+        : undefined;
+  return { items, picks, whole, summary };
+}
+
+type CategoryPick = Pick<MapFilters, "categories" | "interests">;
+
+/** "Alle" in a row: the whole category on, or off again. */
+export function toggleWholeCategory(
+  f: CategoryPick,
+  category: MarkerCategory,
+): CategoryPick {
+  const { whole } = categoryRowState(f, category);
+  const inCategory = (i: string) => interestById(i)?.category === category;
+  return whole
+    ? {
+        categories: f.categories.filter((x) => x !== category),
+        interests: f.interests,
+      }
+    : {
+        categories: [...new Set([...f.categories, category])],
+        interests: f.interests.filter((i) => !inCategory(i)),
+      };
+}
+
+/** One activity in a row on or off; leaving the last one leaves the
+ *  category too, so nothing stays filtered by accident. */
+export function toggleActivity(
+  f: CategoryPick,
+  category: MarkerCategory,
+  id: string,
+): CategoryPick {
+  const inCategory = (i: string) => interestById(i)?.category === category;
+  if (f.interests.includes(id)) {
+    const interests = f.interests.filter((x) => x !== id);
+    return {
+      interests,
+      categories: interests.some(inCategory)
+        ? f.categories
+        : f.categories.filter((x) => x !== category),
+    };
+  }
+  return {
+    interests: [...f.interests, id],
+    categories: [...new Set([...f.categories, category])],
+  };
+}
+
+const CategoryRow = memo(function CategoryRow({
   category,
-  picked,
-  onToggle,
-  onAll,
+  filters,
+  onChange,
 }: {
   category: MarkerCategory;
-  picked: readonly string[];
-  onToggle: (interestId: string) => void;
-  onAll: () => void;
+  filters: CategoryPick;
+  onChange: (update: (f: CategoryPick) => CategoryPick) => void;
 }) {
-  const items = interestsInCategory(category);
-  const none = !items.some((i) => picked.includes(i.id));
+  const { items, picks, whole, summary } = categoryRowState(filters, category);
   return (
-    <View className="ml-1 gap-2 border-l-2 border-line pl-3">
-      <Text variant="micro" weight="semibold" tone="muted">
-        {MARKER_LABEL[category]}
-      </Text>
-      <View
-        className="flex-row flex-wrap gap-2"
-        accessibilityLabel={`Aktiviteter i ${MARKER_LABEL[category]}`}
-      >
+    <Accordion
+      title={MARKER_LABEL[category]}
+      icon={MARKER_FILTER_ICON[category]}
+      meta={summary}
+    >
+      <View className="flex-row flex-wrap gap-2 pb-3 pt-1">
         <Chip
           variant="outline"
           size="sm"
           role="checkbox"
           label="Alle"
-          selected={none}
-          onPress={onAll}
+          selected={whole}
+          onPress={() => onChange((f) => toggleWholeCategory(f, category))}
         />
         {items.map((i) => (
           <Chip
@@ -276,12 +323,12 @@ const ActivityGroup = memo(function ActivityGroup({
             size="sm"
             role="checkbox"
             label={i.label}
-            selected={picked.includes(i.id)}
-            onPress={() => onToggle(i.id)}
+            selected={picks.includes(i.id)}
+            onPress={() => onChange((f) => toggleActivity(f, category, i.id))}
           />
         ))}
       </View>
-    </View>
+    </Accordion>
   );
 });
 
@@ -790,54 +837,16 @@ function FilterBody({
               only here (founder 2026-11-08) and drawn like the sheet's other
               groups: outline chips with an icon, an ink ring when chosen. */}
           <Section title="Kategori">
-            <View className="gap-4">
-              <ChipGroup
-                items={CATEGORY_ITEMS}
-                selected={(l) => {
-                  const c = CATEGORY_BY_LABEL[l];
-                  return c !== undefined && draft.categories.includes(c);
-                }}
-                onToggle={(l) => {
-                  const c = CATEGORY_BY_LABEL[l];
-                  if (!c) return;
-                  // Leaving a category also drops its picked activities.
-                  setDraft((d) =>
-                    d.categories.includes(c)
-                      ? {
-                          ...d,
-                          categories: d.categories.filter((x) => x !== c),
-                          interests: d.interests.filter(
-                            (i) => interestById(i)?.category !== c,
-                          ),
-                        }
-                      : { ...d, categories: [...d.categories, c] },
-                  );
-                }}
-              />
-              {/* Nested (Phase 19, founder 2026-11-08): each chosen
-                  category opens its activities. */}
-              {MARKER_CATEGORIES.filter((c) =>
-                draft.categories.includes(c),
-              ).map((c) => (
-                <ActivityGroup
+            {/* Eight rows, each opening to its activities (founder
+                2026-11-08: nested so one can filter to one activity). */}
+            <View className="gap-1">
+              {MARKER_CATEGORIES.map((c) => (
+                <CategoryRow
                   key={c}
                   category={c}
-                  picked={draft.interests}
-                  onToggle={(id) =>
-                    setDraft((d) => ({
-                      ...d,
-                      interests: d.interests.includes(id)
-                        ? d.interests.filter((x) => x !== id)
-                        : [...d.interests, id],
-                    }))
-                  }
-                  onAll={() =>
-                    setDraft((d) => ({
-                      ...d,
-                      interests: d.interests.filter(
-                        (i) => interestById(i)?.category !== c,
-                      ),
-                    }))
+                  filters={draft}
+                  onChange={(update) =>
+                    setDraft((d) => ({ ...d, ...update(d) }))
                   }
                 />
               ))}

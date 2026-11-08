@@ -7,7 +7,12 @@ import { describe, expect, it, jest } from "@jest/globals";
 import { fireEvent, render, screen } from "@testing-library/react-native";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 
-import { MapFilterSheet } from "@/components/map/MapFilterSheet";
+import {
+  MapFilterSheet,
+  categoryRowState,
+  toggleActivity,
+  toggleWholeCategory,
+} from "@/components/map/MapFilterSheet";
 import { resultForMode } from "@/components/map/services/mapFixtureAdapter";
 import {
   activeExtraFilterCount,
@@ -129,8 +134,27 @@ describe("chips and badge", () => {
   });
 });
 
-describe("Filtre's Kategori", () => {
-  it("opens a category's activities and filters to one", () => {
+describe("Filtre's Kategori rows (founder 2026-11-08)", () => {
+  it("say what is picked and follow the row rules", () => {
+    const none = { categories: [], interests: [] };
+    expect(categoryRowState(none, "trening").summary).toBeUndefined();
+    const whole = toggleWholeCategory(none, "trening");
+    expect(whole).toEqual({ categories: ["trening"], interests: [] });
+    expect(categoryRowState(whole, "trening").summary).toBe("Alle");
+    // An activity narrows the whole category to itself.
+    const one = toggleActivity(whole, "trening", "klatring");
+    expect(one).toEqual({ categories: ["trening"], interests: ["klatring"] });
+    expect(categoryRowState(one, "trening").summary).toBe("Klatring");
+    const two = toggleActivity(one, "trening", "padel");
+    expect(categoryRowState(two, "trening").summary).toBe("2 valgt");
+    // "Alle" again goes back to the whole category, then off.
+    expect(toggleWholeCategory(two, "trening")).toEqual(whole);
+    expect(toggleWholeCategory(whole, "trening")).toEqual(none);
+    // Leaving the last activity leaves the category.
+    expect(toggleActivity(one, "trening", "klatring")).toEqual(none);
+  });
+
+  it("open to their activities and filter to one", () => {
     render(
       <MapFilterSheet
         visible
@@ -142,24 +166,27 @@ describe("Filtre's Kategori", () => {
       />,
       { wrapper },
     );
-    const all = screen.getByText(/^Vis \d+ resultat(er)?$/).props.children;
+    const count = () =>
+      screen.getByText(/^Vis \d+ resultat(er)?$/).props.children as string;
+    const all = count();
+    // Collapsed rows keep their activities hidden.
     expect(screen.queryByRole("checkbox", { name: "Klatring" })).toBeNull();
     // Kategori comes first; Opplevelsestype further down has its own Trening.
-    fireEvent.press(screen.getAllByRole("button", { name: "Trening" })[0]!);
+    const row = () => screen.getAllByRole("button", { name: /^Trening/ })[0]!;
+    fireEvent.press(row());
     expect(screen.getByRole("checkbox", { name: "Alle" })).toBeTruthy();
     fireEvent.press(screen.getByRole("checkbox", { name: "Klatring" }));
-    expect(screen.getByText("Vis 5 resultater")).toBeTruthy();
-    expect(
-      screen.getByRole("checkbox", { name: "Klatring" }).props
-        .accessibilityState,
-    ).toMatchObject({ checked: true });
-    // "Alle" brings the whole category back; leaving it closes the list.
+    expect(count()).toBe("Vis 5 resultater");
+    expect(row().props.accessibilityLabel).toBe("Trening, Klatring");
+    // Off again: nothing filtered.
+    fireEvent.press(screen.getByRole("checkbox", { name: "Klatring" }));
+    expect(count()).toBe(all);
+    expect(row().props.accessibilityLabel).toBe("Trening");
+    // "Alle": the whole category, then off.
     fireEvent.press(screen.getByRole("checkbox", { name: "Alle" }));
-    expect(screen.queryByText("Vis 5 resultater")).toBeNull();
-    fireEvent.press(screen.getAllByRole("button", { name: "Trening" })[0]!);
-    expect(screen.queryByRole("checkbox", { name: "Klatring" })).toBeNull();
-    expect(screen.getByText(/^Vis \d+ resultat(er)?$/).props.children).toBe(
-      all,
-    );
+    expect(count()).not.toBe(all);
+    expect(row().props.accessibilityLabel).toBe("Trening, Alle");
+    fireEvent.press(screen.getByRole("checkbox", { name: "Alle" }));
+    expect(count()).toBe(all);
   });
 });
