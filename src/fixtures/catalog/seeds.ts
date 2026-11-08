@@ -4,6 +4,7 @@ import { KAFE } from "./kafe";
 import { MAT_A } from "./mat-a";
 import { MAT_B } from "./mat-b";
 import { NATUR_A } from "./natur-a";
+import { NATUR_B } from "./natur-b";
 import { SOSIALT_A } from "./sosialt-a";
 import { SOSIALT_B } from "./sosialt-b";
 import { SOSIALT_C } from "./sosialt-c";
@@ -20,6 +21,7 @@ export const SEEDS: readonly InterestSeed[] = [
   ...SOSIALT_B,
   ...SOSIALT_C,
   ...NATUR_A,
+  ...NATUR_B,
   ...TRENING,
   ...VELVAERE_A,
   ...VELVAERE_B,
