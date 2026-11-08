@@ -15,6 +15,7 @@ import {
 } from "@/fixtures";
 import { libImage, photosForPlace } from "@/fixtures/images";
 import { formatRating } from "@/lib/format";
+import { isPlaceOpen } from "@/lib/openingHours";
 import { distanceLabelFor, useOrigin } from "@/lib/origin";
 
 import { Gallery } from "../Gallery";
@@ -55,9 +56,9 @@ export function PlaceContent({ id, push }: { id: string; push: PushFn }) {
         <Text
           variant="label"
           weight="regular"
-          tone={place.openNow ? "success" : "muted"}
+          tone={isPlaceOpen(place) ? "success" : "muted"}
         >
-          · {place.openNow ? "Åpent nå" : "Stengt"}
+          · {isPlaceOpen(place) ? "Åpent nå" : "Stengt"}
         </Text>
         <Text variant="caption" tone="muted">
           · {PLACE_KIND_LABEL[place.kind]} · {areaFor(place.coord).name}

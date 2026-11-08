@@ -20,6 +20,7 @@ import {
 
 import { distanceMeters } from "@/lib/distance";
 import { formatRating } from "@/lib/format";
+import { isPlaceOpen } from "@/lib/openingHours";
 import { shortDayMonth } from "@/lib/dates";
 import { getOrigin, type Origin } from "@/lib/origin";
 
@@ -212,7 +213,8 @@ export function applyFilters(
       !f.accessibility.every((a) => p.accessibility.includes(a))
     )
       return false;
-    if (f.openNowOnly && !p.openNow) return false;
+    // "Åpent nå" reads the place's hours at this moment (src/lib/openingHours.ts).
+    if (f.openNowOnly && !isPlaceOpen(p)) return false;
     // Same matcher as the overlay search (name/category/tags) so submitting a
     // query from the overlay narrows the map exactly as the overlay showed it.
     if (q !== "" && !placeMatchesQuery(p, q)) return false;

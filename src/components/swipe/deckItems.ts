@@ -32,6 +32,7 @@ import {
 } from "@/fixtures";
 import { libImage, photosForPlace } from "@/fixtures/images";
 import { formatRating } from "@/lib/format";
+import { isPlaceOpen } from "@/lib/openingHours";
 import { distanceMeters } from "@/lib/distance";
 import { distanceLabelFor, getOrigin, type Origin } from "@/lib/origin";
 import { media } from "@/theme";
@@ -103,7 +104,10 @@ export function experienceToDeckItem(e: MockExperience): DeckItem {
 // white text legible over any photo (the card also lays a constant floor).
 const PLACE_SCRIM = media.base;
 
-export function placeToDeckItem(p: MockPlace): DeckItem {
+export function placeToDeckItem(
+  p: MockPlace,
+  now: Date = new Date(),
+): DeckItem {
   const photos = photosForPlace(p).map(libImage);
   const { score, count } = ratingOf(reviewsForPlace(p.id));
   return {
@@ -124,7 +128,10 @@ export function placeToDeckItem(p: MockPlace): DeckItem {
           ? `${formatRating(score)} · ${count} ${count === 1 ? "vurdering" : "vurderinger"}`
           : "Ingen vurderinger ennå",
       },
-      { icon: "time-outline", text: p.openNow ? "Åpent nå" : "Stengt nå" },
+      {
+        icon: "time-outline",
+        text: isPlaceOpen(p, now) ? "Åpent nå" : "Stengt nå",
+      },
     ],
     chips: p.vibes,
     chatId: chatForPlace(p.id)?.id,
@@ -148,7 +155,7 @@ export function deckFor(
       .map((r) => r.x);
   return placesTab
     ? nearest(applyFilters(places, "", filters, origin), (p) => p.coord).map(
-        placeToDeckItem,
+        (p) => placeToDeckItem(p),
       )
     : nearest(
         applyExperienceFilters(experiences, "", filters, origin),

@@ -39,6 +39,7 @@ import {
 import { experienceMatchesQuery } from "./mapSearch";
 import { goingLine } from "@/lib/going";
 import { distanceMeters, formatDistance } from "@/lib/distance";
+import { isPlaceOpen } from "@/lib/openingHours";
 import { getOrigin, type Origin } from "@/lib/origin";
 
 import {
@@ -63,7 +64,7 @@ function placeToItem(p: MockPlace, origin: Origin): DiscoveryItem {
     type: p.kind,
     typeLabel: placeTypeLabel(p),
     area: areaFor(p.coord).name,
-    meta: `${"kr".repeat(p.priceLevel)} · ${p.openNow ? "Åpent" : "Stengt"}`,
+    meta: `${"kr".repeat(p.priceLevel)} · ${isPlaceOpen(p) ? "Åpent" : "Stengt"}`,
     rating: placeRating(p.id).score,
     reviewCount: placeRating(p.id).count,
     tags: p.vibes,

@@ -204,6 +204,7 @@ export function buildCatalog(
         priceNok: p.priceNok,
         vibes: p.vibes,
         blurb: p.blurb,
+        // A fallback only: "Åpent nå" is read from `hours` (isPlaceOpen).
         openNow: p.openNow ?? true,
         tags: p.tags,
         about: p.about,

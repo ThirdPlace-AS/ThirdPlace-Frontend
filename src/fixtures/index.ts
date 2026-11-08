@@ -296,6 +296,8 @@ export type MockPlace = {
   blurb: string;
   // No stored rating or review count: both come from the place's reviews
   // (placeRating), so every surface shows the same numbers.
+  // Only the fallback for hours `isPlaceOpen` can't read (src/lib/openingHours.ts):
+  // "Åpent nå" comes from `hours` at the moment it is shown.
   openNow: boolean;
   tags: string[];
   about: string;

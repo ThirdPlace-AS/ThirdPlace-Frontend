@@ -52,6 +52,7 @@ import {
   photosForPlace,
 } from "@/fixtures/images";
 import { formatRating, membersLabel } from "@/lib/format";
+import { isPlaceOpen } from "@/lib/openingHours";
 import {
   ITEM_TYPE_ICON,
   experienceTypeLabel,
@@ -219,7 +220,7 @@ export function PlacePage({
         />
         <InfoRow
           icon="time-outline"
-          title={place.openNow ? "Åpent nå" : "Stengt nå"}
+          title={isPlaceOpen(place) ? "Åpent nå" : "Stengt nå"}
           subtitle={place.hours}
         />
         <InfoRow
