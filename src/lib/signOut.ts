@@ -1,0 +1,25 @@
+import { resetBlocked } from "@/lib/blocked";
+import { resetMyProfile } from "@/lib/myProfile";
+import { resetMyRatings } from "@/lib/myRatings";
+import { resetTo } from "@/lib/navigation";
+import { resetPinnedChats } from "@/lib/pinnedChats";
+import { resetPreferences } from "@/lib/preferences";
+import { resetPrivacyPrefs } from "@/lib/privacyPrefs";
+import { resetSignupProgress } from "@/lib/signupProgress";
+
+/**
+ * Logg ut (and Slett konto, which ends the session the same way): a new
+ * sign-up starts from the beginning and the next account starts from its own
+ * profile, preferences and block list; back can't return to a signed-in
+ * screen (resetTo).
+ */
+export function signOut() {
+  resetSignupProgress();
+  resetMyProfile();
+  resetPreferences();
+  resetBlocked();
+  resetPrivacyPrefs();
+  resetPinnedChats();
+  resetMyRatings();
+  resetTo("/welcome");
+}
