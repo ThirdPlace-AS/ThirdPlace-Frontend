@@ -1,12 +1,18 @@
 import Constants, { ExecutionEnvironment } from "expo-constants";
-import type { ComponentType } from "react";
+import { useMemo, useState, type ComponentType } from "react";
 import { Platform, Pressable, View } from "react-native";
 
 import { env } from "@/lib/env";
 import { elevation, palette } from "@/theme";
 
 import type { MapStylePeriod } from "./mapStyles";
-import { clusterByGrid, projectToUnit } from "./services/softClustering";
+import {
+  clusterByGrid,
+  projectToUnit,
+  softBoxFor,
+  softTowns,
+  type SoftBox,
+} from "./services/softClustering";
 import type { DiscoveryItem } from "./types/mapPresentation";
 import { markerPaint } from "./pinStyle";
 import { USER_PUCK } from "./userPuck";
@@ -46,6 +52,9 @@ type MapProps = {
   // Coordinate of the selected marker to pan/center the camera onto (above the
   // detail sheet), Google-Maps style. SoftMap ignores it.
   focusCoord?: [number, number] | null;
+  // The pick came from the list or a link, not a pin: the native map zooms
+  // in until the pin leaves its cluster. SoftMap ignores it.
+  focusZoomIn?: boolean;
   // Mapbox base-map style URL (Kartlag). SoftMap ignores it.
   styleURL?: string;
   // Kartstil light preset and Terreng overlays (Kartlag). SoftMap ignores them.
@@ -65,12 +74,14 @@ type MapProps = {
 function SoftUserPuck({
   coord,
   heading,
+  box,
 }: {
   coord: [number, number];
   heading: number | null;
+  box: SoftBox;
 }) {
-  const { x, y } = projectToUnit(coord);
-  const box = USER_PUCK.haloRadius * 2;
+  const { x, y } = projectToUnit(coord, box);
+  const size = USER_PUCK.haloRadius * 2;
   const dot = (USER_PUCK.dotRadius + USER_PUCK.ringWidth) * 2;
   return (
     <View
@@ -79,18 +90,18 @@ function SoftUserPuck({
       style={{
         left: `${x * 100}%`,
         top: `${y * 100}%`,
-        width: box,
-        height: box,
-        transform: [{ translateX: -box / 2 }, { translateY: -box / 2 }],
+        width: size,
+        height: size,
+        transform: [{ translateX: -size / 2 }, { translateY: -size / 2 }],
       }}
     >
       {/* Same look as the native puck: halo, white ring, ember dot. */}
       <View
         className="absolute"
         style={{
-          width: box,
-          height: box,
-          borderRadius: box / 2,
+          width: size,
+          height: size,
+          borderRadius: size / 2,
           backgroundColor: USER_PUCK.halo,
           opacity: USER_PUCK.haloOpacity,
         }}
@@ -164,9 +175,37 @@ function SoftMap({
   userCoord,
   heading,
 }: MapProps) {
-  const clusters = clusterByGrid(markers);
+  // County scale (Phase 19 S4b): frame the markers on screen (and the
+  // person), cluster on a 44 dp grid, name the towns in view.
+  const [size, setSize] = useState({ w: 0, h: 0 });
+  const box = useMemo(
+    () =>
+      softBoxFor(
+        [...markers.map((m) => m.coord), ...(userCoord ? [userCoord] : [])],
+        size.w > 0 && size.h > 0 ? size.w / size.h : 1,
+      ),
+    [markers, userCoord, size.w, size.h],
+  );
+  const clusters = clusterByGrid(
+    markers,
+    size.w > 0 ? 44 / size.w : 0.04,
+    box,
+    size.h > 0 ? 44 / size.h : 0.04,
+  );
+  const towns = useMemo(
+    () => softTowns(box, size.w, size.h),
+    [box, size.w, size.h],
+  );
   return (
-    <View className="h-full w-full">
+    <View
+      className="h-full w-full"
+      onLayout={(e) =>
+        setSize({
+          w: e.nativeEvent.layout.width,
+          h: e.nativeEvent.layout.height,
+        })
+      }
+    >
       {/* Background tap target — sits behind the pins so tapping empty map
           collapses the selection / dismisses the keyboard. Pins are rendered
           after it and capture their own taps. */}
@@ -186,6 +225,29 @@ function SoftMap({
         className="absolute h-20 w-20 rounded-full bg-ember/10"
         style={{ bottom: 12, right: 28 }}
       />
+
+      {towns.map((t) => (
+        <View
+          key={t.name}
+          pointerEvents="none"
+          className="absolute"
+          style={{
+            left: `${t.x * 100}%`,
+            top: `${t.y * 100}%`,
+            transform: [{ translateX: -40 }, { translateY: -8 }],
+            width: 80,
+          }}
+        >
+          <Text
+            variant="micro"
+            tone="muted"
+            numberOfLines={1}
+            className="text-center"
+          >
+            {t.name}
+          </Text>
+        </View>
+      ))}
 
       {clusters.map((c) => {
         const left = `${c.x * 100}%` as const;
@@ -271,7 +333,7 @@ function SoftMap({
       })}
 
       {userCoord ? (
-        <SoftUserPuck coord={userCoord} heading={heading ?? null} />
+        <SoftUserPuck coord={userCoord} heading={heading ?? null} box={box} />
       ) : null}
     </View>
   );
@@ -289,6 +351,7 @@ export function MapCanvas({
   onMapPress,
   onClusterPress,
   focusCoord,
+  focusZoomIn,
   styleURL,
   lightPreset,
   terrain,
@@ -318,6 +381,7 @@ export function MapCanvas({
           heading={heading}
           onMapPress={onMapPress}
           focusCoord={focusCoord}
+          focusZoomIn={focusZoomIn}
           styleURL={styleURL}
           lightPreset={lightPreset}
           terrain={terrain}

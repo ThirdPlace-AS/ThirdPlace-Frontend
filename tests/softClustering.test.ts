@@ -8,9 +8,10 @@ import type { DiscoveryItem } from "@/components/map/types/mapPresentation";
 import { COVERAGE_BBOX, experiences, inCoverage, places } from "@/fixtures";
 
 // The legacy places (p1–p14) sit in inner Oslo; Phase 19's catalogue spreads
-// across Akershus. SoftMap still frames the inner city (S4 derives its box
-// from the markers), so these checks hold the legacy set to it and every
-// item to the Akershus coverage box.
+// across Akershus. SoftMap frames the markers on screen since S4b (tests/
+// countyMap.test.ts); these checks keep the legacy set inside the old inner
+// box (the default when there is nothing to frame) and every item inside
+// the Akershus coverage box.
 const legacy = places.filter((p) => /^p\d+$/.test(p.id));
 const legacyExperiences = experiences.filter((e) => /^e\d+$/.test(e.id));
 

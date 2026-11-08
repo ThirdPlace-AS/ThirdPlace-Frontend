@@ -131,8 +131,12 @@ export default function MapScreen() {
   }>();
   const focusKey = focus ? `${focus}:${at ?? ""}` : undefined;
   const [focusedKey, setFocusedKey] = useState<string | undefined>(undefined);
+  // A pick from the list or a link zooms the map in until its pin leaves the
+  // cluster; a pin tap keeps the zoom (Phase 19 S4b).
+  const [zoomToPick, setZoomToPick] = useState(false);
   if (focusKey && focusKey !== focusedKey) {
     setFocusedKey(focusKey);
+    setZoomToPick(true);
     const [kind, id] = (focus ?? "").split(":");
     if ((kind === "place" || kind === "experience") && id)
       selection.openTarget({ kind, id });
@@ -231,16 +235,18 @@ export default function MapScreen() {
       const item = itemByMarker.get(markerId);
       if (item) {
         haptics.selection();
+        setZoomToPick(false);
         selectMarker(item);
       }
     },
     [itemByMarker, selectMarker],
   );
 
-  // Shared by marker taps and browse-list rows — opens the detail sheet.
+  // Browse-list rows: opens the detail sheet and zooms to the pin.
   const handleSelectItem = useCallback(
     (item: DiscoveryItem) => {
       haptics.selection();
+      setZoomToPick(true);
       selectMarker(item);
     },
     [selectMarker],
@@ -339,6 +345,7 @@ export default function MapScreen() {
         onMapPress={handleMapPress}
         onClusterPress={() => setBrowseExpand((n) => n + 1)}
         focusCoord={focusCoord}
+        focusZoomIn={zoomToPick}
         styleURL={basemap.url}
         lightPreset={basemap.period}
         terrain={basemap.terrain}

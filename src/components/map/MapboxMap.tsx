@@ -29,7 +29,8 @@ import {
   TERRAIN_VECTOR_URL,
   terrainPaint,
 } from "./terrainStyle";
-import { boundsOf } from "./services/bounds";
+import { clusterZoom, firstViewCamera, selectionZoom } from "./services/bounds";
+import { getOrigin } from "@/lib/origin";
 import { USER_PUCK } from "./userPuck";
 import { allPinGlyphs, markerIcon } from "./services/markerIcon";
 import type { DiscoveryItem } from "./types/mapPresentation";
@@ -62,9 +63,10 @@ const PIN_IMAGES = allPinGlyphs().map(({ glyph, tone }) => ({
   color: tone === "light" ? pin.surface : pin.ink,
 }));
 
-// The first map of a session fits every marker on screen (founder: "all
-// places and experiences need to be shown"); after that the camera stays
-// where the user left it.
+// The first map of a session opens nearby (Phase 19, founder 2026-11-08):
+// centred on the person (src/lib/origin.ts) with the nearest pins in view;
+// it used to fit every marker, which at county scale showed all of Akershus.
+// After that the camera stays where the user left it.
 let fittedThisSession = false;
 // Room for the search bar and mode chips above (the applied-filter chips only
 // show once a filter is set, never on the first view) and the browse peek
@@ -82,6 +84,7 @@ export function MapboxMap({
   heading,
   onMapPress,
   focusCoord,
+  focusZoomIn = false,
   styleURL,
   lightPreset = "day",
   terrain = false,
@@ -98,6 +101,9 @@ export function MapboxMap({
   heading?: number | null;
   onMapPress?: () => void;
   focusCoord?: [number, number] | null;
+  /** The pick came from the list or a link (not a pin): zoom in far enough
+   *  that its pin leaves the cluster. */
+  focusZoomIn?: boolean;
   styleURL?: string;
   /** Light preset of the base map (Kartstil), applied via the basemap config. */
   lightPreset?: MapStylePeriod;
@@ -111,6 +117,8 @@ export function MapboxMap({
   const paint = pinPaint(pin, darkBasemap);
   const relief = terrainPaint(darkBasemap);
   const cameraRef = useRef<Camera>(null);
+  const mapRef = useRef<MapView>(null);
+  const sourceRef = useRef<ShapeSource>(null);
   // The basemap config (POIs off) mounts once the current style has loaded,
   // and repeats the light preset: the ThirdPlace Studio styles and Mapbox
   // Standard Satellite take dawn/day/dusk/night presets, and a config without
@@ -142,20 +150,26 @@ export function MapboxMap({
 
   useEffect(() => {
     if (fittedThisSession || loadedStyle === null) return;
-    const bounds = boundsOf(markers.map((m) => m.coord));
-    if (!bounds) return;
+    if (markers.length === 0) return;
     fittedThisSession = true;
-    cameraRef.current?.fitBounds(
-      bounds[0],
-      bounds[1],
-      [
-        FIT_PADDING.top,
-        FIT_PADDING.right,
-        FIT_PADDING.bottom,
-        FIT_PADDING.left,
-      ],
-      motion.duration.recenter,
+    const { width, height } = Dimensions.get("window");
+    const cam = firstViewCamera(
+      getOrigin().coord,
+      markers.map((m) => m.coord),
+      { width, height },
+      FIT_PADDING,
     );
+    cameraRef.current?.setCamera({
+      centerCoordinate: cam.center,
+      zoomLevel: cam.zoom,
+      padding: {
+        paddingTop: FIT_PADDING.top,
+        paddingRight: FIT_PADDING.right,
+        paddingBottom: FIT_PADDING.bottom,
+        paddingLeft: FIT_PADDING.left,
+      },
+      animationDuration: motion.duration.recenter,
+    });
   }, [loadedStyle, markers]);
 
   // The user's position for the puck: the app's own fix (after "Posisjon")
@@ -181,19 +195,36 @@ export function MapboxMap({
 
   // Selecting a marker pans the camera so the pin sits centered in the map area
   // ABOVE the detail sheet (bottom padding ≈ the peek height), Google-Maps style.
+  // A pick from the list or a link also zooms in below street level, so the
+  // pin leaves its cluster (Phase 19 S4b); a pin tap keeps the zoom.
   const focusKey = focusCoord ? `${focusCoord[0]},${focusCoord[1]}` : null;
   useEffect(() => {
     if (!focusCoord) return;
-    cameraRef.current?.setCamera({
-      centerCoordinate: focusCoord,
-      padding: {
-        paddingTop: 0,
-        paddingBottom: Dimensions.get("window").height * 0.35,
-        paddingLeft: 0,
-        paddingRight: 0,
-      },
-      animationDuration: motion.duration.recenter,
-    });
+    let cancelled = false;
+    const go = (zoomLevel?: number) =>
+      cameraRef.current?.setCamera({
+        centerCoordinate: focusCoord,
+        ...(zoomLevel !== undefined ? { zoomLevel } : {}),
+        padding: {
+          paddingTop: 0,
+          paddingBottom: Dimensions.get("window").height * 0.35,
+          paddingLeft: 0,
+          paddingRight: 0,
+        },
+        animationDuration: motion.duration.recenter,
+      });
+    if (!focusZoomIn) {
+      go();
+      return;
+    }
+    void (async () => {
+      const z = await mapRef.current?.getZoom().catch(() => undefined);
+      if (!cancelled) go(selectionZoom(z));
+    })();
+    return () => {
+      cancelled = true;
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- focusZoomIn is read with the pick
   }, [focusKey, focusCoord]);
 
   // Each pin: fill by its interest's category, ring by kind, and the
@@ -237,6 +268,7 @@ export function MapboxMap({
 
   return (
     <MapView
+      ref={mapRef}
       style={{ flex: 1 }}
       styleURL={currentStyle}
       scaleBarEnabled={false}
@@ -409,6 +441,7 @@ export function MapboxMap({
         ))}
       </Images>
       <ShapeSource
+        ref={sourceRef}
         id="discovery"
         shape={shape}
         cluster
@@ -421,14 +454,24 @@ export function MapboxMap({
           if (!f) return;
           const props = f.properties ?? {};
           if (props.point_count) {
-            // Cluster: zoom toward it.
+            // Cluster: zoom to where it splits (Phase 19 S4b: from county
+            // zoom a fixed 15 jumped past whole towns).
             const coords = (f.geometry as Point | undefined)?.coordinates;
             if (coords) {
-              cameraRef.current?.setCamera({
-                centerCoordinate: coords as [number, number],
-                zoomLevel: 15,
-                animationDuration: motion.duration.base,
-              });
+              void (async () => {
+                const expansion = await sourceRef.current
+                  ?.getClusterExpansionZoom(f)
+                  .catch(() => undefined);
+                const current =
+                  expansion === undefined
+                    ? await mapRef.current?.getZoom().catch(() => undefined)
+                    : undefined;
+                cameraRef.current?.setCamera({
+                  centerCoordinate: coords as [number, number],
+                  zoomLevel: clusterZoom(expansion, current),
+                  animationDuration: motion.duration.base,
+                });
+              })();
             }
           } else if (props.markerId) {
             onSelectMarker?.(String(props.markerId));
