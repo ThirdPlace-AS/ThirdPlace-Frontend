@@ -27,11 +27,6 @@ import { GoingLine } from "@/components/GoingLine";
 import { PhotoPager } from "./PhotoPager";
 import { sheetA11yChrome } from "./sheetA11y";
 import { photosForItem } from "./services/itemCover";
-import {
-  MARKER_LABEL,
-  markerCategoryFor,
-  markerFill,
-} from "./services/markerCategory";
 import type { DiscoveryItem } from "./types/mapPresentation";
 
 // Airbnb-style persistent "browse" sheet. Always peeks (handle + header,
@@ -314,7 +309,7 @@ export function MapBrowseSheet({
 
 // One result card. Memoized: props are primitives + stable callbacks, so it
 // re-renders only when its own item/selected/saved changes.
-const BrowseCard = memo(function BrowseCard({
+export const BrowseCard = memo(function BrowseCard({
   item,
   selected,
   saved,
@@ -330,16 +325,17 @@ const BrowseCard = memo(function BrowseCard({
   onActions: (item: DiscoveryItem) => void;
 }) {
   const photos = photosForItem(item);
-  const marker = markerCategoryFor(item);
   return (
-    // Card wrapper is a View; the save heart is a SIBLING of the
+    // Card wrapper is a View; the save button is a SIBLING of the
     // select Pressable (never nested) — nested <button> is invalid
     // DOM on web.
     <View className="relative gap-3">
       <UIPressable
         accessibilityRole="button"
         accessibilityState={{ selected }}
-        accessibilityLabel={`${item.title}, ${MARKER_LABEL[marker]}, ${item.subtitle}`}
+        // The card no longer shows the type, area or distance (founder
+        // 2026-11-08); a screen reader still hears them.
+        accessibilityLabel={`${item.title}, ${item.subtitle}`}
         onPress={() => onSelect(item)}
         // Quick actions (Phase 18); screen readers get them as "Flere valg".
         onLongPress={() => onActions(item)}
@@ -364,23 +360,11 @@ const BrowseCard = memo(function BrowseCard({
           ) : (
             <Icon name="image-outline" size="2xl" tone="muted" />
           )}
-
-          {/* Top-left: category chip, with the pin's colour as a dot so a
-              card and its map pin read as the same thing. */}
-          <View className="absolute left-3 top-3">
-            <View className="flex-row items-center gap-1.5 rounded-full bg-surface px-3 py-1">
-              <View
-                className="h-2 w-2 rounded-full"
-                style={{ backgroundColor: markerFill(marker) }}
-              />
-              <Text variant="caption" weight="semibold">
-                {MARKER_LABEL[marker]}
-              </Text>
-            </View>
-          </View>
         </View>
 
-        {/* Body — title + rating, subtitle, info line, tag chips. */}
+        {/* Body: title + rating, then for an experience its time and who
+            is going, for a place its price and opening; tag chips. No
+            category, type, area or distance (founder 2026-11-08). */}
         <View className="gap-1">
           <View className="flex-row items-center gap-2">
             <Text
@@ -405,9 +389,11 @@ const BrowseCard = memo(function BrowseCard({
               </View>
             ) : null}
           </View>
-          <Text variant="caption" tone="muted" numberOfLines={1}>
-            {item.subtitle}
-          </Text>
+          {item.when ? (
+            <Text variant="caption" tone="muted" numberOfLines={1}>
+              {item.when}
+            </Text>
+          ) : null}
           {item.kind === "experience" ? (
             // Who is going, live with your own join (Phase 16).
             <GoingLine id={item.id} />
@@ -433,8 +419,10 @@ const BrowseCard = memo(function BrowseCard({
         </View>
       </UIPressable>
 
-      {/* Top-right save (heart) — sibling overlay over the hero. */}
+      {/* Top-right save — sibling overlay over the hero. The save icon (a
+          bookmark, as in Sveip), not a heart (founder 2026-11-08). */}
       <HeartToggle
+        kind="bookmark"
         selected={saved}
         onToggle={() => onToggleSave(item)}
         variant="floating"

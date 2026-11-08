@@ -3,6 +3,7 @@ import { router } from "expo-router";
 import { Tabs } from "expo-router/js-tabs";
 import { type ColorValue } from "react-native";
 
+import { AddTabIcon } from "@/components/AddTabIcon";
 import { Icon, type IconName } from "@/components/ui";
 import { useUnreadChatCount } from "@/lib/chatReads";
 import { haptics } from "@/lib/haptics";
@@ -66,10 +67,9 @@ export default function TabsLayout() {
         name="add"
         options={{
           title: "Legg til",
-          // Same convention as the other tabs (founder 2026-11-07): a plus in
-          // a rounded square, outline and grey while idle, filled ember while
-          // open. It replaced the TikTok-style button of 2026-11-06.
-          tabBarIcon: icon("tp-add", "tp-add-filled"),
+          // TikTok's stacked button in our colours (founder 2026-11-08); the
+          // same look open or not, the label turns ember while open.
+          tabBarIcon: () => <AddTabIcon />,
         }}
       />
       <Tabs.Screen

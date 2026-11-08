@@ -56,6 +56,9 @@ export type DiscoveryItem = {
   // Metres from the person (src/lib/origin.ts) to the place or the meeting
   // point; the lists are nearest first (Phase 19).
   distanceM?: number;
+  // An experience's time as written on it ("Lør 12:00"); the browse card
+  // shows it on its own (founder 2026-11-08: no type, area or distance there).
+  when?: string;
 };
 
 // Result of resolving a discovery mode over the fixtures.

@@ -86,6 +86,7 @@ function experienceToItem(e: MockExperience, origin: Origin): DiscoveryItem {
     title: e.title,
     // "Arrangement · Lillestrøm · Lør 12:00" (Phase 19).
     subtitle: `${experienceTypeLabel(e)} · ${areaFor(e.meetingPoint.coord).name} · ${e.when}`,
+    when: e.when,
     type: experienceType(e),
     typeLabel: experienceTypeLabel(e),
     area: areaFor(e.meetingPoint.coord).name,

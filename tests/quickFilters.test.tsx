@@ -1,14 +1,15 @@
 // Phase 18 (screen benchmark, "Finding things"): the map pins' categories
 // as a filter, picked in Filtre's Kategori section only (founder 2026-11-08:
-// no category chips on the map or the search page), and applied filters as
-// removable chips on the map and "Fjern «…»".
+// no category chips on the map or the search page). Applied filters show on
+// the map only as the number on Filtre (founder 2026-11-08, ledger 0317);
+// their names reach screen readers through the same labels.
 import { describe, expect, it, jest } from "@jest/globals";
 import { fireEvent, render, screen } from "@testing-library/react-native";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 
 import { MapFilterSheet } from "@/components/map/MapFilterSheet";
 
-import { MapQuickChips } from "@/components/map/MapQuickChips";
+import { MapFilterButton } from "@/components/map/MapFilterButton";
 import {
   activeExtraFilterCount,
   appliedFilterChips,
@@ -107,28 +108,50 @@ describe("applied filters as chips", () => {
   });
 });
 
-describe("applied chips on the map", () => {
-  it("shows only applied filters, a chosen category among them", () => {
-    const onChange = jest.fn();
-    const f: MapFilters = {
-      ...DEFAULT_FILTERS,
-      hasSpots: true,
-      categories: ["kafe"],
-    };
-    render(<MapQuickChips filters={f} onChange={onChange} />);
-    // No category picker on the map: categories are chosen in Filtre.
-    expect(screen.queryAllByRole("checkbox")).toHaveLength(0);
-    fireEvent.press(screen.getByRole("button", { name: "Fjern «Kafé»" }));
-    expect(onChange).toHaveBeenLastCalledWith({ ...f, categories: [] });
-    fireEvent.press(
-      screen.getByRole("button", { name: "Fjern «Ledige plasser»" }),
+describe("applied filters on the map", () => {
+  const f: MapFilters = {
+    ...DEFAULT_FILTERS,
+    hasSpots: true,
+    categories: ["kafe"],
+  };
+
+  it("show only as the number on Filtre, with no chips to remove", () => {
+    const onPress = jest.fn();
+    render(
+      <MapFilterButton
+        filters={f}
+        count={activeExtraFilterCount(f)}
+        onPress={onPress}
+      />,
     );
-    expect(onChange).toHaveBeenLastCalledWith({ ...f, hasSpots: false });
+    expect(screen.getByText("2")).toBeTruthy();
+    // No chip and no picker on the map: everything lives in Filtre.
+    expect(screen.queryAllByRole("checkbox")).toHaveLength(0);
+    expect(screen.queryByRole("button", { name: /^Fjern «/ })).toBeNull();
+    expect(screen.queryByText("Kafé")).toBeNull();
+    fireEvent.press(screen.getByRole("button", { name: "Filtre" }));
+    expect(onPress).toHaveBeenCalledTimes(1);
   });
 
-  it("no row when nothing is applied", () => {
-    render(<MapQuickChips filters={DEFAULT_FILTERS} onChange={jest.fn()} />);
-    expect(screen.toJSON()).toBeNull();
+  it("name what is applied to a screen reader", () => {
+    render(<MapFilterButton filters={f} count={2} onPress={jest.fn()} />);
+    expect(
+      screen.getByRole("button", { name: "Filtre" }).props.accessibilityValue,
+    ).toEqual({ text: "Kafé, Ledige plasser" });
+  });
+
+  it("no number and no value when nothing is applied", () => {
+    render(
+      <MapFilterButton
+        filters={DEFAULT_FILTERS}
+        count={0}
+        onPress={jest.fn()}
+      />,
+    );
+    const button = screen.getByRole("button", { name: "Filtre" });
+    // RN fills in an empty value object; no text means nothing is read out.
+    expect(button.props.accessibilityValue?.text).toBeUndefined();
+    expect(screen.queryByText(/^\d+$/)).toBeNull();
   });
 });
 

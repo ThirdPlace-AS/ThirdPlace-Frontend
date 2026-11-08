@@ -20,11 +20,7 @@ import {
 import { Illustration } from "@/components/illustrations/Illustration";
 import { canUseMapbox, MapCanvas } from "@/components/map/MapCanvas";
 import { DiscoveryModeTabs } from "@/components/map/DiscoveryModeTabs";
-import { AppliedChip, MapQuickChips } from "@/components/map/MapQuickChips";
-import {
-  appliedFilterChips,
-  type MapFilters,
-} from "@/components/map/services/mapFilters";
+import { MapFilterButton } from "@/components/map/MapFilterButton";
 import {
   MapDetailSheet,
   type MapDetailSheetHandle,
@@ -253,7 +249,7 @@ export default function MapScreen() {
   );
 
   // Saving is an account action everywhere (detail Lagre, Sveip, Steder):
-  // the browse heart now asks guests to sign in too instead of saving.
+  // the browse save button asks guests to sign in too instead of saving.
   const { isGuest } = useGuestMode();
   const [signInOpen, setSignInOpen] = useState(false);
   const handleToggleSave = useCallback(
@@ -284,10 +280,6 @@ export default function MapScreen() {
     },
     [setDiscoveryMode],
   );
-
-  // A quick chip edits the same filters as Filtre (no Hvor recentre).
-  const handleQuickFilters = (next: MapFilters) => filters.setFilters(next);
-  const appliedChips = appliedFilterChips(filters.filters);
 
   const handleApplyFilters = (next: typeof filters.filters) => {
     haptics.light();
@@ -396,22 +388,13 @@ export default function MapScreen() {
               </Text>
             </UIPressable>
             <View className="w-px h-6 bg-line" />
-            <UIPressable
-              accessibilityRole="button"
-              accessibilityLabel="Filtre"
+            {/* Applied filters show only as this number (founder
+                2026-11-08: no filter chips on the map). */}
+            <MapFilterButton
+              filters={filters.filters}
+              count={filters.extraCount}
               onPress={() => setFilterOpen(true)}
-              className="w-12"
-              contentClassName="items-center justify-center h-full"
-            >
-              <Icon name="options-outline" size="md" tone="ink" />
-              {filters.extraCount > 0 ? (
-                <View className="absolute items-center justify-center w-4 h-4 rounded-full right-1 top-1 bg-emberStrong">
-                  <Text variant="caption" weight="bold" tone="onEmber">
-                    {filters.extraCount}
-                  </Text>
-                </View>
-              ) : null}
-            </UIPressable>
+            />
           </View>
           <IconButton
             icon="notifications-outline"
@@ -424,12 +407,6 @@ export default function MapScreen() {
         </View>
 
         <DiscoveryModeTabs mode={discovery.mode} onChange={handleModeChange} />
-        {/* Applied filters as removable chips (Phase 18); the categories
-            are picked in Filtre only (founder 2026-11-08). */}
-        <MapQuickChips
-          filters={filters.filters}
-          onChange={handleQuickFilters}
-        />
       </View>
 
       {/* Map tools (layer + location) docked bottom-right. Historically these
@@ -504,19 +481,6 @@ export default function MapScreen() {
             actionLabel="Nullstill"
             onAction={filters.reset}
           />
-          {/* Name what to drop instead of only resetting everything
-              (Airbnb's no-results state; Phase 18). */}
-          {appliedChips.length > 0 ? (
-            <View className="flex-row flex-wrap justify-center gap-2 px-4 pb-6 pt-1">
-              {appliedChips.slice(0, 4).map((c) => (
-                <AppliedChip
-                  key={c.key}
-                  label={c.label}
-                  onRemove={() => filters.setFilters(c.remove(filters.filters))}
-                />
-              ))}
-            </View>
-          ) : null}
         </MapStateCard>
       ) : null}
 
@@ -538,12 +502,12 @@ export default function MapScreen() {
             saved.isSaved(actionsFor.markerId)
               ? {
                   label: "Fjern fra Lagret",
-                  icon: "heart-dislike-outline",
+                  icon: "bookmark",
                   onPress: () => handleToggleSave(actionsFor),
                 }
               : {
                   label: "Lagre",
-                  icon: "heart-outline",
+                  icon: "bookmark-outline",
                   // A guest gets the sign-in sheet: open it after this one.
                   afterClose: true,
                   onPress: () => {
