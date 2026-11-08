@@ -306,6 +306,9 @@ const CategoryRow = memo(function CategoryRow({
       title={MARKER_LABEL[category]}
       icon={MARKER_FILTER_ICON[category]}
       meta={summary}
+      // The chips mount when the row first opens: all eight rows of
+      // activities mounted up front made Filtre slow to open (0319).
+      lazy
     >
       <View className="flex-row flex-wrap gap-2 pb-3 pt-1">
         <Chip
@@ -1103,6 +1106,7 @@ function FilterBody({
             <Accordion
               title="Tilgjengelighetsfunksjoner"
               subtitle="Oppgitt av stedet"
+              lazy
             >
               <View className="gap-4">
                 {ACCESSIBILITY_GROUPS.map((g) => (
