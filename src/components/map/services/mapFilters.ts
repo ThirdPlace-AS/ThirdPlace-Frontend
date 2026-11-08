@@ -18,8 +18,10 @@ import {
   placeRating,
 } from "@/fixtures";
 
+import { distanceMeters } from "@/lib/distance";
 import { formatRating } from "@/lib/format";
 import { shortDayMonth } from "@/lib/dates";
+import { getOrigin, type Origin } from "@/lib/origin";
 
 import { ITEM_TYPE_LABEL, experienceType, type ItemType } from "./itemType";
 import { experienceMatchesQuery, placeMatchesQuery } from "./mapSearch";
@@ -127,21 +129,8 @@ export const DEFAULT_FILTERS: MapFilters = {
   hasSpots: false,
 };
 
-// Orders a filtered place list for the "Sorter" toggle. Demo ordering over MOCK
-// rating/reviews — not a ranking contract. Returns a new array; null = unchanged.
-export function sortPlaces(
-  list: MockPlace[],
-  sort: RatingSort | null,
-): MockPlace[] {
-  if (sort === null) return list;
-  const by =
-    sort === "best"
-      ? (a: MockPlace, b: MockPlace) =>
-          placeRating(b.id).score - placeRating(a.id).score
-      : (a: MockPlace, b: MockPlace) =>
-          placeRating(b.id).count - placeRating(a.id).count;
-  return [...list].sort(by);
-}
+// The list's order (Sorter, nearest first, Trending) is set once, after places
+// and experiences are mixed: orderItems() in mapFixtureAdapter.ts (Phase 19).
 
 // Applies search text + place-level filters to the place list. Time and
 // hasSpots are experience concepts and are applied by the discovery adapter.
@@ -149,6 +138,9 @@ export function applyFilters(
   all: MockPlace[],
   query: string,
   f: MapFilters,
+  // Avstand is measured from the person (Phase 19): the phone, a picked area
+  // or Grünerløkka (src/lib/origin.ts).
+  origin: Origin = getOrigin(),
 ): MockPlace[] {
   const q = query.trim().toLowerCase();
   return all.filter((p) => {
@@ -160,7 +152,11 @@ export function applyFilters(
     if (f.kinds.length > 0 && !f.kinds.includes(p.kind)) return false;
     if (f.types.length > 0 && !f.types.some((t) => p.types.includes(t)))
       return false;
-    if (f.maxDistanceM !== null && p.distanceM > f.maxDistanceM) return false;
+    if (
+      f.maxDistanceM !== null &&
+      distanceMeters(origin.coord, p.coord) > f.maxDistanceM
+    )
+      return false;
     if (!withinPrice(p.priceNok, f)) return false;
     if (f.durationMaxMin < DURATION_NO_CAP && p.durationMin > f.durationMaxMin)
       return false;
@@ -227,9 +223,9 @@ export function activeExtraFilterCount(f: MapFilters): number {
 
 // ── Experiences (Phase 12 H5c: one filter pipeline for the map and Sveip) ──
 // Every facet reads a field the experience has (H2) or, for venue facts
-// (distance, facilities, accessibility), the place it is held at. An
-// experience without a venue has no distance (it passes the distance cap)
-// and no facilities or accessibility to match (it fails those). "Åpent nå"
+// (facilities, accessibility), the place it is held at; distance is measured
+// from the person to the meeting point (Phase 19). An experience without a
+// venue has no facilities or accessibility to match (it fails those). "Åpent nå"
 // is opening hours, a place concept: experiences pass it.
 
 const startHour = (when: string): number | null => {
@@ -274,6 +270,7 @@ export function applyExperienceFilters(
   all: MockExperience[],
   query: string,
   f: MapFilters,
+  origin: Origin = getOrigin(),
 ): MockExperience[] {
   const q = query.trim().toLowerCase();
   const out = all.filter((e) => {
@@ -290,7 +287,11 @@ export function applyExperienceFilters(
     const place = placeById(e.placeId);
     if (f.types.length > 0 && !f.types.some((t) => e.types.includes(t)))
       return false;
-    if (f.maxDistanceM !== null && place && place.distanceM > f.maxDistanceM)
+    // Measured to the meeting point, so an outdoor one is capped too.
+    if (
+      f.maxDistanceM !== null &&
+      distanceMeters(origin.coord, e.meetingPoint.coord) > f.maxDistanceM
+    )
       return false;
     if (!withinPrice(e.priceNok ?? 0, f)) return false;
     if (f.durationMaxMin < DURATION_NO_CAP && e.durationMin > f.durationMaxMin)

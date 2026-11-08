@@ -3,9 +3,9 @@ import { Linking, View } from "react-native";
 import { Icon, Text } from "@/components/ui";
 import { Button } from "@/components/Button";
 import { CategoryArt } from "@/components/illustrations/CategoryArt";
-import { Chip } from "@/components/Chip";
 import { Sheet } from "@/components/Sheet";
-import { AREAS, type MockArea } from "@/fixtures";
+import { AreaChips } from "@/components/pickers/AreaChips";
+import type { MockArea } from "@/fixtures";
 
 import type { LocationStatus } from "./hooks/useMapLocation";
 
@@ -96,16 +96,7 @@ export function MapLocationSheet({
         <Text variant="label" weight="semibold">
           Velg område
         </Text>
-        <View className="flex-row flex-wrap gap-2">
-          {AREAS.map((a) => (
-            <Chip
-              key={a.name}
-              label={a.name}
-              selected={selectedAreaName === a.name}
-              onPress={() => onSelectArea(a)}
-            />
-          ))}
-        </View>
+        <AreaChips value={selectedAreaName ?? null} onChange={onSelectArea} />
       </View>
     </Sheet>
   );

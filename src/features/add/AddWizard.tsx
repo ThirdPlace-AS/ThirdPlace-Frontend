@@ -32,6 +32,7 @@ import {
 } from "@/components/illustrations/CategoryArt";
 import { areaFor } from "@/components/experience/experienceMeta";
 import { Input } from "@/components/Input";
+import { AreaChips } from "@/components/pickers/AreaChips";
 import { CategoryPicker, PlacePicker } from "@/components/pickers/Pickers";
 import {
   CANCELLATION_OPTIONS,
@@ -45,6 +46,7 @@ import {
   experienceById,
   experiences,
   AREAS,
+  areaNameLabel,
   people,
   places,
   REPEAT_OPTIONS,
@@ -542,15 +544,14 @@ function StepBody({
               : "Velg området stedet ligger i."
           }
         >
-          <ChipRow
-            options={AREAS.map((a) => a.name)}
-            selected={draft.area ? [draft.area] : []}
-            onPress={(a) => patch({ area: a })}
+          <AreaChips
+            value={draft.area || null}
+            onChange={(a) => patch({ area: a.name })}
           />
           {draft.area ? (
             <View className="flex-row items-center gap-2">
               <Icon name="location" size="sm" tone="ink" />
-              <Text variant="label">{draft.area}, Oslo</Text>
+              <Text variant="label">{areaNameLabel(draft.area)}</Text>
             </View>
           ) : null}
         </Shell>
@@ -591,10 +592,9 @@ function StepBody({
             />
           ) : null}
           <Label>Annet sted</Label>
-          <ChipRow
-            options={AREAS.map((a) => a.name)}
-            selected={draft.area ? [draft.area] : []}
-            onPress={(a) => patch({ area: a })}
+          <AreaChips
+            value={draft.area || null}
+            onChange={(a) => patch({ area: a.name })}
           />
           <Input
             label="Valgfritt: eget oppmøtested"

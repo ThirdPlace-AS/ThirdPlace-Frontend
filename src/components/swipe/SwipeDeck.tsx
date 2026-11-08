@@ -65,11 +65,7 @@ import {
   type MapFilters,
 } from "@/components/map/services/mapFilters";
 import { useSwipeDeck } from "./useSwipeDeck";
-import {
-  experienceToDeckItem,
-  placeToDeckItem,
-  type DeckItem,
-} from "./deckItems";
+import { deckFor, type DeckItem } from "./deckItems";
 import { Illustration } from "@/components/illustrations/Illustration";
 
 const G = motion.gesture;
@@ -116,13 +112,10 @@ export function SwipeDeck() {
   // model, after the same filters as the map. Switching tab or filters resets
   // the deck to its top.
   const filterKey = `${mode}:${JSON.stringify(filters)}`;
+  // Nearest first from where the person is when the deck is built (Phase 19);
+  // the origin is read, not tracked, so a move never reshuffles the deck.
   const items = useMemo<DeckItem[]>(
-    () =>
-      mode === "places"
-        ? applyFilters(places, "", filters).map(placeToDeckItem)
-        : applyExperienceFilters(experiences, "", filters).map(
-            experienceToDeckItem,
-          ),
+    () => deckFor(mode === "places", filters),
     [filterKey], // eslint-disable-line react-hooks/exhaustive-deps
   );
 

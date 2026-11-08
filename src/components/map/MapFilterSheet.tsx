@@ -73,12 +73,15 @@ export {
   type MapFilters,
 } from "./services/mapFilters";
 
-// Distance "smart slider" steps (last = no cap / "Alle").
+// Distance "smart slider" steps (last = no cap / "Alle"). Phase 19: pins
+// across Oslo and Akershus, so the steps reach county scale, measured from
+// the person (src/lib/origin.ts).
 const DISTANCE_STEPS: { m: number | null; label: string }[] = [
-  { m: 500, label: "500 m" },
   { m: 1000, label: "1 km" },
-  { m: 2000, label: "2 km" },
   { m: 5000, label: "5 km" },
+  { m: 10000, label: "10 km" },
+  { m: 25000, label: "25 km" },
+  { m: 50000, label: "50 km" },
   { m: null, label: "Alle" },
 ];
 
@@ -871,7 +874,11 @@ function FilterBody({
           {/* Avstand — smart slider (canonical: distance/travel feasibility) */}
           <Section
             title="Avstand"
-            subtitle={`Innen ${DISTANCE_STEPS[distanceIndex]?.label ?? "Alle"}`}
+            subtitle={
+              draft.maxDistanceM === null
+                ? "Alle avstander"
+                : `Innen ${DISTANCE_STEPS[distanceIndex]?.label ?? ""}`
+            }
           >
             <SteppedSlider
               labels={DISTANCE_LABELS}
@@ -1063,6 +1070,10 @@ function FilterBody({
                     time: null,
                     dateStart: null,
                     dateEnd: null,
+                    dateFlex: 0,
+                    // Undo "I kveld" whole: its "Kveld" under Tid på dagen
+                    // stayed ticked and kept filtering (found in Phase 19).
+                    timeOfDay: kveldOnly(d) ? [] : d.timeOfDay,
                   }))
                 : setOpenSection("who")
             }

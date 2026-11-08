@@ -4,7 +4,6 @@ import {
   activeExtraFilterCount,
   applyFilters,
   DEFAULT_FILTERS,
-  sortPlaces,
 } from "@/components/map/services/mapFilters";
 import { places, placeRating } from "@/fixtures";
 
@@ -142,23 +141,8 @@ describe("applyFilters — Airbnb-style filters", () => {
   });
 });
 
-describe("sortPlaces", () => {
-  it("'best' orders by rating desc", () => {
-    const res = sortPlaces(places, "best");
-    const r = res.map((p) => placeRating(p.id).score);
-    expect([...r].sort((a, b) => b - a)).toEqual(r);
-  });
-
-  it("'most' orders by reviews desc", () => {
-    const res = sortPlaces(places, "most");
-    const n = res.map((p) => placeRating(p.id).count);
-    expect([...n].sort((a, b) => b - a)).toEqual(n);
-  });
-
-  it("null leaves order unchanged", () => {
-    expect(sortPlaces(places, null)).toBe(places);
-  });
-});
+// The places-only "Sorter" (sortPlaces) became orderItems in Phase 19 S4a:
+// one order over places and experiences mixed (tests/countyLists.test.tsx).
 
 describe("activeExtraFilterCount", () => {
   it("is zero for defaults", () => {

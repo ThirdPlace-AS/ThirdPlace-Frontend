@@ -746,6 +746,8 @@ export {
   REGIONS,
   areaFor,
   areaLabel,
+  areaNameLabel,
+  areasByRegion,
   inCoverage,
   type MockArea,
   type Region,

@@ -53,6 +53,9 @@ export type DiscoveryItem = {
   type?: ItemType;
   typeLabel?: string;
   area?: string;
+  // Metres from the person (src/lib/origin.ts) to the place or the meeting
+  // point; the lists are nearest first (Phase 19).
+  distanceM?: number;
 };
 
 // Result of resolving a discovery mode over the fixtures.

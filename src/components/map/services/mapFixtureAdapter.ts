@@ -6,6 +6,10 @@
 // Founder (2026-11-06): every place and experience shows on the map. For deg,
 // Utforsk, Trending and Lagret list places AND experiences; Live stays
 // experiences only. Experience pins sit at their meeting point.
+//
+// Phase 19 (founder 2026-11-08): every list is nearest first, places and
+// experiences mixed, measured from the person (src/lib/origin.ts); Trending
+// keeps the most-reviewed first and a chosen rating sort (Sorter) wins.
 
 import {
   areaFor,
@@ -30,10 +34,12 @@ import {
   applyExperienceFilters,
   applyFilters,
   type MapFilters,
+  type RatingSort,
 } from "./mapFilters";
 import { experienceMatchesQuery } from "./mapSearch";
 import { goingLine } from "@/lib/going";
-import { distanceLabelFor, getOrigin, type Origin } from "@/lib/origin";
+import { distanceMeters, formatDistance } from "@/lib/distance";
+import { getOrigin, type Origin } from "@/lib/origin";
 
 import {
   experienceType,
@@ -42,6 +48,7 @@ import {
 } from "./itemType";
 
 function placeToItem(p: MockPlace, origin: Origin): DiscoveryItem {
+  const distanceM = distanceMeters(origin.coord, p.coord);
   return {
     markerId: markerId("place", p.id),
     kind: "place",
@@ -51,10 +58,8 @@ function placeToItem(p: MockPlace, origin: Origin): DiscoveryItem {
     title: p.name,
     // Phase 19: "Bedrift · Sandvika · 12 km", the distance measured from
     // the person (src/lib/origin.ts), not typed in.
-    subtitle: `${placeTypeLabel(p)} · ${areaFor(p.coord).name} · ${distanceLabelFor(
-      p.coord,
-      origin,
-    )}`,
+    subtitle: `${placeTypeLabel(p)} · ${areaFor(p.coord).name} · ${formatDistance(distanceM)}`,
+    distanceM,
     type: p.kind,
     typeLabel: placeTypeLabel(p),
     area: areaFor(p.coord).name,
@@ -65,12 +70,14 @@ function placeToItem(p: MockPlace, origin: Origin): DiscoveryItem {
   };
 }
 
-function experienceToItem(e: MockExperience): DiscoveryItem {
+function experienceToItem(e: MockExperience, origin: Origin): DiscoveryItem {
   return {
     markerId: markerId("experience", e.id),
     kind: "experience",
     id: e.id,
     coord: e.meetingPoint.coord,
+    // Measured to the meeting point, like the pin (Phase 19).
+    distanceM: distanceMeters(origin.coord, e.meetingPoint.coord),
     // Rating and count come from the experience's review list (as on its page).
     rating: ratingOf(reviewsForExperience(e.id)).score,
     reviewCount: reviewsForExperience(e.id).length,
@@ -117,8 +124,46 @@ export type AdapterInput = {
   origin?: Origin;
 };
 
-// Resolves the active discovery mode into the items to show on the map + list.
-export function resultForMode({
+/** The list's order (Phase 19, founder 2026-11-08), set once after places
+ *  and experiences are mixed: a chosen rating sort (Sorter) wins, then
+ *  Trending's most-reviewed first, else nearest first. Ties go to the nearer
+ *  item, then keep the fixture order. Returns a new array. */
+export function orderItems(
+  items: readonly DiscoveryItem[],
+  mode: DiscoveryMode,
+  ratingSort: RatingSort | null,
+): DiscoveryItem[] {
+  const dist = (i: DiscoveryItem) => i.distanceM ?? Infinity;
+  const nearer = (a: DiscoveryItem, b: DiscoveryItem) => dist(a) - dist(b);
+  const by =
+    ratingSort === "best"
+      ? (a: DiscoveryItem, b: DiscoveryItem) =>
+          (b.rating ?? 0) - (a.rating ?? 0) || nearer(a, b)
+      : ratingSort === "most" || mode === "trending"
+        ? (a: DiscoveryItem, b: DiscoveryItem) =>
+            (b.reviewCount ?? 0) - (a.reviewCount ?? 0) || nearer(a, b)
+        : nearer;
+  return items
+    .map((item, i) => ({ item, i }))
+    .sort((x, y) => by(x.item, y.item) || x.i - y.i)
+    .map((x) => x.item);
+}
+
+// Resolves the active discovery mode into the items to show on the map + list,
+// in list order (orderItems).
+export function resultForMode(input: AdapterInput): ModeResult {
+  const result = resolveMode(input);
+  return {
+    ...result,
+    items: orderItems(
+      result.items,
+      input.mode,
+      input.filters?.ratingSort ?? null,
+    ),
+  };
+}
+
+function resolveMode({
   mode,
   places,
   query,
@@ -133,18 +178,18 @@ export function resultForMode({
   // for the map and Sveip); without filters, the Når / Ledige plasser /
   // search filters only.
   const filteredExperiences = filters
-    ? applyExperienceFilters(experiences, query, filters)
+    ? applyExperienceFilters(experiences, query, filters, origin)
     : experiences
         .filter((e) => time === null || e.day === time)
         .filter((e) => !hasSpots || e.capacity - e.going > 0)
         .filter((e) => experienceMatchesText(e, query));
   const liveItems = filteredExperiences
     .filter((e) => e.status === "open" || e.status === "waitlist")
-    .map(experienceToItem);
+    .map((e) => experienceToItem(e, origin));
   // Every bookable experience (not cancelled), for the modes that show all.
   const allExperienceItems = filteredExperiences
     .filter((e) => e.status !== "cancelled")
-    .map(experienceToItem);
+    .map((e) => experienceToItem(e, origin));
 
   switch (mode) {
     case "explore":
@@ -156,12 +201,9 @@ export function resultForMode({
 
     case "trending": {
       // Demo popularity = the length of each item's MOCK review list (places
-      // and experiences alike). Not a real metric.
-      const reviewCount = (i: DiscoveryItem) => i.reviewCount ?? 0;
+      // and experiences alike), applied in orderItems. Not a real metric.
       return {
-        items: [...placeItems, ...allExperienceItems].sort(
-          (a, b) => reviewCount(b) - reviewCount(a),
-        ),
+        items: [...placeItems, ...allExperienceItems],
         demo: false,
         emptyMessage: "Ingenting trender her akkurat nå.",
       };
@@ -196,7 +238,7 @@ export function resultForMode({
         ...allPlaces.map((p) => placeToItem(p, origin)),
         ...experiences
           .filter((e) => e.status !== "cancelled")
-          .map(experienceToItem),
+          .map((e) => experienceToItem(e, origin)),
       ].filter((i) => savedIds.includes(i.markerId));
       return {
         items: saved,
@@ -220,20 +262,23 @@ export function countResults({
   query,
   filters,
   savedIds,
+  origin = getOrigin(),
 }: {
   mode: DiscoveryMode;
   allPlaces: MockPlace[];
   query: string;
   filters: MapFilters;
   savedIds: readonly string[];
+  origin?: Origin;
 }): number {
   return resultForMode({
     mode,
-    places: applyFilters(allPlaces, query, filters),
+    places: applyFilters(allPlaces, query, filters, origin),
     query,
     savedIds,
     time: filters.time,
     hasSpots: filters.hasSpots,
     filters,
+    origin,
   }).items.length;
 }

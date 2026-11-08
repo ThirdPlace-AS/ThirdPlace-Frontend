@@ -13,11 +13,18 @@ import type { IconName } from "@/components/ui";
 import { goingLine } from "@/lib/going";
 import { experienceTypeLabel } from "@/components/map/services/itemType";
 import {
+  applyExperienceFilters,
+  applyFilters,
+  type MapFilters,
+} from "@/components/map/services/mapFilters";
+import {
   PLACE_KIND_LABEL,
   areaFor,
   chatForExperience,
   chatForPlace,
+  experiences,
   placeById,
+  places,
   ratingOf,
   reviewsForPlace,
   type MockExperience,
@@ -25,7 +32,8 @@ import {
 } from "@/fixtures";
 import { libImage, photosForPlace } from "@/fixtures/images";
 import { formatRating } from "@/lib/format";
-import { distanceLabelFor } from "@/lib/origin";
+import { distanceMeters } from "@/lib/distance";
+import { distanceLabelFor, getOrigin, type Origin } from "@/lib/origin";
 import { media } from "@/theme";
 
 export type DeckKind = "experience" | "place";
@@ -122,4 +130,28 @@ export function placeToDeckItem(p: MockPlace): DeckItem {
     chatId: chatForPlace(p.id)?.id,
     subtitle: `${PLACE_KIND_LABEL[p.kind]} · ${areaFor(p.coord).name} · ${distanceLabelFor(p.coord)}`,
   };
+}
+
+/** A Sveip deck (Phase 19, founder 2026-11-08): the tab's places or
+ *  experiences after the map's filters, nearest first from the person.
+ *  Built when the tab or the filters change, never on an origin move, so the
+ *  deck doesn't jump under the thumb. */
+export function deckFor(
+  placesTab: boolean,
+  filters: MapFilters,
+  origin: Origin = getOrigin(),
+): DeckItem[] {
+  const nearest = <T>(list: T[], coordOf: (x: T) => [number, number]) =>
+    list
+      .map((x, i) => ({ x, i, d: distanceMeters(origin.coord, coordOf(x)) }))
+      .sort((a, b) => a.d - b.d || a.i - b.i)
+      .map((r) => r.x);
+  return placesTab
+    ? nearest(applyFilters(places, "", filters, origin), (p) => p.coord).map(
+        placeToDeckItem,
+      )
+    : nearest(
+        applyExperienceFilters(experiences, "", filters, origin),
+        (x) => x.meetingPoint.coord,
+      ).map(experienceToDeckItem);
 }

@@ -343,8 +343,34 @@ export function areaFor(coord: [number, number]): MockArea {
 
 /** "Sandvika, Bærum" · "Grünerløkka, Oslo" · "Asker" (town = municipality). */
 export function areaLabel(coord: [number, number]): string {
-  const a = areaFor(coord);
-  return a.name === a.municipality ? a.name : `${a.name}, ${a.municipality}`;
+  return labelOf(areaFor(coord));
+}
+
+const labelOf = (a: MockArea) =>
+  a.name === a.municipality ? a.name : `${a.name}, ${a.municipality}`;
+
+/** The same label for an area picked by name ("Sandvika" → "Sandvika,
+ *  Bærum"); a name that is no area comes back as it is. */
+export function areaNameLabel(name: string): string {
+  const a = AREAS.find((x) => x.name === name);
+  return a ? labelOf(a) : name;
+}
+
+/** The pickers' list (Phase 19 S4): AREAS by region, in REGIONS order. With a
+ *  query, only the areas whose name or municipality contains it, so "bærum"
+ *  lists Sandvika, Bekkestua and the rest. Empty regions are left out. */
+export function areasByRegion(
+  query = "",
+): { region: Region; areas: MockArea[] }[] {
+  const q = query.trim().toLowerCase();
+  const hit = (a: MockArea) =>
+    !q ||
+    a.name.toLowerCase().includes(q) ||
+    a.municipality.toLowerCase().includes(q);
+  return REGIONS.map((region) => ({
+    region,
+    areas: AREAS.filter((a) => a.region === region && hit(a)),
+  })).filter((g) => g.areas.length > 0);
 }
 
 export function inCoverage(coord: [number, number]): boolean {

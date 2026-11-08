@@ -2,13 +2,14 @@ import { useState } from "react";
 import { TextInput, View } from "react-native";
 
 import { Icon, Text, Pressable as UIPressable } from "@/components/ui";
-import { AREAS } from "@/fixtures";
+import { areasByRegion } from "@/fixtures";
 import { useThemeColors } from "@/theme";
 
 import { useRecentSearches } from "./hooks/useRecentSearches";
 
 // "Where?" search for the filter sheet. A text field over the MOCK AREAS
-// list (no geocoder). Selecting a suggestion sets the area name; the screen
+// list (no geocoder), grouped by region until you type (Phase 19: Oslo and
+// Akershus); a search matches an area's name or municipality. Selecting a suggestion sets the area name; the screen
 // recenters the map to it (see map.tsx handleApplyFilters). Not a real search.
 // Layout mirrors the reference Where flow: a tall search box, a "Nylige søk"
 // (DEMO, in-memory, clears on reload) section, then "Foreslåtte steder".
@@ -23,9 +24,8 @@ export function WhereField({
   const [text, setText] = useState("");
   const { recent, add } = useRecentSearches();
   const q = text.trim().toLowerCase();
-  const matches = q
-    ? AREAS.filter((a) => a.name.toLowerCase().includes(q))
-    : AREAS;
+  const groups = areasByRegion(q);
+  const matches = groups.flatMap((g) => g.areas);
 
   const choose = (name: string) => {
     add(name);
@@ -98,16 +98,31 @@ export function WhereField({
         </View>
       ) : null}
 
-      <View className="gap-1">
-        <Text variant="micro" weight="semibold" tone="muted">
-          Foreslåtte steder
-        </Text>
-        <View>
-          {matches.map((a) => (
-            <Row key={a.name} name={a.name} />
-          ))}
+      {q ? (
+        <View className="gap-1">
+          <Text variant="micro" weight="semibold" tone="muted">
+            Foreslåtte steder
+          </Text>
+          <View>
+            {matches.map((a) => (
+              <Row key={a.name} name={a.name} />
+            ))}
+          </View>
         </View>
-      </View>
+      ) : (
+        groups.map(({ region, areas }) => (
+          <View key={region} className="gap-1">
+            <Text variant="micro" weight="semibold" tone="muted">
+              {region}
+            </Text>
+            <View>
+              {areas.map((a) => (
+                <Row key={a.name} name={a.name} />
+              ))}
+            </View>
+          </View>
+        ))
+      )}
     </View>
   );
 }
