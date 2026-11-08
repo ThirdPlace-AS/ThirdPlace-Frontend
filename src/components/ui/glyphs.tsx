@@ -10,16 +10,20 @@ type GlyphProps = { size: number; color: string };
 
 function Frame({
   size,
+  wide = 24,
   children,
 }: {
   size: number;
+  /** Width of the drawing grid; 24 = square. Height stays 24, so a wider
+   *  grid draws a wider glyph at the same height. */
+  wide?: number;
   children: React.ReactNode;
 }) {
   return (
     <Svg
-      width={size}
+      width={(size * wide) / 24}
       height={size}
-      viewBox="0 0 24 24"
+      viewBox={`0 0 ${wide} 24`}
       fill="none"
       accessible={false}
       importantForAccessibility="no-hide-descendants"
@@ -104,27 +108,30 @@ function SwipeFilled({ size, color }: GlyphProps) {
 }
 
 /** Legg til (centre tab, founder 2026-11-07: like the other tabs) — a plus
- * in a rounded square. Idle: outline with the shared stroke. */
+ * in a rounded rectangle, wider than the other glyphs (founder 2026-11-08:
+ * on a 36 × 24 grid, so it is 1.5 times as wide at the same height). Idle:
+ * outline with the shared stroke. */
+const ADD_WIDE = 36;
 function Add({ size, color }: GlyphProps) {
   return (
-    <Frame size={size}>
-      <Rect x={3.5} y={3.5} width={17} height={17} rx={4.5} {...line(color)} />
-      <Path d="M12 8.25v7.5M8.25 12h7.5" {...line(color)} />
+    <Frame size={size} wide={ADD_WIDE}>
+      <Rect x={3.5} y={3.5} width={29} height={17} rx={5} {...line(color)} />
+      <Path d="M18 8.25v7.5M14.25 12h7.5" {...line(color)} />
     </Frame>
   );
 }
 
-// Active: the square filled to the outline's outer edge (2.625–21.375) with
-// the plus cut out (evenodd), so the bar shows through it; a glyph gets no
-// background colour to draw the plus with. The cut-out keeps the outline's
-// round ends (arcs of half the stroke).
+// Active: the rectangle filled to the outline's outer edge (x 2.625–33.375,
+// y 2.625–21.375) with the plus cut out (evenodd), so the bar shows through
+// it; a glyph gets no background colour to draw the plus with. The cut-out
+// keeps the outline's round ends (arcs of half the stroke).
 const ADD_FILLED =
-  "M8 2.625h8A5.375 5.375 0 0 1 21.375 8v8A5.375 5.375 0 0 1 16 21.375H8A5.375 5.375 0 0 1 2.625 16V8A5.375 5.375 0 0 1 8 2.625z" +
-  "M11.125 8.25a.875.875 0 0 1 1.75 0v2.875h2.875a.875.875 0 0 1 0 1.75h-2.875v2.875a.875.875 0 0 1-1.75 0v-2.875H8.25a.875.875 0 0 1 0-1.75h2.875z";
+  "M8.5 2.625h19A5.875 5.875 0 0 1 33.375 8.5v7A5.875 5.875 0 0 1 27.5 21.375H8.5A5.875 5.875 0 0 1 2.625 15.5V8.5A5.875 5.875 0 0 1 8.5 2.625z" +
+  "M17.125 8.25a.875.875 0 0 1 1.75 0v2.875h2.875a.875.875 0 0 1 0 1.75h-2.875v2.875a.875.875 0 0 1-1.75 0v-2.875H14.25a.875.875 0 0 1 0-1.75h2.875z";
 
 function AddFilled({ size, color }: GlyphProps) {
   return (
-    <Frame size={size}>
+    <Frame size={size} wide={ADD_WIDE}>
       <Path d={ADD_FILLED} fill={color} fillRule="evenodd" />
     </Frame>
   );
