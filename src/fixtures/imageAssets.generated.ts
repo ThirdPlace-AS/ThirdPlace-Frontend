@@ -18,6 +18,15 @@ export const LIBRARY_FULL = {
   "group-run": require("../../assets/library/group-run.webp"),
   "group-wine": require("../../assets/library/group-wine.webp"),
   "group-wine-2": require("../../assets/library/group-wine-2.webp"),
+  "klatring-1": require("../../assets/library/klatring-1.webp"),
+  "klatring-2": require("../../assets/library/klatring-2.webp"),
+  "klatring-3": require("../../assets/library/klatring-3.webp"),
+  "klatring-4": require("../../assets/library/klatring-4.webp"),
+  "klatring-5": require("../../assets/library/klatring-5.webp"),
+  "klatring-6": require("../../assets/library/klatring-6.webp"),
+  "klatring-7": require("../../assets/library/klatring-7.webp"),
+  "klatring-8": require("../../assets/library/klatring-8.webp"),
+  "klatring-9": require("../../assets/library/klatring-9.webp"),
   "market-bike": require("../../assets/library/market-bike.webp"),
   "market-ceramics": require("../../assets/library/market-ceramics.webp"),
   "market-plant": require("../../assets/library/market-plant.webp"),
@@ -74,6 +83,15 @@ export const LIBRARY_SMALL: Record<
   "group-run": require("../../assets/library/group-run-sm.webp"),
   "group-wine": require("../../assets/library/group-wine-sm.webp"),
   "group-wine-2": require("../../assets/library/group-wine-2-sm.webp"),
+  "klatring-1": require("../../assets/library/klatring-1-sm.webp"),
+  "klatring-2": require("../../assets/library/klatring-2-sm.webp"),
+  "klatring-3": require("../../assets/library/klatring-3-sm.webp"),
+  "klatring-4": require("../../assets/library/klatring-4-sm.webp"),
+  "klatring-5": require("../../assets/library/klatring-5-sm.webp"),
+  "klatring-6": require("../../assets/library/klatring-6-sm.webp"),
+  "klatring-7": require("../../assets/library/klatring-7-sm.webp"),
+  "klatring-8": require("../../assets/library/klatring-8-sm.webp"),
+  "klatring-9": require("../../assets/library/klatring-9-sm.webp"),
   "market-bike": require("../../assets/library/market-bike-sm.webp"),
   "market-ceramics": require("../../assets/library/market-ceramics-sm.webp"),
   "market-plant": require("../../assets/library/market-plant-sm.webp"),
@@ -173,6 +191,24 @@ export const PLACEHOLDER: Record<string, string> = {
     "data:image/webp;base64,UklGRnQAAABXRUJQVlA4IGgAAABwAgCdASoQAAwAA4BaJYgCdAdwLfcmmzw/ZGMAAOJxRoVJF2Tm+ffNtMZ+2gkDCuLXOXU2spNbCYCSA4LBlI/ldbflU+NsGw+grvsLYb5A5z2z2Y3kARHMFxTMqaGjaSrvlfWsmzAAAA==",
   "library/group-wine-2":
     "data:image/webp;base64,UklGRmAAAABXRUJQVlA4IFQAAADwAQCdASoQAAoAA4BaJQBOgB0knzhmIAAA+/LDr+Q90dr5I2VKGgq3A47ZNbqbX9Cg/o14R0Zw79qgLhtImHSMm/PHCs61mdo9jV7CueVqnifAAAA=",
+  "library/klatring-1":
+    "data:image/webp;base64,UklGRl4AAABXRUJQVlA4IFIAAAAwAgCdASoQAAoAA4BaJYwCsAYrxWcDcSMMgAD+5vDQW4iUnruaCepL+PxQYUrM6w3Uv8BBfSYsr9y+gwQOqTs1WJs+pDaO/ok+nrjrWgDhIAAA",
+  "library/klatring-2":
+    "data:image/webp;base64,UklGRlwAAABXRUJQVlA4IFAAAAAwAgCdASoQAAoAA4BaJZACdAEWtUXxGBHeAAD+xRuayu+y6hG0GvSgI7IMvhUV7pDyWT3AYeFRI1otwinLY/A7qbjANzHHttBtuACE3TaAAA==",
+  "library/klatring-3":
+    "data:image/webp;base64,UklGRngAAABXRUJQVlA4IGwAAAAwAgCdASoQAAoAA4BaJbACdAYw7yzeEgRB5AD+woNMweG0tjG+cw2lLuhyTmmGktDEKO7skwFFiBYzsClrKiucB8z0VxEY7WUTn7khMrBafbf64vqTlqJylsxKeC5UeOpyOrmlEAz+0/ytwAA=",
+  "library/klatring-4":
+    "data:image/webp;base64,UklGRlQAAABXRUJQVlA4IEgAAAAQAgCdASoQAAoAA4BaJZQC7AEQ5XTqKnwQAP7QdH1krDvl02fBBnhF72buipzbbykm8lv178W6FoRIxe1kCbthgSYHJpEQ0AA=",
+  "library/klatring-5":
+    "data:image/webp;base64,UklGRn4AAABXRUJQVlA4IHIAAABQAgCdASoQAAoAA4BaJZACdAYsZWLn717T8+AA/pmGf1ZjnrpJOgQA6bT31j4i8GamfGu8Z5ccctoYBsekJJJeM0hW8ZYObrx82Ar2chv8/x/NDvXXl6kCPk33T2g9slUgxedBrKr5fJ+nLVtQvYkAAAA=",
+  "library/klatring-6":
+    "data:image/webp;base64,UklGRqoAAABXRUJQVlA4IJ4AAABQBACdASoQABgAPu1iqU2ppaOiMAgBMB2JYwAD5gIOlTj7eSn+3JOfKq+AAP7s/PtPInKomGZEXj1iyPEKVqNF1AbvmORcLWSHMXHCa1dNhn9RmU+MNLT7Pu9veXtuk79MBzWG0A7iwVQ7OFK9aOX4aHdf8P44dBALOrtOMotJyuFpo7pmI/yeWprRhsxYAeREs/Z9qCkdmZwg97wAAA==",
+  "library/klatring-7":
+    "data:image/webp;base64,UklGRoAAAABXRUJQVlA4IHQAAAAwBACdASoQABgAPu1iqU2ppaOiMAgBMB2JYwCo9Bn55sLxBwdW9YBFzAAA98W2LalB+CsyAmsG97X7rVF++KhtnC6qBPj5I710GJjObT+3kNEmWrL0Ht0TC7dPbSChYYkrYrVCDasQr+PfSzDcDZfUg8AAAA==",
+  "library/klatring-8":
+    "data:image/webp;base64,UklGRn4AAABXRUJQVlA4IHIAAACwAwCdASoQABQAPu1iqU2ppaOiMAgBMB2JZwC7AB3vaNnYu4g6sAD+rRN0e8rLfM1LXUKOZcsb6OSWEIkmrlQ0dkcQ2nWVO61/+n2vx1P+K65nM41DbDylElzi1m8ecsJzUxSi6q3qLouZME8AKsgAAAA=",
+  "library/klatring-9":
+    "data:image/webp;base64,UklGRtYAAABXRUJQVlA4IMoAAABQBACdASoQABgAPu1iqU2ppaOiMAgBMB2JZQC+SYvCxtgzkOdFUiiEqKHAAPz3bU9n7EPyx+MOWf4jsYN6520MkdW4eFmAhOuXA9JTZZ9zpX2bYfme/iEGyp6eBUoybkyaKhuJr/3WSS207uiteu5Pt0rYJrVv3mASzbvfzXUuN9sbTWO9h7qv6SjeDStWLWQIAKiSUL/DRneOIfsG7cIlWiurb91jeet0Si76bCgpwpnkJiavSh6nxWkDDbdEcq7BkzKrnFP1+AAA",
   "library/market-bike":
     "data:image/webp;base64,UklGRkoAAABXRUJQVlA4ID4AAADQAQCdASoQAAwAA4BaJZQCdAEOQkYApAD+7ASkaJEmbK1hiBcUkPTPZOPi4jU2VWUyoYnYMfEd+E/pVGOAAA==",
   "library/market-ceramics":

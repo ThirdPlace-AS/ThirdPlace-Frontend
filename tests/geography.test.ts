@@ -86,7 +86,8 @@ describe("areas across Oslo and Akershus", () => {
   });
 
   it("keep the legacy places in Oslo", () => {
-    for (const p of places) expect(areaFor(p.coord).municipality).toBe("Oslo");
+    for (const p of places.filter((x) => /^p\d+$/.test(x.id)))
+      expect(areaFor(p.coord).municipality).toBe("Oslo");
   });
 });
 

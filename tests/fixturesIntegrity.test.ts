@@ -232,25 +232,51 @@ describe("sessions follow the experience's when and repeat", () => {
     expect(firstSessionStart("snart", now)).toBeNull();
   });
 
-  it.each(experiences.map((e) => [e.id, e] as const))(
-    "%s has ≥ 4 upcoming sessions, the first one at its `when`",
-    (_id, e) => {
-      const list = sessionsFor(e, now);
-      expect(list.length).toBeGreaterThanOrEqual(4);
-      expect(list[0]!.start).toEqual(firstSessionStart(e.when, now));
-      expect(list[0]!.spotsLeft).toBe(Math.max(0, e.capacity - e.going));
-      const step = e.repeat === "Månedlig" ? 28 : 7;
-      const days =
-        (list[1]!.start.getTime() - list[0]!.start.getTime()) / 864e5;
-      expect(Math.round(days)).toBe(step);
-      for (const s of list) {
-        expect(s.end.getTime() - s.start.getTime()).toBe(
-          e.durationMin * 60_000,
-        );
-        expect(s.spotsLeft).toBeLessThanOrEqual(e.capacity);
-      }
-    },
-  );
+  it.each(
+    experiences
+      .filter((e) => e.format !== "event")
+      .map((e) => [e.id, e] as const),
+  )("%s has ≥ 4 upcoming sessions, the first one at its `when`", (_id, e) => {
+    const list = sessionsFor(e, now);
+    expect(list.length).toBeGreaterThanOrEqual(4);
+    expect(list[0]!.start).toEqual(firstSessionStart(e.when, now));
+    expect(list[0]!.spotsLeft).toBe(Math.max(0, e.capacity - e.going));
+    const step = e.repeat === "Månedlig" ? 28 : 7;
+    const days = (list[1]!.start.getTime() - list[0]!.start.getTime()) / 864e5;
+    expect(Math.round(days)).toBe(step);
+    for (const s of list) {
+      expect(s.end.getTime() - s.start.getTime()).toBe(e.durationMin * 60_000);
+      expect(s.spotsLeft).toBeLessThanOrEqual(e.capacity);
+    }
+  });
+});
+
+describe("an Arrangement runs once, one session per day", () => {
+  const now = new Date(2026, 10, 6, 10, 0, 0);
+  it.each(
+    experiences
+      .filter((e) => e.format === "event")
+      .map((e) => [e.id, e] as const),
+  )("%s", (_id, e) => {
+    const list = sessionsFor(e, now);
+    expect(e.repeat).toBe("Gjentas ikke");
+    expect(list).toHaveLength(e.days ?? 1);
+    expect(list[0]!.start).toEqual(firstSessionStart(e.when, now));
+    list.forEach((s, i) => {
+      if (i > 0)
+        expect(
+          Math.round(
+            (s.start.getTime() - list[i - 1]!.start.getTime()) / 864e5,
+          ),
+        ).toBe(1);
+      expect(s.end.getTime() - s.start.getTime()).toBe(e.durationMin * 60_000);
+    });
+    // Its organiser is a club or a business on the map.
+    const org = placeById(e.organizerPlaceId);
+    expect(["organisasjon", "bedrift"]).toContain(org?.kind);
+    // The program covers every day.
+    expect(e.itinerary.length).toBeGreaterThanOrEqual(3);
+  });
 });
 
 describe("places carry everything the place page shows", () => {

@@ -115,13 +115,19 @@ const PLACE_PHOTOS: Record<string, readonly LibraryKey[]> = {
 export function photosForPlace(place: {
   id: string;
   category: string;
+  // Catalogue places (Phase 19) carry their own photos.
+  photos?: readonly LibraryKey[];
 }): readonly LibraryKey[] {
-  return PLACE_PHOTOS[place.id] ?? [coverForPlaceCategory(place.category)];
+  return (
+    place.photos ??
+    PLACE_PHOTOS[place.id] ?? [coverForPlaceCategory(place.category)]
+  );
 }
 
 export function coverForPlace(place: {
   id: string;
   category: string;
+  photos?: readonly LibraryKey[];
 }): LibraryKey {
   return photosForPlace(place)[0] ?? coverForPlaceCategory(place.category);
 }

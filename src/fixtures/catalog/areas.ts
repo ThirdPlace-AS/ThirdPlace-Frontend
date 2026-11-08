@@ -93,7 +93,7 @@ export const AREAS: MockArea[] = [
     name: "Nydalen",
     municipality: "Oslo",
     region: "Oslo",
-    coord: [10.765, 59.949],
+    coord: [10.769, 59.949],
   },
   {
     name: "Bygdøy",
@@ -111,7 +111,7 @@ export const AREAS: MockArea[] = [
     name: "Sognsvann",
     municipality: "Oslo",
     region: "Oslo",
-    coord: [10.731, 59.975],
+    coord: [10.7295, 59.969],
   },
   {
     name: "Ekeberg",

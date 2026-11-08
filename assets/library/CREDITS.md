@@ -6,6 +6,8 @@ Since Phase 12 (2026-11-07) every photo is stored as WebP in two sizes, `<name>.
 
 `person-tom` and `person-per` (Phase 12) are crops of photos already in the set (`group-coffee` and the Sveip photo `e6-1`); nothing new was downloaded.
 
+Photos added in Phase 19 (2026-11-08, the interest catalogue) come from the same kind of `license=free` Unsplash searches (no Unsplash+), downloaded at 960 px wide (800 px from the content batches on) and checked on a contact sheet for readable signs, logos and brands before use. Their file names start with the interest they illustrate (`klatring-3.webp`); none depicts the fictional business, club, place or person it is shown with.
+
 Photos added before Phase 11 (`person-*`, `venue-cafe/bar/restaurant/books/gallery/outdoor/workshop/music`, `group-run/wine/climb`, `market-*`) are also Unsplash License photos; their individual sources were not recorded when they were added.
 
 | File               | Photographer        | Source                                                                                                |
@@ -36,3 +38,12 @@ Photos added before Phase 11 (`person-*`, `venue-cafe/bar/restaurant/books/galle
 | group-coffee.webp  | Toa Heftiba         | https://unsplash.com/photos/four-friends-laughing-and-high-fiving-over-coffee-l_ExpFwwOEg             |
 | group-books.webp   | Bill Ringer         | https://unsplash.com/photos/hands-holding-open-books-around-a-table-7C2JUQRJ5hE                       |
 | group-wine-2.webp  | Ivenory             | https://unsplash.com/photos/people-toasting-with-glasses-of-red-wine-5tqlorcXgjE                      |
+| klatring-1.webp    | Yns Plt             | https://unsplash.com/photos/woman-rock-climbing-inside-building-NY1D4Zni7fc                           |
+| klatring-2.webp    | Nathan Cima         | https://unsplash.com/photos/a-man-is-climbing-on-a-climbing-wall-TDhpTIK-neM                          |
+| klatring-3.webp    | Tofan Teodor        | https://unsplash.com/photos/a-man-climbing-up-the-side-of-a-climbing-wall-gi2dUvCUVB8                 |
+| klatring-4.webp    | Tofan Teodor        | https://unsplash.com/photos/a-group-of-people-standing-around-a-climbing-wall-3Z95_0rAy88             |
+| klatring-5.webp    | Brook Anderson      | https://unsplash.com/photos/E8E49136fas                                                               |
+| klatring-6.webp    | Noah Master         | https://unsplash.com/photos/W3fBC0thFfw                                                               |
+| klatring-7.webp    | Bradley Dunn        | https://unsplash.com/photos/Pz4ZvQnBThw                                                               |
+| klatring-8.webp    | Mark McGregor       | https://unsplash.com/photos/Ns8trMR4Om8                                                               |
+| klatring-9.webp    | Beta Boulders       | https://unsplash.com/photos/two-women-high-fiving-after-rock-climbing-2qK9YbtIrc8                     |

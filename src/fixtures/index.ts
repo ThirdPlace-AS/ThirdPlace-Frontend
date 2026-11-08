@@ -8,7 +8,9 @@
 
 import type { ImageSourcePropType } from "react-native";
 
+import { buildCatalog } from "./catalog/build";
 import type { InterestId } from "./catalog/interests";
+import { SEEDS } from "./catalog/seeds";
 import { libImage, swipeImage, type LibraryKey } from "./images";
 
 export const PLACE_CATEGORIES = [
@@ -275,12 +277,15 @@ export type CitySpace = {
 export type MockPlace = {
   id: string;
   name: string;
-  category: Exclude<PlaceCategory, "Alle">;
+  // The legacy four (PLACE_CATEGORIES) or, for catalogue places, a short
+  // descriptor ("Klatresenter", "Park").
+  category: string;
   kind: PlaceKind;
   // The interest this place is for (src/fixtures/catalog/interests.ts); its
   // pin takes the interest's colour family and glyph.
   interestId: InterestId;
   space?: CitySpace; // byrom only
+  photos?: LibraryKey[]; // catalogue places; legacy ones use PLACE_PHOTOS
   distance: string;
   distanceM: number;
   coord: [number, number]; // [lng, lat] — MOCK demo point
@@ -771,7 +776,7 @@ export const MOCK_WEATHER: MockWeather = {
 export type MockBusiness = {
   id: string;
   name: string;
-  category: Exclude<PlaceCategory, "Alle">;
+  category: string;
   verified: boolean;
   about: string;
   address: string;
@@ -3942,3 +3947,24 @@ export function visibleNotifications(
     return true;
   });
 }
+
+// ── Interest catalogue (Phase 19, founder 2026-11-08) ───────────────────────
+// Built from the hand-written seeds in src/fixtures/catalog and appended after
+// the legacy items (p1, e1, g1 … stay first). Its chats are not joined, so the
+// Chat tab lists one only after the viewer joins it.
+const CATALOG = buildCatalog(SEEDS, {
+  personName: (id) => personById(id)?.name,
+  legacyGroupFor: (interest) =>
+    groups.find((g) => g.interestId === interest)?.id,
+  namesFor: (seed, count) => generatedNames(seed, count),
+});
+places.push(...CATALOG.places);
+businesses.push(...CATALOG.businesses);
+organizations.push(...CATALOG.organizations);
+experiences.push(...CATALOG.experiences);
+groups.push(...CATALOG.groups);
+chats.push(...CATALOG.chats);
+Object.assign(messagesByChat, CATALOG.messagesByChat);
+reviews.push(...CATALOG.reviews);
+experienceReviews.push(...CATALOG.experienceReviews);
+Object.assign(attendeesByExperience, CATALOG.attendees);
