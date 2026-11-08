@@ -440,8 +440,8 @@ export const VELVAERE_A: InterestSeed[] = [
       days: 1,
       venue: "organisasjon",
       organizer: "organisasjon",
-      capacity: 60,
-      going: 24,
+      capacity: 30,
+      going: 19,
       priceNok: 250,
       about:
         "En dag med rolige aktiviteter i lokalet til Hvilepuls. Du kan prøve massasje, pusteøvelser og avspenning, og det er te og frukt hele dagen.",

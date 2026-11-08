@@ -24,6 +24,7 @@ import {
   places,
   reviewsForExperience,
   reviewsForPlace,
+  sessionsFor,
 } from "@/fixtures";
 import { LIBRARY, photosForPlace } from "@/fixtures/images";
 import { distanceMeters } from "@/lib/distance";
@@ -171,6 +172,32 @@ describe("the catalogue's shape", () => {
       );
       expect(towns.size).toBeGreaterThanOrEqual(3);
     }
+  });
+
+  it("never books a host in two places at once", () => {
+    // Every weekday as "today": legacy times like "I morgen 19:00" move with
+    // the date. Weekly experiences give four sessions, events one per day.
+    const clashes = new Set<string>();
+    for (let d = 0; d < 7; d++) {
+      const now = new Date(2026, 10, 9 + d, 8, 0);
+      const byHost = new Map<string, { id: string; s: number; e: number }[]>();
+      for (const x of experiences) {
+        if (!x.hostId) continue;
+        const list = byHost.get(x.hostId) ?? [];
+        for (const s of sessionsFor(x, now))
+          list.push({ id: x.id, s: s.start.getTime(), e: s.end.getTime() });
+        byHost.set(x.hostId, list);
+      }
+      for (const [host, list] of byHost)
+        for (let i = 0; i < list.length; i++)
+          for (let j = i + 1; j < list.length; j++) {
+            const a = list[i]!;
+            const b = list[j]!;
+            if (a.id !== b.id && a.s < b.e && b.s < a.e)
+              clashes.add(`${host}: ${a.id} / ${b.id}`);
+          }
+    }
+    expect([...clashes]).toEqual([]);
   });
 
   it("credits every new photo", () => {

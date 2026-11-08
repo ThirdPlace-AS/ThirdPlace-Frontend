@@ -60,7 +60,7 @@ export const VELVAERE_B: InterestSeed[] = [
       },
     },
     organisasjon: {
-      name: "Stille stund Ski",
+      name: "Meditasjonsgruppa i Ski",
       category: "Meditasjonsgruppe",
       coord: [10.8365, 59.7195],
       town: "Ski",
@@ -91,7 +91,7 @@ export const VELVAERE_B: InterestSeed[] = [
       ],
       chat: [
         [
-          "Stille stund Ski",
+          "Meditasjonsgruppa i Ski",
           "Mandag mediterer vi i tjue minutter og tar en kort samtale etterpå.",
         ],
         ["Emma", "Hva bør jeg ha på meg?"],
@@ -289,7 +289,7 @@ export const VELVAERE_B: InterestSeed[] = [
       ],
       chat: [
         [
-          "Stille stund Ski",
+          "Meditasjonsgruppa i Ski",
           "Vi holder stillhet fra halv ti til fire. Telefonen kan ligge i jakka.",
         ],
         ["Grete", "Hva om jeg må gå tidligere?"],
@@ -453,9 +453,9 @@ export const VELVAERE_B: InterestSeed[] = [
         ["Henrik Aasen", "Jeg sykler ut rundt fem."],
       ],
       space: {
-        facilities: ["Badeplass", "Toalett"],
+        facilities: ["Badeplass"],
         access: "Åpent for alle",
-        season: "Sommer",
+        season: "Hele året",
       },
     },
     opplevelse: {
@@ -670,7 +670,7 @@ export const VELVAERE_B: InterestSeed[] = [
       },
     },
     organisasjon: {
-      name: "Strømmen Pilateslag",
+      name: "Bevegelseslaget på Strømmen",
       category: "Pilateslag",
       coord: [11.0045, 59.9465],
       town: "Strømmen",
@@ -700,7 +700,7 @@ export const VELVAERE_B: InterestSeed[] = [
         ],
       ],
       chat: [
-        ["Strømmen Pilateslag", "Torsdag er det Linh som leder timen."],
+        ["Bevegelseslaget på Strømmen", "Torsdag er det Linh som leder timen."],
         ["Gunn", "Jeg tar med en venninne torsdag."],
         ["Linh Tran", "Så fint! Vi har matter til låns."],
       ],

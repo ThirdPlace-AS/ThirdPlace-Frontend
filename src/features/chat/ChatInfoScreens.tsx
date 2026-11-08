@@ -30,21 +30,46 @@ import {
   chatById,
   experienceById,
   experiences,
+  groups,
   people,
+  placeById,
   type MockChat,
+  type MockPerson,
 } from "@/fixtures";
+import { interestById } from "@/fixtures/catalog/interests";
 import { libImage, libThumb, smallImage } from "@/fixtures/images";
 import { chatInviteSlug } from "@/lib/entityRoutes";
 import { leaveChat } from "@/lib/joinedChats";
 
 const ROLES = ["Vert · Admin", "Deltar", "Venn", "Kun i chatten"];
-export const membersOf = (chat: MockChat) =>
-  people
-    .slice(0, Math.min(people.length, Math.max(2, chat.members ?? 2)))
+/** What a chat is about: its experience's, place's or group's interest. */
+function chatInterest(chat: MockChat): string | undefined {
+  const id =
+    (chat.pinnedExperienceId
+      ? experienceById(chat.pinnedExperienceId)?.interestId
+      : undefined) ??
+    (chat.placeId ? placeById(chat.placeId)?.interestId : undefined) ??
+    groups.find((g) => g.chatId === chat.id)?.interestId;
+  return id ? interestById(id)?.label : undefined;
+}
+
+/** Stand-in members (MOCK): the experience's host first, then people who
+ *  like what the chat is about, then everyone else in fixture order. */
+export const membersOf = (chat: MockChat) => {
+  const hostId = chat.pinnedExperienceId
+    ? experienceById(chat.pinnedExperienceId)?.hostId
+    : undefined;
+  const label = chatInterest(chat);
+  const rank = (p: MockPerson) =>
+    p.id === hostId ? 0 : label && p.interests.includes(label) ? 1 : 2;
+  const pool = [...people].sort((a, b) => rank(a) - rank(b));
+  return pool
+    .slice(0, Math.min(pool.length, Math.max(2, chat.members ?? 2)))
     .map((p, i) => ({
       person: p,
       role: ROLES[Math.min(i, ROLES.length - 1)] ?? "Kun i chatten",
     }));
+};
 
 // Sample photos standing in for images shared in the chat (bundled art).
 const SHARED = experiences.flatMap((e) => e.photos).slice(0, 4);

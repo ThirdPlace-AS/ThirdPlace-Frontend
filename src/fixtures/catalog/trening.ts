@@ -151,14 +151,14 @@ export const TRENING: InterestSeed[] = [
     opplevelse: {
       title: "Buldring for nye",
       hostId: "u6",
-      when: "Tir 18:00",
+      when: "Tir 16:30",
       repeat: "Ukentlig",
       venue: "bedrift",
       capacity: 10,
       going: 7,
       priceNok: 190,
       about:
-        "En rolig første kveld på buldreveggen. Vi viser hvordan en økt foregår, hvordan du leser et problem og hvordan du tar pauser underveis.",
+        "En rolig første ettermiddag på buldreveggen. Vi viser hvordan en økt foregår, hvordan du leser et problem og hvordan du tar pauser underveis.",
       category: "Sport & trening",
       duration: "2 timer",
       durationMin: 120,

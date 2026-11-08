@@ -35,7 +35,7 @@ export const KAFE: InterestSeed[] = [
           "Ingeborg L.",
           4,
           "1 måned siden",
-          "Hyggelige folk og mye å lære. Lokalet blir trangt når det kommer mer enn femten stykker.",
+          "Hyggelige folk og mye å lære. Lokalet blir trangt de kveldene det kommer mange.",
         ],
         [
           "Ali R.",
@@ -114,8 +114,8 @@ export const KAFE: InterestSeed[] = [
       days: 2,
       venue: "organisasjon",
       organizer: "organisasjon",
-      capacity: 150,
-      going: 38,
+      capacity: 60,
+      going: 34,
       priceNok: 150,
       about:
         "To dager med smaking, brygging og prat om kaffe i Gamlebyen. Små brennerier fra Oslo-området stiller med bønner, og klubben viser hvordan du brygger godt hjemme.",

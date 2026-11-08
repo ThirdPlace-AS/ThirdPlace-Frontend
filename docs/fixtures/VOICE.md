@@ -28,6 +28,15 @@ How the interest catalogue's fixtures are written (`src/fixtures/catalog/*.ts`, 
 - Each interest's three places sit in at least three different towns (`town` must match the nearest area in `AREAS`). Spread the catalogue across Oslo, Asker and Bærum, Follo, Romerike and Hadeland.
 - Coordinates on land: run `node scripts/check-land.js` after adding seeds (it updates `land-check.json`, which the test reads). Water interests sit on the shore or at the base of a pier.
 
+## Before a batch is done
+
+Read the batch once more with four questions, and fix what doesn't hold:
+
+- Does each event fit the room its own reviews describe (a club room that "gets crowded" is not a 150-person festival)?
+- Does each place's `season` fit what is scheduled there (a weekly bath all year needs "Hele året"; harvests, new potatoes and weeding don't hold in a week that falls in winter)?
+- Is any host in two places at once? `tests/catalogCoverage.test.ts` checks every weekday as "today".
+- Are the claims about real places modest (no facilities you can't back)?
+
 ## Photos
 
 - Two or more photos per item, from `license=free` Unsplash searches (no Unsplash+), checked on a contact sheet for readable signs, logos and brands. Name them `<interest>-<n>` and credit each one in `assets/library/CREDITS.md`, then run `node scripts/build-image-manifest.js --convert`.
