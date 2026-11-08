@@ -58,11 +58,10 @@ describe("fixtures referential integrity", () => {
     }
   });
 
-  it("every person.hostsExperienceId resolves to an experience", () => {
-    for (const p of people) {
-      if (p.hostsExperienceId) {
-        expect(experienceById(p.hostsExperienceId)).toBeDefined();
-      }
+  it("every experience names a host who is in people (hostId)", () => {
+    for (const e of experiences) {
+      expect(people.some((p) => p.id === e.hostId)).toBe(true);
+      expect(experienceById(e.id)).toBe(e);
     }
   });
 

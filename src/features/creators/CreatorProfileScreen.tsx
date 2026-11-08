@@ -6,7 +6,7 @@ import { FollowButton, Screen, Avatar, Text } from "@/components/ui";
 import { Button } from "@/components/Button";
 import { RouteHeader } from "@/components/RouteHeader";
 import { EmptyState } from "@/components/states/StateView";
-import { chats, experienceById, personById } from "@/fixtures";
+import { chats, experiencesHostedBy, personById } from "@/fixtures";
 import { libImage } from "@/fixtures/images";
 
 // Creator profile, per the design (PDF p14): avatar, name, "Skaper"
@@ -29,9 +29,7 @@ export default function CreatorProfileScreen() {
       </Screen>
     );
   }
-  const hosted = person.hostsExperienceId
-    ? experienceById(person.hostsExperienceId)
-    : undefined;
+  const hosted = experiencesHostedBy(person.id)[0];
 
   return (
     <Screen edges={["top"]}>

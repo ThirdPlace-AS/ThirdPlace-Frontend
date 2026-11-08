@@ -3,16 +3,17 @@
 import {
   OSLO_AREAS,
   experiences,
-  people,
+  personById,
   type MockExperience,
   type MockPerson,
 } from "@/fixtures";
 
-/** The fixture person who hosts this experience (linked by id, never by name). */
+/** The fixture person who hosts this experience (`hostId`, never by name).
+ *  An Arrangement is hosted by its organiser's contact person. */
 export function hostPerson(
-  exp: Pick<MockExperience, "id">,
+  exp: Pick<MockExperience, "hostId">,
 ): MockPerson | undefined {
-  return people.find((p) => p.hostsExperienceId === exp.id);
+  return personById(exp.hostId);
 }
 
 const dist2 = (a: [number, number], b: [number, number]) =>

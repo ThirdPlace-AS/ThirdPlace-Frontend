@@ -8,6 +8,7 @@
 
 import type { ImageSourcePropType } from "react-native";
 
+import type { InterestId } from "./catalog/interests";
 import { libImage, swipeImage, type LibraryKey } from "./images";
 
 export const PLACE_CATEGORIES = [
@@ -237,10 +238,49 @@ export const DEFAULT_CHIP_ICON = "ellipse-outline";
 // Rating thresholds for the "Vurdering" star row (MOCK — rating is display-only).
 export const RATING_THRESHOLDS = [3, 3.5, 4, 4.5, 5] as const;
 
+// Phase 19 (founder 2026-11-08): what a place on the map is. A Bedrift is run
+// by a business (`businesses`), an Organisasjon by a club or association
+// (`organizations`), a Byrom is a public city space (`space`). MOCK display
+// kinds, not a canonical place taxonomy (BLOCKED_CONTRACT_GAP).
+export type PlaceKind = "bedrift" | "organisasjon" | "byrom";
+export const PLACE_KIND_LABEL: Record<PlaceKind, string> = {
+  bedrift: "Bedrift",
+  organisasjon: "Organisasjon",
+  byrom: "Byrom",
+};
+
+/** What a byrom offers (MOCK display labels, not a facility register). */
+export const FACILITY_OPTIONS = [
+  "Benker",
+  "Toalett",
+  "Grillplass",
+  "Bålplass",
+  "Badeplass",
+  "Lekeplass",
+  "Utescene",
+  "Ballbane",
+  "Turvei",
+  "Gapahuk",
+  "Belysning",
+  "Drikkevann",
+  "Sykkelparkering",
+  "Parkering",
+] as const;
+export type CitySpace = {
+  facilities: (typeof FACILITY_OPTIONS)[number][];
+  access: string; // e.g. "Åpent for alle"
+  season?: "Hele året" | "Sommer" | "Vinter";
+};
+
 export type MockPlace = {
   id: string;
   name: string;
   category: Exclude<PlaceCategory, "Alle">;
+  kind: PlaceKind;
+  // The interest this place is for (src/fixtures/catalog/interests.ts); its
+  // pin takes the interest's colour family and glyph.
+  interestId: InterestId;
+  space?: CitySpace; // byrom only
   distance: string;
   distanceM: number;
   coord: [number, number]; // [lng, lat] — MOCK demo point
@@ -273,6 +313,8 @@ export const places: MockPlace[] = [
     id: "p1",
     name: "Oslo Kaffebar",
     category: "Kafé",
+    kind: "bedrift",
+    interestId: "kaffe",
     distance: "120 m",
     distanceM: 120,
     coord: [10.7579, 59.9227],
@@ -305,6 +347,8 @@ export const places: MockPlace[] = [
     id: "p2",
     name: "Grünerløkka Bokcafé",
     category: "Bokcafé",
+    kind: "bedrift",
+    interestId: "litteratur",
     distance: "450 m",
     distanceM: 450,
     coord: [10.7605, 59.925],
@@ -331,6 +375,8 @@ export const places: MockPlace[] = [
     id: "p3",
     name: "Kork & Kanne Vinbar",
     category: "Vinbar",
+    kind: "bedrift",
+    interestId: "vin",
     distance: "800 m",
     distanceM: 800,
     coord: [10.751, 59.9269],
@@ -356,6 +402,8 @@ export const places: MockPlace[] = [
     id: "p4",
     name: "Sofienberg Sykkelverksted",
     category: "Verksted",
+    kind: "bedrift",
+    interestId: "sykkel",
     distance: "1,1 km",
     distanceM: 1100,
     coord: [10.767, 59.919],
@@ -382,6 +430,8 @@ export const places: MockPlace[] = [
     id: "p5",
     name: "Akerselva Vandring",
     category: "Kafé",
+    kind: "organisasjon",
+    interestId: "friluftsliv",
     distance: "300 m",
     distanceM: 300,
     coord: [10.7558, 59.9268],
@@ -408,6 +458,8 @@ export const places: MockPlace[] = [
     id: "p6",
     name: "Vulkan Keramikkstudio",
     category: "Verksted",
+    kind: "bedrift",
+    interestId: "keramikk",
     distance: "650 m",
     distanceM: 650,
     coord: [10.7515, 59.9261],
@@ -434,6 +486,8 @@ export const places: MockPlace[] = [
     id: "p7",
     name: "Grünerløkka Mattur",
     category: "Vinbar",
+    kind: "bedrift",
+    interestId: "mat",
     distance: "500 m",
     distanceM: 500,
     coord: [10.7662, 59.9238],
@@ -467,6 +521,8 @@ export const places: MockPlace[] = [
     id: "p8",
     name: "Botanisk Hage Omvisning",
     category: "Kafé",
+    kind: "bedrift",
+    interestId: "hage-og-dyrking",
     distance: "1,4 km",
     distanceM: 1400,
     coord: [10.7698, 59.9191],
@@ -497,6 +553,8 @@ export const places: MockPlace[] = [
     id: "p9",
     name: "Takåsen Yogastudio",
     category: "Verksted",
+    kind: "bedrift",
+    interestId: "yoga",
     distance: "950 m",
     distanceM: 950,
     coord: [10.7631, 59.9283],
@@ -523,6 +581,8 @@ export const places: MockPlace[] = [
     id: "p10",
     name: "Oslofjord Seiltur",
     category: "Vinbar",
+    kind: "bedrift",
+    interestId: "seiling",
     distance: "2,3 km",
     distanceM: 2300,
     coord: [10.7389, 59.9044],
@@ -547,8 +607,10 @@ export const places: MockPlace[] = [
   },
   {
     id: "p11",
-    name: "Munch-galleriet Kveldstur",
+    name: "Galleri Kveldslys",
     category: "Bokcafé",
+    kind: "bedrift",
+    interestId: "kunst",
     distance: "1,8 km",
     distanceM: 1800,
     coord: [10.7566, 59.9058],
@@ -559,8 +621,8 @@ export const places: MockPlace[] = [
     openNow: false,
     tags: ["Kunst", "Guidet", "Tilgjengelig"],
     about:
-      "Liten kveldsgruppe gjennom hovedutstillingen med en kunsthistoriker.",
-    address: "Edvard Munchs plass 1, 0194 Oslo",
+      "Et lite galleri som holder åpent på torsdagskvelder, med en kort omvisning ved en kunsthistoriker.",
+    address: "Operagata 18, 0194 Oslo",
     hours: "Tor 18–21",
     accessibility: [
       "Trinnfri inngang",
@@ -586,6 +648,8 @@ export const places: MockPlace[] = [
     id: "p12",
     name: "Barcode Arkitekturtur",
     category: "Kafé",
+    kind: "bedrift",
+    interestId: "arkitektur",
     distance: "2,0 km",
     distanceM: 2000,
     coord: [10.7553, 59.9076],
@@ -612,6 +676,8 @@ export const places: MockPlace[] = [
     id: "p13",
     name: "Grønland Krydderverksted",
     category: "Verksted",
+    kind: "bedrift",
+    interestId: "matlaging",
     distance: "1,6 km",
     distanceM: 1600,
     coord: [10.7623, 59.9124],
@@ -638,6 +704,8 @@ export const places: MockPlace[] = [
     id: "p14",
     name: "Frogner Skjønnhetssalong",
     category: "Bokcafé",
+    kind: "bedrift",
+    interestId: "velvaere",
     distance: "2,6 km",
     distanceM: 2600,
     coord: [10.7045, 59.9205],
@@ -749,6 +817,127 @@ export const businesses: MockBusiness[] = [
     address: "Sofienberggata 7, 0558 Oslo",
     hours: "Man–fre 10–18",
     placeId: "p4",
+  },
+  // Phase 19: every Bedrift place has the business that runs it.
+  {
+    id: "b5",
+    name: "Vulkan Keramikkstudio",
+    category: "Verksted",
+    verified: true,
+    about:
+      "Keramikkverksted med drejeskiver, brennovn og kurs for nybegynnere.",
+    address: "Maridalsveien 17, 0178 Oslo",
+    hours: "Tir–søn 12–20",
+    placeId: "p6",
+  },
+  {
+    id: "b6",
+    name: "Løkka Matvandringer AS",
+    category: "Vinbar",
+    verified: true,
+    about:
+      "Små matturer mellom nabolagets spisesteder, ledet av folk fra strøket.",
+    address: "Olaf Ryes plass 2, 0552 Oslo",
+    hours: "Tor–lør 17–20",
+    placeId: "p7",
+  },
+  {
+    id: "b7",
+    name: "Grønne Stier Omvisninger",
+    category: "Kafé",
+    verified: false,
+    about: "Guidede turer i veksthusene, med vekt på planter fra nord og sør.",
+    address: "Sars' gate 1, 0562 Oslo",
+    hours: "Hver dag 10–17",
+    placeId: "p8",
+  },
+  {
+    id: "b8",
+    name: "Takåsen Yoga",
+    category: "Verksted",
+    verified: true,
+    about: "Lite yogastudio med morgentimer før jobb og rolige helgetimer.",
+    address: "Thorvald Meyers gate 59, 0552 Oslo",
+    hours: "Man–fre 07–09 · Lør 09–11",
+    placeId: "p9",
+  },
+  {
+    id: "b9",
+    name: "Fjordseil AS",
+    category: "Vinbar",
+    verified: true,
+    about: "Halvdagsturer med seilbåt og skipper fra Aker brygge.",
+    address: "Aker brygge, 0250 Oslo",
+    hours: "Lør–søn 12–16",
+    placeId: "p10",
+  },
+  {
+    id: "b10",
+    name: "Galleri Kveldslys",
+    category: "Bokcafé",
+    verified: false,
+    about: "Lite galleri med skiftende utstillinger og omvisning på torsdager.",
+    address: "Operagata 18, 0194 Oslo",
+    hours: "Tor 18–21",
+    placeId: "p11",
+  },
+  {
+    id: "b11",
+    name: "Byform Vandringer",
+    category: "Kafé",
+    verified: true,
+    about: "Arkitekter som viser fram nye og gamle bygg i Bjørvika.",
+    address: "Dronning Eufemias gate 30, 0191 Oslo",
+    hours: "Lør 13–15",
+    placeId: "p12",
+  },
+  {
+    id: "b12",
+    name: "Grønland Krydderverksted",
+    category: "Verksted",
+    verified: true,
+    about: "Krydderbutikk med kjøkken bakerst, der det holdes kurs i uka.",
+    address: "Tøyengata 12, 0190 Oslo",
+    hours: "Ons–lør 14–19",
+    placeId: "p13",
+  },
+  {
+    id: "b13",
+    name: "Frogner Skjønnhetssalong",
+    category: "Bokcafé",
+    verified: false,
+    about: "Rolig salong for ansiktsbehandlinger, drevet av to hudterapeuter.",
+    address: "Frognerveien 22, 0263 Oslo",
+    hours: "Tir–lør 10–18",
+    placeId: "p14",
+  },
+];
+
+// ── Organisations (Phase 19, founder 2026-11-08). MOCK: in the spec an
+// organisation is an owner record, not a map entity; the founder wants the
+// clubs and associations on the map, so each one has a place (its pin) and
+// this record. Membership is not modelled (contract-blocked): people join
+// the organisation's groups.
+export type MockOrganization = {
+  id: string;
+  placeId: string; // the place that is its pin
+  name: string;
+  form: "Forening" | "Klubb" | "Lag" | "Frivillig gruppe";
+  about: string;
+  activities: string[]; // what it does, in its own words
+  contactPersonId: string; // a person in `people`
+};
+
+export const organizations: MockOrganization[] = [
+  {
+    id: "o1",
+    placeId: "p5",
+    name: "Akerselva Vandring",
+    form: "Frivillig gruppe",
+    about:
+      "Frivillige som viser fram elva og historiene langs den. Vandringene er gratis, og ingen trenger å melde seg på.",
+    activities: ["Vandringer langs elva", "Fortellinger fra fabrikktiden"],
+    contactPersonId: "u6",
   },
 ];
 
@@ -866,6 +1055,16 @@ export type MockExperience = {
   // Published in Legg til (src/fixtures/created.ts): the first date the
   // creator picked, so its sessions start there and not on the next weekday.
   firstDate?: string; // ISO yyyy-mm-dd
+  // Phase 19: the interest it is for (pin colour and glyph) and the person
+  // who hosts it (`people`). Experiences made in Legg til have neither.
+  interestId?: InterestId;
+  hostId?: string;
+  // An Arrangement (an event or a festival, founder 2026-11-08): it runs once,
+  // on `days` days in a row from `when`, organised by a place (an
+  // organisasjon or a bedrift). Absent = a recurring opplevelse.
+  format?: "event";
+  days?: number;
+  organizerPlaceId?: string;
 };
 
 export const experiences: MockExperience[] = [
@@ -873,6 +1072,8 @@ export const experiences: MockExperience[] = [
     id: "e1",
     title: "Morgenkaffe & prat",
     host: "Maria M.",
+    hostId: "u1",
+    interestId: "kaffe",
     when: "Ons 09:00",
     placeId: "p1",
     groupId: "g1",
@@ -930,6 +1131,8 @@ export const experiences: MockExperience[] = [
     id: "e2",
     title: "Lesesirkel: nordisk krim",
     host: "Åse K.",
+    hostId: "u3",
+    interestId: "litteratur",
     when: "Søn 18:00",
     placeId: "p2",
     groupId: "g2",
@@ -985,6 +1188,8 @@ export const experiences: MockExperience[] = [
     id: "e3",
     title: "Naturvin-smaking",
     host: "Tom T.",
+    hostId: "u7",
+    interestId: "vin",
     when: "Tor 19:00",
     placeId: "p3",
     groupId: "g3",
@@ -1040,6 +1245,8 @@ export const experiences: MockExperience[] = [
     id: "e4",
     title: "Kveldsjogg i Frognerparken",
     host: "Jonas B.",
+    hostId: "u2",
+    interestId: "loping",
     when: "Tir 18:00",
     groupId: "g1",
     status: "open",
@@ -1094,6 +1301,8 @@ export const experiences: MockExperience[] = [
     id: "e5",
     title: "Brettspillkveld",
     host: "Nina D.",
+    hostId: "u6",
+    interestId: "brettspill",
     when: "I morgen 19:00",
     placeId: "p2",
     groupId: "g2",
@@ -1145,6 +1354,8 @@ export const experiences: MockExperience[] = [
     id: "e6",
     title: "Fotovandring på Grünerløkka",
     host: "Per O.",
+    hostId: "u8",
+    interestId: "fotografi",
     when: "I dag 11:00",
     groupId: "g3",
     status: "waitlist",
@@ -1197,20 +1408,116 @@ export const experiences: MockExperience[] = [
   },
 ];
 
+// ── Lookups (Phase 19). With hundreds of items, a `find` or `filter` over a
+// whole array for every pin, card and rating adds up, so lookups go through
+// lazy indexes. An index is rebuilt when its array changes length or after
+// invalidateFixtureIndexes(), which src/fixtures/created.ts calls whenever it
+// adds or removes something. The first match wins, as `find` did.
+let fixtureRev = 0;
+export function invalidateFixtureIndexes(): void {
+  fixtureRev += 1;
+}
+
+function lazyIndex<T>(size: () => number, build: () => T): () => T {
+  let cache: T | undefined;
+  let rev = -1;
+  let len = -1;
+  return () => {
+    const n = size();
+    if (cache === undefined || rev !== fixtureRev || len !== n) {
+      cache = build();
+      rev = fixtureRev;
+      len = n;
+    }
+    return cache;
+  };
+}
+
+function indexBy<T>(
+  list: readonly T[],
+  key: (x: T) => string | undefined,
+): Map<string, T[]> {
+  const m = new Map<string, T[]>();
+  for (const x of list) {
+    const k = key(x);
+    if (k === undefined) continue;
+    const at = m.get(k);
+    if (at) at.push(x);
+    else m.set(k, [x]);
+  }
+  return m;
+}
+
+function firstBy<T>(
+  list: readonly T[],
+  key: (x: T) => string | undefined,
+): Map<string, T> {
+  const m = new Map<string, T>();
+  for (const x of list) {
+    const k = key(x);
+    if (k !== undefined && !m.has(k)) m.set(k, x);
+  }
+  return m;
+}
+
+const placeIndex = lazyIndex(
+  () => places.length,
+  () => firstBy(places, (p) => p.id),
+);
+const businessIndex = lazyIndex(
+  () => businesses.length,
+  () => ({
+    byId: firstBy(businesses, (b) => b.id),
+    byPlace: firstBy(businesses, (b) => b.placeId),
+  }),
+);
+const organizationIndex = lazyIndex(
+  () => organizations.length,
+  () => ({
+    byId: firstBy(organizations, (o) => o.id),
+    byPlace: firstBy(organizations, (o) => o.placeId),
+  }),
+);
+const experienceIndex = lazyIndex(
+  () => experiences.length,
+  () => ({
+    byId: firstBy(experiences, (e) => e.id),
+    byPlace: indexBy(experiences, (e) => e.placeId),
+    byHost: indexBy(experiences, (e) => e.hostId),
+    byGroup: indexBy(experiences, (e) => e.groupId || undefined),
+  }),
+);
+
 export function placeById(id: string | undefined): MockPlace | undefined {
-  return id ? places.find((p) => p.id === id) : undefined;
+  return id ? placeIndex().get(id) : undefined;
 }
 export function businessForPlace(placeId: string): MockBusiness | undefined {
-  return businesses.find((b) => b.placeId === placeId);
+  return businessIndex().byPlace.get(placeId);
 }
 export function businessById(id: string): MockBusiness | undefined {
-  return businesses.find((b) => b.id === id);
+  return businessIndex().byId.get(id);
+}
+export function organizationForPlace(
+  placeId: string,
+): MockOrganization | undefined {
+  return organizationIndex().byPlace.get(placeId);
+}
+export function organizationById(id: string): MockOrganization | undefined {
+  return organizationIndex().byId.get(id);
 }
 export function experiencesForPlace(placeId: string): MockExperience[] {
-  return experiences.filter((e) => e.placeId === placeId);
+  return [...(experienceIndex().byPlace.get(placeId) ?? [])];
 }
 export function experienceById(id: string): MockExperience | undefined {
-  return experiences.find((e) => e.id === id);
+  return experienceIndex().byId.get(id);
+}
+/** The experiences a person hosts (`hostId`), in fixture order. */
+export function experiencesHostedBy(personId: string): MockExperience[] {
+  return [...(experienceIndex().byHost.get(personId) ?? [])];
+}
+/** The experiences and events a group holds (`groupId`). */
+export function experiencesForGroup(groupId: string): MockExperience[] {
+  return [...(experienceIndex().byGroup.get(groupId) ?? [])];
 }
 
 // ── Attendees / reviews / groups (MOCK — not canonical entities) ─────────────
@@ -1280,15 +1587,185 @@ const ATTENDEE_POOL: [name: string, initials: string][] = [
   ["Mona Berg", "MB"],
 ];
 
-export function attendeesForExperience(expId: string): MockAttendee[] {
-  const list = [...(attendeesByExperience[expId] ?? [])];
-  const going = experienceById(expId)?.going ?? list.length;
-  for (const [name, initials] of ATTENDEE_POOL) {
-    if (list.length >= going) break;
-    if (list.some((a) => a.name === name)) continue;
-    list.push({ id: `${expId}-${initials}`, name, initials, isHost: false });
+// Made-up names for everyone beyond the hand-written rows and the pool
+// (Phase 19: catalogue items have up to 40 going, groups more members).
+// MOCK, in a fixed order per seed; never the name of someone in `people`,
+// whose portrait would then show up for a stranger.
+const GEN_FIRST = [
+  "Ingrid",
+  "Lars",
+  "Sara",
+  "Ahmed",
+  "Maja",
+  "Emil",
+  "Nora",
+  "Sander",
+  "Ida",
+  "Henrik",
+  "Amalie",
+  "Magnus",
+  "Thea",
+  "Kristian",
+  "Selma",
+  "Mathias",
+  "Hedda",
+  "Omar",
+  "Leah",
+  "Tobias",
+  "Julie",
+  "Even",
+  "Frida",
+  "Yusuf",
+  "Vilde",
+  "Sindre",
+  "Aisha",
+  "Martin",
+  "Live",
+  "Jakob",
+  "Mina",
+  "Oskar",
+  "Tiril",
+  "Hassan",
+  "Linnea",
+  "Eirik",
+  "Sigrid",
+  "Anders",
+  "Marte",
+  "Daniel",
+  "Helene",
+  "Fredrik",
+  "Aurora",
+  "Bilal",
+  "Ragnhild",
+  "Vegard",
+  "Malin",
+  "Kasper",
+];
+const GEN_LAST = [
+  "Hansen",
+  "Johansen",
+  "Larsen",
+  "Andersen",
+  "Pedersen",
+  "Kristiansen",
+  "Jensen",
+  "Karlsen",
+  "Johnsen",
+  "Pettersen",
+  "Eriksen",
+  "Haugen",
+  "Hagen",
+  "Johannessen",
+  "Andreassen",
+  "Jacobsen",
+  "Jørgensen",
+  "Halvorsen",
+  "Henriksen",
+  "Lund",
+  "Sørensen",
+  "Moen",
+  "Gundersen",
+  "Iversen",
+  "Strand",
+  "Svendsen",
+  "Knutsen",
+  "Martinsen",
+  "Paulsen",
+  "Bakken",
+  "Mathisen",
+  "Amundsen",
+  "Nguyen",
+  "Hussain",
+  "Rasmussen",
+  "Aasen",
+  "Myhre",
+  "Vik",
+  "Tveit",
+  "Sandvik",
+  "Rønning",
+  "Ødegård",
+  "Brekke",
+  "Holm",
+  "Ahmadi",
+];
+
+function hashOf(s: string): number {
+  let h = 2166136261;
+  for (let i = 0; i < s.length; i += 1) {
+    h ^= s.charCodeAt(i);
+    h = Math.imul(h, 16777619);
   }
-  return list.map((a) => ({ ...a, shown: SHOWN_ATTENDEES.has(a.name) }));
+  return h >>> 0;
+}
+
+function gcd(a: number, b: number): number {
+  return b === 0 ? a : gcd(b, a % b);
+}
+
+/** `count` made-up names for `seed`, none of them in `exclude`. */
+export function generatedNames(
+  seed: string,
+  count: number,
+  exclude: ReadonlySet<string> = new Set(),
+): string[] {
+  const total = GEN_FIRST.length * GEN_LAST.length;
+  let step = Math.floor(total / 3) + 1;
+  while (gcd(step, total) !== 1) step += 1;
+  const taken = new Set([...exclude, ...people.map((p) => p.name)]);
+  const out: string[] = [];
+  let i = hashOf(seed) % total;
+  for (let tries = 0; out.length < count && tries < total; tries += 1) {
+    const name = `${GEN_FIRST[i % GEN_FIRST.length]} ${
+      GEN_LAST[Math.floor(i / GEN_FIRST.length)]
+    }`;
+    if (!taken.has(name)) {
+      taken.add(name);
+      out.push(name);
+    }
+    i = (i + step) % total;
+  }
+  return out;
+}
+
+const initialsOfName = (name: string) =>
+  name
+    .split(/\s+/)
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((w) => w[0]!.toUpperCase())
+    .join("");
+
+// Same experience and same `going`, same list: memoised so every card and
+// "Se deltakere" build it once.
+const attendeeMemo = new Map<string, MockAttendee[]>();
+
+export function attendeesForExperience(expId: string): MockAttendee[] {
+  const rows = attendeesByExperience[expId] ?? [];
+  const going = experienceById(expId)?.going ?? rows.length;
+  const key = `${expId}:${going}`;
+  let list = attendeeMemo.get(key);
+  if (!list) {
+    const built: Omit<MockAttendee, "shown">[] = [...rows];
+    const names = new Set(built.map((a) => a.name));
+    for (const [name, initials] of ATTENDEE_POOL) {
+      if (built.length >= going) break;
+      if (names.has(name)) continue;
+      names.add(name);
+      built.push({ id: `${expId}-${initials}`, name, initials, isHost: false });
+    }
+    const more = generatedNames(expId, going - built.length, names);
+    more.forEach((name, i) =>
+      built.push({
+        id: `${expId}-g${i + 1}`,
+        name,
+        initials: initialsOfName(name),
+        isHost: false,
+      }),
+    );
+    list = built.map((a) => ({ ...a, shown: SHOWN_ATTENDEES.has(a.name) }));
+    attendeeMemo.set(key, list);
+  }
+  return list.map((a) => ({ ...a }));
 }
 
 export type MockReview = {
@@ -1527,13 +2004,28 @@ export const reviews: MockReview[] = [
   },
 ];
 
+const placeReviewIndex = lazyIndex(
+  () => reviews.length,
+  () => {
+    const byPlace = indexBy(reviews, (r) => r.placeId);
+    const rating = new Map<string, { score: number; count: number }>();
+    return { byPlace, rating };
+  },
+);
+
 export function reviewsForPlace(placeId: string): MockReview[] {
-  return reviews.filter((r) => r.placeId === placeId);
+  return [...(placeReviewIndex().byPlace.get(placeId) ?? [])];
 }
 
 /** A place's rating and review count, from its reviews (one source). */
 export function placeRating(placeId: string): { score: number; count: number } {
-  return ratingOf(reviewsForPlace(placeId));
+  const idx = placeReviewIndex();
+  let r = idx.rating.get(placeId);
+  if (!r) {
+    r = ratingOf(idx.byPlace.get(placeId) ?? []);
+    idx.rating.set(placeId, r);
+  }
+  return { ...r };
 }
 
 // ── Experience reviews (MOCK; founder request 2026-11-06). The rating line's
@@ -1714,8 +2206,13 @@ export const experienceReviews: MockExperienceReview[] = [
   },
 ];
 
+const experienceReviewIndex = lazyIndex(
+  () => experienceReviews.length,
+  () => indexBy(experienceReviews, (r) => r.experienceId),
+);
+
 export function reviewsForExperience(id: string): MockExperienceReview[] {
-  return experienceReviews.filter((r) => r.experienceId === id);
+  return [...(experienceReviewIndex().get(id) ?? [])];
 }
 
 /** Average stars and count of a review list (what the rating line shows). */
@@ -1780,8 +2277,14 @@ export function sessionsFor(
     ? startOnDate(exp.firstDate, exp.when)
     : firstSessionStart(exp.when, now);
   if (!first) return [];
-  const stepDays = exp.repeat === "Månedlig" ? 28 : 7;
-  const total = exp.repeat === "Gjentas ikke" ? 1 : count;
+  // An Arrangement runs once: one session per day, `days` days in a row.
+  const isEvent = exp.format === "event";
+  const stepDays = isEvent ? 1 : exp.repeat === "Månedlig" ? 28 : 7;
+  const total = isEvent
+    ? Math.max(1, exp.days ?? 1)
+    : exp.repeat === "Gjentas ikke"
+      ? 1
+      : count;
   return Array.from({ length: total }, (_, i) => {
     const start = new Date(first);
     start.setDate(first.getDate() + i * stepDays);
@@ -1815,11 +2318,21 @@ export type MockGroup = {
   // Phase 18: "Regler", in the group's own words (written by its creator in
   // the Gruppe wizard). MOCK text for the fixture groups; not app rules.
   rules?: string;
+  // Phase 19: what the group is about (catalogue ids, the first is its
+  // interest), where it meets (a place) and its group chat. No map pin
+  // (founder 2026-11-08).
+  interestId?: InterestId;
+  interests: InterestId[];
+  homePlaceId?: string;
+  chatId?: string;
 };
 
 export const groups: MockGroup[] = [
   {
     id: "g1",
+    interestId: "kaffe",
+    interests: ["kaffe"],
+    homePlaceId: "p1",
     name: "Morgenkaffe-gjengen",
     about: "Folk som møtes til kaffe i helgene.",
     rules:
@@ -1831,6 +2344,9 @@ export const groups: MockGroup[] = [
   },
   {
     id: "g2",
+    interestId: "litteratur",
+    interests: ["litteratur"],
+    homePlaceId: "p2",
     name: "Løkka Lesesirkel",
     about: "Månedlig lesesirkel på Grünerløkka.",
     rules: "Les så mye du rekker, ingen spoilere i chatten før møtet.",
@@ -1841,6 +2357,9 @@ export const groups: MockGroup[] = [
   },
   {
     id: "g3",
+    interestId: "vin",
+    interests: ["vin"],
+    homePlaceId: "p3",
     name: "Naturvin-klubben",
     about: "Vi smaker naturvin sammen én gang i måneden.",
     rules: "Ta med noe å spise til å dele. Vi bytter på hvem som velger vin.",
@@ -1851,8 +2370,19 @@ export const groups: MockGroup[] = [
   },
 ];
 
+const groupIndex = lazyIndex(
+  () => groups.length,
+  () => firstBy(groups, (g) => g.id),
+);
+
 export function groupById(id: string): MockGroup | undefined {
-  return groups.find((g) => g.id === id);
+  return groupIndex().get(id);
+}
+
+/** Everyone in a group by name (MOCK): `memberCount` names, so "N medlemmer"
+ *  and the member list agree. Made up in a fixed order per group. */
+export function groupMemberNames(group: MockGroup): string[] {
+  return generatedNames(group.id, group.memberCount);
 }
 
 // MOCK chat list. BLOCKED_CONTRACT_GAP: not a real realtime/messaging backend.
@@ -2173,7 +2703,7 @@ export const chats: MockChat[] = [
   },
   {
     id: "c19",
-    name: "Munch-galleriet Kveldstur",
+    name: "Galleri Kveldslys",
     last: "Utstillingen var verdt turen.",
     time: "Fre",
     unread: 0,
@@ -2229,16 +2759,29 @@ export const chats: MockChat[] = [
   },
 ];
 
+// Chats by experience and by place, every status, in list order; the status
+// is checked on each call, so archiving a chat needs no rebuild.
+const chatIndex = lazyIndex(
+  () => chats.length,
+  () => ({
+    byId: firstBy(chats, (c) => c.id),
+    byExperience: indexBy(chats, (c) => c.pinnedExperienceId),
+    byPlace: indexBy(chats, (c) => c.placeId),
+  }),
+);
+
 /** The chat of an experience (pinned to it), if it has one. */
 export function chatForExperience(expId: string): MockChat | undefined {
-  return chats.find(
-    (c) => c.pinnedExperienceId === expId && c.status === "active",
-  );
+  return chatIndex()
+    .byExperience.get(expId)
+    ?.find((c) => c.status === "active");
 }
 
 /** The chat that belongs to a place, if it has one. */
 export function chatForPlace(placeId: string): MockChat | undefined {
-  return chats.find((c) => c.placeId === placeId && c.status === "active");
+  return chatIndex()
+    .byPlace.get(placeId)
+    ?.find((c) => c.status === "active");
 }
 
 // MOCK message logs per chat (DEMO ONLY — no realtime, no delivery/read state).
@@ -2615,7 +3158,7 @@ export const messagesByChat: Record<string, MockMessage[]> = {
   c19: [
     {
       id: "m225",
-      author: "Munch-galleriet Kveldstur",
+      author: "Galleri Kveldslys",
       initials: "MG",
       text: "Kveldsomvisning torsdag kl. 19.",
       time: "Fre",
@@ -2691,7 +3234,7 @@ export function messagesForChat(chatId: string): MockMessage[] {
 }
 
 export function chatById(id: string): MockChat | undefined {
-  return chats.find((c) => c.id === id);
+  return chatIndex().byId.get(id);
 }
 
 // ── Profile (MOCK — visual only, NO account/session/reputation backend) ──────
@@ -2830,7 +3373,6 @@ export type MockPerson = {
   bio: string;
   mutuals: number; // MOCK shared-friends count (not a real graph)
   interests: string[]; // MOCK tags, not a canonical taxonomy
-  hostsExperienceId?: string; // optional link to an experience they "host"
 };
 
 export const people: MockPerson[] = [
@@ -2843,7 +3385,6 @@ export const people: MockPerson[] = [
     bio: "Kaffeentusiast og vert for morgenkaffen. Elsker å møte nye folk.",
     mutuals: 4,
     interests: ["Kaffe", "Morgenmøter", "Fotografi"],
-    hostsExperienceId: "e1",
   },
   {
     id: "u2",
@@ -2854,7 +3395,6 @@ export const people: MockPerson[] = [
     bio: "Løper, syklist og kaffedrikker. Ofte på kafeen på hjørnet.",
     mutuals: 2,
     interests: ["Løping", "Sykkel", "Kaffe"],
-    hostsExperienceId: "e4",
   },
   {
     id: "u3",
@@ -2865,7 +3405,6 @@ export const people: MockPerson[] = [
     bio: "Bokorm. Leder lesesirkelen for nordisk krim.",
     mutuals: 1,
     interests: ["Bøker", "Diskusjon", "Vin"],
-    hostsExperienceId: "e2",
   },
   {
     id: "u4",
@@ -2896,7 +3435,6 @@ export const people: MockPerson[] = [
     bio: "Naturvin, lange turer og helgeklatring.",
     mutuals: 2,
     interests: ["Vin", "Natur", "Klatring"],
-    hostsExperienceId: "e5",
   },
   {
     id: "u7",
@@ -2907,7 +3445,6 @@ export const people: MockPerson[] = [
     bio: "Jobber med vin og liker å forklare hvordan den lages. Vert for naturvinkveldene.",
     mutuals: 1,
     interests: ["Vin", "Mat", "Reiser"],
-    hostsExperienceId: "e3",
   },
   {
     id: "u8",
@@ -2918,12 +3455,16 @@ export const people: MockPerson[] = [
     bio: "Fotograf som liker gatelivet på Løkka. Viser gjerne enkle grep for bedre bilder.",
     mutuals: 0,
     interests: ["Foto", "Byvandring", "Kaffe"],
-    hostsExperienceId: "e6",
   },
 ];
 
-export function personById(id: string): MockPerson | undefined {
-  return people.find((p) => p.id === id);
+const personIndex = lazyIndex(
+  () => people.length,
+  () => firstBy(people, (p) => p.id),
+);
+
+export function personById(id: string | undefined): MockPerson | undefined {
+  return id ? personIndex().get(id) : undefined;
 }
 
 // ── Marketplace (MOCK — B2B collaboration listings, NO commerce backend) ──

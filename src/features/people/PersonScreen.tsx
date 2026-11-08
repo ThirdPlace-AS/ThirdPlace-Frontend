@@ -23,7 +23,7 @@ import {
   ListRow,
   Screen,
 } from "@/components/ui";
-import { experienceById, people, profile } from "@/fixtures";
+import { experiencesHostedBy, people, profile } from "@/fixtures";
 import { directChatFor } from "@/fixtures/created";
 import { libImage } from "@/fixtures/images";
 import { toggleFollow, useFollowing } from "@/lib/following";
@@ -61,9 +61,7 @@ export default function PersonScreen() {
     );
   }
 
-  const hosts = person.hostsExperienceId
-    ? experienceById(person.hostsExperienceId)
-    : undefined;
+  const hosts = experiencesHostedBy(person.id)[0];
   const isFollowing = following.has(person.id);
   const shared = new Set(
     person.interests.filter((i) => me.interests.includes(i)),

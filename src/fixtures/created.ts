@@ -16,6 +16,7 @@ import {
   chats,
   experiences,
   groups,
+  invalidateFixtureIndexes,
   OSLO_AREAS,
   places,
   profile,
@@ -44,6 +45,7 @@ let seq = 0;
 
 function bump() {
   version += 1;
+  invalidateFixtureIndexes();
   listeners.forEach((l) => l());
 }
 
@@ -134,6 +136,7 @@ export function createGroup(input: NewGroupInput): {
     cover: input.photos[0]!,
     photos: input.photos,
     mine: true,
+    interests: [],
     ...(input.rules?.trim() ? { rules: input.rules.trim() } : {}),
   };
   const chat: MockChat = {

@@ -40,6 +40,7 @@ import { useGuestMode } from "@/components/map/hooks/useGuestMode";
 import {
   chatForExperience,
   experienceById,
+  experiencesHostedBy,
   placeById,
   ratingOf,
   reviewsForExperience,
@@ -172,8 +173,12 @@ describe("labels", () => {
 
 describe("experienceMeta", () => {
   it("finds the host by id link, not by name", () => {
-    expect(hostPerson(e1)?.hostsExperienceId).toBe("e1");
-    expect(hostPerson({ id: "nope" })).toBeUndefined();
+    // Phase 19: the experience names its host (`hostId`); a person can
+    // host several.
+    expect(hostPerson(e1)?.id).toBe("u1");
+    expect(experiencesHostedBy("u1").map((e) => e.id)).toContain("e1");
+    expect(hostPerson({ hostId: "nope" })).toBeUndefined();
+    expect(hostPerson({})).toBeUndefined();
   });
 
   it("captions with the category and the meeting point's area", () => {
