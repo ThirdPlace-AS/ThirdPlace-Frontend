@@ -3533,7 +3533,7 @@ export const people: MockPerson[] = [
     area: "Grünerløkka",
     bio: "Kaffeentusiast og vert for morgenkaffen. Elsker å møte nye folk.",
     mutuals: 4,
-    interests: ["Kaffe", "Morgenmøter", "Fotografi"],
+    interests: ["Kaffe", "Fotografi", "Bakst"],
   },
   {
     id: "u2",
@@ -3553,7 +3553,7 @@ export const people: MockPerson[] = [
     area: "Sofienberg",
     bio: "Bokorm. Leder lesesirkelen for nordisk krim.",
     mutuals: 1,
-    interests: ["Bøker", "Diskusjon", "Vin"],
+    interests: ["Litteratur", "Diskusjon", "Vin"],
   },
   {
     id: "u4",
@@ -3583,7 +3583,7 @@ export const people: MockPerson[] = [
     area: "Torshov",
     bio: "Naturvin, lange turer og helgeklatring.",
     mutuals: 2,
-    interests: ["Vin", "Natur", "Klatring"],
+    interests: ["Vin", "Friluftsliv", "Klatring"],
   },
   {
     id: "u7",
@@ -3593,7 +3593,7 @@ export const people: MockPerson[] = [
     area: "Vulkan",
     bio: "Jobber med vin og liker å forklare hvordan den lages. Vert for naturvinkveldene.",
     mutuals: 1,
-    interests: ["Vin", "Mat", "Reiser"],
+    interests: ["Vin", "Mat", "Kortreist"],
   },
   {
     id: "u8",
@@ -3603,7 +3603,7 @@ export const people: MockPerson[] = [
     area: "Grünerløkka",
     bio: "Fotograf som liker gatelivet på Løkka. Viser gjerne enkle grep for bedre bilder.",
     mutuals: 0,
-    interests: ["Foto", "Byvandring", "Kaffe"],
+    interests: ["Fotografi", "Byvandring", "Kaffe"],
   },
 ];
 

@@ -11,6 +11,7 @@ import type { ImageSourcePropType } from "react-native";
 
 import { media } from "@/theme/media";
 
+import { interestForLabel, type InterestId } from "./catalog/interests";
 import type { LibraryKey } from "./images";
 import {
   chats,
@@ -127,6 +128,16 @@ export function createGroup(input: NewGroupInput): {
   seq += 1;
   const groupId = `gx${seq}`;
   const chatId = `cx${seq}`;
+  // The picked interests as catalogue ids (Phase 19 S5): the first is the
+  // group's interest, so its page shows them and search finds the group.
+  const interests = [
+    ...new Set(
+      input.interests.flatMap((l) => {
+        const i = interestForLabel(l);
+        return i ? [i.id as InterestId] : [];
+      }),
+    ),
+  ];
   const group: MockGroup = {
     id: groupId,
     name: input.name.trim(),
@@ -136,7 +147,8 @@ export function createGroup(input: NewGroupInput): {
     cover: input.photos[0]!,
     photos: input.photos,
     mine: true,
-    interests: [],
+    ...(interests[0] ? { interestId: interests[0] } : {}),
+    interests,
     chatId,
     ...(input.rules?.trim() ? { rules: input.rules.trim() } : {}),
   };

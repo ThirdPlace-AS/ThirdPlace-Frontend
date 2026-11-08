@@ -33,6 +33,7 @@ import {
 import { areaFor } from "@/components/experience/experienceMeta";
 import { Input } from "@/components/Input";
 import { AreaChips } from "@/components/pickers/AreaChips";
+import { InterestPicker } from "@/components/pickers/InterestPicker";
 import { CategoryPicker, PlacePicker } from "@/components/pickers/Pickers";
 import {
   CANCELLATION_OPTIONS,
@@ -47,7 +48,6 @@ import {
   experiences,
   AREAS,
   areaNameLabel,
-  people,
   places,
   REPEAT_OPTIONS,
   type MockChatAccess,
@@ -87,10 +87,6 @@ const GROUP_POOL: LibraryKey[] = [
   "venue-outdoor",
   "venue-gallery",
 ];
-// Interests people already use in their profiles (no new taxonomy).
-const GROUP_INTERESTS = Array.from(
-  new Set(people.flatMap((p) => p.interests)),
-).slice(0, 14);
 // Who can join a group: the chat access modes with the chat's own labels
 // (the group chat header shows the same word).
 const GROUP_ACCESS: { value: MockChatAccess; title: string; hint: string }[] = [
@@ -452,10 +448,9 @@ function StepBody({
               maxLength={280}
             />
             <Label>Interesser</Label>
-            <ChipRow
-              options={GROUP_INTERESTS}
-              selected={draft.interests}
-              onPress={(i) => patch({ interests: toggle(draft.interests, i) })}
+            <InterestPicker
+              value={draft.interests}
+              onToggle={(i) => patch({ interests: toggle(draft.interests, i) })}
             />
           </Shell>
         );
