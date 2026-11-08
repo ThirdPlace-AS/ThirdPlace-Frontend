@@ -36,8 +36,11 @@ Read the batch once more with four questions, and fix what doesn't hold:
 - Does each place's `season` fit what is scheduled there (a weekly bath all year needs "Hele året"; harvests, new potatoes and weeding don't hold in a week that falls in winter)?
 - Is any host in two places at once? `tests/catalogCoverage.test.ts` checks every weekday as "today".
 - Are the claims about real places modest (no facilities you can't back)?
+- Is every photo new to the library? Compare each pick's Unsplash page URL with `assets/library/CREDITS.md` (B3 caught two repeats).
 
 ## Photos
 
 - Two or more photos per item, from `license=free` Unsplash searches (no Unsplash+), checked on a contact sheet for readable signs, logos and brands. Name them `<interest>-<n>` and credit each one in `assets/library/CREDITS.md`, then run `node scripts/build-image-manifest.js --convert`.
 - A photo illustrates the kind of thing; it must never look like it shows the fictional business, club or person.
+- No children in the photos: the app is for people over 18.
+- A real public place lists only facilities OpenStreetMap shows there (benches, toilets, playgrounds, pitches; checked with an Overpass query over the place's bounding box).

@@ -283,6 +283,12 @@ export function buildCatalog(
       const hostName = ctx.personName(e.hostId) ?? e.hostId;
       const access = e.access ?? "Alle";
       const at = venue?.coord ?? AREAS[0]!.coord;
+      // An event held where the interest's opplevelse also meets puts its
+      // meeting point on the other side of the venue, so the pins stay apart.
+      const sharesVenue =
+        event &&
+        seed.opplevelse !== undefined &&
+        venueId(seed.opplevelse.venue) === placeId;
       const exp: MockExperience = {
         id,
         title: e.title,
@@ -315,11 +321,12 @@ export function buildCatalog(
           : ((e as OpplevelseSeed).repeat ?? "Ukentlig"),
         types: e.types,
         audiences: e.audiences,
-        // About 45 m from the venue, so the two pins never sit on each other.
+        // About 45 m north of the venue (south for an event sharing the
+        // opplevelse's venue), so no two pins sit on each other.
         meetingPoint: {
           name: venue?.name ?? e.title,
           address: venue?.address ?? "",
-          coord: [at[0], at[1] + 0.0004],
+          coord: [at[0], at[1] + (sharesVenue ? -0.0004 : 0.0004)],
         },
         itinerary: e.steps.map(([title, text, photo]) => ({
           title,

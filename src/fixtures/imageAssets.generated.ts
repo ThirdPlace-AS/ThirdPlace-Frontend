@@ -30,8 +30,29 @@ export const LIBRARY_FULL = {
   "bakst-7": require("../../assets/library/bakst-7.webp"),
   "bike-repair-1": require("../../assets/library/bike-repair-1.webp"),
   "bike-repair-2": require("../../assets/library/bike-repair-2.webp"),
+  "brettspill-1": require("../../assets/library/brettspill-1.webp"),
+  "brettspill-2": require("../../assets/library/brettspill-2.webp"),
+  "brettspill-3": require("../../assets/library/brettspill-3.webp"),
+  "brettspill-4": require("../../assets/library/brettspill-4.webp"),
+  "brettspill-5": require("../../assets/library/brettspill-5.webp"),
+  "brettspill-6": require("../../assets/library/brettspill-6.webp"),
+  "brettspill-7": require("../../assets/library/brettspill-7.webp"),
+  "diskusjon-1": require("../../assets/library/diskusjon-1.webp"),
+  "diskusjon-2": require("../../assets/library/diskusjon-2.webp"),
+  "diskusjon-3": require("../../assets/library/diskusjon-3.webp"),
+  "diskusjon-4": require("../../assets/library/diskusjon-4.webp"),
+  "diskusjon-5": require("../../assets/library/diskusjon-5.webp"),
+  "diskusjon-6": require("../../assets/library/diskusjon-6.webp"),
+  "diskusjon-7": require("../../assets/library/diskusjon-7.webp"),
   "food-1": require("../../assets/library/food-1.webp"),
   "gallery-2": require("../../assets/library/gallery-2.webp"),
+  "gaming-1": require("../../assets/library/gaming-1.webp"),
+  "gaming-2": require("../../assets/library/gaming-2.webp"),
+  "gaming-3": require("../../assets/library/gaming-3.webp"),
+  "gaming-4": require("../../assets/library/gaming-4.webp"),
+  "gaming-5": require("../../assets/library/gaming-5.webp"),
+  "gaming-6": require("../../assets/library/gaming-6.webp"),
+  "gaming-7": require("../../assets/library/gaming-7.webp"),
   "garden-1": require("../../assets/library/garden-1.webp"),
   "garden-2": require("../../assets/library/garden-2.webp"),
   "group-books": require("../../assets/library/group-books.webp"),
@@ -101,13 +122,17 @@ export const LIBRARY_FULL = {
   "person-leila": require("../../assets/library/person-leila.webp"),
   "person-linh": require("../../assets/library/person-linh.webp"),
   "person-maria": require("../../assets/library/person-maria.webp"),
+  "person-mats": require("../../assets/library/person-mats.webp"),
   "person-nadia": require("../../assets/library/person-nadia.webp"),
   "person-nina": require("../../assets/library/person-nina.webp"),
+  "person-oda": require("../../assets/library/person-oda.webp"),
   "person-ola": require("../../assets/library/person-ola.webp"),
   "person-per": require("../../assets/library/person-per.webp"),
   "person-samuel": require("../../assets/library/person-samuel.webp"),
   "person-sofie": require("../../assets/library/person-sofie.webp"),
+  "person-tobias": require("../../assets/library/person-tobias.webp"),
   "person-tom": require("../../assets/library/person-tom.webp"),
+  "person-yasmin": require("../../assets/library/person-yasmin.webp"),
   "pilates-1": require("../../assets/library/pilates-1.webp"),
   "pilates-2": require("../../assets/library/pilates-2.webp"),
   "pilates-3": require("../../assets/library/pilates-3.webp"),
@@ -118,12 +143,33 @@ export const LIBRARY_FULL = {
   "pilates-8": require("../../assets/library/pilates-8.webp"),
   "pottery-1": require("../../assets/library/pottery-1.webp"),
   "pottery-2": require("../../assets/library/pottery-2.webp"),
+  "quiz-1": require("../../assets/library/quiz-1.webp"),
+  "quiz-2": require("../../assets/library/quiz-2.webp"),
+  "quiz-3": require("../../assets/library/quiz-3.webp"),
+  "quiz-4": require("../../assets/library/quiz-4.webp"),
+  "quiz-5": require("../../assets/library/quiz-5.webp"),
+  "quiz-6": require("../../assets/library/quiz-6.webp"),
+  "quiz-7": require("../../assets/library/quiz-7.webp"),
   "river-1": require("../../assets/library/river-1.webp"),
   "river-2": require("../../assets/library/river-2.webp"),
   "sail-1": require("../../assets/library/sail-1.webp"),
   "sail-2": require("../../assets/library/sail-2.webp"),
   "salon-1": require("../../assets/library/salon-1.webp"),
   "salon-2": require("../../assets/library/salon-2.webp"),
+  "shopping-1": require("../../assets/library/shopping-1.webp"),
+  "shopping-2": require("../../assets/library/shopping-2.webp"),
+  "shopping-3": require("../../assets/library/shopping-3.webp"),
+  "shopping-4": require("../../assets/library/shopping-4.webp"),
+  "shopping-5": require("../../assets/library/shopping-5.webp"),
+  "shopping-6": require("../../assets/library/shopping-6.webp"),
+  "shopping-7": require("../../assets/library/shopping-7.webp"),
+  "sjakk-1": require("../../assets/library/sjakk-1.webp"),
+  "sjakk-2": require("../../assets/library/sjakk-2.webp"),
+  "sjakk-3": require("../../assets/library/sjakk-3.webp"),
+  "sjakk-4": require("../../assets/library/sjakk-4.webp"),
+  "sjakk-5": require("../../assets/library/sjakk-5.webp"),
+  "sjakk-6": require("../../assets/library/sjakk-6.webp"),
+  "sjakk-7": require("../../assets/library/sjakk-7.webp"),
   "spice-1": require("../../assets/library/spice-1.webp"),
   "spice-2": require("../../assets/library/spice-2.webp"),
   "te-1": require("../../assets/library/te-1.webp"),
@@ -203,8 +249,29 @@ export const LIBRARY_SMALL: Record<
   "bakst-7": require("../../assets/library/bakst-7-sm.webp"),
   "bike-repair-1": require("../../assets/library/bike-repair-1-sm.webp"),
   "bike-repair-2": require("../../assets/library/bike-repair-2-sm.webp"),
+  "brettspill-1": require("../../assets/library/brettspill-1-sm.webp"),
+  "brettspill-2": require("../../assets/library/brettspill-2-sm.webp"),
+  "brettspill-3": require("../../assets/library/brettspill-3-sm.webp"),
+  "brettspill-4": require("../../assets/library/brettspill-4-sm.webp"),
+  "brettspill-5": require("../../assets/library/brettspill-5-sm.webp"),
+  "brettspill-6": require("../../assets/library/brettspill-6-sm.webp"),
+  "brettspill-7": require("../../assets/library/brettspill-7-sm.webp"),
+  "diskusjon-1": require("../../assets/library/diskusjon-1-sm.webp"),
+  "diskusjon-2": require("../../assets/library/diskusjon-2-sm.webp"),
+  "diskusjon-3": require("../../assets/library/diskusjon-3-sm.webp"),
+  "diskusjon-4": require("../../assets/library/diskusjon-4-sm.webp"),
+  "diskusjon-5": require("../../assets/library/diskusjon-5-sm.webp"),
+  "diskusjon-6": require("../../assets/library/diskusjon-6-sm.webp"),
+  "diskusjon-7": require("../../assets/library/diskusjon-7-sm.webp"),
   "food-1": require("../../assets/library/food-1-sm.webp"),
   "gallery-2": require("../../assets/library/gallery-2-sm.webp"),
+  "gaming-1": require("../../assets/library/gaming-1-sm.webp"),
+  "gaming-2": require("../../assets/library/gaming-2-sm.webp"),
+  "gaming-3": require("../../assets/library/gaming-3-sm.webp"),
+  "gaming-4": require("../../assets/library/gaming-4-sm.webp"),
+  "gaming-5": require("../../assets/library/gaming-5-sm.webp"),
+  "gaming-6": require("../../assets/library/gaming-6-sm.webp"),
+  "gaming-7": require("../../assets/library/gaming-7-sm.webp"),
   "garden-1": require("../../assets/library/garden-1-sm.webp"),
   "garden-2": require("../../assets/library/garden-2-sm.webp"),
   "group-books": require("../../assets/library/group-books-sm.webp"),
@@ -274,13 +341,17 @@ export const LIBRARY_SMALL: Record<
   "person-leila": require("../../assets/library/person-leila-sm.webp"),
   "person-linh": require("../../assets/library/person-linh-sm.webp"),
   "person-maria": require("../../assets/library/person-maria-sm.webp"),
+  "person-mats": require("../../assets/library/person-mats-sm.webp"),
   "person-nadia": require("../../assets/library/person-nadia-sm.webp"),
   "person-nina": require("../../assets/library/person-nina-sm.webp"),
+  "person-oda": require("../../assets/library/person-oda-sm.webp"),
   "person-ola": require("../../assets/library/person-ola-sm.webp"),
   "person-per": require("../../assets/library/person-per-sm.webp"),
   "person-samuel": require("../../assets/library/person-samuel-sm.webp"),
   "person-sofie": require("../../assets/library/person-sofie-sm.webp"),
+  "person-tobias": require("../../assets/library/person-tobias-sm.webp"),
   "person-tom": require("../../assets/library/person-tom-sm.webp"),
+  "person-yasmin": require("../../assets/library/person-yasmin-sm.webp"),
   "pilates-1": require("../../assets/library/pilates-1-sm.webp"),
   "pilates-2": require("../../assets/library/pilates-2-sm.webp"),
   "pilates-3": require("../../assets/library/pilates-3-sm.webp"),
@@ -291,12 +362,33 @@ export const LIBRARY_SMALL: Record<
   "pilates-8": require("../../assets/library/pilates-8-sm.webp"),
   "pottery-1": require("../../assets/library/pottery-1-sm.webp"),
   "pottery-2": require("../../assets/library/pottery-2-sm.webp"),
+  "quiz-1": require("../../assets/library/quiz-1-sm.webp"),
+  "quiz-2": require("../../assets/library/quiz-2-sm.webp"),
+  "quiz-3": require("../../assets/library/quiz-3-sm.webp"),
+  "quiz-4": require("../../assets/library/quiz-4-sm.webp"),
+  "quiz-5": require("../../assets/library/quiz-5-sm.webp"),
+  "quiz-6": require("../../assets/library/quiz-6-sm.webp"),
+  "quiz-7": require("../../assets/library/quiz-7-sm.webp"),
   "river-1": require("../../assets/library/river-1-sm.webp"),
   "river-2": require("../../assets/library/river-2-sm.webp"),
   "sail-1": require("../../assets/library/sail-1-sm.webp"),
   "sail-2": require("../../assets/library/sail-2-sm.webp"),
   "salon-1": require("../../assets/library/salon-1-sm.webp"),
   "salon-2": require("../../assets/library/salon-2-sm.webp"),
+  "shopping-1": require("../../assets/library/shopping-1-sm.webp"),
+  "shopping-2": require("../../assets/library/shopping-2-sm.webp"),
+  "shopping-3": require("../../assets/library/shopping-3-sm.webp"),
+  "shopping-4": require("../../assets/library/shopping-4-sm.webp"),
+  "shopping-5": require("../../assets/library/shopping-5-sm.webp"),
+  "shopping-6": require("../../assets/library/shopping-6-sm.webp"),
+  "shopping-7": require("../../assets/library/shopping-7-sm.webp"),
+  "sjakk-1": require("../../assets/library/sjakk-1-sm.webp"),
+  "sjakk-2": require("../../assets/library/sjakk-2-sm.webp"),
+  "sjakk-3": require("../../assets/library/sjakk-3-sm.webp"),
+  "sjakk-4": require("../../assets/library/sjakk-4-sm.webp"),
+  "sjakk-5": require("../../assets/library/sjakk-5-sm.webp"),
+  "sjakk-6": require("../../assets/library/sjakk-6-sm.webp"),
+  "sjakk-7": require("../../assets/library/sjakk-7-sm.webp"),
   "spice-1": require("../../assets/library/spice-1-sm.webp"),
   "spice-2": require("../../assets/library/spice-2-sm.webp"),
   "te-1": require("../../assets/library/te-1-sm.webp"),
@@ -431,10 +523,52 @@ export const PLACEHOLDER: Record<string, string> = {
     "data:image/webp;base64,UklGRmoAAABXRUJQVlA4IF4AAADQAQCdASoQAAoAA4BaJZgCdAC2Di3CaAD+7SBB9yVFl5/6jlkRc7gzCLi9Hr8Fkr/3XyB483DpHnQKW5zbJD1FoeEh3CYyAJpYV0XxVlhXaQ7myMnwYK6DPN8Y8AAA",
   "library/bike-repair-2":
     "data:image/webp;base64,UklGRnwAAABXRUJQVlA4IHAAAAAwAgCdASoQAAoAA4BaJQBWAMXwxb51/ln5gAD+7Fr8WxHW4z141Rmot2Jpv3Pc4JdRDZAf+/jdjM9TpzEk43xV+96wnzMpSZez8V+vO3u3qLeo53PrwmGnDVOqDpuXQEpOlfyvG3s4J/leCJJTgAAA",
+  "library/brettspill-1":
+    "data:image/webp;base64,UklGRm4AAABXRUJQVlA4IGIAAADQAQCdASoQAAwAA4BaJYwCdADiouW+AAD8MAl3u4p2s7UioYYD0Jx7hWRf+IxD716j+SxGg8Od/GJmdIx2xYStRyGn4GYhxj8aYPSfjMXluQqy8eLhQR2ww/STsVxzIwAAAA==",
+  "library/brettspill-2":
+    "data:image/webp;base64,UklGRn4AAABXRUJQVlA4IHIAAABQAgCdASoQAAoAA4BaJZACdAYv1TU4FpTG0cAA/ie4VXRfJfw66TbRB6mVGfFxYCuLzXkiDWC6Zyf0cH4KbsLm8vsj6Yx8xffbLGl6lv7nSeK7BziL9ZWCKZUzBJq0ZZpnzlMTZ18k4cgwBdJaQZ0SAAA=",
+  "library/brettspill-3":
+    "data:image/webp;base64,UklGRlQAAABXRUJQVlA4IEgAAAAQAgCdASoQAAoAA4BaJYgAAsSIdCRDoyEYAP6+gGA/t9BoSqaZn8CXvafVmS1BTeyOKemmXtgWnL1SOgSs+opYqwPqX8VAAAA=",
+  "library/brettspill-4":
+    "data:image/webp;base64,UklGRmYAAABXRUJQVlA4IFoAAADwAQCdASoQAAoAA4BaJbACdAEemBTgYqAA/WnR3D60eCAIssBf3kgjgL/RS2ycclwHPripKFMuatjN9/KVjLs8LIO3tyyx82f/XPZSWd+kMGcMD3LmY9agAAA=",
+  "library/brettspill-5":
+    "data:image/webp;base64,UklGRkYAAABXRUJQVlA4IDoAAACwAQCdASoQAAoAA4BaJYwCdADMQSAAAP3sjaCAqxCs/kzvUeQS9dxY3YPwb6Dy/qzhQzIJnvQyz0AA",
+  "library/brettspill-6":
+    "data:image/webp;base64,UklGRrwAAABXRUJQVlA4ILAAAACQBACdASoQABgAPu1iqU2ppaOiMAgBMB2JQBOgO4FwMN6Fa+tdiBDjypwjpIAA/mvSOdiJk16oPJEd5joxihSR3afN8CcvvH/3JjWgE0UNWwkcX7sAvnm/r6EDsci7VpLZ328on5gFrC9wACn9F+IRJ5+E8WFmnKUan0JN9/l605IVYcJ8UdK7ggX526c+/eWcup+ODIcgk9hYZJrE9UGil7rtAXx38dAQoMopf6AAAA==",
+  "library/brettspill-7":
+    "data:image/webp;base64,UklGRpQAAABXRUJQVlA4IIgAAACQBACdASoQABYAPu1iqU2ppaOiMAgBMB2JZQC/OywBzuX08fdxJUhjhIetSEAA/uPUYZvbZEKXfCB5pJ+chK347guaNKVF4kCYXxW0BdwLxI5raVTC7Obbv8qofuwWuquhPcAi+4z7Y22QZCnL/2iZthC3rMVmgJitfEcsxmwLxY7vvFbBgAAA",
+  "library/diskusjon-1":
+    "data:image/webp;base64,UklGRm4AAABXRUJQVlA4IGIAAABQAgCdASoQAAoAA4BaJYgCdAYwnt8sfpRwH7AA/u9aRkQHj6EJPgrv029Vr7nIRAm3BZCvqk8pN2tjRa6BsIXSqhuVGa2tbF9ZBW20xTNCZa2FQOdBSKr0/bhMs4Q1sHQAAA==",
+  "library/diskusjon-2":
+    "data:image/webp;base64,UklGRngAAABXRUJQVlA4IGwAAABwAgCdASoQAAoAA4BaJbACdAYtpwURudDEbgfAAP6JODKazB6qv3mc/KO4w3wMj7q0nE1dZ9X9Wp/cla3MhYJSJpklExzS0kfKtxI3934738vLxQ5LBPEer0shPK37+EX8Z2F0uvfx+UIAAAA=",
+  "library/diskusjon-3":
+    "data:image/webp;base64,UklGRmAAAABXRUJQVlA4IFQAAADQAQCdASoQAAoAA4BaJQBdgBjqwcbdIAD+JmP/cQz0XBhlUtpcxqO6H7cBXwmdG1uS1SZfcbvL6YjL4Okp+2tYnAJO//F8XQOcCxuBAwh3bR860AA=",
+  "library/diskusjon-4":
+    "data:image/webp;base64,UklGRmYAAABXRUJQVlA4IFoAAADQAQCdASoQAAoAA4BaJQBWABwuQEYXaAD+xegHQIeh2t7+bGTr6Q4o2iPEGnJlqO10UXC9UDWU7ti3kmIyD1kZiT8HUd6dFMkL21Q/ax+C3+fCgIB3kQYAAAA=",
+  "library/diskusjon-5":
+    "data:image/webp;base64,UklGRmgAAABXRUJQVlA4IFwAAACwAQCdASoQAAoAA4BaJQBOgBSkHfrAAPz7D5Hh/URJt1sxoIUuk814iReWF2zEOqxGvwyHcCu0cEhBRFjMq5heQ9OEGRyx/Nprab6/0ISN5l8DMAXI8epccQuEAA==",
+  "library/diskusjon-6":
+    "data:image/webp;base64,UklGRlwAAABXRUJQVlA4IFAAAAAwAgCdASoQAAoAA4BaJQBOgCFssckgeosYAAD+9xci6dfF9rhK6mVh5QJPyxyeEEmr9Q7oP1GLnZaxQx3NOsGzXknYBM7FTG7IwzLzGAAAAA==",
+  "library/diskusjon-7":
+    "data:image/webp;base64,UklGRmQAAABXRUJQVlA4IFgAAADwAQCdASoQAAoAA4BaJQBOgCHc7Jf2zIAA/Z0zTdMkZt4Nx75h8Yx8/F2GWO75O767Tfq5yfQFTyIoEHNKmYBqLl29P+DmUxJjh34mgpJ2PdQZ769RAAAA",
   "library/food-1":
     "data:image/webp;base64,UklGRsQAAABXRUJQVlA4ILgAAABQBACdASoQABgAPu1iqU2ppaOiMAgBMB2JYwC7IIjgyhczQR56F1odFDwAAP7kXkStfTg1SBibPN9v3mNXhOV6D6MfVK2YMv6BlqgGeT1t/VZokvRKrdjJgVNqZInnNSsOeaEXUuA9KWpsvZQB0jV+kvpD+uD7wHa1sgubHK0EJqR9CrQruLgkaiO/YK8q+aOYynlc/iCyP//76KQAzvRfX0NmMQTgmirpmI+8SxnxbVTj+vLx/HAA",
   "library/gallery-2":
     "data:image/webp;base64,UklGRkwAAABXRUJQVlA4IEAAAAAQAgCdASoQAAoAA4BaJZQC7AERGFtJn0IAAP7W/l2iMbwsDQuAHiPz2sVvoURWcGp+HUjE+g7Zse3kDsQ3YTAA",
+  "library/gaming-1":
+    "data:image/webp;base64,UklGRmgAAABXRUJQVlA4IFwAAAAQAgCdASoQAAoAA4BaJZgCdAYr7QXDxySAAP7pXWRtQHGfJYVgFQDffEwIFc93whoPQ/HdDJoo2Nky+3wkXjZ7B+TkeW2JH0KLWLY2AsXjWsmB1ccAmQfa1aAAAA==",
+  "library/gaming-2":
+    "data:image/webp;base64,UklGRmgAAABXRUJQVlA4IFwAAAAQAgCdASoQAAoAA4BaJYwCdAD6KoCsMVAAAP7qARCgo8lHLF1XLkuc9cs0D+sAakJn3R7xnPBLJ5xycemG4Hus5pnzvw8tZrvuEJUTzjR9tt+pQ3bM80O7tYAAAA==",
+  "library/gaming-3":
+    "data:image/webp;base64,UklGRnoAAABXRUJQVlA4IG4AAABQAgCdASoQAAoAA4BaJZACdAYuRoDjCC+N2kAA/uy/3tdM8BbGFRkV79ngZWOyFuR5P3QPxQDjo3rq+9ApeneZbT/UTj9QKNFSq7uXIZZKvdWtne3fgcn3DAO8xS+ljO/kc3imNlvorH3C8AAAAA==",
+  "library/gaming-4":
+    "data:image/webp;base64,UklGRmgAAABXRUJQVlA4IFwAAAAwAgCdASoQAAoAA4BaJZQCdADPJDvlHym5AAD7xDZ5om7x1k50qgkSDLTsTuhILjfrClKfeS6WSOpCsQiIY2Tnh2BYOMXvc58/Ej9Qi12EoxTlLAszhES7RcAAAA==",
+  "library/gaming-5":
+    "data:image/webp;base64,UklGRmgAAABXRUJQVlA4IFwAAACwAQCdASoQAAoAA4BaJbACdABrqR1YAP6J1Czif9Ke9q5ryoxCLw6X0cHnAi6F0e4MjGMnaB17RS2VJbtHvxHLX9x2fe/YgZm/19yEfIlb5Rv4Y0EJhQeTSIkAAA==",
+  "library/gaming-6":
+    "data:image/webp;base64,UklGRnIAAABXRUJQVlA4IGYAAACwAwCdASoQABgAPu1mqk4ppaOiMAgBMB2JYwAAUrJXuy7WMcKoAAD5bVyrK22MNLT03kiIRfmUXvZMHtvqDnG+QDjAnNTLg7KEzK1ucWbeJ/lzutA5OAI23CEvBgWUtJk+nmD6CAA=",
+  "library/gaming-7":
+    "data:image/webp;base64,UklGRk4AAABXRUJQVlA4IEIAAACQAQCdASoQAAoAA4BaJQBOgA8kuZgA8qJ0JP8CGHXN66xQW8zgSpMj7BDr8kxsYUrcWRYXIUL5X4FIarG96eAAAAA=",
   "library/garden-1":
     "data:image/webp;base64,UklGRpQAAABXRUJQVlA4IIgAAACwAwCdASoQABQAPu1iqU2ppaOiMAgBMB2JYwC7ABVMC9eMwbDlwAD+rCgmZ9UGwe/WmQDMbXGtPKESy+Au4ekYFUbk5eykkwPXDypkLUKgFYgZN2WSTczlMVL2juZhNpMhwZ5+CPvnprb7kg8bw5vF129TR8LCidVFGEFwD8C4BkvMfMFawAAA",
   "library/garden-2":
@@ -573,10 +707,14 @@ export const PLACEHOLDER: Record<string, string> = {
     "data:image/webp;base64,UklGRoAAAABXRUJQVlA4IHQAAAAwAgCdASoQABAAA4BaJZACdIExFwAeHranAAD+79fPmlyhEq6xPfzmc7+b09obuTlCHWV6KiZygtAXAzHnVqRFEhLteMrCl+gf2TuvR7f33PJyDmT1LdxXBl0czOJQz6W38wtouTaEeDf8oJQpGC3URheEAA==",
   "library/person-maria":
     "data:image/webp;base64,UklGRogAAABXRUJQVlA4IHwAAACwAgCdASoQABAAA4BaJbACdIEx4ABRW4F/ZZADHAAA/tD18UHYU7kVZD4dX6O298OudRtbYoL5Y7c/J/g9IBm2g5VrCaXNpfDhQOTKulDyZlSvTQvqyye4P5gNZaKk77OdyPORQlzCceuky7N8ZydzHTAorwRmCQcBgAAA",
+  "library/person-mats":
+    "data:image/webp;base64,UklGRngAAABXRUJQVlA4IGwAAABQAgCdASoQABAAA4BaJZACdAdwLfwnv+9pFKAA/rfFoj0qU4b6KQn60nBCX74JOm2V5+Owu/fcrPhiCLvgKyMxvGpTFESgooF+M/2L+6NKRicbuil2RNMHGGN6TYKWKDfKvHl2jgmTRxC+AAA=",
   "library/person-nadia":
     "data:image/webp;base64,UklGRngAAABXRUJQVlA4IGwAAAAwAgCdASoQABAAA4BaJZQC7AEecl2CpUQzQAD+8zWl0DKti4BOrv92BK/Uw7Q7GfUj3fp+agBCnl6+oUKE685njzTFCfEQNHKuaj3dizb2OxEiShqf01XWGNa7OvYsZWKnNuX7y6bV7+lgAAA=",
   "library/person-nina":
     "data:image/webp;base64,UklGRloAAABXRUJQVlA4IE4AAAAwAgCdASoQABAAA4BaJbACdLoAAwXAzsBEQAD+vwRHdiM7NBJkNo85amlFPNNBy1xAmml5YUJUJrRiO9uVpbUsmZP5jfBkMR4Pzf7rkAA=",
+  "library/person-oda":
+    "data:image/webp;base64,UklGRoQAAABXRUJQVlA4IHgAAABwAgCdASoQABAAA4BaJZACdAYwxuOUFgEAl8LwAP7F+4sohurDe4YwVjz5mi+KeL10j0DszrTK3WY+8oZ0FooifM4uCqMsfbn8mtt3VryXaxK5a86hFeV6Y3h5ILTzwUJ9jt5qEXAd28nqWi2H9NVnlGLnCIMAAAA=",
   "library/person-ola":
     "data:image/webp;base64,UklGRnAAAABXRUJQVlA4IGQAAAAwAgCdASoQABAAA4BaJZgCdH8AEjJTzL2DAAD+fGsggeXo5ByrTIX57PiKhRnKwN2IAN4fzjXNj2YPECUDGrioVtMBDbfkN4vpPgJ/8rinhq2x7uIeulyFZvZBIfWAgHoVyOAA",
   "library/person-per":
@@ -585,8 +723,12 @@ export const PLACEHOLDER: Record<string, string> = {
     "data:image/webp;base64,UklGRnQAAABXRUJQVlA4IGgAAAAwAgCdASoQABAAA4BaJYwCdAEWszZfIGS2oAD+wSJRsNqF50rGNKu8q67qXq9cn1S6wcD0hRG8jryItrkX8eZ6hXpHfRppK1MGsTito18GCcSH+ITLWEj3Jj0VZn1fFyGvBFihcgAAAA==",
   "library/person-sofie":
     "data:image/webp;base64,UklGRmoAAABXRUJQVlA4IF4AAADQAQCdASoQABAAA4BaJbACdACDN09zmAD8WjyotOFPmmtuSWQRM8zMO1agDxvG5a9XWxhZNjrF+3AJ/rM+wixZmojGwCMEiwsqOpxZ8joXpSrG/EGiGE4uGFyApYAA",
+  "library/person-tobias":
+    "data:image/webp;base64,UklGRmoAAABXRUJQVlA4IF4AAAAwAgCdASoQABAAA4BaJQBOj+ACvGgnrI6AqAD+y/+HIh75tyPSdAez9rWv+LtzPRa4zK8CseDdHz9vmfTQ/gvSUPLHTbeFgrB6m41Pb2ZN5UdvBe/W1I12JMpM8AAA",
   "library/person-tom":
     "data:image/webp;base64,UklGRngAAABXRUJQVlA4IGwAAAAwAgCdASoQABAAA4BaJQBOgBuH3PkBYMM2AAD2t6wo3riS6VftJB9APXiQYu/kvyZvDkA5d/pD8ziWLZcylug2VmpCK4luR6dGucnbVjYUyXf5XTX0MD3GDDKTD1KJvgnugbC89MkobL4QAAA=",
+  "library/person-yasmin":
+    "data:image/webp;base64,UklGRnoAAABXRUJQVlA4IG4AAACQAgCdASoQABAAA4BaJZACdMn8IHsk9fZI+1eIAAD+AIqZNudV+V8mJsscsRRS93SMIPsUFcLHfQ32iSvap01A3BA3SOY/EFwCJe8vZF+c0f0x7CUtG0wSOafV2w65SuNZz0NgwG37KJudfB2AAA==",
   "library/pilates-1":
     "data:image/webp;base64,UklGRpIAAABXRUJQVlA4IIYAAACwAwCdASoQABYAPu1iqU2ppaOiMAgBMB2JQBOgAt+3ad8KTwY5AAD+EyEmSKipiXTaDRWi9JoMFCElIZWOe7AOWBFVNDz7LNZOcmZH6HYaNPwyr1eBlYnJJ1KdccqmZb+xm3rPg/4apc874Ydklg1DAIN8tlxWzeVfXYesH9LD6kWtKoAAAA==",
   "library/pilates-2":
@@ -607,6 +749,20 @@ export const PLACEHOLDER: Record<string, string> = {
     "data:image/webp;base64,UklGRm4AAABXRUJQVlA4IGIAAADwAQCdASoQAAoAA4BaJYwCdADpmQLlb6QA/usj21xF6+ILQxkur2r0P43eggRKdLb8hmb8bKqNLCoNz3KuTrYsQUJzyBuQowD3bYzJy8WmoD1OIoRruZ/AvPhXhJfVSCAAAA==",
   "library/pottery-2":
     "data:image/webp;base64,UklGRmgAAABXRUJQVlA4IFwAAADwAQCdASoQAAoAA4BaJYwCdADG03w97EAA/u0VLA7ykVcUer8uNQMCg73/vQJY2OczicOiYgQQSpe0dVKGcCFQd1q0qWTLqGagTAxaWKMqaFubIS/FyhqB9AAAAA==",
+  "library/quiz-1":
+    "data:image/webp;base64,UklGRmYAAABXRUJQVlA4IFoAAAAQAgCdASoQAAwAA4BaJQBYdiBX72h6N2igAP74eh3rCyGNR+PF38XyJSLT5vM0mv96WEXoGPRenNsB9P+YsXNJLwfWGcSyEl4ClA+rWgh1wYdz1+3OaIn4AAA=",
+  "library/quiz-2":
+    "data:image/webp;base64,UklGRlgAAABXRUJQVlA4IEwAAAAQAgCdASoQAAoAA4BaJZACdAEQZqknF7oAAP7VE214ELFO/wn/PVvuGUt3/S5kXjWL5i4A7Rni8VF7YY2aG/hBnPDH8rlc2KOUAAAA",
+  "library/quiz-3":
+    "data:image/webp;base64,UklGRnIAAABXRUJQVlA4IGYAAADwAQCdASoQAAoAA4BaJYgCdADM78ybIgAA/u0o7GbZfl5uvvTmga/sbxKTYrA0TuHQ7waoIT3F2uK2BrEA2utpJa6J6uq8E18dBQEsn0BV0bjL0DBdDB5BOTBZYwKTBjLhOaCPAAA=",
+  "library/quiz-4":
+    "data:image/webp;base64,UklGRoQAAABXRUJQVlA4IHgAAAAwBACdASoQABYAPu1iqU2ppaQiMAgBMB2JZACdMoAB+uURAgMP5I1bDgAA/qey3x4ovZ/YLTsE/vX9v0n06BuypDpbz9+Uw3Db9K7WwG1rkwfmC5Cm0Wv0X9JuZdkU2ebnQKpS71kqUGywPu5kxUcH6l7RWiuQAAA=",
+  "library/quiz-5":
+    "data:image/webp;base64,UklGRmYAAABXRUJQVlA4IFoAAADwAQCdASoQAAoAA4BaJYwCdAD7gTkGD2AA/s39jDQMzym1DPrzr3rEbThEpNZ25p8I8vVnSTDLd1nG9px1ZiEFUqC888s9yLtlypmI5QBRfehOU5pDVVSgoAA=",
+  "library/quiz-6":
+    "data:image/webp;base64,UklGRp4AAABXRUJQVlA4IJIAAAAwBACdASoQABgAPu1iqU2ppaOiMAgBMB2JZACdMoADg/BZaQR2CrVc+AAA+CorYf2FXZNpEaZpLMxhtom0ErAV+b86CN7oVLu/jeuVChmN3roUtrUcZ3oauP/JIuqkU5J38xx2P1u/CG2MT04bNV6swi+eFdd+iT8vEU08tPeke7RflSu8wK+iDO7c0SETdTCAAA==",
+  "library/quiz-7":
+    "data:image/webp;base64,UklGRn4AAABXRUJQVlA4IHIAAABQBACdASoQABgAPu1krU2ppaSiMAgBMB2JZACdL1yB0aDhZZDfqUH7uPAAAP7qbigYHjL+6hWt6Yd+3InOY3qab3ZReOfuolrlea2UmvLd3y6pvVNpWlXtF1z5ZCmvIkXhUVUBjwwQF3x1fynsNHIwAAA=",
   "library/river-1":
     "data:image/webp;base64,UklGRmAAAABXRUJQVlA4IFQAAADwAQCdASoQAAoAA4BaJQBOgBmSSIbVAwAA/NamkJNmzEy0CMFsOt4l/O8PnF1b634Wfu8cm0uB0Hc4RAVqhPKoooOLitaVnCxlGUi5hFq6wbIQAAA=",
   "library/river-2":
@@ -619,6 +775,34 @@ export const PLACEHOLDER: Record<string, string> = {
     "data:image/webp;base64,UklGRmIAAABXRUJQVlA4IFYAAAAQAgCdASoQAAwAA4BaJZwAD4zL1QD0M9gAAP70VthLfQqzYrbG5gVcRxSp+1MWxqGBl5z2cl4mCSRm1pfxcGOqFnxd7FuFcdRkI3CRh7RiLKZI95AgAA==",
   "library/salon-2":
     "data:image/webp;base64,UklGRmAAAABXRUJQVlA4IFQAAAAwAgCdASoQAAoAA4BaJYwCdAYvXc985JnGQAD+8H1mSr9nT3ALk0QuzrOpyKyv7ZukneI1t1lfvso6kKh7j0geKJR8X7w/RWFG7wj2mDTik6uQAAA=",
+  "library/shopping-1":
+    "data:image/webp;base64,UklGRnIAAABXRUJQVlA4IGYAAAAQAgCdASoQAAwAA4BaJYgCdADRuGZf6PAAAP7kTa8x+CJckU9VMlVhtQf1xrRoLxQPeZgz17bTt+x9QBX2NewC3rRj0B6E8y4E+AFXq9CfV7ni3FmpbloXQ23CW5fUVNNNeKbUAAA=",
+  "library/shopping-2":
+    "data:image/webp;base64,UklGRpwAAABXRUJQVlA4IJAAAAAwBACdASoQABYAPu1iqU2ppaOiMAgBMB2JQBOg7QAJ5WvF5fpP1a1JsgAA/s3wXFUG30cxebfN41u3DnoOPw08ttx6ITXTF+04T22hsdBqyCRKXawXznaY3C0U5xNmbaZAWLPIXcZO0cSSzk+3ooMSFF+AblZ0SNo3s+tk0WE4oVLsVMEzycIRXa9Ug/HgAAA=",
+  "library/shopping-3":
+    "data:image/webp;base64,UklGRmIAAABXRUJQVlA4IFYAAADQAQCdASoQAAgAA4BaJQBdgMVQYKFiAAD+vczJbVRQuPinS+bABfOARTf1J5hceDqs2kpN7tX8k09RsavSftn55rO8hHvISzyGbLAUsXrNQvBcjXgAAA==",
+  "library/shopping-4":
+    "data:image/webp;base64,UklGRnQAAABXRUJQVlA4IGgAAAAQAgCdASoQAAwAA4BaJbACdAYstOebLZ0AAP6XJ/CkbL50mrGuqiSdL1CuxbZYM7NIHp/Iv+2Vk7mLCYypyFSkWJVWvij9y3KneNIMPoCjacX2lKJzDo5M60N4wpcpWDenxktEm3AAAA==",
+  "library/shopping-5":
+    "data:image/webp;base64,UklGRm4AAABXRUJQVlA4IGIAAADwAQCdASoQAAoAA4BaJYgCdAYwxIetz8AA8Cu0o6LIfX0F0RNKZbqNXovWxPAcHie9Dddn2hmAuDeHy/8gyM950NwSs7VyDI4ZxoQ7IkiKOxHXxnTOAf++9+PeQGin/tJ4AA==",
+  "library/shopping-6":
+    "data:image/webp;base64,UklGRmYAAABXRUJQVlA4IFoAAADQAQCdASoQAAoAA4BaJQBOgBrV4bveQAD+R0udN9maS9aZdkB5q1kZ4e2bfFX+yBJyebuHU4aUvpu6cHdMnei50MnuLjLtt8V8J3nOTTKW/ZPkoz+x9JubgAA=",
+  "library/shopping-7":
+    "data:image/webp;base64,UklGRlYAAABXRUJQVlA4IEoAAAAQAgCdASoQAAoAA4BaJZwC7AD6dJio1KVgAPz3dETfLjN5JZWnrP71UdkBa1WS+dGkCrGgg6a11ImwdnZqUaD1oYKIPv9TqgAAAA==",
+  "library/sjakk-1":
+    "data:image/webp;base64,UklGRm4AAABXRUJQVlA4IGIAAADwAQCdASoQAAoAA4BaJaACdAEUTgfisKAA/QDNPztlA4ufjkgt5motB/KYSHYFHO8MHKZT7euoJWa6VGajN5wtL1xDKAMh41IZhkGX+7FeNCPAgJuBCjPCjErppYkjjAAAAA==",
+  "library/sjakk-2":
+    "data:image/webp;base64,UklGRnwAAABXRUJQVlA4IHAAAABQAgCdASoQAAoAA4BaJZgCdH8Agryq+0Qr38AA/pwnKkbJyQHTWpS6+z7U5ZlP/w2MDdzyaFChafHV2wf47o4xDNCW4RgGlva64aqllML2FFuBC+IrBN0spgJO28eXaautW+y5GvxElnZPfVhEAAAA",
+  "library/sjakk-3":
+    "data:image/webp;base64,UklGRmIAAABXRUJQVlA4IFYAAACwAQCdASoQAAoAA4BaJbACdABu3dkgAP7zyKg7QIayTqeJuLz80z2ScEA2df8ImbfsTF08d57njGHVwwuQMKBOC2piaXq9Jzen/EZCOLLNGpSMUMsAAA==",
+  "library/sjakk-4":
+    "data:image/webp;base64,UklGRmoAAABXRUJQVlA4IF4AAAAwAgCdASoQAAwAA4BaJYgCdAYtfkr8iC6sAAD9dh6h1siNmhZFvd5SOk9ELxuv9IpgQ/cFIGyt81nh0cW4U8XzH0Ws0H7jUvTCaIiFdH1q7D9+ISdgKARRcCMCaIAA",
+  "library/sjakk-5":
+    "data:image/webp;base64,UklGRmAAAABXRUJQVlA4IFQAAACwAQCdASoQAAoAA4BaJZwAAgAzxvAAAP6txuhWApbF/+aVQ2Wk5jE5TPPBWdv1XM7VcgSdZXM/g2VbBCVH3aPUUvMaXvYQ0cSB0TX4r5xv/GOIhAA=",
+  "library/sjakk-6":
+    "data:image/webp;base64,UklGRmwAAABXRUJQVlA4IGAAAADwAQCdASoQAAoAA4BaJZwCdAYu5dMknIAA/uU7YpqFxDCWm+mioaE3XJMdGVtXK+kiycHbJtR+jA6ejoIGug/24Emx13pef91LiTn2VzfiR/YKiDvyC/oAn29WoPFAAAA=",
+  "library/sjakk-7":
+    "data:image/webp;base64,UklGRkwAAABXRUJQVlA4IEAAAACwAQCdASoQAAoAA4BaJZACdADJ4JkgAP7pA+p/c4KyKXvp9MG26SdH9iwC0f+lvUFRWKwZSbjuFv+MJqwFigAA",
   "library/spice-1":
     "data:image/webp;base64,UklGRlgAAABXRUJQVlA4IEwAAACwAQCdASoQAAwAA4BaJYgCdAEGiSc8AP7p4Z0wsR43Yqb+gkkX8w5AY5oMbl1nHT72OCC2kRqrCpJ4hxRRR+KL2c1upkClyI3fFNAA",
   "library/spice-2":

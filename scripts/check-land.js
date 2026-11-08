@@ -2,7 +2,9 @@
 /* global __dirname */
 // Dev-only land check for the interest catalogue (Phase 19): every place
 // coordinate in src/fixtures/catalog/*.ts, and the meeting point the builder
-// puts ~45 m north of it, must be on land. Asks the Mapbox Tilequery API
+// puts ~45 m north of it, must be on land (the point ~45 m south is stamped
+// too, for an event that shares its venue with an opplevelse; jest fails if
+// a meeting point actually used is in water). Asks the Mapbox Tilequery API
 // whether the point is inside the streets tileset's `water` layer, and writes
 // the result to src/fixtures/catalog/land-check.json, which a jest test reads
 // (every catalogue coordinate needs a "land" stamp). Never run in CI.
@@ -18,7 +20,8 @@ const https = require("https");
 const ROOT = path.join(__dirname, "..");
 const CATALOG = path.join(ROOT, "src", "fixtures", "catalog");
 const OUT = path.join(CATALOG, "land-check.json");
-// Mirrors build.ts: the meeting point sits this far north of its venue.
+// Mirrors build.ts: the meeting point sits this far north of its venue, or
+// this far south for an event that shares its venue with an opplevelse.
 const MEETING_OFFSET = 0.0004;
 
 function publicToken() {
@@ -46,6 +49,7 @@ function catalogueCoords() {
       const c = [Number(m[1]), Number(m[2])];
       out.push({ file: f, coord: c });
       out.push({ file: f, coord: [c[0], c[1] + MEETING_OFFSET] });
+      out.push({ file: f, coord: [c[0], c[1] - MEETING_OFFSET], spare: true });
     }
   }
   return out;
@@ -85,12 +89,13 @@ async function main() {
     : {};
   const result = {};
   const wet = [];
-  for (const { file, coord } of catalogueCoords()) {
+  const spareWet = [];
+  for (const { file, coord, spare } of catalogueCoords()) {
     const k = key(coord);
     if (result[k]) continue;
     const water = prev[k] === "land" ? false : await inWater(coord, token);
     result[k] = water ? "water" : "land";
-    if (water) wet.push(`${file}: ${k}`);
+    if (water) (spare ? spareWet : wet).push(`${file}: ${k}`);
   }
   const sorted = Object.fromEntries(
     Object.entries(result).sort(([a], [b]) => a.localeCompare(b)),
@@ -100,6 +105,8 @@ async function main() {
     `${Object.keys(sorted).length} points checked, ${wet.length} in water`,
   );
   for (const w of wet) console.log(`  WATER ${w}`);
+  for (const w of spareWet)
+    console.log(`  south point in water (fine unless an event uses it) ${w}`);
   process.exit(wet.length ? 1 : 0);
 }
 
