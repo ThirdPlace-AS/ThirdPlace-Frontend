@@ -30,6 +30,20 @@ export const LIBRARY_FULL = {
   "bakst-7": require("../../assets/library/bakst-7.webp"),
   "bike-repair-1": require("../../assets/library/bike-repair-1.webp"),
   "bike-repair-2": require("../../assets/library/bike-repair-2.webp"),
+  "biljard-1": require("../../assets/library/biljard-1.webp"),
+  "biljard-2": require("../../assets/library/biljard-2.webp"),
+  "biljard-3": require("../../assets/library/biljard-3.webp"),
+  "biljard-4": require("../../assets/library/biljard-4.webp"),
+  "biljard-5": require("../../assets/library/biljard-5.webp"),
+  "biljard-6": require("../../assets/library/biljard-6.webp"),
+  "biljard-7": require("../../assets/library/biljard-7.webp"),
+  "bowling-1": require("../../assets/library/bowling-1.webp"),
+  "bowling-2": require("../../assets/library/bowling-2.webp"),
+  "bowling-3": require("../../assets/library/bowling-3.webp"),
+  "bowling-4": require("../../assets/library/bowling-4.webp"),
+  "bowling-5": require("../../assets/library/bowling-5.webp"),
+  "bowling-6": require("../../assets/library/bowling-6.webp"),
+  "bowling-7": require("../../assets/library/bowling-7.webp"),
   "brettspill-1": require("../../assets/library/brettspill-1.webp"),
   "brettspill-2": require("../../assets/library/brettspill-2.webp"),
   "brettspill-3": require("../../assets/library/brettspill-3.webp"),
@@ -45,6 +59,13 @@ export const LIBRARY_FULL = {
   "diskusjon-6": require("../../assets/library/diskusjon-6.webp"),
   "diskusjon-7": require("../../assets/library/diskusjon-7.webp"),
   "food-1": require("../../assets/library/food-1.webp"),
+  "frivillighet-1": require("../../assets/library/frivillighet-1.webp"),
+  "frivillighet-2": require("../../assets/library/frivillighet-2.webp"),
+  "frivillighet-3": require("../../assets/library/frivillighet-3.webp"),
+  "frivillighet-4": require("../../assets/library/frivillighet-4.webp"),
+  "frivillighet-5": require("../../assets/library/frivillighet-5.webp"),
+  "frivillighet-6": require("../../assets/library/frivillighet-6.webp"),
+  "frivillighet-7": require("../../assets/library/frivillighet-7.webp"),
   "gallery-2": require("../../assets/library/gallery-2.webp"),
   "gaming-1": require("../../assets/library/gaming-1.webp"),
   "gaming-2": require("../../assets/library/gaming-2.webp"),
@@ -113,11 +134,14 @@ export const LIBRARY_FULL = {
   "ol-6": require("../../assets/library/ol-6.webp"),
   "ol-7": require("../../assets/library/ol-7.webp"),
   "person-ase": require("../../assets/library/person-ase.webp"),
+  "person-elif": require("../../assets/library/person-elif.webp"),
   "person-erik": require("../../assets/library/person-erik.webp"),
   "person-henrik": require("../../assets/library/person-henrik.webp"),
+  "person-hilde": require("../../assets/library/person-hilde.webp"),
   "person-jakob": require("../../assets/library/person-jakob.webp"),
   "person-jonas": require("../../assets/library/person-jonas.webp"),
   "person-kari": require("../../assets/library/person-kari.webp"),
+  "person-kenneth": require("../../assets/library/person-kenneth.webp"),
   "person-kristine": require("../../assets/library/person-kristine.webp"),
   "person-leila": require("../../assets/library/person-leila.webp"),
   "person-linh": require("../../assets/library/person-linh.webp"),
@@ -129,6 +153,7 @@ export const LIBRARY_FULL = {
   "person-ola": require("../../assets/library/person-ola.webp"),
   "person-per": require("../../assets/library/person-per.webp"),
   "person-samuel": require("../../assets/library/person-samuel.webp"),
+  "person-sindre": require("../../assets/library/person-sindre.webp"),
   "person-sofie": require("../../assets/library/person-sofie.webp"),
   "person-tobias": require("../../assets/library/person-tobias.webp"),
   "person-tom": require("../../assets/library/person-tom.webp"),
@@ -152,6 +177,13 @@ export const LIBRARY_FULL = {
   "quiz-7": require("../../assets/library/quiz-7.webp"),
   "river-1": require("../../assets/library/river-1.webp"),
   "river-2": require("../../assets/library/river-2.webp"),
+  "rollespill-1": require("../../assets/library/rollespill-1.webp"),
+  "rollespill-2": require("../../assets/library/rollespill-2.webp"),
+  "rollespill-3": require("../../assets/library/rollespill-3.webp"),
+  "rollespill-4": require("../../assets/library/rollespill-4.webp"),
+  "rollespill-5": require("../../assets/library/rollespill-5.webp"),
+  "rollespill-6": require("../../assets/library/rollespill-6.webp"),
+  "rollespill-7": require("../../assets/library/rollespill-7.webp"),
   "sail-1": require("../../assets/library/sail-1.webp"),
   "sail-2": require("../../assets/library/sail-2.webp"),
   "salon-1": require("../../assets/library/salon-1.webp"),
@@ -172,6 +204,12 @@ export const LIBRARY_FULL = {
   "sjakk-7": require("../../assets/library/sjakk-7.webp"),
   "spice-1": require("../../assets/library/spice-1.webp"),
   "spice-2": require("../../assets/library/spice-2.webp"),
+  "sprakkafe-1": require("../../assets/library/sprakkafe-1.webp"),
+  "sprakkafe-2": require("../../assets/library/sprakkafe-2.webp"),
+  "sprakkafe-3": require("../../assets/library/sprakkafe-3.webp"),
+  "sprakkafe-4": require("../../assets/library/sprakkafe-4.webp"),
+  "sprakkafe-5": require("../../assets/library/sprakkafe-5.webp"),
+  "sprakkafe-7": require("../../assets/library/sprakkafe-7.webp"),
   "te-1": require("../../assets/library/te-1.webp"),
   "te-2": require("../../assets/library/te-2.webp"),
   "te-3": require("../../assets/library/te-3.webp"),
@@ -249,6 +287,20 @@ export const LIBRARY_SMALL: Record<
   "bakst-7": require("../../assets/library/bakst-7-sm.webp"),
   "bike-repair-1": require("../../assets/library/bike-repair-1-sm.webp"),
   "bike-repair-2": require("../../assets/library/bike-repair-2-sm.webp"),
+  "biljard-1": require("../../assets/library/biljard-1-sm.webp"),
+  "biljard-2": require("../../assets/library/biljard-2-sm.webp"),
+  "biljard-3": require("../../assets/library/biljard-3-sm.webp"),
+  "biljard-4": require("../../assets/library/biljard-4-sm.webp"),
+  "biljard-5": require("../../assets/library/biljard-5-sm.webp"),
+  "biljard-6": require("../../assets/library/biljard-6-sm.webp"),
+  "biljard-7": require("../../assets/library/biljard-7-sm.webp"),
+  "bowling-1": require("../../assets/library/bowling-1-sm.webp"),
+  "bowling-2": require("../../assets/library/bowling-2-sm.webp"),
+  "bowling-3": require("../../assets/library/bowling-3-sm.webp"),
+  "bowling-4": require("../../assets/library/bowling-4-sm.webp"),
+  "bowling-5": require("../../assets/library/bowling-5-sm.webp"),
+  "bowling-6": require("../../assets/library/bowling-6-sm.webp"),
+  "bowling-7": require("../../assets/library/bowling-7-sm.webp"),
   "brettspill-1": require("../../assets/library/brettspill-1-sm.webp"),
   "brettspill-2": require("../../assets/library/brettspill-2-sm.webp"),
   "brettspill-3": require("../../assets/library/brettspill-3-sm.webp"),
@@ -264,6 +316,13 @@ export const LIBRARY_SMALL: Record<
   "diskusjon-6": require("../../assets/library/diskusjon-6-sm.webp"),
   "diskusjon-7": require("../../assets/library/diskusjon-7-sm.webp"),
   "food-1": require("../../assets/library/food-1-sm.webp"),
+  "frivillighet-1": require("../../assets/library/frivillighet-1-sm.webp"),
+  "frivillighet-2": require("../../assets/library/frivillighet-2-sm.webp"),
+  "frivillighet-3": require("../../assets/library/frivillighet-3-sm.webp"),
+  "frivillighet-4": require("../../assets/library/frivillighet-4-sm.webp"),
+  "frivillighet-5": require("../../assets/library/frivillighet-5-sm.webp"),
+  "frivillighet-6": require("../../assets/library/frivillighet-6-sm.webp"),
+  "frivillighet-7": require("../../assets/library/frivillighet-7-sm.webp"),
   "gallery-2": require("../../assets/library/gallery-2-sm.webp"),
   "gaming-1": require("../../assets/library/gaming-1-sm.webp"),
   "gaming-2": require("../../assets/library/gaming-2-sm.webp"),
@@ -332,11 +391,14 @@ export const LIBRARY_SMALL: Record<
   "ol-6": require("../../assets/library/ol-6-sm.webp"),
   "ol-7": require("../../assets/library/ol-7-sm.webp"),
   "person-ase": require("../../assets/library/person-ase-sm.webp"),
+  "person-elif": require("../../assets/library/person-elif-sm.webp"),
   "person-erik": require("../../assets/library/person-erik-sm.webp"),
   "person-henrik": require("../../assets/library/person-henrik-sm.webp"),
+  "person-hilde": require("../../assets/library/person-hilde-sm.webp"),
   "person-jakob": require("../../assets/library/person-jakob-sm.webp"),
   "person-jonas": require("../../assets/library/person-jonas-sm.webp"),
   "person-kari": require("../../assets/library/person-kari-sm.webp"),
+  "person-kenneth": require("../../assets/library/person-kenneth-sm.webp"),
   "person-kristine": require("../../assets/library/person-kristine-sm.webp"),
   "person-leila": require("../../assets/library/person-leila-sm.webp"),
   "person-linh": require("../../assets/library/person-linh-sm.webp"),
@@ -348,6 +410,7 @@ export const LIBRARY_SMALL: Record<
   "person-ola": require("../../assets/library/person-ola-sm.webp"),
   "person-per": require("../../assets/library/person-per-sm.webp"),
   "person-samuel": require("../../assets/library/person-samuel-sm.webp"),
+  "person-sindre": require("../../assets/library/person-sindre-sm.webp"),
   "person-sofie": require("../../assets/library/person-sofie-sm.webp"),
   "person-tobias": require("../../assets/library/person-tobias-sm.webp"),
   "person-tom": require("../../assets/library/person-tom-sm.webp"),
@@ -371,6 +434,13 @@ export const LIBRARY_SMALL: Record<
   "quiz-7": require("../../assets/library/quiz-7-sm.webp"),
   "river-1": require("../../assets/library/river-1-sm.webp"),
   "river-2": require("../../assets/library/river-2-sm.webp"),
+  "rollespill-1": require("../../assets/library/rollespill-1-sm.webp"),
+  "rollespill-2": require("../../assets/library/rollespill-2-sm.webp"),
+  "rollespill-3": require("../../assets/library/rollespill-3-sm.webp"),
+  "rollespill-4": require("../../assets/library/rollespill-4-sm.webp"),
+  "rollespill-5": require("../../assets/library/rollespill-5-sm.webp"),
+  "rollespill-6": require("../../assets/library/rollespill-6-sm.webp"),
+  "rollespill-7": require("../../assets/library/rollespill-7-sm.webp"),
   "sail-1": require("../../assets/library/sail-1-sm.webp"),
   "sail-2": require("../../assets/library/sail-2-sm.webp"),
   "salon-1": require("../../assets/library/salon-1-sm.webp"),
@@ -391,6 +461,12 @@ export const LIBRARY_SMALL: Record<
   "sjakk-7": require("../../assets/library/sjakk-7-sm.webp"),
   "spice-1": require("../../assets/library/spice-1-sm.webp"),
   "spice-2": require("../../assets/library/spice-2-sm.webp"),
+  "sprakkafe-1": require("../../assets/library/sprakkafe-1-sm.webp"),
+  "sprakkafe-2": require("../../assets/library/sprakkafe-2-sm.webp"),
+  "sprakkafe-3": require("../../assets/library/sprakkafe-3-sm.webp"),
+  "sprakkafe-4": require("../../assets/library/sprakkafe-4-sm.webp"),
+  "sprakkafe-5": require("../../assets/library/sprakkafe-5-sm.webp"),
+  "sprakkafe-7": require("../../assets/library/sprakkafe-7-sm.webp"),
   "te-1": require("../../assets/library/te-1-sm.webp"),
   "te-2": require("../../assets/library/te-2-sm.webp"),
   "te-3": require("../../assets/library/te-3-sm.webp"),
@@ -523,6 +599,34 @@ export const PLACEHOLDER: Record<string, string> = {
     "data:image/webp;base64,UklGRmoAAABXRUJQVlA4IF4AAADQAQCdASoQAAoAA4BaJZgCdAC2Di3CaAD+7SBB9yVFl5/6jlkRc7gzCLi9Hr8Fkr/3XyB483DpHnQKW5zbJD1FoeEh3CYyAJpYV0XxVlhXaQ7myMnwYK6DPN8Y8AAA",
   "library/bike-repair-2":
     "data:image/webp;base64,UklGRnwAAABXRUJQVlA4IHAAAAAwAgCdASoQAAoAA4BaJQBWAMXwxb51/ln5gAD+7Fr8WxHW4z141Rmot2Jpv3Pc4JdRDZAf+/jdjM9TpzEk43xV+96wnzMpSZez8V+vO3u3qLeo53PrwmGnDVOqDpuXQEpOlfyvG3s4J/leCJJTgAAA",
+  "library/biljard-1":
+    "data:image/webp;base64,UklGRkgAAABXRUJQVlA4IDwAAADQAQCdASoQAAoAA4BaJaAAAudmzBoXAAD++ItpOcJ0BPnb0AZdH2ODWOM6Sf5m/6mEBFRc4lzFm2THWAA=",
+  "library/biljard-2":
+    "data:image/webp;base64,UklGRlAAAABXRUJQVlA4IEQAAADQAQCdASoQAAoAA4BaJbACdADBakZ2QAD+2avcGZweEKJkvJJHVLd6lwQxejIfFjGSqA6dp8o7lWcv83NannaHUAAAAA==",
+  "library/biljard-3":
+    "data:image/webp;base64,UklGRogAAABXRUJQVlA4IHwAAAAwBACdASoQABgAPu1iqk4ppaQiMAgBMB2JQBOg7QAHu+usmrwDiebBLRgA/puej3xI25qYe0Qtf6H8ccu5N241Hv8qIkhBSj1ioqkEDEiIQWWgIke6RPze0BDM8fGcyr2Yov8ACbdfzVP84yvkvE1yq5HJaaCRye2LWgAA",
+  "library/biljard-4":
+    "data:image/webp;base64,UklGRqwAAABXRUJQVlA4IKAAAABwBACdASoQABgAPu1iqU2ppaOiMAgBMB2JQBOgMYYb6wCPW9pTS+XJzM4bQAD+uWWYzfLu1pIas3aUihE7yWJOLwICzhE2jhJYclAziKGsTXtipuvmAIabhrxZpRhM4/cilTQcw7PDR5T9BaDe1m8/2IXB15GHcUnp/4cP8tE//tI6ukbF4CZfeC79MxUYin/PPkeuQIItgXTEsvwVAAAA",
+  "library/biljard-5":
+    "data:image/webp;base64,UklGRmAAAABXRUJQVlA4IFQAAAAQAgCdASoQAAoAA4BaJZgCdADdLMhi1orAAP70lLH+vYkfsFK7AyO6OvvUpcxiB9E05BYB/3hQf2qb8oanAOUDzdzCocOgM5JYZhFu5vRIKYKAAAA=",
+  "library/biljard-6":
+    "data:image/webp;base64,UklGRnQAAABXRUJQVlA4IGgAAAAQBACdASoQABgAPu1iqk2ppaQiMAgBMB2JZQAASnkFGWFqNHkjG8a8UAD+8N6qswiazAHJ4Bqsa9knD71Q+yPUceBY6eugQvS74l5/ijlB2iZV1Oo9gCVk+jVYwBYwXNj8no2/BEvAAA==",
+  "library/biljard-7":
+    "data:image/webp;base64,UklGRlAAAABXRUJQVlA4IEQAAABwAQCdASoQAAoAA4BaJZQAAuABQAD+8SGFj9MXQod5Bnb6TNkaJuU1WBroF9ausu2IUZx7M31UOI0dET3hyAXwWhgUAA==",
+  "library/bowling-1":
+    "data:image/webp;base64,UklGRqYAAABXRUJQVlA4IJoAAAAwBACdASoQABgAPu1iqU2ppaOiMAgBMB2JQBZwMX/bzz2VjqdTC4IZz+AA/vQwgagOv13u6WMl20CJ2ZLgYR0PNQVDyvn1NC2bUddRD10TTuP0kromet3zNtKx6QQ/qncvHZWwx9l8FsOfczlvtkcn96wGYeN7Gsu/0fW85IDnZY9fB7/sss4wBsNPusTol4SKYdMMtXb5HgAA",
+  "library/bowling-2":
+    "data:image/webp;base64,UklGRqwAAABXRUJQVlA4IKAAAAAwBACdASoQABgAPu1iqU2ppaOiMAgBMB2JYgCdAdwLgsb1vHxvdEHX7gAAzjxXFZ0rO3MWt1fIwkKytwZfuzdihChfMLcuvduMcTZ9GGXSS8WsW/bLujRucvjYIhkheROfqzjwfwZynCD9WQdkBsK+J/BZZTg4et98+lVSOdrNUTxPBdj2A4LDNM6iHZ3HFvlyE6RRqdy4zIFUUTPbbYAA",
+  "library/bowling-3":
+    "data:image/webp;base64,UklGRmgAAABXRUJQVlA4IFwAAADwAQCdASoQAAoAA4BaJbACdADp0/DbXQAA/tHNeF9GCtg0c7YssUq74Nz+QjrcLg3lweLR3I8n+9oF+9iG3poa4uXkyxmhMI7eECgVoaDbA28MAm/ql4yi6AAAAA==",
+  "library/bowling-4":
+    "data:image/webp;base64,UklGRlwAAABXRUJQVlA4IFAAAADQAQCdASoQAAoAA4BaJZACdAC6s3t9gAD+8rgFsylKyG+etV4NatfCu34A7mgcRoCpmPPPQgJIOzBDszAZjcExfFSWTM+AWc3a7Am0jsAAAA==",
+  "library/bowling-5":
+    "data:image/webp;base64,UklGRmAAAABXRUJQVlA4IFQAAAAQAgCdASoQAAoAA4BaJagCdH8AGA3qe7rgAP723imnnZsNF+zO70HE/xTWpyy3iY7A5ZsURM4ysupdY5KbC+js5ifWY5k4q3ZSlHPLGicO10kgAAA=",
+  "library/bowling-6":
+    "data:image/webp;base64,UklGRmQAAABXRUJQVlA4IFgAAAAQAgCdASoQAAoAA4BaJYgCdADhQ+Prj9IAAP7l7mfLO8wrdSryc3asZhkJplR8UrySeKpsPT3/iSkRm5JNueemgWY86hI3IN+Q9Xm6T4Yls1RtRKqQAAAA",
+  "library/bowling-7":
+    "data:image/webp;base64,UklGRkoAAABXRUJQVlA4ID4AAADQAQCdASoQAAoAA4BaJZwAAp1MhnuWgAD+8zYc+MbR0U2zfCQrNexZas2G++qnNE0tjhnFWIW5yPLnkKAAAA==",
   "library/brettspill-1":
     "data:image/webp;base64,UklGRm4AAABXRUJQVlA4IGIAAADQAQCdASoQAAwAA4BaJYwCdADiouW+AAD8MAl3u4p2s7UioYYD0Jx7hWRf+IxD716j+SxGg8Od/GJmdIx2xYStRyGn4GYhxj8aYPSfjMXluQqy8eLhQR2ww/STsVxzIwAAAA==",
   "library/brettspill-2":
@@ -553,6 +657,20 @@ export const PLACEHOLDER: Record<string, string> = {
     "data:image/webp;base64,UklGRmQAAABXRUJQVlA4IFgAAADwAQCdASoQAAoAA4BaJQBOgCHc7Jf2zIAA/Z0zTdMkZt4Nx75h8Yx8/F2GWO75O767Tfq5yfQFTyIoEHNKmYBqLl29P+DmUxJjh34mgpJ2PdQZ769RAAAA",
   "library/food-1":
     "data:image/webp;base64,UklGRsQAAABXRUJQVlA4ILgAAABQBACdASoQABgAPu1iqU2ppaOiMAgBMB2JYwC7IIjgyhczQR56F1odFDwAAP7kXkStfTg1SBibPN9v3mNXhOV6D6MfVK2YMv6BlqgGeT1t/VZokvRKrdjJgVNqZInnNSsOeaEXUuA9KWpsvZQB0jV+kvpD+uD7wHa1sgubHK0EJqR9CrQruLgkaiO/YK8q+aOYynlc/iCyP//76KQAzvRfX0NmMQTgmirpmI+8SxnxbVTj+vLx/HAA",
+  "library/frivillighet-1":
+    "data:image/webp;base64,UklGRl4AAABXRUJQVlA4IFIAAAAQAgCdASoQAAoAA4BaJYwCdAEfj/ReuLAAAP72S7Ng/Pjw5Jr8YoNqBxqJcGD4VI6dhP2eN5Z+rWcyH74KPnb/pR+FLdHcApJvVMB28AgADnAA",
+  "library/frivillighet-2":
+    "data:image/webp;base64,UklGRm4AAABXRUJQVlA4IGIAAAAQAgCdASoQAAoAA4BaJZACdH8AERMT6CvgAP4LT1Z3HbOqML5/yJCBQejJT9wI4ozGZ6HEcS0dGRlRSU9xpp51oYELRWPNsK+ask8t6PhcDoBAUSHjTRinEBVsKctaDjwAAA==",
+  "library/frivillighet-3":
+    "data:image/webp;base64,UklGRlIAAABXRUJQVlA4IEYAAACwAQCdASoQAAwAA4BaJQBdgBelrb2AAP7veebDZr1HRSIfXBFXkPMIKG5Okupk9qvSm6c0deruNuyHs237huKoLxAigAAA",
+  "library/frivillighet-4":
+    "data:image/webp;base64,UklGRlAAAABXRUJQVlA4IEQAAADQAQCdASoQAAoAA4BaJZACdAENoFKFYAD+7er2YG2OI5ka+r+31VWNigUQY+W+cURf3Y5UCcNObOTQQ+U/5iFrcmvoAA==",
+  "library/frivillighet-5":
+    "data:image/webp;base64,UklGRmgAAABXRUJQVlA4IFwAAAAQAgCdASoQAAwAA4BaJYgCw7YuvL1QyHIIAP2a7/bjDgraVHgCo8VqfBwqO/XBnmUa2Z0i8/y9V1JSofvbFyGMb+v77jdxpAU0V/cK2FA09ATlZalwwbyz+LhgAA==",
+  "library/frivillighet-6":
+    "data:image/webp;base64,UklGRlIAAABXRUJQVlA4IEYAAADwAQCdASoQAAwAA4BaJbACdAEO8JRKHPgA/j4yfdou569iNwqG61SIOk8QvvdN6djEhCLmJIVN9glabxaYeVLjA2vBW6AA",
+  "library/frivillighet-7":
+    "data:image/webp;base64,UklGRnIAAABXRUJQVlA4IGYAAAAwAgCdASoQAAoAA4BaJbACdAEXu37/OxM+gAD+CtcR/bSMULNVI/TueJ7rni62her3wnPld/psB1qqAGDZd0a8Ntv02DsD1IyiUg0xZUDxGWua8+Hu4aesjy6RnuQ9WTvvi/5ZAAA=",
   "library/gallery-2":
     "data:image/webp;base64,UklGRkwAAABXRUJQVlA4IEAAAAAQAgCdASoQAAoAA4BaJZQC7AERGFtJn0IAAP7W/l2iMbwsDQuAHiPz2sVvoURWcGp+HUjE+g7Zse3kDsQ3YTAA",
   "library/gaming-1":
@@ -689,16 +807,22 @@ export const PLACEHOLDER: Record<string, string> = {
     "data:image/webp;base64,UklGRrIAAABXRUJQVlA4IKYAAAAQBACdASoQABgAPu1iqU2ppaOiMAgBMB2JYgAATvC2v5a1E+2888angAD94g1395qT5+FfET/2lAJAKz72+FtqFoRt11sgcg2i0RwknPFmGlWKlFrJmZdUp/hJ4o9c7hlm5Hw96kAqtrP0TYMkJ0+dfeth9HpqxoIY+Vp6aJktPffWGuYetyaTuPx39i+c57HcU1MxFdkFUYHepcs+MSYlpoh5tAAA",
   "library/person-ase":
     "data:image/webp;base64,UklGRooAAABXRUJQVlA4IH4AAACwAgCdASoQABAAA4BaJYgCdH8AguSc9fEFKbTvGwAA/vJ+X9aCnTExZOwVfXx4GwNy3hyZATyvf3lJVK+/x6TekuzkRuxhd8bl50buNqO8Kwo+HsRo4LD3adIEuYt5DUoeZqv1FB/tWOgvrBDtnGVvChkhKp+aHmymh2UAAAA=",
+  "library/person-elif":
+    "data:image/webp;base64,UklGRoIAAABXRUJQVlA4IHYAAAAQAgCdASoQABAAA4BaJZACdAYt81yT5SzQAP7t0oY+fvwJhUwYv50ljRDP76sWDy6FcDLLf3IpsuT3MOsuWPmdwAGP99yGhFYe7nI6u80o8hZR1czVEpGLWtSRvtiAstB1L3xFpnXGB1wUjU3BXLlYJvZzQYAA",
   "library/person-erik":
     "data:image/webp;base64,UklGRlYAAABXRUJQVlA4IEoAAAAQAgCdASoQABAAA4BaJZQC7AEUkTcJWd5AAPy/8IK+J/qDIh/UFOczxItpvlTyKsmgCYMzkmp+J2DtCIETrzWvft93IEWCQAAAAA==",
   "library/person-henrik":
     "data:image/webp;base64,UklGRoYAAABXRUJQVlA4IHoAAABwAgCdASoQABAAA4BaJbACdAYv/la7msZ1D6rgAPjZhD+0wWcNbnsY1EVqfUwiJ4/rZDaBizxrnrwpPRp/eYzBJxRRl9k+k56LeUlvjOOeN1gZCxz00UtX5U3LlgdyMAOhwmb6a+A7zxZK4s1aY4+ijQEH1MEO0ENgAA==",
+  "library/person-hilde":
+    "data:image/webp;base64,UklGRnwAAABXRUJQVlA4IHAAAAAQAgCdASoQABAAA4BaJZQC7AD8Jv9mI7sAAP5PACYZOYssZsREV8T2Danb8WnJ9Xj/+nt62BhCYwtvCKOfRUwIfQd0qRZyTv14X3+Uf8lrDq0HpTvD7FuJr/e8PY55FafSlDbUVyR8fjiLUL19ggAA",
   "library/person-jakob":
     "data:image/webp;base64,UklGRmwAAABXRUJQVlA4IGAAAAAwAgCdASoQABAAA4BaJZQCdAEWtANj6y4YtAD+9g4X/bgEQcdv3Yt0d/mcp4+0rc2smXxvpYXVLxDYAjlagPZw+EsTlKsY7DygAVjw+WXKzcCzPpfeiOG8mAIIpqAQAAA=",
   "library/person-jonas":
     "data:image/webp;base64,UklGRngAAABXRUJQVlA4IGwAAABwAgCdASoQABAAA4BaJYgCdH8AgmSMs64e06OAANzWb3i4PfxEwCznU7I+/+jnq+CNvo1LjSCr4KPwxPYCakwk2m05VChCZ1xbNfnWWyltrJYyLgnXYQgdbPCA8d0wg+XoiqUf80gvjTqYAAA=",
   "library/person-kari":
     "data:image/webp;base64,UklGRmYAAABXRUJQVlA4IFoAAAAwAgCdASoQABAAA4BaJQBOgB9gGAD8dGCJZAD+rbdIJOetHMSjfvsTHEPYxpiDTiQIJpR5W17hNrmGP2BwBFaEbGMECiGSeTKBi9IfLCBwbCjFfkPbuqgAAAA=",
+  "library/person-kenneth":
+    "data:image/webp;base64,UklGRkIAAABXRUJQVlA4IDYAAADQAQCdASoQABAAA4BaJZQAAudcY3uAAAD+83Pldh1CAaKv0f4rshXdlzjpVbgduOgOH7o0wAA=",
   "library/person-kristine":
     "data:image/webp;base64,UklGRnoAAABXRUJQVlA4IG4AAACQAgCdASoQABAAA4BaJYwCsH8Agry3Y+vHeTa2AAD+9hI6JecY+WHrFiUpUbYSo9xch7JTD//PIO0epgxq11cJ9yB9W56kxUit3O+xrvcnfQ2eOmEJHmqXhZ/3HhlOCEQYjwRH/bqU8xUef9AAAA==",
   "library/person-leila":
@@ -721,6 +845,8 @@ export const PLACEHOLDER: Record<string, string> = {
     "data:image/webp;base64,UklGRm4AAABXRUJQVlA4IGIAAAAwAgCdASoQABAAA4BaJYgCdAEVYjvq//cQvAD+7Jj+g75AywwroNtTsjQRKqbE+ZUK4Mx50Mm0niEgS6YKJJr5uv2Ft9hu5ixkps3GdpnntrA9bF7tHNRJDYza7IrCWebAAA==",
   "library/person-samuel":
     "data:image/webp;base64,UklGRnQAAABXRUJQVlA4IGgAAAAwAgCdASoQABAAA4BaJYwCdAEWszZfIGS2oAD+wSJRsNqF50rGNKu8q67qXq9cn1S6wcD0hRG8jryItrkX8eZ6hXpHfRppK1MGsTito18GCcSH+ITLWEj3Jj0VZn1fFyGvBFihcgAAAA==",
+  "library/person-sindre":
+    "data:image/webp;base64,UklGRmIAAABXRUJQVlA4IFYAAAAQAgCdASoQABAAA4BaJQBWACFU60kPd20AAP72EuGSqKEpmQDzJ5o/qOI/KGv4fHa8fkhF9hdp+J+JcBiB8wUTSe426kdRniSF8+q1HoGSAgkNfpAAAA==",
   "library/person-sofie":
     "data:image/webp;base64,UklGRmoAAABXRUJQVlA4IF4AAADQAQCdASoQABAAA4BaJbACdACDN09zmAD8WjyotOFPmmtuSWQRM8zMO1agDxvG5a9XWxhZNjrF+3AJ/rM+wixZmojGwCMEiwsqOpxZ8joXpSrG/EGiGE4uGFyApYAA",
   "library/person-tobias":
@@ -767,6 +893,20 @@ export const PLACEHOLDER: Record<string, string> = {
     "data:image/webp;base64,UklGRmAAAABXRUJQVlA4IFQAAADwAQCdASoQAAoAA4BaJQBOgBmSSIbVAwAA/NamkJNmzEy0CMFsOt4l/O8PnF1b634Wfu8cm0uB0Hc4RAVqhPKoooOLitaVnCxlGUi5hFq6wbIQAAA=",
   "library/river-2":
     "data:image/webp;base64,UklGRl4AAABXRUJQVlA4IFIAAAAQAgCdASoQAAoAA4BaJQBWACPwzerCZ6gAAP299rKCP5lQXR7nXeP/Qcp0icahlwDIL6dtbD9p5S/ONHfhH5Hp9JR+c/j662V2Eip0e+sjnAAA",
+  "library/rollespill-1":
+    "data:image/webp;base64,UklGRkQAAABXRUJQVlA4IDgAAAAQAgCdASoQAAgAA4BaJQBOgBu03NzA7RgAAP67QKhx+6hb6xZIalZauiHSIdmNWGNVqvWVZDiAAA==",
+  "library/rollespill-2":
+    "data:image/webp;base64,UklGRrQAAABXRUJQVlA4IKgAAABwBACdASoQABQAPu1iqU2ppaOiMAgBMB2JZgCdMoADQTXU6enAgUJMPX6FAAD+1zgjUUOhfEw600Qf2VOpDGKP0EluTkwTGLCBONwTI6v34Y+t+hHyA6Y9MBhkINev/A7qDC/KjkVV4KorEyhSYVh7SVRpGJFv/h7rrKLkd98bH0W+S11zw8W8r3XNgthAAHsHuv3e6y8UbVouOtHDo1Y2nhbQswmwAAA=",
+  "library/rollespill-3":
+    "data:image/webp;base64,UklGRm4AAABXRUJQVlA4IGIAAADwAQCdASoQAAoAA4BaJZACsAEJUPhzUoAA/vMw/PPi2Pn/OisjHpIH9ZLm2nZrgThvO6IG0nXnYjuc3ezQhdQozboqMONJHTqKl1qAYlYSbR3qUikI5O6D3WmztHg6ngAAAA==",
+  "library/rollespill-4":
+    "data:image/webp;base64,UklGRlQAAABXRUJQVlA4IEgAAADQAwCdASoQABIAPu1iqU2ppaOiMAgBMB2JZwDCgCHPYioMOnqWgoAA/oJkWN312aZr6i8X1ltLn5fyJcd3pvfwQ3886Bw/+AA=",
+  "library/rollespill-5":
+    "data:image/webp;base64,UklGRmYAAABXRUJQVlA4IFoAAAAQAgCdASoQAAoAA4BaJQBOgMXSoX3JvGQAAM4NJ8z4n1g3MZ+jl48n5srDX2+TXpRH2lNtDNfB2IPKReyOBV3fuLoizdfWwbt4Z8ylk6lgWZRI/bSRJ2ZzFgA=",
+  "library/rollespill-6":
+    "data:image/webp;base64,UklGRn4AAABXRUJQVlA4IHIAAADwAwCdASoQABgAPu1kqk4ppaQiMAgBMB2JQBOgBDvpLA30pkDQQtkgAP7sHFA2WLj38OoYE113SedT0QaxnlL67YT9C+zYGRKf+j4n7dUfdHDbz06UaAOu4T8lwUtlE2ZjkkWZE8ZPzhIMuddmdZngAAA=",
+  "library/rollespill-7":
+    "data:image/webp;base64,UklGRnoAAABXRUJQVlA4IG4AAACQAwCdASoQABgAPu1iqU2ppaOiMAgBMB2JQAAIVFaBGdoa8DvgAP7kNF1fanmjOqp1O3dw6rrked8g2Td7edpGHRTsQt8DNC/F979nyhHO/jZliv1vdqFM4B5fou7IDOkHTr70pF5lD9v0WM7AAA==",
   "library/sail-1":
     "data:image/webp;base64,UklGRl4AAABXRUJQVlA4IFIAAABQAgCdASoQAAwAA4BaJYwCdIIjGBaGYV7tMAAA/qxs7Ya+7ovUNfuzUrYz9ndFmvvljMbCKH/05pVwdFgflIBW4TfvC6OwI/hvebF2gJ/DgAAA",
   "library/sail-2":
@@ -807,6 +947,18 @@ export const PLACEHOLDER: Record<string, string> = {
     "data:image/webp;base64,UklGRlgAAABXRUJQVlA4IEwAAACwAQCdASoQAAwAA4BaJYgCdAEGiSc8AP7p4Z0wsR43Yqb+gkkX8w5AY5oMbl1nHT72OCC2kRqrCpJ4hxRRR+KL2c1upkClyI3fFNAA",
   "library/spice-2":
     "data:image/webp;base64,UklGRnYAAABXRUJQVlA4IGoAAADQAQCdASoQAAoAA4BaJbACdACTfghCAAD+azivZ+ZjkozbQqa6duw58XsNhbHpMFrNkFjK+LYsFnOYlxiXQ5RAMBq/4tcClx/tHuNreBBEoeLfL9rRjHDKtzoPbzO1g+cMhMoluRznicAA",
+  "library/sprakkafe-1":
+    "data:image/webp;base64,UklGRngAAABXRUJQVlA4IGwAAAAwAgCdASoQABAAA4BaJYgC7AYwTSYU7Q9IGgD+6QVwMLaX1HMOKdRtXHqhzcpvzOPw5F3VSH+V+s5+iUwX0OgSacazMyAT5ZlGAucCw2Tw5YW9g5mM9zkUfFvqaJMz1WbtDRA/qUYaldBJAAA=",
+  "library/sprakkafe-2":
+    "data:image/webp;base64,UklGRnYAAABXRUJQVlA4IGoAAABQAgCdASoQAAoAA4BaJZACdAYwxEg/a633D4AA/uJSYFC/aLeyu/9LJhUxoGFW1ItTKITm7HcBY4qk/F2x0PENoX5NkQ8QD8iFNRNoGyL829iPH+bjr3iZXyxWvm5c8tqrccvYlxu0gAAA",
+  "library/sprakkafe-3":
+    "data:image/webp;base64,UklGRnAAAABXRUJQVlA4IGQAAAAwAgCdASoQAAoAA4BaJagCdAEN8Ne+P5sxAAD+75MgqR1Y5Yq31a5n8pSRkD298BJEh1FvC9uAVxExOLEKkk9xK6m2mqH9hpdFWKz0bcVCRd3cB+WyJKjEYsMTWfofyHPvAAAA",
+  "library/sprakkafe-4":
+    "data:image/webp;base64,UklGRm4AAABXRUJQVlA4IGIAAADwAQCdASoQAAwAA4BaJbACdADRJCaglAAA/vRG4E4fDnIO3YQXzs+6T62CtBWThV+GshyQIcVU5iboJ/RbRqnktBF2GjnyG17ysu8Sl93QL9ah4mqeDuzdwCau4FZgXQAAAA==",
+  "library/sprakkafe-5":
+    "data:image/webp;base64,UklGRmQAAABXRUJQVlA4IFgAAADwAQCdASoQAAoAA4BaJQBOgCKZ6ls8wYgA/vYiXJDxskdnoqjPcuv9RTSTPhQ4PE9AJl94/sNJ4sL6/eaoa5iZoe3tV980zl8+ggyLI4ltxdIQ2SHtnWAA",
+  "library/sprakkafe-7":
+    "data:image/webp;base64,UklGRmAAAABXRUJQVlA4IFQAAADwAQCdASoQAAoAA4BaJbACdAEVwWBqjxAA/e8jwCVOCiKSerkreM8K5CmPdXyOCjp8R/H6idfdlwwnaqlTBY/7iKaZ+RWDb0OyIO4we04z03JCwAA=",
   "library/te-1":
     "data:image/webp;base64,UklGRsgAAABXRUJQVlA4ILwAAACQBACdASoQABgAPu1iqU2ppaOiMAgBMB2JQBdl4AKv1Uk0TsLzd8IcGE//TEAA9ryFdlJ+IEqccep3Utefw6jRfRsXVoGPDYFDGqXliGSUzAWJbmTtfK3OVAwauo3oIeT2YftJYliniWcTKs3Bwjayg9BR8hG+vReost/vHlsb5qjzAuZOUpPR9Szf90TpxC48IjI2s1oeOh5LjoCYQqHjpiubgXDXPmCT+iwOogWX04p8cY40f56uxgAAAA==",
   "library/te-2":

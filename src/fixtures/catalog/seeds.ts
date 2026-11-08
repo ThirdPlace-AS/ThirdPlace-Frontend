@@ -5,6 +5,7 @@ import { MAT_A } from "./mat-a";
 import { MAT_B } from "./mat-b";
 import { SOSIALT_A } from "./sosialt-a";
 import { SOSIALT_B } from "./sosialt-b";
+import { SOSIALT_C } from "./sosialt-c";
 import { TRENING } from "./trening";
 import type { InterestSeed } from "./types";
 import { VELVAERE_A } from "./velvaere-a";
@@ -16,6 +17,7 @@ export const SEEDS: readonly InterestSeed[] = [
   ...MAT_B,
   ...SOSIALT_A,
   ...SOSIALT_B,
+  ...SOSIALT_C,
   ...TRENING,
   ...VELVAERE_A,
   ...VELVAERE_B,
