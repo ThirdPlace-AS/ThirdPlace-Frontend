@@ -23,6 +23,8 @@ import { formatRating } from "@/lib/format";
 import { shortDayMonth } from "@/lib/dates";
 import { getOrigin, type Origin } from "@/lib/origin";
 
+import { interestById } from "@/fixtures/catalog/interests";
+
 import { ITEM_TYPE_LABEL, experienceType, type ItemType } from "./itemType";
 import { experienceMatchesQuery, placeMatchesQuery } from "./mapSearch";
 import {
@@ -73,6 +75,10 @@ export type MapFilters = {
   // "Kategori": the map pins' eight categories (OR match). Phase 18, from
   // the screen benchmark: quick chips on the map, the same colours as the pins.
   categories: MarkerCategory[];
+  // Activities inside the chosen categories (Phase 19, founder 2026-11-08:
+  // nested so people can filter to one activity): interest ids. A category
+  // with picks keeps only those; one without keeps everything in it.
+  interests: string[];
   // "Type" (Phase 19, founder 2026-11-08): Bedrift, Organisasjon, Byrom,
   // Opplevelse, Arrangement (OR). Applies to places and experiences alike, so
   // choosing only Byrom also empties the experience list.
@@ -105,6 +111,7 @@ export type MapFilters = {
 
 export const DEFAULT_FILTERS: MapFilters = {
   categories: [],
+  interests: [],
   kinds: [],
   types: [],
   whereArea: null,
@@ -132,6 +139,22 @@ export const DEFAULT_FILTERS: MapFilters = {
 // The list's order (Sorter, nearest first, Trending) is set once, after places
 // and experiences are mixed: orderItems() in mapFixtureAdapter.ts (Phase 19).
 
+/** Kategori with its activities (Phase 19, founder 2026-11-08). Nothing
+ *  chosen keeps everything; a picked activity always matches; a chosen
+ *  category keeps all of itself until one of its activities is picked, then
+ *  only the picked ones. Items without an interest (made in Legg til) match
+ *  by category alone. */
+export function categoryMatch(
+  f: Pick<MapFilters, "categories" | "interests">,
+  category: MarkerCategory,
+  interestId?: string,
+): boolean {
+  if (f.categories.length === 0 && f.interests.length === 0) return true;
+  if (interestId !== undefined && f.interests.includes(interestId)) return true;
+  if (!f.categories.includes(category)) return false;
+  return !f.interests.some((i) => interestById(i)?.category === category);
+}
+
 // Applies search text + place-level filters to the place list. Time and
 // hasSpots are experience concepts and are applied by the discovery adapter.
 export function applyFilters(
@@ -145,8 +168,11 @@ export function applyFilters(
   const q = query.trim().toLowerCase();
   return all.filter((p) => {
     if (
-      f.categories.length > 0 &&
-      !f.categories.includes(markerCategoryFor({ kind: "place", id: p.id }))
+      !categoryMatch(
+        f,
+        markerCategoryFor({ kind: "place", id: p.id }),
+        p.interestId,
+      )
     )
       return false;
     if (f.kinds.length > 0 && !f.kinds.includes(p.kind)) return false;
@@ -200,7 +226,7 @@ export function applyFilters(
 // narrow results, so they must not inflate the badge.
 export function activeExtraFilterCount(f: MapFilters): number {
   return (
-    (f.categories.length > 0 ? 1 : 0) +
+    (f.categories.length > 0 || f.interests.length > 0 ? 1 : 0) +
     (f.kinds.length > 0 ? 1 : 0) +
     (f.types.length > 0 ? 1 : 0) +
     (f.maxDistanceM !== null ? 1 : 0) +
@@ -276,9 +302,10 @@ export function applyExperienceFilters(
   const out = all.filter((e) => {
     if (e.status === "cancelled") return false;
     if (
-      f.categories.length > 0 &&
-      !f.categories.includes(
+      !categoryMatch(
+        f,
         markerCategoryFor({ kind: "experience", id: e.id }),
+        e.interestId,
       )
     )
       return false;
@@ -383,7 +410,48 @@ export function appliedFilterChips(f: MapFilters): AppliedFilterChip[] {
         }),
       });
   };
-  each("categories", f.categories, (c) => MARKER_LABEL[c as MarkerCategory]);
+  // Kategori (Phase 19 nested): a category with picked activities shows one
+  // chip per activity; removing the last one drops the category too, so the
+  // filter goes away instead of widening to the whole category.
+  for (const c of f.categories) {
+    const picks = f.interests.filter((i) => interestById(i)?.category === c);
+    if (picks.length === 0)
+      out.push({
+        key: `categories:${c}`,
+        label: MARKER_LABEL[c],
+        remove: (g) => ({
+          ...g,
+          categories: g.categories.filter((x) => x !== c),
+        }),
+      });
+    for (const i of picks)
+      out.push({
+        key: `interests:${i}`,
+        label: interestById(i)?.label ?? i,
+        remove: (g) => {
+          const interests = g.interests.filter((x) => x !== i);
+          const left = interests.some((x) => interestById(x)?.category === c);
+          return {
+            ...g,
+            interests,
+            categories: left
+              ? g.categories
+              : g.categories.filter((x) => x !== c),
+          };
+        },
+      });
+  }
+  // An activity picked without its category (not made by Filtre, but kept
+  // consistent).
+  for (const i of f.interests) {
+    const cat = interestById(i)?.category;
+    if (cat && f.categories.includes(cat)) continue;
+    out.push({
+      key: `interests:${i}`,
+      label: interestById(i)?.label ?? i,
+      remove: (g) => ({ ...g, interests: g.interests.filter((x) => x !== i) }),
+    });
+  }
   each("kinds", f.kinds, (k) => ITEM_TYPE_LABEL[k as ItemType]);
   if (f.time !== null)
     out.push({

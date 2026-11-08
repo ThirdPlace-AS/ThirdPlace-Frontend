@@ -1,4 +1,4 @@
-import { useMemo, useRef, useState } from "react";
+import { memo, useMemo, useRef, useState } from "react";
 import { Pressable, ScrollView, View } from "react-native";
 
 import {
@@ -61,6 +61,10 @@ import {
   ITEM_TYPE_LABEL,
   type ItemType,
 } from "./services/itemType";
+import {
+  interestById,
+  interestsInCategory,
+} from "@/fixtures/catalog/interests";
 import { TypeChip } from "./TypeChip";
 import type { DiscoveryMode } from "./types/mapPresentation";
 
@@ -231,6 +235,56 @@ const TYPE_BY_LABEL: Record<string, ItemType> = Object.fromEntries(
 const CATEGORY_BY_LABEL: Record<string, MarkerCategory> = Object.fromEntries(
   MARKER_CATEGORIES.map((c) => [MARKER_LABEL[c], c]),
 );
+/** A chosen category's activities (Phase 19, founder 2026-11-08), nested
+ *  under Kategori so one can filter to a single activity: indented under the
+ *  category's name, "Alle" first (the whole category), then every interest
+ *  in it. Several picks combine (OR). */
+const ActivityGroup = memo(function ActivityGroup({
+  category,
+  picked,
+  onToggle,
+  onAll,
+}: {
+  category: MarkerCategory;
+  picked: readonly string[];
+  onToggle: (interestId: string) => void;
+  onAll: () => void;
+}) {
+  const items = interestsInCategory(category);
+  const none = !items.some((i) => picked.includes(i.id));
+  return (
+    <View className="ml-1 gap-2 border-l-2 border-line pl-3">
+      <Text variant="micro" weight="semibold" tone="muted">
+        {MARKER_LABEL[category]}
+      </Text>
+      <View
+        className="flex-row flex-wrap gap-2"
+        accessibilityLabel={`Aktiviteter i ${MARKER_LABEL[category]}`}
+      >
+        <Chip
+          variant="outline"
+          size="sm"
+          role="checkbox"
+          label="Alle"
+          selected={none}
+          onPress={onAll}
+        />
+        {items.map((i) => (
+          <Chip
+            key={i.id}
+            variant="outline"
+            size="sm"
+            role="checkbox"
+            label={i.label}
+            selected={picked.includes(i.id)}
+            onPress={() => onToggle(i.id)}
+          />
+        ))}
+      </View>
+    </View>
+  );
+});
+
 function ChipGroup({
   items,
   selected,
@@ -736,23 +790,58 @@ function FilterBody({
               only here (founder 2026-11-08) and drawn like the sheet's other
               groups: outline chips with an icon, an ink ring when chosen. */}
           <Section title="Kategori">
-            <ChipGroup
-              items={CATEGORY_ITEMS}
-              selected={(l) => {
-                const c = CATEGORY_BY_LABEL[l];
-                return c !== undefined && draft.categories.includes(c);
-              }}
-              onToggle={(l) => {
-                const c = CATEGORY_BY_LABEL[l];
-                if (!c) return;
-                setDraft((d) => ({
-                  ...d,
-                  categories: d.categories.includes(c)
-                    ? d.categories.filter((x) => x !== c)
-                    : [...d.categories, c],
-                }));
-              }}
-            />
+            <View className="gap-4">
+              <ChipGroup
+                items={CATEGORY_ITEMS}
+                selected={(l) => {
+                  const c = CATEGORY_BY_LABEL[l];
+                  return c !== undefined && draft.categories.includes(c);
+                }}
+                onToggle={(l) => {
+                  const c = CATEGORY_BY_LABEL[l];
+                  if (!c) return;
+                  // Leaving a category also drops its picked activities.
+                  setDraft((d) =>
+                    d.categories.includes(c)
+                      ? {
+                          ...d,
+                          categories: d.categories.filter((x) => x !== c),
+                          interests: d.interests.filter(
+                            (i) => interestById(i)?.category !== c,
+                          ),
+                        }
+                      : { ...d, categories: [...d.categories, c] },
+                  );
+                }}
+              />
+              {/* Nested (Phase 19, founder 2026-11-08): each chosen
+                  category opens its activities. */}
+              {MARKER_CATEGORIES.filter((c) =>
+                draft.categories.includes(c),
+              ).map((c) => (
+                <ActivityGroup
+                  key={c}
+                  category={c}
+                  picked={draft.interests}
+                  onToggle={(id) =>
+                    setDraft((d) => ({
+                      ...d,
+                      interests: d.interests.includes(id)
+                        ? d.interests.filter((x) => x !== id)
+                        : [...d.interests, id],
+                    }))
+                  }
+                  onAll={() =>
+                    setDraft((d) => ({
+                      ...d,
+                      interests: d.interests.filter(
+                        (i) => interestById(i)?.category !== c,
+                      ),
+                    }))
+                  }
+                />
+              ))}
+            </View>
           </Section>
           {/* Type (Phase 19, founder 2026-11-08): Bedrift, Organisasjon,
               Byrom, Opplevelse, Arrangement, for places and experiences. */}
