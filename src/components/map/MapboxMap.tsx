@@ -18,7 +18,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { Dimensions, View } from "react-native";
 
 import { MAP_CENTER } from "@/fixtures";
-import { Icon } from "@/components/ui";
+import { PinGlyph } from "@/components/ui";
 import { motion, palette } from "@/theme";
 
 import type { MapStylePeriod } from "./mapStyles";
@@ -31,7 +31,7 @@ import {
 } from "./terrainStyle";
 import { boundsOf } from "./services/bounds";
 import { USER_PUCK } from "./userPuck";
-import { markerIcon, type MarkerGlyph } from "./services/markerIcon";
+import { allPinGlyphs, markerIcon } from "./services/markerIcon";
 import type { DiscoveryItem } from "./types/mapPresentation";
 
 // Real Mapbox map. ONLY required from MapCanvas in a native dev/EAS build with a
@@ -53,6 +53,14 @@ const pin = palette.light as unknown as Record<
   "ink" | "surface" | "onInk" | "ember" | "success" | "warning",
   string
 >;
+
+// Every pin glyph image (Phase 19: one per interest, in its category's tone,
+// plus the fallbacks), registered once: filtering never re-copies them.
+const PIN_IMAGES = allPinGlyphs().map(({ glyph, tone }) => ({
+  key: `${glyph}:${tone}`,
+  glyph,
+  color: tone === "light" ? pin.surface : pin.ink,
+}));
 
 // The first map of a session fits every marker on screen (founder: "all
 // places and experiences need to be shown"); after that the camera stays
@@ -188,18 +196,16 @@ export function MapboxMap({
     });
   }, [focusKey, focusCoord]);
 
-  // Each pin: fill by marker category, ring by kind, and a glyph that
-  // matches it (markerIcon) in white or ink, whichever reads on the fill.
-  // Glyphs render as map images from RN views (one per glyph + tone on the map).
-  const { shape, glyphs } = useMemo(() => {
-    const keys = new Map<string, { glyph: MarkerGlyph; color: string }>();
+  // Each pin: fill by its interest's category, ring by kind, and the
+  // interest's glyph (markerIcon) in white or ink, whichever reads on the
+  // fill. `rank` (list order) decides which title wins a collision.
+  const shape = useMemo(() => {
     const fc: FeatureCollection<Point> = {
       type: "FeatureCollection",
-      features: markers.map((m) => {
+      features: markers.map((m, rank) => {
         const glyph = markerIcon(m);
         const look = markerPaint(m, pin);
         const icon = `${glyph}:${look.glyphTone}`;
-        keys.set(icon, { glyph, color: look.glyph });
         return {
           type: "Feature",
           id: m.markerId,
@@ -210,13 +216,24 @@ export function MapboxMap({
             icon,
             fill: look.fill,
             ring: look.ring,
+            rank,
           },
           geometry: { type: "Point", coordinates: m.coord },
         };
       }),
     };
-    return { shape: fc, glyphs: [...keys.entries()] };
+    return fc;
   }, [markers]);
+
+  // A pin image is a copy of a view; copy again once the glyphs have surely
+  // drawn (the yarn glyph is an SVG), so no pin keeps a blank glyph.
+  const imageRefs = useRef(new Map<string, { refresh: () => void } | null>());
+  useEffect(() => {
+    const t = setTimeout(() => {
+      imageRefs.current.forEach((r) => r?.refresh());
+    }, 400);
+    return () => clearTimeout(t);
+  }, []);
 
   return (
     <MapView
@@ -368,8 +385,14 @@ export function MapboxMap({
             />
           </View>
         </MapImage>
-        {glyphs.map(([key, g]) => (
-          <MapImage key={key} name={key}>
+        {PIN_IMAGES.map((g) => (
+          <MapImage
+            key={g.key}
+            name={g.key}
+            ref={(r) => {
+              imageRefs.current.set(g.key, r);
+            }}
+          >
             <View
               // As wide as the pin circle (r 14): the image is the pin's
               // collision box, which keeps titles off neighbouring pins.
@@ -380,7 +403,7 @@ export function MapboxMap({
                 justifyContent: "center",
               }}
             >
-              <Icon name={g.glyph} size="sm" color={g.color} />
+              <PinGlyph name={g.glyph} size={16} color={g.color} />
             </View>
           </MapImage>
         ))}
@@ -436,8 +459,18 @@ export function MapboxMap({
           filter={["!", ["has", "point_count"]]}
           style={{
             circleColor: paint.pointFill,
-            circleRadius: 14,
-            circleStrokeWidth: 2.5,
+            // Small dots when zoomed far out (Phase 19: pins across Akershus),
+            // full pins from zoom 11.
+            circleRadius: ["interpolate", ["linear"], ["zoom"], 8, 6, 11, 14],
+            circleStrokeWidth: [
+              "interpolate",
+              ["linear"],
+              ["zoom"],
+              8,
+              1.5,
+              11,
+              2.5,
+            ],
             circleStrokeColor: paint.pointStroke,
             circleEmissiveStrength: 1,
           }}
@@ -449,7 +482,11 @@ export function MapboxMap({
         <SymbolLayer
           id="point-title"
           filter={["!", ["has", "point_count"]]}
+          // Titles from street level only; earlier they only collide.
+          minZoomLevel={13}
           style={{
+            // The nearer item (list order) wins a title collision.
+            symbolSortKey: ["get", "rank"],
             textField: ["get", "title"],
             textSize: 13,
             textColor: paint.labelText,
@@ -471,7 +508,17 @@ export function MapboxMap({
           filter={["has", "point_count"]}
           style={{
             circleColor: paint.clusterFill,
-            circleRadius: ["step", ["get", "point_count"], 16, 5, 20, 10, 26],
+            circleRadius: [
+              "step",
+              ["get", "point_count"],
+              16,
+              10,
+              20,
+              50,
+              24,
+              100,
+              28,
+            ],
             circleStrokeWidth: 3,
             circleStrokeColor: paint.clusterStroke,
             // Fully self-emissive so the Mapbox Standard light preset
@@ -503,6 +550,8 @@ export function MapboxMap({
         <SymbolLayer
           id="point-icon"
           filter={["!", ["has", "point_count"]]}
+          // Glyphs from zoom 11, when the pins are full size.
+          minZoomLevel={11}
           style={{
             iconImage: ["get", "icon"],
             iconAllowOverlap: true,
@@ -521,6 +570,46 @@ export function MapboxMap({
             circleStrokeWidth: 3,
             circleStrokeColor: pin.ember,
             circleEmissiveStrength: 1,
+          }}
+        />
+        {/* The selected pin, its glyph and its title drawn again on top, so
+            neighbours never hide them (Phase 19: dense maps). */}
+        <CircleLayer
+          id="selected-point"
+          filter={["==", ["get", "markerId"], selectedMarkerId ?? "__none__"]}
+          style={{
+            circleColor: paint.pointFill,
+            circleRadius: 14,
+            circleStrokeWidth: 2.5,
+            circleStrokeColor: paint.pointStroke,
+            circleEmissiveStrength: 1,
+          }}
+        />
+        <SymbolLayer
+          id="selected-icon"
+          filter={["==", ["get", "markerId"], selectedMarkerId ?? "__none__"]}
+          style={{
+            iconImage: ["get", "icon"],
+            iconAllowOverlap: true,
+            iconIgnorePlacement: true,
+            iconEmissiveStrength: 1,
+          }}
+        />
+        <SymbolLayer
+          id="selected-title"
+          filter={["==", ["get", "markerId"], selectedMarkerId ?? "__none__"]}
+          style={{
+            textField: ["get", "title"],
+            textSize: 13,
+            textColor: paint.labelText,
+            textHaloColor: paint.labelHalo,
+            textHaloWidth: 1.5,
+            textHaloBlur: 0,
+            textEmissiveStrength: 1,
+            textAnchor: "top",
+            textOffset: [0, 1.9],
+            textAllowOverlap: true,
+            textIgnorePlacement: true,
           }}
         />
       </ShapeSource>

@@ -199,7 +199,9 @@ Motion explains a change (where something came from, what it became); it never d
 4. Tokens only — no hex, no arbitrary sizes, no hand-written shadows, no raw `Modal`.
 5. Verify on the Android emulator in light and dark; add a ledger line.
 
-`tests/designGuard.test.ts` enforces the mechanical rules in CI: no raw hex outside `src/theme`/fixtures/sandbox (escape: a `hex-ok:` comment with the reason), no legacy `text-xs…text-4xl`/`text-[Npx]` classes, no `rounded-3xl`/bare `rounded`/`rounded-[…]`, no raw `Modal` outside `Sheet`/`Overlay`, `Ionicons` only through `<Icon>` (escape: a `raw-icon:` comment saying why — animated colours, stamps with text shadows, caller-sized stars), no `active:/focus:/hover:` in `contentClassName`, no `InteractionManager`, no `expo-status-bar` import outside `StatusBarStyle`, and no `.toFixed(` outside `src/lib/format.ts`.
+Map pins are the one place with a second icon family (Phase 19, founder 2026-11-08): every interest has its own filled pin glyph from Material Community Icons (shipped inside `@expo/vector-icons`), drawn through `PinGlyph` (`src/components/ui/PinGlyph.tsx`; Strikking’s yarn ball is a hand-drawn SVG there). Everything else stays on `<Icon>`.
+
+`tests/designGuard.test.ts` enforces the mechanical rules in CI: no raw hex outside `src/theme`/fixtures/sandbox (escape: a `hex-ok:` comment with the reason), no legacy `text-xs…text-4xl`/`text-[Npx]` classes, no `rounded-3xl`/bare `rounded`/`rounded-[…]`, no raw `Modal` outside `Sheet`/`Overlay`, `MaterialCommunityIcons` only through `<PinGlyph>`, `Ionicons` only through `<Icon>` (escape: a `raw-icon:` comment saying why — animated colours, stamps with text shadows, caller-sized stars), no `active:/focus:/hover:` in `contentClassName`, no `InteractionManager`, no `expo-status-bar` import outside `StatusBarStyle`, and no `.toFixed(` outside `src/lib/format.ts`.
 
 **Numbers.** Display decimals use the Norwegian comma (4,8 · 1,1 km) through `src/lib/format.ts` (`formatRating`, `formatDecimal`, `formatThreshold`); fixture strings are written the same way. Times keep the full stop ("kl. 12.00").
 

@@ -1,90 +1,53 @@
 // Map pin glyphs (founder request 2026-11-06: every marker shows an icon that
-// matches it). Pure, so the native map, SoftMap and the tests share it.
-// Presentational mapping over the MOCK fixtures (BLOCKED_CONTRACT_GAP: no
-// canonical place taxonomy): a per-place glyph where the category alone would
-// mislead (a sailing trip filed under "Vinbar"), experience glyphs from their
-// tags, businesses take their place's glyph, groups a people glyph.
-import type { Ionicons } from "@expo/vector-icons";
-
-import { businessById, experienceById, placeById } from "@/fixtures";
+// matches it). Phase 19 (founder 2026-11-08): every interest has its own pin
+// glyph (src/fixtures/catalog/interests.ts, Material Community Icons plus the
+// hand-drawn yarn), so a pin shows the glyph of the item's interest. Pure, so
+// the native map, SoftMap and the tests share it.
+import type { PinGlyphName } from "@/components/ui/PinGlyph";
+import { INTERESTS, type Interest } from "@/fixtures/catalog/interests";
 
 import type { DiscoveryItem } from "../types/mapPresentation";
+import {
+  MARKER_GLYPH_TONE,
+  interestOfItem,
+  type MarkerCategory,
+} from "./markerCategory";
 
-export type MarkerGlyph = keyof typeof Ionicons.glyphMap;
+export type MarkerGlyph = PinGlyphName;
 
-const PLACE_GLYPH: Record<string, MarkerGlyph> = {
-  p1: "cafe",
-  p2: "book",
-  p3: "wine",
-  p4: "bicycle",
-  p5: "walk",
-  p6: "color-palette",
-  p7: "restaurant",
-  p8: "leaf",
-  p9: "body",
-  p10: "boat",
-  p11: "image",
-  p12: "business",
-  p13: "nutrition",
-  p14: "cut",
-};
-
-const CATEGORY_GLYPH: Record<string, MarkerGlyph> = {
-  Kafé: "cafe",
-  Bokcafé: "book",
-  Vinbar: "wine",
-  Verksted: "hammer",
-};
-
-// First matching experience tag wins (order = specificity).
-const TAG_GLYPH: [string, MarkerGlyph][] = [
-  ["Kaffe", "cafe"],
-  ["Bøker", "book"],
-  ["Vin", "wine"],
-  ["Løping", "footsteps"],
-  ["Trening", "fitness"],
-  ["Spill", "dice"],
-  ["Foto", "camera"],
-  ["Musikk", "musical-notes"],
-  ["Mat", "restaurant"],
-  ["Kunst", "color-palette"],
-  ["Kultur", "color-palette"],
-];
-
-/** Generic glyphs when nothing more specific is known. */
+/** Generic glyphs when an item has no interest (nothing in the fixtures). */
 export const FALLBACK_GLYPH = {
-  place: "location",
+  place: "map-marker",
   experience: "calendar",
-  business: "storefront",
-  group: "people",
+  business: "store",
+  group: "account-group",
 } as const satisfies Record<string, MarkerGlyph>;
-
-function placeGlyph(id: string, category?: string): MarkerGlyph | undefined {
-  return (
-    PLACE_GLYPH[id] ??
-    (category ? CATEGORY_GLYPH[category] : undefined) ??
-    CATEGORY_GLYPH[placeById(id)?.category ?? ""]
-  );
-}
 
 export function markerIcon(
   item: Pick<DiscoveryItem, "kind" | "id"> & { category?: string },
 ): MarkerGlyph {
-  switch (item.kind) {
-    case "place":
-      return placeGlyph(item.id, item.category) ?? FALLBACK_GLYPH.place;
-    case "experience": {
-      const tags = experienceById(item.id)?.tags ?? [];
-      const hit = TAG_GLYPH.find(([t]) => tags.includes(t));
-      return hit?.[1] ?? FALLBACK_GLYPH.experience;
-    }
-    case "business": {
-      const b = businessById(item.id);
-      return (b ? placeGlyph(b.placeId) : undefined) ?? FALLBACK_GLYPH.business;
-    }
-    case "group":
-      return FALLBACK_GLYPH.group;
-    default:
-      return FALLBACK_GLYPH.place;
-  }
+  if (item.kind === "group") return FALLBACK_GLYPH.group;
+  const interest = interestOfItem(item);
+  if (interest) return interest.glyph as MarkerGlyph;
+  return item.kind === "experience"
+    ? FALLBACK_GLYPH.experience
+    : item.kind === "business"
+      ? FALLBACK_GLYPH.business
+      : FALLBACK_GLYPH.place;
+}
+
+/** Every glyph a pin can show, with the tone(s) it is drawn in: each
+ *  interest's glyph in its category's tone, and the fallbacks in both. The
+ *  map registers these once, so filtering never re-copies pin images. */
+export function allPinGlyphs(): {
+  glyph: MarkerGlyph;
+  tone: "light" | "dark";
+}[] {
+  const out = (INTERESTS as readonly Interest[]).map((i) => ({
+    glyph: i.glyph as MarkerGlyph,
+    tone: MARKER_GLYPH_TONE[i.category as MarkerCategory],
+  }));
+  for (const g of Object.values(FALLBACK_GLYPH))
+    for (const tone of ["light", "dark"] as const) out.push({ glyph: g, tone });
+  return out;
 }

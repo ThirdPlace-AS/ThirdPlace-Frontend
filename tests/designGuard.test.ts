@@ -108,6 +108,14 @@ describe("design-system guard", () => {
     expect(fmt(hits)).toEqual([]);
   });
 
+  it("Material Community Icons only through <PinGlyph> (map pins, Phase 19)", () => {
+    const hits = scan(
+      (line) => /<MaterialCommunityIcons\b/.test(line),
+      (f) => f !== "src/components/ui/PinGlyph.tsx",
+    );
+    expect(fmt(hits)).toEqual([]);
+  });
+
   it("no active:/focus:/hover: in Pressable contentClassName (they block presses)", () => {
     const hits = scan((line) =>
       /contentClassName=.*\b(active|focus|hover):/.test(line),

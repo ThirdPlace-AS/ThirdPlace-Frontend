@@ -11,7 +11,7 @@ import type { DiscoveryItem } from "./types/mapPresentation";
 import { markerPaint } from "./pinStyle";
 import { USER_PUCK } from "./userPuck";
 import { markerIcon } from "./services/markerIcon";
-import { Icon, Text } from "@/components/ui";
+import { PinGlyph, Text } from "@/components/ui";
 
 // Pins sit on the map, not the app surface: the light palette in every theme
 // (as the native pins), category fills from pinStyle.
@@ -219,6 +219,7 @@ function SoftMap({
         }
         const item = c.items[0]!;
         const selected = item.markerId === selectedMarkerId;
+        const look = markerPaint(item, PIN);
         // 44×44 transparent hit box centered on the coord so the touch rect
         // aligns with the visible dot (a transformed small box used to miss).
         return (
@@ -243,15 +244,11 @@ function SoftMap({
               // Same paint as the native pins (category fill, kind ring);
               // the selected pin gets the brand ring.
               style={{
-                backgroundColor: markerPaint(item, PIN).fill,
-                borderColor: selected ? PIN.ember : markerPaint(item, PIN).ring,
+                backgroundColor: look.fill,
+                borderColor: selected ? PIN.ember : look.ring,
               }}
             >
-              <Icon
-                name={markerIcon(item)}
-                size="sm"
-                color={markerPaint(item, PIN).glyph}
-              />
+              <PinGlyph name={markerIcon(item)} size={16} color={look.glyph} />
             </View>
             {/* Title label under the pin (un-clustered markers only). The pill
                 keeps it legible regardless of the map background. */}

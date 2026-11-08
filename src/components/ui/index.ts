@@ -9,6 +9,7 @@ export {
 export { Chip, type ChipProps, type ChipSize, type ChipVariant } from "./Chip";
 export { Divider } from "./Divider";
 export { Icon, type IconName, type IconProps, type IconTone } from "./Icon";
+export { PinGlyph, isPinGlyph, type PinGlyphName } from "./PinGlyph";
 export {
   IconButton,
   type IconButtonProps,

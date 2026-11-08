@@ -157,3 +157,9 @@ and [MAP_DELIVERABLES.md](MAP_DELIVERABLES.md) for journeys + completion classes
 - Long-press on a browse card: Lagre / Fjern fra Lagret, Del, Veibeskrivelse (`ItemActionsSheet`).
 - Når (0288): an "I kveld" tile (I dag + the Kveld band) and "Nøyaktig dato" / "± 1 dag" for one picked day (`dateFlex`). A picked day or period now narrows experiences to those with a session in the window (`dateWindow`, `hasSessionIn` over `sessionsFor`), counts in the badge and shows as a chip ("11. nov ± 1 dag"); a quick tile decides instead of its dates; places ignore dates (opening hours, not times).
 - "Nytt i ThirdPlace" (0290) opens on the map once after an app update (`WhatsNewOnFocus`), sharing the one-hint-per-session slot.
+
+## Phase 19 changes (2026-11-08)
+
+- Interest catalogue (0299): 84 interests (`src/fixtures/catalog/interests.ts`), each in one of the eight pin colours with its own pin glyph; every place has a kind (Bedrift, Organisasjon, Byrom) and an interest, experiences a host id; lookups go through lazy indexes.
+- Areas and distances (0300): `AREAS` covers Oslo and every Akershus municipality; distances are measured from the person (`src/lib/origin.ts`: the phone while the map follows it, else the area picked in Hvor, else Grünerløkka; jitter under 250 m ignored); the browse header names the origin’s municipality.
+- Pins by interest (0301): fill = the interest’s category, glyph = the interest’s Material Community Icons glyph (`PinGlyph`, yarn drawn by hand), all pin images registered once; titles from zoom 13 (nearest first on collisions), glyphs from zoom 11, cluster steps 10/50/100, the selected pin redrawn on top. p10 (Seiling) moved from Natur to Trening. Native verification: emulator, Standard / Natt / Satellitt.
