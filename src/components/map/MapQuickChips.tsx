@@ -1,61 +1,17 @@
 import { memo } from "react";
-import { ScrollView, View } from "react-native";
+import { ScrollView } from "react-native";
 
 import { Icon, Pressable as UIPressable, Text } from "@/components/ui";
 import { elevation } from "@/theme";
 
-import {
-  MARKER_LABEL,
-  markerFill,
-  type MarkerCategory,
-} from "./services/markerCategory";
 import { appliedFilterChips, type MapFilters } from "./services/mapFilters";
 
 // Applied filters as removable chips on the map (Phase 18, from the screen
 // benchmark: Amazon's filter chips). Under the mode chips, one chip with an ✕
 // per applied value, so the list, its count, Filtre's badge and Sveip's sheet
 // agree. The pin categories are picked only in Filtre's "Kategori" section
-// (founder 2026-11-08; CategoryChip below is that section's chip); a chosen
-// category shows here like any other applied filter.
-
-export const CategoryChip = memo(function CategoryChip({
-  category,
-  selected,
-  onPress,
-}: {
-  category: MarkerCategory;
-  selected: boolean;
-  onPress: () => void;
-}) {
-  const label = MARKER_LABEL[category];
-  return (
-    <UIPressable
-      accessibilityRole="checkbox"
-      accessibilityState={{ checked: selected }}
-      accessibilityLabel={label}
-      onPress={onPress}
-      haptic="selection"
-      pressedScale={0.95}
-      hitSlop={4}
-      contentClassName={`flex-row items-center gap-1.5 rounded-full border px-3 py-1.5 ${
-        selected ? "border-ink bg-ink" : "border-line bg-surface"
-      }`}
-    >
-      <View
-        className="h-2.5 w-2.5 rounded-full"
-        style={{ backgroundColor: markerFill(category) }}
-      />
-      <Text
-        variant="caption"
-        weight={selected ? "semibold" : "medium"}
-        tone={selected ? "onInk" : "ink"}
-      >
-        {label}
-      </Text>
-      {selected ? <Icon name="close" size="sm" tone="onInk" /> : null}
-    </UIPressable>
-  );
-});
+// (founder 2026-11-08); a chosen category shows here like any other applied
+// filter.
 
 export const AppliedChip = memo(function AppliedChip({
   label,

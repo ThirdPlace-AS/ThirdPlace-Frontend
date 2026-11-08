@@ -4,6 +4,9 @@
 // removable chips on the map and "Fjern «…»".
 import { describe, expect, it, jest } from "@jest/globals";
 import { fireEvent, render, screen } from "@testing-library/react-native";
+import { SafeAreaProvider } from "react-native-safe-area-context";
+
+import { MapFilterSheet } from "@/components/map/MapFilterSheet";
 
 import { MapQuickChips } from "@/components/map/MapQuickChips";
 import {
@@ -15,7 +18,12 @@ import {
   type MapFilters,
 } from "@/components/map/services/mapFilters";
 import { countResults } from "@/components/map/services/mapFixtureAdapter";
-import { markerCategoryFor } from "@/components/map/services/markerCategory";
+import {
+  MARKER_CATEGORIES,
+  MARKER_FILTER_ICON,
+  MARKER_LABEL,
+  markerCategoryFor,
+} from "@/components/map/services/markerCategory";
 import { experiences, places } from "@/fixtures";
 
 const withCats = (cats: MapFilters["categories"]): MapFilters => ({
@@ -121,5 +129,49 @@ describe("applied chips on the map", () => {
   it("no row when nothing is applied", () => {
     render(<MapQuickChips filters={DEFAULT_FILTERS} onChange={jest.fn()} />);
     expect(screen.toJSON()).toBeNull();
+  });
+});
+
+describe("Kategori in Filtre", () => {
+  it("draws the categories like the sheet's other groups and filters", () => {
+    // One outline icon per category, as Opplevelsestype has.
+    expect(
+      MARKER_CATEGORIES.every((c) =>
+        MARKER_FILTER_ICON[c].endsWith("-outline"),
+      ),
+    ).toBe(true);
+    render(
+      <SafeAreaProvider
+        initialMetrics={{
+          frame: { x: 0, y: 0, width: 390, height: 844 },
+          insets: { top: 0, left: 0, right: 0, bottom: 0 },
+        }}
+      >
+        <MapFilterSheet
+          visible
+          filters={DEFAULT_FILTERS}
+          mode="forYou"
+          savedIds={[]}
+          onClose={jest.fn()}
+          onApply={jest.fn()}
+        />
+      </SafeAreaProvider>,
+    );
+    const before = screen.getByText(/^Vis \d+ resultater$/).props.children;
+    // Outline chips are buttons with a selected state, like Opplevelsestype.
+    for (const c of MARKER_CATEGORIES) {
+      expect(
+        screen.getByRole("button", { name: MARKER_LABEL[c] }),
+      ).toBeTruthy();
+    }
+    expect(screen.queryAllByRole("checkbox", { name: "Kafé" })).toHaveLength(0);
+    const kafe = screen.getByRole("button", { name: "Kafé" });
+    fireEvent.press(kafe);
+    expect(
+      screen.getByRole("button", { name: "Kafé" }).props.accessibilityState,
+    ).toMatchObject({ selected: true });
+    expect(screen.getByText(/^Vis \d+ resultater$/).props.children).not.toBe(
+      before,
+    );
   });
 });

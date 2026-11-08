@@ -8,6 +8,7 @@ import { experienceById, placeById } from "@/fixtures";
 import { mapPalette } from "@/theme";
 
 import type { DiscoveryItem } from "../types/mapPresentation";
+import type { MarkerGlyph } from "./markerIcon";
 
 export const MARKER_CATEGORIES = [
   "kafe",
@@ -30,6 +31,20 @@ export const MARKER_LABEL: Record<MarkerCategory, string> = {
   kultur: "Bøker og kultur",
   kreativt: "Kreativt og verksted",
   velvaere: "Velvære",
+};
+
+/** Outline icon for each category in Filtre's "Kategori" group (founder
+ *  2026-11-08: drawn like the sheet's other groups, Opplevelsestype and the
+ *  rest, so the same icon families as the pins and the experience types). */
+export const MARKER_FILTER_ICON: Record<MarkerCategory, MarkerGlyph> = {
+  kafe: "cafe-outline",
+  mat: "restaurant-outline",
+  sosialt: "dice-outline",
+  natur: "trail-sign-outline",
+  trening: "barbell-outline",
+  kultur: "book-outline",
+  kreativt: "brush-outline",
+  velvaere: "flower-outline",
 };
 
 /** Glyph colour on the pin fill: whichever reads at ≥ 3:1 (tested). */

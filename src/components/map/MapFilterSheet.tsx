@@ -48,8 +48,12 @@ import {
   PRICE_STEP,
   type RatingSort,
 } from "./services/mapFilters";
-import { CategoryChip } from "./MapQuickChips";
-import { MARKER_CATEGORIES } from "./services/markerCategory";
+import {
+  MARKER_CATEGORIES,
+  MARKER_FILTER_ICON,
+  MARKER_LABEL,
+  type MarkerCategory,
+} from "./services/markerCategory";
 import { TypeChip } from "./TypeChip";
 import type { DiscoveryMode } from "./types/mapPresentation";
 
@@ -196,6 +200,15 @@ function Section({
 // / Passer for / Vibe / Fasiliteter) so they behave consistently and never hide
 // chips off-screen.
 type ChipItem = { label: string; icon: string };
+
+// The eight pin categories as chip items (labels as on the pins' legend).
+const CATEGORY_ITEMS: ChipItem[] = MARKER_CATEGORIES.map((c) => ({
+  label: MARKER_LABEL[c],
+  icon: MARKER_FILTER_ICON[c],
+}));
+const CATEGORY_BY_LABEL: Record<string, MarkerCategory> = Object.fromEntries(
+  MARKER_CATEGORIES.map((c) => [MARKER_LABEL[c], c]),
+);
 function ChipGroup({
   items,
   selected,
@@ -697,26 +710,27 @@ function FilterBody({
             400 ms deferral made the lower half settle 1.2–1.4 s after the tap
             (0.02–0.33 s without it), so it was removed (Phase 10). */}
         <>
-          {/* Kategori (Phase 18): the map pins' eight categories, the same
-              choice as the quick chips on the map. */}
+          {/* Kategori (Phase 18): the map pins' eight categories, picked
+              only here (founder 2026-11-08) and drawn like the sheet's other
+              groups: outline chips with an icon, an ink ring when chosen. */}
           <Section title="Kategori">
-            <View className="flex-row flex-wrap gap-2">
-              {MARKER_CATEGORIES.map((c) => (
-                <CategoryChip
-                  key={c}
-                  category={c}
-                  selected={draft.categories.includes(c)}
-                  onPress={() =>
-                    setDraft((d) => ({
-                      ...d,
-                      categories: d.categories.includes(c)
-                        ? d.categories.filter((x) => x !== c)
-                        : [...d.categories, c],
-                    }))
-                  }
-                />
-              ))}
-            </View>
+            <ChipGroup
+              items={CATEGORY_ITEMS}
+              selected={(l) => {
+                const c = CATEGORY_BY_LABEL[l];
+                return c !== undefined && draft.categories.includes(c);
+              }}
+              onToggle={(l) => {
+                const c = CATEGORY_BY_LABEL[l];
+                if (!c) return;
+                setDraft((d) => ({
+                  ...d,
+                  categories: d.categories.includes(c)
+                    ? d.categories.filter((x) => x !== c)
+                    : [...d.categories, c],
+                }));
+              }}
+            />
           </Section>
           {/* Tid på dagen (moved out of the "Når?" card) */}
           <Section title="Tid på dagen">
