@@ -1,7 +1,8 @@
 // Pressable primitive (docs/design/DESIGN_SYSTEM.md §4 "Pressed").
 // Every tappable surface gets the same tactile response: a quick spring scale
-// on press-in, back on release, optional haptic on press. Under reduced motion
-// it dims instead of scaling. Disabled → 40 % and no feedback.
+// on press-in, back on release. No vibration on a tap (founder 2026-11-09).
+// Under reduced motion it dims instead of scaling. Disabled → 40 % and no
+// feedback.
 //
 // Structure (deliberate — NativeWind only styles core components reliably):
 //   core Pressable   ← a11y, hitSlop, press handlers, `className` (LAYOUT only:
@@ -28,11 +29,9 @@ import Animated, {
 } from "react-native-reanimated";
 import { useReducedMotion } from "@/hooks/useReducedMotion";
 
-import { haptics } from "@/lib/haptics";
 import { duration, spring } from "@/theme";
 
 export type PressFeedback = "scale" | "none";
-export type PressHaptic = "selection" | "light" | "none";
 
 export type PressableProps = Omit<RNPressableProps, "children" | "style"> & {
   children?: ReactNode;
@@ -48,8 +47,6 @@ export type PressableProps = Omit<RNPressableProps, "children" | "style"> & {
   feedback?: PressFeedback;
   /** Pressed scale (default 0.97; small controls look better at ~0.92). */
   pressedScale?: number;
-  /** Haptic fired on press (default none). */
-  haptic?: PressHaptic;
   /** Fade to 40 % when disabled (default). Off when the child draws its own
    * disabled look (Button). */
   dimWhenDisabled?: boolean;
@@ -80,7 +77,6 @@ export const Pressable = forwardRef<View, PressableProps>(function Pressable(
     contentStyle,
     feedback = "scale",
     pressedScale = 0.97,
-    haptic = "none",
     dimWhenDisabled = true,
     disabled,
     onPressIn,
@@ -115,9 +111,9 @@ export const Pressable = forwardRef<View, PressableProps>(function Pressable(
     pressed.value = to(0);
     onPressOut?.(e);
   };
+  // Always hand RN a handler, so a press without onPress (a busy Button)
+  // ends here instead of reaching a parent's onPress.
   const handlePress = (e: GestureResponderEvent) => {
-    if (haptic === "selection") haptics.selection();
-    else if (haptic === "light") haptics.light();
     onPress?.(e);
   };
 

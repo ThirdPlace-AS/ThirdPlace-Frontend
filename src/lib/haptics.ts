@@ -1,7 +1,9 @@
 import { Platform } from "react-native";
 
-// Subtle, consistent haptic language for the app. Reinforces interactions; never
-// drives them. The native module is loaded lazily and guarded: it is a no-op on
+// Haptics for drag gestures only: no vibration on a tap or a long press
+// (founder 2026-11-09). Two users: Sveip's tick when a dragged card crosses
+// the commit line, and the chat's swipe-to-reply. Reinforces a gesture; never
+// drives it. The native module is loaded lazily and guarded: it is a no-op on
 // web, on unsupported platforms, AND in any build where expo-haptics isn't
 // compiled in — and never throws. Real device feedback is native-verification-
 // outstanding (NV-7).
@@ -17,21 +19,9 @@ const supported =
   (Platform.OS === "ios" || Platform.OS === "android") && Haptics !== null;
 
 export const haptics = {
-  // Light tick for discrete selections (marker tap, mode change).
+  // Light tick when a drag gesture reaches its threshold.
   selection() {
     if (!supported) return;
     Haptics!.selectionAsync().catch(() => {});
-  },
-  // Soft impact for committing an interaction (apply filters, expand preview).
-  light() {
-    if (!supported) return;
-    Haptics!.impactAsync(Haptics!.ImpactFeedbackStyle.Light).catch(() => {});
-  },
-  // Success notification for a completed local action.
-  success() {
-    if (!supported) return;
-    Haptics!
-      .notificationAsync(Haptics!.NotificationFeedbackType.Success)
-      .catch(() => {});
   },
 };

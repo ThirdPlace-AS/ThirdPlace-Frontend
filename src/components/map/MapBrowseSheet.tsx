@@ -291,7 +291,6 @@ export function MapBrowseSheet({
             <UIPressable
               accessibilityRole="button"
               accessibilityLabel="Vis kart"
-              haptic="selection"
               onPress={() => sheetRef.current?.snapToIndex(0)}
               contentClassName="flex-row items-center gap-sm rounded-full bg-ink px-lg py-md"
               contentStyle={elevation.e2}

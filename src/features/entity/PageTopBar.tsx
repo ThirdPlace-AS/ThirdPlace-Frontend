@@ -57,7 +57,6 @@ export function PageTopBar({
       <HeartToggle
         selected={saved}
         variant="ghost"
-        haptic={!isGuest}
         label={saved ? "Fjern fra lagret" : "Lagre"}
         onToggle={() => (isGuest ? setSignIn(true) : toggle(savedKey))}
       />

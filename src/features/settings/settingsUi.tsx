@@ -79,7 +79,6 @@ export function ToggleRow({
     // Switch stays the one accessible control, so the row is not focusable.
     <UIPressable
       accessible={false}
-      haptic="selection"
       onPress={() => onValueChange(!value)}
       contentClassName="flex-row items-center gap-3 border-b border-line px-gutter py-3.5"
       pressedScale={0.99}

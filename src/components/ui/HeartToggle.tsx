@@ -1,8 +1,7 @@
 // HeartToggle (docs/design/DESIGN_SYSTEM.md §5) — the one like/save control.
-// Outline → filled ember glyph with a pop and a light haptic when it turns on;
-// turning it off is quiet. Saving is a local store action in the demo, so the
-// toggle never claims a server result.
-import { haptics } from "@/lib/haptics";
+// Outline → filled ember glyph with a pop when it turns on (no vibration on a
+// tap, founder 2026-11-09); turning it off is quiet. Saving is a local store
+// action in the demo, so the toggle never claims a server result.
 
 import {
   IconButton,
@@ -20,7 +19,6 @@ export function HeartToggle({
   size = "md",
   label,
   className,
-  haptic = true,
 }: {
   selected: boolean;
   onToggle: () => void;
@@ -31,8 +29,6 @@ export function HeartToggle({
   label?: string;
   /** Layout-only classes. */
   className?: string;
-  /** Set false when the tap only opens a sign-in prompt (guest). */
-  haptic?: boolean;
 }) {
   return (
     <IconButton
@@ -50,10 +46,7 @@ export function HeartToggle({
       selected={selected}
       pop={selected}
       className={className}
-      onPress={() => {
-        if (!selected && haptic) haptics.light();
-        onToggle();
-      }}
+      onPress={onToggle}
     />
   );
 }

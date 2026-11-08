@@ -42,6 +42,7 @@ import {
   markChatRead,
   unreadOf,
 } from "@/lib/chatReads";
+import { haptics } from "@/lib/haptics";
 import { claimHint, markHintSeen, useHintSeen } from "@/lib/hints";
 import { HintBanner } from "@/components/HintBanner";
 import {
@@ -54,7 +55,6 @@ import {
 } from "@/lib/chatThreads";
 import { duration, useThemeColors } from "@/theme";
 import { fontFamilyFor } from "@/theme/fonts";
-import { haptics } from "@/lib/haptics";
 
 // Chat conversation. BLOCKED_CONTRACT_GAP: no realtime/messaging
 // backend, no delivery or read receipts. What the viewer sends, replies to and
@@ -133,12 +133,10 @@ export default function ChatThreadScreen() {
     setReplyTo(null);
     setMenuFor(null);
     sentCount.current += 1;
-    haptics.light();
   };
   const startReply = (m: ThreadMessage) => {
     setMenuFor(null);
     setReplyTo({ author: m.mine ? "deg selv" : m.author, text: m.text });
-    haptics.selection();
   };
 
   return (
@@ -249,7 +247,6 @@ export default function ChatThreadScreen() {
                 onReact={(emoji) => {
                   toggleReaction(chat.id, item.id, emoji);
                   setMenuFor(null);
-                  haptics.selection();
                 }}
                 onReply={() => startReply(item)}
                 canReply={chat.status !== "archived" && !isGuest}
@@ -377,7 +374,10 @@ function Bubble({
       x.value = Math.max(0, Math.min(e.translationX, 72));
     })
     .onEnd(() => {
-      if (x.value >= REPLY_SWIPE) runOnJS(onReply)();
+      if (x.value >= REPLY_SWIPE) {
+        runOnJS(haptics.selection)();
+        runOnJS(onReply)();
+      }
       x.value = reduced ? 0 : withSpring(0);
     });
   const slide = useAnimatedStyle(() => ({
@@ -391,7 +391,6 @@ function Bubble({
   const body = (
     <Pressable
       onLongPress={() => {
-        haptics.selection();
         onToggleMenu();
       }}
       delayLongPress={280}

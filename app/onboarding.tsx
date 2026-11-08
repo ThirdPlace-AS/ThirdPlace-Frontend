@@ -264,7 +264,6 @@ export default function Onboarding() {
                   accessibilityLabel={
                     photo ? "Bytt profilbilde" : "Legg til profilbilde"
                   }
-                  haptic="selection"
                   onPress={() => {
                     if (!photo) showToast(confirmToast.photoAdded);
                     setPhoto(true);

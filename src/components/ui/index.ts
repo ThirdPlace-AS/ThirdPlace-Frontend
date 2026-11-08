@@ -20,7 +20,6 @@ export {
   Pressable,
   type PressableProps,
   type PressFeedback,
-  type PressHaptic,
 } from "./Pressable";
 export { Switch } from "./Switch";
 export { Text, type TextProps, type TextTone, type TextVariant } from "./Text";

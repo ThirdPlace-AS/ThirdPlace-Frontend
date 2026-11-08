@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { View } from "react-native";
 import { Icon, PopIcon, Text, Pressable as UIPressable } from "@/components/ui";
-import { haptics } from "@/lib/haptics";
 import { ReportSheet, ShareSheet } from "@/components/actions/ActionSheets";
 import { SignInPrompt } from "@/components/SignInPrompt";
 import { useGuestMode } from "../hooks/useGuestMode";
@@ -27,7 +26,6 @@ export function DetailActions({
   const onSave = () => {
     if (isGuest) setPromptOpen(true);
     else {
-      if (!saved) haptics.light();
       toggle(markerId);
     }
   };

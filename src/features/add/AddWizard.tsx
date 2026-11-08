@@ -25,7 +25,6 @@ import {
   Sheet,
 } from "@/components/ui";
 import { Button } from "@/components/Button";
-import { haptics } from "@/lib/haptics";
 import {
   CategoryArt,
   hasCategoryArt,
@@ -238,7 +237,6 @@ export function AddWizard() {
   };
   const next = () => {
     if (!isLast) return setStepIndex((i) => i + 1);
-    haptics.light();
     if (draft.kind === "group") {
       setCreated(
         createGroup({
@@ -495,7 +493,6 @@ function StepBody({
             onClose={() => setStartFrom(false)}
             onPick={(e) => {
               patch(copyOf(e));
-              haptics.light();
             }}
           />
           <Input

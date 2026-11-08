@@ -51,7 +51,6 @@ import {
 } from "@/fixtures";
 import { dayLabel, shortSessionLabel, timeRange } from "@/lib/dates";
 import { env } from "@/lib/env";
-import { haptics } from "@/lib/haptics";
 import { isMember, joinChat, useJoinedChats } from "@/lib/joinedChats";
 import { useScheme } from "@/theme";
 
@@ -300,7 +299,6 @@ export function AvailabilitySection({ exp }: { exp: MockExperience }) {
         initial={sheetAt}
         onClose={() => setSheetAt(null)}
         onPick={(id) => {
-          haptics.selection();
           choose(id);
           setSheetAt(null);
         }}
@@ -371,7 +369,6 @@ export function SessionSheet({
                   accessibilityLabel={`${day}, ${timeRange(s.start, s.end)}, ${placesLeft(s)}`}
                   disabled={full}
                   dimWhenDisabled={false}
-                  haptic="selection"
                   onPress={() => setDraft(s.id)}
                   contentClassName={`flex-row items-center justify-between rounded-lg p-4 ${
                     on ? "border-2 border-ink" : "border border-line"
@@ -620,7 +617,6 @@ export function ChatSection({
         setPrompt(true);
         return;
       }
-      haptics.light();
       joinChat(chat.id);
     }
     onNavigate(`/chat/${chat.id}` as Href);

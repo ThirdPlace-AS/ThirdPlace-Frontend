@@ -29,7 +29,6 @@ export const CheckboxRow = memo(function CheckboxRow({
       accessibilityState={{ checked }}
       accessibilityLabel={label}
       onPress={onToggle}
-      haptic="selection"
       contentClassName={`flex-row items-center justify-between py-3 ${
         divider ? "border-b border-line" : ""
       }`}

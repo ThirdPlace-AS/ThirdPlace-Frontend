@@ -202,7 +202,6 @@ export default function ChatScreen() {
         label="Ny chat"
         variant="ink"
         size="xl"
-        haptic="light"
         onPress={() => router.push("/chat/new" as Href)}
         className="absolute bottom-5 right-5"
       />

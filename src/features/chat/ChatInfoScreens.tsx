@@ -266,7 +266,6 @@ export function ChatInviteScreen() {
         </Text>
         <UIPressable
           accessibilityRole="button"
-          haptic="selection"
           hitSlop={{ top: 12, bottom: 12, left: 8, right: 8 }}
           onPress={() => showToast(confirmToast.linkCopied)}
           className="self-start"

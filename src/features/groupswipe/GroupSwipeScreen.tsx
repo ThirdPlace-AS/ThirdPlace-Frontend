@@ -22,7 +22,6 @@ import {
   Pressable as UIPressable,
 } from "@/components/ui";
 import { Button } from "@/components/Button";
-import { haptics } from "@/lib/haptics";
 import { Chip } from "@/components/Chip";
 import { Input } from "@/components/Input";
 import { showToast } from "@/components/Toast";
@@ -394,7 +393,6 @@ export default function GroupSwipeScreen() {
               onPress={() => {
                 const agrees = fromSaved || card.id === AGREED_ID;
                 if (!agrees) return setIndex((i) => i + 1);
-                haptics.light();
                 setPhase("match");
               }}
             />

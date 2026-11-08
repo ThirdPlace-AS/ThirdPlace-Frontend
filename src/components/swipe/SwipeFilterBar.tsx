@@ -75,7 +75,6 @@ export function SwipeFilterBar({
               accessibilityRole="tab"
               accessibilityState={{ selected: active }}
               hitSlop={{ top: 6, bottom: 6, left: 2, right: 2 }}
-              haptic="selection"
               pressedScale={0.95}
               onPress={() => onSelectMode(m.key)}
               // Over a photo the selected pill is a light surface with ink text

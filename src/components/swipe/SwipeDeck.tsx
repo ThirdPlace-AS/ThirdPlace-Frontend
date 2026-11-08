@@ -206,7 +206,6 @@ export function SwipeDeck() {
       ty.value = withSpring(0, motion.spring.card);
       return;
     }
-    haptics.light();
     setBusy(true);
     // PDF p8: a like (♥ / right swipe) offers "Bli med i samtalen", joining
     // the item's chat as a separate, explicit step (a place is also saved).
@@ -252,7 +251,6 @@ export function SwipeDeck() {
     const action = deck.lastAction;
     if (!action || busy) return;
     pendingTap.value = null;
-    haptics.selection();
     if (reduced) {
       deck.undo();
       return;
@@ -835,7 +833,6 @@ function JoinChatSheet({
   const join = () => {
     if (!item) return;
     onClose();
-    haptics.light();
     if (item.chatId) {
       joinChat(item.chatId);
       const id = item.chatId;

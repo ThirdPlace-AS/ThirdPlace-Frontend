@@ -236,7 +236,6 @@ function StyleTile({
       accessibilityState={{ checked: selected }}
       accessibilityLabel={label}
       onPress={onPress}
-      haptic="selection"
       pressedScale={0.97}
       style={{ width }}
       contentClassName="gap-2"

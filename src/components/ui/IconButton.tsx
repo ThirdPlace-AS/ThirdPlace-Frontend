@@ -8,7 +8,7 @@ import { elevation } from "@/theme";
 
 import { Icon, type IconName, type IconTone } from "./Icon";
 import { PopIcon } from "./PopIcon";
-import { Pressable, type PressHaptic } from "./Pressable";
+import { Pressable } from "./Pressable";
 import { Text } from "./Text";
 
 export type IconButtonVariant =
@@ -77,7 +77,6 @@ export type IconButtonProps = {
   /** Glyph pops when this turns true (like/save — see HeartToggle). */
   pop?: boolean;
   disabled?: boolean;
-  haptic?: PressHaptic;
   /** Layout-only classes (position/margins), not colours. */
   className?: string;
   testID?: string;
@@ -94,7 +93,6 @@ export function IconButton({
   selected,
   pop,
   disabled,
-  haptic = "none",
   className,
   testID,
 }: IconButtonProps) {
@@ -111,7 +109,6 @@ export function IconButton({
       accessibilityState={selected != null ? { selected } : undefined}
       onPress={onPress}
       disabled={disabled}
-      haptic={haptic}
       hitSlop={slop}
       pressedScale={0.92}
       className={className}

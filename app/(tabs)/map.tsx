@@ -62,7 +62,6 @@ import { MOCK_WEATHER, AREAS, places } from "@/fixtures";
 import { useMockResource } from "@/hooks/useMockResource";
 import { useLoadPhase } from "@/hooks/useLoadPhase";
 import { useNotificationReads } from "@/hooks/useNotificationReads";
-import { haptics } from "@/lib/haptics";
 import { setDevSimulation, useDevSimulation } from "@/lib/devSimulation";
 import { elevation } from "@/theme";
 
@@ -230,7 +229,6 @@ export default function MapScreen() {
     (markerId: string) => {
       const item = itemByMarker.get(markerId);
       if (item) {
-        haptics.selection();
         setZoomToPick(false);
         selectMarker(item);
       }
@@ -241,7 +239,6 @@ export default function MapScreen() {
   // Browse-list rows: opens the detail sheet and zooms to the pin.
   const handleSelectItem = useCallback(
     (item: DiscoveryItem) => {
-      haptics.selection();
       setZoomToPick(true);
       selectMarker(item);
     },
@@ -263,7 +260,6 @@ export default function MapScreen() {
   const [actionsFor, setActionsFor] = useState<DiscoveryItem | null>(null);
   const [shareFor, setShareFor] = useState<DiscoveryItem | null>(null);
   const handleItemActions = useCallback((item: DiscoveryItem) => {
-    haptics.selection();
     setActionsFor(item);
   }, []);
 
@@ -275,14 +271,12 @@ export default function MapScreen() {
 
   const handleModeChange = useCallback(
     (m: DiscoveryMode) => {
-      haptics.selection();
       setDiscoveryMode(m);
     },
     [setDiscoveryMode],
   );
 
   const handleApplyFilters = (next: typeof filters.filters) => {
-    haptics.light();
     // "Where?" recenters the map to the chosen Oslo area (demo — reuses the
     // manual-area fallback; it does not refilter the mock distances).
     if (next.whereArea && next.whereArea !== filters.filters.whereArea) {

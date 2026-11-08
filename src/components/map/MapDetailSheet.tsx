@@ -402,7 +402,6 @@ function ShareSave({ experienceId }: { experienceId: string }) {
       <HeartToggle
         selected={saved}
         variant="ghost"
-        haptic={!isGuest}
         label={saved ? "Fjern fra lagret" : "Lagre"}
         onToggle={() => (isGuest ? setPromptOpen(true) : toggle(key))}
       />

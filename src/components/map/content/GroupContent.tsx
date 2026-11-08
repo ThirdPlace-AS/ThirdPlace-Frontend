@@ -22,7 +22,6 @@ import { interestById } from "@/fixtures/catalog/interests";
 import { libImage } from "@/fixtures/images";
 import { shortSessionLabel } from "@/lib/dates";
 import { membersLabel } from "@/lib/format";
-import { haptics } from "@/lib/haptics";
 import { Chip, ListRow, Text } from "@/components/ui";
 
 import { Gallery } from "../Gallery";
@@ -83,7 +82,6 @@ export function GroupContent({ id }: { id: string }) {
   // signed-in demo flips local state only (BLOCKED_CONTRACT_GAP).
   const toggle = () => {
     if (isGuest) return setPromptOpen(true);
-    if (!member) haptics.light();
     setMember((m) => !m);
   };
 

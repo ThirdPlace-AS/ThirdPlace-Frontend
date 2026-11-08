@@ -152,4 +152,32 @@ describe("design-system guard", () => {
     );
     expect(fmt(hits)).toEqual([]);
   });
+
+  it("no vibration on a tap: haptics only in the two drag gestures (founder 2026-11-09)", () => {
+    // Sveip's commit-line tick and the chat's swipe-to-reply. A tap, long
+    // press, switch or chip never vibrates, and expo-haptics only loads
+    // through src/lib/haptics.ts.
+    const DRAG_GESTURES = [
+      "src/components/swipe/SwipeDeck.tsx",
+      "app/chat/[id]/index.tsx",
+    ];
+    const hits = scan(
+      (line) =>
+        /expo-haptics/.test(line) ||
+        /\bhaptics\b/.test(line) ||
+        /\bhaptic=/.test(line),
+      (file) =>
+        !file.endsWith("lib/haptics.ts") && !DRAG_GESTURES.includes(file),
+    );
+    expect(fmt(hits)).toEqual([]);
+    for (const file of DRAG_GESTURES) {
+      const code = fs.readFileSync(path.join(ROOT, file), "utf8");
+      const calls = code.match(/haptics\.\w+/g) ?? [];
+      // Only inside a gesture worklet, handed to JS through runOnJS.
+      expect(calls.length).toBeGreaterThan(0);
+      expect(calls.length).toBe(
+        (code.match(/runOnJS\(haptics\.\w+\)/g) ?? []).length,
+      );
+    }
+  });
 });

@@ -1037,7 +1037,6 @@ function FilterBody({
                     accessibilityState={{ selected }}
                     accessibilityLabel={`${formatThreshold(r)} stjerner og over`}
                     onPress={() => setDraft((d) => ({ ...d, minRating: r }))}
-                    haptic="selection"
                     contentClassName={`flex-row items-center gap-1.5 rounded-full bg-surface px-3 py-2 ${
                       selected ? "border-2 border-ink" : "border border-line"
                     }`}

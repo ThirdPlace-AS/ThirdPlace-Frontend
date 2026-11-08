@@ -2,7 +2,6 @@ import { useState } from "react";
 import { View } from "react-native";
 import { Icon, Text } from "@/components/ui";
 import { Button } from "@/components/Button";
-import { haptics } from "@/lib/haptics";
 import { experienceById } from "@/fixtures";
 import { useDevSimulation } from "@/lib/devSimulation";
 
@@ -65,7 +64,6 @@ export function CheckinContent({ id }: { id: string }) {
         variant={checkedIn ? "secondary" : "ember"}
         disabled={!near && !checkedIn}
         onPress={() => {
-          if (!checkedIn) haptics.light();
           setCheckedIn((c) => !c);
         }}
       />
