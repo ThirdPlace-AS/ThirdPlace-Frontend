@@ -23,12 +23,6 @@ export default function SearchScreen() {
             params: { q: query, at: String(Date.now()) },
           })
         }
-        onCategory={(c) =>
-          router.navigate({
-            pathname: "/map",
-            params: { cat: c, at: String(Date.now()) },
-          })
-        }
         onSelect={(r) => {
           if (r.kind === "group") {
             router.replace(`/group/${r.id}` as Href);

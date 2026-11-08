@@ -58,9 +58,10 @@ const pin = palette.light as unknown as Record<
 // places and experiences need to be shown"); after that the camera stays
 // where the user left it.
 let fittedThisSession = false;
-// Room for the search bar, mode chips and quick chips (Phase 18) above and
-// the browse peek below.
-const FIT_PADDING = { top: 230, right: 48, bottom: 140, left: 48 };
+// Room for the search bar and mode chips above (the applied-filter chips only
+// show once a filter is set, never on the first view) and the browse peek
+// below.
+const FIT_PADDING = { top: 190, right: 48, bottom: 140, left: 48 };
 
 export function MapboxMap({
   markers,

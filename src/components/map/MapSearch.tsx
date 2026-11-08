@@ -10,11 +10,6 @@ import {
   Text,
   Pressable as UIPressable,
 } from "@/components/ui";
-import { CategoryChip } from "./MapQuickChips";
-import {
-  MARKER_CATEGORIES,
-  type MarkerCategory,
-} from "./services/markerCategory";
 import { Chip } from "@/components/Chip";
 import { experienceById, placeById } from "@/fixtures";
 import { coverForPlace, libThumb, smallImage } from "@/fixtures/images";
@@ -38,14 +33,11 @@ export function MapSearch({
   onBack,
   onSubmit,
   onSelect,
-  onCategory,
 }: {
   initialQuery: string;
   onBack: () => void;
   onSubmit: (q: string) => void;
   onSelect: (r: SearchResult) => void;
-  /** A category picked while the field is empty (Phase 18). */
-  onCategory?: (c: MarkerCategory) => void;
 }) {
   const insets = useSafeAreaInsets();
   const { recent, add, remove, clear } = useRecentSearches();
@@ -132,28 +124,6 @@ export function MapSearch({
                   });
                 }}
               />
-              {/* Browse by category while the field is empty (Spotify,
-                  Apple Maps; Phase 18): the map's pin categories. */}
-              {onCategory ? (
-                <View className="gap-2">
-                  <Text variant="label" weight="semibold">
-                    Kategorier
-                  </Text>
-                  <View className="flex-row flex-wrap gap-2">
-                    {MARKER_CATEGORIES.map((c) => (
-                      <CategoryChip
-                        key={c}
-                        category={c}
-                        selected={false}
-                        onPress={() => {
-                          Keyboard.dismiss();
-                          onCategory(c);
-                        }}
-                      />
-                    ))}
-                  </View>
-                </View>
-              ) : null}
             </>
           ) : results.total === 0 ? (
             <View className="items-center gap-2 pt-10">

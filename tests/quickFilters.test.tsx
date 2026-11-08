@@ -1,6 +1,7 @@
 // Phase 18 (screen benchmark, "Finding things"): the map pins' categories
-// as a filter (quick chips on the map, a Kategori section in Filtre, the
-// empty search), applied filters as removable chips, and "Fjern «…»".
+// as a filter, picked in Filtre's Kategori section only (founder 2026-11-08:
+// no category chips on the map or the search page), and applied filters as
+// removable chips on the map and "Fjern «…»".
 import { describe, expect, it, jest } from "@jest/globals";
 import { fireEvent, render, screen } from "@testing-library/react-native";
 
@@ -98,16 +99,27 @@ describe("applied filters as chips", () => {
   });
 });
 
-describe("quick chips on the map", () => {
-  it("toggles a category and removes an applied filter", () => {
+describe("applied chips on the map", () => {
+  it("shows only applied filters, a chosen category among them", () => {
     const onChange = jest.fn();
-    const f: MapFilters = { ...DEFAULT_FILTERS, hasSpots: true };
+    const f: MapFilters = {
+      ...DEFAULT_FILTERS,
+      hasSpots: true,
+      categories: ["kafe"],
+    };
     render(<MapQuickChips filters={f} onChange={onChange} />);
-    fireEvent.press(screen.getByRole("checkbox", { name: "Kafé" }));
-    expect(onChange).toHaveBeenLastCalledWith({ ...f, categories: ["kafe"] });
+    // No category picker on the map: categories are chosen in Filtre.
+    expect(screen.queryAllByRole("checkbox")).toHaveLength(0);
+    fireEvent.press(screen.getByRole("button", { name: "Fjern «Kafé»" }));
+    expect(onChange).toHaveBeenLastCalledWith({ ...f, categories: [] });
     fireEvent.press(
       screen.getByRole("button", { name: "Fjern «Ledige plasser»" }),
     );
     expect(onChange).toHaveBeenLastCalledWith({ ...f, hasSpots: false });
+  });
+
+  it("no row when nothing is applied", () => {
+    render(<MapQuickChips filters={DEFAULT_FILTERS} onChange={jest.fn()} />);
+    expect(screen.toJSON()).toBeNull();
   });
 });

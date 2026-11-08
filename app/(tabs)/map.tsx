@@ -26,10 +26,6 @@ import {
   type MapFilters,
 } from "@/components/map/services/mapFilters";
 import {
-  MARKER_CATEGORIES,
-  type MarkerCategory,
-} from "@/components/map/services/markerCategory";
-import {
   MapDetailSheet,
   type MapDetailSheetHandle,
 } from "@/components/map/MapDetailSheet";
@@ -127,11 +123,10 @@ export default function MapScreen() {
   // /map?focus=<kind>:<id>&at=<stamp> (e.g. "Vis på kartet" in the Steder
   // deck) opens that item's detail once per request; the stamp tells repeat
   // taps apart because the tab stays mounted.
-  const { focus, at, q, cat } = useLocalSearchParams<{
+  const { focus, at, q } = useLocalSearchParams<{
     focus?: string;
     at?: string;
     q?: string;
-    cat?: string;
   }>();
   const focusKey = focus ? `${focus}:${at ?? ""}` : undefined;
   const [focusedKey, setFocusedKey] = useState<string | undefined>(undefined);
@@ -148,18 +143,6 @@ export default function MapScreen() {
   if (queryKey && queryKey !== queriedKey) {
     setQueriedKey(queryKey);
     filters.setQuery(q ?? "");
-  }
-  // /map?cat=<category>&at=<stamp> (a category on the empty search page,
-  // Phase 18): shows that category, once per tap.
-  const catKey = cat !== undefined ? `${cat}:${at ?? ""}` : undefined;
-  const [catDoneKey, setCatDoneKey] = useState<string | undefined>(undefined);
-  if (catKey && catKey !== catDoneKey) {
-    setCatDoneKey(catKey);
-    if ((MARKER_CATEGORIES as readonly string[]).includes(cat ?? ""))
-      filters.setFilters({
-        ...filters.filters,
-        categories: [cat as MarkerCategory],
-      });
   }
   const { setMode: setDiscoveryMode } = discovery;
 
@@ -431,7 +414,8 @@ export default function MapScreen() {
         </View>
 
         <DiscoveryModeTabs mode={discovery.mode} onChange={handleModeChange} />
-        {/* Applied filters and the pin categories as quick chips (Phase 18). */}
+        {/* Applied filters as removable chips (Phase 18); the categories
+            are picked in Filtre only (founder 2026-11-08). */}
         <MapQuickChips
           filters={filters.filters}
           onChange={handleQuickFilters}

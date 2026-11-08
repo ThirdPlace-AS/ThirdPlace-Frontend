@@ -5,30 +5,27 @@ import { Icon, Pressable as UIPressable, Text } from "@/components/ui";
 import { elevation } from "@/theme";
 
 import {
-  MARKER_CATEGORIES,
   MARKER_LABEL,
   markerFill,
   type MarkerCategory,
 } from "./services/markerCategory";
 import { appliedFilterChips, type MapFilters } from "./services/mapFilters";
 
-// Quick filter chips on the map (Phase 18, from the screen benchmark:
-// Google Maps' category chips, Amazon's removable filter chips). Under the
-// mode chips: first every applied filter with an ✕, then the eight pin
-// categories, each with its pin colour. A chip edits the same filters as
-// Filtre, so the list, its count, Filtre's badge and Sveip's sheet agree.
+// Applied filters as removable chips on the map (Phase 18, from the screen
+// benchmark: Amazon's filter chips). Under the mode chips, one chip with an ✕
+// per applied value, so the list, its count, Filtre's badge and Sveip's sheet
+// agree. The pin categories are picked only in Filtre's "Kategori" section
+// (founder 2026-11-08; CategoryChip below is that section's chip); a chosen
+// category shows here like any other applied filter.
 
 export const CategoryChip = memo(function CategoryChip({
   category,
   selected,
   onPress,
-  floating = false,
 }: {
   category: MarkerCategory;
   selected: boolean;
   onPress: () => void;
-  /** Over the map: a raised white pill like the mode chips. */
-  floating?: boolean;
 }) {
   const label = MARKER_LABEL[category];
   return (
@@ -40,7 +37,6 @@ export const CategoryChip = memo(function CategoryChip({
       haptic="selection"
       pressedScale={0.95}
       hitSlop={4}
-      contentStyle={floating ? elevation.e1 : undefined}
       contentClassName={`flex-row items-center gap-1.5 rounded-full border px-3 py-1.5 ${
         selected ? "border-ink bg-ink" : "border-line bg-surface"
       }`}
@@ -96,24 +92,9 @@ export const MapQuickChips = memo(function MapQuickChips({
   filters: MapFilters;
   onChange: (next: MapFilters) => void;
 }) {
-  // Categories have their own chips below; the rest show as applied chips.
-  const applied = appliedFilterChips(filters).filter(
-    (c) => !c.key.startsWith("categories:"),
-  );
-  // Chosen categories first, so one picked elsewhere (Filtre, the search
-  // page) is in view, not scrolled off the end of the row.
-  const ordered = [...MARKER_CATEGORIES].sort(
-    (a, b) =>
-      Number(filters.categories.includes(b)) -
-      Number(filters.categories.includes(a)),
-  );
-  const toggle = (c: MarkerCategory) =>
-    onChange({
-      ...filters,
-      categories: filters.categories.includes(c)
-        ? filters.categories.filter((x) => x !== c)
-        : [...filters.categories, c],
-    });
+  const applied = appliedFilterChips(filters);
+  // Nothing applied: no row, so the map keeps the space.
+  if (applied.length === 0) return null;
   return (
     <ScrollView
       horizontal
@@ -127,15 +108,6 @@ export const MapQuickChips = memo(function MapQuickChips({
           label={c.label}
           floating
           onRemove={() => onChange(c.remove(filters))}
-        />
-      ))}
-      {ordered.map((c) => (
-        <CategoryChip
-          key={c}
-          category={c}
-          floating
-          selected={filters.categories.includes(c)}
-          onPress={() => toggle(c)}
         />
       ))}
     </ScrollView>
