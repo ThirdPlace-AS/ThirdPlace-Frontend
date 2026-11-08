@@ -65,6 +65,7 @@ function placeToItem(p: MockPlace, origin: Origin): DiscoveryItem {
     typeLabel: placeTypeLabel(p),
     area: areaFor(p.coord).name,
     meta: `${"kr".repeat(p.priceLevel)} · ${isPlaceOpen(p) ? "Åpent" : "Stengt"}`,
+    openNow: isPlaceOpen(p),
     rating: placeRating(p.id).score,
     reviewCount: placeRating(p.id).count,
     tags: p.vibes,
@@ -87,6 +88,7 @@ function experienceToItem(e: MockExperience, origin: Origin): DiscoveryItem {
     // "Arrangement · Lillestrøm · Lør 12:00" (Phase 19).
     subtitle: `${experienceTypeLabel(e)} · ${areaFor(e.meetingPoint.coord).name} · ${e.when}`,
     when: e.when,
+    price: e.priceNok ? `${e.priceNok} kr` : "Gratis",
     type: experienceType(e),
     typeLabel: experienceTypeLabel(e),
     area: areaFor(e.meetingPoint.coord).name,

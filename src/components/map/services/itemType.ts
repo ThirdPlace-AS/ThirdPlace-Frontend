@@ -66,3 +66,20 @@ export function itemTypeOf(
   }
   return undefined;
 }
+
+/** The browse card's "what is it" line (founder 2026-11-08): the type with a
+ *  place's opening ("Bedrift · Åpent") or an experience's time ("Festival ·
+ *  Lør 10:00"). No area or distance on the card. */
+export function browseCardLine(
+  item: Pick<DiscoveryItem, "kind" | "typeLabel" | "when" | "openNow">,
+): string {
+  const extra =
+    item.kind === "experience"
+      ? item.when
+      : item.openNow === undefined
+        ? undefined
+        : item.openNow
+          ? "Åpent"
+          : "Stengt";
+  return [item.typeLabel, extra].filter(Boolean).join(" · ");
+}

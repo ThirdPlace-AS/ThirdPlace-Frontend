@@ -27,6 +27,7 @@ import { GoingLine } from "@/components/GoingLine";
 import { PhotoPager } from "./PhotoPager";
 import { sheetA11yChrome } from "./sheetA11y";
 import { photosForItem } from "./services/itemCover";
+import { browseCardLine } from "./services/itemType";
 import type { DiscoveryItem } from "./types/mapPresentation";
 
 // Airbnb-style persistent "browse" sheet. Always peeks (handle + header,
@@ -325,6 +326,7 @@ export const BrowseCard = memo(function BrowseCard({
   onActions: (item: DiscoveryItem) => void;
 }) {
   const photos = photosForItem(item);
+  const tags = (item.tags ?? []).slice(0, 3);
   return (
     // Card wrapper is a View; the save button is a SIBLING of the
     // select Pressable (never nested) — nested <button> is invalid
@@ -362,9 +364,11 @@ export const BrowseCard = memo(function BrowseCard({
           )}
         </View>
 
-        {/* Body: title + rating, then for an experience its time and who
-            is going, for a place its price and opening; tag chips. No
-            category, type, area or distance (founder 2026-11-08). */}
+        {/* Body (founder 2026-11-08): title + rating, then what it is
+            ("Bedrift", "Opplevelse", "Festival" …) with a place's opening
+            or an experience's time; for an experience who is going and its
+            price (places show no price); tag chips. No pin category, area
+            or distance. */}
         <View className="gap-1">
           <View className="flex-row items-center gap-2">
             <Text
@@ -389,22 +393,25 @@ export const BrowseCard = memo(function BrowseCard({
               </View>
             ) : null}
           </View>
-          {item.when ? (
+          {browseCardLine(item) ? (
             <Text variant="caption" tone="muted" numberOfLines={1}>
-              {item.when}
+              {browseCardLine(item)}
             </Text>
           ) : null}
           {item.kind === "experience" ? (
-            // Who is going, live with your own join (Phase 16).
-            <GoingLine id={item.id} />
-          ) : item.meta ? (
-            <Text variant="label" weight="semibold" numberOfLines={1}>
-              {item.meta}
-            </Text>
+            <>
+              {/* Who is going, live with your own join (Phase 16). */}
+              <GoingLine id={item.id} />
+              {item.price ? (
+                <Text variant="label" weight="semibold" numberOfLines={1}>
+                  {item.price}
+                </Text>
+              ) : null}
+            </>
           ) : null}
-          {item.tags && item.tags.length > 0 ? (
+          {tags.length > 0 ? (
             <View className="flex-row flex-wrap gap-1.5 mt-0.5">
-              {item.tags.slice(0, 3).map((t) => (
+              {tags.map((t) => (
                 <View
                   key={t}
                   className="px-2 py-0.5 rounded-full bg-surfaceMuted"

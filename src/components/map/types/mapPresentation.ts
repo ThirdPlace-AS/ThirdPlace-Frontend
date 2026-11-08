@@ -57,8 +57,13 @@ export type DiscoveryItem = {
   // point; the lists are nearest first (Phase 19).
   distanceM?: number;
   // An experience's time as written on it ("Lør 12:00"); the browse card
-  // shows it on its own (founder 2026-11-08: no type, area or distance there).
+  // shows it after the type (founder 2026-11-08: no area or distance there).
   when?: string;
+  // A place open right now (from its hours), for the card's type line.
+  openNow?: boolean;
+  // An experience's price ("250 kr" or "Gratis"); places show none on the
+  // browse card (founder 2026-11-08).
+  price?: string;
 };
 
 // Result of resolving a discovery mode over the fixtures.
