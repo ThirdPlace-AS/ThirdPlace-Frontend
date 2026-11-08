@@ -1725,7 +1725,16 @@ export function generatedNames(
   exclude: ReadonlySet<string> = new Set(),
 ): string[] {
   const total = GEN_FIRST.length * GEN_LAST.length;
-  let step = Math.floor(total / 3) + 1;
+  // Walk the first × last grid by a golden-ratio step on both axes, so names
+  // next to each other differ in both. (A third of the grid per step, as
+  // before Phase 19 S3c, gave three surnames on repeat.) Coprime with the
+  // grid size, so the walk visits every name once.
+  const near = (n: number) => {
+    let k = Math.round(n * 0.618);
+    while (gcd(k, n) !== 1) k += 1;
+    return k;
+  };
+  let step = GEN_FIRST.length * near(GEN_LAST.length) + near(GEN_FIRST.length);
   while (gcd(step, total) !== 1) step += 1;
   const taken = new Set([...exclude, ...people.map((p) => p.name)]);
   const out: string[] = [];
@@ -2349,6 +2358,7 @@ export const groups: MockGroup[] = [
     interestId: "kaffe",
     interests: ["kaffe"],
     homePlaceId: "p1",
+    chatId: "c-g1",
     name: "Morgenkaffe-gjengen",
     about: "Folk som møtes til kaffe i helgene.",
     rules:
@@ -2363,6 +2373,7 @@ export const groups: MockGroup[] = [
     interestId: "litteratur",
     interests: ["litteratur"],
     homePlaceId: "p2",
+    chatId: "c-g2",
     name: "Løkka Lesesirkel",
     about: "Månedlig lesesirkel på Grünerløkka.",
     rules: "Les så mye du rekker, ingen spoilere i chatten før møtet.",
@@ -2376,6 +2387,7 @@ export const groups: MockGroup[] = [
     interestId: "vin",
     interests: ["vin"],
     homePlaceId: "p3",
+    chatId: "c-g3",
     name: "Naturvin-klubben",
     about: "Vi smaker naturvin sammen én gang i måneden.",
     rules: "Ta med noe å spise til å dele. Vi bytter på hvem som velger vin.",
@@ -2772,6 +2784,47 @@ export const chats: MockChat[] = [
     member: false,
     members: 19,
     initials: "FS",
+  },
+  // The fixture groups' own chats (Phase 19): not joined, so the Chat tab
+  // lists one only after the viewer joins it from the group page.
+  {
+    id: "c-g1",
+    name: "Morgenkaffe-gjengen",
+    last: "Tar med en kollega som nettopp har flyttet til Løkka, håper det går fint.",
+    time: "I går",
+    unread: 0,
+    type: "user_created",
+    access: "open",
+    status: "active",
+    member: false,
+    members: 34,
+    initials: "MG",
+  },
+  {
+    id: "c-g2",
+    name: "Løkka Lesesirkel",
+    last: "Jeg har lest den ferdig og sier ingenting.",
+    time: "I går",
+    unread: 0,
+    type: "user_created",
+    access: "open",
+    status: "active",
+    member: false,
+    members: 18,
+    initials: "LL",
+  },
+  {
+    id: "c-g3",
+    name: "Naturvin-klubben",
+    last: "Jeg tar med ost og brød.",
+    time: "I går",
+    unread: 0,
+    type: "user_created",
+    access: "closed",
+    status: "active",
+    member: false,
+    members: 52,
+    initials: "NK",
   },
 ];
 
@@ -3240,6 +3293,84 @@ export const messagesByChat: Record<string, MockMessage[]> = {
       initials: "ND",
       text: "Hyggelig betjening som alltid.",
       time: "I går",
+      mine: false,
+    },
+  ],
+  "c-g1": [
+    {
+      id: "m-c-g1-1",
+      author: "Maria",
+      initials: "MM",
+      text: "Noen som blir med på kaffen onsdag? Jeg tar med kanelboller.",
+      time: "19:12",
+      mine: false,
+    },
+    {
+      id: "m-c-g1-2",
+      author: "Jonas",
+      initials: "JB",
+      text: "Jeg kommer, men må gå litt før ti.",
+      time: "19:20",
+      mine: false,
+    },
+    {
+      id: "m-c-g1-3",
+      author: "Nina",
+      initials: "ND",
+      text: "Tar med en kollega som nettopp har flyttet til Løkka, håper det går fint.",
+      time: "20:03",
+      mine: false,
+    },
+  ],
+  "c-g2": [
+    {
+      id: "m-c-g2-1",
+      author: "Åse",
+      initials: "ÅK",
+      text: "Hvor langt har dere kommet i boka? Jeg er på kapittel tolv.",
+      time: "17:45",
+      mine: false,
+    },
+    {
+      id: "m-c-g2-2",
+      author: "Per",
+      initials: "PO",
+      text: "Halvveis. Ingen spoilere før søndag, takk.",
+      time: "18:02",
+      mine: false,
+    },
+    {
+      id: "m-c-g2-3",
+      author: "Ingrid",
+      initials: "IS",
+      text: "Jeg har lest den ferdig og sier ingenting.",
+      time: "18:10",
+      mine: false,
+    },
+  ],
+  "c-g3": [
+    {
+      id: "m-c-g3-1",
+      author: "Tom",
+      initials: "TT",
+      text: "Hvem velger flasker til torsdag? Er det ikke Kari sin tur?",
+      time: "12:30",
+      mine: false,
+    },
+    {
+      id: "m-c-g3-2",
+      author: "Kari",
+      initials: "KN",
+      text: "Jo, det er meg. Det blir noe oransje fra Slovenia og noe med bobler.",
+      time: "13:05",
+      mine: false,
+    },
+    {
+      id: "m-c-g3-3",
+      author: "Maria",
+      initials: "MM",
+      text: "Jeg tar med ost og brød.",
+      time: "13:11",
       mine: false,
     },
   ],

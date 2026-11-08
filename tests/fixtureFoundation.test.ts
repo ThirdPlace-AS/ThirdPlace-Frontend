@@ -183,6 +183,17 @@ describe("made-up names", () => {
     expect(generatedNames("x", 5, new Set([a[0]!]))).not.toContain(a[0]);
   });
 
+  it("vary first and last names next to each other (Phase 19 S3c)", () => {
+    // A group page shows 12 faces: they read as 12 different people.
+    for (const seed of ["g-klatring", "e1", "g1", "e-test"]) {
+      const twelve = generatedNames(seed, 12);
+      const last = new Set(twelve.map((n) => n.split(" ").at(-1)));
+      const first = new Set(twelve.map((n) => n.split(" ")[0]));
+      expect(last.size).toBeGreaterThanOrEqual(10);
+      expect(first.size).toBeGreaterThanOrEqual(10);
+    }
+  });
+
   it("fill each attendee list to `going`, the hand-written rows first", () => {
     for (const e of experiences) {
       const list = attendeesForExperience(e.id);

@@ -137,6 +137,7 @@ export function createGroup(input: NewGroupInput): {
     photos: input.photos,
     mine: true,
     interests: [],
+    chatId,
     ...(input.rules?.trim() ? { rules: input.rules.trim() } : {}),
   };
   const chat: MockChat = {

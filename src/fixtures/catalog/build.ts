@@ -142,7 +142,7 @@ function messages(chatId: string, lines: readonly ChatLineSeed[]) {
 
 function chatFrom(
   base: Pick<MockChat, "id" | "name" | "type" | "access"> &
-    Partial<Pick<MockChat, "placeId" | "pinnedExperienceId">>,
+    Partial<Pick<MockChat, "placeId" | "pinnedExperienceId" | "members">>,
   lines: readonly ChatLineSeed[],
   out: Catalog,
 ) {
@@ -390,7 +390,14 @@ export function buildCatalog(
         chatId,
       });
       chatFrom(
-        { id: chatId, name: g.name, type: "user_created", access: g.access },
+        {
+          id: chatId,
+          name: g.name,
+          type: "user_created",
+          access: g.access,
+          // The group's chat: its members are the group's.
+          members: g.memberCount,
+        },
         g.chat,
         out,
       );

@@ -31,6 +31,7 @@ import {
   type IconName,
 } from "@/components/ui";
 import {
+  PLACE_KIND_LABEL,
   areaLabel,
   chatForExperience,
   chats,
@@ -44,6 +45,7 @@ import { libImage } from "@/fixtures/images";
 import { formatRating, membersLabel } from "@/lib/format";
 
 import { useExperienceJoin } from "../map/hooks/useExperienceJoin";
+import { ITEM_TYPE_ICON, experienceTypeLabel } from "../map/services/itemType";
 import { PhotoPager } from "../map/PhotoPager";
 import type { SheetTarget } from "../map/sheetTypes";
 import {
@@ -97,9 +99,13 @@ export function includedLabel(exp: Pick<MockExperience, "included">): string {
 
 /** Vibes first, then tags that are not already a vibe (no chip twice). */
 export function experienceChips(
-  exp: Pick<MockExperience, "vibes" | "tags">,
+  exp: Pick<MockExperience, "vibes" | "tags" | "format" | "days">,
 ): string[] {
-  const seen = new Set<string>();
+  // The top bar already says what an Arrangement is ("Festival · Kolsås"),
+  // so a tag naming it is not repeated as a chip (Phase 19).
+  const seen = new Set<string>(
+    exp.format === "event" ? [experienceTypeLabel(exp).toLowerCase()] : [],
+  );
   return [...exp.vibes, ...exp.tags].filter((c) => {
     const k = c.toLowerCase();
     if (seen.has(k)) return false;
@@ -128,12 +134,14 @@ export function ExperiencePage({
   const latest = sortReviews(reviews, "newest")[0];
   const more = moreExperiences(exp);
   const reviewsHref = `/experience/${exp.id}/reviews` as Href;
+  // The direct chat with the host, matched by person (Phase 19: with many
+  // hosts a first name is no longer enough).
   const dm = host
-    ? chats.find(
-        (c) =>
-          c.type === "dm" && c.name.startsWith(host.name.split(" ")[0] ?? ""),
-      )
+    ? chats.find((c) => c.type === "dm" && c.personId === host.id)
     : undefined;
+  // An Arrangement names who puts it on (a club or a business).
+  const organizer =
+    exp.format === "event" ? placeById(exp.organizerPlaceId) : undefined;
 
   return (
     <View className="gap-6">
@@ -195,6 +203,14 @@ export function ExperiencePage({
             host ? () => onNavigate(`/creator/${host.id}` as Href) : undefined
           }
         />
+        {organizer ? (
+          <InfoRow
+            icon={ITEM_TYPE_ICON[organizer.kind]}
+            title={`Arrangør: ${organizer.name}`}
+            subtitle={`${PLACE_KIND_LABEL[organizer.kind]} · ${areaLabel(organizer.coord)}`}
+            onPress={() => onNavigate(`/place/${organizer.id}` as Href)}
+          />
+        ) : null}
         <InfoRow
           icon="location-outline"
           title={place?.name ?? exp.meetingPoint.name}
@@ -231,7 +247,7 @@ export function ExperiencePage({
         />
         {group ? (
           <InfoRow
-            icon="people-circle-outline"
+            icon="people-outline"
             title={group.name}
             subtitle={`Gruppe · ${membersLabel(group.memberCount)}`}
             onPress={() => onNavigate(`/group/${group.id}` as Href)}

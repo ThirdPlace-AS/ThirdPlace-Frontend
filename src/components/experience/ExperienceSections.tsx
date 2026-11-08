@@ -66,7 +66,8 @@ export function ItinerarySection({ exp }: { exp: MockExperience }) {
   return (
     <View className="gap-4">
       <Text variant="h2" accessibilityRole="header">
-        Hva dere skal gjøre
+        {/* An Arrangement shows its steps as the program (Phase 19). */}
+        {exp.format === "event" ? "Program" : "Hva dere skal gjøre"}
       </Text>
       <View>
         {steps.map((s, i) => (
@@ -226,7 +227,13 @@ export function AvailabilitySection({ exp }: { exp: MockExperience }) {
           Ledige tider
         </Text>
         <Text variant="caption" tone="muted">
-          {`${exp.repeat} · ${exp.duration}`}
+          {`${
+            exp.format === "event"
+              ? (exp.days ?? 1) > 1
+                ? `${exp.days} dager`
+                : "Én dag"
+              : exp.repeat
+          } · ${exp.duration}`}
         </Text>
       </View>
       <ScrollView
@@ -631,7 +638,11 @@ export function ChatSection({
               {chat.name}
             </Text>
             <Text variant="caption" tone="muted">
-              {`${chat.members ?? 0} medlemmer · ${CHAT_ACCESS_LABEL[chat.access]}`}
+              {/* Catalogue place and experience chats carry no count
+                  (Phase 19): the access mode alone, never "0 medlemmer". */}
+              {chat.members != null
+                ? `${chat.members} medlemmer · ${CHAT_ACCESS_LABEL[chat.access]}`
+                : CHAT_ACCESS_LABEL[chat.access]}
             </Text>
           </View>
         </View>

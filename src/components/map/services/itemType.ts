@@ -33,7 +33,7 @@ export const ITEM_TYPE_LABEL: Record<ItemType, string> = {
 /** Filtre's "Type" chips, drawn like the sheet's other groups. */
 export const ITEM_TYPE_ICON: Record<ItemType, IconName> = {
   bedrift: "tp-business",
-  organisasjon: "people-circle-outline",
+  organisasjon: "ribbon-outline",
   byrom: "map-outline",
   opplevelse: "tp-experience",
   arrangement: "calendar-outline",

@@ -6,6 +6,10 @@ import { formatDecimal } from "./format";
 const EARTH_M = 6_371_000;
 const rad = (d: number) => (d * Math.PI) / 180;
 
+/** The "i nærheten" rails (Flere steder / Flere opplevelser) list only what
+ *  lies within this distance of the page's place or meeting point. */
+export const NEARBY_M = 10_000;
+
 /** Straight-line (great-circle) distance in metres between [lng, lat] points. */
 export function distanceMeters(
   a: readonly [number, number],

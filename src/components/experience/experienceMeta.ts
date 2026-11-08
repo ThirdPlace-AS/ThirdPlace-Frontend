@@ -7,7 +7,9 @@ import {
   type MockExperience,
   type MockPerson,
 } from "@/fixtures";
-import { distanceMeters } from "@/lib/distance";
+import { NEARBY_M, distanceMeters } from "@/lib/distance";
+
+import { experienceTypeLabel } from "../map/services/itemType";
 
 /** The fixture person who hosts this experience (`hostId`, never by name).
  *  An Arrangement is hosted by its organiser's contact person. */
@@ -24,16 +26,19 @@ export function areaFor(coord: [number, number]): string {
 
 /** Small caption for the page top bar: "Sosialt · Grünerløkka". */
 export function experienceCaption(exp: MockExperience): string {
-  return `${exp.category} · ${areaFor(exp.meetingPoint.coord)}`;
+  // An Arrangement says so ("Festival · Kolsås", Phase 19).
+  const what = exp.format === "event" ? experienceTypeLabel(exp) : exp.category;
+  return `${what} · ${areaFor(exp.meetingPoint.coord)}`;
 }
 
-/** Other experiences to suggest, nearest meeting point first (cancelled ones
- *  left out). */
+/** Other experiences to suggest, nearest meeting point first, within
+ *  NEARBY_M (cancelled ones left out). */
 export function moreExperiences(exp: MockExperience, n = 6): MockExperience[] {
   const here = exp.meetingPoint.coord;
   return experiences
     .filter((e) => e.id !== exp.id && e.status !== "cancelled")
     .map((e) => ({ e, d: distanceMeters(e.meetingPoint.coord, here) }))
+    .filter((x) => x.d <= NEARBY_M)
     .sort((a, b) => a.d - b.d)
     .slice(0, n)
     .map((x) => x.e);

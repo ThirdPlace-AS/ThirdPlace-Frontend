@@ -33,7 +33,12 @@ import {
 } from "@/components/ui";
 import {
   areaLabel,
+  businessForPlace,
   chatForPlace,
+  experiences,
+  groups,
+  organizationForPlace,
+  personById,
   places,
   priceBandFor,
   ratingOf,
@@ -46,7 +51,12 @@ import {
   libThumb,
   photosForPlace,
 } from "@/fixtures/images";
-import { formatRating } from "@/lib/format";
+import { formatRating, membersLabel } from "@/lib/format";
+import {
+  ITEM_TYPE_ICON,
+  experienceTypeLabel,
+} from "@/components/map/services/itemType";
+import { NEARBY_M, distanceMeters } from "@/lib/distance";
 import { distanceLabelFor, useOrigin } from "@/lib/origin";
 
 /** Chips: vibes, then tags not already a vibe (each once). */
@@ -62,12 +72,15 @@ export function placeChips(p: Pick<MockPlace, "vibes" | "tags">): string[] {
 
 /** Other places, nearest first (straight-line distance between the pins). */
 export function nearbyPlaces(p: MockPlace, count = 6): MockPlace[] {
-  const d = (q: MockPlace) =>
-    Math.hypot(q.coord[0] - p.coord[0], (q.coord[1] - p.coord[1]) * 2);
+  // Nearest first, and only what is near (Phase 19: across Akershus the
+  // nearest place can be a town away).
   return places
     .filter((q) => q.id !== p.id && q.placeStatus !== "unavailable")
-    .sort((a, b) => d(a) - d(b))
-    .slice(0, count);
+    .map((q) => ({ q, d: distanceMeters(q.coord, p.coord) }))
+    .filter((x) => x.d <= NEARBY_M)
+    .sort((a, b) => a.d - b.d)
+    .slice(0, count)
+    .map((x) => x.q);
 }
 
 /** "Ting å vite" for a place: facts the listing has, nothing invented. */
@@ -96,6 +109,29 @@ export function placeThingsToKnow(p: MockPlace): Know[] {
       summary: p.specialHours,
       detail: [{ icon: "time-outline", text: p.specialHours }],
     });
+  // A byrom: what is there, who it is for, the season (Phase 19).
+  if (p.space)
+    items.push({
+      key: "fasiliteter",
+      icon: "leaf-outline",
+      title: "Fasiliteter",
+      summary: p.space.facilities.join(", "),
+      detail: [
+        ...p.space.facilities.map((f) => ({
+          icon: "checkmark-circle-outline" as const,
+          text: f,
+        })),
+        { icon: "people-outline", text: p.space.access },
+        ...(p.space.season
+          ? [
+              {
+                icon: "sunny-outline" as const,
+                text: `Sesong: ${p.space.season}`,
+              },
+            ]
+          : []),
+      ],
+    });
   items.push({
     key: "kilde",
     icon: "shield-checkmark-outline",
@@ -122,6 +158,18 @@ export function PlacePage({
   const photos = photosForPlace(place).map(libImage);
   const band = priceBandFor(place.priceNok);
   const nearby = nearbyPlaces(place);
+  // Phase 19: who runs it, what happens here, which groups meet here.
+  const business =
+    place.kind === "bedrift" ? businessForPlace(place.id) : undefined;
+  const org =
+    place.kind === "organisasjon" ? organizationForPlace(place.id) : undefined;
+  const contact = org ? personById(org.contactPersonId) : undefined;
+  const happening = experiences.filter(
+    (e) =>
+      e.status !== "cancelled" &&
+      (e.placeId === place.id || e.organizerPlaceId === place.id),
+  );
+  const meetingHere = groups.filter((g) => g.homePlaceId === place.id);
 
   return (
     <View className="gap-6">
@@ -187,6 +235,36 @@ export function PlacePage({
             lines={2}
           />
         ) : null}
+        {business ? (
+          <InfoRow
+            icon="storefront-outline"
+            title={`Drives av ${business.name}`}
+            subtitle={business.verified ? "Verifisert bedrift" : "Bedrift"}
+          />
+        ) : null}
+        {org ? (
+          <>
+            <InfoRow
+              icon={ITEM_TYPE_ICON.organisasjon}
+              // A club named like its place would say its name twice.
+              title={org.name === place.name ? "Om organisasjonen" : org.name}
+              subtitle={
+                contact ? `${org.form} · Kontakt: ${contact.name}` : org.form
+              }
+              onPress={
+                contact
+                  ? () => onNavigate(`/people/${contact.id}` as Href)
+                  : undefined
+              }
+            />
+            <InfoRow
+              icon="list-outline"
+              title="Hva vi gjør"
+              subtitle={org.activities.join(" · ")}
+              lines={2}
+            />
+          </>
+        ) : null}
       </View>
 
       <View className="h-px bg-line" />
@@ -221,6 +299,40 @@ export function PlacePage({
           }
         />
       </View>
+
+      {happening.length > 0 ? (
+        <View className="gap-1">
+          <Text variant="h2" accessibilityRole="header" className="mb-2">
+            Hva skjer her
+          </Text>
+          {happening.map((e) => (
+            <InfoRow
+              key={e.id}
+              icon={e.format === "event" ? "calendar-outline" : "tp-experience"}
+              title={e.title}
+              subtitle={`${experienceTypeLabel(e)} · ${e.when}`}
+              onPress={() => onNavigate(`/experience/${e.id}` as Href)}
+            />
+          ))}
+        </View>
+      ) : null}
+
+      {meetingHere.length > 0 ? (
+        <View className="gap-1">
+          <Text variant="h2" accessibilityRole="header" className="mb-2">
+            Grupper som møtes her
+          </Text>
+          {meetingHere.map((g) => (
+            <InfoRow
+              key={g.id}
+              icon="people-outline"
+              title={g.name}
+              subtitle={`Gruppe · ${membersLabel(g.memberCount)}`}
+              onPress={() => onNavigate(`/group/${g.id}` as Href)}
+            />
+          ))}
+        </View>
+      ) : null}
 
       <ChatSection chat={chatForPlace(place.id)} onNavigate={onNavigate} />
 

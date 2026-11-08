@@ -9,7 +9,7 @@ import { areaFor } from "@/components/experience/experienceMeta";
 import { markerId } from "@/components/map/types/mapPresentation";
 import { PlacePage } from "@/components/place/PlacePage";
 import { EmptyState, Header, Screen, StatusBarStyle } from "@/components/ui";
-import { placeById } from "@/fixtures";
+import { PLACE_KIND_LABEL, placeById } from "@/fixtures";
 import { PageTopBar } from "@/features/entity/PageTopBar";
 import { goBackOr } from "@/lib/navigation";
 
@@ -33,7 +33,8 @@ export default function PlaceScreen() {
     <View className="flex-1 bg-background">
       <StatusBarStyle style="auto" />
       <PageTopBar
-        caption={`${place.category} · ${areaFor(place.coord)}`}
+        // "Byrom · Kolsås" (Phase 19): what it is and where.
+        caption={`${PLACE_KIND_LABEL[place.kind]} · ${areaFor(place.coord)}`}
         shareMessage={`${place.name} på ThirdPlace: thirdplace.app/place/${place.id}`}
         savedKey={markerId("place", place.id)}
       />
