@@ -4,6 +4,7 @@
 
 import {
   DURATION_STEPS,
+  experiences,
   placeById,
   places,
   ratingOf,
@@ -27,10 +28,21 @@ import {
   type MarkerCategory,
 } from "./markerCategory";
 
-// Price range bounds derived from the MOCK fixtures (not a pricing contract).
+// Price range bounds derived from the MOCK fixtures (not a pricing contract):
+// the dearest place or experience. The top of the range is open ("kr 1650+"),
+// so a dearer item, such as one made in Legg til, still shows by default.
 export const PRICE_FLOOR = 0;
-export const PRICE_CEIL = Math.max(...places.map((p) => p.priceNok));
+export const PRICE_CEIL = Math.max(
+  ...places.map((p) => p.priceNok),
+  ...experiences.map((e) => e.priceNok ?? 0),
+);
 export const PRICE_STEP = 10;
+
+/** The price range, with no upper limit while the slider is at its top. */
+export function withinPrice(price: number, f: MapFilters): boolean {
+  if (price < f.priceMin) return false;
+  return f.priceMax >= PRICE_CEIL || price <= f.priceMax;
+}
 // Duration is picked as a "max" step; the last step (999) means "no upper cap".
 export const DURATION_NO_CAP =
   DURATION_STEPS[DURATION_STEPS.length - 1]?.min ?? 999;
@@ -142,7 +154,7 @@ export function applyFilters(
     if (f.types.length > 0 && !f.types.some((t) => p.types.includes(t)))
       return false;
     if (f.maxDistanceM !== null && p.distanceM > f.maxDistanceM) return false;
-    if (p.priceNok < f.priceMin || p.priceNok > f.priceMax) return false;
+    if (!withinPrice(p.priceNok, f)) return false;
     if (f.durationMaxMin < DURATION_NO_CAP && p.durationMin > f.durationMaxMin)
       return false;
     if (f.vibes.length > 0 && !f.vibes.some((v) => p.vibes.includes(v)))
@@ -270,8 +282,7 @@ export function applyExperienceFilters(
       return false;
     if (f.maxDistanceM !== null && place && place.distanceM > f.maxDistanceM)
       return false;
-    const price = e.priceNok ?? 0;
-    if (price < f.priceMin || price > f.priceMax) return false;
+    if (!withinPrice(e.priceNok ?? 0, f)) return false;
     if (f.durationMaxMin < DURATION_NO_CAP && e.durationMin > f.durationMaxMin)
       return false;
     if (

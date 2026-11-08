@@ -26,6 +26,7 @@ import {
   DEFAULT_CHIP_ICON,
   DURATION_STEPS,
   EXPERIENCE_TYPES,
+  experiences,
   LANGUAGES,
   LANGUAGES_VISIBLE,
   places,
@@ -79,7 +80,11 @@ const DISTANCE_STEPS: { m: number | null; label: string }[] = [
 // every render (they never change; the fixtures are constant).
 const DURATION_LABELS = DURATION_STEPS.map((s) => s.label);
 const DISTANCE_LABELS = DISTANCE_STEPS.map((s) => s.label);
-const PRICE_VALUES = places.map((p) => p.priceNok);
+// Places and experiences both carry a price, so both shape the histogram.
+const PRICE_VALUES = [
+  ...places.map((p) => p.priceNok),
+  ...experiences.map((e) => e.priceNok ?? 0),
+];
 
 // Icon-chip items for the taxonomy groups (label + Ionicons glyph), hoisted so
 // they are built once. Vibe/Fasiliteter derive their glyph from the icon maps.
