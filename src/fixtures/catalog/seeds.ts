@@ -8,7 +8,9 @@ import { NATUR_B } from "./natur-b";
 import { SOSIALT_A } from "./sosialt-a";
 import { SOSIALT_B } from "./sosialt-b";
 import { SOSIALT_C } from "./sosialt-c";
-import { TRENING } from "./trening";
+import { TRENING_A } from "./trening-a";
+import { TRENING_B } from "./trening-b";
+import { TRENING_C } from "./trening-c";
 import type { InterestSeed } from "./types";
 import { VELVAERE_A } from "./velvaere-a";
 import { VELVAERE_B } from "./velvaere-b";
@@ -22,7 +24,9 @@ export const SEEDS: readonly InterestSeed[] = [
   ...SOSIALT_C,
   ...NATUR_A,
   ...NATUR_B,
-  ...TRENING,
+  ...TRENING_A,
+  ...TRENING_B,
+  ...TRENING_C,
   ...VELVAERE_A,
   ...VELVAERE_B,
 ];
