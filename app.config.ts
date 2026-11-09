@@ -2,9 +2,13 @@ import type { ConfigContext, ExpoConfig } from "expo/config";
 
 // Extends the static app.json config. The ONLY dynamic bit is the Mapbox native
 // SDK download token, read from the environment at build time (never committed).
-// Set MAPBOX_DOWNLOADS_TOKEN (a secret sk.* token) in your shell / EAS secrets
-// before a native build. Without it, @rnmapbox/maps still installs but the native
-// map is unavailable (the app falls back to the SoftMap placeholder).
+// Set MAPBOX_DOWNLOADS_TOKEN (a secret sk.* token) in your shell / the EAS
+// environment before a native build. With @rnmapbox/maps 10.3.8 the Gradle
+// download auth is optional, so a build may succeed without it. What decides
+// whether the running app shows the native map is EXPO_PUBLIC_MAPBOX_TOKEN (the
+// public pk.* token, inlined at bundle time through src/lib/env.ts): without it
+// the app falls back to the SoftMap. `.env.*` files never reach EAS, so an EAS
+// build needs both in the EAS environment its profile names (eas.json).
 export default ({ config }: ConfigContext): ExpoConfig => {
   // SECURITY: the download token is used ONLY as a native-build plugin input
   // (Gradle Maven auth / Pods). It is never written to `extra`, never exposed as
