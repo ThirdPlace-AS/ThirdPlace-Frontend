@@ -6,10 +6,15 @@
 import { describe, expect, it, jest } from "@jest/globals";
 import { act, fireEvent, render, screen } from "@testing-library/react-native";
 import { Image } from "expo-image";
+import { SafeAreaProvider } from "react-native-safe-area-context";
 
 import { PhotoPager } from "@/components/map/PhotoPager";
 import { LoadingImage } from "@/components/ui/LoadingImage";
+import { PhotoViewer } from "@/components/ui/PhotoViewer";
 import { imagePreview, libImage } from "@/fixtures/images";
+
+// The viewer sets the status bar through a focus effect; no navigator here.
+jest.mock("expo-router", () => ({ useFocusEffect: () => {} }));
 
 const PHOTOS = [
   libImage("venue-cafe"),
@@ -96,5 +101,35 @@ describe("imagePreview", () => {
     const src = libImage("venue-cafe");
     expect(imagePreview(src)).toBeDefined();
     expect(imagePreview(src)).toBe(imagePreview(src));
+  });
+});
+
+// Speed pass (0350): the viewer's list used the defaults (ten items, 21
+// screens), so opening it mounted and decoded every full photo of the item.
+describe("PhotoViewer", () => {
+  it("mounts the photo it opens at and its neighbour, not the whole set", () => {
+    jest.useFakeTimers();
+    try {
+      render(
+        <SafeAreaProvider
+          initialMetrics={{
+            frame: { x: 0, y: 0, width: 360, height: 640 },
+            insets: { top: 24, left: 0, right: 0, bottom: 0 },
+          }}
+        >
+          <PhotoViewer
+            photos={PHOTOS}
+            index={0}
+            onClose={() => {}}
+            label="Kafé"
+          />
+        </SafeAreaProvider>,
+      );
+      act(() => jest.runOnlyPendingTimers());
+      expect(screen.getByLabelText("Bilde 1 av 3")).toBeTruthy();
+      expect(screen.queryByLabelText("Bilde 3 av 3")).toBeNull();
+    } finally {
+      jest.useRealTimers();
+    }
   });
 });

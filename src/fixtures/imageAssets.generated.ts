@@ -254,7 +254,6 @@ export const LIBRARY_FULL = {
   "kunst-5": require("../../assets/library/kunst-5.webp"),
   "langrenn-1": require("../../assets/library/langrenn-1.webp"),
   "langrenn-2": require("../../assets/library/langrenn-2.webp"),
-  "langrenn-3": require("../../assets/library/langrenn-3.webp"),
   "langrenn-4": require("../../assets/library/langrenn-4.webp"),
   "langrenn-5": require("../../assets/library/langrenn-5.webp"),
   "litteratur-1": require("../../assets/library/litteratur-1.webp"),
@@ -276,7 +275,6 @@ export const LIBRARY_FULL = {
   "market-bike": require("../../assets/library/market-bike.webp"),
   "market-ceramics": require("../../assets/library/market-ceramics.webp"),
   "market-plant": require("../../assets/library/market-plant.webp"),
-  "market-vinyl": require("../../assets/library/market-vinyl.webp"),
   "mat-1": require("../../assets/library/mat-1.webp"),
   "mat-2": require("../../assets/library/mat-2.webp"),
   "mat-3": require("../../assets/library/mat-3.webp"),
@@ -424,7 +422,6 @@ export const LIBRARY_FULL = {
   "quiz-2": require("../../assets/library/quiz-2.webp"),
   "quiz-3": require("../../assets/library/quiz-3.webp"),
   "quiz-4": require("../../assets/library/quiz-4.webp"),
-  "quiz-5": require("../../assets/library/quiz-5.webp"),
   "quiz-6": require("../../assets/library/quiz-6.webp"),
   "quiz-7": require("../../assets/library/quiz-7.webp"),
   "river-1": require("../../assets/library/river-1.webp"),
@@ -861,7 +858,6 @@ export const LIBRARY_SMALL: Record<
   "kunst-5": require("../../assets/library/kunst-5-sm.webp"),
   "langrenn-1": require("../../assets/library/langrenn-1-sm.webp"),
   "langrenn-2": require("../../assets/library/langrenn-2-sm.webp"),
-  "langrenn-3": require("../../assets/library/langrenn-3-sm.webp"),
   "langrenn-4": require("../../assets/library/langrenn-4-sm.webp"),
   "langrenn-5": require("../../assets/library/langrenn-5-sm.webp"),
   "litteratur-1": require("../../assets/library/litteratur-1-sm.webp"),
@@ -883,7 +879,6 @@ export const LIBRARY_SMALL: Record<
   "market-bike": require("../../assets/library/market-bike-sm.webp"),
   "market-ceramics": require("../../assets/library/market-ceramics-sm.webp"),
   "market-plant": require("../../assets/library/market-plant-sm.webp"),
-  "market-vinyl": require("../../assets/library/market-vinyl-sm.webp"),
   "mat-1": require("../../assets/library/mat-1-sm.webp"),
   "mat-2": require("../../assets/library/mat-2-sm.webp"),
   "mat-3": require("../../assets/library/mat-3-sm.webp"),
@@ -1031,7 +1026,6 @@ export const LIBRARY_SMALL: Record<
   "quiz-2": require("../../assets/library/quiz-2-sm.webp"),
   "quiz-3": require("../../assets/library/quiz-3-sm.webp"),
   "quiz-4": require("../../assets/library/quiz-4-sm.webp"),
-  "quiz-5": require("../../assets/library/quiz-5-sm.webp"),
   "quiz-6": require("../../assets/library/quiz-6-sm.webp"),
   "quiz-7": require("../../assets/library/quiz-7-sm.webp"),
   "river-1": require("../../assets/library/river-1-sm.webp"),
@@ -1747,8 +1741,6 @@ export const PLACEHOLDER: Record<string, string> = {
     "data:image/webp;base64,UklGRlQAAABXRUJQVlA4IEgAAADwAQCdASoQAAoAA4BaJYwCdAEPTyxNkAAA/utpre1wpaRk8X7n1M2gnQWmNcma68ux13ZUZgBXS07EtyHAxAJ5hwEAbEygAAA=",
   "library/langrenn-2":
     "data:image/webp;base64,UklGRoYAAABXRUJQVlA4IHoAAAAQBACdASoQABQAPu1iqU2ppaOiMAgBMB2JZwAARJbt/hpjV5iXL/QQAAD+tBWaXLs4aHbHOVI0QsRVKinGso++TcmKJ9UpYa1RCG7zFkFurs++hE8cGr7wagL2SYB2mrWL22Uq8VfIQ6/u2nm1UC1yg1fBkVFuDeaAAA==",
-  "library/langrenn-3":
-    "data:image/webp;base64,UklGRqYAAABXRUJQVlA4IJoAAACwAwCdASoQABYAPu1iqU2ppaOiMAgBMB2JZwAD5Mjvy5YL0wmbAAD7/jl+0Im1fpZJMjqBVXbqB2KYYGk6V/RTksvpvFFdl9IHtZDE27+HbkNUc3v/HV7htu9mT3vYakb3FUJxa4q+LffDejXxzifdp7ckeEu0m2g1R/hTcJzvCjcp49k5hTRrUek7Rz71HACayn9jGyJj54QA",
   "library/langrenn-4":
     "data:image/webp;base64,UklGRooAAABXRUJQVlA4IH4AAAAQBACdASoQABIAPu1iqU2ppaOiMAgBMB2JZwAAYfi7etfEWUM5rE9fQAD2o2QV3StifoPtL38SHtXnQ/m/YUAQ1KxCH6M9l3AdK/5+XGLWBtw0cqpbWoe59MeEAZZzCKm2UiJzmzWsb1ylUExQMDu+X+PwUYODFFus5m3CAAA=",
   "library/langrenn-5":
@@ -1791,8 +1783,6 @@ export const PLACEHOLDER: Record<string, string> = {
     "data:image/webp;base64,UklGRkYAAABXRUJQVlA4IDoAAADwAQCdASoQAAwAA4BaJZwAAudNPwgTGUAA/u6aWctMj5Y1uXxoBqm4f56v3F0V9662CiZD7NNv1CAA",
   "library/market-plant":
     "data:image/webp;base64,UklGRkAAAABXRUJQVlA4IDQAAADQAQCdASoQAAwAA4BaJZwAAlxV0nogAAD+9/FYuIu7njAw37MNGo29lBTMPP4J7UeUQAAA",
-  "library/market-vinyl":
-    "data:image/webp;base64,UklGRlgAAABXRUJQVlA4IEwAAADQAQCdASoQAAwAA4BaJQBOgBuDPtOMgAD96yDnvXQgIWbzdzKWsEMtduEwoMsP28jh5ot0Xq0b1CaWPPZWMO+v8UKIyn9Y9bMYFYAA",
   "library/mat-1":
     "data:image/webp;base64,UklGRmwAAABXRUJQVlA4IGAAAADwAQCdASoQAAoAA4BaJQBOgMYJmp+51UAA/u+iq/53pP7GR34MlaTs/c34isS74h+zwcKjn9WmEZmYup5xnyFtdrt90NMj5P6S4uOxZmzZaTakQtyF+34aIQcptwwAAAA=",
   "library/mat-2":
@@ -2087,8 +2077,6 @@ export const PLACEHOLDER: Record<string, string> = {
     "data:image/webp;base64,UklGRnIAAABXRUJQVlA4IGYAAADwAQCdASoQAAoAA4BaJYgCdADM78ybIgAA/u0o7GbZfl5uvvTmga/sbxKTYrA0TuHQ7waoIT3F2uK2BrEA2utpJa6J6uq8E18dBQEsn0BV0bjL0DBdDB5BOTBZYwKTBjLhOaCPAAA=",
   "library/quiz-4":
     "data:image/webp;base64,UklGRoQAAABXRUJQVlA4IHgAAAAwBACdASoQABYAPu1iqU2ppaQiMAgBMB2JZACdMoAB+uURAgMP5I1bDgAA/qey3x4ovZ/YLTsE/vX9v0n06BuypDpbz9+Uw3Db9K7WwG1rkwfmC5Cm0Wv0X9JuZdkU2ebnQKpS71kqUGywPu5kxUcH6l7RWiuQAAA=",
-  "library/quiz-5":
-    "data:image/webp;base64,UklGRmYAAABXRUJQVlA4IFoAAADwAQCdASoQAAoAA4BaJYwCdAD7gTkGD2AA/s39jDQMzym1DPrzr3rEbThEpNZ25p8I8vVnSTDLd1nG9px1ZiEFUqC888s9yLtlypmI5QBRfehOU5pDVVSgoAA=",
   "library/quiz-6":
     "data:image/webp;base64,UklGRp4AAABXRUJQVlA4IJIAAAAwBACdASoQABgAPu1iqU2ppaOiMAgBMB2JZACdMoADg/BZaQR2CrVc+AAA+CorYf2FXZNpEaZpLMxhtom0ErAV+b86CN7oVLu/jeuVChmN3roUtrUcZ3oauP/JIuqkU5J38xx2P1u/CG2MT04bNV6swi+eFdd+iT8vEU08tPeke7RflSu8wK+iDO7c0SETdTCAAA==",
   "library/quiz-7":

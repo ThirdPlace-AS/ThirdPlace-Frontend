@@ -187,7 +187,6 @@ Photos added before Phase 11 (`person-*`, `venue-cafe/bar/restaurant/books/galle
 | quiz-2.webp          | Jessica Lewis                    | https://unsplash.com/photos/person-holding-white-printer-paper-8T-lK9FkzyI                                                                             |
 | quiz-3.webp          | OurWhisky Foundation             | https://unsplash.com/photos/a-group-of-people-sitting-around-a-table-with-drinks-7Jyyf4haqww                                                           |
 | quiz-4.webp          | Zach Camp                        | https://unsplash.com/photos/a-person-writing-on-a-piece-of-paper-on-a-table-S4YNfBXYLVM                                                                |
-| quiz-5.webp          | Fenghua                          | https://unsplash.com/photos/man-writing-at-a-table-in-a-dimly-lit-cafe-5Yx-kK8igLI                                                                     |
 | quiz-6.webp          | Amir Arsalan Shamsabadi          | https://unsplash.com/photos/birch-trees-and-a-lake-on-a-sunny-day-qZhwN-lJ2p4                                                                          |
 | quiz-7.webp          | Amir Arsalan Shamsabadi          | https://unsplash.com/photos/a-peaceful-lake-reflects-the-trees-and-sky-0lfKPikkn1s                                                                     |
 | gaming-1.webp        | Stem List                        | https://unsplash.com/photos/man-using-video-game-control-pad-beside-man-using-computer-keyboard-sitting-and-playing-video-games-bq4ytZ8hTAQ            |
@@ -380,7 +379,6 @@ Photos added before Phase 11 (`person-*`, `venue-cafe/bar/restaurant/books/galle
 | ski-5.webp           | Hendrik Morkel                   | https://unsplash.com/photos/a-pair-of-skis-sitting-on-top-of-a-snow-covered-slope-BLKZfjRaa6Y                                                          |
 | langrenn-1.webp      | Harri P                          | https://unsplash.com/photos/two-people-cross-country-skiing-on-a-snowy-trail-xe0dsehNops                                                               |
 | langrenn-2.webp      | phillip belena                   | https://unsplash.com/photos/person-skiing-near-trees-under-white-clouds-during-daytime-eY-iYrKGOkw                                                     |
-| langrenn-3.webp      | simon                            | https://unsplash.com/photos/person-standing-on-snow-covered-land-PcVqr8v4XaA                                                                           |
 | langrenn-4.webp      | Aaron Doucett                    | https://unsplash.com/photos/a-man-standing-on-skis-in-the-snow-oXSMk1dyoF0                                                                             |
 | langrenn-5.webp      | Amanda Wold Kortnes              | https://unsplash.com/photos/snow-covered-trees-and-road-during-daytime-H_2uCqop6e8                                                                     |
 | skoyter-1.webp       | Natalya Karpeka                  | https://unsplash.com/photos/a-man-is-skating-on-an-ice-rink-hQtWeolOAoc                                                                                |
