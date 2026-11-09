@@ -89,6 +89,11 @@ export const LIBRARY_FULL = {
   "dans-4": require("../../assets/library/dans-4.webp"),
   "dans-5": require("../../assets/library/dans-5.webp"),
   "dans-6": require("../../assets/library/dans-6.webp"),
+  "design-1": require("../../assets/library/design-1.webp"),
+  "design-2": require("../../assets/library/design-2.webp"),
+  "design-3": require("../../assets/library/design-3.webp"),
+  "design-4": require("../../assets/library/design-4.webp"),
+  "design-5": require("../../assets/library/design-5.webp"),
   "diskusjon-1": require("../../assets/library/diskusjon-1.webp"),
   "diskusjon-2": require("../../assets/library/diskusjon-2.webp"),
   "diskusjon-3": require("../../assets/library/diskusjon-3.webp"),
@@ -125,6 +130,11 @@ export const LIBRARY_FULL = {
   "fotball-4": require("../../assets/library/fotball-4.webp"),
   "fotball-5": require("../../assets/library/fotball-5.webp"),
   "fotball-6": require("../../assets/library/fotball-6.webp"),
+  "fotografi-1": require("../../assets/library/fotografi-1.webp"),
+  "fotografi-2": require("../../assets/library/fotografi-2.webp"),
+  "fotografi-3": require("../../assets/library/fotografi-3.webp"),
+  "fotografi-4": require("../../assets/library/fotografi-4.webp"),
+  "fotografi-5": require("../../assets/library/fotografi-5.webp"),
   "friluftsliv-1": require("../../assets/library/friluftsliv-1.webp"),
   "friluftsliv-2": require("../../assets/library/friluftsliv-2.webp"),
   "friluftsliv-3": require("../../assets/library/friluftsliv-3.webp"),
@@ -192,6 +202,11 @@ export const LIBRARY_FULL = {
   "kampsport-3": require("../../assets/library/kampsport-3.webp"),
   "kampsport-4": require("../../assets/library/kampsport-4.webp"),
   "kampsport-5": require("../../assets/library/kampsport-5.webp"),
+  "keramikk-1": require("../../assets/library/keramikk-1.webp"),
+  "keramikk-2": require("../../assets/library/keramikk-2.webp"),
+  "keramikk-3": require("../../assets/library/keramikk-3.webp"),
+  "keramikk-4": require("../../assets/library/keramikk-4.webp"),
+  "keramikk-5": require("../../assets/library/keramikk-5.webp"),
   "klassisk-1": require("../../assets/library/klassisk-1.webp"),
   "klassisk-2": require("../../assets/library/klassisk-2.webp"),
   "klassisk-3": require("../../assets/library/klassisk-3.webp"),
@@ -227,6 +242,11 @@ export const LIBRARY_FULL = {
   "kortreist-4": require("../../assets/library/kortreist-4.webp"),
   "kortreist-5": require("../../assets/library/kortreist-5.webp"),
   "kortreist-6": require("../../assets/library/kortreist-6.webp"),
+  "kunst-1": require("../../assets/library/kunst-1.webp"),
+  "kunst-2": require("../../assets/library/kunst-2.webp"),
+  "kunst-3": require("../../assets/library/kunst-3.webp"),
+  "kunst-4": require("../../assets/library/kunst-4.webp"),
+  "kunst-5": require("../../assets/library/kunst-5.webp"),
   "langrenn-1": require("../../assets/library/langrenn-1.webp"),
   "langrenn-2": require("../../assets/library/langrenn-2.webp"),
   "langrenn-3": require("../../assets/library/langrenn-3.webp"),
@@ -285,11 +305,13 @@ export const LIBRARY_FULL = {
   "padel-5": require("../../assets/library/padel-5.webp"),
   "person-anne": require("../../assets/library/person-anne.webp"),
   "person-arne": require("../../assets/library/person-arne.webp"),
+  "person-arnulf": require("../../assets/library/person-arnulf.webp"),
   "person-arvid": require("../../assets/library/person-arvid.webp"),
   "person-ase": require("../../assets/library/person-ase.webp"),
   "person-bahram": require("../../assets/library/person-bahram.webp"),
   "person-bente": require("../../assets/library/person-bente.webp"),
   "person-daniel": require("../../assets/library/person-daniel.webp"),
+  "person-duc": require("../../assets/library/person-duc.webp"),
   "person-eirik": require("../../assets/library/person-eirik.webp"),
   "person-elif": require("../../assets/library/person-elif.webp"),
   "person-emil": require("../../assets/library/person-emil.webp"),
@@ -326,16 +348,19 @@ export const LIBRARY_FULL = {
   "person-mats": require("../../assets/library/person-mats.webp"),
   "person-melissa": require("../../assets/library/person-melissa.webp"),
   "person-nadia": require("../../assets/library/person-nadia.webp"),
+  "person-naomi": require("../../assets/library/person-naomi.webp"),
   "person-nina": require("../../assets/library/person-nina.webp"),
   "person-nora": require("../../assets/library/person-nora.webp"),
   "person-oda": require("../../assets/library/person-oda.webp"),
   "person-ola": require("../../assets/library/person-ola.webp"),
   "person-omar": require("../../assets/library/person-omar.webp"),
   "person-per": require("../../assets/library/person-per.webp"),
+  "person-ritu": require("../../assets/library/person-ritu.webp"),
   "person-rune": require("../../assets/library/person-rune.webp"),
   "person-samira": require("../../assets/library/person-samira.webp"),
   "person-samuel": require("../../assets/library/person-samuel.webp"),
   "person-sander": require("../../assets/library/person-sander.webp"),
+  "person-selma": require("../../assets/library/person-selma.webp"),
   "person-silje": require("../../assets/library/person-silje.webp"),
   "person-sindre": require("../../assets/library/person-sindre.webp"),
   "person-sofie": require("../../assets/library/person-sofie.webp"),
@@ -343,6 +368,7 @@ export const LIBRARY_FULL = {
   "person-thao": require("../../assets/library/person-thao.webp"),
   "person-tobias": require("../../assets/library/person-tobias.webp"),
   "person-tom": require("../../assets/library/person-tom.webp"),
+  "person-torgeir": require("../../assets/library/person-torgeir.webp"),
   "person-torill": require("../../assets/library/person-torill.webp"),
   "person-tuva": require("../../assets/library/person-tuva.webp"),
   "person-vegard": require("../../assets/library/person-vegard.webp"),
@@ -446,6 +472,11 @@ export const LIBRARY_FULL = {
   "standup-3": require("../../assets/library/standup-3.webp"),
   "standup-4": require("../../assets/library/standup-4.webp"),
   "standup-5": require("../../assets/library/standup-5.webp"),
+  "strikking-1": require("../../assets/library/strikking-1.webp"),
+  "strikking-2": require("../../assets/library/strikking-2.webp"),
+  "strikking-3": require("../../assets/library/strikking-3.webp"),
+  "strikking-4": require("../../assets/library/strikking-4.webp"),
+  "strikking-5": require("../../assets/library/strikking-5.webp"),
   "styrketrening-1": require("../../assets/library/styrketrening-1.webp"),
   "styrketrening-2": require("../../assets/library/styrketrening-2.webp"),
   "styrketrening-3": require("../../assets/library/styrketrening-3.webp"),
@@ -510,6 +541,11 @@ export const LIBRARY_FULL = {
   "venue-outdoor": require("../../assets/library/venue-outdoor.webp"),
   "venue-restaurant": require("../../assets/library/venue-restaurant.webp"),
   "venue-workshop": require("../../assets/library/venue-workshop.webp"),
+  "verksted-1": require("../../assets/library/verksted-1.webp"),
+  "verksted-2": require("../../assets/library/verksted-2.webp"),
+  "verksted-3": require("../../assets/library/verksted-3.webp"),
+  "verksted-4": require("../../assets/library/verksted-4.webp"),
+  "verksted-5": require("../../assets/library/verksted-5.webp"),
   "vin-1": require("../../assets/library/vin-1.webp"),
   "vin-2": require("../../assets/library/vin-2.webp"),
   "vin-3": require("../../assets/library/vin-3.webp"),
@@ -624,6 +660,11 @@ export const LIBRARY_SMALL: Record<
   "dans-4": require("../../assets/library/dans-4-sm.webp"),
   "dans-5": require("../../assets/library/dans-5-sm.webp"),
   "dans-6": require("../../assets/library/dans-6-sm.webp"),
+  "design-1": require("../../assets/library/design-1-sm.webp"),
+  "design-2": require("../../assets/library/design-2-sm.webp"),
+  "design-3": require("../../assets/library/design-3-sm.webp"),
+  "design-4": require("../../assets/library/design-4-sm.webp"),
+  "design-5": require("../../assets/library/design-5-sm.webp"),
   "diskusjon-1": require("../../assets/library/diskusjon-1-sm.webp"),
   "diskusjon-2": require("../../assets/library/diskusjon-2-sm.webp"),
   "diskusjon-3": require("../../assets/library/diskusjon-3-sm.webp"),
@@ -660,6 +701,11 @@ export const LIBRARY_SMALL: Record<
   "fotball-4": require("../../assets/library/fotball-4-sm.webp"),
   "fotball-5": require("../../assets/library/fotball-5-sm.webp"),
   "fotball-6": require("../../assets/library/fotball-6-sm.webp"),
+  "fotografi-1": require("../../assets/library/fotografi-1-sm.webp"),
+  "fotografi-2": require("../../assets/library/fotografi-2-sm.webp"),
+  "fotografi-3": require("../../assets/library/fotografi-3-sm.webp"),
+  "fotografi-4": require("../../assets/library/fotografi-4-sm.webp"),
+  "fotografi-5": require("../../assets/library/fotografi-5-sm.webp"),
   "friluftsliv-1": require("../../assets/library/friluftsliv-1-sm.webp"),
   "friluftsliv-2": require("../../assets/library/friluftsliv-2-sm.webp"),
   "friluftsliv-3": require("../../assets/library/friluftsliv-3-sm.webp"),
@@ -727,6 +773,11 @@ export const LIBRARY_SMALL: Record<
   "kampsport-3": require("../../assets/library/kampsport-3-sm.webp"),
   "kampsport-4": require("../../assets/library/kampsport-4-sm.webp"),
   "kampsport-5": require("../../assets/library/kampsport-5-sm.webp"),
+  "keramikk-1": require("../../assets/library/keramikk-1-sm.webp"),
+  "keramikk-2": require("../../assets/library/keramikk-2-sm.webp"),
+  "keramikk-3": require("../../assets/library/keramikk-3-sm.webp"),
+  "keramikk-4": require("../../assets/library/keramikk-4-sm.webp"),
+  "keramikk-5": require("../../assets/library/keramikk-5-sm.webp"),
   "klassisk-1": require("../../assets/library/klassisk-1-sm.webp"),
   "klassisk-2": require("../../assets/library/klassisk-2-sm.webp"),
   "klassisk-3": require("../../assets/library/klassisk-3-sm.webp"),
@@ -762,6 +813,11 @@ export const LIBRARY_SMALL: Record<
   "kortreist-4": require("../../assets/library/kortreist-4-sm.webp"),
   "kortreist-5": require("../../assets/library/kortreist-5-sm.webp"),
   "kortreist-6": require("../../assets/library/kortreist-6-sm.webp"),
+  "kunst-1": require("../../assets/library/kunst-1-sm.webp"),
+  "kunst-2": require("../../assets/library/kunst-2-sm.webp"),
+  "kunst-3": require("../../assets/library/kunst-3-sm.webp"),
+  "kunst-4": require("../../assets/library/kunst-4-sm.webp"),
+  "kunst-5": require("../../assets/library/kunst-5-sm.webp"),
   "langrenn-1": require("../../assets/library/langrenn-1-sm.webp"),
   "langrenn-2": require("../../assets/library/langrenn-2-sm.webp"),
   "langrenn-3": require("../../assets/library/langrenn-3-sm.webp"),
@@ -820,11 +876,13 @@ export const LIBRARY_SMALL: Record<
   "padel-5": require("../../assets/library/padel-5-sm.webp"),
   "person-anne": require("../../assets/library/person-anne-sm.webp"),
   "person-arne": require("../../assets/library/person-arne-sm.webp"),
+  "person-arnulf": require("../../assets/library/person-arnulf-sm.webp"),
   "person-arvid": require("../../assets/library/person-arvid-sm.webp"),
   "person-ase": require("../../assets/library/person-ase-sm.webp"),
   "person-bahram": require("../../assets/library/person-bahram-sm.webp"),
   "person-bente": require("../../assets/library/person-bente-sm.webp"),
   "person-daniel": require("../../assets/library/person-daniel-sm.webp"),
+  "person-duc": require("../../assets/library/person-duc-sm.webp"),
   "person-eirik": require("../../assets/library/person-eirik-sm.webp"),
   "person-elif": require("../../assets/library/person-elif-sm.webp"),
   "person-emil": require("../../assets/library/person-emil-sm.webp"),
@@ -861,16 +919,19 @@ export const LIBRARY_SMALL: Record<
   "person-mats": require("../../assets/library/person-mats-sm.webp"),
   "person-melissa": require("../../assets/library/person-melissa-sm.webp"),
   "person-nadia": require("../../assets/library/person-nadia-sm.webp"),
+  "person-naomi": require("../../assets/library/person-naomi-sm.webp"),
   "person-nina": require("../../assets/library/person-nina-sm.webp"),
   "person-nora": require("../../assets/library/person-nora-sm.webp"),
   "person-oda": require("../../assets/library/person-oda-sm.webp"),
   "person-ola": require("../../assets/library/person-ola-sm.webp"),
   "person-omar": require("../../assets/library/person-omar-sm.webp"),
   "person-per": require("../../assets/library/person-per-sm.webp"),
+  "person-ritu": require("../../assets/library/person-ritu-sm.webp"),
   "person-rune": require("../../assets/library/person-rune-sm.webp"),
   "person-samira": require("../../assets/library/person-samira-sm.webp"),
   "person-samuel": require("../../assets/library/person-samuel-sm.webp"),
   "person-sander": require("../../assets/library/person-sander-sm.webp"),
+  "person-selma": require("../../assets/library/person-selma-sm.webp"),
   "person-silje": require("../../assets/library/person-silje-sm.webp"),
   "person-sindre": require("../../assets/library/person-sindre-sm.webp"),
   "person-sofie": require("../../assets/library/person-sofie-sm.webp"),
@@ -878,6 +939,7 @@ export const LIBRARY_SMALL: Record<
   "person-thao": require("../../assets/library/person-thao-sm.webp"),
   "person-tobias": require("../../assets/library/person-tobias-sm.webp"),
   "person-tom": require("../../assets/library/person-tom-sm.webp"),
+  "person-torgeir": require("../../assets/library/person-torgeir-sm.webp"),
   "person-torill": require("../../assets/library/person-torill-sm.webp"),
   "person-tuva": require("../../assets/library/person-tuva-sm.webp"),
   "person-vegard": require("../../assets/library/person-vegard-sm.webp"),
@@ -981,6 +1043,11 @@ export const LIBRARY_SMALL: Record<
   "standup-3": require("../../assets/library/standup-3-sm.webp"),
   "standup-4": require("../../assets/library/standup-4-sm.webp"),
   "standup-5": require("../../assets/library/standup-5-sm.webp"),
+  "strikking-1": require("../../assets/library/strikking-1-sm.webp"),
+  "strikking-2": require("../../assets/library/strikking-2-sm.webp"),
+  "strikking-3": require("../../assets/library/strikking-3-sm.webp"),
+  "strikking-4": require("../../assets/library/strikking-4-sm.webp"),
+  "strikking-5": require("../../assets/library/strikking-5-sm.webp"),
   "styrketrening-1": require("../../assets/library/styrketrening-1-sm.webp"),
   "styrketrening-2": require("../../assets/library/styrketrening-2-sm.webp"),
   "styrketrening-3": require("../../assets/library/styrketrening-3-sm.webp"),
@@ -1045,6 +1112,11 @@ export const LIBRARY_SMALL: Record<
   "venue-outdoor": require("../../assets/library/venue-outdoor-sm.webp"),
   "venue-restaurant": require("../../assets/library/venue-restaurant-sm.webp"),
   "venue-workshop": require("../../assets/library/venue-workshop-sm.webp"),
+  "verksted-1": require("../../assets/library/verksted-1-sm.webp"),
+  "verksted-2": require("../../assets/library/verksted-2-sm.webp"),
+  "verksted-3": require("../../assets/library/verksted-3-sm.webp"),
+  "verksted-4": require("../../assets/library/verksted-4-sm.webp"),
+  "verksted-5": require("../../assets/library/verksted-5-sm.webp"),
   "vin-1": require("../../assets/library/vin-1-sm.webp"),
   "vin-2": require("../../assets/library/vin-2-sm.webp"),
   "vin-3": require("../../assets/library/vin-3-sm.webp"),
@@ -1273,6 +1345,16 @@ export const PLACEHOLDER: Record<string, string> = {
     "data:image/webp;base64,UklGRlYAAABXRUJQVlA4IEoAAADwAQCdASoQAAoAA4BaJQBOgCKKhE6GyAAA/vXQLouQutaF2a9Eo3ubNpYkoc3w2CPdXMNA1CQ/XhdUaAMUHjM0GkpOtysMBKAAAA==",
   "library/dans-6":
     "data:image/webp;base64,UklGRlIAAABXRUJQVlA4IEYAAACwAQCdASoQAAoAA4BaJQBOgB6NiiigAP70nUgiAhuxTcIcP0nF7OJ1LtqIkwWJJ0nwv4AyF+U6cLfjbro0qQtBKl3sQAAA",
+  "library/design-1":
+    "data:image/webp;base64,UklGRlQAAABXRUJQVlA4IEgAAADQAQCdASoQAAwAA4BaJZQAAiGjTD3C0AD+1/1eQQ8fIGjMW3C1NhH33ysLLipKxE7wra3uYDFeVdix0hqCus8IrMoXWugAAAA=",
+  "library/design-2":
+    "data:image/webp;base64,UklGRmIAAABXRUJQVlA4IFYAAADQAQCdASoQAAoAA4BaJYwCdAEKaVN4bAD+4AnXnLUmwK2QOKjHZ+5SOQ6BlZ5bkpAjc9yPH/aKQTwhZj7YUsAQvudHfaQ6lAKbgD7Z5k9/owhuWYBIAA==",
+  "library/design-3":
+    "data:image/webp;base64,UklGRpgAAABXRUJQVlA4IIwAAAAwBACdASoQABYAPu1iqU2ppaOiMAgBMB2JYwC/OCKJ29AcyrnQP7q8Z2gA+XllTJQs1o9leuh74d5obvukl4MQeOTpdJiqbm9JPBlyJZ9UNMAroQkOTfabXyRN5vo51cUJh9BOiaB71hs+LJMi3dbo1HUcHexn/aqLULJGWLzHXs8rHh0AzMvgLmAAAA==",
+  "library/design-4":
+    "data:image/webp;base64,UklGRjwAAABXRUJQVlA4IDAAAACwAQCdASoQAAoAA4BaJYwC7AEMmtTQAP7hhB5oL+Vs1a364ZnvNvinu6KgZgkF4AA=",
+  "library/design-5":
+    "data:image/webp;base64,UklGRnQAAABXRUJQVlA4IGgAAAAQBACdASoQABgAPu1iqU2ppaQiMAgBMB2JYgCdACDmTPTTHKl4pl2AAAD+p4v4zUjwZLZ0N7eJdTxMXNvCJRCQiyLoIQrcjunOjxjL3bHHWI7mz5Z1gRTOsK+X+0eMzbe+DfG552cAAA==",
   "library/diskusjon-1":
     "data:image/webp;base64,UklGRm4AAABXRUJQVlA4IGIAAABQAgCdASoQAAoAA4BaJYgCdAYwnt8sfpRwH7AA/u9aRkQHj6EJPgrv029Vr7nIRAm3BZCvqk8pN2tjRa6BsIXSqhuVGa2tbF9ZBW20xTNCZa2FQOdBSKr0/bhMs4Q1sHQAAA==",
   "library/diskusjon-2":
@@ -1345,6 +1427,16 @@ export const PLACEHOLDER: Record<string, string> = {
     "data:image/webp;base64,UklGRqAAAABXRUJQVlA4IJQAAAAQBACdASoQABYAPu1iqU2ppaOiMAgBMB2JQAAMOjqRVwWWRTnI/ueO1AD+qh4+D2FQSsF54qj11qtRKAOL7uwrUb1hxyeP3d84Qo6qTMhX0yXGGpDCwpw70Q7Ezh7XTVRCR2xn9CVIB3JG5JgHbG3afilTfoB9HZtwPq2oLoDt4SXWJqwbaMyiGs91aqMP5O+UtF4A",
   "library/fotball-6":
     "data:image/webp;base64,UklGRlIAAABXRUJQVlA4IEYAAADQAQCdASoQAAoAA4BaJbAC7AEOxiDwsAD+5GqhI3g6tdTOkgrl4U95TalFLL/o6EP95uQr1dFOQBUszaowiR70rZynyiAA",
+  "library/fotografi-1":
+    "data:image/webp;base64,UklGRlIAAABXRUJQVlA4IEYAAABQAgCdASoQAAoAA4BaJZQCdH8AGKieZx1eNwAA/qN/RJtz+LsB5g9B7JdaEmTrDrS1B39lhaMBCqiHvVN9q1B7tNe0AAAA",
+  "library/fotografi-2":
+    "data:image/webp;base64,UklGRpYAAABXRUJQVlA4IIoAAADwAwCdASoQABQAPu1iqU2ppaOiMAgBMB2JYwCdAA30n5Bp+0ysjLkAAP6TwDPbwaqn71KinlwNtPhvH/G78aZ/izP0TF5eQD7ay8sBdYg2SiGoern+w0EujVrqNFmpcFjJ5aA7X4qZdqGgypzrzdpv111DqjakvxomfvIkbIimGmDRgBAEe/rAAAA=",
+  "library/fotografi-3":
+    "data:image/webp;base64,UklGRmgAAABXRUJQVlA4IFwAAABQAgCdASoQAAoAA4BaJZwCw7YvrzNFiPVKe4AA/tusbGz0ZRwGLVTuSExd63RWxSAqi/jLGrop/VeXV/i0LTpxDRmOLkQY5R7sHkTCwRZCbkCzI0nKETD7js0QAA==",
+  "library/fotografi-4":
+    "data:image/webp;base64,UklGRlgAAABXRUJQVlA4IEwAAADwAQCdASoQAAoAA4BaJbACdAD2PN7ltAAA/u0P3fOAxvVvZEmOcXoN29rLvJhXQyyWUNM00UAQMr/c1ukLlX+0RKzrSfiH311tg1AA",
+  "library/fotografi-5":
+    "data:image/webp;base64,UklGRqoAAABXRUJQVlA4IJ4AAABQBACdASoQABwAPu1iqU2ppaQiMAgBMB2JZgDCgBue2tYUAaqIPPZSiRCAAP7SRz/ZLrpdlRr9TQvf5qaMA6gdHdsAyZZMZDP1Ie4U85yj+dRxQ6JHrxhkUmlDKUoDOM/VjlusQzTFFOJ6cKXuSXgrwWuR60VJS7cz03Ghngol5mJmMG5BuoSkvr2PUlaxyT0HJ1t/2yf/2e9t9ewAAA==",
   "library/friluftsliv-1":
     "data:image/webp;base64,UklGRlQAAABXRUJQVlA4IEgAAAAwAgCdASoQAAoAA4BaJYwC7IDZEmTkIEGAQAD+vgwnnnWG/tJVqHVTxm5XuxruLDErWUI7Xk0irvEFg4kYJLriY5qONfSgAAA=",
   "library/friluftsliv-2":
@@ -1479,6 +1571,16 @@ export const PLACEHOLDER: Record<string, string> = {
     "data:image/webp;base64,UklGRmIAAABXRUJQVlA4IFYAAAAQAgCdASoQAAoAA4BaJYwC7AC8Sv/MIZfgAP7vgxBgAxSGN07EQYewj1PZWWmxY1Sgf/vuSHBpqCIWq/dlH8qb1faraZgoRYsKji0ZPACSCN2rcYAAAA==",
   "library/kampsport-5":
     "data:image/webp;base64,UklGRrgAAABXRUJQVlA4IKwAAAAwBACdASoQABgAPu1iqU2ppaOiMAgBMB2JagCdAYv0Y2RjECsaK48O6AAA/XeLtp2+1TRCY5D1GHGlnAVXKIyRNSNGehGNp/wcTaMpJ0oagDVooX1iIP/GkdvJvDePpfuns5M9g/2eLHvs2QlaKmiwuel+3OSsN/+Ygjg5Nl2EiveADI7AuwvOXaruMVF3e9790SdpUl3Jr+eR/XCZ5ZteVQr9azfswD44wAAA",
+  "library/keramikk-1":
+    "data:image/webp;base64,UklGRlwAAABXRUJQVlA4IFAAAAAwAgCdASoQAAoAA4BaJQBOgB9g3a0dPqcyAAD+ujpxHP+kZKHD01gmvApXi6NReo8c203rQ1Tt+KM/zoEuIjohacFCsSk+wj28S/rfIEAAAA==",
+  "library/keramikk-2":
+    "data:image/webp;base64,UklGRmoAAABXRUJQVlA4IF4AAAAwAgCdASoQAAoAA4BaJZACdAD8G5f8j5t3AAD+5iIQPVLwmjyXkAXK3sM/AyvryX7qW+lMLGeOPr8xDfb9iNlh1ibii0OEIE3Typ0X5dhHy9m65UmnUNjOs62WBcAA",
+  "library/keramikk-3":
+    "data:image/webp;base64,UklGRqYAAABXRUJQVlA4IJoAAABQBACdASoQABgAPu1iqU2ppaOiMAgBMB2JYwCdAywTnwxZjof4InXtwHYAAP6dz9yjYiGaX5R53ZtWMgFR+daS5lRMcgM/F8ZJCqJHL4ogNQtYUhnpOfkXzQ5QpS/QUDOrbnERruR9IQekMFFu184ftNPOtd5IWnLeF8b7x1Ffikme4El83X+u+0hH5b32nEH9a5urlywonIAA",
+  "library/keramikk-4":
+    "data:image/webp;base64,UklGRlQAAABXRUJQVlA4IEgAAACwAQCdASoQAAoAA4BaJQBOgBKfajZAAPnXw0Y3YCdiZ27juWyV8ad92KKLUvTN38eZ4jVjYjrZoG6fn/YeyjJK+GbmBLDQAAA=",
+  "library/keramikk-5":
+    "data:image/webp;base64,UklGRl4AAABXRUJQVlA4IFIAAAAwAgCdASoQAAoAA4BaJZACdAYrnqio49/YAADiBblk7jDJlMD8flEBHIbNR4lGarkkCTEIFAQXUvqy6TnHrzlnrNaSkI6MnLpeBFmllrPJSsAA",
   "library/klassisk-1":
     "data:image/webp;base64,UklGRl4AAABXRUJQVlA4IFIAAACwAQCdASoQAAoAA4BaJQBOgBh4EBgAAP7sR+GSLIEpLL79y6DzM4DljiC+rSOikUps7dtK4hYGP1ES3B2//PipVih7ZlPh1MKq4SMQBFjMIAAA",
   "library/klassisk-2":
@@ -1549,6 +1651,16 @@ export const PLACEHOLDER: Record<string, string> = {
     "data:image/webp;base64,UklGRp4AAABXRUJQVlA4IJIAAADQAwCdASoQABQAPu1iqU2ppaOiMAgBMB2JQBdgMZZOzuPf1CJcjgAA/oVoLsui6QWbrbO2oJZy6vOsQ+tNMur3INks9XLIAbh+sFeaAoSxpoJ6qAeTRgzKDzuqLHDCym3nXaetYilrdHowedYs0pvmGEDwXGfDyQ5NVj2CodPF/1ou7SlbnIZICXSYyLgtJAgAAA==",
   "library/kortreist-6":
     "data:image/webp;base64,UklGRlgAAABXRUJQVlA4IEwAAACwAQCdASoQAAoAA4BaJZgCdADxwLgIAPY59NVYisPSLCdQO9UAMxbvBZQYtd3ZF/PQDwX0FcKJudZsRF2h4+0BfzcJDL/SbXr67AAA",
+  "library/kunst-1":
+    "data:image/webp;base64,UklGRm4AAABXRUJQVlA4IGIAAACQAgCdASoQAAwAA4BaJZwC7AYvXyp+LnNy6OcnAAD+4aE/GD5MzSpeSyOxO2moy1p/eb6zIoAIFHl7QeXzrfi1exPqOqnzuYUFmlBSu419huRbWYk3StBYULnjh2Zrm2AAAA==",
+  "library/kunst-2":
+    "data:image/webp;base64,UklGRmQAAABXRUJQVlA4IFgAAAAwAgCdASoQAAoAA4BaJaACdAEfcEVgRGx4AAD+80yXAjb0OvRq0DVdspZyjw9EylOo6SJz8nTEv32bWvf23gusNqq9bnQIL5J8LV2yMx0rphLZQUBgAAAA",
+  "library/kunst-3":
+    "data:image/webp;base64,UklGRmwAAABXRUJQVlA4IGAAAAAwAgCdASoQAAoAA4BaJYwC7AYuHypoEb+LeADieoJEyZkM+DXO7xUd+mQ7Us15SJ3DDAK/Gu4VeXM5Kgnkiv58boIJ7borUxWBjG00YSoVzwdUi/qVbGwWq1jAl4gAAAA=",
+  "library/kunst-4":
+    "data:image/webp;base64,UklGRm4AAABXRUJQVlA4IGIAAADwAQCdASoQAAoAA4BaJbACdAC22jezpAAA/myrPkbuJRjwhiwtDay2Hc+ozeFjIKsEgYhtWef+3QH95rQzLo1nfOjq1a8QHrN9O9C2Mo03hgAXVZ0tfaIxaZS7JTdSjThAAA==",
+  "library/kunst-5":
+    "data:image/webp;base64,UklGRqIAAABXRUJQVlA4IJYAAAAwBACdASoQABgAPu1iqU2ppaOiMAgBMB2JZQDGfYua3sD1yLAc7Z8h+HAA/mzZdOWZ/lCc4DcFXDs6ZVacIMFEUesG4nnwY1U5F13ZvTf8/aimSc04J55IbnauufuyIeEmoVY2q//kfDr0445stFiVd/fkbcchXRn5VSbOmcds/dTfbG4Pr5bm/qduYlzGBKosHYIgAAA=",
   "library/langrenn-1":
     "data:image/webp;base64,UklGRlQAAABXRUJQVlA4IEgAAADwAQCdASoQAAoAA4BaJYwCdAEPTyxNkAAA/utpre1wpaRk8X7n1M2gnQWmNcma68ux13ZUZgBXS07EtyHAxAJ5hwEAbEygAAA=",
   "library/langrenn-2":
@@ -1665,6 +1777,8 @@ export const PLACEHOLDER: Record<string, string> = {
     "data:image/webp;base64,UklGRnIAAABXRUJQVlA4IGYAAAAQAgCdASoQABAAA4BaJZACdAEMibBdRetgAP7V5Jng7nV8//MKGorCESwreYAwx20D44xqQhjDI3l7gvkvs66w1Av0XrRarnbqZVTKliUOk1WmffAmA9rneWi4Lj/TcoWorUAAAAA=",
   "library/person-arne":
     "data:image/webp;base64,UklGRmYAAABXRUJQVlA4IFoAAADwAQCdASoQABAAA4BaJZQCw7ChP6s3PwAA/ve+k8jP+mPN6fsXcYimf9453riqMxCanwgQmvy8bUDZNbAxNGpmGxI03VLAfWofvHZddc+INWiP5h8CAVMQIAA=",
+  "library/person-arnulf":
+    "data:image/webp;base64,UklGRoIAAABXRUJQVlA4IHYAAABQAgCdASoQABAAA4BaJZwAD4uuzbA9aUQTmmwA/oY5y3BDLXb77eRD+WWEt023N4GJto7nM2/NGnVMPVi1UPDko6QQ1vN8IrR5ytx38Gehhyzq+LzEFcJIJH8aUeMcI4XN2cHMLeDUx/WTd/N9F5em7TKZ+BwA",
   "library/person-arvid":
     "data:image/webp;base64,UklGRoIAAABXRUJQVlA4IHYAAAAwAgCdASoQABAAA4BaJbACdGaAwv8BtbPG0AD+4aX/7NvPZLeI5IyMyHeMZvvDrU4wxGtRBNjbBYhPGhplSkY9z9ejpDIfnSIaFSVi2ZzGsUxtSH7GA92elc1z99LGiRbyKqHCoPDd2Vq0gq+Q6KFaMdE2AAAA",
   "library/person-ase":
@@ -1675,6 +1789,8 @@ export const PLACEHOLDER: Record<string, string> = {
     "data:image/webp;base64,UklGRnYAAABXRUJQVlA4IGoAAAAQAgCdASoQABAAA4BaJQBOgCKH6bwtVfwAAP7VFrF6O8i4JFlj4LPijzlLFWc7Dh+f7Qajvq2nZXiVTk4T13Judkglsvl8xBmr8grm/59TQhFfwafl/RTamfrYJ57AUMXFHuF0cIECwAAA",
   "library/person-daniel":
     "data:image/webp;base64,UklGRn4AAABXRUJQVlA4IHIAAABQAgCdASoQABAAA4BaJZgCdAYx3vLDHoz96gAA/rQNEhtBTbd3bH3GHfY5eFYaPyOIvWqywEMgl6hI1DHNL7C+26duWclfNi7C4sFrXGM49Pun53M2XNxnynLoKxNLVFgBtxbJhl1QNgHKu5uFa8UBAAA=",
+  "library/person-duc":
+    "data:image/webp;base64,UklGRnYAAABXRUJQVlA4IGoAAAAwAgCdASoQABAAA4BaJbACdAEazJZahfQkAAD+9x80Mbr3G1u/BMckZmkPhiLfjDRMYciCrvFO9i0Ob1UPLamCIOc1QC/Q8JeL5XSHmKXqckSYPY+aIQuPbL3xOTsM+hnuW3Z0GQseQAAA",
   "library/person-eirik":
     "data:image/webp;base64,UklGRoQAAABXRUJQVlA4IHgAAABwAgCdASoQABAAA4BaJbACdAYwxqakyxDEMk+AAP7Iw2c5xFZIQ0nJM8tKrww+eOUUQ3ntJgHL/5J4ONgjWp99KtkAoCD86N86nsFtFbSpm2IEFHKd1ZIFnlG2i/FfnoKqJgu75ESpwJa6Szs4GdlRw7Ho2SpKmAA=",
   "library/person-elif":
@@ -1747,6 +1863,8 @@ export const PLACEHOLDER: Record<string, string> = {
     "data:image/webp;base64,UklGRn4AAABXRUJQVlA4IHIAAACwAgCdASoQABAAA4BaJYwCdAYsFzo1/Eh1aqXfcAAA/vUeQGzAqNQ/pc0UJQtwPnydLEvBIkpVy7gC/CavESyOw4Ua+DwdsdnzxkwoGOSCxDSOCPh7EO2a94CnCvEHtHTSLreNyNQc7ugYKbHo9wkQSAA=",
   "library/person-nadia":
     "data:image/webp;base64,UklGRngAAABXRUJQVlA4IGwAAAAwAgCdASoQABAAA4BaJZQC7AEecl2CpUQzQAD+8zWl0DKti4BOrv92BK/Uw7Q7GfUj3fp+agBCnl6+oUKE685njzTFCfEQNHKuaj3dizb2OxEiShqf01XWGNa7OvYsZWKnNuX7y6bV7+lgAAA=",
+  "library/person-naomi":
+    "data:image/webp;base64,UklGRnwAAABXRUJQVlA4IHAAAAAQAgCdASoQABAAA4BaJbACdADp5TyrYv0AAP6b3aY8K2lrktj5BQE2+f4a2cAXEo1EQkZwApizwDfZ5udwFj6fy+4Iq3Ja45SxMw3QiUgKLvA3msWEor8MJYarN9JIAkmmf5jRhQtSLGh1dpnMBRAA",
   "library/person-nina":
     "data:image/webp;base64,UklGRloAAABXRUJQVlA4IE4AAAAwAgCdASoQABAAA4BaJbACdLoAAwXAzsBEQAD+vwRHdiM7NBJkNo85amlFPNNBy1xAmml5YUJUJrRiO9uVpbUsmZP5jfBkMR4Pzf7rkAA=",
   "library/person-nora":
@@ -1759,6 +1877,8 @@ export const PLACEHOLDER: Record<string, string> = {
     "data:image/webp;base64,UklGRmwAAABXRUJQVlA4IGAAAAAQAgCdASoQABAAA4BaJZACdADW3rMHvhqAAP7mPvpDPpzNqucRgZI+UcOGaRyqWD0JUE3yUFaIzcqQOmOSBrh8y45DkMwLeLSHcU4apTDu+sogZ/sFtHgyMg9cIRF2AAA=",
   "library/person-per":
     "data:image/webp;base64,UklGRm4AAABXRUJQVlA4IGIAAAAwAgCdASoQABAAA4BaJYgCdAEVYjvq//cQvAD+7Jj+g75AywwroNtTsjQRKqbE+ZUK4Mx50Mm0niEgS6YKJJr5uv2Ft9hu5ixkps3GdpnntrA9bF7tHNRJDYza7IrCWebAAA==",
+  "library/person-ritu":
+    "data:image/webp;base64,UklGRn4AAABXRUJQVlA4IHIAAADwAQCdASoQABAAA4BaJbACdADpj4nMcGAA/klMM3rZyWl7d+/PuVd1H2ejjUTkqz/7ibjtEN/jUuy1w9uHw0C0R0Mm00Sq8EC5yXDD9QH59g00SCuUT4duHfmFU7VFsDODg7bvjCsp8nsJTcxVgctGQAA=",
   "library/person-rune":
     "data:image/webp;base64,UklGRnQAAABXRUJQVlA4IGgAAADQAQCdASoQABAAA4BaJbACdAEDtIp4QAD+1LPSvYIyOc5ltpvrdBvfQDqxNBa5/Jbx/5gOeJPmVeqYe3vuTQcM1uIHgQlyvKEoJF2W4jKuiyTVBtAgZTw1whwyWA57hcvRVueASbmAAA==",
   "library/person-samira":
@@ -1767,6 +1887,8 @@ export const PLACEHOLDER: Record<string, string> = {
     "data:image/webp;base64,UklGRnQAAABXRUJQVlA4IGgAAAAwAgCdASoQABAAA4BaJYwCdAEWszZfIGS2oAD+wSJRsNqF50rGNKu8q67qXq9cn1S6wcD0hRG8jryItrkX8eZ6hXpHfRppK1MGsTito18GCcSH+ITLWEj3Jj0VZn1fFyGvBFihcgAAAA==",
   "library/person-sander":
     "data:image/webp;base64,UklGRoAAAABXRUJQVlA4IHQAAAAwAgCdASoQABAAA4BaJaACdAYvhFyMydWeAAD+8/xTQnb3nqvtlTaWDbPfx0ATes1+ueW6GUXZ7WIxH5t0De4F/uI7ik2xSiLLeM547G0b+X2xFIdrcW3mYjVXBru+ggPFG96oD70B+ciHnfqAgIKMTNjgAA==",
+  "library/person-selma":
+    "data:image/webp;base64,UklGRkQAAABXRUJQVlA4IDgAAACwAQCdASoQABAAA4BaJZQAAudVfgHAAP72hwxjPqSBWWsMdCrfS5360hhL33dYgDorvT9xNAAAAA==",
   "library/person-silje":
     "data:image/webp;base64,UklGRnYAAABXRUJQVlA4IGoAAADwAQCdASoQABAAA4BaJQBOgB8+eqTGSPAA/tG201xUPKn+oW4DhMVc04AnG9746tdD/y9FwvvqtvzRR1vOt5Ceob7IHHUvCSyeo7DtPubsBtfKvg8L6zaeDjW9qq5XjMJaP6Ydj7b8AAAA",
   "library/person-sindre":
@@ -1781,6 +1903,8 @@ export const PLACEHOLDER: Record<string, string> = {
     "data:image/webp;base64,UklGRmoAAABXRUJQVlA4IF4AAAAwAgCdASoQABAAA4BaJQBOj+ACvGgnrI6AqAD+y/+HIh75tyPSdAez9rWv+LtzPRa4zK8CseDdHz9vmfTQ/gvSUPLHTbeFgrB6m41Pb2ZN5UdvBe/W1I12JMpM8AAA",
   "library/person-tom":
     "data:image/webp;base64,UklGRngAAABXRUJQVlA4IGwAAAAwAgCdASoQABAAA4BaJQBOgBuH3PkBYMM2AAD2t6wo3riS6VftJB9APXiQYu/kvyZvDkA5d/pD8ziWLZcylug2VmpCK4luR6dGucnbVjYUyXf5XTX0MD3GDDKTD1KJvgnugbC89MkobL4QAAA=",
+  "library/person-torgeir":
+    "data:image/webp;base64,UklGRmoAAABXRUJQVlA4IF4AAAAQAgCdASoQABAAA4BaJQBdgCBjgdl2DgIAAP7xE/irtjrli+owOEmnbz+prjM1fJpx+yWnKw/tVmqxfWyuUM/kfKGeKuRdMms2a+H6tPbrQwnQ/xsXHHU5toVBmSAA",
   "library/person-torill":
     "data:image/webp;base64,UklGRmgAAABXRUJQVlA4IFwAAAAQAgCdASoQABAAA4BaJbACdAEU+Ww/SmwAAP70Ugbw1zg8yPPrd2Tsb8WBoDMut5wUNYx6yJKNJh42AmhClMJi1Hfom6M1NFBWmddIWWdDaWmN8odXYvGozMtaAA==",
   "library/person-tuva":
@@ -1987,6 +2111,16 @@ export const PLACEHOLDER: Record<string, string> = {
     "data:image/webp;base64,UklGRlIAAABXRUJQVlA4IEYAAADwAQCdASoQAAoAA4BaJYwCdADdHlSmSwAA/vkYbmOPfbyOfp5GaQCb3qsdDuZo/7n1AT/BjwiKG7nztkXZhjzA4UySAAAA",
   "library/standup-5":
     "data:image/webp;base64,UklGRmoAAABXRUJQVlA4IF4AAABwBACdASoQABgAPu1yrU+pp6QiMAgBMB2JYwC7MoADTiJaIglDGGEI6dpDYAD+7n7swfaKIAPwog9OASvnpO+9OmEwotwQVD2qtjknuhKyDzXeMgQGx0vcyx2Y0vAA",
+  "library/strikking-1":
+    "data:image/webp;base64,UklGRmAAAABXRUJQVlA4IFQAAAAwAgCdASoQAAoAA4BaJZACdAERH/IR71czAAD+tuIxGp+VdEoQzLgHZzbr8RGk0WaG0hh11HAqzaRGYu1qwCubV2xIDFGiNFjdseJhupeysXIAAAA=",
+  "library/strikking-2":
+    "data:image/webp;base64,UklGRngAAABXRUJQVlA4IGwAAABwAgCdASoQAAoAA4BaJQBOgMYi7ZmXsC9J49ZEAP6t3je9kwPw1hINXfRKbTXCAqA6wh9BdBLr7bJ5Fu9YZcNtpEkW0GHx2POeLrv2a2412n5s6+tBqQMTNI67LOAvuW+F3n15AcRdjiTAAAA=",
+  "library/strikking-3":
+    "data:image/webp;base64,UklGRoYAAABXRUJQVlA4IHoAAAAwAgCdASoQAAwAA4BaJbACdAYwnWpSFay1gAD+6fuenfKAHffmDgiLJUjthjD77z6buCHMgX2jXGXWvZKhreUCZ2GDYe6kYz0zgK2c70pYAn1QbOEAE2in+gaeptGVX8Zlr/NZ0bkqsh4tUu4uJeW0/F+013F+oC3AAA==",
+  "library/strikking-4":
+    "data:image/webp;base64,UklGRmgAAABXRUJQVlA4IFwAAADQAQCdASoQAAoAA4BaJQBOgB9lDNvy+AD+0gQXK4k+L4HAPuo1p5sbHmAuZT8LGr6ru1UdhUf7nBghTz0M9MG7Fhw/TDV4W9RIdnqQf552JBAJCg6L6E5uriAAAA==",
+  "library/strikking-5":
+    "data:image/webp;base64,UklGRmYAAABXRUJQVlA4IFoAAAAQAgCdASoQAAwAA4BaJZQCdAEHTwLb2v1AAP7SpmjyB4gCtDyGrMbNZLm3RSVv8GQG57R/lRCDkKwgSs/kIyzBsI2GWNhHCuEDr8DxDdrD/vJWRB94nt+0gAA=",
   "library/styrketrening-1":
     "data:image/webp;base64,UklGRooAAABXRUJQVlA4IH4AAADwAwCdASoQABgAPu1iqU2ppaOiMAgBMB2JZQAAQ+zZUzvqRKTQ4eNgAP7r569R0x76VGBpfpPXsVF7urgKJR5+UV7xVQ2r6bLdndxLVZ4nvUHbL64ozoP+72O/D9thkq+dyrjSIFHmkkxva58u8P9Lr33+JCR/AtNB3QIWUAA=",
   "library/styrketrening-2":
@@ -2115,6 +2249,16 @@ export const PLACEHOLDER: Record<string, string> = {
     "data:image/webp;base64,UklGRmwAAABXRUJQVlA4IGAAAADQAQCdASoQAAwAA4BaJZQCdAEJaeWvAAD++RcrJKyychiC8hYHedmjfdvUawdMgvfx2yF7fqHUmXbWVOjYis06s9dkWtYqSz+TVKdoCIElDSBZFOlNXLUIMC6RG9kAAAA=",
   "library/venue-workshop":
     "data:image/webp;base64,UklGRkoAAABXRUJQVlA4ID4AAADQAQCdASoQAAwAA4BaJZQAAvmHjJq1IAD0Sit4XKK66iSr8eTJXBqfduQDnMWEM6fxZZWbI5PffbIk14oAAA==",
+  "library/verksted-1":
+    "data:image/webp;base64,UklGRmoAAABXRUJQVlA4IF4AAAAwAgCdASoQAAoAA4BaJZACdAD1FjU37i4nAAD+5k8fpeLhDu7YlYcgEGJOXENPP75GDThaSyhY4zeyYjApi12FkEXmlKvmnig9BKGRY+JqjmBBkZOUuFm5ZL/V3kAA",
+  "library/verksted-2":
+    "data:image/webp;base64,UklGRmgAAABXRUJQVlA4IFwAAAAQAgCdASoQAAoAA4BaJZACdADdpZNdDpSwAP7qW2lhxj0SlyYH4WkaJvzjnu9JVikeb4SgexryAlRCR3Z7MYhZn9s4ZhH+TLxtBHVqK5OsCi+kt2AKaJUe33QgAA==",
+  "library/verksted-3":
+    "data:image/webp;base64,UklGRlQAAABXRUJQVlA4IEgAAAAwAgCdASoQAAgAA4BaJbACdLoAAtHHnrOlWAD+3vB9I/t8K1klyNRiNOP8V3njvKNy4aiThi8hQmU9tEd68rfp+z8ikWLwAAA=",
+  "library/verksted-4":
+    "data:image/webp;base64,UklGRl4AAABXRUJQVlA4IFIAAAAQAgCdASoQAAoAA4BaJYgCdAEXfAj6pNIAAPa6TVo3ZeUg6Xcaj7qriS7xc3bcCel2JJdQJ9QkKKH0iA73B2vDdkh5x8u/hUxXvkm1HspVhAAA",
+  "library/verksted-5":
+    "data:image/webp;base64,UklGRnAAAABXRUJQVlA4IGQAAAAQAgCdASoQAAwAA4BaJQBOgMW5po35HDYAAP715bZpidU/O0yev53ieG+vfMS4SSX2iJW9M9Q/6VU2LxGpQm3GSd3pEML/NNAFsHPbjMRVmGy0zau6oHuvn6fzimKzsoBJAAAA",
   "library/vin-1":
     "data:image/webp;base64,UklGRqwAAABXRUJQVlA4IKAAAAAwBACdASoQABgAPu1iqU2ppaOiMAgBMB2JQBOmUAS4Yv9DAKQ9KE4FeAAA/vDGhqliTTbxVxtjAUDtCKxuazX/+SCPod8Mcr2LWyDYEDnTGoGaCvISLGLc3T3SyxaffTnTm+681caxwtwIhaJqr+/3/vwGF4WL3CUcDQuyzchqcyJoaSFh+PRbqJlpPGN3TrJPnEdtznhHBWnUaS5NI1AA",
   "library/vin-2":
