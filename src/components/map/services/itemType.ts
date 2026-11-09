@@ -52,8 +52,16 @@ export function experienceTypeLabel(
   return (e.days ?? 1) > 1 ? "Festival" : ITEM_TYPE_LABEL.arrangement;
 }
 
-export function placeTypeLabel(p: Pick<MockPlace, "kind">): string {
-  return ITEM_TYPE_LABEL[p.kind];
+/** What to call a place on the map: its kind ("Bedrift", "Organisasjon"),
+ *  but a city space by the kind of space it is ("Park", "Torg",
+ *  "Klatrefelt"; user 2026-11-09: "should say what type of city space and
+ *  not just city space"). Filtre's Type group still says "Byrom". */
+export function placeTypeLabel(
+  p: Pick<MockPlace, "kind" | "category">,
+): string {
+  return p.kind === "byrom" && p.category
+    ? p.category
+    : ITEM_TYPE_LABEL[p.kind];
 }
 
 /** The type of a map item (places by kind, experiences by format). */

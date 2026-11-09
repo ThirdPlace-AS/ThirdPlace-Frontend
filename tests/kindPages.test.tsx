@@ -138,10 +138,11 @@ describe("place pages by kind", () => {
 });
 
 describe("the place page's top bar", () => {
-  it("says what the place is and where (Byrom · Kolsås)", () => {
+  it("says what the place is and where (Klatrefelt · Kolsås)", () => {
+    // A city space by its own kind, not just "Byrom" (user 2026-11-09).
     mockParams = { id: "p-klatring-r" };
     render(<PlaceScreen />, { wrapper });
-    expect(screen.getByText("Byrom · Kolsås")).toBeTruthy();
+    expect(screen.getByText("Klatrefelt · Kolsås")).toBeTruthy();
     expect(screen.getAllByText("Kolsås klatrefelt").length).toBeGreaterThan(0);
   });
 });

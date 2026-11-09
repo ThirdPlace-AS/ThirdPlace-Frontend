@@ -90,6 +90,29 @@ describe("item types", () => {
     const fest = r.items.find((i) => i.id === "e-klatring-arr")!;
     expect(fest.subtitle).toBe("Festival · Kolsås · Lør 10:00");
   });
+
+  it("names a city space by its own kind, not just Byrom (2026-11-09)", () => {
+    const r = resultForMode({
+      mode: "explore",
+      places,
+      query: "",
+      savedIds: [],
+    });
+    const spaces = r.items.filter((i) => i.type === "byrom");
+    expect(spaces.length).toBeGreaterThan(0);
+    for (const i of spaces) {
+      const p = places.find((x) => x.id === i.id)!;
+      expect(i.typeLabel).toBe(p.category);
+      expect(i.typeLabel).not.toBe("Byrom");
+    }
+    const crag = spaces.find((i) => i.id === "p-klatring-r")!;
+    expect(crag.subtitle.startsWith("Klatrefelt · Kolsås · ")).toBe(true);
+    // Bedrift and Organisasjon keep the kind; Filtre's Type still says Byrom.
+    expect(r.items.find((i) => i.type === "bedrift")!.typeLabel).toBe(
+      "Bedrift",
+    );
+    expect(ITEM_TYPE_LABEL.byrom).toBe("Byrom");
+  });
 });
 
 describe("the Type filter", () => {
