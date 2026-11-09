@@ -32,7 +32,7 @@ npx jest -t "trending sorts"              # single test by name
 npx expo-doctor      # dependency/config health (CI runs this; patch drift fails it → `npx expo install --fix`)
 ```
 
-CI (`.github/workflows/ci.yml`): a **quality** job (format → lint → typecheck → test, Node 22) and a **bundle** job (expo-doctor + `expo export` web & android with `EXPO_PUBLIC_USE_NATIVE_MAP=0`, then an anchored grep asserting no `sk.*` Mapbox token is in the bundles).
+CI (`.github/workflows/ci.yml`): a **quality** job (format → lint → typecheck → test, Node 22) and a **bundle** job (expo-doctor + `expo export` web & android with `EXPO_PUBLIC_USE_NATIVE_MAP=0`, then a grep over every exported file, the web `.js` and the android Hermes `.hbc` read as text, asserting no `sk.*` Mapbox token is in the bundles; it fails if `dist-android` holds no `.hbc`).
 
 **Line endings:** the working tree is CRLF, the git index is LF, so local `prettier --check` flags every file. Run `npx prettier --write` only on files you touched (a repo-wide write creates EOL-only churn — `git checkout` those). To check what CI sees: `git show HEAD:<file> | npx prettier --stdin-filepath <file> --check`. Edits made after a prettier run (scripts, sed) need re-formatting before commit.
 
