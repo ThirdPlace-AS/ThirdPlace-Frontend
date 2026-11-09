@@ -1,6 +1,8 @@
 // Every interest seed, in catalogue order (Phase 19). One file per pin colour
 // (split in two above ~1,000 lines); the content batches add theirs here.
 import { KAFE } from "./kafe";
+import { KULTUR_A } from "./kultur-a";
+import { KULTUR_B } from "./kultur-b";
 import { MAT_A } from "./mat-a";
 import { MAT_B } from "./mat-b";
 import { NATUR_A } from "./natur-a";
@@ -35,6 +37,8 @@ export const SEEDS: readonly InterestSeed[] = [
   ...TRENING_E,
   ...TRENING_F,
   ...TRENING_G,
+  ...KULTUR_A,
+  ...KULTUR_B,
   ...VELVAERE_A,
   ...VELVAERE_B,
 ];
