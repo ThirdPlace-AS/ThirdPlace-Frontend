@@ -1,7 +1,7 @@
 import { Ionicons } from "@expo/vector-icons";
 import BottomSheet, { BottomSheetFlatList } from "@gorhom/bottom-sheet";
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { View } from "react-native";
+import { useWindowDimensions, View } from "react-native";
 import Animated, {
   Extrapolation,
   interpolate,
@@ -20,7 +20,7 @@ import {
   Text,
   useSheetChrome,
 } from "@/components/ui";
-import { elevation } from "@/theme";
+import { elevation, gutterPx } from "@/theme";
 import { areaFor, type MockWeather } from "@/fixtures";
 import { useOrigin } from "@/lib/origin";
 import { formatRating } from "@/lib/format";
@@ -152,17 +152,21 @@ export const MapBrowseSheet = memo(function MapBrowseSheet({
     (item: DiscoveryItem) => onToggleSaveRef.current(item),
     [],
   );
+  // The cards span the sheet (the window) less the list's gutters; measured
+  // here once instead of by every card's photo pager (speed pass 0349).
+  const cardWidth = Math.round(useWindowDimensions().width - 2 * gutterPx);
   const renderItem = useCallback(
     ({ item }: { item: DiscoveryItem }) => (
       <BrowseCard
         item={item}
+        width={cardWidth}
         selected={item.markerId === selectedMarkerId}
         saved={isSaved(item.markerId)}
         onSelect={handleSelect}
         onToggleSave={handleToggleSave}
       />
     ),
-    [selectedMarkerId, isSaved, handleSelect, handleToggleSave],
+    [cardWidth, selectedMarkerId, isSaved, handleSelect, handleToggleSave],
   );
 
   // The municipality the person is in (Phase 19: Oslo and Akershus), then
@@ -268,7 +272,10 @@ export const MapBrowseSheet = memo(function MapBrowseSheet({
           renderItem={renderItem}
           initialNumToRender={4}
           maxToRenderPerBatch={4}
-          windowSize={7}
+          // Two screens of cards above and below (was three; speed pass
+          // 0349). The cards differ in height (lines, tags, who is going),
+          // so there is no getItemLayout.
+          windowSize={5}
         />
       </BottomSheet>
 
@@ -307,12 +314,16 @@ export const MapBrowseSheet = memo(function MapBrowseSheet({
 // re-renders only when its own item/selected/saved changes.
 export const BrowseCard = memo(function BrowseCard({
   item,
+  width,
   selected,
   saved,
   onSelect,
   onToggleSave,
 }: {
   item: DiscoveryItem;
+  /** The card's width, when the list knows it: the photos page without a
+   * layout pass of their own. */
+  width?: number;
   selected: boolean;
   saved: boolean;
   onSelect: (item: DiscoveryItem) => void;
@@ -362,7 +373,13 @@ export const BrowseCard = memo(function BrowseCard({
           }`}
         >
           {photos.length > 0 ? (
-            <PhotoPager photos={photos} />
+            <PhotoPager
+              photos={photos}
+              // The selected card's 2 px ink border sits inside the photo box.
+              width={
+                width === undefined ? undefined : width - (selected ? 4 : 0)
+              }
+            />
           ) : (
             <Icon name="image-outline" size="2xl" tone="muted" />
           )}

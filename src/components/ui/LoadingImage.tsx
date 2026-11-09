@@ -30,7 +30,11 @@ export function LoadingImage({
     setSource(props.source);
     setLoaded(false);
   }
-  const phase = useLoadPhase(!loaded);
+  // A bundled photo's blurred preview covers the whole frame from the first
+  // paint, so a skeleton or spinner under it is never seen: skip both, with
+  // their pulse loop, timer and the re-render on load (speed pass 0349).
+  const preview = imagePreview(props.source);
+  const phase = useLoadPhase(!loaded && !preview);
   return (
     <View style={[{ overflow: "hidden" }, style]}>
       {phase === "skeleton" ? (
@@ -49,13 +53,13 @@ export function LoadingImage({
       ) : null}
       <Image
         cachePolicy="memory-disk"
-        placeholder={imagePreview(props.source)}
+        placeholder={preview}
         placeholderContentFit="cover"
         {...props}
         source={thumb ? smallImage(props.source) : props.source}
         style={StyleSheet.absoluteFill}
         onLoad={(e) => {
-          setLoaded(true);
+          if (!preview) setLoaded(true);
           onLoad?.(e);
         }}
       />
