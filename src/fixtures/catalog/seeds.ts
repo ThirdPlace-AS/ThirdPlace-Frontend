@@ -5,6 +5,8 @@ import { KULTUR_A } from "./kultur-a";
 import { KULTUR_B } from "./kultur-b";
 import { KULTUR_C } from "./kultur-c";
 import { KULTUR_D } from "./kultur-d";
+import { KULTUR_E } from "./kultur-e";
+import { KULTUR_F } from "./kultur-f";
 import { MAT_A } from "./mat-a";
 import { MAT_B } from "./mat-b";
 import { NATUR_A } from "./natur-a";
@@ -43,6 +45,8 @@ export const SEEDS: readonly InterestSeed[] = [
   ...KULTUR_B,
   ...KULTUR_C,
   ...KULTUR_D,
+  ...KULTUR_E,
+  ...KULTUR_F,
   ...VELVAERE_A,
   ...VELVAERE_B,
 ];
