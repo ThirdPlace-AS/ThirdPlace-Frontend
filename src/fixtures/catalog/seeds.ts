@@ -11,6 +11,8 @@ import { SOSIALT_C } from "./sosialt-c";
 import { TRENING_A } from "./trening-a";
 import { TRENING_B } from "./trening-b";
 import { TRENING_C } from "./trening-c";
+import { TRENING_D } from "./trening-d";
+import { TRENING_E } from "./trening-e";
 import type { InterestSeed } from "./types";
 import { VELVAERE_A } from "./velvaere-a";
 import { VELVAERE_B } from "./velvaere-b";
@@ -27,6 +29,8 @@ export const SEEDS: readonly InterestSeed[] = [
   ...TRENING_A,
   ...TRENING_B,
   ...TRENING_C,
+  ...TRENING_D,
+  ...TRENING_E,
   ...VELVAERE_A,
   ...VELVAERE_B,
 ];

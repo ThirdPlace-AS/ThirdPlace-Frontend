@@ -1,7 +1,8 @@
-// Seeds for the Trening interests, part C (Phase 19): Dans. Hand-written
-// MOCK content: businesses, clubs and events are fictional; outdoor places
-// use their public names with modest, general descriptions (facilities as
-// OpenStreetMap shows them). See docs/fixtures/VOICE.md.
+// Seeds for the Trening interests, part C (Phase 19): Dans, Kampsport,
+// Tennis. Hand-written MOCK content: businesses, clubs and events are
+// fictional; outdoor places use their public names with modest, general
+// descriptions (facilities as OpenStreetMap shows them). See
+// docs/fixtures/VOICE.md.
 import type { InterestSeed } from "./types";
 
 export const TRENING_C: InterestSeed[] = [
@@ -323,6 +324,663 @@ export const TRENING_C: InterestSeed[] = [
         ["Elise", "Hvem kommer på søndag? Jeg tar med en venn som er helt ny."],
         ["Joakim", "Jeg er der fra fire. Vi viser henne grunntrinnet."],
         ["Elise", "Hun blir glad for det!"],
+      ],
+    },
+  },
+  {
+    interest: "kampsport",
+    bedrift: {
+      name: "Dojo Sundet",
+      category: "Kampsportsenter",
+      coord: [11.258, 60.33],
+      town: "Eidsvoll",
+      address: "Sundgata 13D, 2080 Eidsvoll",
+      hours: "Man–fre 16–21 · Lør 10–14",
+      priceNok: 180,
+      vibes: ["Energisk", "Sosial"],
+      blurb:
+        "Kampsportsenter på Sundet med judo, jiu-jitsu og boksing for voksne.",
+      about:
+        "To matter, et boksehjørne og garderober i en gammel lagerbygning på Sundet. De fleste timene er for voksne, og nybegynnere får en egen time i uka der ingen forventer at du kan noe.",
+      tags: ["Judo", "Jiu-jitsu", "Prøvetime"],
+      accessibility: ["Trinnfri inngang"],
+      types: ["Trening"],
+      audiences: ["Alenereisende", "Førstegangsbesøkende"],
+      durationMin: 60,
+      photos: ["kampsport-3", "kampsport-2"],
+      reviews: [
+        [
+          "Jan Ove S.",
+          5,
+          "1 uke siden",
+          "Jeg var 52 og stiv som en planke da jeg begynte. Trenerne tilpasser alt, og jeg har ikke vært så sliten og glad på lenge.",
+        ],
+        [
+          "Malene T.",
+          4,
+          "1 måned siden",
+          "Flinke trenere og god stemning på matta. Garderoben er liten når to timer overlapper.",
+        ],
+        [
+          "Ahmad R.",
+          5,
+          "2 måneder siden",
+          "Prøvde boksing en tirsdag og har kommet tilbake hver uke siden. Ingen spiller tøffe.",
+        ],
+      ],
+      chat: [
+        [
+          "Dojo Sundet",
+          "Ny nybegynnertime i judo på onsdager fra denne uka. Drakter å låne står klare i resepsjonen.",
+        ],
+        ["Henning", "Trenger jeg egen drakt for å prøve jiu-jitsu?"],
+        [
+          "Dojo Sundet",
+          "Nei, vi har noen å låne ut. Kom i treningstøy første gang.",
+        ],
+      ],
+      business: {
+        name: "Dojo Sundet AS",
+        verified: true,
+        about:
+          "Kampsportsenter på Sundet i Eidsvoll, startet av tre trenere fra hver sin klubb i 2018.",
+      },
+    },
+    organisasjon: {
+      name: "Taijilaget på Årnes",
+      category: "Taijilag",
+      coord: [11.468, 60.124],
+      town: "Årnes",
+      address: "Silovegen 4A, 2150 Årnes",
+      hours: "Tir og tor 18–20",
+      priceNok: 0,
+      vibes: ["Rolig", "Sosial"],
+      blurb: "Taijilag på Årnes for voksne som vil bevege seg rolig sammen.",
+      about:
+        "Vi trener taiji, en rolig kampkunst med langsomme bevegelser, to kvelder i uka i en sal på Årnes. De fleste kom for å bli mer bevegelige, og mange har blitt fordi de liker gjengen.",
+      tags: ["Taiji", "Rolig tempo", "Alle aldre"],
+      accessibility: ["Trinnfri inngang", "Ingen ekstreme sensoriske stimuli"],
+      types: ["Trening", "Velvære"],
+      photos: ["kampsport-4", "kampsport-5"],
+      reviews: [
+        [
+          "Turid H.",
+          5,
+          "1 måned siden",
+          "Begynte for å få bedre balanse og ble værende for folka. Instruktøren har en enorm tålmodighet.",
+        ],
+        [
+          "Leif A.",
+          4,
+          "2 måneder siden",
+          "Rolig og fint. Det tok meg noen uker før bevegelsene satt, så ikke gi opp etter første kveld.",
+        ],
+      ],
+      chat: [
+        [
+          "Taijilaget på Årnes",
+          "Torsdag trener vi ute på plenen ved Glomma hvis det er oppholdsvær.",
+        ],
+        ["Grete", "Kan jeg komme selv om jeg aldri har trent noe som ligner?"],
+        [
+          "Marte Gjerstad",
+          "Ja, alle startet der. Vi går gjennom de første bevegelsene sammen.",
+        ],
+      ],
+      org: {
+        form: "Lag",
+        about:
+          "Taijilag på Årnes for voksne. Vi trener rolig taiji sammen, ute når været tillater det og inne resten av året.",
+        activities: [
+          "Trening tirsdag og torsdag",
+          "Utetrening ved Glomma",
+          "Taijidag for nye",
+        ],
+        contactPersonId: "u34",
+      },
+    },
+    byrom: {
+      name: "Slottsparken",
+      category: "Park",
+      coord: [10.7279, 59.9176],
+      town: "St. Hanshaugen",
+      address: "Slottsparken, 0010 Oslo",
+      hours: "Alltid åpent",
+      priceNok: 0,
+      vibes: ["Rolig", "Sosial"],
+      blurb: "Stor park rundt Slottet med plener, gamle trær og skulpturer.",
+      about:
+        "Parken rundt Slottet har store plener, gamle trær og gangveier med lys. Her er det god plass til å trene rolig om morgenen, og mange tar en runde i parken på vei til jobb.",
+      tags: ["Gratis", "Ute", "Park"],
+      accessibility: ["Trinnfri inngang"],
+      types: ["Friluftsliv", "Trening"],
+      photos: ["kampsport-5", "kampsport-4"],
+      reviews: [
+        [
+          "Petra L.",
+          5,
+          "3 uker siden",
+          "Midt i byen, men det føles stille tidlig om morgenen. Perfekt for en rolig økt før jobb.",
+        ],
+        [
+          "Olav M.",
+          4,
+          "1 måned siden",
+          "Vakkert hele året. Mye folk og turister midt på dagen, så kom tidlig.",
+        ],
+      ],
+      chat: [
+        ["Ingvild", "Noen som trener taiji i Slottsparken på lørdager?"],
+        [
+          "Tor",
+          "Vi er en gjeng som møtes ved Dronningparken klokka ni. Bli med!",
+        ],
+      ],
+      space: {
+        facilities: [
+          "Benker",
+          "Toalett",
+          "Turvei",
+          "Belysning",
+          "Sykkelparkering",
+        ],
+        access: "Åpent for alle",
+        season: "Hele året",
+      },
+    },
+    opplevelse: {
+      title: "Judo for voksne nybegynnere",
+      hostId: "u34",
+      when: "Ons 18:00",
+      repeat: "Ukentlig",
+      venue: "bedrift",
+      capacity: 14,
+      going: 9,
+      priceNok: 150,
+      about:
+        "En time der du lærer å falle, de første grepene og hvordan en kamp på matta foregår. Vi tar det rolig, og ingen kaster noen før de er klare.",
+      category: "Sport & trening",
+      duration: "1 time",
+      durationMin: 60,
+      languages: ["Norsk", "Engelsk"],
+      included: ["Lån av judodrakt", "Matte og garderobe"],
+      vibes: ["Lærerikt", "Sosialt"],
+      types: ["Trening"],
+      audiences: ["Alenereisende", "Førstegangsbesøkende"],
+      tags: ["Judo", "Nybegynner"],
+      photos: ["kampsport-2", "kampsport-1"],
+      steps: [
+        [
+          "Drakt og belte",
+          "Marte viser hvordan du knyter beltet og hvordan en time er bygd opp.",
+          "kampsport-1",
+        ],
+        [
+          "Å falle",
+          "Vi øver på å rulle og falle mykt, først fra knærne og så stående.",
+          "kampsport-3",
+        ],
+        [
+          "De første grepene",
+          "To og to prøver vi enkle grep i rolig tempo.",
+          "kampsport-2",
+        ],
+        [
+          "Prat på matta",
+          "Vi avslutter sittende i ring med spørsmål og en plan for neste uke.",
+          "kampsport-3",
+        ],
+      ],
+      reviews: [
+        [
+          "Kenneth",
+          "Eidsvoll",
+          5,
+          "2 uker siden",
+          "Jeg trodde judo var for barn og olympiere. Marte gjorde det helt naturlig å være 40 og nybegynner.",
+        ],
+        [
+          "Sunniva",
+          "Råholt",
+          5,
+          "1 måned siden",
+          "Lærte å falle uten å bli redd, og det alene var verdt det. Hyggelig gjeng.",
+        ],
+        [
+          "Pål",
+          "Jessheim",
+          4,
+          "2 måneder siden",
+          "Godt opplegg, men én time går fort. Jeg skulle gjerne hatt tid til en runde til på matta.",
+        ],
+      ],
+      chat: [
+        [
+          "Marte Gjerstad",
+          "Velkommen! Kom i treningstøy, så får du låne drakt her.",
+        ],
+        ["Kenneth", "Hva om jeg er helt utrent?"],
+        ["Marte Gjerstad", "Da er du i godt selskap. Vi starter der du er."],
+      ],
+    },
+    arrangement: {
+      title: "Taijidagen på Årnes",
+      hostId: "u34",
+      when: "Lør 11:00",
+      days: 1,
+      venue: "organisasjon",
+      organizer: "organisasjon",
+      capacity: 40,
+      going: 17,
+      priceNok: 100,
+      about:
+        "En dag med taiji for alle som vil prøve. Laget går gjennom de første bevegelsene i små grupper, og etter lunsj viser de mer erfarne en hel form.",
+      category: "Sport & trening",
+      duration: "Hele dagen",
+      durationMin: 300,
+      included: ["Lunsj", "Te og frukt"],
+      vibes: ["Rolig", "Lærerikt"],
+      energy: "Lavt",
+      types: ["Trening", "Velvære"],
+      audiences: ["Førstegangsbesøkende", "Par", "Store grupper"],
+      tags: ["Taiji", "Kampkunst"],
+      photos: ["kampsport-5", "kampsport-4"],
+      steps: [
+        [
+          "Lør 11:00 · Velkommen",
+          "Te i salen og en kort runde om hva taiji er.",
+          "kampsport-4",
+        ],
+        [
+          "Lør 11:30 · Første bevegelser",
+          "Små grupper med en instruktør hver, i det tempoet gruppa trenger.",
+          "kampsport-5",
+        ],
+        [
+          "Lør 13:00 · Lunsj",
+          "Vi spiser sammen og prater om hvordan det kjennes.",
+          "kampsport-3",
+        ],
+        [
+          "Lør 14:00 · En hel form",
+          "De mer erfarne viser en hel form, og alle som vil følger etter.",
+          "kampsport-5",
+        ],
+      ],
+      reviews: [
+        [
+          "Gerd",
+          "Årnes",
+          5,
+          "1 år siden",
+          "En rolig og fin dag. Jeg meldte meg inn i laget uka etter.",
+        ],
+        [
+          "Thomas",
+          "Kongsvinger",
+          4,
+          "1 år siden",
+          "Lærte mye, men det var litt lite plass i salen da alle skulle bevege seg samtidig.",
+        ],
+        [
+          "Ragna",
+          "Lillestrøm",
+          5,
+          "1 år siden",
+          "Fin blanding av folk i alle aldre. Lunsjen var hjemmelaget og god.",
+        ],
+      ],
+      chat: [
+        [
+          "Taijilaget på Årnes",
+          "Programmet er klart. Ta med innesko eller kom i ullsokker.",
+        ],
+        ["Ellen", "Kan jeg ta med mamma på 75?"],
+        [
+          "Marte Gjerstad",
+          "Så gjerne! Bevegelsene kan gjøres i hvert sitt tempo.",
+        ],
+      ],
+    },
+    gruppe: {
+      name: "Morgentaiji i Slottsparken",
+      about:
+        "Vi møtes i Slottsparken lørdag morgen og går gjennom en rolig taijiform sammen. Ingen instruktør, bare folk som har lært litt og deler det med hverandre.",
+      rules:
+        "Kom i klær du kan bevege deg i. Vi starter presis, men du kan alltid slutte deg til underveis.",
+      photos: ["kampsport-5", "kampsport-4"],
+      memberCount: 29,
+      home: "byrom",
+      alsoInterests: ["meditasjon"],
+      access: "open",
+      chat: [
+        ["Tor", "Lørdag klokka ni ved Dronningparken som vanlig."],
+        ["Ingvild", "Jeg tar med en kollega som vil prøve."],
+        ["Tor", "Hyggelig, vi viser henne de første bevegelsene."],
+      ],
+    },
+  },
+  {
+    interest: "tennis",
+    bedrift: {
+      name: "Ballgutten",
+      category: "Tennishall",
+      coord: [11.159, 59.931],
+      town: "Fetsund",
+      address: "Garderbakken 38, 1900 Fetsund",
+      hours: "Man–fre 07–23 · Lør–søn 08–20",
+      priceNok: 250,
+      vibes: ["Energisk", "Sosial"],
+      blurb: "Tennishall med tre baner under tak og en kafé ved inngangen.",
+      about:
+        "Tre baner i en hall som står oppe hele året, med lys som holder til kveldskampene. I kafeen kan du se på mens du venter, og trenerne setter opp kurs for voksne som aldri har spilt.",
+      tags: ["Baneleie", "Kurs for voksne", "Kafé"],
+      accessibility: ["Trinnfri inngang", "Rullestol-WC"],
+      types: ["Trening"],
+      audiences: ["Par", "Førstegangsbesøkende", "Lokalkjente"],
+      durationMin: 60,
+      photos: ["tennis-3", "tennis-2"],
+      reviews: [
+        [
+          "Kristian B.",
+          5,
+          "2 uker siden",
+          "Gode baner og fint lys. Vi spiller dobbel hver onsdag og har aldri savnet å være ute.",
+        ],
+        [
+          "Lise M.",
+          4,
+          "1 måned siden",
+          "Hyggelig sted, men kafeen stenger tidlig på kveldene.",
+        ],
+        [
+          "Hans P.",
+          5,
+          "2 måneder siden",
+          "Begynte på voksenkurs her i fjor. Nå er jeg den som spør om noen vil spille.",
+        ],
+      ],
+      chat: [
+        [
+          "Ballgutten",
+          "Bane 2 er ledig søndag ettermiddag. Si fra her hvis dere vil ha den.",
+        ],
+        ["Mette", "Noen som vil spille single torsdag klokka sju?"],
+        ["Jørn", "Jeg kan. Sees i kafeen kvart på."],
+      ],
+      business: {
+        name: "Ballgutten Tennis AS",
+        verified: true,
+        about:
+          "Tennishall i Fetsund med tre innendørsbaner, drevet av et ektepar som begge har vært trenere.",
+      },
+    },
+    organisasjon: {
+      name: "Tennisvennene i Gjerdrum",
+      category: "Tennisklubb",
+      coord: [11.034, 60.069],
+      town: "Gjerdrum",
+      address: "Ingelstun 45, 2022 Gjerdrum",
+      hours: "Man og ons 18–21",
+      priceNok: 0,
+      vibes: ["Sosial", "Rolig"],
+      blurb:
+        "Tennisklubb for voksne i Gjerdrum som vil spille mer og bli kjent med flere.",
+      about:
+        "Vi setter opp dobbelkamper på tvers av nivå, låner baner der det er ledig og tar med nye spillere i kampene fra første kveld. De fleste av oss begynte å spille i voksen alder.",
+      tags: ["Dobbel", "Alle nivåer", "Voksne"],
+      accessibility: ["Trinnfri inngang"],
+      types: ["Trening"],
+      photos: ["tennis-1", "tennis-4"],
+      reviews: [
+        [
+          "Bente K.",
+          5,
+          "1 måned siden",
+          "Steinar har kontroll på alt og husker navnet ditt etter første kveld. Jeg spiller tre ganger i uka nå.",
+        ],
+        [
+          "Erlend V.",
+          4,
+          "2 måneder siden",
+          "Fin klubb, men kampoppsettet kommer ofte sent kvelden før. Litt kort varsel for oss med travle uker.",
+        ],
+      ],
+      chat: [
+        [
+          "Tennisvennene i Gjerdrum",
+          "Kampoppsettet for onsdag er klart. Sjekk hvem du spiller med.",
+        ],
+        ["Erlend", "Kan noen bytte med meg? Jeg kommer først halv åtte."],
+        ["Steinar Kolstad", "Jeg bytter med deg, så tar du siste kampen."],
+      ],
+      org: {
+        form: "Klubb",
+        about:
+          "Tennisklubb i Gjerdrum for voksne på alle nivåer. Vi spiller dobbel, blander makkere og arrangerer en dobbeldag i året.",
+        activities: [
+          "Dobbelkvelder mandag og onsdag",
+          "Makkerbytte hver kveld",
+          "Dobbeldag for alle nivåer",
+        ],
+        contactPersonId: "u35",
+      },
+    },
+    byrom: {
+      name: "Haraløkka tennisanlegg",
+      category: "Tennisbaner",
+      coord: [10.8603, 59.8836],
+      town: "Nordstrand",
+      address: "Olav Nygards veg, 0688 Oslo",
+      hours: "Alltid åpent",
+      priceNok: 0,
+      vibes: ["Energisk", "Rolig"],
+      blurb: "Grusbaner på Haraløkka, drevet av kommunen.",
+      about:
+        "Tennisbaner med grus på Haraløkka, rett ved kunstgressbanen. I området er det benker, sykkelparkering og en lekeplass.",
+      tags: ["Grus", "Ute", "Tennis"],
+      accessibility: ["Trinnfri inngang"],
+      types: ["Trening", "Friluftsliv"],
+      photos: ["tennis-5", "tennis-4"],
+      reviews: [
+        [
+          "Sigmund A.",
+          5,
+          "3 uker siden",
+          "Fint å ha grusbaner så nær. Vi spiller her flere kvelder i uka når sesongen er i gang.",
+        ],
+        [
+          "Lene O.",
+          4,
+          "2 måneder siden",
+          "Gode baner, men populære på fine kvelder, så det kan bli venting.",
+        ],
+      ],
+      chat: [
+        ["Johan", "Noen som vil spille på Haraløkka i morgen tidlig?"],
+        ["Synne", "Jeg kan klokka sju. Tar med baller."],
+      ],
+      space: {
+        facilities: [
+          "Ballbane",
+          "Benker",
+          "Sykkelparkering",
+          "Belysning",
+          "Lekeplass",
+        ],
+        access: "Åpent for alle",
+        season: "Sommer",
+      },
+    },
+    opplevelse: {
+      title: "Tennis for voksne nybegynnere",
+      hostId: "u31",
+      when: "Man 18:00",
+      repeat: "Ukentlig",
+      venue: "bedrift",
+      capacity: 8,
+      going: 6,
+      priceNok: 300,
+      about:
+        "To timer der du lærer grepet, forehand, backhand og en enkel serve. Eirik mater baller fra kurven, så du får slå mange ganger og kan tenke mindre på å plukke opp.",
+      category: "Sport & trening",
+      duration: "2 timer",
+      durationMin: 120,
+      languages: ["Norsk", "Engelsk"],
+      included: ["Lån av racket", "Baller", "Bane i to timer"],
+      vibes: ["Lærerikt", "Sosialt"],
+      types: ["Trening"],
+      audiences: ["Alenereisende", "Par", "Førstegangsbesøkende"],
+      tags: ["Tennis", "Nybegynner"],
+      photos: ["tennis-1", "tennis-2"],
+      steps: [
+        [
+          "Grep og stilling",
+          "Eirik viser hvordan du holder racketen og står klar for ballen.",
+          "tennis-3",
+        ],
+        [
+          "Forehand fra kurven",
+          "Han mater baller, og du slår mange i rolig tempo.",
+          "tennis-1",
+        ],
+        [
+          "Backhand og serve",
+          "Samme øvelse fra den andre siden, og så de første servene.",
+          "tennis-2",
+        ],
+        [
+          "Små kamper",
+          "Vi spiller korte poeng to og to på hver side.",
+          "tennis-1",
+        ],
+      ],
+      reviews: [
+        [
+          "Ida",
+          "Fetsund",
+          5,
+          "1 uke siden",
+          "Jeg hadde ikke holdt en racket siden gymmen. Etter to mandager slo jeg ballen over nettet nesten hver gang.",
+        ],
+        [
+          "Ole",
+          "Sørumsand",
+          5,
+          "1 måned siden",
+          "Mye slag på kort tid, og Eirik er god på å rette opp små feil uten å mase.",
+        ],
+        [
+          "Linn",
+          "Lillestrøm",
+          4,
+          "2 måneder siden",
+          "Hyggelig og lærerikt. Litt mange på banen den kvelden jeg var der.",
+        ],
+      ],
+      chat: [
+        [
+          "Eirik Kvam",
+          "Velkommen! Ta med innesko og noe å drikke. Racket får dere låne.",
+        ],
+        ["Ida", "Kan vi komme to stykker og spille sammen?"],
+        ["Eirik Kvam", "Absolutt. Vi setter dere på samme bane."],
+      ],
+    },
+    arrangement: {
+      title: "Dobbeldagen i Fetsund",
+      hostId: "u35",
+      when: "Søn 10:00",
+      days: 1,
+      venue: "bedrift",
+      organizer: "organisasjon",
+      capacity: 32,
+      going: 22,
+      priceNok: 200,
+      about:
+        "En søndag med dobbel på alle tre banene i Ballgutten. Klubben setter opp kamper med ny makker hver runde, og det blir kaffe og boller mellom rundene.",
+      category: "Sport & trening",
+      duration: "Hele dagen",
+      durationMin: 360,
+      included: ["Baner hele dagen", "Kaffe og boller", "Baller"],
+      vibes: ["Sosialt", "Hands-on"],
+      energy: "Høyt",
+      types: ["Trening"],
+      audiences: ["Par", "Alenereisende", "Lokalkjente"],
+      tags: ["Tennis", "Dobbel"],
+      photos: ["tennis-3", "tennis-1"],
+      steps: [
+        [
+          "Søn 10:00 · Oppmøte i kafeen",
+          "Steinar deler ut kampoppsettet og en makker til første runde.",
+          "tennis-3",
+        ],
+        [
+          "Søn 10:30 · Morgenrundene",
+          "Korte kamper på alle tre banene.",
+          "tennis-1",
+        ],
+        [
+          "Søn 13:00 · Pause",
+          "Kaffe og boller, og nye makkere for ettermiddagen.",
+          "tennis-2",
+        ],
+        [
+          "Søn 14:00 · Ettermiddagsrundene",
+          "Flere kamper til alle har spilt med alle.",
+          "tennis-3",
+        ],
+      ],
+      reviews: [
+        [
+          "Randi",
+          "Gjerdrum",
+          5,
+          "1 år siden",
+          "Spilte med åtte forskjellige makkere og lo mer enn jeg har gjort på lenge.",
+        ],
+        [
+          "Kjell",
+          "Fetsund",
+          4,
+          "1 år siden",
+          "Godt organisert. For lange pauser mellom kampene for min smak.",
+        ],
+        [
+          "Yvonne",
+          "Kløfta",
+          5,
+          "1 år siden",
+          "Steinar sørger for at nybegynnerne får spille mot hverandre først. Smart.",
+        ],
+      ],
+      chat: [
+        [
+          "Tennisvennene i Gjerdrum",
+          "Kampoppsettet kommer her lørdag kveld. Si fra om du trenger racket.",
+        ],
+        ["Kjell", "Går det an å kjøpe lunsj i kafeen?"],
+        [
+          "Steinar Kolstad",
+          "Kafeen holder åpent hele dagen, og vi tar med boller.",
+        ],
+      ],
+    },
+    gruppe: {
+      name: "Grusbanegjengen",
+      about:
+        "Vi spiller på grusbanene på Haraløkka når de er åpne for sesongen, og flytter inn i hall resten av året. Kampene avtales i chatten.",
+      rules:
+        "Si fra senest dagen før hvis du ikke kommer, så noen andre kan ta plassen. Alle nivåer, men vi spiller mest dobbel.",
+      photos: ["tennis-4", "tennis-5"],
+      memberCount: 47,
+      home: "byrom",
+      alsoInterests: ["padel"],
+      access: "open",
+      chat: [
+        ["Synne", "Dobbel lørdag klokka ti? Vi mangler to."],
+        ["Johan", "Jeg er med, og tar med Kari."],
+        ["Synne", "Perfekt, da er vi fire."],
       ],
     },
   },
