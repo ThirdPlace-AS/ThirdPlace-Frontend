@@ -1,11 +1,13 @@
 // Pure helpers for the experience page (Phase 11 G5, Phase 12 H4): host,
 // area and nearby experiences, all derived from MOCK fixture fields.
 import {
+  PLACE_KIND_LABEL,
   areaFor as nearestArea,
   experiences,
   personById,
   type MockExperience,
   type MockPerson,
+  type MockPlace,
 } from "@/fixtures";
 import { NEARBY_M, distanceMeters } from "@/lib/distance";
 
@@ -29,6 +31,12 @@ export function experienceCaption(exp: MockExperience): string {
   // An Arrangement says so ("Festival · Kolsås", Phase 19).
   const what = exp.format === "event" ? experienceTypeLabel(exp) : exp.category;
   return `${what} · ${areaFor(exp.meetingPoint.coord)}`;
+}
+
+/** The same caption for a place: what it is and where ("Byrom · Kolsås").
+ *  The /place page and the map's page sheet both use it. */
+export function placeCaption(p: Pick<MockPlace, "kind" | "coord">): string {
+  return `${PLACE_KIND_LABEL[p.kind]} · ${areaFor(p.coord)}`;
 }
 
 /** Other experiences to suggest, nearest meeting point first, within

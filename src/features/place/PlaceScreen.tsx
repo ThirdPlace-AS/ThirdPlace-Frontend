@@ -1,15 +1,15 @@
 // Place page (/place/[id]), Phase 12: the video-style PlacePage (H5d) under
 // the same top bar as the experience page. Lagret, Sveip's "i", an
 // experience's venue row, "Flere steder i nærheten" and deep links open it;
-// map pins still open the place in the map sheet.
+// map pins open the same PlacePage in the map's page sheet (2026-11-09).
 import { router, useLocalSearchParams, type Href } from "expo-router";
 import { ScrollView, View } from "react-native";
 
-import { areaFor } from "@/components/experience/experienceMeta";
+import { placeCaption } from "@/components/experience/experienceMeta";
 import { markerId } from "@/components/map/types/mapPresentation";
 import { PlacePage } from "@/components/place/PlacePage";
 import { EmptyState, Header, Screen, StatusBarStyle } from "@/components/ui";
-import { PLACE_KIND_LABEL, placeById } from "@/fixtures";
+import { placeById } from "@/fixtures";
 import { PageTopBar } from "@/features/entity/PageTopBar";
 import { goBackOr } from "@/lib/navigation";
 
@@ -34,7 +34,7 @@ export default function PlaceScreen() {
       <StatusBarStyle style="auto" />
       <PageTopBar
         // "Byrom · Kolsås" (Phase 19): what it is and where.
-        caption={`${PLACE_KIND_LABEL[place.kind]} · ${areaFor(place.coord)}`}
+        caption={placeCaption(place)}
         shareMessage={`${place.name} på ThirdPlace: thirdplace.app/place/${place.id}`}
         savedKey={markerId("place", place.id)}
       />

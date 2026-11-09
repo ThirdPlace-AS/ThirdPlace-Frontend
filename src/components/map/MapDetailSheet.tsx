@@ -40,7 +40,6 @@ import {
   useSheetChrome,
 } from "@/components/ui";
 import { SignInPrompt } from "@/components/SignInPrompt";
-import { experienceCaption } from "@/components/experience/experienceMeta";
 import { PAGE_BAR_ROW } from "@/components/experience/ExperiencePage";
 import { experienceById, placeById } from "@/fixtures";
 import { elevation, gutterPx, useThemeColors } from "@/theme";
@@ -50,18 +49,20 @@ import { useGuestMode } from "./hooks/useGuestMode";
 import { useMapSaved } from "./hooks/useMapSaved";
 import { markViewed } from "./hooks/useRecentlyViewed";
 import { DetailContent, titleFor } from "./DetailContentRouter";
+import { isPageKind, pageInfoFor, type PageInfo } from "./pageTarget";
 import { backdropA11y, sheetA11yChrome, useSheetHandleA11y } from "./sheetA11y";
 import type { PushFn, SheetTarget } from "./sheetTypes";
-import { markerId } from "./types/mapPresentation";
 
 // Google-Maps-style expandable detail sheet (@gorhom/bottom-sheet) with three
 // snaps — peek, mid, full. Marker taps open it at the peek; the user drags up
 // for more or pulls down to dismiss. Above the peek a backdrop dims the map.
 // Drilling in (reviews, attendees, …) swaps content on the in-sheet stack.
 //
-// Experiences (Phase 11 G5, the founder's reference video): the experience
-// sheet is a modal sheet rendered in the app-root portal, above the tab bar,
-// so its 100 % top snap is the full-screen page. While dragging up, the
+// Experiences (Phase 11 G5, the founder's reference video) and places of
+// every kind (user 2026-11-09: "make businesses and places the same map
+// details sheet as experience"): the page sheet is a modal sheet rendered in
+// the app-root portal, above the tab bar, so its 100 % top snap is the
+// full-screen page (ExperiencePage / PlacePage). While dragging up, the
 // handle fades, the top corners square off and the page top bar (back,
 // caption, share, save) grows in — all from gorhom's animatedIndex on the UI
 // thread (styles only on Animated.View). Tried and dropped: hiding the tab
@@ -69,13 +70,12 @@ import { markerId } from "./types/mapPresentation";
 // off to a second full-screen page at the top (the sheet vanished for ~1 s
 // while the page mounted). Back / ← at the top returns to the mid snap.
 // Pushed views keep the normal header, padded below the status bar at the
-// top snap. Places, businesses and groups keep the 92 % sheet docked above
-// the tab bar.
+// top snap. Groups keep the 92 % sheet docked above the tab bar.
 
 export const PAGE_SNAP = 2;
-// Experience peek: handle + ✕ row + the top of the gallery above the
-// floating join card (≈ 24 + 56 + 120 + 100 dp).
-const EXPERIENCE_PEEK_MIN = 300;
+// Page peek: handle + ✕ row + the top of the gallery (above an experience's
+// floating join card: ≈ 24 + 56 + 120 + 100 dp).
+const PAGE_PEEK_MIN = 300;
 const PAGE_FROM = 1.7; // animatedIndex where the page chrome starts to show
 
 export type MapDetailSheetHandle = {
@@ -116,20 +116,16 @@ export const MapDetailSheet = forwardRef<
     }, []),
   );
   const root = stack[0];
-  const pageCapable = root?.kind === "experience";
+  const pageCapable = isPageKind(root?.kind);
   const { height: winH } = useWindowDimensions();
   // Short phones (H1, Phase 11 open item): at 35 % of a 640 dp screen only
-  // the handle and ✕ showed above the floating join card. The experience
-  // peek is at least EXPERIENCE_PEEK_MIN dp, so the top of the gallery shows.
+  // the handle and ✕ showed above the floating join card. The page peek is
+  // at least PAGE_PEEK_MIN dp, so the top of the gallery shows.
   const compact = winH < 700;
   const snapPoints = useMemo(
     () =>
       pageCapable
-        ? [
-            Math.max(Math.round(winH * 0.35), EXPERIENCE_PEEK_MIN),
-            "60%",
-            "100%",
-          ]
+        ? [Math.max(Math.round(winH * 0.35), PAGE_PEEK_MIN), "60%", "100%"]
         : ["35%", "60%", "92%"],
     [pageCapable, winH],
   );
@@ -141,6 +137,13 @@ export const MapDetailSheet = forwardRef<
   const top = stack[stack.length - 1];
   const nested = stack.length > 1;
   const topIsExperience = top?.kind === "experience";
+  // The top view is a page (experience or place): the page top bar, Del +
+  // Lagre in the header and the header folding away at the top snap.
+  const topIsPage = isPageKind(top?.kind);
+  const pageInfo = useMemo(
+    () => (topIsPage ? pageInfoFor(top) : null),
+    [topIsPage, top],
+  );
   // Re-snap only when the ROOT target changes (not on in-sheet push/back).
   const rootKey = root ? `${root.kind}:${root.id}` : null;
   // The page top bar clears the status bar; the handle row (24) sits above.
@@ -247,10 +250,10 @@ export const MapDetailSheet = forwardRef<
     );
     // Always set every key: Reanimated keeps a prop that a later style
     // object leaves out (a pushed view kept maxHeight 0 and vanished).
-    return topIsExperience
+    return topIsPage
       ? { maxHeight: 64 * (1 - t), opacity: 1 - t, paddingTop: 0 }
       : { maxHeight: 200, opacity: 1, paddingTop: topPad * t };
-  }, [pageCapable, topIsExperience, topPad]);
+  }, [pageCapable, topIsPage, topPad]);
 
   const sheet = (
     <>
@@ -278,12 +281,12 @@ export const MapDetailSheet = forwardRef<
       >
         {top ? (
           <>
-            {pageCapable && topIsExperience ? (
+            {pageCapable && pageInfo ? (
               <PageTopBar
                 animatedIndex={animatedIndex}
                 topPad={topPad}
                 interactive={isPage}
-                experienceId={top.id}
+                info={pageInfo}
                 onBack={() => sheetRef.current?.snapToIndex(1)}
               />
             ) : null}
@@ -295,12 +298,10 @@ export const MapDetailSheet = forwardRef<
             >
               <View className="pb-2">
                 <SheetHeader
-                  title={topIsExperience ? undefined : titleFor(top)}
+                  title={topIsPage ? undefined : titleFor(top)}
                   onBack={nested ? onBack : undefined}
                   onClose={onClose}
-                  actions={
-                    topIsExperience ? <ShareSave experienceId={top.id} /> : null
-                  }
+                  actions={pageInfo ? <ShareSave info={pageInfo} /> : null}
                 />
               </View>
             </Animated.View>
@@ -378,32 +379,28 @@ function PageHandle({ animatedIndex }: BottomSheetHandleProps) {
 
 // The reference page's top bar: back (to 60 %), small centred caption, share
 // and save. Grows in with the drag; tappable only once the page is settled.
-/** Del + Lagre for an experience: in the page top bar, and next to ✕ in the
- *  sheet header at the lower snaps (they left the page body: no fact twice). */
-function ShareSave({ experienceId }: { experienceId: string }) {
-  const exp = experienceById(experienceId);
+/** Del + Lagre for a page (experience or place): in the page top bar, and
+ *  next to ✕ in the sheet header at the lower snaps (they left the page
+ *  body: no fact twice). */
+function ShareSave({ info }: { info: PageInfo }) {
   const { isGuest } = useGuestMode();
   const { isSaved, toggle } = useMapSaved();
   const [promptOpen, setPromptOpen] = useState(false);
-  if (!exp) return null;
-  const key = markerId("experience", exp.id);
-  const saved = isSaved(key);
+  const saved = isSaved(info.savedKey);
   return (
     <>
       <IconButton
         icon="share-outline"
         label="Del"
         onPress={() =>
-          void Share.share({
-            message: `${exp.title} på ThirdPlace: thirdplace.app/experience/${exp.id}`,
-          }).catch(() => {})
+          void Share.share({ message: info.shareMessage }).catch(() => {})
         }
       />
       <HeartToggle
         selected={saved}
         variant="ghost"
         label={saved ? "Fjern fra lagret" : "Lagre"}
-        onToggle={() => (isGuest ? setPromptOpen(true) : toggle(key))}
+        onToggle={() => (isGuest ? setPromptOpen(true) : toggle(info.savedKey))}
       />
       <SignInPrompt
         visible={promptOpen}
@@ -418,16 +415,15 @@ function PageTopBar({
   animatedIndex,
   topPad,
   interactive,
-  experienceId,
+  info,
   onBack,
 }: {
   animatedIndex: SharedValue<number>;
   topPad: number;
   interactive: boolean;
-  experienceId: string;
+  info: PageInfo;
   onBack: () => void;
 }) {
-  const exp = experienceById(experienceId);
   const full = topPad + PAGE_BAR_ROW;
   const a = useAnimatedStyle(() => {
     const t = interpolate(
@@ -438,7 +434,6 @@ function PageTopBar({
     );
     return { height: full * t, opacity: t };
   }, [full]);
-  if (!exp) return null;
   return (
     <Animated.View
       pointerEvents={interactive ? "auto" : "none"}
@@ -456,9 +451,9 @@ function PageTopBar({
           className="flex-1 text-center"
           numberOfLines={1}
         >
-          {experienceCaption(exp)}
+          {info.caption}
         </Text>
-        <ShareSave experienceId={exp.id} />
+        <ShareSave info={info} />
       </View>
     </Animated.View>
   );

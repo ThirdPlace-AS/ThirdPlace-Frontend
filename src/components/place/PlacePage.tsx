@@ -22,6 +22,7 @@ import {
   HeroGallery,
   InfoRow,
 } from "@/components/experience/ExperiencePage";
+import type { SheetTarget } from "@/components/map/sheetTypes";
 import { ReviewsSection } from "@/components/reviews/ReviewsSection";
 import { sortReviews } from "@/components/reviews/reviewSort";
 import {
@@ -146,9 +147,13 @@ export function placeThingsToKnow(p: MockPlace): Know[] {
 export function PlacePage({
   place,
   onNavigate,
+  onOpen,
 }: {
   place: MockPlace;
   onNavigate: (href: Href) => void;
+  /** In the map's page sheet: opens a sub-view on the sheet's stack (the
+   *  business behind "Drives av", and from there its Verifiseringsstatus). */
+  onOpen?: (target: SheetTarget) => void;
 }) {
   const [report, setReport] = useState(false);
   const reviews = reviewsForPlace(place.id);
@@ -216,7 +221,9 @@ export function PlacePage({
         <InfoRow
           icon="location-outline"
           title={place.address}
-          subtitle={`${place.category} · ${areaLabel(place.coord)}`}
+          // How far away it is, from the person (the map's place sheet showed
+          // it before it became this page, 2026-11-09).
+          subtitle={`${place.category} · ${areaLabel(place.coord)} · ${distanceLabelFor(place.coord, origin)}`}
         />
         <InfoRow
           icon="time-outline"
@@ -241,6 +248,11 @@ export function PlacePage({
             icon="storefront-outline"
             title={`Drives av ${business.name}`}
             subtitle={business.verified ? "Verifisert bedrift" : "Bedrift"}
+            onPress={
+              onOpen
+                ? () => onOpen({ kind: "business", id: business.id })
+                : undefined
+            }
           />
         ) : null}
         {org ? (
