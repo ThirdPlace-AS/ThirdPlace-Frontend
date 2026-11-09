@@ -6,11 +6,11 @@ Status: **hand-built SVG set shipped** (S12, 2026-11-06). This spec is the brief
 
 Only in slots the design PDF already has:
 
-| Slot                                               | PDF     | Size | Key(s)                |
-| -------------------------------------------------- | ------- | ---- | --------------------- |
-| "Hva vil du legge til?" rows                       | p10     | 48   | `place`, `experience` |
-| Location prompt tile ("Hvor er du?")               | p5      | 96   | `location`            |
-| Category value / "Velg kategori" (when wired, P4e) | p10–p11 | 32   | category keys below   |
+| Slot                                               | PDF     | Size | Key(s)                         |
+| -------------------------------------------------- | ------- | ---- | ------------------------------ |
+| "Hva vil du legge til?" rows                       | p10     | 48   | `place`, `experience`, `group` |
+| Location prompt tile ("Hvor er du?")               | p5      | 96   | `location`                     |
+| Category value / "Velg kategori" (when wired, P4e) | p10–p11 | 32   | category keys below            |
 
 Not used for: tab bar, chips smaller than 32 px, decoration rails, or anything the PDF doesn't show.
 
@@ -18,23 +18,24 @@ Not used for: tab bar, chips smaller than 32 px, decoration rails, or anything t
 
 `src/assets/3d/manifest.ts` maps app labels to keys.
 
-| Key          | Object                             | Labels                 |
-| ------------ | ---------------------------------- | ---------------------- |
-| `cafe`       | Cup and saucer, coffee, ember band | Kafé, Bokcafé          |
-| `bar`        | Beer mug with foam                 | Bar                    |
-| `restaurant` | Plate with tomato and herb         | Restaurant             |
-| `outdoors`   | Round tree                         | Utendørs               |
-| `culture`    | Columned building, ember pediment  | Kultur                 |
-| `workshop`   | Hammer                             | Verksted               |
-| `tasting`    | Wine glass                         | Kurs & smaking, Vinbar |
-| `music`      | Vinyl record, ember label          | Musikk                 |
-| `hiking`     | Two peaks, snow cap, green base    | Tur & friluft          |
-| `art`        | Painter's palette                  | Kunst & kultur         |
-| `sport`      | Football                           | Sport & trening        |
-| `social`     | Two speech bubbles                 | Sosialt                |
-| `place`      | Map plate with ember pin           | Sted                   |
-| `experience` | Ember ticket                       | Opplevelse             |
-| `location`   | App-tile map with an ink pin       | location prompt        |
+| Key          | Object                                               | Labels                 |
+| ------------ | ---------------------------------------------------- | ---------------------- |
+| `cafe`       | Cup and saucer, coffee, ember band                   | Kafé, Bokcafé          |
+| `bar`        | Beer mug with foam                                   | Bar                    |
+| `restaurant` | Plate with tomato and herb                           | Restaurant             |
+| `outdoors`   | Round tree                                           | Utendørs               |
+| `culture`    | Columned building, ember pediment                    | Kultur                 |
+| `workshop`   | Hammer                                               | Verksted               |
+| `tasting`    | Wine glass                                           | Kurs & smaking, Vinbar |
+| `music`      | Vinyl record, ember label                            | Musikk                 |
+| `hiking`     | Two peaks, snow cap, green base                      | Tur & friluft          |
+| `art`        | Painter's palette                                    | Kunst & kultur         |
+| `sport`      | Football                                             | Sport & trening        |
+| `social`     | Two speech bubbles                                   | Sosialt                |
+| `place`      | Map plate with ember pin                             | Sted                   |
+| `experience` | Ember ticket                                         | Opplevelse             |
+| `group`      | Three friends: ember in front, grey and green behind | Gruppe                 |
+| `location`   | App-tile map with an ink pin                         | location prompt        |
 
 ## Style (locked)
 
