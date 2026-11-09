@@ -41,10 +41,11 @@ import {
 } from "@/components/ui";
 import { SignInPrompt } from "@/components/SignInPrompt";
 import { PAGE_BAR_ROW } from "@/components/experience/ExperiencePage";
-import { experienceById, placeById } from "@/fixtures";
+import { chatForPlace, experienceById, placeById } from "@/fixtures";
 import { elevation, gutterPx, useThemeColors } from "@/theme";
 
 import { ExperienceJoinBar } from "./content/ExperienceJoinBar";
+import { PlaceChatBar } from "./content/PlaceChatBar";
 import { useGuestMode } from "./hooks/useGuestMode";
 import { useMapSaved } from "./hooks/useMapSaved";
 import { markViewed } from "./hooks/useRecentlyViewed";
@@ -181,9 +182,18 @@ export const MapDetailSheet = forwardRef<
     onPageChange?.(isPage);
   }, [isPage, onPageChange]);
 
-  // Experiences pin their join action as a floating card (PDF p6 + video),
-  // so "Bli med" shows at every snap.
-  const footerId = topIsExperience && top ? top.id : null;
+  // A floating action card at every snap: an experience's join action (PDF
+  // p6 + video, "Bli med"), a place's chat (user 2026-11-09: "a sticky action
+  // section but it should focus on the chat"; PDF p6 draws a chat bar under
+  // places too).
+  const footerKind: "experience" | "place" | null = !top
+    ? null
+    : topIsExperience
+      ? "experience"
+      : top.kind === "place" && chatForPlace(top.id)
+        ? "place"
+        : null;
+  const footerId = footerKind && top ? top.id : null;
 
   // "Nylig sett": a place or experience whose detail actually opened.
   const topKind = top?.kind;
@@ -216,12 +226,16 @@ export const MapDetailSheet = forwardRef<
               }`}
               style={elevation.e2}
             >
-              <ExperienceJoinBar id={footerId} />
+              {footerKind === "place" ? (
+                <PlaceChatBar placeId={footerId} />
+              ) : (
+                <ExperienceJoinBar id={footerId} />
+              )}
             </View>
           </View>
         </BottomSheetFooter>
       ) : null,
-    [footerId, pageCapable, insets.bottom, compact],
+    [footerKind, footerId, pageCapable, insets.bottom, compact],
   );
 
   const renderBackdrop = useCallback(
