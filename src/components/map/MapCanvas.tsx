@@ -3,6 +3,7 @@ import { memo, useMemo, useState, type ComponentType } from "react";
 import { Platform, Pressable, View } from "react-native";
 
 import { env } from "@/lib/env";
+import { useUserLocation } from "@/lib/userLocation";
 import { elevation, palette } from "@/theme";
 
 import type { MapStylePeriod } from "./mapStyles";
@@ -38,12 +39,10 @@ type MapProps = {
   // Zoom for that recenter (15 = fly to the user, 13 = an area).
   recenterZoom?: number;
   // Camera center (GPS fix / manual area / demo default). SoftMap ignores it.
+  // The user's position and heading are not props: both maps' location dots
+  // read them from src/lib/userLocation.ts (speed pass 0346), so a GPS fix or
+  // a compass reading renders only the dot.
   center?: [number, number];
-  // The user's real GPS fix (null until granted). Both maps draw the same
-  // puck (userPuck.ts); the native map also follows its own location updates.
-  userCoord?: [number, number] | null;
-  // Device facing heading in degrees (0 = north), or null: the puck's wedge.
-  heading?: number | null;
   // Tap on empty map (not a marker) — collapses selection + dismisses keyboard.
   onMapPress?: () => void;
   // SoftMap only: tapping a multi-item cluster (whose members have no individual
@@ -172,9 +171,10 @@ function SoftMap({
   onSelectMarker,
   onMapPress,
   onClusterPress,
-  userCoord,
-  heading,
 }: MapProps) {
+  // The app's own fix only (the native map's engine position does not exist
+  // here); the fallback frames it with the markers.
+  const { coord: userCoord, heading } = useUserLocation();
   // County scale (Phase 19 S4b): frame the markers on screen (and the
   // person), cluster on a 44 dp grid, name the towns in view.
   const [size, setSize] = useState({ w: 0, h: 0 });
@@ -350,8 +350,6 @@ export const MapCanvas = memo(function MapCanvas({
   recenterSignal,
   recenterZoom,
   center,
-  userCoord,
-  heading,
   onMapPress,
   onClusterPress,
   focusCoord,
@@ -381,8 +379,6 @@ export const MapCanvas = memo(function MapCanvas({
           recenterSignal={recenterSignal}
           recenterZoom={recenterZoom}
           center={center}
-          userCoord={userCoord}
-          heading={heading}
           onMapPress={onMapPress}
           focusCoord={focusCoord}
           focusZoomIn={focusZoomIn}
@@ -399,8 +395,6 @@ export const MapCanvas = memo(function MapCanvas({
           onSelectMarker={onSelectMarker}
           onMapPress={onMapPress}
           onClusterPress={onClusterPress}
-          userCoord={userCoord}
-          heading={heading}
         />
       )}
     </View>

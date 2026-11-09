@@ -41,6 +41,7 @@ import {
 } from "./terrainStyle";
 import { clusterZoom, firstViewCamera, selectionZoom } from "./services/bounds";
 import { getOrigin } from "@/lib/origin";
+import { setNativeCoord, useUserLocation } from "@/lib/userLocation";
 import { USER_PUCK } from "./userPuck";
 import { allPinGlyphs, markerIcon } from "./services/markerIcon";
 import type { DiscoveryItem } from "./types/mapPresentation";
@@ -116,8 +117,6 @@ export const MapboxMap = memo(function MapboxMap({
   recenterSignal,
   recenterZoom = 13,
   center = MAP_CENTER,
-  userCoord,
-  heading,
   onMapPress,
   focusCoord,
   focusZoomIn = false,
@@ -133,8 +132,6 @@ export const MapboxMap = memo(function MapboxMap({
   recenterSignal?: number;
   recenterZoom?: number;
   center?: [number, number];
-  userCoord?: [number, number] | null;
-  heading?: number | null;
   onMapPress?: () => void;
   focusCoord?: [number, number] | null;
   /** The pick came from the list or a link (not a pin): zoom in far enough
@@ -215,26 +212,8 @@ export const MapboxMap = memo(function MapboxMap({
     });
   }, [loadedStyle, markers]);
 
-  // The user's position for the puck: the app's own fix (after "Posisjon")
-  // or, before that, the native location updates (OS permission granted).
-  const [nativeCoord, setNativeCoord] = useState<[number, number] | null>(null);
-  const puckCoord = userCoord ?? nativeCoord;
-  const puckShape = useMemo<FeatureCollection<Point>>(
-    () => ({
-      type: "FeatureCollection",
-      features: puckCoord
-        ? [
-            {
-              type: "Feature",
-              // heading only when known: the wedge layer filters on it.
-              properties: heading != null ? { heading } : {},
-              geometry: { type: "Point", coordinates: puckCoord },
-            },
-          ]
-        : [],
-    }),
-    [puckCoord, heading],
-  );
+  // The map engine's own position updates (OS permission granted) go to the
+  // location store; only the puck reads them (speed pass 0346).
   const handleNativeLocation = useCallback(
     (l: NativeLocation) =>
       setNativeCoord([l.coords.longitude, l.coords.latitude]),
@@ -416,7 +395,7 @@ export const MapboxMap = memo(function MapboxMap({
         selectedMarkerId={selectedMarkerId ?? null}
         onPress={handlePinPress}
       />
-      <UserPuck shape={puckShape} />
+      <UserPuck />
     </MapView>
   );
 });
@@ -814,12 +793,28 @@ const PUCK_DOT: CircleStyle = {
 };
 
 // The user's location: the same look on every basemap (fixed colours, fully
-// emissive), above the pins.
-const UserPuck = memo(function UserPuck({
-  shape,
-}: {
-  shape: FeatureCollection<Point>;
-}) {
+// emissive), above the pins. The only part of the map that follows the GPS
+// and the compass (src/lib/userLocation.ts, speed pass 0346): the app's own
+// fix (after "Posisjon") or, before that, the map engine's position.
+const UserPuck = memo(function UserPuck() {
+  const { coord, nativeCoord, heading } = useUserLocation();
+  const puckCoord = coord ?? nativeCoord;
+  const shape = useMemo<FeatureCollection<Point>>(
+    () => ({
+      type: "FeatureCollection",
+      features: puckCoord
+        ? [
+            {
+              type: "Feature",
+              // heading only when known: the wedge layer filters on it.
+              properties: heading != null ? { heading } : {},
+              geometry: { type: "Point", coordinates: puckCoord },
+            },
+          ]
+        : [],
+    }),
+    [puckCoord, heading],
+  );
   return (
     <ShapeSource id="user-location" shape={shape}>
       <CircleLayer id="user-halo" style={PUCK_HALO} />

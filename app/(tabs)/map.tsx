@@ -49,6 +49,7 @@ import {
 import { SignInPrompt } from "@/components/SignInPrompt";
 import { WhatsNewOnFocus } from "@/components/WhatsNewSheet";
 import { reportFix } from "@/lib/origin";
+import { getUserLocation } from "@/lib/userLocation";
 import { useGuestMode } from "@/components/map/hooks/useGuestMode";
 import { MapBrowseSheet } from "@/components/map/MapBrowseSheet";
 import { MOCK_WEATHER, AREAS, places } from "@/fixtures";
@@ -107,6 +108,15 @@ export default function MapScreen() {
   const selection = useMapSelection();
   const camera = useMapCamera();
   const location = useMapLocation();
+  // The GPS and compass watches run only while the map is in front (speed
+  // pass 0346): the tab stays mounted behind Sveip, Chat and Profil.
+  const { pause: pauseLocation, resume: resumeLocation } = location;
+  useFocusEffect(
+    useCallback(() => {
+      resumeLocation();
+      return () => pauseLocation();
+    }, [pauseLocation, resumeLocation]),
+  );
 
   // Stable methods (the hooks useCallback these) for memo-friendly handlers.
   const { selectMarker, back: sheetBack, close: sheetClose } = selection;
@@ -292,9 +302,11 @@ export default function MapScreen() {
   // "Posisjon": fly to the user and zoom in (street level); without a fix,
   // ask for it, or fall back to the manual-area sheet.
   const handleLocationPress = async () => {
-    if (location.status === "granted" && location.coord) {
+    // The live fix (the store), not the one from this screen's last render.
+    const fix = location.coord ? getUserLocation().coord : null;
+    if (location.status === "granted" && fix) {
       // Distances follow the phone again from exactly here.
-      reportFix(location.coord, { force: true });
+      reportFix(fix, { force: true });
       camera.recenter(USER_PUCK.locateZoom);
     } else if (location.status === "granted") {
       // A manual area replaced the GPS fix — go back to the real position.
@@ -340,8 +352,6 @@ export default function MapScreen() {
         recenterSignal={camera.recenterSignal}
         recenterZoom={camera.recenterZoom}
         center={location.center}
-        userCoord={location.coord}
-        heading={location.heading}
       />
 
       {/* Floating top controls: search + notifications, then discovery modes.
