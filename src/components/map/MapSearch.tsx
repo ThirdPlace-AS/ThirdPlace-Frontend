@@ -5,6 +5,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import {
   Icon,
+  BACK_ICON,
   IconButton,
   type IconName,
   Text,
@@ -73,7 +74,7 @@ export function MapSearch({
         {/* Header: back + search field */}
         <View className="flex-row items-center gap-2 px-gutter pb-2">
           <IconButton
-            icon="chevron-back"
+            icon={BACK_ICON}
             label="Tilbake"
             onPress={() => {
               Keyboard.dismiss();

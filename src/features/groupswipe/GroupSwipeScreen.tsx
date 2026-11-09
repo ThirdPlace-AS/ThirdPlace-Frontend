@@ -12,6 +12,7 @@ import {
 import {
   Avatar,
   Icon,
+  BACK_ICON,
   IconButton,
   ListRow,
   Screen,
@@ -119,7 +120,7 @@ export default function GroupSwipeScreen() {
     <Screen>
       <View className="flex-row items-center justify-between px-gutter pb-2 pt-1">
         <IconButton
-          icon="chevron-back"
+          icon={BACK_ICON}
           label="Tilbake"
           variant="outline"
           onPress={back}

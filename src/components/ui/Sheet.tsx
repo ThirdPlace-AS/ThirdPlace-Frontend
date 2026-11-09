@@ -43,7 +43,7 @@ import {
   useThemeColors,
 } from "@/theme";
 
-import { IconButton } from "./IconButton";
+import { BACK_ICON, IconButton } from "./IconButton";
 import { Text } from "./Text";
 import { usePresence } from "./usePresence";
 
@@ -100,7 +100,7 @@ export function SheetHeader({
     >
       {onBack ? (
         <IconButton
-          icon="chevron-back"
+          icon={BACK_ICON}
           label="Tilbake"
           size="sm"
           variant={variant}

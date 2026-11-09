@@ -11,6 +11,7 @@ export { Divider } from "./Divider";
 export { Icon, type IconName, type IconProps, type IconTone } from "./Icon";
 export { PinGlyph, isPinGlyph, type PinGlyphName } from "./PinGlyph";
 export {
+  BACK_ICON,
   IconButton,
   type IconButtonProps,
   type IconButtonSize,

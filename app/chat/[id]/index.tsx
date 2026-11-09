@@ -21,6 +21,7 @@ import {
   Avatar,
   EmptyState,
   Icon,
+  BACK_ICON,
   IconButton,
   Pressable as UIPressable,
   Screen,
@@ -144,7 +145,7 @@ export default function ChatThreadScreen() {
       {/* Header */}
       <View className="flex-row items-center gap-3 border-b border-line px-gutter pb-3">
         <IconButton
-          icon="chevron-back"
+          icon={BACK_ICON}
           label="Tilbake"
           variant="outline"
           onPress={() => router.back()}

@@ -123,6 +123,15 @@ describe("design-system guard", () => {
     expect(fmt(hits)).toEqual([]);
   });
 
+  it("one back arrow: every Tilbake button uses BACK_ICON (user 2026-11-09)", () => {
+    const hits = scan(
+      (line, prev) =>
+        /label="Tilbake"/.test(line) &&
+        !/icon=\{BACK_ICON\}/.test([...prev, line].join("\n")),
+    );
+    expect(fmt(hits)).toEqual([]);
+  });
+
   it("no InteractionManager (deprecated; deferred updates did not paint in Modals)", () => {
     const hits = scan((line) => /\bInteractionManager\b/.test(line));
     expect(fmt(hits)).toEqual([]);

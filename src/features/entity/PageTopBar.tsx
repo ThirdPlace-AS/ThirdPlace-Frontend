@@ -10,7 +10,7 @@ import { PAGE_BAR_ROW } from "@/components/experience/ExperiencePage";
 import { useGuestMode } from "@/components/map/hooks/useGuestMode";
 import { useMapSaved } from "@/components/map/hooks/useMapSaved";
 import { SignInPrompt } from "@/components/SignInPrompt";
-import { HeartToggle, IconButton, Text } from "@/components/ui";
+import { BACK_ICON, HeartToggle, IconButton, Text } from "@/components/ui";
 import { goBackOr } from "@/lib/navigation";
 
 export function PageTopBar({
@@ -34,7 +34,7 @@ export function PageTopBar({
       style={{ paddingTop: insets.top, height: insets.top + PAGE_BAR_ROW }}
     >
       <IconButton
-        icon="arrow-back"
+        icon={BACK_ICON}
         label="Tilbake"
         onPress={() => goBackOr("/map")}
       />

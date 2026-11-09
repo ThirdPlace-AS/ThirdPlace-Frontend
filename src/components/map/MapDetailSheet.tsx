@@ -32,6 +32,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import {
   FadeSwap,
   HeartToggle,
+  BACK_ICON,
   IconButton,
   RootPortal,
   SheetHeader,
@@ -457,7 +458,7 @@ function PageTopBar({
         className="flex-row items-center gap-1 border-b border-line px-2"
         style={{ paddingTop: topPad, height: full }}
       >
-        <IconButton icon="arrow-back" label="Tilbake" onPress={onBack} />
+        <IconButton icon={BACK_ICON} label="Tilbake" onPress={onBack} />
         <Text
           variant="caption"
           weight="semibold"

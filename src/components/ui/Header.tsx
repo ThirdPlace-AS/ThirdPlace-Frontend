@@ -1,6 +1,6 @@
 // Headers (docs/design/DESIGN_SYSTEM.md §4) — one back style everywhere
-// (outlined round chevron IconButton, as on every PDF screen), titles from the
-// type scale.
+// (an outlined round IconButton with the ← the map's page sheet uses,
+// BACK_ICON, user 2026-11-09), titles from the type scale.
 //
 //   <Header>       pushed route screens: back · title · trailing actions
 //   <TitleBlock>   large title + subtitle (auth, tab roots), optional back above
@@ -11,7 +11,7 @@ import { View } from "react-native";
 
 import { goBackOr } from "@/lib/navigation";
 
-import { IconButton } from "./IconButton";
+import { BACK_ICON, IconButton } from "./IconButton";
 import { Text } from "./Text";
 
 // A page opened cold from a deep link has no history: back goes to the map.
@@ -50,7 +50,7 @@ export function Header({
             <View />
           ) : (
             <IconButton
-              icon="chevron-back"
+              icon={BACK_ICON}
               label="Tilbake"
               variant="outline"
               onPress={onBack}
@@ -76,7 +76,7 @@ export function Header({
     >
       {showBack ? (
         <IconButton
-          icon="chevron-back"
+          icon={BACK_ICON}
           label="Tilbake"
           variant="outline"
           onPress={onBack}
@@ -109,7 +109,7 @@ export function TitleBlock({
     <View className="gap-md">
       {back ? (
         <IconButton
-          icon="chevron-back"
+          icon={BACK_ICON}
           label="Tilbake"
           variant="outline"
           onPress={onBack}
@@ -147,7 +147,7 @@ export function StepHeader({
     <View className="gap-md px-gutter pb-sm pt-xs">
       <View className="flex-row items-center justify-between">
         <IconButton
-          icon="chevron-back"
+          icon={BACK_ICON}
           label="Tilbake"
           variant="outline"
           onPress={onBack}
