@@ -44,7 +44,7 @@ import { getOrigin, type Origin } from "@/lib/origin";
 
 import {
   experienceType,
-  experienceTypeLabel,
+  experienceKindLabel,
   placeTypeLabel,
 } from "./itemType";
 
@@ -85,12 +85,12 @@ function experienceToItem(e: MockExperience, origin: Origin): DiscoveryItem {
     reviewCount: reviewsForExperience(e.id).length,
     category: "Opplevelse",
     title: e.title,
-    // "Arrangement · Lillestrøm · Lør 12:00" (Phase 19).
-    subtitle: `${experienceTypeLabel(e)} · ${areaFor(e.meetingPoint.coord).name} · ${e.when}`,
+    // "Klatring · Lillestrøm · Lør 12:00": its activity (2026-11-09).
+    subtitle: `${experienceKindLabel(e)} · ${areaFor(e.meetingPoint.coord).name} · ${e.when}`,
     when: e.when,
     price: e.priceNok ? `${e.priceNok} kr` : "Gratis",
     type: experienceType(e),
-    typeLabel: experienceTypeLabel(e),
+    typeLabel: experienceKindLabel(e),
     area: areaFor(e.meetingPoint.coord).name,
     // Who is going (Phase 16): "5 skal · 3 plasser igjen"; the browse card
     // draws it live with the faces (GoingLine).

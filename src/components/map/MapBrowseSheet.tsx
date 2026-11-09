@@ -317,7 +317,14 @@ export const BrowseCard = memo(function BrowseCard({
   onToggleSave: (item: DiscoveryItem) => void;
 }) {
   const photos = photosForItem(item);
-  const tags = (item.tags ?? []).slice(0, 3);
+  // Tags that repeat the type line ("Festival", the activity) are left out:
+  // every fact once.
+  const typeWords = new Set(
+    (item.typeLabel ?? "").toLowerCase().split(" · ").filter(Boolean),
+  );
+  const tags = (item.tags ?? [])
+    .filter((t) => !typeWords.has(t.toLowerCase()))
+    .slice(0, 3);
   const line = browseCardLine(item);
   const openBadge = browseCardOpenBadge(item);
   return (

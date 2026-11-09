@@ -25,9 +25,11 @@ import { searchFixtures } from "@/components/map/services/mapSearch";
 import {
   ITEM_TYPES,
   ITEM_TYPE_LABEL,
+  experienceKindLabel,
   experienceType,
   experienceTypeLabel,
 } from "@/components/map/services/itemType";
+import { interestById } from "@/fixtures/catalog/interests";
 import {
   WorkspaceCalendar,
   WorkspaceLocations,
@@ -88,7 +90,32 @@ describe("item types", () => {
       expect(i.subtitle.startsWith(`${i.typeLabel} · ${i.area} · `)).toBe(true);
     }
     const fest = r.items.find((i) => i.id === "e-klatring-arr")!;
-    expect(fest.subtitle).toBe("Festival · Kolsås · Lør 10:00");
+    expect(fest.subtitle).toBe("Klatring · Festival · Kolsås · Lør 10:00");
+  });
+
+  it("names an experience by its activity (2026-11-09)", () => {
+    const r = resultForMode({
+      mode: "explore",
+      places,
+      query: "",
+      savedIds: [],
+    });
+    for (const i of r.items.filter((x) => x.kind === "experience")) {
+      const e = experiences.find((x) => x.id === i.id)!;
+      const activity = interestById(e.interestId)?.label;
+      if (!activity) continue;
+      expect(i.typeLabel).toBe(
+        e.format === "event" && (e.days ?? 1) > 1
+          ? `${activity} · Festival`
+          : activity,
+      );
+      // Filtre's Type axis is unchanged.
+      expect(i.type).toBe(experienceType(e));
+    }
+    expect(experienceKindLabel({ interestId: undefined })).toBe("Opplevelse");
+    expect(
+      experienceKindLabel({ format: "event", days: 1, interestId: "jazz" }),
+    ).toBe("Jazz");
   });
 
   it("names a city space by its own kind, not just Byrom (2026-11-09)", () => {

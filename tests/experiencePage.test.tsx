@@ -26,6 +26,7 @@ import {
   hostPerson,
   moreExperiences,
 } from "@/components/experience/experienceMeta";
+import { interestById } from "@/fixtures/catalog/interests";
 import {
   ChatSection,
   MeetingSection,
@@ -198,9 +199,9 @@ describe("experienceMeta", () => {
     expect(hostPerson({})).toBeUndefined();
   });
 
-  it("captions with the category and the meeting point's area", () => {
+  it("captions with the activity and the meeting point's area (2026-11-09)", () => {
     expect(experienceCaption(e1)).toBe(
-      `${e1.category} · ${areaFor(e1.meetingPoint.coord)}`,
+      `${interestById(e1.interestId)!.label} · ${areaFor(e1.meetingPoint.coord)}`,
     );
     expect(areaFor([10.758, 59.9227])).toBe("Grünerløkka");
   });

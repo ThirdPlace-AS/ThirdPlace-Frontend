@@ -10,6 +10,7 @@ import {
   type MockExperience,
   type MockPlace,
 } from "@/fixtures";
+import { interestById } from "@/fixtures/catalog/interests";
 import { formatDistance } from "@/lib/distance";
 
 import type { DiscoveryItem } from "../types/mapPresentation";
@@ -56,6 +57,21 @@ export function experienceTypeLabel(
  *  but a city space by the kind of space it is ("Park", "Torg",
  *  "Klatrefelt"; user 2026-11-09: "should say what type of city space and
  *  not just city space"). Filtre's Type group still says "Byrom". */
+/** What an experience is on the map (user 2026-11-09: "Experiences on the
+ *  map details and browse sheets should say the type of experience"): its
+ *  activity, the interest's label ("Klatring", "Jazz"); a festival keeps the
+ *  word ("Klatring · Festival"). Without an interest it stays Opplevelse /
+ *  Arrangement / Festival. Filtre's Type group keeps those words. */
+export function experienceKindLabel(
+  e: Pick<MockExperience, "format" | "days" | "interestId">,
+): string {
+  const activity = interestById(e.interestId)?.label;
+  if (!activity) return experienceTypeLabel(e);
+  return e.format === "event" && (e.days ?? 1) > 1
+    ? `${activity} · Festival`
+    : activity;
+}
+
 export function placeTypeLabel(
   p: Pick<MockPlace, "kind" | "category">,
 ): string {
@@ -95,7 +111,8 @@ function opensOnPhoto(item: CardItem): boolean {
  *  - a Bedrift or a Byrom: the type and how far away it is ("Bedrift ·
  *    1,2 km", from the person, the number the list is sorted by; 2026-11-09);
  *  - an Organisasjon: the type and its opening ("Organisasjon · Åpent");
- *  - an experience: the type and its time ("Festival · Lør 10:00"). */
+ *  - an experience: its activity and its time ("Klatring · Lør 10:00",
+ *    a festival "Klatring · Festival · Lør 10:00"; 2026-11-09). */
 export function browseCardLine(item: CardItem): string {
   const extra =
     item.kind === "experience"

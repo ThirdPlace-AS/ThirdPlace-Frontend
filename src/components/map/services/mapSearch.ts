@@ -15,7 +15,7 @@ import {
 import { interestWords } from "@/fixtures/catalog/interests";
 import { formatRating } from "@/lib/format";
 
-import { experienceTypeLabel, placeTypeLabel } from "./itemType";
+import { experienceKindLabel, placeTypeLabel } from "./itemType";
 
 import type { SheetKind } from "../sheetTypes";
 
@@ -107,7 +107,7 @@ export function searchFixtures(query: string): SearchGroups {
       kind: "experience",
       id: e.id,
       title: e.title,
-      subtitle: `${experienceTypeLabel(e)} · ${areaFor(e.meetingPoint.coord).name} · ${e.when}`,
+      subtitle: `${experienceKindLabel(e)} · ${areaFor(e.meetingPoint.coord).name} · ${e.when}`,
     }));
 
   const groupResults: SearchResult[] = groups

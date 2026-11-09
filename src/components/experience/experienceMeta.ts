@@ -10,7 +10,7 @@ import {
 } from "@/fixtures";
 import { NEARBY_M, distanceMeters } from "@/lib/distance";
 
-import { experienceTypeLabel, placeTypeLabel } from "../map/services/itemType";
+import { experienceKindLabel, placeTypeLabel } from "../map/services/itemType";
 
 /** The fixture person who hosts this experience (`hostId`, never by name).
  *  An Arrangement is hosted by its organiser's contact person. */
@@ -25,11 +25,10 @@ export function areaFor(coord: [number, number]): string {
   return nearestArea(coord).name;
 }
 
-/** Small caption for the page top bar: "Sosialt · Grünerløkka". */
+/** Small caption for the page top bar: the activity and where ("Klatring ·
+ *  Kolsås", a festival "Klatring · Festival · Kolsås"; user 2026-11-09). */
 export function experienceCaption(exp: MockExperience): string {
-  // An Arrangement says so ("Festival · Kolsås", Phase 19).
-  const what = exp.format === "event" ? experienceTypeLabel(exp) : exp.category;
-  return `${what} · ${areaFor(exp.meetingPoint.coord)}`;
+  return `${experienceKindLabel(exp)} · ${areaFor(exp.meetingPoint.coord)}`;
 }
 
 /** The same caption for a place: what it is and where ("Bedrift ·

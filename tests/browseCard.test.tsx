@@ -128,6 +128,16 @@ describe("browse card", () => {
     expect(screen.UNSAFE_queryAllByType(Badge)).toHaveLength(0);
   });
 
+  it("names an experience by its activity and drops tags the line repeats", () => {
+    const fest = items.find((i) => i.id === "e-klatring-arr")!;
+    expect(browseCardLine(fest)).toBe(`Klatring · Festival · ${fest.when}`);
+    card({ ...fest, tags: ["Festival", "Klatring", "Ute"] });
+    // "Festival" and "Klatring" are in the line already; "Ute" stays.
+    expect(screen.queryByText("Festival")).toBeNull();
+    expect(screen.queryByText("Klatring")).toBeNull();
+    expect(screen.getByText("Ute")).toBeTruthy();
+  });
+
   it("a screen reader hears the type, area and distance, and a place's opening", () => {
     card(experience);
     expect(
