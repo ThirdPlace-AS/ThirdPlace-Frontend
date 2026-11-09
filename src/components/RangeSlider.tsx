@@ -72,6 +72,11 @@ export function RangeSlider({
   const startLow = useRef(low);
   const startHigh = useRef(high);
   const dragging = useRef(false);
+  // The values last sent to onChange during a drag: a move that stays on the
+  // same step sends nothing (speed pass 0347: Filtre recounted the whole list
+  // on every finger move).
+  const sentLow = useRef(low);
+  const sentHigh = useRef(high);
 
   const reduced = useReducedMotion();
   const lowX = useSharedValue(0);
@@ -142,6 +147,7 @@ export function RangeSlider({
       onPanResponderGrant: () => {
         dragging.current = true;
         startLow.current = latest.current.low;
+        sentLow.current = latest.current.low;
         press(lowScale);
       },
       onPanResponderMove: (_e, g) => {
@@ -151,7 +157,10 @@ export function RangeSlider({
           snap(raw, p.min, p.max, p.step),
           p.high - p.minGap,
         );
-        p.onChange(committed, p.high);
+        if (committed !== sentLow.current) {
+          sentLow.current = committed;
+          p.onChange(committed, p.high);
+        }
         // Follow the finger continuously (clamped), independent of the snap.
         lowX.value = Math.max(0, Math.min(xOf(raw), xOf(p.high - p.minGap)));
       },
@@ -171,6 +180,7 @@ export function RangeSlider({
       onPanResponderGrant: () => {
         dragging.current = true;
         startHigh.current = latest.current.high;
+        sentHigh.current = latest.current.high;
         press(highScale);
       },
       onPanResponderMove: (_e, g) => {
@@ -180,7 +190,10 @@ export function RangeSlider({
           snap(raw, p.min, p.max, p.step),
           p.low + p.minGap,
         );
-        p.onChange(p.low, committed);
+        if (committed !== sentHigh.current) {
+          sentHigh.current = committed;
+          p.onChange(p.low, committed);
+        }
         highX.value = Math.max(
           xOf(p.low + p.minGap),
           Math.min(xOf(raw), trackWRef.current),

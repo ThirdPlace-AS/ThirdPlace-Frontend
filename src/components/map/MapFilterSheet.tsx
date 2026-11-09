@@ -560,6 +560,10 @@ function FilterBody({
 
   // Live "show N results" count — instant, no artificial delay, and the same
   // pipeline as the list (countResults), so N is what the list will show.
+  // Speed pass (0347): countResults counts without building the items, and
+  // the sliders only report a new step. A deferred count (useDeferredValue)
+  // was tried and made the sheet's frames slower on the emulator (median
+  // frame 69 -> 150 ms), so it is not used.
   const resultCount = useMemo(
     () =>
       count

@@ -50,6 +50,9 @@ export function SteppedSlider({
   const startX = useRef(0);
   const moved = useRef(false);
   const dragging = useRef(false);
+  // The step last sent to onChange during a drag: moving within a step sends
+  // nothing (speed pass 0347: each send re-rendered Filtre and recounted).
+  const sent = useRef(index);
   const last = labels.length - 1 || 1;
 
   const reduced = useReducedMotion();
@@ -101,6 +104,7 @@ export function SteppedSlider({
           Math.min(w, e.nativeEvent.locationX - THUMB / 2),
         );
         moved.current = false;
+        sent.current = latest.current.index;
       },
       onPanResponderMove: (_e, g) => {
         const p = latest.current;
@@ -113,7 +117,11 @@ export function SteppedSlider({
         }
         const x = Math.max(0, Math.min(w, startX.current + g.dx));
         thumbX.value = x; // follow the finger
-        p.onChange(stepAt(x, w, p.last));
+        const step = stepAt(x, w, p.last);
+        if (step !== sent.current) {
+          sent.current = step;
+          p.onChange(step);
+        }
       },
       onPanResponderRelease: () => {
         const p = latest.current;

@@ -88,16 +88,44 @@ function readSpan(text: string): Span | null {
   return { days, start, end: end === 0 ? 24 * 60 : end };
 }
 
-export function isOpenAt(hours: string, now: Date): boolean | null {
+// Each hours text is read once (speed pass 0347): the map's list asks for
+// every place's open state on each filter, mode or origin change, and the
+// parse (regexes, day sets) was most of that cost. Only the parse is kept;
+// the open state is still worked out for the moment asked.
+type Parsed = "always" | readonly Span[] | null;
+const parsedHours = new Map<string, Parsed>();
+
+function parseHours(hours: string): Parsed {
+  const hit = parsedHours.get(hours);
+  if (hit !== undefined) return hit;
+  let parsed: Parsed;
   const text = hours.trim();
-  if (/^alltid åpen/i.test(text)) return true;
-  if (text === "") return null;
-  const spans: Span[] = [];
-  for (const part of text.split("·")) {
-    const span = readSpan(part);
-    if (!span) return null;
-    spans.push(span);
+  if (/^alltid åpen/i.test(text)) parsed = "always";
+  else if (text === "") parsed = null;
+  else {
+    const spans: Span[] = [];
+    for (const part of text.split("·")) {
+      const span = readSpan(part);
+      if (!span) {
+        spans.length = 0;
+        break;
+      }
+      spans.push(span);
+    }
+    parsed = spans.length > 0 ? spans : null;
   }
+  // Hours texts are few (one per place, plus Legg til's); a runaway list of
+  // new ones only empties the cache.
+  if (parsedHours.size > 2000) parsedHours.clear();
+  parsedHours.set(hours, parsed);
+  return parsed;
+}
+
+export function isOpenAt(hours: string, now: Date): boolean | null {
+  const parsed = parseHours(hours);
+  if (parsed === "always") return true;
+  if (parsed === null) return null;
+  const spans = parsed;
   const minute = now.getHours() * 60 + now.getMinutes();
   const yesterday = new Date(now);
   yesterday.setDate(now.getDate() - 1);

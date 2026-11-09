@@ -328,7 +328,15 @@ function near2(a: [number, number], b: [number, number]): number {
 }
 
 /** The named area nearest a coordinate. */
+// The nearest area per coordinate, remembered (speed pass 0347): the map's
+// list asks for every item's area on each filter, mode or origin change, and
+// each answer scanned all the areas. Pins never move, so their answers hold.
+const areaByCoord = new Map<string, MockArea>();
+
 export function areaFor(coord: [number, number]): MockArea {
+  const key = `${coord[0]},${coord[1]}`;
+  const hit = areaByCoord.get(key);
+  if (hit) return hit;
   let best = AREAS[0]!;
   let bestD = near2(best.coord, coord);
   for (const a of AREAS) {
@@ -338,6 +346,9 @@ export function areaFor(coord: [number, number]): MockArea {
       bestD = d;
     }
   }
+  // GPS fixes add new coordinates; a long session only empties the cache.
+  if (areaByCoord.size > 5000) areaByCoord.clear();
+  areaByCoord.set(key, best);
   return best;
 }
 
