@@ -88,13 +88,22 @@ export function languageLabel(exp: Pick<MockExperience, "languages">): string {
   return `Holdes på ${list || "norsk"}`;
 }
 
-/** ["En kopp kaffe", "Litt bakst"] → "En kopp kaffe og litt bakst". */
+/**
+ * ["En kopp kaffe", "Litt bakst"] → "En kopp kaffe og litt bakst". An item
+ * that holds its own "og" keeps the list readable with commas:
+ * ["Inngang", "Kaffe og kake"] → "Inngang, kaffe og kake", and
+ * ["Tråd og knapper", "Kaffe"] → "Tråd og knapper, og kaffe".
+ */
 export function includedLabel(exp: Pick<MockExperience, "included">): string {
-  return joinList(
-    exp.included.map((x, i) =>
-      i === 0 ? x : x.charAt(0).toLowerCase() + x.slice(1),
-    ),
+  const items = exp.included.map((x, i) =>
+    i === 0 ? x : x.charAt(0).toLowerCase() + x.slice(1),
   );
+  const hasOg = (x: string) => /(^|\s)og(\s|$)/.test(x);
+  const last = items[items.length - 1] ?? "";
+  if (items.length > 1 && hasOg(last)) return items.join(", ");
+  if (items.length > 2 && items.slice(1, -1).some(hasOg))
+    return `${items.slice(0, -1).join(", ")}, og ${last}`;
+  return joinList(items);
 }
 
 /** Vibes first, then tags that are not already a vibe (no chip twice). */

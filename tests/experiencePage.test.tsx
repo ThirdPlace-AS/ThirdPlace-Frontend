@@ -169,6 +169,23 @@ describe("labels", () => {
       "Holdes på norsk og engelsk",
     );
   });
+
+  it("what's included reads well when an item holds its own og", () => {
+    expect(includedLabel({ included: ["En kopp kaffe", "Litt bakst"] })).toBe(
+      "En kopp kaffe og litt bakst",
+    );
+    expect(includedLabel({ included: ["Inngang", "Kaffe og kake"] })).toBe(
+      "Inngang, kaffe og kake",
+    );
+    expect(
+      includedLabel({ included: ["Papir og kull", "Blyanter", "Te og kaffe"] }),
+    ).toBe("Papir og kull, blyanter, te og kaffe");
+    expect(
+      includedLabel({
+        included: ["Symaskin til låns", "Tråd og knapper", "Kaffe"],
+      }),
+    ).toBe("Symaskin til låns, tråd og knapper, og kaffe");
+  });
 });
 
 describe("experienceMeta", () => {

@@ -8,7 +8,7 @@ import path from "path";
 import { describe, expect, it } from "@jest/globals";
 
 import { SEEDS } from "@/fixtures/catalog/seeds";
-import { interestById } from "@/fixtures/catalog/interests";
+import { INTERESTS, interestById } from "@/fixtures/catalog/interests";
 import {
   areaFor,
   chatById,
@@ -62,7 +62,14 @@ const REAL_NAMES = [
   "Operaen",
 ];
 
-describe("every seeded interest has the full set", () => {
+describe("every interest has the full set", () => {
+  it("covers all 84 interests in the catalogue", () => {
+    expect(INTERESTS).toHaveLength(84);
+    expect([...new Set(seeded)].sort()).toEqual(
+      INTERESTS.map((i) => i.id).sort(),
+    );
+  });
+
   it.each(seeded.map((i) => [i]))("%s", (interest) => {
     expect(interestById(interest)).toBeDefined();
     for (const kind of ["bedrift", "organisasjon", "byrom"] as const)
