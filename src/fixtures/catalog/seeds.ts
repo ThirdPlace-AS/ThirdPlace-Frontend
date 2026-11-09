@@ -3,6 +3,8 @@
 import { KAFE } from "./kafe";
 import { KULTUR_A } from "./kultur-a";
 import { KULTUR_B } from "./kultur-b";
+import { KULTUR_C } from "./kultur-c";
+import { KULTUR_D } from "./kultur-d";
 import { MAT_A } from "./mat-a";
 import { MAT_B } from "./mat-b";
 import { NATUR_A } from "./natur-a";
@@ -39,6 +41,8 @@ export const SEEDS: readonly InterestSeed[] = [
   ...TRENING_G,
   ...KULTUR_A,
   ...KULTUR_B,
+  ...KULTUR_C,
+  ...KULTUR_D,
   ...VELVAERE_A,
   ...VELVAERE_B,
 ];
