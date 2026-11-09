@@ -4,7 +4,7 @@
 // opening-hours answer still follows the clock with its parse cached, and
 // distances still follow the person.
 import { describe, expect, it, jest } from "@jest/globals";
-import { render } from "@testing-library/react-native";
+import { act, render } from "@testing-library/react-native";
 
 import { RangeSlider } from "@/components/RangeSlider";
 import { SteppedSlider } from "@/components/SteppedSlider";
@@ -173,8 +173,10 @@ describe("the Filtre sliders only report a new step", () => {
     );
     const [track] = handlersOf(ui.UNSAFE_root);
     // A 528 px track: 500 px for the thumb to travel, 100 px per step.
-    track!.props.onLayout?.({ nativeEvent: { layout: { width: 528 } } });
-    drag(track!.props, 0, 160);
+    act(() =>
+      track!.props.onLayout?.({ nativeEvent: { layout: { width: 528 } } }),
+    );
+    act(() => drag(track!.props, 0, 160));
     const moves = onChange.mock.calls.map((c) => c[0]);
     // 160 one-pixel moves cross into step 1 and then step 2 at most.
     expect(moves.length).toBeGreaterThan(0);
@@ -198,8 +200,8 @@ describe("the Filtre sliders only report a new step", () => {
     const root = ui.UNSAFE_root.findAll(
       (n) => typeof n.props.onLayout === "function",
     )[0]!;
-    root.props.onLayout({ nativeEvent: { layout: { width: 528 } } });
-    drag(thumbs[thumbs.length - 1]!.props, 500, 260);
+    act(() => root.props.onLayout({ nativeEvent: { layout: { width: 528 } } }));
+    act(() => drag(thumbs[thumbs.length - 1]!.props, 500, 260));
     const highs = onChange.mock.calls.map((c) => c[1]);
     // 240 one-pixel moves down from 1000 cross about five 100-kr steps.
     expect(highs.length).toBeGreaterThan(0);

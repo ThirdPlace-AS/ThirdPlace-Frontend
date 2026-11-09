@@ -7,7 +7,7 @@
 // appears twice; everything a creator enters in Legg til shows once. The join
 // action lives in the host's floating ExperienceJoinBar card.
 import type { Href } from "expo-router";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import {
   ScrollView,
   View,
@@ -141,7 +141,16 @@ export function ExperiencePage({
   const reviews = reviewsForExperience(exp.id);
   const { score, count } = ratingOf(reviews);
   const latest = sortReviews(reviews, "newest")[0];
-  const more = moreExperiences(exp);
+  // Lists over every experience and chat: worked out once per page (speed
+  // pass 0348), with each suggestion's rating.
+  const more = useMemo(
+    () =>
+      moreExperiences(exp).map((e) => ({
+        e,
+        r: ratingOf(reviewsForExperience(e.id)),
+      })),
+    [exp],
+  );
   const reviewsHref = `/experience/${exp.id}/reviews` as Href;
   // The direct chat with the host, matched by person (Phase 19: with many
   // hosts a first name is no longer enough).
@@ -305,8 +314,7 @@ export function ExperiencePage({
             // cold start (className on the scroll content was dropped).
             contentContainerStyle={{ gap: 12 }}
           >
-            {more.map((e) => {
-              const r = ratingOf(reviewsForExperience(e.id));
+            {more.map(({ e, r }) => {
               return (
                 <UIPressable
                   key={e.id}

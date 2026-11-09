@@ -6,7 +6,7 @@
 // vite (tilgjengelighet, spesielle åpningstider, kilde); footer links. Every
 // fact once. MOCK fixture data; no booking or ranking (BLOCKED_CONTRACT_GAP).
 import type { Href } from "expo-router";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { ScrollView, View } from "react-native";
 
 import { ReportSheet } from "@/components/actions/ActionSheets";
@@ -165,21 +165,30 @@ export function PlacePage({
   const { score, count } = ratingOf(reviews);
   const latest = sortReviews(reviews, "newest")[0];
   const reviewsHref = `/place/${place.id}/reviews` as Href;
-  const photos = photosForPlace(place).map(libImage);
+  // Lists over every place, experience and group: worked out once per page
+  // (speed pass 0348), and the same photo list for the gallery each render.
+  const photos = useMemo(() => photosForPlace(place).map(libImage), [place]);
   const band = priceBandFor(place.priceNok);
-  const nearby = nearbyPlaces(place);
+  const nearby = useMemo(() => nearbyPlaces(place), [place]);
   // Phase 19: who runs it, what happens here, which groups meet here.
   const business =
     place.kind === "bedrift" ? businessForPlace(place.id) : undefined;
   const org =
     place.kind === "organisasjon" ? organizationForPlace(place.id) : undefined;
   const contact = org ? personById(org.contactPersonId) : undefined;
-  const happening = experiences.filter(
-    (e) =>
-      e.status !== "cancelled" &&
-      (e.placeId === place.id || e.organizerPlaceId === place.id),
+  const happening = useMemo(
+    () =>
+      experiences.filter(
+        (e) =>
+          e.status !== "cancelled" &&
+          (e.placeId === place.id || e.organizerPlaceId === place.id),
+      ),
+    [place.id],
   );
-  const meetingHere = groups.filter((g) => g.homePlaceId === place.id);
+  const meetingHere = useMemo(
+    () => groups.filter((g) => g.homePlaceId === place.id),
+    [place.id],
+  );
 
   return (
     <View className="gap-6">

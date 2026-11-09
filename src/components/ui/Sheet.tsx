@@ -172,7 +172,17 @@ export type SheetProps = {
   children: ReactNode;
 };
 
-export function Sheet({
+/** A sheet costs nothing until it is first opened (speed pass 0348: an
+ *  experience page mounted 11 hidden sheets and overlays, each with its
+ *  presence state, shared values and animated styles). Once opened it stays
+ *  mounted, so the exit animation runs and reopening is instant. */
+export function Sheet(props: SheetProps) {
+  const [opened, setOpened] = useState(props.visible);
+  if (props.visible && !opened) setOpened(true);
+  return opened ? <SheetEngine {...props} /> : null;
+}
+
+function SheetEngine({
   visible,
   onClose,
   title,
