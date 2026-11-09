@@ -16,6 +16,30 @@ export function isPageKind(kind: SheetKind | undefined): boolean {
   return kind === "experience" || kind === "place";
 }
 
+/** The page sheet's top snap index (100 %: the full-screen page). */
+export const PAGE_SNAP = 2;
+/** animatedIndex where the page chrome starts to grow in on the way up. */
+export const PAGE_FROM = 1.7;
+// Within a hair of the top snap counts as the top: a drag that reaches the
+// top and carries on into the content scroll never "snaps" (gorhom reports
+// no index), and the sheet can rest just short of 2.
+const PAGE_TOP = PAGE_SNAP - 0.02;
+
+/** The sheet is at the top snap (full screen), read from its position. A
+ *  worklet: the sheet's animated reactions call it on the UI thread. */
+export function atPageTop(index: number): boolean {
+  "worklet";
+  return index > PAGE_TOP;
+}
+
+/** How far the floating action card has faded in: 0 below PAGE_FROM, 1 once
+ *  the sheet counts as at the top (a card resting at 0.95 let the page text
+ *  show through). A worklet, for its animated style. */
+export function pageReveal(index: number): number {
+  "worklet";
+  return Math.min(1, Math.max(0, (index - PAGE_FROM) / (PAGE_TOP - PAGE_FROM)));
+}
+
 export type PageInfo = {
   /** The small centred caption: "Sosialt · Grünerløkka", "Byrom · Kolsås". */
   caption: string;

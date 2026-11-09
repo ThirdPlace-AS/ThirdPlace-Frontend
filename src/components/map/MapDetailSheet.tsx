@@ -45,13 +45,19 @@ import { PAGE_BAR_ROW } from "@/components/experience/ExperiencePage";
 import { chatForPlace, experienceById, placeById } from "@/fixtures";
 import { elevation, gutterPx, useThemeColors } from "@/theme";
 
-import { ExperienceJoinBar } from "./content/ExperienceJoinBar";
-import { PlaceChatBar } from "./content/PlaceChatBar";
+import { PageActionCard } from "./content/PageActionCard";
 import { useGuestMode } from "./hooks/useGuestMode";
 import { useMapSaved } from "./hooks/useMapSaved";
 import { markViewed } from "./hooks/useRecentlyViewed";
 import { DetailContent, titleFor } from "./DetailContentRouter";
-import { isPageKind, pageInfoFor, type PageInfo } from "./pageTarget";
+import {
+  atPageTop,
+  isPageKind,
+  PAGE_FROM,
+  PAGE_SNAP,
+  pageInfoFor,
+  type PageInfo,
+} from "./pageTarget";
 import { backdropA11y, sheetA11yChrome, useSheetHandleA11y } from "./sheetA11y";
 import type { PushFn, SheetTarget } from "./sheetTypes";
 
@@ -74,11 +80,10 @@ import type { PushFn, SheetTarget } from "./sheetTypes";
 // Pushed views keep the normal header, padded below the status bar at the
 // top snap. Groups keep the 92 % sheet docked above the tab bar.
 
-export const PAGE_SNAP = 2;
-// Page peek: handle + ✕ row + the top of the gallery (above an experience's
-// floating join card: ≈ 24 + 56 + 120 + 100 dp).
+// Page peek: handle + ✕ row + the top of the gallery (sized when the floating
+// card sat above the peek: ≈ 24 + 56 + 120 + 100 dp; since 0342 the card
+// shows only at the top snap and the peek keeps this floor).
 const PAGE_PEEK_MIN = 300;
-const PAGE_FROM = 1.7; // animatedIndex where the page chrome starts to show
 
 export type MapDetailSheetHandle = {
   /** Page → mid snap (Android back at the top snap). */
@@ -160,7 +165,7 @@ export const MapDetailSheet = forwardRef<
     [pageCapable],
   );
   useAnimatedReaction(
-    () => animatedIndex.value > PAGE_SNAP - 0.02,
+    () => atPageTop(animatedIndex.value),
     (atTop, prev) => {
       if (atTop !== prev) runOnJS(onTop)(atTop);
     },
@@ -183,10 +188,10 @@ export const MapDetailSheet = forwardRef<
     onPageChange?.(isPage);
   }, [isPage, onPageChange]);
 
-  // A floating action card at every snap: an experience's join action (PDF
-  // p6 + video, "Bli med"), a place's chat (user 2026-11-09: "a sticky action
-  // section but it should focus on the chat"; PDF p6 draws a chat bar under
-  // places too).
+  // A floating action card on the full-screen page (PageActionCard, top snap
+  // only; user 2026-11-09): an experience's join action (PDF p6 + video, "Bli
+  // med"), a place's chat (user 2026-11-09: "a sticky action section but it
+  // should focus on the chat"; PDF p6 draws a chat bar under places too).
   const footerKind: "experience" | "place" | null = !top
     ? null
     : topIsExperience
@@ -210,33 +215,23 @@ export const MapDetailSheet = forwardRef<
     }
   }, [topKind, topId]);
 
+  // Keep this callback stable (no page state in its deps): gorhom renders it
+  // as a component type, so a new identity remounts the card.
   const renderFooter = useCallback(
     (props: BottomSheetFooterProps) =>
-      footerId ? (
+      footerKind && footerId ? (
         <BottomSheetFooter {...props}>
-          <View
-            style={{
-              paddingHorizontal: gutterPx,
-              // The portal sheet reaches the screen bottom (gesture bar).
-              paddingBottom: pageCapable ? Math.max(insets.bottom, 12) : 12,
-            }}
-          >
-            <View
-              className={`rounded-lg border border-line bg-surface px-4 ${
-                compact ? "py-2" : "py-3"
-              }`}
-              style={elevation.e2}
-            >
-              {footerKind === "place" ? (
-                <PlaceChatBar placeId={footerId} />
-              ) : (
-                <ExperienceJoinBar id={footerId} />
-              )}
-            </View>
-          </View>
+          <PageActionCard
+            kind={footerKind}
+            id={footerId}
+            animatedIndex={animatedIndex}
+            // The portal sheet reaches the screen bottom (gesture bar).
+            bottomPad={pageCapable ? Math.max(insets.bottom, 12) : 12}
+            compact={compact}
+          />
         </BottomSheetFooter>
       ) : null,
-    [footerKind, footerId, pageCapable, insets.bottom, compact],
+    [footerKind, footerId, animatedIndex, pageCapable, insets.bottom, compact],
   );
 
   const renderBackdrop = useCallback(

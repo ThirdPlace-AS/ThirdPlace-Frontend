@@ -105,7 +105,7 @@ and [MAP_DELIVERABLES.md](MAP_DELIVERABLES.md) for journeys + completion classes
 ## Phase 9–10 changes (2026-11-06)
 
 - Android back steps back / closes the detail sheet before leaving the map (0193).
-- Experience detail pins its join bar through gorhom `footerComponent` (PDF p6); join state is a shared demo store (`useExperienceJoin`) (0204).
+- Experience detail pins its join bar through gorhom `footerComponent` (PDF p6); join state is a shared demo store (`useExperienceJoin`) (0204). Since 0342 it shows only on the full-screen page.
 - `/map?focus=<kind>:<id>&at=<stamp>` opens a detail from Steder "Vis på kartet", Lagret and Mine planer (0199, 0208).
 - Browse heart asks guests to sign in, like every other save (0208).
 - Map tools sit 12 dp above the measured browse peek (0204).
@@ -172,4 +172,5 @@ and [MAP_DELIVERABLES.md](MAP_DELIVERABLES.md) for journeys + completion classes
 - Browse cards (0335, user 2026-11-09): a Bedrift or Byrom card reads "Bedrift · 1,2 km" (from the person, the list’s sort key) and wears Åpent / Stengt as a solid green / red badge on the photo’s top left (`browseCardOpenBadge`, `Badge solid`); Organisasjon cards keep "· Åpent" in the line; no long-press menu on a card.
 - City spaces by their kind (0337, user 2026-11-09): on the map a Byrom says its own kind of space (`placeTypeLabel` gives its `category`: "Klatrefelt · 14 km" on the card, "Klatrefelt · Kolsås" in the detail sheet's top bar via `placeCaption`); the Type filter keeps "Byrom".
 - Experiences by their activity (0339, user 2026-11-09): `experienceKindLabel` names an experience by its interest ("Klatring", a festival "Klatring · Festival") on browse cards, search rows and the page sheet's top bar (`experienceCaption`); browse-card tags that repeat the type line are dropped; the Type filter keeps Opplevelse / Arrangement.
-- Sticky chat card (0340, user 2026-11-09): a place's page sheet pins `PlaceChatBar` at every snap (last message, "Bli med i samtalen" / "Åpne samtalen", sign-in prompt for guests), like an experience's `ExperienceJoinBar`; the sheet's `PlacePage` leaves out its Samtalen section (`chatInBar`).
+- Sticky chat card (0340, user 2026-11-09): a place's page sheet pins `PlaceChatBar` (at every snap until 0342, now on the full-screen page only) (last message, "Bli med i samtalen" / "Åpne samtalen", sign-in prompt for guests), like an experience's `ExperienceJoinBar`; the sheet's `PlacePage` leaves out its Samtalen section (`chatInBar`).
+- Floating card on the full-screen page only (0342, user 2026-11-09): `PageActionCard` holds the join card and the chat card; it fades in on the last stretch of the drag to the top snap (`pageReveal`, opaque once `atPageTop`) and is not touchable or read out below it, so the peek and mid snaps show the page with nothing over it.
