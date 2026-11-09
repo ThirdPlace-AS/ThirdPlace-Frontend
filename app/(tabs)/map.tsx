@@ -48,13 +48,6 @@ import {
 } from "@/components/map/hooks/useMapSelection";
 import { SignInPrompt } from "@/components/SignInPrompt";
 import { WhatsNewOnFocus } from "@/components/WhatsNewSheet";
-import {
-  ItemActionsSheet,
-  ShareSheet,
-} from "@/components/actions/ActionSheets";
-import { showToast } from "@/components/Toast";
-import { confirmToast } from "@/copy";
-import { openDirections } from "@/lib/directions";
 import { reportFix } from "@/lib/origin";
 import { useGuestMode } from "@/components/map/hooks/useGuestMode";
 import { MapBrowseSheet } from "@/components/map/MapBrowseSheet";
@@ -254,14 +247,6 @@ export default function MapScreen() {
       isGuest ? setSignInOpen(true) : saved.toggle(item.markerId),
     [saved, isGuest],
   );
-
-  // Long-press on a browse card (Phase 18): Lagre, Del, Veibeskrivelse.
-  // A tap already shows the item on the map, so the menu offers the rest.
-  const [actionsFor, setActionsFor] = useState<DiscoveryItem | null>(null);
-  const [shareFor, setShareFor] = useState<DiscoveryItem | null>(null);
-  const handleItemActions = useCallback((item: DiscoveryItem) => {
-    setActionsFor(item);
-  }, []);
 
   // Tap on empty map: dismiss the keyboard and collapse the open sheet.
   const handleMapPress = useCallback(() => {
@@ -487,58 +472,6 @@ export default function MapScreen() {
         onClose={() => setFilterOpen(false)}
         onApply={handleApplyFilters}
       />
-      {actionsFor ? (
-        <ItemActionsSheet
-          title={actionsFor.title}
-          subtitle={actionsFor.subtitle}
-          onClose={() => setActionsFor(null)}
-          actions={[
-            saved.isSaved(actionsFor.markerId)
-              ? {
-                  label: "Fjern fra Lagret",
-                  icon: "bookmark",
-                  onPress: () => handleToggleSave(actionsFor),
-                }
-              : {
-                  label: "Lagre",
-                  icon: "bookmark-outline",
-                  // A guest gets the sign-in sheet: open it after this one.
-                  afterClose: true,
-                  onPress: () => {
-                    handleToggleSave(actionsFor);
-                    if (!isGuest) showToast(confirmToast.saved);
-                  },
-                },
-            {
-              label: "Del",
-              icon: "share-outline",
-              afterClose: true,
-              onPress: () => setShareFor(actionsFor),
-            },
-            {
-              label: "Veibeskrivelse",
-              icon: "navigate-outline",
-              afterClose: true,
-              onPress: () => {
-                void openDirections(actionsFor.coord).then((ok) => {
-                  if (!ok)
-                    showToast({
-                      title: "Fikk ikke åpnet kartappen",
-                      icon: "alert-circle-outline",
-                    });
-                });
-              },
-            },
-          ]}
-        />
-      ) : null}
-      {shareFor ? (
-        <ShareSheet
-          title={shareFor.title}
-          slug={shareFor.markerId.replace(":", "/")}
-          onClose={() => setShareFor(null)}
-        />
-      ) : null}
       <SignInPrompt
         visible={signInOpen}
         onClose={() => setSignInOpen(false)}
@@ -578,7 +511,6 @@ export default function MapScreen() {
           onSelect={handleSelectItem}
           isSaved={saved.isSaved}
           onToggleSave={handleToggleSave}
-          onItemActions={handleItemActions}
           emptyMessage={discovery.emptyMessage}
           areaLabel={location.areaLabel}
           weather={MOCK_WEATHER}

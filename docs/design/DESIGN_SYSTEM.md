@@ -46,6 +46,8 @@ The design system **restyles the PDF's layouts**. It never adds screens, section
 | `emberText`     | `#DA1249` | `#FF6B85` | Pink text and links                                        |
 | `success`       | `#008A05` | `#008A05` | Local completion                                           |
 | `danger`        | `#C13515` | `#C13515` | Destructive                                                |
+| `onSuccess`     | `#FFFFFF` | `#FFFFFF` | Text on a success fill (solid badges)                      |
+| `onDanger`      | `#FFFFFF` | `#FFFFFF` | Text on a danger fill (solid badges)                       |
 | `warning`       | `#B05008` | `#B05008` | Warning                                                    |
 
 Brand gradient (`brandGradient` in `src/theme/tokens.js`): `#E61E4D → #E31C5F → #D70466`, left to right, white text (≥ 4.5:1 on every stop). Only Button `variant="ember"` draws it.

@@ -3,13 +3,14 @@
 // or a festival over several days). Shown as a label on cards, the preview
 // and search rows ("Bedrift · Sandvika · 12 km") and picked in Filtre's
 // "Type" group. Pure.
-import type { IconName } from "@/components/ui";
+import type { BadgeTone, IconName } from "@/components/ui";
 import {
   experienceById,
   placeById,
   type MockExperience,
   type MockPlace,
 } from "@/fixtures";
+import { formatDistance } from "@/lib/distance";
 
 import type { DiscoveryItem } from "../types/mapPresentation";
 
@@ -67,19 +68,52 @@ export function itemTypeOf(
   return undefined;
 }
 
-/** The browse card's "what is it" line (founder 2026-11-08): the type with a
- *  place's opening ("Bedrift · Åpent") or an experience's time ("Festival ·
- *  Lør 10:00"). No area or distance on the card. */
-export function browseCardLine(
-  item: Pick<DiscoveryItem, "kind" | "typeLabel" | "when" | "openNow">,
-): string {
+type CardItem = Pick<
+  DiscoveryItem,
+  "kind" | "type" | "typeLabel" | "when" | "openNow" | "distanceM"
+>;
+
+/** A Bedrift or Byrom card wears its opening as a badge on the photo, and its
+ *  line gives the distance instead (user 2026-11-09: Bedrift first, then
+ *  "city spaces should also have the same open close as the business").
+ *  An Organisasjon card stays as it was. */
+function opensOnPhoto(item: CardItem): boolean {
+  return (
+    item.kind === "place" && (item.type === "bedrift" || item.type === "byrom")
+  );
+}
+
+/** The browse card's "what is it" line (founder 2026-11-08), no area:
+ *  - a Bedrift or a Byrom: the type and how far away it is ("Bedrift ·
+ *    1,2 km", from the person, the number the list is sorted by; 2026-11-09);
+ *  - an Organisasjon: the type and its opening ("Organisasjon · Åpent");
+ *  - an experience: the type and its time ("Festival · Lør 10:00"). */
+export function browseCardLine(item: CardItem): string {
   const extra =
     item.kind === "experience"
       ? item.when
-      : item.openNow === undefined
-        ? undefined
-        : item.openNow
-          ? "Åpent"
-          : "Stengt";
+      : opensOnPhoto(item)
+        ? item.distanceM === undefined
+          ? undefined
+          : formatDistance(item.distanceM)
+        : item.openNow === undefined
+          ? undefined
+          : item.openNow
+            ? "Åpent"
+            : "Stengt";
   return [item.typeLabel, extra].filter(Boolean).join(" · ");
+}
+
+export type OpenBadge = {
+  label: "Åpent" | "Stengt";
+  tone: Extract<BadgeTone, "success" | "danger">;
+};
+
+/** A Bedrift's or Byrom's opening, a solid badge on the photo's top left:
+ *  green "Åpent" or red "Stengt" (2026-11-09). Null on other cards. */
+export function browseCardOpenBadge(item: CardItem): OpenBadge | null {
+  if (!opensOnPhoto(item) || item.openNow === undefined) return null;
+  return item.openNow
+    ? { label: "Åpent", tone: "success" }
+    : { label: "Stengt", tone: "danger" };
 }

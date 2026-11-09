@@ -54,12 +54,14 @@ export type DiscoveryItem = {
   typeLabel?: string;
   area?: string;
   // Metres from the person (src/lib/origin.ts) to the place or the meeting
-  // point; the lists are nearest first (Phase 19).
+  // point; the lists are nearest first (Phase 19). A Bedrift's or Byrom's
+  // browse card shows it after the type ("Bedrift · 1,2 km", 2026-11-09).
   distanceM?: number;
   // An experience's time as written on it ("Lør 12:00"); the browse card
-  // shows it after the type (founder 2026-11-08: no area or distance there).
+  // shows it after the type (founder 2026-11-08: no area there).
   when?: string;
-  // A place open right now (from its hours), for the card's type line.
+  // A place open right now (from its hours): the green / red badge on a
+  // Bedrift or Byrom photo, an Organisasjon's type line ("· Åpent").
   openNow?: boolean;
   // An experience's price ("250 kr" or "Gratis"); places show none on the
   // browse card (founder 2026-11-08).

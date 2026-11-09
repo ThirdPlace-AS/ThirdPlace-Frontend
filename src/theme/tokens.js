@@ -37,6 +37,8 @@ const palette = {
     success: "#008A05",
     onSuccess: "#FFFFFF",
     danger: "#C13515",
+    // Text on a danger fill (a solid "Stengt" badge): white = 5.5:1.
+    onDanger: "#FFFFFF",
     warning: "#B05008",
     scrim: "#000000", // use with an opacity modifier, e.g. bg-scrim/40
     onMedia: "#FFFFFF", // content over photos/video (with a scrim), any scheme
@@ -61,6 +63,7 @@ const palette = {
     success: "#008A05",
     onSuccess: "#FFFFFF",
     danger: "#C13515",
+    onDanger: "#FFFFFF",
     warning: "#B05008",
     scrim: "#000000",
     onMedia: "#FFFFFF",
