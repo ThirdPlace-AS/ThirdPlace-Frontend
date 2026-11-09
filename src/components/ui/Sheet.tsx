@@ -10,7 +10,7 @@
 //
 // The scrim is a SIBLING behind the card, never its ancestor, so the card's
 // buttons are never nested inside a <button> on web (CLAUDE.md "Sheets").
-import { useState, type ReactNode } from "react";
+import { useMemo, useState, type ReactNode } from "react";
 import {
   KeyboardAvoidingView,
   type LayoutChangeEvent,
@@ -132,22 +132,27 @@ export function SheetHeader({
   );
 }
 
-/** Props for the @gorhom engine so map sheets match <Sheet>. */
+/** Props for the @gorhom engine so map sheets match <Sheet>. The same objects
+ *  on every render (speed pass 0345): new ones made gorhom restyle the map
+ *  sheets on each render of the map screen. */
 export function useSheetChrome() {
   const c = useThemeColors();
-  return {
-    backgroundStyle: {
-      backgroundColor: c.surface,
-      borderTopLeftRadius: SHEET_RADIUS,
-      borderTopRightRadius: SHEET_RADIUS,
-    },
-    handleIndicatorStyle: {
-      backgroundColor: c.line,
-      width: 40,
-      height: 4,
-    },
-    style: elevation.e3,
-  };
+  return useMemo(
+    () => ({
+      backgroundStyle: {
+        backgroundColor: c.surface,
+        borderTopLeftRadius: SHEET_RADIUS,
+        borderTopRightRadius: SHEET_RADIUS,
+      },
+      handleIndicatorStyle: {
+        backgroundColor: c.line,
+        width: 40,
+        height: 4,
+      },
+      style: elevation.e3,
+    }),
+    [c.surface, c.line],
+  );
 }
 
 export type SheetProps = {

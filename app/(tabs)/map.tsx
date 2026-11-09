@@ -62,6 +62,8 @@ import { elevation } from "@/theme";
 // filters/search, discovery mode, selection (detail sheet), camera, location.
 // Set once the Sveip tab was pre-rendered (R28).
 let swipePrefetched = false;
+// One empty list while loading, so the memoised map children keep their props.
+const NO_ITEMS: DiscoveryItem[] = [];
 
 // Map-only — no list view. All data is MOCK fixtures (no backend).
 export default function MapScreen() {
@@ -144,18 +146,24 @@ export default function MapScreen() {
   // focused; Modal sheets (Filtre, Kartlag, …) handle back themselves.
   const sheetDepth = selection.sheetStack.length;
   const detailRef = useRef<MapDetailSheetHandle>(null);
-  const [detailIsPage, setDetailIsPage] = useState(false);
+  // Whether the detail sheet is the full-screen page, read only by the back
+  // key: a ref, so reaching the top does not re-render the whole map screen
+  // (speed pass 0345; the sheet itself owns the status bar).
+  const detailIsPage = useRef(false);
+  const handlePageChange = useCallback((isPage: boolean) => {
+    detailIsPage.current = isPage;
+  }, []);
   useFocusEffect(
     useCallback(() => {
       const sub = BackHandler.addEventListener("hardwareBackPress", () => {
-        const action = mapBackAction(sheetDepth, detailIsPage);
+        const action = mapBackAction(sheetDepth, detailIsPage.current);
         if (action === "back") sheetBack();
         else if (action === "collapse") detailRef.current?.collapse();
         else if (action === "close") sheetClose();
         return action !== "none";
       });
       return () => sub.remove();
-    }, [sheetDepth, detailIsPage, sheetBack, sheetClose]),
+    }, [sheetDepth, sheetBack, sheetClose]),
   );
 
   // Mock async load so the surface can show loading/error states (no backend).
@@ -242,10 +250,17 @@ export default function MapScreen() {
   // the browse save button asks guests to sign in too instead of saving.
   const { isGuest } = useGuestMode();
   const [signInOpen, setSignInOpen] = useState(false);
+  const { toggle: toggleSaved } = saved;
   const handleToggleSave = useCallback(
     (item: DiscoveryItem) =>
-      isGuest ? setSignInOpen(true) : saved.toggle(item.markerId),
-    [saved, isGuest],
+      isGuest ? setSignInOpen(true) : toggleSaved(item.markerId),
+    [toggleSaved, isGuest],
+  );
+
+  // SoftMap cluster tap: expand the browse list.
+  const handleClusterPress = useCallback(
+    () => setBrowseExpand((n) => n + 1),
+    [],
   );
 
   // Tap on empty map: dismiss the keyboard and collapse the open sheet.
@@ -310,11 +325,11 @@ export default function MapScreen() {
       <StatusBarStyle style={darkBasemap ? "light" : "auto"} />
       <MapCanvas
         fill
-        markers={loading ? [] : items}
+        markers={loading ? NO_ITEMS : items}
         selectedMarkerId={selection.selectedMarkerId}
         onSelectMarker={handleSelectMarker}
         onMapPress={handleMapPress}
-        onClusterPress={() => setBrowseExpand((n) => n + 1)}
+        onClusterPress={handleClusterPress}
         focusCoord={focusCoord}
         focusZoomIn={zoomToPick}
         styleURL={basemap.url}
@@ -504,7 +519,7 @@ export default function MapScreen() {
           to its peek (never below) and the detail, on top, covers it. */}
       {!errored ? (
         <MapBrowseSheet
-          items={loading ? [] : items}
+          items={loading ? NO_ITEMS : items}
           loading={loading}
           loadingSlow={loadPhase === "loader"}
           selectedMarkerId={selection.selectedMarkerId}
@@ -525,7 +540,7 @@ export default function MapScreen() {
       {selection.sheetStack.length > 0 ? (
         <MapDetailSheet
           ref={detailRef}
-          onPageChange={setDetailIsPage}
+          onPageChange={handlePageChange}
           stack={selection.sheetStack}
           openIndex={selection.openIndex}
           openNonce={selection.openNonce}

@@ -44,7 +44,9 @@ const PEEK_HANDLE = 24;
 // opening badge on the other corner is centred on the same line.
 const BOOKMARK_PX = 36;
 
-export function MapBrowseSheet({
+// Memoised (speed pass 0345): the map screen passes stable props, so this
+// sheet renders only when its list, selection or state really change.
+export const MapBrowseSheet = memo(function MapBrowseSheet({
   items,
   selectedMarkerId,
   onSelect,
@@ -299,7 +301,7 @@ export function MapBrowseSheet({
       ) : null}
     </>
   );
-}
+});
 
 // One result card. Memoized: props are primitives + stable callbacks, so it
 // re-renders only when its own item/selected/saved changes.

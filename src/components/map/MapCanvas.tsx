@@ -1,5 +1,5 @@
 import Constants, { ExecutionEnvironment } from "expo-constants";
-import { useMemo, useState, type ComponentType } from "react";
+import { memo, useMemo, useState, type ComponentType } from "react";
 import { Platform, Pressable, View } from "react-native";
 
 import { env } from "@/lib/env";
@@ -339,7 +339,11 @@ function SoftMap({
   );
 }
 
-export function MapCanvas({
+// Memoised (speed pass 0345): the map screen re-renders for many reasons that
+// do not concern the map (sheets, peek height, saved toggles), and each
+// render used to rebuild every pin layer. Its props come stable from
+// app/(tabs)/map.tsx.
+export const MapCanvas = memo(function MapCanvas({
   markers,
   selectedMarkerId,
   onSelectMarker,
@@ -401,4 +405,4 @@ export function MapCanvas({
       )}
     </View>
   );
-}
+});

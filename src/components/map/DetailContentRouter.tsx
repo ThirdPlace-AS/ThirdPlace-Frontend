@@ -1,3 +1,5 @@
+import { memo } from "react";
+
 import { businessById, experienceById, groupById, placeById } from "@/fixtures";
 
 import { AttendeesContent } from "./content/AttendeesContent";
@@ -40,7 +42,9 @@ export function titleFor(t: SheetTarget): string {
   }
 }
 
-export function DetailContent({
+// Memoised (speed pass 0345): a page body is the heaviest thing in the
+// detail sheet; it renders again only when its target or push changes.
+export const DetailContent = memo(function DetailContent({
   target,
   push,
 }: {
@@ -69,4 +73,4 @@ export function DetailContent({
     case "verification":
       return <VerificationContent />;
   }
-}
+});
