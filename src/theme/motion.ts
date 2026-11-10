@@ -13,6 +13,7 @@ export const duration = {
   slow: 320,
   fling: 180, // card/preview flung off-screen
   recenter: 500, // map camera recenter
+  focus: 450, // map camera to a tapped pin (centred above the sheet, a step closer)
   shimmer: 800, // skeleton pulse
 } as const;
 

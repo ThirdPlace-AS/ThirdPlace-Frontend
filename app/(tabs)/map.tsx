@@ -5,7 +5,13 @@ import {
   type Href,
 } from "expo-router";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { BackHandler, Keyboard, useWindowDimensions, View } from "react-native";
+import {
+  BackHandler,
+  Keyboard,
+  useWindowDimensions,
+  View,
+  type LayoutChangeEvent,
+} from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import {
@@ -36,6 +42,7 @@ import type {
   DiscoveryMode,
 } from "@/components/map/types/mapPresentation";
 import { useMapCamera } from "@/components/map/hooks/useMapCamera";
+import { focusPadding } from "@/components/map/services/pinCamera";
 import { useTimeOfDayStyle } from "@/components/map/hooks/useTimeOfDayStyle";
 import { useMapLocation } from "@/components/map/hooks/useMapLocation";
 import { USER_PUCK } from "@/components/map/userPuck";
@@ -221,6 +228,30 @@ export default function MapScreen() {
     return map;
   }, [items]);
 
+  // Room around a centred pin (services/pinCamera.ts): the map's own height
+  // (it ends at the tab bar, which the page sheet covers) and the bottom of
+  // the search bar and mode chips, both measured once.
+  const [screenH, setScreenH] = useState<number | null>(null);
+  const [topH, setTopH] = useState<number | null>(null);
+  const handleScreenLayout = useCallback((e: LayoutChangeEvent) => {
+    const h = Math.round(e.nativeEvent.layout.height);
+    setScreenH((prev) => (prev === h ? prev : h));
+  }, []);
+  const handleTopLayout = useCallback((e: LayoutChangeEvent) => {
+    const { y, height } = e.nativeEvent.layout;
+    const h = Math.round(y + height);
+    setTopH((prev) => (prev === h ? prev : h));
+  }, []);
+  const pinPadding = useMemo(
+    () =>
+      focusPadding({
+        windowH: windowHeight,
+        mapH: screenH ?? windowHeight,
+        top: topH ?? insets.top,
+      }),
+    [windowHeight, screenH, topH, insets.top],
+  );
+
   // Coord of the selected marker — pans the camera to center the pin above the
   // detail sheet (Google-Maps style). Null when nothing is selected.
   const focusCoord = useMemo(() => {
@@ -330,10 +361,11 @@ export default function MapScreen() {
   };
 
   return (
-    <View className="flex-1 bg-background">
+    <View className="flex-1 bg-background" onLayout={handleScreenLayout}>
       <StatusBarStyle style={darkBasemap ? "light" : "auto"} />
       <MapCanvas
         fill
+        focusPadding={pinPadding}
         markers={loading ? NO_ITEMS : items}
         selectedMarkerId={selection.selectedMarkerId}
         onSelectMarker={handleSelectMarker}
@@ -356,6 +388,7 @@ export default function MapScreen() {
       <View
         // box-none: the gaps between the rows reach the map.
         pointerEvents="box-none"
+        onLayout={handleTopLayout}
         className="absolute top-0 left-0 right-0 gap-2 pb-2"
         style={{ paddingTop: insets.top + 8 }}
       >

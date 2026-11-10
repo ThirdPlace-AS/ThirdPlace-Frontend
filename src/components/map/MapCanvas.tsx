@@ -15,6 +15,7 @@ import {
   type SoftBox,
 } from "./services/softClustering";
 import type { DiscoveryItem } from "./types/mapPresentation";
+import type { FocusPadding } from "./services/pinCamera";
 import { markerPaint } from "./pinStyle";
 import { USER_PUCK } from "./userPuck";
 import { markerIcon } from "./services/markerIcon";
@@ -65,6 +66,9 @@ type MapProps = {
   // and titles flip so they stay visible (pinStyle.ts). SoftMap follows the
   // theme.
   darkBasemap?: boolean;
+  // Room around a centred pin, below the top controls and above the detail
+  // sheet's peek (services/pinCamera.ts). SoftMap ignores it.
+  focusPadding?: FocusPadding;
 };
 
 // User-location puck for the SoftMap fallback: an ember dot with a white ring
@@ -359,6 +363,7 @@ export const MapCanvas = memo(function MapCanvas({
   terrain,
   ornamentBottom,
   darkBasemap = false,
+  focusPadding,
   height = 160,
   fill = false,
 }: MapProps & { height?: number; fill?: boolean }) {
@@ -387,6 +392,7 @@ export const MapCanvas = memo(function MapCanvas({
           terrain={terrain}
           ornamentBottom={ornamentBottom}
           darkBasemap={darkBasemap}
+          focusPadding={focusPadding}
         />
       ) : (
         <SoftMap

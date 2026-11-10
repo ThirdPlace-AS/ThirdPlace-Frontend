@@ -50,6 +50,7 @@ import { PageActionCard } from "./content/PageActionCard";
 import { useGuestMode } from "./hooks/useGuestMode";
 import { useMapSaved } from "./hooks/useMapSaved";
 import { markViewed } from "./hooks/useRecentlyViewed";
+import { pagePeekHeight } from "./services/pinCamera";
 import { DetailContent, titleFor } from "./DetailContentRouter";
 import {
   atPageTop,
@@ -81,10 +82,11 @@ import type { PushFn, SheetTarget } from "./sheetTypes";
 // Pushed views keep the normal header, padded below the status bar at the
 // top snap. Groups keep the 92 % sheet docked above the tab bar.
 
-// Page peek: handle + ✕ row + the top of the gallery (sized when the floating
-// card sat above the peek: ≈ 24 + 56 + 120 + 100 dp; since 0342 the card
-// shows only at the top snap and the peek keeps this floor).
-const PAGE_PEEK_MIN = 300;
+// Page peek: 35 % of the window, at least PAGE_PEEK_MIN (300 dp: handle + ✕
+// row + the top of the gallery, sized when the floating card sat above the
+// peek; since 0342 the card shows only at the top snap and the peek keeps
+// this floor). Both live in services/pinCamera.ts, since the pin-tap camera
+// centres the pin above this same peek.
 
 export type MapDetailSheetHandle = {
   /** Page → mid snap (Android back at the top snap). */
@@ -136,7 +138,7 @@ export const MapDetailSheet = memo(
     const snapPoints = useMemo(
       () =>
         pageCapable
-          ? [Math.max(Math.round(winH * 0.35), PAGE_PEEK_MIN), "60%", "100%"]
+          ? [pagePeekHeight(winH), "60%", "100%"]
           : ["35%", "60%", "92%"],
       [pageCapable, winH],
     );

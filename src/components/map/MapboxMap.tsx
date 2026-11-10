@@ -40,6 +40,13 @@ import {
   type TerrainPaint,
 } from "./terrainStyle";
 import { clusterZoom, firstViewCamera, selectionZoom } from "./services/bounds";
+import {
+  focusPadding as paddingFor,
+  pinTapZoom,
+  sameCoord,
+  type FocusPadding,
+} from "./services/pinCamera";
+import { useReducedMotion } from "@/hooks/useReducedMotion";
 import { getOrigin } from "@/lib/origin";
 import { setNativeCoord, useUserLocation } from "@/lib/userLocation";
 import { USER_PUCK } from "./userPuck";
@@ -95,6 +102,15 @@ type PinPress = Parameters<
 type NativeLocation = Parameters<
   NonNullable<ComponentProps<typeof UserLocation>["onUpdate"]>
 >[0];
+type MapIdle = Parameters<
+  NonNullable<ComponentProps<typeof MapView>["onMapIdle"]>
+>[0];
+
+// Until the map screen has measured itself: the whole window, nothing on top.
+function windowPadding(): FocusPadding {
+  const { height } = Dimensions.get("window");
+  return paddingFor({ windowH: height, mapH: height, top: 0 });
+}
 type PinPaint = ReturnType<typeof pinPaint>;
 type Filter = NonNullable<ComponentProps<typeof CircleLayer>["filter"]>;
 type CircleStyle = NonNullable<ComponentProps<typeof CircleLayer>["style"]>;
@@ -125,6 +141,7 @@ export const MapboxMap = memo(function MapboxMap({
   terrain = false,
   ornamentBottom = 8,
   darkBasemap = false,
+  focusPadding,
 }: {
   markers: DiscoveryItem[];
   selectedMarkerId?: string | null;
@@ -146,19 +163,36 @@ export const MapboxMap = memo(function MapboxMap({
    *  browse sheet's peek never covers them (Mapbox attribution terms). */
   ornamentBottom?: number;
   darkBasemap?: boolean;
+  /** Room around a centred pin: below the top controls, above the detail
+   *  sheet's peek (services/pinCamera.ts, measured by the map screen). */
+  focusPadding?: FocusPadding;
 }) {
   const paint = useMemo(() => pinPaint(pin, darkBasemap), [darkBasemap]);
   const relief = useMemo(() => terrainPaint(darkBasemap), [darkBasemap]);
   const cameraRef = useRef<Camera>(null);
   const mapRef = useRef<MapView>(null);
   const sourceRef = useRef<ShapeSource>(null);
-  // The latest callbacks, for handlers that stay the same between renders.
+  // The latest callbacks and values, for handlers that stay the same between
+  // renders.
   const onSelectRef = useRef(onSelectMarker);
   const onMapPressRef = useRef(onMapPress);
+  const selectedRef = useRef(selectedMarkerId ?? null);
+  const paddingRef = useRef(focusPadding ?? windowPadding());
+  const reduced = useReducedMotion();
+  const reducedRef = useRef(reduced);
   useEffect(() => {
     onSelectRef.current = onSelectMarker;
     onMapPressRef.current = onMapPress;
+    selectedRef.current = selectedMarkerId ?? null;
+    paddingRef.current = focusPadding ?? windowPadding();
+    reducedRef.current = reduced;
   });
+  // The camera's zoom when it last came to rest (onMapIdle): a pin tap reads
+  // it without asking the native side (no await, no render).
+  const zoomRef = useRef(13);
+  // The pin a tap has just flown to: the selection's focus effect then has
+  // nothing left to do for it.
+  const flownRef = useRef<[number, number] | null>(null);
   // The basemap config (POIs off) mounts once the current style has loaded,
   // and repeats the light preset: the ThirdPlace Studio styles and Mapbox
   // Standard Satellite take dawn/day/dusk/night presets, and a config without
@@ -199,6 +233,7 @@ export const MapboxMap = memo(function MapboxMap({
       { width, height },
       FIT_PADDING,
     );
+    zoomRef.current = cam.zoom;
     cameraRef.current?.setCamera({
       centerCoordinate: cam.center,
       zoomLevel: cam.zoom,
@@ -212,6 +247,12 @@ export const MapboxMap = memo(function MapboxMap({
     });
   }, [loadedStyle, markers]);
 
+  // The zoom at rest, for the next pin tap.
+  const handleMapIdle = useCallback((s: MapIdle) => {
+    const z = s?.properties?.zoom;
+    if (typeof z === "number" && Number.isFinite(z)) zoomRef.current = z;
+  }, []);
+
   // The map engine's own position updates (OS permission granted) go to the
   // location store; only the puck reads them (speed pass 0346).
   const handleNativeLocation = useCallback(
@@ -220,25 +261,33 @@ export const MapboxMap = memo(function MapboxMap({
     [],
   );
 
-  // Selecting a marker pans the camera so the pin sits centered in the map area
-  // ABOVE the detail sheet (bottom padding ≈ the peek height), Google-Maps style.
-  // A pick from the list or a link also zooms in below street level, so the
-  // pin leaves its cluster (Phase 19 S4b); a pin tap keeps the zoom.
+  // Selecting a marker pans the camera so the pin sits centred in the map
+  // left in view: below the top controls, above the detail sheet's peek
+  // (services/pinCamera.ts), Google-Maps style. A pick from the list or a link
+  // also zooms in below street level, so the pin leaves its cluster (Phase 19
+  // S4b). A pin tap moves the camera from the press itself (handlePinPress),
+  // so this effect skips the pin it has just flown to.
   const focusKey = focusCoord ? `${focusCoord[0]},${focusCoord[1]}` : null;
   useEffect(() => {
     if (!focusCoord) return;
+    if (flownRef.current) {
+      // This pin's tap already moved the camera.
+      if (sameCoord(flownRef.current, focusCoord)) {
+        flownRef.current = null;
+        return;
+      }
+      // A newer pin tap is on its way and has moved the camera; only a pick
+      // from the list or a link goes ahead.
+      if (!focusZoomIn) return;
+      flownRef.current = null;
+    }
     let cancelled = false;
     const go = (zoomLevel?: number) =>
       cameraRef.current?.setCamera({
         centerCoordinate: focusCoord,
         ...(zoomLevel !== undefined ? { zoomLevel } : {}),
-        padding: {
-          paddingTop: 0,
-          paddingBottom: Dimensions.get("window").height * 0.35,
-          paddingLeft: 0,
-          paddingRight: 0,
-        },
-        animationDuration: motion.duration.recenter,
+        padding: paddingRef.current,
+        animationDuration: reducedRef.current ? 0 : motion.duration.recenter,
       });
     if (!focusZoomIn) {
       go();
@@ -309,7 +358,23 @@ export const MapboxMap = memo(function MapboxMap({
         })();
       }
     } else if (props.markerId) {
-      onSelectRef.current?.(String(props.markerId));
+      const id = String(props.markerId);
+      const coords = (f.geometry as Point | undefined)?.coordinates;
+      // The camera moves from the press itself, before the selection
+      // renders the sheet (user 2026-11-10: centre the tapped marker and zoom
+      // in a bit, smoothly). A tap on the pin already open moves nothing.
+      if (coords && id !== selectedRef.current) {
+        const target: [number, number] = [coords[0]!, coords[1]!];
+        flownRef.current = target;
+        cameraRef.current?.setCamera({
+          centerCoordinate: target,
+          zoomLevel: pinTapZoom(zoomRef.current),
+          padding: paddingRef.current,
+          animationMode: "easeTo",
+          animationDuration: reducedRef.current ? 0 : motion.duration.focus,
+        });
+      }
+      onSelectRef.current?.(id);
     }
   }, []);
 
@@ -352,6 +417,7 @@ export const MapboxMap = memo(function MapboxMap({
       logoPosition={logoPosition}
       attributionPosition={attributionPosition}
       onPress={handleMapPress}
+      onMapIdle={handleMapIdle}
       onDidFinishLoadingStyle={handleStyleLoaded}
     >
       {/* Hide the basemap's own POI icons/labels (hospital crosses, theatre
