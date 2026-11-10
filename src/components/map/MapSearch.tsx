@@ -139,6 +139,25 @@ export function MapSearch({
           ) : (
             <>
               <SuggestionChips suggestions={suggestions} onPick={setQuery} />
+              {/* More matches than the rows show (a type search: "park",
+                  "festival"): the submit lists them all on the map. */}
+              {results.onMap >
+              results.places.length + results.experiences.length ? (
+                <UIPressable
+                  accessibilityRole="button"
+                  accessibilityLabel={`Vis alle ${results.onMap} på kartet`}
+                  onPress={() => submit(query)}
+                  contentClassName="flex-row items-center gap-3 rounded-md px-1 py-2"
+                >
+                  <View className="h-9 w-9 items-center justify-center rounded-full bg-surfaceMuted">
+                    <Icon name="map-outline" size="md" tone="ink" />
+                  </View>
+                  <Text variant="body" weight="semibold" className="flex-1">
+                    {`Vis alle ${results.onMap} på kartet`}
+                  </Text>
+                  <Icon name="chevron-forward" size="md" tone="muted" />
+                </UIPressable>
+              ) : null}
               <ResultGroup
                 title="På kartet"
                 icon="location-outline"
