@@ -278,8 +278,10 @@ export type CitySpace = {
 export type MockPlace = {
   id: string;
   name: string;
-  // The legacy four (PLACE_CATEGORIES) or, for catalogue places, a short
-  // descriptor ("Klatresenter", "Park").
+  // A short descriptor of the place ("Kafé", "Klatresenter", "Park").
+  // Legacy places used to carry one of the old four pin categories
+  // (PLACE_CATEGORIES) even when it did not describe them; since 0371 each
+  // says what it is (a sail trip is "Seilturer", not "Vinbar").
   category: string;
   kind: PlaceKind;
   // The interest this place is for (src/fixtures/catalog/interests.ts); its
@@ -437,7 +439,7 @@ export const places: MockPlace[] = [
   {
     id: "p5",
     name: "Akerselva Vandring",
-    category: "Kafé",
+    category: "Vandrelag",
     kind: "organisasjon",
     interestId: "friluftsliv",
     distance: "300 m",
@@ -493,7 +495,7 @@ export const places: MockPlace[] = [
   {
     id: "p7",
     name: "Grünerløkka Mattur",
-    category: "Vinbar",
+    category: "Matturer",
     kind: "bedrift",
     interestId: "mat",
     distance: "500 m",
@@ -528,7 +530,7 @@ export const places: MockPlace[] = [
   {
     id: "p8",
     name: "Botanisk Hage Omvisning",
-    category: "Kafé",
+    category: "Hageomvisninger",
     kind: "bedrift",
     interestId: "hage-og-dyrking",
     distance: "1,4 km",
@@ -560,7 +562,7 @@ export const places: MockPlace[] = [
   {
     id: "p9",
     name: "Takåsen Yogastudio",
-    category: "Verksted",
+    category: "Yogastudio",
     kind: "bedrift",
     interestId: "yoga",
     distance: "950 m",
@@ -588,7 +590,7 @@ export const places: MockPlace[] = [
   {
     id: "p10",
     name: "Oslofjord Seiltur",
-    category: "Vinbar",
+    category: "Seilturer",
     kind: "bedrift",
     interestId: "seiling",
     distance: "2,3 km",
@@ -616,7 +618,7 @@ export const places: MockPlace[] = [
   {
     id: "p11",
     name: "Galleri Kveldslys",
-    category: "Bokcafé",
+    category: "Galleri",
     kind: "bedrift",
     interestId: "kunst",
     distance: "1,8 km",
@@ -655,7 +657,7 @@ export const places: MockPlace[] = [
   {
     id: "p12",
     name: "Barcode Arkitekturtur",
-    category: "Kafé",
+    category: "Arkitekturturer",
     kind: "bedrift",
     interestId: "arkitektur",
     distance: "2,0 km",
@@ -711,7 +713,7 @@ export const places: MockPlace[] = [
   {
     id: "p14",
     name: "Frogner Skjønnhetssalong",
-    category: "Bokcafé",
+    category: "Skjønnhetssalong",
     kind: "bedrift",
     interestId: "velvaere",
     distance: "2,6 km",
@@ -845,7 +847,7 @@ export const businesses: MockBusiness[] = [
   {
     id: "b6",
     name: "Løkka Matvandringer AS",
-    category: "Vinbar",
+    category: "Matturer",
     verified: true,
     about:
       "Små matturer mellom nabolagets spisesteder, ledet av folk fra strøket.",
@@ -856,7 +858,7 @@ export const businesses: MockBusiness[] = [
   {
     id: "b7",
     name: "Grønne Stier Omvisninger",
-    category: "Kafé",
+    category: "Hageomvisninger",
     verified: false,
     about: "Guidede turer i veksthusene, med vekt på planter fra nord og sør.",
     address: "Sars' gate 1, 0562 Oslo",
@@ -866,7 +868,7 @@ export const businesses: MockBusiness[] = [
   {
     id: "b8",
     name: "Takåsen Yoga",
-    category: "Verksted",
+    category: "Yogastudio",
     verified: true,
     about: "Lite yogastudio med morgentimer før jobb og rolige helgetimer.",
     address: "Thorvald Meyers gate 59, 0552 Oslo",
@@ -876,7 +878,7 @@ export const businesses: MockBusiness[] = [
   {
     id: "b9",
     name: "Fjordseil AS",
-    category: "Vinbar",
+    category: "Seilturer",
     verified: true,
     about: "Halvdagsturer med seilbåt og skipper fra Aker brygge.",
     address: "Aker brygge, 0250 Oslo",
@@ -886,7 +888,7 @@ export const businesses: MockBusiness[] = [
   {
     id: "b10",
     name: "Galleri Kveldslys",
-    category: "Bokcafé",
+    category: "Galleri",
     verified: false,
     about: "Lite galleri med skiftende utstillinger og omvisning på torsdager.",
     address: "Operagata 18, 0194 Oslo",
@@ -896,7 +898,7 @@ export const businesses: MockBusiness[] = [
   {
     id: "b11",
     name: "Byform Vandringer",
-    category: "Kafé",
+    category: "Arkitekturturer",
     verified: true,
     about: "Arkitekter som viser fram nye og gamle bygg i Bjørvika.",
     address: "Dronning Eufemias gate 30, 0191 Oslo",
@@ -916,7 +918,7 @@ export const businesses: MockBusiness[] = [
   {
     id: "b13",
     name: "Frogner Skjønnhetssalong",
-    category: "Bokcafé",
+    category: "Skjønnhetssalong",
     verified: false,
     about: "Rolig salong for ansiktsbehandlinger, drevet av to hudterapeuter.",
     address: "Frognerveien 22, 0263 Oslo",
