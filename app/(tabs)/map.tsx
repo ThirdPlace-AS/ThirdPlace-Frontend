@@ -40,6 +40,7 @@ import { useTimeOfDayStyle } from "@/components/map/hooks/useTimeOfDayStyle";
 import { useMapLocation } from "@/components/map/hooks/useMapLocation";
 import { USER_PUCK } from "@/components/map/userPuck";
 import { useMapDiscovery } from "@/components/map/hooks/useMapDiscovery";
+import { useSwipePrefetch } from "@/components/map/hooks/useSwipePrefetch";
 import { useMapFilters } from "@/components/map/hooks/useMapFilters";
 import { useMapSaved } from "@/components/map/hooks/useMapSaved";
 import {
@@ -61,8 +62,6 @@ import { elevation } from "@/theme";
 
 // Map discovery surface. Thin composition over feature hooks:
 // filters/search, discovery mode, selection (detail sheet), camera, location.
-// Set once the Sveip tab was pre-rendered (R28).
-let swipePrefetched = false;
 // One empty list while loading, so the memoised map children keep their props.
 const NO_ITEMS: DiscoveryItem[] = [];
 
@@ -192,18 +191,13 @@ export default function MapScreen() {
   // §4 "Loading").
   const loadPhase = useLoadPhase(loading);
 
-  // R28 (Phase 10 open item): the first Sveip visit paid the tab mount and
-  // photo decode. Once the map has content, wait 2 s and pre-render the Sveip
-  // tab in the background (react-navigation preload), once per session; the
-  // first paint of the map is untouched.
-  useEffect(() => {
-    if (status !== "success" || swipePrefetched) return;
-    const t = setTimeout(() => {
-      swipePrefetched = true;
-      router.prefetch("/swipe");
-    }, 2000);
-    return () => clearTimeout(t);
-  }, [status]);
+  // R28: pre-render the Sveip tab once the map has content and has been left
+  // alone for a moment (no open sheet, pick or mode change; speed pass 0352).
+  useSwipePrefetch(
+    status === "success",
+    selection.selectedMarkerId,
+    discovery.mode,
+  );
   const errored = status === "error";
   // Turning the slow-load switch on reloads the map once so the slow path runs.
   useEffect(() => {

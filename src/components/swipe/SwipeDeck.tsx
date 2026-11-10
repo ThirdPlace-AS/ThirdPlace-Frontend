@@ -2,6 +2,7 @@ import { router, useFocusEffect, type Href } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import { Asset } from "expo-asset";
 import {
+  memo,
   useCallback,
   useEffect,
   useLayoutEffect,
@@ -140,7 +141,9 @@ export function SwipeDeck() {
   const [joinChatFor, setJoinChatFor] = useState<DeckItem | null>(null);
   // Guards a second commit while a card is still flying off (F3) — without it a
   // rapid second drag clobbers the in-flight exit and strands/double-advances.
-  const [busy, setBusy] = useState(false);
+  // A shared value, not state (speed pass 0352): flipping state re-rendered the
+  // whole deck twice per swipe; the pan worklet reads it on the UI thread.
+  const busy = useSharedValue(false);
   // Bumped after the outgoing card has flown off and the deck advanced, so the
   // layout effect reveals + recenters the newly-promoted top card before paint.
   const [commitNonce, setCommitNonce] = useState(0);
@@ -148,7 +151,11 @@ export function SwipeDeck() {
   // off is queued (latest wins) and replayed once the next card is in place,
   // instead of being dropped. Drags stay locked during the glide.
   const pendingTap = useSharedValue<SwipeAction | null>(null);
-  const commitRef = useRef<(a: SwipeAction) => void>(() => {});
+  // The latest commit (fresh deck state): the queued-tap replay and the pan
+  // gesture call it through this ref, so the gesture is not rebuilt with it.
+  const commitRef = useRef<(a: SwipeAction, vx?: number, vy?: number) => void>(
+    () => {},
+  );
   // Measured top Y of the top card's info block → pins the expand arrow to the
   // actual title row instead of a brittle magic offset (F11).
   const [arrowY, setArrowY] = useState<number | null>(null);
@@ -178,7 +185,7 @@ export function SwipeDeck() {
   // card before paint.
   const advance = (action: SwipeAction) => {
     deck.commit(action);
-    setBusy(false);
+    busy.value = false;
     setCommitNonce((n) => n + 1);
   };
 
@@ -193,7 +200,7 @@ export function SwipeDeck() {
     if (!card) return;
     // A first swipe or button press means the gestures are known.
     markHintSeen("swipeGestures");
-    if (busy) {
+    if (busy.value) {
       if (vx === 0 && vy === 0) pendingTap.value = action;
       return;
     }
@@ -206,7 +213,7 @@ export function SwipeDeck() {
       ty.value = withSpring(0, motion.spring.card);
       return;
     }
-    setBusy(true);
+    busy.value = true;
     // PDF p8: a like (♥ / right swipe) offers "Bli med i samtalen", joining
     // the item's chat as a separate, explicit step (a place is also saved).
     if (action === "like") setJoinChatFor(card);
@@ -249,7 +256,7 @@ export function SwipeDeck() {
 
   const undo = () => {
     const action = deck.lastAction;
-    if (!action || busy) return;
+    if (!action || busy.value) return;
     pendingTap.value = null;
     if (reduced) {
       deck.undo();
@@ -265,48 +272,76 @@ export function SwipeDeck() {
     ty.value = withTiming(0, back);
   };
 
-  const pan = Gesture.Pan()
-    .enabled(!deck.done && !busy)
-    .activeOffsetX([-12, 12])
-    .activeOffsetY([-12, 12])
-    .onUpdate((e) => {
-      tx.value = e.translationX;
-      ty.value = e.translationY * G.swipeVertDamp;
-      const over =
-        Math.abs(tx.value) > size.w * G.swipeCommitRatio ||
-        -ty.value > size.h * G.swipeVertCommitRatio;
-      if (over && crossed.value === 0) {
-        crossed.value = 1;
-        runOnJS(haptics.selection)();
-      } else if (!over && crossed.value === 1) {
-        crossed.value = 0;
-      }
-    })
-    .onEnd((e) => {
-      crossed.value = 0;
-      const action = decideCommit(
-        {
-          dx: tx.value,
-          dy: ty.value,
-          vx: e.velocityX,
-          vy: e.velocityY * G.swipeVertDamp,
-          w: size.w,
-          h: size.h,
-        },
-        {
-          commitRatio: G.swipeCommitRatio,
-          vertCommitRatio: G.swipeVertCommitRatio,
-          velocity: G.swipeVelocity,
-        },
-      );
-      if (!action) {
-        tx.value = withSpring(0, motion.spring.card);
-        ty.value = withSpring(0, motion.spring.card);
-        return;
-      }
-      // The live top card is already at tx/ty — just continue it off from here.
-      runOnJS(commit)(action, e.velocityX, e.velocityY);
-    });
+  // A drag that starts while a card is still flying off is ignored until the
+  // finger lifts (the gesture used to be disabled for the glide).
+  const dragIgnored = useSharedValue(false);
+  const commitFromGesture = useCallback(
+    (action: SwipeAction, vx: number, vy: number) =>
+      commitRef.current(action, vx, vy),
+    [],
+  );
+  // Built once per deck size (speed pass 0352): it was a new gesture on every
+  // deck render, attached to the card again each time.
+  const pan = useMemo(
+    () =>
+      Gesture.Pan()
+        .enabled(!deck.done)
+        .activeOffsetX([-12, 12])
+        .activeOffsetY([-12, 12])
+        .onStart(() => {
+          dragIgnored.value = busy.value;
+        })
+        .onUpdate((e) => {
+          if (dragIgnored.value) return;
+          tx.value = e.translationX;
+          ty.value = e.translationY * G.swipeVertDamp;
+          const over =
+            Math.abs(tx.value) > size.w * G.swipeCommitRatio ||
+            -ty.value > size.h * G.swipeVertCommitRatio;
+          if (over && crossed.value === 0) {
+            crossed.value = 1;
+            runOnJS(haptics.selection)();
+          } else if (!over && crossed.value === 1) {
+            crossed.value = 0;
+          }
+        })
+        // Runs when a drag ends, never during render: commitFromGesture reads
+        // the latest commit from a ref only then.
+        // eslint-disable-next-line react-hooks/refs
+        .onEnd((e) => {
+          crossed.value = 0;
+          if (dragIgnored.value) {
+            dragIgnored.value = false;
+            return;
+          }
+          const action = decideCommit(
+            {
+              dx: tx.value,
+              dy: ty.value,
+              vx: e.velocityX,
+              vy: e.velocityY * G.swipeVertDamp,
+              w: size.w,
+              h: size.h,
+            },
+            {
+              commitRatio: G.swipeCommitRatio,
+              vertCommitRatio: G.swipeVertCommitRatio,
+              velocity: G.swipeVelocity,
+            },
+          );
+          if (!action) {
+            tx.value = withSpring(0, motion.spring.card);
+            ty.value = withSpring(0, motion.spring.card);
+            return;
+          }
+          // The live top card is already at tx/ty — just continue it off from here.
+          runOnJS(commitFromGesture)(action, e.velocityX, e.velocityY);
+        }),
+    // Shared values are stable and written from the worklets, so they stay
+    // out of the list.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [deck.done, size.w, size.h, commitFromGesture],
+  );
 
   // After the deck advances, reveal + recenter the newly-promoted top card before
   // paint — `op` was driven to 0 as the outgoing card left, and tx/ty were zeroed
@@ -325,16 +360,16 @@ export function SwipeDeck() {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [commitNonce]);
-  // Keep the replay pointed at the latest commit (fresh deck and busy).
+  // Keep the replay and the gesture pointed at the latest commit (fresh deck).
   useLayoutEffect(() => {
-    commitRef.current = (a) => commit(a);
+    commitRef.current = commit;
   });
 
   // Web keyboard alternative: ← nope, → like, ↑ save, Backspace undo.
   useEffect(() => {
     if (Platform.OS !== "web" || deck.done || joinChatFor !== null) return;
     const onKey = (ev: KeyboardEvent) => {
-      if (busy) return;
+      if (busy.value) return;
       if (ev.key === "ArrowLeft") commit("nope");
       else if (ev.key === "ArrowRight") commit("like");
       else if (ev.key === "ArrowUp") commit("save");
@@ -344,6 +379,13 @@ export function SwipeDeck() {
     return () => window.removeEventListener("keydown", onKey);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [deck.done, deck.index, reduced, busy, mode, joinChatFor]);
+
+  // The card's full page is a route (Phase 12 H4c); the deck keeps its place
+  // underneath while it is open. Stable, so the memoised top card keeps it.
+  const openPage = useCallback((item: DeckItem) => {
+    markViewed({ kind: item.kind, id: item.id, title: item.title });
+    router.push(`/${item.kind}/${item.id}` as Href);
+  }, []);
 
   // Render behind→front so the top card (slot 0) sits on top.
   const slots = deck.window.map((item, n) => ({ item, n })).reverse();
@@ -408,16 +450,7 @@ export function SwipeDeck() {
                   reduced={reduced}
                   arrowY={arrowY}
                   onInfoTop={setArrowY}
-                  onExpand={() => {
-                    markViewed({
-                      kind: item.kind,
-                      id: item.id,
-                      title: item.title,
-                    });
-                    // The full page is a route (Phase 12 H4c); the deck keeps
-                    // its place underneath while it is open.
-                    router.push(`/${item.kind}/${item.id}` as Href);
-                  }}
+                  onExpand={openPage}
                 />
               ) : (
                 // The immediate next card (n===1) renders its FULL content so it is
@@ -539,7 +572,9 @@ export function SwipeDeck() {
   );
 }
 
-function TopCard({
+// Memoised with BehindCard (speed pass 0352): a deck render for a sheet, a
+// tip or the filter bar no longer re-renders the cards.
+const TopCard = memo(function TopCard({
   item,
   pan,
   tx,
@@ -562,7 +597,7 @@ function TopCard({
   reduced: boolean;
   arrowY: number | null;
   onInfoTop: (y: number) => void;
-  onExpand: () => void;
+  onExpand: (item: DeckItem) => void;
 }) {
   // No entrance scale: the next card already sits full-size underneath (BehindCard
   // renders at scale 1), so when it is promoted it is simply already there — no
@@ -602,7 +637,7 @@ function TopCard({
       <Pressable
         accessibilityRole="button"
         accessibilityLabel="Vis mer om opplevelsen"
-        onPress={onExpand}
+        onPress={() => onExpand(item)}
         style={{
           position: "absolute",
           // Pin the arrow to the ACTUAL title row: SwipeCard reports the info
@@ -629,13 +664,19 @@ function TopCard({
       </Pressable>
     </View>
   );
-}
+});
 
 // Pivot for the top card's swing rotation — a low hinge so the card levers from
 // near its base (the reference pivots low, not around the center).
 const CARD_PIVOT = "50% 80%";
 
-function BehindCard({ item, ready }: { item: DeckItem; ready: boolean }) {
+const BehindCard = memo(function BehindCard({
+  item,
+  ready,
+}: {
+  item: DeckItem;
+  ready: boolean;
+}) {
   // The next card sits FULL-SIZE directly under the top card (no peek/scale/fade),
   // so when the top card leaves it is simply already there — a seamless 1:1 swap
   // with no grow-in. `ready` (the immediate next card) renders its FULL content
@@ -653,7 +694,7 @@ function BehindCard({ item, ready }: { item: DeckItem; ready: boolean }) {
       <SwipeCard item={item} interactive={false} minimal={!ready} />
     </View>
   );
-}
+});
 
 // Directional colour wash over the top card while dragging — a whole-card tint
 // that deepens toward the commit threshold (the reference tints the card as you

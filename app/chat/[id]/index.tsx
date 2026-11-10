@@ -1,5 +1,5 @@
 import { router, useLocalSearchParams, type Href } from "expo-router";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   FlatList,
   KeyboardAvoidingView,
@@ -63,7 +63,6 @@ import { fontFamilyFor } from "@/theme/fonts";
 // delivered. Phase 16 (founder, after the section benchmark): long-press a
 // message for reactions and "Svar", or swipe it right to reply with a quote.
 export default function ChatThreadScreen() {
-  const colors = useThemeColors();
   const { id } = useLocalSearchParams<{ id: string }>();
   const chat = chatById(id ?? "");
   const thread = useThread(id ?? "");
@@ -71,7 +70,6 @@ export default function ChatThreadScreen() {
     () => [...messagesForChat(id ?? ""), ...thread.sent],
     [id, thread.sent],
   );
-  const [draft, setDraft] = useState("");
   const [replyTo, setReplyTo] = useState<Reply | null>(null);
   // The message whose reaction row is open (long press).
   const [menuFor, setMenuFor] = useState<string | null>(null);
@@ -98,14 +96,67 @@ export default function ChatThreadScreen() {
   const hintSeen = useHintSeen("chatLongPress");
   const [hintClaimed] = useState(() => !isGuest && claimHint("chatLongPress"));
   const showHint = hintClaimed && !hintSeen && chat?.status !== "archived";
-  const toggleMenu = (messageId: string) => {
-    markHintSeen("chatLongPress");
-    setMenuFor((cur) => (cur === messageId ? null : messageId));
-  };
   const listRef = useRef<FlatList<ThreadMessage>>(null);
   // Open at the newest message and follow every send (the list used to open
   // at the oldest message and new bubbles landed out of view).
   const sentCount = useRef(0);
+  const chatId = chat?.id;
+  const canReply = chat?.status !== "archived" && !isGuest;
+
+  // Stable handlers taking the message, so the memoised bubbles re-render
+  // only when their own message, reaction or menu changes (speed pass 0352).
+  const toggleMenu = useCallback((messageId: string) => {
+    markHintSeen("chatLongPress");
+    setMenuFor((cur) => (cur === messageId ? null : messageId));
+  }, []);
+  const react = useCallback(
+    (messageId: string, emoji: string) => {
+      if (!chatId) return;
+      toggleReaction(chatId, messageId, emoji);
+      setMenuFor(null);
+    },
+    [chatId],
+  );
+  const startReply = useCallback((m: ThreadMessage) => {
+    setMenuFor(null);
+    setReplyTo({ author: m.mine ? "deg selv" : m.author, text: m.text });
+  }, []);
+  const cancelReply = useCallback(() => setReplyTo(null), []);
+  const send = useCallback(
+    (text: string) => {
+      if (!chatId) return;
+      sendMessage(chatId, text, replyTo ?? undefined);
+      setReplyTo(null);
+      setMenuFor(null);
+      sentCount.current += 1;
+    },
+    [chatId, replyTo],
+  );
+  const renderItem = useCallback(
+    ({ item }: { item: ThreadMessage }) => (
+      <View className="gap-3">
+        {item.id === newFrom ? <NewMessagesLine /> : null}
+        <Bubble
+          message={item}
+          reaction={thread.reactions[item.id]}
+          menuOpen={menuFor === item.id}
+          canReply={canReply}
+          onToggleMenu={toggleMenu}
+          onReact={react}
+          onReply={startReply}
+        />
+      </View>
+    ),
+    [
+      newFrom,
+      thread.reactions,
+      menuFor,
+      canReply,
+      toggleMenu,
+      react,
+      startReply,
+    ],
+  );
 
   if (!chat) {
     return (
@@ -125,20 +176,6 @@ export default function ChatThreadScreen() {
   const pinned = chat.pinnedExperienceId
     ? experienceById(chat.pinnedExperienceId)
     : undefined;
-
-  const send = () => {
-    const text = draft.trim();
-    if (!text) return;
-    sendMessage(chat.id, text, replyTo ?? undefined);
-    setDraft("");
-    setReplyTo(null);
-    setMenuFor(null);
-    sentCount.current += 1;
-  };
-  const startReply = (m: ThreadMessage) => {
-    setMenuFor(null);
-    setReplyTo({ author: m.mine ? "deg selv" : m.author, text: m.text });
-  };
 
   return (
     <Screen edges={["top", "bottom"]}>
@@ -237,23 +274,7 @@ export default function ChatThreadScreen() {
               </Text>
             </View>
           }
-          renderItem={({ item }) => (
-            <View className="gap-3">
-              {item.id === newFrom ? <NewMessagesLine /> : null}
-              <Bubble
-                message={item}
-                reaction={thread.reactions[item.id]}
-                menuOpen={menuFor === item.id}
-                onToggleMenu={() => toggleMenu(item.id)}
-                onReact={(emoji) => {
-                  toggleReaction(chat.id, item.id, emoji);
-                  setMenuFor(null);
-                }}
-                onReply={() => startReply(item)}
-                canReply={chat.status !== "archived" && !isGuest}
-              />
-            </View>
-          )}
+          renderItem={renderItem}
         />
 
         {chat.status === "archived" ? (
@@ -271,49 +292,11 @@ export default function ChatThreadScreen() {
             />
           </View>
         ) : (
-          <View className="gap-2 border-t border-line px-gutter pb-2 pt-2.5">
-            {replyTo ? (
-              <View className="flex-row items-center gap-2 rounded-md bg-surfaceMuted py-2 pl-3 pr-1">
-                <View className="flex-1 border-l-2 border-ember pl-2">
-                  <Text variant="caption" weight="semibold">
-                    Svarer {replyTo.author}
-                  </Text>
-                  <Text variant="caption" tone="muted" numberOfLines={1}>
-                    {replyTo.text}
-                  </Text>
-                </View>
-                <IconButton
-                  icon="close"
-                  label="Avbryt svaret"
-                  size="sm"
-                  variant="ghost"
-                  onPress={() => setReplyTo(null)}
-                />
-              </View>
-            ) : null}
-            <View className="flex-row items-end gap-2">
-              <TextInput
-                accessibilityLabel="Melding"
-                className="max-h-28 flex-1 rounded-2xl border border-line bg-surface px-4 py-2.5 text-ink"
-                style={{ fontFamily: fontFamilyFor("regular"), fontSize: 16 }}
-                placeholder="Skriv en melding …"
-                placeholderTextColor={colors.muted}
-                value={draft}
-                onChangeText={setDraft}
-                multiline
-              />
-              <IconButton
-                // A paper plane, not an arrow (founder 2026-11-06: no
-                // arrows on buttons).
-                icon="send"
-                label="Send"
-                variant={draft.trim() ? "ink" : "filled"}
-                tone={draft.trim() ? "onInk" : "muted"}
-                disabled={!draft.trim()}
-                onPress={send}
-              />
-            </View>
-          </View>
+          <Composer
+            replyTo={replyTo}
+            onCancelReply={cancelReply}
+            onSend={send}
+          />
         )}
       </KeyboardAvoidingView>
       <SignInPrompt
@@ -322,6 +305,72 @@ export default function ChatThreadScreen() {
         action="skrive i chatten"
       />
     </Screen>
+  );
+}
+
+// The message box keeps its own draft (speed pass 0352): typing used to
+// re-render the whole thread, every bubble and its gesture, per keystroke.
+function Composer({
+  replyTo,
+  onCancelReply,
+  onSend,
+}: {
+  replyTo: Reply | null;
+  onCancelReply: () => void;
+  onSend: (text: string) => void;
+}) {
+  const colors = useThemeColors();
+  const [draft, setDraft] = useState("");
+  const ready = draft.trim().length > 0;
+  return (
+    <View className="gap-2 border-t border-line px-gutter pb-2 pt-2.5">
+      {replyTo ? (
+        <View className="flex-row items-center gap-2 rounded-md bg-surfaceMuted py-2 pl-3 pr-1">
+          <View className="flex-1 border-l-2 border-ember pl-2">
+            <Text variant="caption" weight="semibold">
+              Svarer {replyTo.author}
+            </Text>
+            <Text variant="caption" tone="muted" numberOfLines={1}>
+              {replyTo.text}
+            </Text>
+          </View>
+          <IconButton
+            icon="close"
+            label="Avbryt svaret"
+            size="sm"
+            variant="ghost"
+            onPress={onCancelReply}
+          />
+        </View>
+      ) : null}
+      <View className="flex-row items-end gap-2">
+        <TextInput
+          accessibilityLabel="Melding"
+          className="max-h-28 flex-1 rounded-2xl border border-line bg-surface px-4 py-2.5 text-ink"
+          style={{ fontFamily: fontFamilyFor("regular"), fontSize: 16 }}
+          placeholder="Skriv en melding …"
+          placeholderTextColor={colors.muted}
+          value={draft}
+          onChangeText={setDraft}
+          multiline
+        />
+        <IconButton
+          // A paper plane, not an arrow (founder 2026-11-06: no
+          // arrows on buttons).
+          icon="send"
+          label="Send"
+          variant={ready ? "ink" : "filled"}
+          tone={ready ? "onInk" : "muted"}
+          disabled={!ready}
+          onPress={() => {
+            const text = draft.trim();
+            if (!text) return;
+            onSend(text);
+            setDraft("");
+          }}
+        />
+      </View>
+    </View>
   );
 }
 
@@ -340,23 +389,29 @@ function NewMessagesLine() {
 
 const REPLY_SWIPE = 56;
 
-function Bubble({
+// Memoised (speed pass 0352): the screen's handlers are stable and take the
+// message, so a bubble renders again only when its own message, reaction or
+// menu changes.
+const Bubble = memo(function Bubble({
   message,
   reaction,
   menuOpen,
-  onToggleMenu,
-  onReact,
-  onReply,
+  onToggleMenu: toggleMenuFor,
+  onReact: reactTo,
+  onReply: replyTo,
   canReply,
 }: {
   message: ThreadMessage;
   reaction: string | undefined;
   menuOpen: boolean;
-  onToggleMenu: () => void;
-  onReact: (emoji: string) => void;
-  onReply: () => void;
+  onToggleMenu: (messageId: string) => void;
+  onReact: (messageId: string, emoji: string) => void;
+  onReply: (message: ThreadMessage) => void;
   canReply: boolean;
 }) {
+  const onToggleMenu = () => toggleMenuFor(message.id);
+  const onReact = (emoji: string) => reactTo(message.id, emoji);
+  const onReply = () => replyTo(message);
   const reduced = useReducedMotion();
   // Only messages written in this session slide in from the composer; the
   // fixture history is already there. No delivered/read ticks (no backend).
@@ -483,7 +538,7 @@ function Bubble({
       ) : null}
     </Animated.View>
   );
-}
+});
 
 // The quoted message inside a reply.
 function Quote({ reply, onInk = false }: { reply: Reply; onInk?: boolean }) {

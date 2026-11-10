@@ -8,6 +8,7 @@ import {
   renderHook,
   screen,
 } from "@testing-library/react-native";
+import { Gesture } from "react-native-gesture-handler";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 
 import ChatThreadScreen from "../app/chat/[id]/index";
@@ -94,5 +95,26 @@ describe("thread screen", () => {
     fireEvent.press(screen.getByLabelText("Send"));
     expect(screen.queryByText(`Svarer ${first.author}`)).toBeNull();
     expect(screen.getByText("Gleder meg!")).toBeTruthy();
+  });
+
+  // Speed pass (0352): typing used to re-render the whole thread, every bubble
+  // and its swipe-to-reply gesture, per keystroke. The composer keeps its own
+  // draft and the bubbles are memoised.
+  it("typing re-renders no message", async () => {
+    const pan = jest.spyOn(Gesture, "Pan");
+    try {
+      render(<ChatThreadScreen />, { wrapper });
+      await act(async () => {});
+      const built = pan.mock.calls.length;
+      expect(built).toBeGreaterThan(0);
+      const input = screen.getByLabelText("Melding");
+      for (const text of ["H", "He", "Hei", "Hei!"])
+        fireEvent.changeText(input, text);
+      expect(pan.mock.calls.length).toBe(built);
+      fireEvent.press(screen.getByLabelText("Send"));
+      expect(screen.getByText("Hei!")).toBeTruthy();
+    } finally {
+      pan.mockRestore();
+    }
   });
 });
