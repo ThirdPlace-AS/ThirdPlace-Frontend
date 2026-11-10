@@ -56,8 +56,8 @@ export function MapLocationSheet({
         <View className="flex-row items-start gap-2 rounded-md border border-line bg-surfaceMuted px-3 py-2">
           <Icon name="warning-outline" size="md" tone="muted" />
           <Text variant="caption" tone="muted" className="flex-1">
-            Posisjon er ikke tilgjengelig her. Velg et område under for å
-            fortsette.
+            Fant ikke posisjonen din. Sjekk at posisjon er slått på i telefonen
+            og prøv igjen, eller velg et område under.
           </Text>
         </View>
       ) : null}
@@ -74,7 +74,11 @@ export function MapLocationSheet({
       {!granted ? (
         <Button
           label={
-            status === "requesting" ? "Henter posisjon…" : "Del posisjonen min"
+            status === "requesting"
+              ? "Henter posisjon…"
+              : unavailable
+                ? "Prøv igjen"
+                : "Del posisjonen min"
           }
           variant="ink"
           disabled={status === "requesting"}

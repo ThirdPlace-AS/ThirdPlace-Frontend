@@ -16,6 +16,7 @@ import {
 } from "./services/softClustering";
 import type { DiscoveryItem } from "./types/mapPresentation";
 import type { FocusPadding } from "./services/pinCamera";
+import type { CameraTarget } from "./hooks/useMapCamera";
 import { markerPaint } from "./pinStyle";
 import { USER_PUCK } from "./userPuck";
 import { markerIcon } from "./services/markerIcon";
@@ -35,14 +36,13 @@ type MapProps = {
   // markerId of the current selection (highlights its pin).
   selectedMarkerId?: string | null;
   onSelectMarker?: (markerId: string) => void;
-  // Bump to recenter the real map on `center` (SoftMap ignores it).
-  recenterSignal?: number;
-  // Zoom for that recenter (15 = fly to the user, 13 = an area).
-  recenterZoom?: number;
-  // Camera center (GPS fix / manual area / demo default). SoftMap ignores it.
-  // The user's position and heading are not props: both maps' location dots
-  // read them from src/lib/userLocation.ts (speed pass 0346), so a GPS fix or
-  // a compass reading renders only the dot.
+  // Where the real map flies next (Posisjon, a picked area), once per request
+  // (hooks/useMapCamera.ts). SoftMap ignores it.
+  cameraTarget?: CameraTarget | null;
+  // Where the real map opens (read once; GPS fix / manual area / demo
+  // default). SoftMap ignores it. The user's position and heading are not
+  // props: both maps' location dots read them from src/lib/userLocation.ts
+  // (speed pass 0346), so a GPS fix or a compass reading renders only the dot.
   center?: [number, number];
   // Tap on empty map (not a marker) — collapses selection + dismisses keyboard.
   onMapPress?: () => void;
@@ -351,8 +351,7 @@ export const MapCanvas = memo(function MapCanvas({
   markers,
   selectedMarkerId,
   onSelectMarker,
-  recenterSignal,
-  recenterZoom,
+  cameraTarget,
   center,
   onMapPress,
   onClusterPress,
@@ -381,8 +380,7 @@ export const MapCanvas = memo(function MapCanvas({
           markers={markers}
           selectedMarkerId={selectedMarkerId}
           onSelectMarker={onSelectMarker}
-          recenterSignal={recenterSignal}
-          recenterZoom={recenterZoom}
+          cameraTarget={cameraTarget}
           center={center}
           onMapPress={onMapPress}
           focusCoord={focusCoord}

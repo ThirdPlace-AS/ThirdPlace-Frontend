@@ -41,7 +41,7 @@ import type {
   DiscoveryItem,
   DiscoveryMode,
 } from "@/components/map/types/mapPresentation";
-import { useMapCamera } from "@/components/map/hooks/useMapCamera";
+import { locateFly, useMapCamera } from "@/components/map/hooks/useMapCamera";
 import { focusPadding } from "@/components/map/services/pinCamera";
 import { useTimeOfDayStyle } from "@/components/map/hooks/useTimeOfDayStyle";
 import { useMapLocation } from "@/components/map/hooks/useMapLocation";
@@ -56,8 +56,6 @@ import {
 } from "@/components/map/hooks/useMapSelection";
 import { SignInPrompt } from "@/components/SignInPrompt";
 import { WhatsNewOnFocus } from "@/components/WhatsNewSheet";
-import { reportFix } from "@/lib/origin";
-import { getUserLocation } from "@/lib/userLocation";
 import { useGuestMode } from "@/components/map/hooks/useGuestMode";
 import { MapBrowseSheet } from "@/components/map/MapBrowseSheet";
 import { MOCK_WEATHER, AREAS, places } from "@/fixtures";
@@ -114,6 +112,8 @@ export default function MapScreen() {
   const selection = useMapSelection();
   const camera = useMapCamera();
   const location = useMapLocation();
+  // Where the native map opens (read once by it; later moves are requests).
+  const [initialCenter] = useState(() => location.center);
   // The GPS and compass watches run only while the map is in front (speed
   // pass 0346): the tab stays mounted behind Sveip, Chat and Profil.
   const { pause: pauseLocation, resume: resumeLocation } = location;
@@ -314,6 +314,19 @@ export default function MapScreen() {
     [setDiscoveryMode],
   );
 
+  // Posisjon and areas centre between the top controls and the browse
+  // sheet's peek.
+  const browsePadding = useMemo(
+    () => ({
+      paddingTop: topH ?? insets.top,
+      paddingBottom: browsePeekClearance + 8,
+      paddingLeft: 0,
+      paddingRight: 0,
+    }),
+    [topH, insets.top, browsePeekClearance],
+  );
+  const { flyTo } = camera;
+
   const handleApplyFilters = (next: typeof filters.filters) => {
     // "Where?" recenters the map to the chosen Oslo area (demo — reuses the
     // manual-area fallback; it does not refilter the mock distances).
@@ -321,42 +334,49 @@ export default function MapScreen() {
       const area = AREAS.find((a) => a.name === next.whereArea);
       if (area) {
         location.selectArea(area);
-        camera.recenter();
+        flyTo(area.coord, 13, { padding: browsePadding });
       }
     }
     filters.setFilters(next);
   };
 
-  // "Posisjon": fly to the user and zoom in (street level); without a fix,
-  // ask for it, or fall back to the manual-area sheet.
-  const handleLocationPress = async () => {
-    // The live fix (the store), not the one from this screen's last render.
-    const fix = location.coord ? getUserLocation().coord : null;
-    if (location.status === "granted" && fix) {
-      // Distances follow the phone again from exactly here.
-      reportFix(fix, { force: true });
-      camera.recenter(USER_PUCK.locateZoom);
-    } else if (location.status === "granted") {
-      // A manual area replaced the GPS fix — go back to the real position.
-      void handleRequestLocation();
-    } else if (await location.hasPermission()) {
-      // OS permission already given: fly straight to the user, no explainer.
-      void handleRequestLocation();
-    } else {
-      setLocationOpen(true);
-    }
-  };
+  // Posisjon (R1b, user 2026-11-10: "the location button must take the user
+  // to their current location"): fly at once to the best position known,
+  // then ease to the fresh fix when it is more than LOCATE_REFINE_M away. With
+  // no position at all the camera stays and the Posisjon sheet says why;
+  // without permission the sheet asks for it. Never a fly to a default place.
+  const flyOnPosition = useCallback(
+    () =>
+      locateFly((coord, followUp) =>
+        flyTo(coord, USER_PUCK.locateZoom, {
+          padding: browsePadding,
+          followUp,
+        }),
+      ),
+    [flyTo, browsePadding],
+  );
 
-  const handleRequestLocation = async () => {
-    const granted = await location.request();
-    camera.recenter(granted ? USER_PUCK.locateZoom : 13);
-    // With a fix, close the Posisjon sheet so the user sees where they are.
-    if (granted) setLocationOpen(false);
-  };
+  const { locate, request: requestLocation } = location;
+  const handleLocationPress = useCallback(async () => {
+    const result = await locate(flyOnPosition());
+    if (result !== "located") setLocationOpen(true);
+  }, [locate, flyOnPosition]);
+
+  const handleRequestLocation = useCallback(async () => {
+    const fly = flyOnPosition();
+    // The Posisjon sheet closes with the first position, so the user sees
+    // the map go there (the fresh fix and the watches can take seconds);
+    // without one it stays open with the reason.
+    const result = await requestLocation((coord, fresh) => {
+      setLocationOpen(false);
+      fly(coord, fresh);
+    });
+    if (result === "located") setLocationOpen(false);
+  }, [requestLocation, flyOnPosition]);
 
   const handleSelectArea = (a: Parameters<typeof location.selectArea>[0]) => {
     location.selectArea(a);
-    camera.recenter();
+    flyTo(a.coord, 13, { padding: browsePadding });
     setLocationOpen(false);
   };
 
@@ -378,9 +398,8 @@ export default function MapScreen() {
         terrain={basemap.terrain}
         ornamentBottom={browsePeekClearance + 8}
         darkBasemap={darkBasemap}
-        recenterSignal={camera.recenterSignal}
-        recenterZoom={camera.recenterZoom}
-        center={location.center}
+        cameraTarget={camera.target}
+        center={initialCenter}
       />
 
       {/* Floating top controls: search + notifications, then discovery modes.
@@ -472,6 +491,7 @@ export default function MapScreen() {
         />
         <IconButton
           icon={location.status === "granted" ? "locate" : "locate-outline"}
+          busy={location.locating}
           label="Posisjon"
           variant="floating"
           size="lg"

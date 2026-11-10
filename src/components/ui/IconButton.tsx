@@ -2,9 +2,9 @@
 // Replaces the ad-hoc `h-9/h-10 w-9/w-10 rounded-full` buttons across screens.
 // Always ≥ 44×44 touchable (hitSlop tops up smaller visuals), always labelled,
 // optional badge (dot or count) for unread markers.
-import { View } from "react-native";
+import { ActivityIndicator, View } from "react-native";
 
-import { elevation } from "@/theme";
+import { elevation, useThemeColors } from "@/theme";
 
 import { Icon, type IconName, type IconTone } from "./Icon";
 import { PopIcon } from "./PopIcon";
@@ -83,6 +83,9 @@ export type IconButtonProps = {
   selected?: boolean;
   /** Glyph pops when this turns true (like/save — see HeartToggle). */
   pop?: boolean;
+  /** Working (e.g. Posisjon looking for the phone's position): a spinner in
+   *  place of the glyph, announced as busy. The button stays pressable. */
+  busy?: boolean;
   disabled?: boolean;
   /** Layout-only classes (position/margins), not colours. */
   className?: string;
@@ -99,21 +102,28 @@ export function IconButton({
   badge,
   selected,
   pop,
+  busy,
   disabled,
   className,
   testID,
 }: IconButtonProps) {
+  const c = useThemeColors();
   const px = SIZE_PX[size];
   const slop = Math.max(0, Math.ceil((MIN_TARGET - px) / 2));
   const count = typeof badge === "number" && badge > 0 ? badge : null;
   const showBadge = badge === true || count !== null;
+  const glyphTone = tone ?? VARIANT_TONE[variant];
+  const state =
+    selected != null || busy
+      ? { ...(selected != null ? { selected } : {}), ...(busy ? { busy } : {}) }
+      : undefined;
 
   return (
     <Pressable
       testID={testID}
       accessibilityRole="button"
       accessibilityLabel={count !== null ? `${label}, ${count} uleste` : label}
-      accessibilityState={selected != null ? { selected } : undefined}
+      accessibilityState={state}
       onPress={onPress}
       disabled={disabled}
       hitSlop={slop}
@@ -127,19 +137,15 @@ export function IconButton({
           : null,
       ]}
     >
-      {pop !== undefined ? (
-        <PopIcon
-          pop={pop}
-          name={icon}
-          size={GLYPH[size]}
-          tone={tone ?? VARIANT_TONE[variant]}
+      {busy ? (
+        <ActivityIndicator
+          size="small"
+          color={glyphTone in c ? c[glyphTone as keyof typeof c] : c.ink}
         />
+      ) : pop !== undefined ? (
+        <PopIcon pop={pop} name={icon} size={GLYPH[size]} tone={glyphTone} />
       ) : (
-        <Icon
-          name={icon}
-          size={GLYPH[size]}
-          tone={tone ?? VARIANT_TONE[variant]}
-        />
+        <Icon name={icon} size={GLYPH[size]} tone={glyphTone} />
       )}
       {showBadge ? (
         <View

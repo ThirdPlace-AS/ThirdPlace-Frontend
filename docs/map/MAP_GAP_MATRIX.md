@@ -116,7 +116,7 @@ and [MAP_DELIVERABLES.md](MAP_DELIVERABLES.md) for journeys + completion classes
 ## Phase 11 changes (2026-11-06)
 
 - Marker glyphs: `services/markerIcon.ts` (per place, category fallback, experience tags, business → place, group → people); native `point-icon` SymbolLayer from `Images` views, emissive (0218).
-- User location: `userPuck.ts`; the native UserLocation only reports position, our emissive halo/dot/heading layers draw the puck the same on every preset; SoftMap matches; "Posisjon" flies to the user at zoom 15 (0223).
+- User location: `userPuck.ts`; the native UserLocation only reports position, our emissive halo/dot/heading layers draw the puck the same on every preset; SoftMap matches; "Posisjon" flies to the user at zoom 15 (0223). Since 0363 (user 2026-11-10) it flies at once to the best position known (the app’s fix, the map engine’s, the phone’s cached one), eases on to a fresh fix more than 30 m away unless the map was touched meanwhile, shows a spinner while locating, and with no position keeps the camera and opens the Posisjon sheet instead of flying to Grünerløkka.
 - Experience detail: snaps 35/60/100 % in an app-root `RootPortal` above the tab bar; page chrome from `animatedIndex`; `mapBackAction` gains "collapse" (0221).
 - Detail galleries for places, businesses and groups (0217); loading rule on the browse list (0222); Sveip pre-render after the map loads (0224).
 
@@ -149,7 +149,7 @@ and [MAP_DELIVERABLES.md](MAP_DELIVERABLES.md) for journeys + completion classes
 - "Søk i dette området" (0276, reworked 0282, **removed 0283** by the founder, 2026-11-07): a pill after a pan or pinch limited the pins, the browse list and count, and Filtre's count to the visible part of the map (rnmapbox `CameraGestureObserver`, corners from `getCoordinateFromView`). All of it is gone (`useMapArea`, the area helpers in `bounds.ts`, `area` in `useMapDiscovery` / `countResults`); the list follows the mode and filters only.
 - Each style opens north up and flat (0276): heading and pitch reset to 0 on every style load, because the Studio styles were saved with bearing 13.6° and pitch 14° and the camera took that over. The rotate and tilt lock that came with the area search was lifted in 0283 (founder): the gestures are on again; there is no compass.
 - "Veibeskrivelse" on places and meeting points hands the coordinate to the phone's maps app (0276, `src/lib/directions.ts`).
-- After Posisjon the map no longer pulls back to the user (0282, an older bug found while testing the area pill): the recenter effect ran on every new centre array, which the GPS watch gives on each fix, and the camera's controlled `centerCoordinate` / `zoomLevel` props re-applied whenever the screen re-rendered (the area pill appearing was enough). The camera now takes its first view from `defaultSettings`, and Posisjon or an area flies once per `recenterSignal`.
+- After Posisjon the map no longer pulls back to the user (0282, an older bug found while testing the area pill): the recenter effect ran on every new centre array, which the GPS watch gives on each fix, and the camera's controlled `centerCoordinate` / `zoomLevel` props re-applied whenever the screen re-rendered (the area pill appearing was enough). The camera now takes its first view from `defaultSettings`, and Posisjon or an area flies once per request (0363: the target coordinate travels with the request, `useMapCamera().flyTo`).
 
 ## Phase 18 changes (2026-11-07)
 

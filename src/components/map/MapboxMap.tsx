@@ -46,6 +46,7 @@ import {
   sameCoord,
   type FocusPadding,
 } from "./services/pinCamera";
+import { followUpAllowed, type CameraTarget } from "./hooks/useMapCamera";
 import { useReducedMotion } from "@/hooks/useReducedMotion";
 import { getOrigin } from "@/lib/origin";
 import { setNativeCoord, useUserLocation } from "@/lib/userLocation";
@@ -130,8 +131,7 @@ export const MapboxMap = memo(function MapboxMap({
   markers,
   selectedMarkerId,
   onSelectMarker,
-  recenterSignal,
-  recenterZoom = 13,
+  cameraTarget,
   center = MAP_CENTER,
   onMapPress,
   focusCoord,
@@ -146,8 +146,9 @@ export const MapboxMap = memo(function MapboxMap({
   markers: DiscoveryItem[];
   selectedMarkerId?: string | null;
   onSelectMarker?: (markerId: string) => void;
-  recenterSignal?: number;
-  recenterZoom?: number;
+  /** Where to fly next (Posisjon, a picked area): hooks/useMapCamera.ts. */
+  cameraTarget?: CameraTarget | null;
+  /** Where the map opens (read once; then the camera is the user's). */
   center?: [number, number];
   onMapPress?: () => void;
   focusCoord?: [number, number] | null;
@@ -207,20 +208,31 @@ export const MapboxMap = memo(function MapboxMap({
     pitch: 0,
   }));
 
-  // Fly only when asked (Posisjon, an area): the centre at that moment. It
-  // used to re-run on every centre change too, and the GPS watch gives the
-  // centre a new array on each fix, so after Posisjon the map kept flying
-  // back to the user and nothing else could be browsed (found in Phase 16).
+  // Fly only when asked (Posisjon, an area), once per request, to the point
+  // the request names. A camera that followed a centre prop kept flying back
+  // to the user on every GPS fix (Phase 16). A follow-up (Posisjon's fresh
+  // fix) is dropped once the user has touched the map since the fly it
+  // refines, so the camera never pulls them back either.
+  const touchedAt = useRef(0);
+  const flownAt = useRef(new Map<number, number>());
+  const handleTouchStart = useCallback(() => {
+    touchedAt.current = Date.now();
+  }, []);
   useEffect(() => {
-    if (recenterSignal === undefined || recenterSignal === 0) return;
+    if (!cameraTarget) return;
+    const flown = flownAt.current;
+    if (!followUpAllowed(cameraTarget.followUp, flown, touchedAt.current))
+      return;
+    flown.set(cameraTarget.seq, Date.now());
+    if (flown.size > 8) flown.delete(flown.keys().next().value as number);
     cameraRef.current?.setCamera({
-      centerCoordinate: center,
-      zoomLevel: recenterZoom,
-      animationMode: "flyTo",
-      animationDuration: motion.duration.recenter,
+      centerCoordinate: cameraTarget.coord,
+      zoomLevel: cameraTarget.zoom,
+      ...(cameraTarget.padding ? { padding: cameraTarget.padding } : {}),
+      animationMode: cameraTarget.followUp !== undefined ? "easeTo" : "flyTo",
+      animationDuration: reducedRef.current ? 0 : motion.duration.recenter,
     });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [recenterSignal]);
+  }, [cameraTarget]);
 
   useEffect(() => {
     if (fittedThisSession || loadedStyle === null) return;
@@ -409,60 +421,64 @@ export const MapboxMap = memo(function MapboxMap({
   );
 
   return (
-    <MapView
-      ref={mapRef}
-      style={MAP_STYLE}
-      styleURL={currentStyle}
-      scaleBarEnabled={false}
-      logoPosition={logoPosition}
-      attributionPosition={attributionPosition}
-      onPress={handleMapPress}
-      onMapIdle={handleMapIdle}
-      onDidFinishLoadingStyle={handleStyleLoaded}
-    >
-      {/* Hide the basemap's own POI icons/labels (hospital crosses, theatre
+    // A plain wrapper hears every touch on the map (rnmapbox's MapView keeps
+    // its own layout and touch props), for the follow-up rule above.
+    <View style={MAP_STYLE} onTouchStart={handleTouchStart}>
+      <MapView
+        ref={mapRef}
+        style={MAP_STYLE}
+        styleURL={currentStyle}
+        scaleBarEnabled={false}
+        logoPosition={logoPosition}
+        attributionPosition={attributionPosition}
+        onPress={handleMapPress}
+        onMapIdle={handleMapIdle}
+        onDidFinishLoadingStyle={handleStyleLoaded}
+      >
+        {/* Hide the basemap's own POI icons/labels (hospital crosses, theatre
           masks …): in the same colours as our pins they competed with them
           (review M20). The ThirdPlace Studio styles and Standard Satellite
           import Mapbox Standard as "basemap"; if a style does not, the
           config is ignored. Keyed by style + preset: Satellitt keeps one URL
           for every time of day. */}
-      {loadedStyle === currentStyle ? (
-        <StyleImport
-          key={`${currentStyle}:${lightPreset}`}
-          id="basemap"
-          existing
-          config={basemapConfig}
-        />
-      ) : null}
-      {/* Terreng: hill shading and contour lines in the style's bottom slot
+        {loadedStyle === currentStyle ? (
+          <StyleImport
+            key={`${currentStyle}:${lightPreset}`}
+            id="basemap"
+            existing
+            config={basemapConfig}
+          />
+        ) : null}
+        {/* Terreng: hill shading and contour lines in the style's bottom slot
           (above land and water, under roads, labels and our pins). Re-added
           after every style load, since a new style drops custom layers. */}
-      {loadedStyle === currentStyle && terrain ? (
-        <TerrainSources styleKey={currentStyle} relief={relief} />
-      ) : null}
-      {/* The native puck follows each style's light preset (it looked
+        {loadedStyle === currentStyle && terrain ? (
+          <TerrainSources styleKey={currentStyle} relief={relief} />
+        ) : null}
+        {/* The native puck follows each style's light preset (it looked
           different on every basemap), so it only reports the position here;
           the puck itself is our own emissive layers below (userPuck.ts). */}
-      <UserLocation
-        visible={false}
-        minDisplacement={5}
-        onUpdate={handleNativeLocation}
-      />
-      {/* The first view only (defaultSettings). As controlled props, a
+        <UserLocation
+          visible={false}
+          minDisplacement={5}
+          onUpdate={handleNativeLocation}
+        />
+        {/* The first view only (defaultSettings). As controlled props, a
           new centre array re-applied the camera: the GPS watch makes one
           per fix, so after Posisjon the map kept jumping back to the user
           (found in Phase 16). Moves go through cameraRef. */}
-      <Camera ref={cameraRef} defaultSettings={firstView} />
-      <PinImages />
-      <PinsSource
-        sourceRef={sourceRef}
-        shape={shape}
-        paint={paint}
-        selectedMarkerId={selectedMarkerId ?? null}
-        onPress={handlePinPress}
-      />
-      <UserPuck />
-    </MapView>
+        <Camera ref={cameraRef} defaultSettings={firstView} />
+        <PinImages />
+        <PinsSource
+          sourceRef={sourceRef}
+          shape={shape}
+          paint={paint}
+          selectedMarkerId={selectedMarkerId ?? null}
+          onPress={handlePinPress}
+        />
+        <UserPuck />
+      </MapView>
+    </View>
   );
 });
 
