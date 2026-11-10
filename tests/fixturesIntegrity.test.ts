@@ -126,10 +126,11 @@ describe("photo galleries", () => {
     }
   });
 
-  it("every business shows its place's photos (at least two)", () => {
+  // A business has one profile, its place's page (user 2026-11-10), so its
+  // photos are its place's (checked above).
+  it("every business runs a Bedrift place", () => {
     for (const b of businesses) {
-      const photos = photosForItem({ kind: "business", id: b.id });
-      expect(distinct(photos)).toBeGreaterThanOrEqual(2);
+      expect(placeById(b.placeId)?.kind).toBe("bedrift");
     }
   });
 

@@ -23,7 +23,6 @@ import {
   HeroGallery,
   InfoRow,
 } from "@/components/experience/ExperiencePage";
-import type { SheetTarget } from "@/components/map/sheetTypes";
 import { ReviewsSection } from "@/components/reviews/ReviewsSection";
 import { sortReviews } from "@/components/reviews/reviewSort";
 import {
@@ -62,6 +61,23 @@ import {
 } from "@/components/map/services/itemType";
 import { NEARBY_M, distanceMeters } from "@/lib/distance";
 import { distanceLabelFor, useOrigin } from "@/lib/origin";
+
+/** "✓ Verifisert" under a verified business's name (PDF p6). */
+function VerifiedChip() {
+  return (
+    <View
+      accessible
+      accessibilityLabel="Verifisert bedrift"
+      className="flex-row items-center gap-1 rounded-full bg-success/15 px-md"
+      style={{ minHeight: 32 }}
+    >
+      <Icon name="checkmark-circle" size="sm" tone="success" />
+      <Text variant="caption" weight="semibold" tone="success">
+        Verifisert
+      </Text>
+    </View>
+  );
+}
 
 /** Chips: vibes, then tags not already a vibe (each once). */
 export function placeChips(p: Pick<MockPlace, "vibes" | "tags">): string[] {
@@ -149,13 +165,9 @@ export function placeThingsToKnow(p: MockPlace): Know[] {
 export function PlacePage({
   place,
   onNavigate,
-  onOpen,
 }: {
   place: MockPlace;
   onNavigate: (href: Href) => void;
-  /** In the map's page sheet: opens a sub-view on the sheet's stack (the
-   *  business behind "Drives av", and from there its Verifiseringsstatus). */
-  onOpen?: (target: SheetTarget) => void;
 }) {
   const ready = useSheetStageReady();
   const [report, setReport] = useState(false);
@@ -227,6 +239,10 @@ export function PlacePage({
           </UIPressable>
         ) : null}
         <View className="mt-1 flex-row flex-wrap justify-center gap-2">
+          {/* The place page is the business's one profile (user
+              2026-11-10), so its verified mark sits here, as PDF p6 draws
+              it. */}
+          {business?.verified ? <VerifiedChip /> : null}
           {placeChips(place).map((c) => (
             <Chip key={c} label={c} size="sm" />
           ))}
@@ -261,16 +277,15 @@ export function PlacePage({
             lines={2}
           />
         ) : null}
+        {/* Who runs it and what they say about themselves, as facts on this
+            page: a business or organisation has one profile, this one (user
+            2026-11-10, "don't need 2 business profiles"). */}
         {business ? (
           <InfoRow
             icon="storefront-outline"
             title={`Drives av ${business.name}`}
-            subtitle={business.verified ? "Verifisert bedrift" : "Bedrift"}
-            onPress={
-              onOpen
-                ? () => onOpen({ kind: "business", id: business.id })
-                : undefined
-            }
+            subtitle={business.about}
+            lines={2}
           />
         ) : null}
         {org ? (
@@ -278,16 +293,20 @@ export function PlacePage({
             <InfoRow
               icon={ITEM_TYPE_ICON.organisasjon}
               // A club named like its place would say its name twice.
-              title={org.name === place.name ? "Om organisasjonen" : org.name}
-              subtitle={
-                contact ? `${org.form} · Kontakt: ${contact.name}` : org.form
+              title={
+                org.name === place.name ? org.form : `${org.name} · ${org.form}`
               }
-              onPress={
-                contact
-                  ? () => onNavigate(`/people/${contact.id}` as Href)
-                  : undefined
-              }
+              subtitle={org.about}
+              lines={3}
             />
+            {contact ? (
+              <InfoRow
+                icon="person-circle-outline"
+                title={contact.name}
+                subtitle="Kontaktperson"
+                onPress={() => onNavigate(`/people/${contact.id}` as Href)}
+              />
+            ) : null}
             <InfoRow
               icon="list-outline"
               title="Hva vi gjør"

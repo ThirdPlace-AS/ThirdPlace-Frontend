@@ -1,7 +1,7 @@
 import { describe, expect, it } from "@jest/globals";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 
-import { businesses, experiences, groups, places } from "@/fixtures";
+import { experiences, groups, places } from "@/fixtures";
 import {
   INTERESTS,
   interestById,
@@ -43,12 +43,7 @@ describe("markerIcon", () => {
     expect(markerIcon({ kind: "experience", id: "e5" })).toBe("dice-5");
   });
 
-  it("businesses use their place's glyph; groups a people glyph", () => {
-    for (const b of businesses) {
-      expect(markerIcon({ kind: "business", id: b.id })).toBe(
-        markerIcon({ kind: "place", id: b.placeId }),
-      );
-    }
+  it("groups get a people glyph", () => {
     for (const g of groups) {
       expect(markerIcon({ kind: "group", id: g.id })).toBe("account-group");
     }

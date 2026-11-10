@@ -5,7 +5,7 @@
 // map, the SoftMap fallback and the browse cards. Colours: `mapPalette` in
 // src/theme/tokens.js.
 import type { IconName } from "@/components/ui";
-import { businessById, experienceById, placeById } from "@/fixtures";
+import { experienceById, placeById } from "@/fixtures";
 import {
   interestById,
   interestForLabel,
@@ -90,7 +90,7 @@ function experienceInterest(id: string): Interest | undefined {
 }
 
 /** The interest an item stands for on the map. Places, experiences and
- *  events carry one; a business shows its place's; groups have no pin. */
+ *  events carry one; groups have no pin. */
 export function interestOfItem(
   item: Pick<DiscoveryItem, "kind" | "id">,
 ): Interest | undefined {
@@ -99,10 +99,6 @@ export function interestOfItem(
       return interestById(placeById(item.id)?.interestId);
     case "experience":
       return experienceInterest(item.id);
-    case "business": {
-      const b = businessById(item.id);
-      return b ? interestById(placeById(b.placeId)?.interestId) : undefined;
-    }
     default:
       return undefined;
   }
@@ -113,6 +109,6 @@ export function markerCategoryFor(
 ): MarkerCategory {
   return (
     interestOfItem(item)?.category ??
-    (item.kind === "place" || item.kind === "business" ? "kafe" : "sosialt")
+    (item.kind === "place" ? "kafe" : "sosialt")
   );
 }

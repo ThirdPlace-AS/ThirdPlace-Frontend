@@ -1,7 +1,8 @@
 // User 2026-11-10: "every place, business and experiances must have a chat on
 // the details modal sheet" ("same as the experiances have right now"). The
-// map's place sheet (every kind) and the business sub-view behind "Drives av"
-// show the Samtalen section; every place and experience has a chat to show.
+// map's place sheet (every kind; the one profile of a business or
+// organisation) shows the Samtalen section; every place and experience has a
+// chat to show.
 import { afterEach, describe, expect, it, jest } from "@jest/globals";
 import {
   act,
@@ -12,11 +13,9 @@ import {
 } from "@testing-library/react-native";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 
-import { BusinessContent } from "@/components/map/content/BusinessContent";
 import { PlaceContent } from "@/components/map/content/PlaceContent";
 import { useGuestMode } from "@/components/map/hooks/useGuestMode";
 import {
-  businesses,
   chatForExperience,
   chatForPlace,
   experiences,
@@ -61,21 +60,10 @@ describe("the map's details sheets show their chat", () => {
   it.each(["bedrift", "organisasjon", "byrom"] as const)("a %s", (kind) => {
     const place = catalogue(kind);
     const chat = chatForPlace(place.id)!;
-    render(<PlaceContent id={place.id} push={jest.fn()} />, { wrapper });
+    render(<PlaceContent id={place.id} />, { wrapper });
     expect(screen.getByText("Samtalen")).toBeTruthy();
     // A place's chat carries its name (the title shows it too).
     expect(screen.getAllByText(chat.name).length).toBeGreaterThan(1);
-    fireEvent.press(screen.getByText("Bli med i samtalen"));
-    expect(mockPush).toHaveBeenCalledWith(`/chat/${chat.id}`);
-  });
-
-  it('the business behind "Drives av" shows its place\'s chat', () => {
-    const business = businesses.find((b) => b.id.startsWith("b-"))!;
-    const chat = chatForPlace(business.placeId)!;
-    render(<BusinessContent id={business.id} push={jest.fn()} />, {
-      wrapper,
-    });
-    expect(screen.getByText("Samtalen")).toBeTruthy();
     fireEvent.press(screen.getByText("Bli med i samtalen"));
     expect(mockPush).toHaveBeenCalledWith(`/chat/${chat.id}`);
   });
@@ -84,10 +72,7 @@ describe("the map's details sheets show their chat", () => {
     const g = renderHook(() => useGuestMode());
     act(() => g.result.current.setGuest(true));
     try {
-      const business = businesses.find((b) => b.id.startsWith("b-"))!;
-      render(<BusinessContent id={business.id} push={jest.fn()} />, {
-        wrapper,
-      });
+      render(<PlaceContent id={catalogue("bedrift").id} />, { wrapper });
       fireEvent.press(screen.getByText("Bli med i samtalen"));
       expect(mockPush).not.toHaveBeenCalled();
     } finally {

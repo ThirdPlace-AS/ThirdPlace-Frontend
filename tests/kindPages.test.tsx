@@ -90,10 +90,13 @@ describe("place pages by kind", () => {
     const biz = businessForPlace(gym.id)!;
     const nav = jest.fn();
     render(<PlacePage place={gym} onNavigate={nav} />, { wrapper });
+    // One profile (user 2026-11-10): who runs it and their own words are a
+    // fact on the page; a verified business wears the mark under its name.
     expect(screen.getByText(`Drives av ${biz.name}`)).toBeTruthy();
-    expect(
-      screen.getByText(biz.verified ? "Verifisert bedrift" : "Bedrift"),
-    ).toBeTruthy();
+    expect(screen.getByText(biz.about)).toBeTruthy();
+    expect(screen.queryAllByLabelText("Verifisert bedrift")).toHaveLength(
+      biz.verified ? 1 : 0,
+    );
     // The opplevelse is held here.
     expect(screen.getByText("Hva skjer her")).toBeTruthy();
     const exp = experienceById("e-klatring")!;
@@ -112,13 +115,15 @@ describe("place pages by kind", () => {
     const contact = personById(org.contactPersonId)!;
     const nav = jest.fn();
     render(<PlacePage place={club} onNavigate={nav} />, { wrapper });
-    expect(
-      screen.getByText(`${org.form} · Kontakt: ${contact.name}`),
-    ).toBeTruthy();
-    expect(screen.getByText("Hva vi gjør")).toBeTruthy();
-    // The club shares its place's name: the row says what it is instead.
+    // The club shares its place's name: its row says what it is, with the
+    // club's own words; the contact person is a row of their own.
     expect(org.name).toBe(club.name);
-    fireEvent.press(screen.getByText("Om organisasjonen"));
+    expect(screen.getByText(org.form)).toBeTruthy();
+    expect(screen.getByText(org.about)).toBeTruthy();
+    expect(screen.getByText("Hva vi gjør")).toBeTruthy();
+    fireEvent.press(
+      screen.getByRole("button", { name: `${contact.name}, Kontaktperson` }),
+    );
     expect(nav).toHaveBeenCalledWith(`/people/${contact.id}`);
     // Hengetak-dagene: organised by the club, two days.
     expect(screen.getByText("Festival · Lør 10:00")).toBeTruthy();

@@ -19,7 +19,6 @@ export type MarkerGlyph = PinGlyphName;
 export const FALLBACK_GLYPH = {
   place: "map-marker",
   experience: "calendar",
-  business: "store",
   group: "account-group",
 } as const satisfies Record<string, MarkerGlyph>;
 
@@ -31,9 +30,7 @@ export function markerIcon(
   if (interest) return interest.glyph as MarkerGlyph;
   return item.kind === "experience"
     ? FALLBACK_GLYPH.experience
-    : item.kind === "business"
-      ? FALLBACK_GLYPH.business
-      : FALLBACK_GLYPH.place;
+    : FALLBACK_GLYPH.place;
 }
 
 /** Every glyph a pin can show, with the tone(s) it is drawn in: each

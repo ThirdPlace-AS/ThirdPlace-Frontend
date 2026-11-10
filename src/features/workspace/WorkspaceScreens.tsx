@@ -398,9 +398,19 @@ export function WorkspaceLocations() {
           {ownBusinesses().length} lokasjoner
         </Text>
         {ownBusinesses().map((b) => (
-          <View
+          // Verifisering (PDF p7) is the owner’s own screen, so it opens
+          // from here (user 2026-11-10: a business has one public profile).
+          <UIPressable
             key={b.id}
-            className="gap-1 rounded-lg border border-line bg-surface p-4"
+            accessibilityRole="button"
+            accessibilityLabel={`${b.name}, ${
+              b.verified ? "verifisert" : "venter på verifisering"
+            }. Verifisering`}
+            onPress={() =>
+              router.push(`/workspace/verification/${b.id}` as Href)
+            }
+            pressedScale={0.99}
+            contentClassName="gap-1 rounded-lg border border-line bg-surface p-4"
           >
             <View className="flex-row items-start justify-between gap-3">
               <Text variant="body" weight="semibold" className="flex-1">
@@ -415,7 +425,13 @@ export function WorkspaceLocations() {
             <Text variant="caption" tone="muted">
               {b.address}
             </Text>
-          </View>
+            <View className="mt-2 flex-row items-center justify-between border-t border-line pt-3">
+              <Text variant="label" weight="semibold">
+                Verifisering
+              </Text>
+              <Icon name="chevron-forward" size="md" tone="muted" />
+            </View>
+          </UIPressable>
         ))}
         <View
           accessibilityRole="button"

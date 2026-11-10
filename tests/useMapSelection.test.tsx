@@ -37,10 +37,10 @@ describe("useMapSelection", () => {
 
   it("openTarget opens the sheet at the mid snap", () => {
     const { result } = renderHook(() => useMapSelection());
-    act(() => result.current.openTarget({ kind: "business", id: "b1" }));
-    expect(result.current.sheetStack).toEqual([{ kind: "business", id: "b1" }]);
+    act(() => result.current.openTarget({ kind: "group", id: "g1" }));
+    expect(result.current.sheetStack).toEqual([{ kind: "group", id: "g1" }]);
     expect(result.current.openIndex).toBe(SNAP_MID);
-    expect(result.current.selectedMarkerId).toBe("business:b1");
+    expect(result.current.selectedMarkerId).toBe("group:g1");
   });
 
   it("push/back/close manage the in-sheet stack", () => {

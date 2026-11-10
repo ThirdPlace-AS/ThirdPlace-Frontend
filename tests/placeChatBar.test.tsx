@@ -89,7 +89,7 @@ describe("PlaceChatBar", () => {
   // full screen.
   it("the sheet's page body keeps its own Samtalen section", () => {
     const chat = chatForPlace(PLACE)!;
-    render(<PlaceContent id={PLACE} push={jest.fn()} />, { wrapper });
+    render(<PlaceContent id={PLACE} />, { wrapper });
     expect(screen.getByText("Samtalen")).toBeTruthy();
     fireEvent.press(screen.getByText("Bli med i samtalen"));
     expect(mockPush).toHaveBeenCalledWith(`/chat/${chat.id}`);

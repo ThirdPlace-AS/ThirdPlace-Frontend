@@ -12,7 +12,6 @@ import { experienceById, placeById, places } from "@/fixtures";
 
 const KINDS: SheetKind[] = [
   "place",
-  "business",
   "experience",
   "reviews",
   "attendees",
@@ -20,7 +19,6 @@ const KINDS: SheetKind[] = [
   "host",
   "group",
   "checkin",
-  "verification",
 ];
 
 describe("page sheet targets", () => {

@@ -1,16 +1,14 @@
 import { memo } from "react";
 
-import { businessById, experienceById, groupById, placeById } from "@/fixtures";
+import { experienceById, groupById, placeById } from "@/fixtures";
 
 import { AttendeesContent } from "./content/AttendeesContent";
-import { BusinessContent } from "./content/BusinessContent";
 import { CheckinContent } from "./content/CheckinContent";
 import { ExperienceContent } from "./content/ExperienceContent";
 import { GroupContent } from "./content/GroupContent";
 import { HostContent } from "./content/HostContent";
 import { PlaceContent } from "./content/PlaceContent";
 import { ReviewsContent } from "./content/ReviewsContent";
-import { VerificationContent } from "./content/VerificationContent";
 import type { PushFn, SheetTarget } from "./sheetTypes";
 
 // The per-kind detail dispatcher + title resolver for a SheetTarget. Extracted
@@ -22,8 +20,6 @@ export function titleFor(t: SheetTarget): string {
   switch (t.kind) {
     case "place":
       return placeById(t.id)?.name ?? "Sted";
-    case "business":
-      return businessById(t.id)?.name ?? "Bedrift";
     case "experience":
       return experienceById(t.id)?.title ?? "Arrangement";
     case "group":
@@ -37,8 +33,6 @@ export function titleFor(t: SheetTarget): string {
       return "Administrer";
     case "checkin":
       return "Innsjekk";
-    case "verification":
-      return "Verifisering";
   }
 }
 
@@ -53,9 +47,7 @@ export const DetailContent = memo(function DetailContent({
 }) {
   switch (target.kind) {
     case "place":
-      return <PlaceContent id={target.id} push={push} />;
-    case "business":
-      return <BusinessContent id={target.id} push={push} />;
+      return <PlaceContent id={target.id} />;
     case "experience":
       return <ExperienceContent id={target.id} push={push} />;
     case "reviews":
@@ -70,7 +62,5 @@ export const DetailContent = memo(function DetailContent({
       return <GroupContent id={target.id} />;
     case "checkin":
       return <CheckinContent id={target.id} />;
-    case "verification":
-      return <VerificationContent />;
   }
 });
