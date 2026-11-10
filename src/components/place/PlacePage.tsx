@@ -1,7 +1,8 @@
 // Place page (Phase 12 H5d), in the reference video's layout like the
 // experience page: inset gallery with the photo viewer, centred name and
 // description, a rating line built from the place's reviews, chips; icon rows
-// (Adresse, Åpningstider, Prisnivå, Siste anmeldelse); Vurderinger; "Hvor du
+// (Adresse, Åpningstider, Prisnivå, Siste anmeldelse); Meny for a café, bar
+// or restaurant (user 2026-11-10, MenuSection.tsx); Vurderinger; "Hvor du
 // finner oss" with the map card; Samtalen; Flere steder i nærheten; Ting å
 // vite (tilgjengelighet, spesielle åpningstider, kilde); footer links. Every
 // fact once. MOCK fixture data; no booking or ranking (BLOCKED_CONTRACT_GAP).
@@ -23,6 +24,7 @@ import {
   HeroGallery,
   InfoRow,
 } from "@/components/experience/ExperiencePage";
+import { MenuSection } from "@/components/place/MenuSection";
 import { ReviewsSection } from "@/components/reviews/ReviewsSection";
 import { sortReviews } from "@/components/reviews/reviewSort";
 import {
@@ -47,6 +49,7 @@ import {
   type MockPlace,
 } from "@/fixtures";
 import { useCreatedVersion } from "@/fixtures/created";
+import { isMenuVenue } from "@/fixtures/menus";
 import {
   coverForPlace,
   libImage,
@@ -321,6 +324,13 @@ export function PlacePage({
           rest (R3a, src/components/map/sheetStage.ts). */}
       {ready ? (
         <>
+          {isMenuVenue(place) ? (
+            <>
+              <View className="h-px bg-line" />
+              <MenuSection place={place} onNavigate={onNavigate} />
+            </>
+          ) : null}
+
           <View className="h-px bg-line" />
 
           <ReviewsSection
