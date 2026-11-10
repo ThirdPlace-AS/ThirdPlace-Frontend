@@ -13,6 +13,7 @@ import Animated, {
   withSpring,
 } from "react-native-reanimated";
 import { useReducedMotion } from "@/hooks/useReducedMotion";
+import { haptics } from "@/lib/haptics";
 
 import { motion, useThemeColors, elevation } from "@/theme";
 import { Text } from "@/components/ui";
@@ -120,6 +121,10 @@ export function SteppedSlider({
         const step = stepAt(x, w, p.last);
         if (step !== sent.current) {
           sent.current = step;
+          // A detent tick for each step the thumb crosses (user 2026-11-09:
+          // haptics where it makes sense; the price slider's 10 kr steps
+          // stay silent, they would buzz).
+          haptics.selection();
           p.onChange(step);
         }
       },

@@ -25,6 +25,7 @@ import {
   Sheet,
 } from "@/components/ui";
 import { Button } from "@/components/Button";
+import { haptics } from "@/lib/haptics";
 import {
   CategoryArt,
   hasCategoryArt,
@@ -274,6 +275,9 @@ export function AddWizard() {
         }),
       });
     }
+    // Published, created or sent in: a real local completion, so the
+    // success tick (user 2026-11-09: haptics where it makes sense).
+    haptics.success();
     setSubmitted(true);
   };
 

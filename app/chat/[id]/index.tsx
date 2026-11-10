@@ -361,10 +361,13 @@ function Composer({
           label="Send"
           variant={ready ? "ink" : "filled"}
           tone={ready ? "onInk" : "muted"}
+          // The plane pops as the button wakes up with the first character.
+          pop={ready}
           disabled={!ready}
           onPress={() => {
             const text = draft.trim();
             if (!text) return;
+            haptics.tap();
             onSend(text);
             setDraft("");
           }}
@@ -447,6 +450,9 @@ const Bubble = memo(function Bubble({
   const body = (
     <Pressable
       onLongPress={() => {
+        // The platform's long-press tick as the reactions open (user
+        // 2026-11-09: haptics where it makes sense).
+        haptics.longPress();
         onToggleMenu();
       }}
       delayLongPress={280}

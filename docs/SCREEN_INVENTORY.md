@@ -404,3 +404,9 @@ Founder decision 2026-11-08: every interest gets a Bedrift, an Organisasjon, a B
 ### Founder decision: no vibration on a tap (2026-11-09, 0322)
 
 Founder request: "Turn off the vibration when clicking on the app". The PDF draws no haptics. Taps, long presses, switches, chips and the heart or bookmark no longer vibrate anywhere in the app (they used to give a light tick on selections and saves). Two drag gestures keep a light tick, since they are not taps: a Sveip card dragged across the commit line and a chat message swiped to reply.
+
+### Founder decision: haptics at chosen moments (2026-11-09, 0355)
+
+User request later the same day: "Add haptic feedback where it makes sense and in the right strength". Asked which rule applies, the user chose "Also key taps", which replaces the no-tap rule above. The PDF draws no haptics. Now: a light tick when a dragged Sveip card crosses the commit line, a chat message is swiped to reply or the Avstand slider moves a step; a toggle tick when save or like turns on (not off); a light tap when a message is sent; the long-press tick when a long press opens a menu (Lagret and Chat rows, chat reactions); a success when you join an experience ("Du er med") or publish or create something in Legg til. Plain buttons, navigation, chips, switches and the price slider stay silent. On Android the phone's own feedback constants are used, so its touch-feedback setting applies.
+
+Also added with it (user 2026-11-09: "Add interactions and animations where it feels natural"): an unsaved Lagret row fades out and the rows below close up, the "Du er med" check springs in, and the chat's send button pops as it wakes up.

@@ -185,7 +185,21 @@ Motion explains a change (where something came from, what it became); it never d
 - **Join:** button morphs to the joined state locally.
 - **Send message:** bubble slides in from the composer. No delivered/read ticks (contract-blocked).
 - **Filter / chip select:** fill crossfade (`fast`).
-- **No vibration on a tap** (founder 2026-11-09): taps, long presses, switches, chips and the heart never vibrate, and the ui primitives have no `haptic` prop. `haptics.selection()` (`src/lib/haptics.ts`) is only for drag gestures, called through `runOnJS` from the gesture: Sveip's tick when a dragged card crosses the commit line and the chat's swipe-to-reply. `tests/designGuard.test.ts` enforces it.
+- **Haptics at chosen moments only** (user 2026-11-09: "Add haptic feedback where it makes sense and in the right strength", then "Also key taps"; replaces the no-tap rule of 2026-11-09). Five strengths in `src/lib/haptics.ts`:
+
+  | Strength    | Where                                                                                  |
+  | ----------- | -------------------------------------------------------------------------------------- |
+  | `selection` | a dragged Sveip card crosses the commit line; swipe to reply; each Avstand slider step |
+  | `toggleOn`  | save or like turns on (`HeartToggle`); turning it off is quiet                         |
+  | `tap`       | a chat message is sent                                                                 |
+  | `longPress` | a long press opens a menu (`ListRow` "Flere valg", chat reactions)                     |
+  | `success`   | a real local completion: joined ("Du er med"), published or created (Add wizard)       |
+
+  Android plays its own feedback constants (`performAndroidHapticsAsync`: Segment_Tick, Toggle_On, Virtual_Key, Long_Press, Confirm, with older ones on phones below API 34/30), so the phone's touch-feedback setting applies; iOS plays the matching selection, impact and notification calls. Plain buttons, navigation, chips, switches and the price slider (10 kr steps would buzz) stay silent, and the ui primitives take no `haptic` prop. `tests/designGuard.test.ts` holds the list of files and moments.
+
+- **Lagret:** an unsaved row fades out and the rows below close up (`LinearTransition`); a row put back with "Angre" fades in. The list does not animate in on opening (`LayoutAnimationConfig skipEntering`).
+- **Du er med:** the check springs in just after the sheet has slid up (`ZoomIn`, delayed), with the `success` haptic.
+- **Chat send button:** the plane pops as the button wakes up with the first character (`IconButton pop`).
 
 ## 6. Illustration and 3D
 

@@ -1,9 +1,17 @@
 import { Image } from "expo-image";
 import { router, type Href } from "expo-router";
 import { useMemo, useState } from "react";
-import { FlatList, View } from "react-native";
+import { View } from "react-native";
+import Animated, {
+  FadeIn,
+  FadeOut,
+  LayoutAnimationConfig,
+  LinearTransition,
+} from "react-native-reanimated";
 
 import { HeartToggle, ListRow, Screen } from "@/components/ui";
+import { useReducedMotion } from "@/hooks/useReducedMotion";
+import { motion } from "@/theme";
 import { Chip } from "@/components/Chip";
 import { RouteHeader } from "@/components/RouteHeader";
 import { showToast } from "@/components/Toast";
@@ -54,6 +62,7 @@ const FILTERS: { key: Kind | null; label: string }[] = [
 export default function SavedScreen() {
   const { savedIds, toggle } = useMapSaved();
   const { isGuest } = useGuestMode();
+  const reduced = useReducedMotion();
   const savedExperienceCount = savedIds.filter((k) =>
     k.startsWith("experience:"),
   ).length;
@@ -138,94 +147,116 @@ export default function SavedScreen() {
   return (
     <Screen edges={["top"]}>
       <RouteHeader title="Lagret" />
-      <FlatList
-        data={visible}
-        keyExtractor={(r) => r.key}
-        contentContainerClassName="gap-2 px-gutter pb-10 flex-grow"
-        ListHeaderComponent={
-          <View className="gap-3 pb-2">
-            {/* Approved addition (2026-11-06): turn saved experiences into a
+      {/* Motion (user 2026-11-09: animations where they feel natural): an
+          unsaved row fades out and the rows below close up; one put back
+          with "Angre" fades in. The list does not animate in on opening
+          (skipEntering covers the first render). */}
+      <LayoutAnimationConfig skipEntering>
+        <Animated.FlatList
+          data={visible}
+          keyExtractor={(r) => r.key}
+          itemLayoutAnimation={
+            reduced
+              ? undefined
+              : LinearTransition.duration(motion.duration.base)
+          }
+          contentContainerClassName="gap-2 px-gutter pb-10 flex-grow"
+          ListHeaderComponent={
+            <View className="gap-3 pb-2">
+              {/* Approved addition (2026-11-06): turn saved experiences into a
                 group decision. Signed in, two or more saved experiences. */}
-            {!isGuest && savedExperienceCount >= 2 ? (
-              <ListRow
-                variant="card"
-                icon="people-outline"
-                title="Sveip lagrede med venner"
-                subtitle={`${savedExperienceCount} lagrede opplevelser`}
-                onPress={() =>
-                  router.push({
-                    pathname: "/group-swipe",
-                    params: { from: "saved" },
-                  })
-                }
-              />
-            ) : null}
-            <View
-              accessibilityRole="radiogroup"
-              className="flex-row flex-wrap gap-2"
-            >
-              {FILTERS.map((f) => (
-                <Chip
-                  key={f.label}
-                  label={f.label}
-                  size="sm"
-                  role="radio"
-                  selected={filter === f.key}
-                  onPress={() => setFilter(f.key)}
+              {!isGuest && savedExperienceCount >= 2 ? (
+                <ListRow
+                  variant="card"
+                  icon="people-outline"
+                  title="Sveip lagrede med venner"
+                  subtitle={`${savedExperienceCount} lagrede opplevelser`}
+                  onPress={() =>
+                    router.push({
+                      pathname: "/group-swipe",
+                      params: { from: "saved" },
+                    })
+                  }
                 />
-              ))}
-            </View>
-          </View>
-        }
-        ListEmptyComponent={
-          <EmptyState
-            icon="bookmark-outline"
-            illustration={<Illustration name="emptySaved" />}
-            title="Ingenting lagret – ennå"
-            message="Lagre stedene og opplevelsene du ikke vil gå glipp av."
-            actionLabel="Utforsk kartet"
-            onAction={() => router.navigate("/map")}
-          />
-        }
-        ListFooterComponent={null}
-        renderItem={({ item }) => {
-          const place = item.placeId ? placeById(item.placeId) : undefined;
-          return (
-            <ListRow
-              variant="card"
-              title={item.title}
-              subtitle={item.meta}
-              onLongPress={() =>
-                setActionsFor({ key: item.key, title: item.title })
-              }
-              // Everything opens its page (a business opens its place).
-              onPress={() => router.push(item.href)}
-              leading={
-                place ? (
-                  <Image
-                    source={libThumb(coverForPlace(place))}
-                    contentFit="cover"
-                    style={{ height: 48, width: 48, borderRadius: 10 }}
-                    accessible={false}
+              ) : null}
+              <View
+                accessibilityRole="radiogroup"
+                className="flex-row flex-wrap gap-2"
+              >
+                {FILTERS.map((f) => (
+                  <Chip
+                    key={f.label}
+                    label={f.label}
+                    size="sm"
+                    role="radio"
+                    selected={filter === f.key}
+                    onPress={() => setFilter(f.key)}
                   />
-                ) : (
-                  <View className="h-12 w-12 rounded-md bg-surfaceMuted" />
-                )
-              }
-              trailing={
-                <HeartToggle
-                  kind="bookmark"
-                  selected
-                  variant="ghost"
-                  size="sm"
-                  label={`Fjern ${item.title} fra lagret`}
-                  onToggle={() => unsave(item.key, item.title)}
-                />
-              }
+                ))}
+              </View>
+            </View>
+          }
+          ListEmptyComponent={
+            <EmptyState
+              icon="bookmark-outline"
+              illustration={<Illustration name="emptySaved" />}
+              title="Ingenting lagret – ennå"
+              message="Lagre stedene og opplevelsene du ikke vil gå glipp av."
+              actionLabel="Utforsk kartet"
+              onAction={() => router.navigate("/map")}
             />
-          );
-        }}
-      />
+          }
+          ListFooterComponent={null}
+          renderItem={({ item }) => {
+            const place = item.placeId ? placeById(item.placeId) : undefined;
+            return (
+              // The animated wrapper carries no className (dropped on a cold
+              // start, CLAUDE.md); the row inside keeps its own.
+              <Animated.View
+                entering={
+                  reduced ? undefined : FadeIn.duration(motion.duration.base)
+                }
+                exiting={
+                  reduced ? undefined : FadeOut.duration(motion.duration.fast)
+                }
+              >
+                <ListRow
+                  variant="card"
+                  title={item.title}
+                  subtitle={item.meta}
+                  onLongPress={() =>
+                    setActionsFor({ key: item.key, title: item.title })
+                  }
+                  // Everything opens its page (a business opens its place).
+                  onPress={() => router.push(item.href)}
+                  leading={
+                    place ? (
+                      <Image
+                        source={libThumb(coverForPlace(place))}
+                        contentFit="cover"
+                        style={{ height: 48, width: 48, borderRadius: 10 }}
+                        accessible={false}
+                      />
+                    ) : (
+                      <View className="h-12 w-12 rounded-md bg-surfaceMuted" />
+                    )
+                  }
+                  trailing={
+                    <HeartToggle
+                      kind="bookmark"
+                      selected
+                      variant="ghost"
+                      size="sm"
+                      label={`Fjern ${item.title} fra lagret`}
+                      onToggle={() => unsave(item.key, item.title)}
+                    />
+                  }
+                />
+              </Animated.View>
+            );
+          }}
+        />
+      </LayoutAnimationConfig>
       {actionsFor ? (
         <ItemActionsSheet
           title={actionsFor.title}
