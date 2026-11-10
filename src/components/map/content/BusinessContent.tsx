@@ -1,8 +1,10 @@
+import { router } from "expo-router";
 import { View } from "react-native";
 
+import { ChatSection } from "@/components/experience/ExperienceSections";
 import { Icon, MetaRow, Text, Pressable as UIPressable } from "@/components/ui";
 import { Card } from "@/components/Card";
-import { businessById, placeById } from "@/fixtures";
+import { businessById, chatForPlace, placeById } from "@/fixtures";
 import { libImage, photosForPlace } from "@/fixtures/images";
 
 import { Gallery } from "../Gallery";
@@ -57,6 +59,13 @@ export function BusinessContent({ id, push }: { id: string; push: PushFn }) {
           <MetaRow icon="time-outline" text={business.hours} />
         </View>
       </Card>
+
+      {/* The business's chat is its place's (user 2026-11-10: every place,
+          business and experience has a chat on the details sheet). */}
+      <ChatSection
+        chat={chatForPlace(business.placeId)}
+        onNavigate={(href) => router.push(href)}
+      />
 
       {place ? (
         <UIPressable

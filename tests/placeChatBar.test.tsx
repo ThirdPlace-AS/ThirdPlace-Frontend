@@ -83,9 +83,15 @@ describe("PlaceChatBar", () => {
     expect(toJSON()).toBeNull();
   });
 
-  it("the sheet's page body leaves out its own Samtalen section", () => {
+  // User 2026-11-10: every place, business and experience has a chat on the
+  // details sheet, "same as the experiances": the body keeps its Samtalen
+  // section (it used to leave it to this card, 0340), and the card stays at
+  // full screen.
+  it("the sheet's page body keeps its own Samtalen section", () => {
+    const chat = chatForPlace(PLACE)!;
     render(<PlaceContent id={PLACE} push={jest.fn()} />, { wrapper });
-    expect(screen.queryByText("Samtalen")).toBeNull();
-    expect(screen.queryByText("Bli med i samtalen")).toBeNull();
+    expect(screen.getByText("Samtalen")).toBeTruthy();
+    fireEvent.press(screen.getByText("Bli med i samtalen"));
+    expect(mockPush).toHaveBeenCalledWith(`/chat/${chat.id}`);
   });
 });

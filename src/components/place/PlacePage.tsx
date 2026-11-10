@@ -149,16 +149,12 @@ export function PlacePage({
   place,
   onNavigate,
   onOpen,
-  chatInBar = false,
 }: {
   place: MockPlace;
   onNavigate: (href: Href) => void;
   /** In the map's page sheet: opens a sub-view on the sheet's stack (the
    *  business behind "Drives av", and from there its Verifiseringsstatus). */
   onOpen?: (target: SheetTarget) => void;
-  /** The map's page sheet pins the chat as its floating card (PlaceChatBar),
-   *  so the body leaves out its own Samtalen section (every fact once). */
-  chatInBar?: boolean;
 }) {
   const [report, setReport] = useState(false);
   const reviews = reviewsForPlace(place.id);
@@ -367,9 +363,11 @@ export function PlacePage({
         </View>
       ) : null}
 
-      {chatInBar ? null : (
-        <ChatSection chat={chatForPlace(place.id)} onNavigate={onNavigate} />
-      )}
+      {/* Every place has its chat here, in the map sheet too (user
+          2026-11-10: "every place, business and experiances must have a chat
+          on the details modal sheet", "same as the experiances"); at full
+          screen the map sheet also keeps its floating chat card. */}
+      <ChatSection chat={chatForPlace(place.id)} onNavigate={onNavigate} />
 
       {nearby.length > 0 ? (
         <View className="gap-3">
