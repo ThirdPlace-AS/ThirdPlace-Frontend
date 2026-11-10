@@ -8,6 +8,7 @@
 // action lives in the host's floating ExperienceJoinBar card.
 import type { Href } from "expo-router";
 import { useMemo, useState } from "react";
+import { useSheetStageReady } from "@/components/map/sheetStage";
 import {
   ScrollView,
   View,
@@ -129,6 +130,7 @@ export function ExperiencePage({
   onOpen,
   onNavigate,
 }: ExperiencePageProps) {
+  const ready = useSheetStageReady();
   const [user] = useExperienceJoin(
     exp.id,
     exp.status === "joined" ? "joined" : "none",
@@ -277,166 +279,181 @@ export function ExperiencePage({
         ) : null}
       </View>
 
-      <View className="h-px bg-line" />
+      {/* Below the first screen: in the map sheet, once it has come to
+          rest (R3a, src/components/map/sheetStage.ts). */}
+      {ready ? (
+        <>
+          <View className="h-px bg-line" />
 
-      <ItinerarySection exp={exp} />
+          <ItinerarySection exp={exp} />
 
-      <View className="h-px bg-line" />
+          <View className="h-px bg-line" />
 
-      <ReviewsSection
-        reviews={reviews}
-        onShowAll={() => onNavigate(reviewsHref)}
-      />
-
-      <View className="h-px bg-line" />
-
-      <AvailabilitySection exp={exp} />
-
-      <View className="h-px bg-line" />
-
-      <MeetingSection
-        exp={exp}
-        hostName={hostName}
-        onShowOnMap={() =>
-          onNavigate(`/map?focus=experience:${exp.id}&at=${Date.now()}` as Href)
-        }
-      />
-
-      <ChatSection chat={chatForExperience(exp.id)} onNavigate={onNavigate} />
-
-      {more.length > 0 ? (
-        <View className="gap-3">
-          <Text variant="h2" accessibilityRole="header">
-            Flere opplevelser i området
-          </Text>
-          <ScrollView
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            snapToInterval={188}
-            decelerationRate="fast"
-            // Plain style: the gap and fixed card width must hold on a
-            // cold start (className on the scroll content was dropped).
-            contentContainerStyle={{ gap: 12 }}
-          >
-            {more.map(({ e, r }) => {
-              return (
-                <UIPressable
-                  key={e.id}
-                  accessibilityRole="button"
-                  accessibilityLabel={`${e.title}, ${e.category}`}
-                  onPress={() => onNavigate(`/experience/${e.id}` as Href)}
-                  style={{ width: 176 }}
-                  contentClassName="gap-1.5"
-                  pressedScale={0.98}
-                >
-                  <LoadingImage
-                    thumb
-                    source={e.photos[0]}
-                    contentFit="cover"
-                    transition={150}
-                    style={{ width: 176, height: 176, borderRadius: 16 }}
-                  />
-                  <Text variant="label" weight="semibold" numberOfLines={2}>
-                    {e.title}
-                  </Text>
-                  <Text variant="caption" tone="muted" numberOfLines={1}>
-                    {`${e.category} · ${e.duration}`}
-                  </Text>
-                  <Text variant="caption" tone="muted" numberOfLines={1}>
-                    {`${e.priceNok ? `${e.priceNok} kr` : "Gratis"}${
-                      r.count ? ` · ★ ${formatRating(r.score)}` : ""
-                    }`}
-                  </Text>
-                </UIPressable>
-              );
-            })}
-          </ScrollView>
-        </View>
-      ) : null}
-
-      {/* Om verten: a centred card, then the bio and the message button, as
-          in the reference. */}
-      <View className="gap-4">
-        <Text variant="h2" accessibilityRole="header">
-          Om verten
-        </Text>
-        <UIPressable
-          accessibilityRole="button"
-          accessibilityLabel={`${hostName}, vert. Se profilen`}
-          onPress={
-            host ? () => onNavigate(`/creator/${host.id}` as Href) : undefined
-          }
-          pressedScale={0.99}
-          contentClassName="items-center gap-2 rounded-xl border border-line bg-surface px-4 py-6"
-        >
-          <Avatar
-            name={hostName}
-            source={host ? libImage(host.avatar) : undefined}
-            size="xl"
-            decorative
+          <ReviewsSection
+            reviews={reviews}
+            onShowAll={() => onNavigate(reviewsHref)}
           />
-          <Text variant="title" className="text-center">
-            {hostName}
-          </Text>
-          <Text variant="caption" tone="muted">
-            {host ? `Vert · ${host.area}` : "Vert"}
-          </Text>
-        </UIPressable>
-        {host?.bio ? <Text variant="body">{host.bio}</Text> : null}
-        <Button
-          label={`Send melding til ${hostName.split(" ")[0]}`}
-          variant="secondary"
-          onPress={() => onNavigate((dm ? `/chat/${dm.id}` : "/chat") as Href)}
-        />
-      </View>
 
-      <View className="h-px bg-line" />
+          <View className="h-px bg-line" />
 
-      <ThingsToKnowSection exp={exp} />
+          <AvailabilitySection exp={exp} />
 
-      <View className="h-px bg-line" />
+          <View className="h-px bg-line" />
 
-      {/* Footer links. */}
-      <View className="gap-1">
-        <FooterLink
-          icon="tp-arrival"
-          label="Sjekk inn når du er der"
-          onPress={() => onOpen({ kind: "checkin", id: exp.id })}
-        />
-        <FooterLink
-          icon="settings-outline"
-          label="Administrer (vert)"
-          onPress={() => onOpen({ kind: "host", id: exp.id })}
-        />
-        {/* Phase 18: help that starts from this experience (Uber, Amazon). */}
-        <FooterLink
-          icon="help-buoy-outline"
-          label="Få hjelp med opplevelsen"
-          onPress={() =>
-            onNavigate(`/settings/support?about=${exp.id}` as Href)
-          }
-        />
-        <FooterLink
-          icon="flag-outline"
-          label="Rapporter opplevelsen"
-          onPress={() => setSheet("report")}
-        />
-        <FooterLink
-          icon="ban-outline"
-          label={`Blokker ${hostName.split(" ")[0]}`}
-          onPress={() => setSheet("block")}
-        />
-      </View>
+          <MeetingSection
+            exp={exp}
+            hostName={hostName}
+            onShowOnMap={() =>
+              onNavigate(
+                `/map?focus=experience:${exp.id}&at=${Date.now()}` as Href,
+              )
+            }
+          />
 
-      {sheet === "report" ? (
-        <ReportSheet onClose={() => setSheet(null)} />
-      ) : null}
-      {sheet === "block" ? (
-        <BlockSheet
-          name={hostName}
-          personId={host?.id}
-          onClose={() => setSheet(null)}
-        />
+          <ChatSection
+            chat={chatForExperience(exp.id)}
+            onNavigate={onNavigate}
+          />
+
+          {more.length > 0 ? (
+            <View className="gap-3">
+              <Text variant="h2" accessibilityRole="header">
+                Flere opplevelser i området
+              </Text>
+              <ScrollView
+                horizontal
+                showsHorizontalScrollIndicator={false}
+                snapToInterval={188}
+                decelerationRate="fast"
+                // Plain style: the gap and fixed card width must hold on a
+                // cold start (className on the scroll content was dropped).
+                contentContainerStyle={{ gap: 12 }}
+              >
+                {more.map(({ e, r }) => {
+                  return (
+                    <UIPressable
+                      key={e.id}
+                      accessibilityRole="button"
+                      accessibilityLabel={`${e.title}, ${e.category}`}
+                      onPress={() => onNavigate(`/experience/${e.id}` as Href)}
+                      style={{ width: 176 }}
+                      contentClassName="gap-1.5"
+                      pressedScale={0.98}
+                    >
+                      <LoadingImage
+                        thumb
+                        source={e.photos[0]}
+                        contentFit="cover"
+                        transition={150}
+                        style={{ width: 176, height: 176, borderRadius: 16 }}
+                      />
+                      <Text variant="label" weight="semibold" numberOfLines={2}>
+                        {e.title}
+                      </Text>
+                      <Text variant="caption" tone="muted" numberOfLines={1}>
+                        {`${e.category} · ${e.duration}`}
+                      </Text>
+                      <Text variant="caption" tone="muted" numberOfLines={1}>
+                        {`${e.priceNok ? `${e.priceNok} kr` : "Gratis"}${
+                          r.count ? ` · ★ ${formatRating(r.score)}` : ""
+                        }`}
+                      </Text>
+                    </UIPressable>
+                  );
+                })}
+              </ScrollView>
+            </View>
+          ) : null}
+
+          {/* Om verten: a centred card, then the bio and the message button, as
+          in the reference. */}
+          <View className="gap-4">
+            <Text variant="h2" accessibilityRole="header">
+              Om verten
+            </Text>
+            <UIPressable
+              accessibilityRole="button"
+              accessibilityLabel={`${hostName}, vert. Se profilen`}
+              onPress={
+                host
+                  ? () => onNavigate(`/creator/${host.id}` as Href)
+                  : undefined
+              }
+              pressedScale={0.99}
+              contentClassName="items-center gap-2 rounded-xl border border-line bg-surface px-4 py-6"
+            >
+              <Avatar
+                name={hostName}
+                source={host ? libImage(host.avatar) : undefined}
+                size="xl"
+                decorative
+              />
+              <Text variant="title" className="text-center">
+                {hostName}
+              </Text>
+              <Text variant="caption" tone="muted">
+                {host ? `Vert · ${host.area}` : "Vert"}
+              </Text>
+            </UIPressable>
+            {host?.bio ? <Text variant="body">{host.bio}</Text> : null}
+            <Button
+              label={`Send melding til ${hostName.split(" ")[0]}`}
+              variant="secondary"
+              onPress={() =>
+                onNavigate((dm ? `/chat/${dm.id}` : "/chat") as Href)
+              }
+            />
+          </View>
+
+          <View className="h-px bg-line" />
+
+          <ThingsToKnowSection exp={exp} />
+
+          <View className="h-px bg-line" />
+
+          {/* Footer links. */}
+          <View className="gap-1">
+            <FooterLink
+              icon="tp-arrival"
+              label="Sjekk inn når du er der"
+              onPress={() => onOpen({ kind: "checkin", id: exp.id })}
+            />
+            <FooterLink
+              icon="settings-outline"
+              label="Administrer (vert)"
+              onPress={() => onOpen({ kind: "host", id: exp.id })}
+            />
+            {/* Phase 18: help that starts from this experience (Uber, Amazon). */}
+            <FooterLink
+              icon="help-buoy-outline"
+              label="Få hjelp med opplevelsen"
+              onPress={() =>
+                onNavigate(`/settings/support?about=${exp.id}` as Href)
+              }
+            />
+            <FooterLink
+              icon="flag-outline"
+              label="Rapporter opplevelsen"
+              onPress={() => setSheet("report")}
+            />
+            <FooterLink
+              icon="ban-outline"
+              label={`Blokker ${hostName.split(" ")[0]}`}
+              onPress={() => setSheet("block")}
+            />
+          </View>
+
+          {sheet === "report" ? (
+            <ReportSheet onClose={() => setSheet(null)} />
+          ) : null}
+          {sheet === "block" ? (
+            <BlockSheet
+              name={hostName}
+              personId={host?.id}
+              onClose={() => setSheet(null)}
+            />
+          ) : null}
+        </>
       ) : null}
     </View>
   );

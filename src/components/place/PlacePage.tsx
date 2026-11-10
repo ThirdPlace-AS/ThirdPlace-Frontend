@@ -7,6 +7,7 @@
 // fact once. MOCK fixture data; no booking or ranking (BLOCKED_CONTRACT_GAP).
 import type { Href } from "expo-router";
 import { useMemo, useState } from "react";
+import { useSheetStageReady } from "@/components/map/sheetStage";
 import { ScrollView, View } from "react-native";
 
 import { ReportSheet } from "@/components/actions/ActionSheets";
@@ -156,6 +157,7 @@ export function PlacePage({
    *  business behind "Drives av", and from there its Verifiseringsstatus). */
   onOpen?: (target: SheetTarget) => void;
 }) {
+  const ready = useSheetStageReady();
   const [report, setReport] = useState(false);
   const reviews = reviewsForPlace(place.id);
   const origin = useOrigin();
@@ -296,145 +298,155 @@ export function PlacePage({
         ) : null}
       </View>
 
-      <View className="h-px bg-line" />
+      {/* Below the first screen: in the map sheet, once it has come to
+          rest (R3a, src/components/map/sheetStage.ts). */}
+      {ready ? (
+        <>
+          <View className="h-px bg-line" />
 
-      <ReviewsSection
-        reviews={reviews}
-        onShowAll={() => onNavigate(reviewsHref)}
-      />
+          <ReviewsSection
+            reviews={reviews}
+            onShowAll={() => onNavigate(reviewsHref)}
+          />
 
-      <View className="h-px bg-line" />
+          <View className="h-px bg-line" />
 
-      <View className="gap-3">
-        <Text variant="h2" accessibilityRole="header">
-          Hvor du finner oss
-        </Text>
-        <View className="flex-row items-start gap-3">
-          <View className="flex-1 gap-0.5">
-            <Text variant="label" weight="semibold">
-              {place.name}
+          <View className="gap-3">
+            <Text variant="h2" accessibilityRole="header">
+              Hvor du finner oss
             </Text>
-            <Text variant="caption" tone="muted">
-              {place.address}
-            </Text>
+            <View className="flex-row items-start gap-3">
+              <View className="flex-1 gap-0.5">
+                <Text variant="label" weight="semibold">
+                  {place.name}
+                </Text>
+                <Text variant="caption" tone="muted">
+                  {place.address}
+                </Text>
+              </View>
+              <DirectionsButton coord={place.coord} name={place.name} />
+            </View>
+            <MeetingMap
+              coord={place.coord}
+              label={place.name}
+              onShowOnMap={() =>
+                onNavigate(
+                  `/map?focus=place:${place.id}&at=${Date.now()}` as Href,
+                )
+              }
+            />
           </View>
-          <DirectionsButton coord={place.coord} name={place.name} />
-        </View>
-        <MeetingMap
-          coord={place.coord}
-          label={place.name}
-          onShowOnMap={() =>
-            onNavigate(`/map?focus=place:${place.id}&at=${Date.now()}` as Href)
-          }
-        />
-      </View>
 
-      {happening.length > 0 ? (
-        <View className="gap-1">
-          <Text variant="h2" accessibilityRole="header" className="mb-2">
-            Hva skjer her
-          </Text>
-          {happening.map((e) => (
-            <InfoRow
-              key={e.id}
-              icon={e.format === "event" ? "calendar-outline" : "tp-experience"}
-              title={e.title}
-              subtitle={`${experienceTypeLabel(e)} · ${e.when}`}
-              onPress={() => onNavigate(`/experience/${e.id}` as Href)}
-            />
-          ))}
-        </View>
-      ) : null}
+          {happening.length > 0 ? (
+            <View className="gap-1">
+              <Text variant="h2" accessibilityRole="header" className="mb-2">
+                Hva skjer her
+              </Text>
+              {happening.map((e) => (
+                <InfoRow
+                  key={e.id}
+                  icon={
+                    e.format === "event" ? "calendar-outline" : "tp-experience"
+                  }
+                  title={e.title}
+                  subtitle={`${experienceTypeLabel(e)} · ${e.when}`}
+                  onPress={() => onNavigate(`/experience/${e.id}` as Href)}
+                />
+              ))}
+            </View>
+          ) : null}
 
-      {meetingHere.length > 0 ? (
-        <View className="gap-1">
-          <Text variant="h2" accessibilityRole="header" className="mb-2">
-            Grupper som møtes her
-          </Text>
-          {meetingHere.map((g) => (
-            <InfoRow
-              key={g.id}
-              icon="people-outline"
-              title={g.name}
-              subtitle={`Gruppe · ${membersLabel(g.memberCount)}`}
-              onPress={() => onNavigate(`/group/${g.id}` as Href)}
-            />
-          ))}
-        </View>
-      ) : null}
+          {meetingHere.length > 0 ? (
+            <View className="gap-1">
+              <Text variant="h2" accessibilityRole="header" className="mb-2">
+                Grupper som møtes her
+              </Text>
+              {meetingHere.map((g) => (
+                <InfoRow
+                  key={g.id}
+                  icon="people-outline"
+                  title={g.name}
+                  subtitle={`Gruppe · ${membersLabel(g.memberCount)}`}
+                  onPress={() => onNavigate(`/group/${g.id}` as Href)}
+                />
+              ))}
+            </View>
+          ) : null}
 
-      {/* Every place has its chat here, in the map sheet too (user
+          {/* Every place has its chat here, in the map sheet too (user
           2026-11-10: "every place, business and experiances must have a chat
           on the details modal sheet", "same as the experiances"); at full
           screen the map sheet also keeps its floating chat card. */}
-      <ChatSection chat={chatForPlace(place.id)} onNavigate={onNavigate} />
+          <ChatSection chat={chatForPlace(place.id)} onNavigate={onNavigate} />
 
-      {nearby.length > 0 ? (
-        <View className="gap-3">
-          <Text variant="h2" accessibilityRole="header">
-            Flere steder i nærheten
-          </Text>
-          <ScrollView
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            snapToInterval={188}
-            decelerationRate="fast"
-            contentContainerStyle={{ gap: 12 }}
-          >
-            {nearby.map((p) => {
-              const r = ratingOf(reviewsForPlace(p.id));
-              return (
-                <UIPressable
-                  key={p.id}
-                  accessibilityRole="button"
-                  accessibilityLabel={`${p.name}, ${p.category}`}
-                  onPress={() => onNavigate(`/place/${p.id}` as Href)}
-                  style={{ width: 176 }}
-                  contentClassName="gap-1.5"
-                  pressedScale={0.98}
-                >
-                  <LoadingImage
-                    thumb
-                    source={libThumb(coverForPlace(p))}
-                    contentFit="cover"
-                    transition={150}
-                    style={{ width: 176, height: 176, borderRadius: 16 }}
-                  />
-                  <Text variant="label" weight="semibold" numberOfLines={1}>
-                    {p.name}
-                  </Text>
-                  <Text variant="caption" tone="muted" numberOfLines={1}>
-                    {`${p.category} · ${distanceLabelFor(p.coord, origin)}${
-                      r.count ? ` · ★ ${formatRating(r.score)}` : ""
-                    }`}
-                  </Text>
-                </UIPressable>
-              );
-            })}
-          </ScrollView>
-        </View>
+          {nearby.length > 0 ? (
+            <View className="gap-3">
+              <Text variant="h2" accessibilityRole="header">
+                Flere steder i nærheten
+              </Text>
+              <ScrollView
+                horizontal
+                showsHorizontalScrollIndicator={false}
+                snapToInterval={188}
+                decelerationRate="fast"
+                contentContainerStyle={{ gap: 12 }}
+              >
+                {nearby.map((p) => {
+                  const r = ratingOf(reviewsForPlace(p.id));
+                  return (
+                    <UIPressable
+                      key={p.id}
+                      accessibilityRole="button"
+                      accessibilityLabel={`${p.name}, ${p.category}`}
+                      onPress={() => onNavigate(`/place/${p.id}` as Href)}
+                      style={{ width: 176 }}
+                      contentClassName="gap-1.5"
+                      pressedScale={0.98}
+                    >
+                      <LoadingImage
+                        thumb
+                        source={libThumb(coverForPlace(p))}
+                        contentFit="cover"
+                        transition={150}
+                        style={{ width: 176, height: 176, borderRadius: 16 }}
+                      />
+                      <Text variant="label" weight="semibold" numberOfLines={1}>
+                        {p.name}
+                      </Text>
+                      <Text variant="caption" tone="muted" numberOfLines={1}>
+                        {`${p.category} · ${distanceLabelFor(p.coord, origin)}${
+                          r.count ? ` · ★ ${formatRating(r.score)}` : ""
+                        }`}
+                      </Text>
+                    </UIPressable>
+                  );
+                })}
+              </ScrollView>
+            </View>
+          ) : null}
+
+          <View className="h-px bg-line" />
+
+          <KnowSection items={placeThingsToKnow(place)} />
+
+          <View className="h-px bg-line" />
+
+          <View className="gap-1">
+            <FooterLink
+              icon="create-outline"
+              label="Skriv en anmeldelse"
+              onPress={() => onNavigate(`/review/place/${place.id}` as Href)}
+            />
+            <FooterLink
+              icon="flag-outline"
+              label="Rapporter stedet"
+              onPress={() => setReport(true)}
+            />
+          </View>
+
+          {report ? <ReportSheet onClose={() => setReport(false)} /> : null}
+        </>
       ) : null}
-
-      <View className="h-px bg-line" />
-
-      <KnowSection items={placeThingsToKnow(place)} />
-
-      <View className="h-px bg-line" />
-
-      <View className="gap-1">
-        <FooterLink
-          icon="create-outline"
-          label="Skriv en anmeldelse"
-          onPress={() => onNavigate(`/review/place/${place.id}` as Href)}
-        />
-        <FooterLink
-          icon="flag-outline"
-          label="Rapporter stedet"
-          onPress={() => setReport(true)}
-        />
-      </View>
-
-      {report ? <ReportSheet onClose={() => setReport(false)} /> : null}
     </View>
   );
 }

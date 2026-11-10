@@ -51,6 +51,7 @@ import { useGuestMode } from "./hooks/useGuestMode";
 import { useMapSaved } from "./hooks/useMapSaved";
 import { markViewed } from "./hooks/useRecentlyViewed";
 import { pagePeekHeight } from "./services/pinCamera";
+import { STAGE_FALLBACK_MS, SheetStageContext, stageReady } from "./sheetStage";
 import { DetailContent, titleFor } from "./DetailContentRouter";
 import {
   atPageTop,
@@ -194,6 +195,28 @@ export const MapDetailSheet = memo(
       onPageChange?.(isPage);
     }, [isPage, onPageChange]);
 
+    // R3a: a page opens with its first screen; the rest mounts once the
+    // sheet has come to rest at a snap (onChange), or after
+    // STAGE_FALLBACK_MS should no snap event come. Pushed views render
+    // everything (the sheet is already open).
+    const [settledNonce, setSettledNonce] = useState<number | null>(null);
+    const nonceRef = useRef(openNonce);
+    useEffect(() => {
+      nonceRef.current = openNonce;
+    }, [openNonce]);
+    const handleSnap = useCallback((i: number) => {
+      if (i >= 0) setSettledNonce(nonceRef.current);
+    }, []);
+    useEffect(() => {
+      if (!open) return;
+      const t = setTimeout(
+        () => setSettledNonce(nonceRef.current),
+        STAGE_FALLBACK_MS,
+      );
+      return () => clearTimeout(t);
+    }, [open, openNonce]);
+    const stage = stageReady({ nested, openNonce, settledNonce });
+
     // A floating action card on the full-screen page (PageActionCard, top snap
     // only; user 2026-11-09): an experience's join action (PDF p6 + video, "Bli
     // med"), a place's chat (user 2026-11-09: "a sticky action section but it
@@ -290,6 +313,7 @@ export const MapDetailSheet = memo(
           animatedIndex={animatedIndex}
           enableDynamicSizing={false}
           enablePanDownToClose
+          onChange={handleSnap}
           backdropComponent={renderBackdrop}
           footerComponent={footerId ? renderFooter : undefined}
           onClose={() => {
@@ -337,7 +361,9 @@ export const MapDetailSheet = memo(
               >
                 {/* In-sheet push/back fades the new content in (was one frame). */}
                 <FadeSwap swapKey={`${top.kind}:${top.id}`}>
-                  <DetailContent target={top} push={push} />
+                  <SheetStageContext.Provider value={stage}>
+                    <DetailContent target={top} push={push} />
+                  </SheetStageContext.Provider>
                 </FadeSwap>
               </BottomSheetScrollView>
             </>
