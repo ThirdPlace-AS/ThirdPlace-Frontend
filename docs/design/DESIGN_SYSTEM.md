@@ -187,17 +187,17 @@ Motion explains a change (where something came from, what it became); it never d
 - **Filter / chip select:** fill crossfade (`fast`).
 - **Haptics at chosen moments only** (user 2026-11-09: "Add haptic feedback where it makes sense and in the right strength", then "Also key taps"; replaces the no-tap rule of 2026-11-09). Five strengths in `src/lib/haptics.ts`:
 
-  | Strength    | Where                                                                                  |
-  | ----------- | -------------------------------------------------------------------------------------- |
-  | `selection` | a dragged Sveip card crosses the commit line; swipe to reply; each Avstand slider step |
-  | `toggleOn`  | save or like turns on (`HeartToggle`); turning it off is quiet                         |
-  | `tap`       | a chat message is sent                                                                 |
-  | `longPress` | a long press opens a menu (`ListRow` "Flere valg", chat reactions)                     |
-  | `success`   | a real local completion: joined ("Du er med"), published or created (Add wizard)       |
+  | Strength    | Where                                                                                                       |
+  | ----------- | ----------------------------------------------------------------------------------------------------------- |
+  | `selection` | a dragged Sveip card crosses the commit line; swipe to reply; each step of the Avstand and Varighet sliders |
+  | `toggleOn`  | save or like turns on (`HeartToggle`); turning it off is quiet                                              |
+  | `tap`       | a chat message is sent                                                                                      |
+  | `longPress` | a long press opens a menu (`ListRow` "Flere valg", chat reactions)                                          |
+  | `success`   | a real local completion: joined ("Du er med"), published or created (Add wizard)                            |
 
   Android plays its own feedback constants (`performAndroidHapticsAsync`: Segment_Tick, Toggle_On, Virtual_Key, Long_Press, Confirm, with older ones on phones below API 34/30), so the phone's touch-feedback setting applies; iOS plays the matching selection, impact and notification calls. Plain buttons, navigation, chips, switches and the price slider (10 kr steps would buzz) stay silent, and the ui primitives take no `haptic` prop. `tests/designGuard.test.ts` holds the list of files and moments.
 
-- **Lagret:** an unsaved row fades out and the rows below close up (`LinearTransition`); a row put back with "Angre" fades in. The list does not animate in on opening (`LayoutAnimationConfig skipEntering`).
+- **Lagret:** an unsaved row fades out and the rows below close up (`LinearTransition`); the row put back with "Angre" fades in. Nothing else fades in: not the list on opening, rows mounted while scrolling or rows a filter chip shows.
 - **Du er med:** the check springs in just after the sheet has slid up (`ZoomIn`, delayed), with the `success` haptic.
 - **Chat send button:** the plane pops as the button wakes up with the first character (`IconButton pop`).
 

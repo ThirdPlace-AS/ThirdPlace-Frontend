@@ -5,13 +5,12 @@ import { View } from "react-native";
 import Animated, {
   FadeIn,
   FadeOut,
-  LayoutAnimationConfig,
   LinearTransition,
 } from "react-native-reanimated";
 
 import { HeartToggle, ListRow, Screen } from "@/components/ui";
 import { useReducedMotion } from "@/hooks/useReducedMotion";
-import { motion } from "@/theme";
+import { gutterPx, motion } from "@/theme";
 import { Chip } from "@/components/Chip";
 import { RouteHeader } from "@/components/RouteHeader";
 import { showToast } from "@/components/Toast";
@@ -33,6 +32,16 @@ import { experienceTypeLabel } from "@/components/map/services/itemType";
 import { coverForPlace, libThumb } from "@/fixtures/images";
 import { Illustration } from "@/components/illustrations/Illustration";
 import { formatRating } from "@/lib/format";
+
+// The list's padding and gaps as a style (review of the speed pass: no
+// className on an animated component); the values the classes
+// "gap-2 px-gutter pb-10 flex-grow" resolved to (NativeWind's rem is 14).
+const LIST_CONTENT = {
+  gap: 7,
+  paddingHorizontal: gutterPx,
+  paddingBottom: 35,
+  flexGrow: 1,
+};
 
 type Kind = "place" | "experience" | "business";
 type Row = {
@@ -76,13 +85,21 @@ export default function SavedScreen() {
     key: string;
     title: string;
   } | null>(null);
+  // The row put back with "Angre": the only row that fades in.
+  const [restoredKey, setRestoredKey] = useState<string | null>(null);
   const unsave = (key: string, title: string) => {
     toggle(key);
     showToast({
       title: "Fjernet fra Lagret",
       body: title,
       icon: "bookmark-outline",
-      action: { label: "Angre", onPress: () => toggle(key) },
+      action: {
+        label: "Angre",
+        onPress: () => {
+          setRestoredKey(key);
+          toggle(key);
+        },
+      },
     });
   };
 
@@ -148,115 +165,114 @@ export default function SavedScreen() {
     <Screen edges={["top"]}>
       <RouteHeader title="Lagret" />
       {/* Motion (user 2026-11-09: animations where they feel natural): an
-          unsaved row fades out and the rows below close up; one put back
-          with "Angre" fades in. The list does not animate in on opening
-          (skipEntering covers the first render). */}
-      <LayoutAnimationConfig skipEntering>
-        <Animated.FlatList
-          data={visible}
-          keyExtractor={(r) => r.key}
-          itemLayoutAnimation={
-            reduced
-              ? undefined
-              : LinearTransition.duration(motion.duration.base)
-          }
-          contentContainerClassName="gap-2 px-gutter pb-10 flex-grow"
-          ListHeaderComponent={
-            <View className="gap-3 pb-2">
-              {/* Approved addition (2026-11-06): turn saved experiences into a
+          unsaved row fades out and the rows below close up; the one put back
+          with "Angre" fades in. Nothing else fades in: not the list on
+          opening, rows mounted while scrolling or rows a filter chip shows
+          (review of the speed pass). */}
+      <Animated.FlatList
+        data={visible}
+        keyExtractor={(r) => r.key}
+        itemLayoutAnimation={
+          reduced ? undefined : LinearTransition.duration(motion.duration.base)
+        }
+        contentContainerStyle={LIST_CONTENT}
+        ListHeaderComponent={
+          <View className="gap-3 pb-2">
+            {/* Approved addition (2026-11-06): turn saved experiences into a
                 group decision. Signed in, two or more saved experiences. */}
-              {!isGuest && savedExperienceCount >= 2 ? (
-                <ListRow
-                  variant="card"
-                  icon="people-outline"
-                  title="Sveip lagrede med venner"
-                  subtitle={`${savedExperienceCount} lagrede opplevelser`}
-                  onPress={() =>
-                    router.push({
-                      pathname: "/group-swipe",
-                      params: { from: "saved" },
-                    })
-                  }
+            {!isGuest && savedExperienceCount >= 2 ? (
+              <ListRow
+                variant="card"
+                icon="people-outline"
+                title="Sveip lagrede med venner"
+                subtitle={`${savedExperienceCount} lagrede opplevelser`}
+                onPress={() =>
+                  router.push({
+                    pathname: "/group-swipe",
+                    params: { from: "saved" },
+                  })
+                }
+              />
+            ) : null}
+            <View
+              accessibilityRole="radiogroup"
+              className="flex-row flex-wrap gap-2"
+            >
+              {FILTERS.map((f) => (
+                <Chip
+                  key={f.label}
+                  label={f.label}
+                  size="sm"
+                  role="radio"
+                  selected={filter === f.key}
+                  onPress={() => setFilter(f.key)}
                 />
-              ) : null}
-              <View
-                accessibilityRole="radiogroup"
-                className="flex-row flex-wrap gap-2"
-              >
-                {FILTERS.map((f) => (
-                  <Chip
-                    key={f.label}
-                    label={f.label}
-                    size="sm"
-                    role="radio"
-                    selected={filter === f.key}
-                    onPress={() => setFilter(f.key)}
-                  />
-                ))}
-              </View>
+              ))}
             </View>
-          }
-          ListEmptyComponent={
-            <EmptyState
-              icon="bookmark-outline"
-              illustration={<Illustration name="emptySaved" />}
-              title="Ingenting lagret – ennå"
-              message="Lagre stedene og opplevelsene du ikke vil gå glipp av."
-              actionLabel="Utforsk kartet"
-              onAction={() => router.navigate("/map")}
-            />
-          }
-          ListFooterComponent={null}
-          renderItem={({ item }) => {
-            const place = item.placeId ? placeById(item.placeId) : undefined;
-            return (
-              // The animated wrapper carries no className (dropped on a cold
-              // start, CLAUDE.md); the row inside keeps its own.
-              <Animated.View
-                entering={
-                  reduced ? undefined : FadeIn.duration(motion.duration.base)
+          </View>
+        }
+        ListEmptyComponent={
+          <EmptyState
+            icon="bookmark-outline"
+            illustration={<Illustration name="emptySaved" />}
+            title="Ingenting lagret – ennå"
+            message="Lagre stedene og opplevelsene du ikke vil gå glipp av."
+            actionLabel="Utforsk kartet"
+            onAction={() => router.navigate("/map")}
+          />
+        }
+        ListFooterComponent={null}
+        renderItem={({ item }) => {
+          const place = item.placeId ? placeById(item.placeId) : undefined;
+          return (
+            // The animated wrapper carries no className (dropped on a cold
+            // start, CLAUDE.md); the row inside keeps its own.
+            <Animated.View
+              entering={
+                reduced || item.key !== restoredKey
+                  ? undefined
+                  : FadeIn.duration(motion.duration.base)
+              }
+              exiting={
+                reduced ? undefined : FadeOut.duration(motion.duration.fast)
+              }
+            >
+              <ListRow
+                variant="card"
+                title={item.title}
+                subtitle={item.meta}
+                onLongPress={() =>
+                  setActionsFor({ key: item.key, title: item.title })
                 }
-                exiting={
-                  reduced ? undefined : FadeOut.duration(motion.duration.fast)
-                }
-              >
-                <ListRow
-                  variant="card"
-                  title={item.title}
-                  subtitle={item.meta}
-                  onLongPress={() =>
-                    setActionsFor({ key: item.key, title: item.title })
-                  }
-                  // Everything opens its page (a business opens its place).
-                  onPress={() => router.push(item.href)}
-                  leading={
-                    place ? (
-                      <Image
-                        source={libThumb(coverForPlace(place))}
-                        contentFit="cover"
-                        style={{ height: 48, width: 48, borderRadius: 10 }}
-                        accessible={false}
-                      />
-                    ) : (
-                      <View className="h-12 w-12 rounded-md bg-surfaceMuted" />
-                    )
-                  }
-                  trailing={
-                    <HeartToggle
-                      kind="bookmark"
-                      selected
-                      variant="ghost"
-                      size="sm"
-                      label={`Fjern ${item.title} fra lagret`}
-                      onToggle={() => unsave(item.key, item.title)}
+                // Everything opens its page (a business opens its place).
+                onPress={() => router.push(item.href)}
+                leading={
+                  place ? (
+                    <Image
+                      source={libThumb(coverForPlace(place))}
+                      contentFit="cover"
+                      style={{ height: 48, width: 48, borderRadius: 10 }}
+                      accessible={false}
                     />
-                  }
-                />
-              </Animated.View>
-            );
-          }}
-        />
-      </LayoutAnimationConfig>
+                  ) : (
+                    <View className="h-12 w-12 rounded-md bg-surfaceMuted" />
+                  )
+                }
+                trailing={
+                  <HeartToggle
+                    kind="bookmark"
+                    selected
+                    variant="ghost"
+                    size="sm"
+                    label={`Fjern ${item.title} fra lagret`}
+                    onToggle={() => unsave(item.key, item.title)}
+                  />
+                }
+              />
+            </Animated.View>
+          );
+        }}
+      />
       {actionsFor ? (
         <ItemActionsSheet
           title={actionsFor.title}

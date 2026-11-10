@@ -41,6 +41,7 @@ import {
   reviewsForExperience,
   type MockExperience,
 } from "@/fixtures";
+import { useCreatedVersion } from "@/fixtures/created";
 import { libImage } from "@/fixtures/images";
 import { formatRating, membersLabel } from "@/lib/format";
 
@@ -143,13 +144,16 @@ export function ExperiencePage({
   const latest = sortReviews(reviews, "newest")[0];
   // Lists over every experience and chat: worked out once per page (speed
   // pass 0348), with each suggestion's rating.
+  // Something made in Legg til joins the list (review of the speed pass).
+  const created = useCreatedVersion();
   const more = useMemo(
     () =>
       moreExperiences(exp).map((e) => ({
         e,
         r: ratingOf(reviewsForExperience(e.id)),
       })),
-    [exp],
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- created: an experience made in Legg til
+    [exp, created],
   );
   const reviewsHref = `/experience/${exp.id}/reviews` as Href;
   // The direct chat with the host, matched by person (Phase 19: with many

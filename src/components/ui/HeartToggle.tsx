@@ -2,7 +2,11 @@
 // Outline → filled ember glyph with a pop and a light toggle tick when it
 // turns on (user 2026-11-09: haptics on key taps); turning it off is quiet.
 // Saving is a local store action in the demo, so the toggle never claims a
-// server result.
+// server result. The tick plays once the press has turned it on: a guest's
+// press opens the sign-in prompt and saves nothing, so it stays quiet (review
+// of the speed pass).
+
+import { useEffect, useRef } from "react";
 
 import { haptics } from "@/lib/haptics";
 
@@ -33,6 +37,12 @@ export function HeartToggle({
   /** Layout-only classes. */
   className?: string;
 }) {
+  // Set by a press, read when `selected` next changes.
+  const pressed = useRef(false);
+  useEffect(() => {
+    if (selected && pressed.current) haptics.toggleOn();
+    pressed.current = false;
+  }, [selected]);
   return (
     <IconButton
       icon={
@@ -50,7 +60,7 @@ export function HeartToggle({
       pop={selected}
       className={className}
       onPress={() => {
-        if (!selected) haptics.toggleOn();
+        pressed.current = true;
         onToggle();
       }}
     />

@@ -176,7 +176,7 @@ describe("design-system guard", () => {
       "src/components/ui/HeartToggle.tsx": ["toggleOn"],
       // A long press opens a row's "Flere valg" menu.
       "src/components/ui/ListRow.tsx": ["longPress"],
-      // Each step of the Avstand slider (the price slider stays silent).
+      // Each step of the Avstand and Varighet sliders (the price slider stays silent).
       "src/components/SteppedSlider.tsx": ["selection"],
       // Joined; published, created or sent in.
       "src/components/experience/JoinedSheet.tsx": ["success"],

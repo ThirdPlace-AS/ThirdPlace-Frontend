@@ -292,6 +292,10 @@ export function SwipeDeck() {
           dragIgnored.value = busy.value;
         })
         .onUpdate((e) => {
+          // A button's swipe that started during this drag owns the card from
+          // then on (review of the speed pass): writing tx here would stop its
+          // fly-off, so the deck never advanced and stayed locked.
+          if (busy.value) dragIgnored.value = true;
           if (dragIgnored.value) return;
           tx.value = e.translationX;
           ty.value = e.translationY * G.swipeVertDamp;
@@ -310,7 +314,7 @@ export function SwipeDeck() {
         // eslint-disable-next-line react-hooks/refs
         .onEnd((e) => {
           crossed.value = 0;
-          if (dragIgnored.value) {
+          if (dragIgnored.value || busy.value) {
             dragIgnored.value = false;
             return;
           }

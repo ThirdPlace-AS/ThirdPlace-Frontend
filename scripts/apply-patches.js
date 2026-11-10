@@ -47,21 +47,31 @@ function compare(a, b) {
   return 0;
 }
 
+// Line endings are written as the patch has them (core.autocrlf off): with
+// Windows' usual autocrlf=true, git wrote CRLF into the patched files.
 function gitApply(args, patch, cwd) {
   try {
-    execFileSync("git", ["apply", ...args, patch], {
-      cwd,
-      stdio: "pipe",
-      // Stop git from finding this project's repository above node_modules:
-      // inside a repository, `git apply` resolves the diff's paths from the
-      // repository root and can skip files with a zero exit code.
-      env: {
-        ...process.env,
-        GIT_CEILING_DIRECTORIES: path.join(ROOT, "node_modules"),
+    execFileSync(
+      "git",
+      ["-c", "core.autocrlf=false", "apply", ...args, patch],
+      {
+        cwd,
+        stdio: "pipe",
+        // Stop git from finding this project's repository above node_modules:
+        // inside a repository, `git apply` resolves the diff's paths from the
+        // repository root and can skip files with a zero exit code.
+        env: {
+          ...process.env,
+          GIT_CEILING_DIRECTORIES: path.join(ROOT, "node_modules"),
+        },
       },
-    });
+    );
     return true;
-  } catch {
+  } catch (e) {
+    if (e && e.code === "ENOENT") {
+      console.error("[patches] git is not installed; it applies patches/");
+      process.exit(1);
+    }
     return false;
   }
 }
@@ -97,7 +107,12 @@ for (const p of PATCHES) {
   // diff's paths resolve against the package and nothing is skipped because
   // node_modules sits inside this project's repository.
   const cwd = dir;
-  if (hasMarkers() && gitApply(["--reverse", "--check"], patch, cwd)) {
+  // Whitespace is ignored here only: an earlier install may have written the
+  // patched lines with CRLF.
+  if (
+    hasMarkers() &&
+    gitApply(["--reverse", "--check", "--ignore-whitespace"], patch, cwd)
+  ) {
     console.log(`[patches] ${p.pkg}@${p.version} already patched`);
     continue;
   }

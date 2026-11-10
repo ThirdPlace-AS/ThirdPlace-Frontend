@@ -46,6 +46,7 @@ import {
   reviewsForPlace,
   type MockPlace,
 } from "@/fixtures";
+import { useCreatedVersion } from "@/fixtures/created";
 import {
   coverForPlace,
   libImage,
@@ -167,9 +168,13 @@ export function PlacePage({
   const reviewsHref = `/place/${place.id}/reviews` as Href;
   // Lists over every place, experience and group: worked out once per page
   // (speed pass 0348), and the same photo list for the gallery each render.
+  // Something made in Legg til joins the lists below (review of the speed
+  // pass: the memoised lists kept the arrays they first saw).
+  const created = useCreatedVersion();
   const photos = useMemo(() => photosForPlace(place).map(libImage), [place]);
   const band = priceBandFor(place.priceNok);
-  const nearby = useMemo(() => nearbyPlaces(place), [place]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps -- created: a place made in Legg til
+  const nearby = useMemo(() => nearbyPlaces(place), [place, created]);
   // Phase 19: who runs it, what happens here, which groups meet here.
   const business =
     place.kind === "bedrift" ? businessForPlace(place.id) : undefined;
@@ -183,11 +188,13 @@ export function PlacePage({
           e.status !== "cancelled" &&
           (e.placeId === place.id || e.organizerPlaceId === place.id),
       ),
-    [place.id],
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- created: an experience made in Legg til
+    [place.id, created],
   );
   const meetingHere = useMemo(
     () => groups.filter((g) => g.homePlaceId === place.id),
-    [place.id],
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- created: a group made in Legg til
+    [place.id, created],
   );
 
   return (
