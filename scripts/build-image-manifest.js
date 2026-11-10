@@ -14,6 +14,11 @@
 // at WebP quality 75, and the JPEG is deleted (the originals stay in git
 // history). Needs ffmpeg with libwebp on PATH.
 //
+// Portraits (person-*) get the small file only (2026-11-10, "Optimize the
+// images"): a face is only ever drawn by Avatar, at most 88 dp, which always
+// loads the ≤256 px file, so the full-size copy was never read. Their FULL
+// entry points at the small file, so any lookup still resolves.
+//
 // Manifest: writes src/fixtures/imageAssets.generated.ts with static require()
 // maps (Metro needs literal paths) for both sizes plus a tiny blurred preview
 // per photo (16 px WebP as a data URI) that expo-image paints as `placeholder`
@@ -30,6 +35,11 @@ function ffmpeg(args) {
   execFileSync("ffmpeg", ["-v", "error", "-y", ...args], { stdio: "pipe" });
 }
 
+/** A photo with no full-size file (see the header). */
+function smallOnly(name) {
+  return name.startsWith("person-");
+}
+
 /** Long edge ≤ max, aspect kept, never upscaled. */
 function fit(max) {
   return `scale=w='min(${max},iw)':h='min(${max},ih)':force_original_aspect_ratio=decrease`;
@@ -42,19 +52,20 @@ function convert(dir) {
     const src = path.join(abs, file);
     const small = name.startsWith("person-") ? 256 : 480;
     const full = dir === "swipe" ? 1350 : 1080;
-    ffmpeg([
-      "-i",
-      src,
-      "-vf",
-      fit(full),
-      "-c:v",
-      "libwebp",
-      "-quality",
-      "75",
-      "-compression_level",
-      "6",
-      path.join(abs, `${name}.webp`),
-    ]);
+    if (!smallOnly(name))
+      ffmpeg([
+        "-i",
+        src,
+        "-vf",
+        fit(full),
+        "-c:v",
+        "libwebp",
+        "-quality",
+        "75",
+        "-compression_level",
+        "6",
+        path.join(abs, `${name}.webp`),
+      ]);
     ffmpeg([
       "-i",
       src,
@@ -92,12 +103,23 @@ function placeholder(file) {
   return `data:image/webp;base64,${data}`;
 }
 
+/** Every photo name in a folder: its full file, or its small file alone. */
 function names(dir) {
-  return fs
-    .readdirSync(path.join(ROOT, "assets", dir))
-    .filter((f) => f.endsWith(".webp") && !f.endsWith("-sm.webp"))
-    .map((f) => f.slice(0, -5))
-    .sort();
+  const set = new Set(
+    fs
+      .readdirSync(path.join(ROOT, "assets", dir))
+      .filter((f) => f.endsWith(".webp"))
+      .map((f) => f.replace(/(-sm)?\.webp$/, "")),
+  );
+  return [...set].sort();
+}
+
+/** The full-size file of a photo, or its small file when it has none. */
+function fullFile(dir, n) {
+  const full = path.join(ROOT, "assets", dir, `${n}.webp`);
+  if (fs.existsSync(full)) return `${n}.webp`;
+  if (!smallOnly(n)) throw new Error(`missing assets/${dir}/${n}.webp`);
+  return `${n}-sm.webp`;
 }
 
 async function manifest() {
@@ -114,7 +136,9 @@ async function manifest() {
     const id = dir.toUpperCase();
     lines.push(`export const ${id}_FULL = {`);
     for (const n of list)
-      lines.push(`  "${n}": require("../../assets/${dir}/${n}.webp"),`);
+      lines.push(
+        `  "${n}": require("../../assets/${dir}/${fullFile(dir, n)}"),`,
+      );
     lines.push("} as const;", "");
     lines.push(
       `export const ${id}_SMALL: Record<keyof typeof ${id}_FULL, ImageSourcePropType> = {`,
@@ -127,7 +151,7 @@ async function manifest() {
     lines.push("};", "");
     for (const n of list)
       placeholders.push(
-        `  "${dir}/${n}": "${placeholder(path.join(ROOT, "assets", dir, `${n}.webp`))}",`,
+        `  "${dir}/${n}": "${placeholder(path.join(ROOT, "assets", dir, fullFile(dir, n)))}",`,
       );
   }
   lines.push(
