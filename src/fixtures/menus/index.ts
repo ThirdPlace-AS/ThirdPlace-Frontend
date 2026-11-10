@@ -6,11 +6,17 @@ import type { MockPlace } from "../index";
 import { BAR_MENUS } from "./bars";
 import { CAFE_MENUS } from "./cafes";
 import { LEGACY_MENUS } from "./legacy";
+import { RESTAURANT_MENUS } from "./restaurants";
 import type { MockMenu } from "./types";
 
 export * from "./types";
 
-export const menus: MockMenu[] = [...LEGACY_MENUS, ...CAFE_MENUS, ...BAR_MENUS];
+export const menus: MockMenu[] = [
+  ...LEGACY_MENUS,
+  ...CAFE_MENUS,
+  ...BAR_MENUS,
+  ...RESTAURANT_MENUS,
+];
 
 let byPlace: Map<string, MockMenu> | null = null;
 let indexedLength = -1;

@@ -142,3 +142,11 @@ export type InterestSeed = {
   arrangement?: ArrangementSeed;
   gruppe?: GruppeSeed;
 };
+
+/** A restaurant (user 2026-11-10, "Add restaurants too"): an extra Bedrift
+ *  for a food interest, on top of the interest's own set. Its place id is
+ *  `p-rest-<key>`, its business `b-rest-<key>`. */
+export type RestaurantSeed = BedriftSeed & {
+  key: string;
+  interest: InterestId;
+};

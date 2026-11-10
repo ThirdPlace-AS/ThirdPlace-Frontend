@@ -533,7 +533,13 @@ export const CAFE_MENUS: MockMenu[] = [
           {
             title: "For hunden",
             items: [
-              item("Vannskål", undefined, "Står ved døra og ved bordene"),
+              item(
+                "Vannskål",
+                undefined,
+                "Står ved døra og ved bordene",
+                undefined,
+                "Gratis",
+              ),
               item("Hundekjeks", 15, "Bakt med havre og peanøttsmør", [
                 "Inneholder nøtter",
               ]),

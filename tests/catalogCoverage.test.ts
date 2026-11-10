@@ -7,10 +7,13 @@ import path from "path";
 
 import { describe, expect, it } from "@jest/globals";
 
+import { RESTAURANTS } from "@/fixtures/catalog/restaurants";
 import { SEEDS } from "@/fixtures/catalog/seeds";
 import { INTERESTS, interestById } from "@/fixtures/catalog/interests";
+import { menuForPlace, servesFoodOrDrink } from "@/fixtures/menus";
 import {
   areaFor,
+  businessForPlace,
   chatById,
   chatForExperience,
   chatForPlace,
@@ -44,6 +47,9 @@ const landKey = ([lng, lat]: [number, number]) =>
   `${lng.toFixed(5)},${lat.toFixed(5)}`;
 
 const isCatalogue = (id: string) => /^[pebgoc]-/.test(id);
+// Restaurants (0374, user 2026-11-10) are Bedrift places on top of each
+// interest's own set of six; the set itself stays exactly one of each kind.
+const isRestaurant = (id: string) => id.startsWith("p-rest-");
 const catPlaces = places.filter((p) => isCatalogue(p.id));
 const catExperiences = experiences.filter((e) => isCatalogue(e.id));
 const catGroups = groups.filter((g) => isCatalogue(g.id));
@@ -74,7 +80,10 @@ describe("every interest has the full set", () => {
     expect(interestById(interest)).toBeDefined();
     for (const kind of ["bedrift", "organisasjon", "byrom"] as const)
       expect(
-        places.filter((p) => p.interestId === interest && p.kind === kind),
+        places.filter(
+          (p) =>
+            p.interestId === interest && p.kind === kind && !isRestaurant(p.id),
+        ),
       ).toHaveLength(1);
     const own = experiences.filter((e) => e.interestId === interest);
     expect(own.filter((e) => e.format !== "event")).toHaveLength(1);
@@ -131,6 +140,28 @@ describe("catalogue items carry full data", () => {
   });
 });
 
+describe("restaurants (user 2026-11-10, 0374)", () => {
+  it("are eight Bedrift places for food interests, each with its business and menu", () => {
+    expect(RESTAURANTS).toHaveLength(8);
+    for (const r of RESTAURANTS) {
+      const p = placeById(`p-rest-${r.key}`);
+      expect(p).toBeDefined();
+      expect(p!.kind).toBe("bedrift");
+      expect(interestById(p!.interestId)?.category).toBe("mat");
+      expect(servesFoodOrDrink(p!)).toBe(true);
+      expect(businessForPlace(p!.id)?.id).toBe(`b-rest-${r.key}`);
+      expect(menuForPlace(p!.id)).toBeDefined();
+    }
+    // On top of each interest's own set: the full-data checks above cover
+    // them like every catalogue place.
+    expect(catPlaces.filter((p) => isRestaurant(p.id))).toHaveLength(8);
+  });
+
+  it("are spread over eight towns in Oslo and Akershus", () => {
+    expect(new Set(RESTAURANTS.map((r) => r.town)).size).toBe(8);
+  });
+});
+
 describe("the catalogue's shape", () => {
   it("has unique ASCII ids and unique names", () => {
     for (const list of [catPlaces, catExperiences, catGroups])
@@ -159,6 +190,7 @@ describe("the catalogue's shape", () => {
         const p = s[kind];
         if (p) expect(areaFor(p.coord).name).toBe(p.town);
       }
+    for (const r of RESTAURANTS) expect(areaFor(r.coord).name).toBe(r.town);
     const pins = [
       ...places.map((p) => p.coord),
       ...experiences.map((e) => e.meetingPoint.coord),

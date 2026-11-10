@@ -99,6 +99,9 @@ export function MenuItemRow({
   compact?: boolean;
 }) {
   const sizes = variantsLabel(item);
+  // An item without a price always says why (part of a set menu, free), so
+  // the note shows in the page section too.
+  const showNote = item.note && (!compact || (!item.price && !sizes));
   return (
     <View accessible accessibilityLabel={menuItemLabel(item)} className="gap-1">
       <View className="flex-row items-start justify-between gap-3">
@@ -125,7 +128,7 @@ export function MenuItemRow({
           {item.description}
         </Text>
       ) : null}
-      {!compact && item.note ? (
+      {showNote ? (
         <Text variant="caption" tone="muted">
           {item.note}
         </Text>

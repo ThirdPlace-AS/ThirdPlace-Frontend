@@ -424,6 +424,30 @@ export const LIBRARY_FULL = {
   "quiz-4": require("../../assets/library/quiz-4.webp"),
   "quiz-6": require("../../assets/library/quiz-6.webp"),
   "quiz-7": require("../../assets/library/quiz-7.webp"),
+  "rest-gard-1": require("../../assets/library/rest-gard-1.webp"),
+  "rest-gard-2": require("../../assets/library/rest-gard-2.webp"),
+  "rest-gard-3": require("../../assets/library/rest-gard-3.webp"),
+  "rest-kokk-1": require("../../assets/library/rest-kokk-1.webp"),
+  "rest-kokk-2": require("../../assets/library/rest-kokk-2.webp"),
+  "rest-kokk-3": require("../../assets/library/rest-kokk-3.webp"),
+  "rest-kvist-1": require("../../assets/library/rest-kvist-1.webp"),
+  "rest-kvist-2": require("../../assets/library/rest-kvist-2.webp"),
+  "rest-kvist-3": require("../../assets/library/rest-kvist-3.webp"),
+  "rest-malt-1": require("../../assets/library/rest-malt-1.webp"),
+  "rest-malt-2": require("../../assets/library/rest-malt-2.webp"),
+  "rest-malt-3": require("../../assets/library/rest-malt-3.webp"),
+  "rest-pho-1": require("../../assets/library/rest-pho-1.webp"),
+  "rest-pho-2": require("../../assets/library/rest-pho-2.webp"),
+  "rest-pho-3": require("../../assets/library/rest-pho-3.webp"),
+  "rest-pizza-1": require("../../assets/library/rest-pizza-1.webp"),
+  "rest-pizza-2": require("../../assets/library/rest-pizza-2.webp"),
+  "rest-pizza-3": require("../../assets/library/rest-pizza-3.webp"),
+  "rest-sjo-1": require("../../assets/library/rest-sjo-1.webp"),
+  "rest-sjo-2": require("../../assets/library/rest-sjo-2.webp"),
+  "rest-sjo-3": require("../../assets/library/rest-sjo-3.webp"),
+  "rest-spire-1": require("../../assets/library/rest-spire-1.webp"),
+  "rest-spire-2": require("../../assets/library/rest-spire-2.webp"),
+  "rest-spire-3": require("../../assets/library/rest-spire-3.webp"),
   "river-1": require("../../assets/library/river-1.webp"),
   "river-2": require("../../assets/library/river-2.webp"),
   "rollespill-1": require("../../assets/library/rollespill-1.webp"),
@@ -1028,6 +1052,30 @@ export const LIBRARY_SMALL: Record<
   "quiz-4": require("../../assets/library/quiz-4-sm.webp"),
   "quiz-6": require("../../assets/library/quiz-6-sm.webp"),
   "quiz-7": require("../../assets/library/quiz-7-sm.webp"),
+  "rest-gard-1": require("../../assets/library/rest-gard-1-sm.webp"),
+  "rest-gard-2": require("../../assets/library/rest-gard-2-sm.webp"),
+  "rest-gard-3": require("../../assets/library/rest-gard-3-sm.webp"),
+  "rest-kokk-1": require("../../assets/library/rest-kokk-1-sm.webp"),
+  "rest-kokk-2": require("../../assets/library/rest-kokk-2-sm.webp"),
+  "rest-kokk-3": require("../../assets/library/rest-kokk-3-sm.webp"),
+  "rest-kvist-1": require("../../assets/library/rest-kvist-1-sm.webp"),
+  "rest-kvist-2": require("../../assets/library/rest-kvist-2-sm.webp"),
+  "rest-kvist-3": require("../../assets/library/rest-kvist-3-sm.webp"),
+  "rest-malt-1": require("../../assets/library/rest-malt-1-sm.webp"),
+  "rest-malt-2": require("../../assets/library/rest-malt-2-sm.webp"),
+  "rest-malt-3": require("../../assets/library/rest-malt-3-sm.webp"),
+  "rest-pho-1": require("../../assets/library/rest-pho-1-sm.webp"),
+  "rest-pho-2": require("../../assets/library/rest-pho-2-sm.webp"),
+  "rest-pho-3": require("../../assets/library/rest-pho-3-sm.webp"),
+  "rest-pizza-1": require("../../assets/library/rest-pizza-1-sm.webp"),
+  "rest-pizza-2": require("../../assets/library/rest-pizza-2-sm.webp"),
+  "rest-pizza-3": require("../../assets/library/rest-pizza-3-sm.webp"),
+  "rest-sjo-1": require("../../assets/library/rest-sjo-1-sm.webp"),
+  "rest-sjo-2": require("../../assets/library/rest-sjo-2-sm.webp"),
+  "rest-sjo-3": require("../../assets/library/rest-sjo-3-sm.webp"),
+  "rest-spire-1": require("../../assets/library/rest-spire-1-sm.webp"),
+  "rest-spire-2": require("../../assets/library/rest-spire-2-sm.webp"),
+  "rest-spire-3": require("../../assets/library/rest-spire-3-sm.webp"),
   "river-1": require("../../assets/library/river-1-sm.webp"),
   "river-2": require("../../assets/library/river-2-sm.webp"),
   "rollespill-1": require("../../assets/library/rollespill-1-sm.webp"),
@@ -2081,6 +2129,54 @@ export const PLACEHOLDER: Record<string, string> = {
     "data:image/webp;base64,UklGRp4AAABXRUJQVlA4IJIAAAAwBACdASoQABgAPu1iqU2ppaOiMAgBMB2JZACdMoADg/BZaQR2CrVc+AAA+CorYf2FXZNpEaZpLMxhtom0ErAV+b86CN7oVLu/jeuVChmN3roUtrUcZ3oauP/JIuqkU5J38xx2P1u/CG2MT04bNV6swi+eFdd+iT8vEU08tPeke7RflSu8wK+iDO7c0SETdTCAAA==",
   "library/quiz-7":
     "data:image/webp;base64,UklGRn4AAABXRUJQVlA4IHIAAABQBACdASoQABgAPu1krU2ppaSiMAgBMB2JZACdL1yB0aDhZZDfqUH7uPAAAP7qbigYHjL+6hWt6Yd+3InOY3qab3ZReOfuolrlea2UmvLd3y6pvVNpWlXtF1z5ZCmvIkXhUVUBjwwQF3x1fynsNHIwAAA=",
+  "library/rest-gard-1":
+    "data:image/webp;base64,UklGRmgAAABXRUJQVlA4IFwAAADwAQCdASoQAAoAA4BaJZACdAERAw49IgAA/spq7amItdLCyzjqmmuNXuKi3O9OeEaepe9kSXY8klhCoyy5+7907csnsJOBSr18uh/Y+jDIi4sXPW7ZzGcmvgAAAA==",
+  "library/rest-gard-2":
+    "data:image/webp;base64,UklGRmIAAABXRUJQVlA4IFYAAAAwAgCdASoQAAoAA4BaJYwC7AERCFv2sGLo8AD+o3pzSayCmAZd8zM+4pD0VWyI73aYVwGFxD6X84qQBjY9V4RymswKJCOxMdPixsB88g2QVVs0UpwAAA==",
+  "library/rest-gard-3":
+    "data:image/webp;base64,UklGRngAAABXRUJQVlA4IGwAAACQAgCdASoQAAoAA4BaJbACdLoAAx+jLyzuJjIpgAD89pstaQjHTysfucadGZsqu9zMpUQ/iiFlf8XnZ/VJ21HF0LmNtUOxnlUw6+nyDIaMgmG5hF6+pULhF5L9egd1zZP24IIB9SvYiUJoFgA=",
+  "library/rest-kokk-1":
+    "data:image/webp;base64,UklGRp4AAABXRUJQVlA4IJIAAAAQBACdASoQABgAPu1iqU2ppaOiMAgBMB2JQBOmUABLmZeAjDGpd4M3AAD+7SYtpvUdWm+ylRSD1ZZf7TARF7EVRXyK76zoYeiYFC+tESy+CYbkz9FXXzJtsIHYACyd+YuIHlJuEqyg87dIlJP5HOgdp73G2JYr9Am5/VtEIuzsznRV7ufG0u5zagpHJkMEqvQAAA==",
+  "library/rest-kokk-2":
+    "data:image/webp;base64,UklGRlAAAABXRUJQVlA4IEQAAADQAQCdASoQAAoAA4BaJZQCdADGag3GwAD+9HltQ1ygdIdcLxNdJ5V9rm/pRzgF4Nu7B4seNfegiZLuwAcWU0zHGLgAAA==",
+  "library/rest-kokk-3":
+    "data:image/webp;base64,UklGRrYAAABXRUJQVlA4IKoAAACQBACdASoQABgAPu1iqU2ppaOiMAgBMB2JbACdL1yVgm31O99cRq6RVZH4YTIA/s3+g55G7/5VGhkOCeQSsvAIys7ssQ8LLlAzbpsM3+ExRmCBGkprUgPU65ZamQaUOl3tzhJwN8lhXmKpkdzVl+2etqlS47uO59iSFlfst2pRv5AjeOE+Gh+2JX1w/9WMHFY13WW+2WICSPAHXEwM2MAckKLjCA3/nNYAAA==",
+  "library/rest-kvist-1":
+    "data:image/webp;base64,UklGRtYAAABXRUJQVlA4IMoAAAAwBACdASoQABYAPu1iqU2ppaOiMAgBMB2JbAC7AYvClw90QhgXZ6VjbdgA/Z1pt9RLyq3PSqI99cdqqA++sKI86IdmUaSfCl0x1D0U1YPQSQ8kFiLkryyl7rdHe/sIfj0wl3iG+j7q8p3KDHtP0gZ8ALkyDnlTZxZAT8dlHNd5RI3koi9TbXGTz6LMs3stcZFJDhIkFZztXJwqqFNvI6okwJD+cw7Y9E1QR0P6Hwd0+0w3kKc3bWITfc3zr6gzyU5BusSurFPhgAAA",
+  "library/rest-kvist-2":
+    "data:image/webp;base64,UklGRmAAAABXRUJQVlA4IFQAAABQAgCdASoQAAoAA4BaJZgCdAEfVroLIVywrAAA/u0hDYQ9dGu3jM1vDIf1dbbw2mJZhODX6UlAjpKuSMsbiKWbsghd3R3zYMi/4jFYdtBlttVAAAA=",
+  "library/rest-kvist-3":
+    "data:image/webp;base64,UklGRlQAAABXRUJQVlA4IEgAAAAwAgCdASoQAAoAA4BaJZQCw7ELYzAe1kEQAADic3vmPgY7JvpmH+yqcAYixu+kWu0WXixbnauTZe9rgBAmfQx3H11yJN8AAAA=",
+  "library/rest-malt-1":
+    "data:image/webp;base64,UklGRqIAAABXRUJQVlA4IJYAAACwBACdASoQABQAPu1iqU2ppaOiMAgBMB2JbACdMoRwIsAAzhyiPg6FXgsCM8TAAP7ytI30DDzcdcCoFyGfOqr+feRDLCrUkFFoaoa2fodiGKmDp0hH4gpLS9RW6jctwIYFjTKp9+y98xEUTLXOtT0emGKnE7uTz4rAaLR6CMBvhn8l/HvRkuqoMf64tIb0vnC95kFgAAA=",
+  "library/rest-malt-2":
+    "data:image/webp;base64,UklGRoIAAABXRUJQVlA4IHYAAACQAgCdASoQAAwAA4BaJbACdH8Agpy3EOni+NHV+AD+5vGxyjfDNK3HQNx9QEh3oUykpntLNAQYm0PnB9uXJGYJcSETNzhIVY7PQCguDARZn1dkPgoLgQc+n+aeKXG9o5bKgAtbdj/s/GR9isN3s7up1KNKsgAA",
+  "library/rest-malt-3":
+    "data:image/webp;base64,UklGRnoAAABXRUJQVlA4IG4AAAAQAgCdASoQAAoAA4BaJZgCdH8ACv1c1JNAAP21PJt3alnnvQIfMBgswPoXR6i6jvvxeLZdvP3QHFnJjg/Xj6vSvt7bKcfQ3qWTVfMoWlly19p2yO9ctGIHKLjmv+PExjseesKkjmgetbWAH8AAAA==",
+  "library/rest-pho-1":
+    "data:image/webp;base64,UklGRlgAAABXRUJQVlA4IEwAAADQAQCdASoQAAoAA4BaJbACdH8AB4MmAAD33+U97PgvQxTPkHU4MHSm27J5lI2bPR8n0laVPijoXrKXSL5xxUjQKdndp7c5RcdADIAA",
+  "library/rest-pho-2":
+    "data:image/webp;base64,UklGRmYAAABXRUJQVlA4IFoAAADwAQCdASoQAAoAA4BaJbACdACkK6TxCgAA/u0AKx+vkktYSpmnkXa9apcCJ07jylFYiBSgi/JyjBl5qBGItthiRIKBGMEgKcmLNQs4JypTaZv8G48f/BcQAAA=",
+  "library/rest-pho-3":
+    "data:image/webp;base64,UklGRm4AAABXRUJQVlA4IGIAAAAQAgCdASoQAAoAA4BaJagCdAYsjVhaOvgAAOHRwBMuFRb7uUnXmvTFMr63GRnQg+kYB3Yv1EflxU8CnP7HMinbGSCd84jw6HRdpHTImZkc6Sf03VvdvNcPjJ2W0yRUakwAAA==",
+  "library/rest-pizza-1":
+    "data:image/webp;base64,UklGRm4AAABXRUJQVlA4IGIAAAAQAgCdASoQAAoAA4BaJbACdADp8Y1X7K9AAP73glJtI8JdiLZ6OHd8ReJHx4p3/MoOdRhs9nd8XrwdH5cILYjy/OY29DyT5EW+sVKXMxrvXdp2FD2/bajQ3h3b6pCfuEgAAA==",
+  "library/rest-pizza-2":
+    "data:image/webp;base64,UklGRrAAAABXRUJQVlA4IKQAAABwBACdASoQABgAPu1iqU2ppaOiMAgBMB2JYgCdMoR3Ac9cx0wP8rguIJQ0dAD+LsHq5w8zB53+dMFaQY+9Km5esPOvagHSiG5ZW21RzGo2eIf9OCmdFXwtmzsQRHvUl8zh7N5PWePCkU4cwbpscAQXyvVjDnOPfuixQADjj/wNL5DF5U3w9LBptLjxtpGTM8gXMuZfkFW1THiypQU+L/OIXZYAAA==",
+  "library/rest-pizza-3":
+    "data:image/webp;base64,UklGRnYAAABXRUJQVlA4IGoAAADwAQCdASoQAAoAA4BaJYgCdADPdY2fZ5gA/vUdmPprvjpXqI/LwX+jtRvZiDeJWqpgj0+oZGQ/430oBFO7LToXjfE/K2nHcCjNx5DKJf9t4C+KuSsjH3R+hsfCDseLBOhVNJoRH3yAAAAA",
+  "library/rest-sjo-1":
+    "data:image/webp;base64,UklGRnAAAABXRUJQVlA4IGQAAAAQAgCdASoQAAwAA4BaJZQAD4nNsliWbZ4AAP7qTll7nAbG3j2JJywiir/ZSNTcg77pvvvEcqdMVLDwn1tHw2ZBfbo8MuwXcYVEO2Wr4MBS6MCw5oWVp5T5YsIxKSdkeILe0AAA",
+  "library/rest-sjo-2":
+    "data:image/webp;base64,UklGRsYAAABXRUJQVlA4ILoAAACwBACdASoQABgAPu1iqU2ppaOiMAgBMB2JagCdL1AViAwFKawhjUOMNLRQZYAgAP7ujCIUXPyv7L0WlH5JzF/6Fbyo89XneK7j5ClvpnUz7It+8lH3X92kLKoTCvTu707+XOs//6eYV1wbQwW38W1r6LXZHWII90kUt+dGdSVrpoa7XZEL40sdlxfCBDz8dr3gep0NLve+rsYC6XzcoVACumOTREkPHHtR1x6rSWSmKZHRthkzVcLpwAA=",
+  "library/rest-sjo-3":
+    "data:image/webp;base64,UklGRnwAAABXRUJQVlA4IHAAAABQAgCdASoQAAoAA4BaJQBOkBLwWRVcg3oK9ZAA/sd+RayDLKR1obge1ud8Osmx5MJcFPqsT3wQWrzaencGXdK9Sb3lT8PiF9+dAQT097x/p8XiNxlIo3dH9w3JwBL6cSLeTkuLlnWOV5DzFs9HAAAA",
+  "library/rest-spire-1":
+    "data:image/webp;base64,UklGRlgAAABXRUJQVlA4IEwAAACwAQCdASoQAAoAA4BaJbACdAB4LkAAAP5KkyGer2l05+JW7bQhMy103L1TGN9Q1E4iOOEF/PuGvF4PRWrd53s8Xbdgb6OboUm0pYAA",
+  "library/rest-spire-2":
+    "data:image/webp;base64,UklGRqYAAABXRUJQVlA4IJoAAACwBACdASoQABgAPu1iqU2ppaOiMAgBMB2JbACdAYuk7WNQOnWgKJST0lko5N2AAP6aNBxnx8EsJKJxGtuRj7tIEqeG3MBoiuYaGI3MfKD/L+QPwliHWObkCwY8qzIb/V9qtlLjlenxAUhhcFX6YjUYOwVDh36oURUHjD4RhWzu6K/qVPY5sAtOvY2dJ7d8LZvWEYnDLaV2ArgA",
+  "library/rest-spire-3":
+    "data:image/webp;base64,UklGRt4AAABXRUJQVlA4INIAAACwBACdASoQABYAPu1iqU2ppaOiMAgBMB2JagCdMoMjb0dJ21jTNboOk+S/gXwAAPkHEHSieEDLOxAR9Wmeoy3pmtqsyNnenjGOpCJOIB/lmVKUx4KCyB/OevLllLRRbQAyf9X15vFRjcyg0srp8LmI2fSkawCtmt5NOgL5iaeMXX9TIDkcrGX6tReDjcU5JM2t5myladTrUjykQIa5+gSVc+B36nLJf/oYQFi2+drC3Ld2YAqGujgwudFF9qW4EFtarg1+3qiVNM+WkJKk/P5jfAA=",
   "library/river-1":
     "data:image/webp;base64,UklGRmAAAABXRUJQVlA4IFQAAADwAQCdASoQAAoAA4BaJQBOgBmSSIbVAwAA/NamkJNmzEy0CMFsOt4l/O8PnF1b634Wfu8cm0uB0Hc4RAVqhPKoooOLitaVnCxlGUi5hFq6wbIQAAA=",
   "library/river-2":

@@ -10,8 +10,24 @@ Do not edit by hand; run the script again after a seed changes.
 
 - Interests: 84 in 8 categories, 84 with a seed entry.
 - Kinds per interest: Bedrift, Organisasjon, Byrom, Opplevelse, Arrangement, Gruppe. Cells marked **mangler**: 0.
-- Seeded places: 238 (legacy p1–p14 sit in inner Oslo and are not counted below).
-- Library photos: 598 full-size WebP (plus a small copy each), 35.0 MB in total; CREDITS.md rows: 575.
+- Seeded places: 238 (legacy p1–p14 sit in inner Oslo and are not counted below), plus 8 restaurants (below).
+- Library photos: 622 full-size WebP (plus a small copy each), 36.5 MB in total; CREDITS.md rows: 599.
+
+## Restaurants
+
+Extra Bedrift places for the food interests (user 2026-11-10), on top of each
+interest's own set, each with a menu (src/fixtures/menus/restaurants.ts).
+
+| Restaurant                 | Kind                    | Town           | Interest  |
+| -------------------------- | ----------------------- | -------------- | --------- |
+| Bếp Mai                    | Vietnamesisk restaurant | Tøyen          | mat       |
+| Skjellsand Sjømat          | Sjømatrestaurant        | Sandvika       | mat       |
+| Ildkula Pizzeria           | Pizzeria                | Lillestrøm     | mat       |
+| Åkerkanten Gårdsrestaurant | Gårdsrestaurant         | Ås             | kortreist |
+| Spireriet                  | Vegansk restaurant      | St. Hanshaugen | vegansk   |
+| Kvist Vinbistro            | Vinbistro               | Jessheim       | vin       |
+| Maltloftet                 | Ølrestaurant            | Kolbotn        | ol        |
+| Kokkebenken                | Restaurant              | Lørenskog      | matlaging |
 
 ## Places by region
 

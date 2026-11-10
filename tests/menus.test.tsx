@@ -130,13 +130,15 @@ describe("the menu fixtures", () => {
           }
   });
 
-  it("every café, bar, pub, bakery and tea room in the fixtures has a menu", () => {
+  it("every café, bar, pub, bakery, tea room and restaurant has a menu", () => {
     const venues = places.filter((p) => servesFoodOrDrink(p));
     expect(venues.filter((p) => !menuForPlace(p.id)).map((p) => p.id)).toEqual(
       [],
     );
-    // The three legacy ones and the catalogue's 22 (0372–0373).
-    expect(venues.length).toBe(25);
+    // The three legacy ones, the catalogue's 22 (0372–0373) and the eight
+    // restaurants (0374).
+    expect(venues.length).toBe(33);
+    expect(venues.filter((p) => p.id.startsWith("p-rest-"))).toHaveLength(8);
     expect(menus.length).toBe(venues.length);
     // Of the legacy places, only the two cafés and the wine bar serve food or
     // drink (0371 gave the others categories that say what they are).
@@ -147,14 +149,20 @@ describe("the menu fixtures", () => {
     ]);
   });
 
-  it("put a price on everything but what is free", () => {
+  it("put a price on every item, or say why there is none", () => {
+    // Never a guessed price: an item without one says why (the dog café's
+    // free water bowl, the courses of a tasting menu with one price).
+    const unpriced: string[] = [];
     for (const m of menus)
       for (const o of m.offerings)
         for (const s of o.sections)
           for (const i of s.items)
-            if (!i.price && !i.variants)
-              // The dog café's water bowl is the one item without a price.
-              expect(i.name).toBe("Vannskål");
+            if (!i.price && !i.variants) {
+              expect(i.note).toBeTruthy();
+              unpriced.push(i.name);
+            }
+    expect(unpriced).toContain("Vannskål");
+    expect(unpriced.length).toBe(6);
   });
 });
 
@@ -231,6 +239,22 @@ describe("the Meny section", () => {
     expect(offeringIndex("x", 3)).toBe(0);
     expect(menuHref("p1")).toBe("/place/p1/menu");
     expect(menuHref("p1", 2)).toBe("/place/p1/menu?offering=2");
+  });
+
+  it("says why an item has no price, even in the short preview", () => {
+    render(
+      <MenuSection
+        place={placeById("p-rest-kokkebenken")!}
+        onNavigate={jest.fn()}
+      />,
+      { wrapper },
+    );
+    // The tasting menu has one price; its first course says it is part of it.
+    expect(
+      screen.getByText(`Ti små retter 1${String.fromCharCode(0xa0)}095 kr`),
+    ).toBeTruthy();
+    expect(screen.getByText("Rå kamskjell med eple og pepperrot")).toBeTruthy();
+    expect(screen.getByText("Del av smaksmenyen")).toBeTruthy();
   });
 
   it("says so for a café without a menu, and is absent elsewhere", () => {

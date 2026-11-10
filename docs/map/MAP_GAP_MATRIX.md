@@ -110,6 +110,7 @@ and [MAP_DELIVERABLES.md](MAP_DELIVERABLES.md) for journeys + completion classes
 - Browse heart asks guests to sign in, like every other save (0208).
 - Map tools sit 12 dp above the measured browse peek (0204).
 - Map search shows "Nylig sett" (founder-approved; `useRecentlyViewed`, in-memory) (0209).
+- Restaurants (0374, user 2026-11-10, "Add restaurants too"): eight Bedrift pins for the food interests (Tøyen, Sandvika, Lillestrøm, Ås, St. Hanshaugen, Jessheim, Kolbotn, Lørenskog), each with full data and its Meny; they come on top of each interest's own set of six.
 - Meny (0372, user 2026-11-10): a café’s, bar’s or restaurant’s page sheet shows a Meny section (offerings as chips, the first four items with prices, "Vis hele menyen" to `/place/[id]/menu`); one generic model per the spec’s venue menus contract (MASTER_SPEC L188, L8932, L21953). Menus are not searchable or filterable (the contract allows only approved fields to drive discovery).
 - Search by type (0365, user 2026-11-10): type words (Bedrift, Byrom, Organisasjon, Opplevelse, Arrangement, Festival), place and business categories, the organisation’s form, the experience’s category and types, accents and plural/definite endings folded, several words with an area ("park bærum"), ranked by match then distance, "Vis alle N på kartet" in the overlay. Before, "byrom", "bedrift" or "park bærum" found nothing.
 - Filtre mounts every section with the sheet; the 400 ms deferral made the lower half settle 1.2–1.4 s on the production bundle (0212).

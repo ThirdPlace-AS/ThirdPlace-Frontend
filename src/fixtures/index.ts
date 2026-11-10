@@ -11,6 +11,7 @@ import type { ImageSourcePropType } from "react-native";
 import { buildCatalog } from "./catalog/build";
 import type { InterestId } from "./catalog/interests";
 import { CATALOG_PEOPLE } from "./catalog/people";
+import { RESTAURANTS } from "./catalog/restaurants";
 import { SEEDS } from "./catalog/seeds";
 import { libImage, swipeImage, type LibraryKey } from "./images";
 
@@ -4102,12 +4103,16 @@ export function visibleNotifications(
 // The hosts the catalogue adds (fictional, with portraits) join `people`
 // first, so every host and contact person resolves.
 people.push(...CATALOG_PEOPLE);
-const CATALOG = buildCatalog(SEEDS, {
-  personName: (id) => personById(id)?.name,
-  legacyGroupFor: (interest) =>
-    groups.find((g) => g.interestId === interest)?.id,
-  namesFor: (seed, count) => generatedNames(seed, count),
-});
+const CATALOG = buildCatalog(
+  SEEDS,
+  {
+    personName: (id) => personById(id)?.name,
+    legacyGroupFor: (interest) =>
+      groups.find((g) => g.interestId === interest)?.id,
+    namesFor: (seed, count) => generatedNames(seed, count),
+  },
+  RESTAURANTS,
+);
 places.push(...CATALOG.places);
 businesses.push(...CATALOG.businesses);
 organizations.push(...CATALOG.organizations);

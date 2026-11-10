@@ -29,9 +29,13 @@ import { AREAS } from "./areas";
 import type { InterestId } from "./interests";
 import type {
   ArrangementSeed,
+  BedriftSeed,
+  ByromSeed,
   ChatLineSeed,
   InterestSeed,
   OpplevelseSeed,
+  OrganisasjonSeed,
+  RestaurantSeed,
   VenueRef,
 } from "./types";
 
@@ -164,6 +168,7 @@ function chatFrom(
 export function buildCatalog(
   seeds: readonly InterestSeed[],
   ctx: BuildContext,
+  restaurants: readonly RestaurantSeed[] = [],
 ): Catalog {
   const out: Catalog = {
     places: [],
@@ -178,6 +183,97 @@ export function buildCatalog(
     attendees: {},
   };
 
+  // One place with its reviews, its business or organisation record and its
+  // chat. The interest seeds' places and the extra restaurants share it.
+  const addPlace = (
+    kind: PlaceKind,
+    p: BedriftSeed | OrganisasjonSeed | ByromSeed,
+    id: string,
+    slug: InterestId,
+    recordId: string,
+  ): MockPlace => {
+    const d = KIND_DEFAULTS[kind];
+    const distanceM = Math.round(distanceMeters(CENTRE, p.coord));
+    const place: MockPlace = {
+      id,
+      name: p.name,
+      category: p.category,
+      kind,
+      interestId: slug,
+      ...(kind === "byrom" && "space" in p ? { space: p.space } : {}),
+      photos: p.photos,
+      distance: formatDistance(distanceM),
+      distanceM,
+      coord: p.coord,
+      priceLevel: priceLevelFor(p.priceNok),
+      priceNok: p.priceNok,
+      vibes: p.vibes,
+      blurb: p.blurb,
+      // A fallback only: "Åpent nå" is read from `hours` (isPlaceOpen).
+      openNow: p.openNow ?? true,
+      tags: p.tags,
+      about: p.about,
+      address: p.address,
+      hours: p.hours,
+      ...(p.specialHours ? { specialHours: p.specialHours } : {}),
+      accessibility: p.accessibility,
+      source: d.source,
+      placeStatus: "active",
+      types: p.types,
+      audiences: p.audiences ?? d.audiences,
+      durationMin: p.durationMin ?? d.durationMin,
+      timeOfDay: p.timeOfDay ?? d.timeOfDay,
+      languages: p.languages ?? ["norsk", "engelsk"],
+    };
+    out.places.push(place);
+    p.reviews.forEach(([author, rating, when, text], i) =>
+      out.reviews.push({
+        id: `r-${id}-${i + 1}`,
+        placeId: id,
+        author,
+        rating,
+        when,
+        text,
+      }),
+    );
+    if (kind === "bedrift" && "business" in p) {
+      out.businesses.push({
+        id: recordId,
+        name: p.business.name,
+        category: p.category,
+        verified: p.business.verified,
+        about: p.business.about,
+        address: p.address,
+        hours: p.hours,
+        placeId: id,
+      });
+    }
+    if (kind === "organisasjon" && "org" in p) {
+      out.organizations.push({
+        id: recordId,
+        placeId: id,
+        name: p.org.name ?? p.name,
+        form: p.org.form,
+        about: p.org.about,
+        activities: p.org.activities,
+        contactPersonId: p.org.contactPersonId,
+      });
+    }
+    const chatType: MockChatType = kind === "bedrift" ? "business" : "place";
+    chatFrom(
+      {
+        id: `c-${id}`,
+        name: p.name,
+        type: chatType,
+        access: "open",
+        placeId: id,
+      },
+      p.chat,
+      out,
+    );
+    return place;
+  };
+
   for (const seed of seeds) {
     const slug = seed.interest;
     const placeIds: Partial<Record<PlaceKind, string>> = {};
@@ -187,87 +283,10 @@ export function buildCatalog(
       const p = seed[kind];
       if (!p) continue;
       const id = `p-${slug}-${KIND_SUFFIX[kind]}`;
-      const d = KIND_DEFAULTS[kind];
-      const distanceM = Math.round(distanceMeters(CENTRE, p.coord));
-      const place: MockPlace = {
-        id,
-        name: p.name,
-        category: p.category,
-        kind,
-        interestId: slug,
-        ...(kind === "byrom" && "space" in p ? { space: p.space } : {}),
-        photos: p.photos,
-        distance: formatDistance(distanceM),
-        distanceM,
-        coord: p.coord,
-        priceLevel: priceLevelFor(p.priceNok),
-        priceNok: p.priceNok,
-        vibes: p.vibes,
-        blurb: p.blurb,
-        // A fallback only: "Åpent nå" is read from `hours` (isPlaceOpen).
-        openNow: p.openNow ?? true,
-        tags: p.tags,
-        about: p.about,
-        address: p.address,
-        hours: p.hours,
-        ...(p.specialHours ? { specialHours: p.specialHours } : {}),
-        accessibility: p.accessibility,
-        source: d.source,
-        placeStatus: "active",
-        types: p.types,
-        audiences: p.audiences ?? d.audiences,
-        durationMin: p.durationMin ?? d.durationMin,
-        timeOfDay: p.timeOfDay ?? d.timeOfDay,
-        languages: p.languages ?? ["norsk", "engelsk"],
-      };
-      out.places.push(place);
+      const record = `${kind === "organisasjon" ? "o" : "b"}-${slug}`;
+      const place = addPlace(kind, p, id, slug, record);
       placeIds[kind] = id;
       placeOf.set(id, place);
-      p.reviews.forEach(([author, rating, when, text], i) =>
-        out.reviews.push({
-          id: `r-${id}-${i + 1}`,
-          placeId: id,
-          author,
-          rating,
-          when,
-          text,
-        }),
-      );
-      if (kind === "bedrift" && "business" in p) {
-        out.businesses.push({
-          id: `b-${slug}`,
-          name: p.business.name,
-          category: p.category,
-          verified: p.business.verified,
-          about: p.business.about,
-          address: p.address,
-          hours: p.hours,
-          placeId: id,
-        });
-      }
-      if (kind === "organisasjon" && "org" in p) {
-        out.organizations.push({
-          id: `o-${slug}`,
-          placeId: id,
-          name: p.org.name ?? p.name,
-          form: p.org.form,
-          about: p.org.about,
-          activities: p.org.activities,
-          contactPersonId: p.org.contactPersonId,
-        });
-      }
-      const chatType: MockChatType = kind === "bedrift" ? "business" : "place";
-      chatFrom(
-        {
-          id: `c-${id}`,
-          name: p.name,
-          type: chatType,
-          access: "open",
-          placeId: id,
-        },
-        p.chat,
-        out,
-      );
     }
 
     const venueId = (ref: VenueRef): string | undefined =>
@@ -411,5 +430,10 @@ export function buildCatalog(
       );
     }
   }
+
+  // Restaurants (user 2026-11-10, "Add restaurants too"): extra Bedrift
+  // places for food interests, on top of each interest's own set of six.
+  for (const r of restaurants)
+    addPlace("bedrift", r, `p-rest-${r.key}`, r.interest, `b-rest-${r.key}`);
   return out;
 }
