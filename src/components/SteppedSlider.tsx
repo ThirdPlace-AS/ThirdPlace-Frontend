@@ -18,9 +18,9 @@ import { haptics } from "@/lib/haptics";
 import { motion, useThemeColors, elevation } from "@/theme";
 import { Text } from "@/components/ui";
 
+import { dragIntent } from "./sliderGesture";
+
 const THUMB = 28;
-// Horizontal travel (dp) before a touch counts as a drag rather than a tap.
-const DRAG_SLOP = 4;
 
 /** The step under a point on the track: x from the first step's centre, w the
  *  track's length between the first and last centres. */
@@ -50,6 +50,9 @@ export function SteppedSlider({
   // Where the touch went down on the track, and whether it has become a drag.
   const startX = useRef(0);
   const moved = useRef(false);
+  // The touch went up or down first: a scroll of the sheet, so it neither
+  // moves the thumb nor counts as a tap (0360).
+  const scrolling = useRef(false);
   const dragging = useRef(false);
   // The step last sent to onChange during a drag: moving within a step sends
   // nothing (speed pass 0347: each send re-rendered Filtre and recounted).
@@ -85,8 +88,9 @@ export function SteppedSlider({
   // end by default ("Alle"), about 30 dp from the screen edge, where Android's
   // back gesture starts, so a drag begun on the thumb closed Filtre instead.
   // A tap jumps to the nearest step on release; a horizontal drag follows the
-  // finger from wherever it started. A vertical scroll that starts here is
-  // taken by the sheet (terminate) and changes nothing.
+  // finger from wherever it started. A touch that goes up or down first is the
+  // sheet scrolling (sliderGesture.ts, 0360): it moves nothing, even a little
+  // diagonally, and is no tap.
   const settle = () => {
     dragging.current = false;
     const p = latest.current;
@@ -105,13 +109,17 @@ export function SteppedSlider({
           Math.min(w, e.nativeEvent.locationX - THUMB / 2),
         );
         moved.current = false;
+        scrolling.current = false;
         sent.current = latest.current.index;
       },
       onPanResponderMove: (_e, g) => {
         const p = latest.current;
         const w = trackWRef.current || 1;
         if (!moved.current) {
-          if (Math.abs(g.dx) < DRAG_SLOP) return;
+          if (scrolling.current) return;
+          const intent = dragIntent(g.dx, g.dy);
+          if (intent === "scroll") scrolling.current = true;
+          if (intent !== "drag") return;
           moved.current = true;
           dragging.current = true;
           scale.value = p.reduced ? 1 : withSpring(1.2, motion.spring.snappy);
@@ -130,7 +138,7 @@ export function SteppedSlider({
       },
       onPanResponderRelease: () => {
         const p = latest.current;
-        if (!moved.current)
+        if (!moved.current && !scrolling.current)
           p.onChange(stepAt(startX.current, trackWRef.current || 1, p.last));
         settle();
       },

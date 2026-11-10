@@ -203,8 +203,9 @@ describe("the Filtre sliders only report a new step", () => {
     act(() => root.props.onLayout({ nativeEvent: { layout: { width: 528 } } }));
     act(() => drag(thumbs[thumbs.length - 1]!.props, 500, 260));
     const highs = onChange.mock.calls.map((c) => c[1]);
-    // 240 one-pixel moves down from 1000 cross about five 100-kr steps (and
-    // since 0356 a drag reports at most every 100 ms; rangeSlider.test.tsx).
+    // 240 one-pixel moves down from 1000 cross about five 100-kr steps. With
+    // no reportEveryMs the slider reports each step once (Filtre's price
+    // waits between commits, 0356: rangeSlider.test.tsx).
     expect(highs.length).toBeGreaterThan(0);
     expect(highs.length).toBeLessThanOrEqual(6);
     expect(new Set(highs).size).toBe(highs.length);

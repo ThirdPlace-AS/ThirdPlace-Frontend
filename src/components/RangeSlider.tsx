@@ -20,10 +20,9 @@ import { useReducedMotion } from "@/hooks/useReducedMotion";
 
 import { motion, useThemeColors, elevation } from "@/theme";
 
+import { dragIntent } from "./sliderGesture";
+
 const THUMB = 28; // thumb diameter (px)
-// Horizontal travel (dp) before a touch counts as a drag (as in SteppedSlider):
-// a vertical scroll that starts on the slider moves no thumb.
-const DRAG_SLOP = 4;
 
 function snap(value: number, min: number, max: number, step: number): number {
   const stepped = Math.round((value - min) / step) * step + min;
@@ -98,8 +97,9 @@ const thumbShape = {
 // the touch, as in SteppedSlider (speed pass 0356): the top thumb rests at the
 // right end, partly inside Android's back-gesture zone, so a drag begun on it
 // could close Filtre instead; a drag that starts anywhere on the track moves
-// the nearer thumb by the finger's travel, without jumping, and a tap changes
-// nothing. The thumb position lives in a reanimated shared value so it glides
+// the nearer thumb by the finger's travel, without jumping; a tap changes
+// nothing, and a touch that goes up or down first is the sheet scrolling and
+// moves no thumb (sliderGesture.ts, 0360). The thumb position lives in a reanimated shared value so it glides
 // under the finger during the drag and springs to the committed (snapped)
 // position on release, while the COMMITTED value stays snapped to `step`.
 // `onSlide` hears every step a drag reaches (for cheap followers such as the
@@ -145,6 +145,8 @@ function RangeSliderBody({
   // which thumb it moves (decided on the first move).
   const startX = useRef(0);
   const moved = useRef(false);
+  // The touch went up or down first: a scroll, so it moves no thumb (0360).
+  const scrolling = useRef(false);
   const active = useRef<"low" | "high" | null>(null);
   const startLow = useRef(low);
   const startHigh = useRef(high);
@@ -274,6 +276,7 @@ function RangeSliderBody({
           Math.min(w, e.nativeEvent.locationX - THUMB / 2),
         );
         moved.current = false;
+        scrolling.current = false;
         active.current = null;
         startLow.current = p.low;
         startHigh.current = p.high;
@@ -283,7 +286,10 @@ function RangeSliderBody({
       onPanResponderMove: (_e, g) => {
         const p = latest.current;
         if (!moved.current) {
-          if (Math.abs(g.dx) < DRAG_SLOP) return;
+          if (scrolling.current) return;
+          const intent = dragIntent(g.dx, g.dy);
+          if (intent === "scroll") scrolling.current = true;
+          if (intent !== "drag") return;
           moved.current = true;
           dragging.current = true;
           const pick = thumbFor(
