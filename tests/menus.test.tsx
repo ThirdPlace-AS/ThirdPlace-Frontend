@@ -23,6 +23,7 @@ import {
   item,
   menuForPlace,
   menus,
+  servesFoodOrDrink,
   sized,
 } from "@/fixtures/menus";
 import { formatMoney } from "@/lib/format";
@@ -85,7 +86,8 @@ describe("the menu fixtures", () => {
     for (const m of menus) {
       const p = placeById(m.placeId);
       expect(p).toBeDefined();
-      expect(isMenuVenue(p!)).toBe(true);
+      // By what the place says it is, not because it has a menu.
+      expect(servesFoodOrDrink(p!)).toBe(true);
     }
     expect(new Set(menus.map((m) => m.placeId)).size).toBe(menus.length);
   });
@@ -128,14 +130,31 @@ describe("the menu fixtures", () => {
           }
   });
 
-  it("every legacy café and bar has a menu, and nothing else does", () => {
-    for (const id of ["p1", "p2", "p3"]) expect(menuForPlace(id)).toBeDefined();
-    const legacy = places.filter((p) => /^p\d+$/.test(p.id));
-    expect(legacy.filter((p) => isMenuVenue(p)).map((p) => p.id)).toEqual([
+  it("every café, bar, pub, bakery and tea room in the fixtures has a menu", () => {
+    const venues = places.filter((p) => servesFoodOrDrink(p));
+    expect(venues.filter((p) => !menuForPlace(p.id)).map((p) => p.id)).toEqual(
+      [],
+    );
+    // The three legacy ones and the catalogue's 22 (0372–0373).
+    expect(venues.length).toBe(25);
+    expect(menus.length).toBe(venues.length);
+    // Of the legacy places, only the two cafés and the wine bar serve food or
+    // drink (0371 gave the others categories that say what they are).
+    expect(venues.filter((p) => /^p\d+$/.test(p.id)).map((p) => p.id)).toEqual([
       "p1",
       "p2",
       "p3",
     ]);
+  });
+
+  it("put a price on everything but what is free", () => {
+    for (const m of menus)
+      for (const o of m.offerings)
+        for (const s of o.sections)
+          for (const i of s.items)
+            if (!i.price && !i.variants)
+              // The dog café's water bowl is the one item without a price.
+              expect(i.name).toBe("Vannskål");
   });
 });
 

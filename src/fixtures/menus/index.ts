@@ -3,12 +3,14 @@
 // venue that has none (one made in Legg til) shows the no-menu state.
 import type { MockPlace } from "../index";
 
+import { BAR_MENUS } from "./bars";
+import { CAFE_MENUS } from "./cafes";
 import { LEGACY_MENUS } from "./legacy";
 import type { MockMenu } from "./types";
 
 export * from "./types";
 
-export const menus: MockMenu[] = [...LEGACY_MENUS];
+export const menus: MockMenu[] = [...LEGACY_MENUS, ...CAFE_MENUS, ...BAR_MENUS];
 
 let byPlace: Map<string, MockMenu> | null = null;
 let indexedLength = -1;
@@ -27,11 +29,18 @@ export function menuForPlace(placeId: string): MockMenu | undefined {
 const VENUE =
   /(kaf[eé]|café|bar$|^bar\b|\bpub\b|restaurant|bistro|bakeri|bryggeri|tesalong|spisested|brasserie|pizzeria)/i;
 
-/** Whether a place's page has a Meny section: it has a menu, or it is a
- *  café, bar or restaurant (then the section says the menu isn't out yet). */
+/** A café, bar, pub, bakery, brewery, tea room or restaurant, by what the
+ *  place says it is. */
+export function servesFoodOrDrink(
+  place: Pick<MockPlace, "kind" | "category">,
+): boolean {
+  return place.kind !== "byrom" && VENUE.test(place.category);
+}
+
+/** Whether a place's page has a Meny section: it has a menu, or it serves
+ *  food or drink (then the section says the menu isn't out yet). */
 export function isMenuVenue(
   place: Pick<MockPlace, "id" | "kind" | "category">,
 ): boolean {
-  if (menuForPlace(place.id)) return true;
-  return place.kind !== "byrom" && VENUE.test(place.category);
+  return menuForPlace(place.id) !== undefined || servesFoodOrDrink(place);
 }
