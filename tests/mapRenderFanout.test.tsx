@@ -5,11 +5,14 @@
 // memo boundaries to that.
 import { afterEach, describe, expect, it, jest } from "@jest/globals";
 import { act, render, renderHook } from "@testing-library/react-native";
+import { readFileSync } from "fs";
+import { join } from "path";
 import { useState } from "react";
 import { Text as RNText } from "react-native";
 
 import { DetailContent } from "@/components/map/DetailContentRouter";
 import { useMapSaved } from "@/components/map/hooks/useMapSaved";
+import { useMapSelection } from "@/components/map/hooks/useMapSelection";
 import { MapCanvas } from "@/components/map/MapCanvas";
 import { resultForMode } from "@/components/map/services/mapFixtureAdapter";
 import { useSheetChrome } from "@/components/ui";
@@ -131,5 +134,42 @@ describe("memo boundaries", () => {
     expect(counts.page).toBe(1);
     act(() => bump());
     expect(counts.page).toBe(1);
+  });
+});
+
+// Review of the speed pass: the map screen's empty-map tap handler listed the
+// whole selection object, which was new on every render, so the memoised map
+// rendered again with every map-screen render and the test above (a synthetic
+// parent) could not see it.
+describe("the map screen hands the map stable handlers", () => {
+  it("useMapSelection returns the same object until the selection changes", () => {
+    const h = renderHook(() => useMapSelection());
+    const first = h.result.current;
+    h.rerender({});
+    expect(h.result.current).toBe(first);
+    act(() =>
+      h.result.current.openTarget({ kind: "place", id: places[0]!.id }),
+    );
+    const opened = h.result.current;
+    expect(opened).not.toBe(first);
+    h.rerender({});
+    expect(h.result.current).toBe(opened);
+  });
+
+  it("no hook on the map screen lists a whole hook result as a dependency", () => {
+    // These objects are rebuilt with their hook's state; a callback or memo
+    // that lists one changes whenever they do. List the member used instead.
+    const whole = ["filters", "discovery", "selection", "camera", "location"];
+    const src = readFileSync(
+      join(__dirname, "..", "app", "(tabs)", "map.tsx"),
+      "utf8",
+    );
+    const found: string[] = [];
+    for (const m of src.matchAll(/\[([^[\]]*)\]\s*,?\s*\)/g)) {
+      for (const name of m[1]!.split(",").map((x) => x.trim())) {
+        if (whole.includes(name)) found.push(name);
+      }
+    }
+    expect(found).toEqual([]);
   });
 });

@@ -64,15 +64,30 @@ export function useMapSelection() {
     return root ? markerId(root.kind, root.id) : null;
   }, [sheetStack]);
 
-  return {
-    sheetStack,
-    openIndex,
-    openNonce,
-    selectedMarkerId,
-    selectMarker,
-    openTarget,
-    push,
-    back,
-    close,
-  };
+  // One object per selection state (speed pass review): a caller that keeps
+  // the whole object in a dependency list then changes only with it.
+  return useMemo(
+    () => ({
+      sheetStack,
+      openIndex,
+      openNonce,
+      selectedMarkerId,
+      selectMarker,
+      openTarget,
+      push,
+      back,
+      close,
+    }),
+    [
+      sheetStack,
+      openIndex,
+      openNonce,
+      selectedMarkerId,
+      selectMarker,
+      openTarget,
+      push,
+      back,
+      close,
+    ],
+  );
 }

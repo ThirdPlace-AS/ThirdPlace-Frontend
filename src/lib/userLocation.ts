@@ -4,7 +4,10 @@
 // compass reading no longer renders the whole map. A compass sends readings
 // up to 20 times a second on a 2° change; the dot only takes a reading once
 // the phone has turned HEADING_MIN_TURN degrees and HEADING_MIN_GAP_MS has
-// passed. Device data, kept in memory only.
+// passed. A turn that comes too soon is held and shown when the gap is over
+// (the latest one wins): the compass sends nothing more while the phone is
+// held still, so the end of a quick turn would otherwise never show (review
+// of the speed pass). Device data, kept in memory only.
 import { useSyncExternalStore } from "react";
 
 export type UserLocationState = {
@@ -30,6 +33,15 @@ const EMPTY: UserLocationState = {
 
 let state: UserLocationState = EMPTY;
 let lastHeadingAt = Number.NEGATIVE_INFINITY;
+// A real turn that came before the gap was over, and the timer that shows it.
+let heldHeading: number | null = null;
+let heldTimer: ReturnType<typeof setTimeout> | null = null;
+
+function dropHeld() {
+  heldHeading = null;
+  if (heldTimer !== null) clearTimeout(heldTimer);
+  heldTimer = null;
+}
 const listeners = new Set<() => void>();
 
 function set(next: UserLocationState) {
@@ -74,15 +86,44 @@ export function setNativeCoord(coord: [number, number] | null) {
 }
 
 export function setUserHeading(heading: number | null, now = Date.now()) {
-  if (!headingCounts(state.heading, heading, now - lastHeadingAt)) return;
-  lastHeadingAt = now;
-  set({ ...state, heading });
+  if (headingCounts(state.heading, heading, now - lastHeadingAt)) {
+    dropHeld();
+    lastHeadingAt = now;
+    set({ ...state, heading });
+    return;
+  }
+  if (
+    heading !== null &&
+    state.heading !== null &&
+    headingCounts(state.heading, heading, HEADING_MIN_GAP_MS)
+  ) {
+    // A real turn, too soon: show the latest such reading when the gap ends.
+    heldHeading = heading;
+    if (heldTimer === null) {
+      const due = lastHeadingAt + HEADING_MIN_GAP_MS;
+      heldTimer = setTimeout(
+        () => {
+          heldTimer = null;
+          const h = heldHeading;
+          heldHeading = null;
+          if (h === null) return;
+          lastHeadingAt = due;
+          set({ ...state, heading: h });
+        },
+        Math.max(0, due - now),
+      );
+    }
+    return;
+  }
+  // Back within a few degrees of the shown heading: nothing left to show.
+  dropHeld();
 }
 
 /** A manual area replaces the phone: no fix and no heading. The map
  *  engine's own position stays (it only shows the dot). */
 export function clearUserFix() {
   lastHeadingAt = Number.NEGATIVE_INFINITY;
+  dropHeld();
   if (state.coord === null && state.heading === null) return;
   set({ ...state, coord: null, heading: null });
 }
@@ -99,5 +140,6 @@ export function useUserLocation(): UserLocationState {
 /** Tests and sign-out: back to no position. */
 export function resetUserLocation() {
   lastHeadingAt = Number.NEGATIVE_INFINITY;
+  dropHeld();
   set(EMPTY);
 }

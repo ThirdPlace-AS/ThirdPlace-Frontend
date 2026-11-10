@@ -267,11 +267,14 @@ export default function MapScreen() {
     [],
   );
 
-  // Tap on empty map: dismiss the keyboard and collapse the open sheet.
+  // Tap on empty map: dismiss the keyboard and collapse the open sheet. It
+  // depends on the stable close, not on the selection object (a new object
+  // whenever the stack changes), or the memoised map renders again with
+  // every map-screen render (review of the speed pass).
   const handleMapPress = useCallback(() => {
     Keyboard.dismiss();
-    selection.close();
-  }, [selection]);
+    sheetClose();
+  }, [sheetClose]);
 
   const handleModeChange = useCallback(
     (m: DiscoveryMode) => {

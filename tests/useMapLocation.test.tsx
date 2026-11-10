@@ -13,13 +13,23 @@ const mockHeadRemove = jest.fn();
 const mockWatchPosition = jest.fn();
 const mockWatchHeading = jest.fn();
 let mockOnHeading: (h: Heading) => void = () => {};
+type Pos = {
+  coords: { longitude: number; latitude: number; accuracy: number };
+  timestamp: number;
+};
+// The request's fix is taken at mockFixAt; the phone's last known position
+// (what resume reads) is mockLastKnown.
+let mockFixAt = 1000;
+let mockLastKnown: Pos | null = null;
 jest.mock("expo-location", () => ({
   Accuracy: { Balanced: 3 },
   requestForegroundPermissionsAsync: async () => ({ status: "granted" }),
   getForegroundPermissionsAsync: async () => ({ status: "granted" }),
   getCurrentPositionAsync: async () => ({
     coords: { longitude: 10.7579, latitude: 59.9227, accuracy: 20 },
+    timestamp: mockFixAt,
   }),
+  getLastKnownPositionAsync: async () => mockLastKnown,
   watchPositionAsync: async () => {
     mockWatchPosition();
     return { remove: mockPosRemove };
@@ -34,6 +44,8 @@ jest.mock("expo-location", () => ({
 afterEach(() => {
   resetUserLocation();
   jest.clearAllMocks();
+  mockFixAt = 1000;
+  mockLastKnown = null;
 });
 
 describe("useMapLocation", () => {
@@ -104,5 +116,42 @@ describe("useMapLocation", () => {
       result.current.resume();
     });
     expect(mockWatchPosition).toHaveBeenCalledTimes(1);
+  });
+
+  // Review of the speed pass: after the map was away, the dot and Posisjon
+  // used the fix from before until the watch's first new one arrived.
+  it("on return, a newer last known position replaces the old fix", async () => {
+    const { result } = renderHook(() => useMapLocation());
+    await act(async () => {
+      await result.current.request();
+    });
+    act(() => result.current.pause());
+    mockLastKnown = {
+      coords: { longitude: 10.8, latitude: 59.95, accuracy: 20 },
+      timestamp: mockFixAt + 60_000,
+    };
+    await act(async () => {
+      result.current.resume();
+      await new Promise((r) => setTimeout(r, 0));
+    });
+    expect(getUserLocation().coord).toEqual([10.8, 59.95]);
+  });
+
+  it("on return, an older last known position leaves the fix", async () => {
+    mockFixAt = 90_000;
+    const { result } = renderHook(() => useMapLocation());
+    await act(async () => {
+      await result.current.request();
+    });
+    act(() => result.current.pause());
+    mockLastKnown = {
+      coords: { longitude: 10.8, latitude: 59.95, accuracy: 20 },
+      timestamp: 30_000,
+    };
+    await act(async () => {
+      result.current.resume();
+      await new Promise((r) => setTimeout(r, 0));
+    });
+    expect(getUserLocation().coord).toEqual([10.7579, 59.9227]);
   });
 });

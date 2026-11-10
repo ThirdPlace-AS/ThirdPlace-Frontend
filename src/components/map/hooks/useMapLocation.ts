@@ -52,6 +52,9 @@ export function useMapLocation() {
   // The map follows the phone (a granted request, no manual area since): the
   // watches come back when the map is in front again.
   const following = useRef(false);
+  // When the fix in the store was taken (the position's own timestamp), so an
+  // older last-known position never replaces a newer fix.
+  const fixAt = useRef(0);
 
   const stop = useCallback(() => {
     gen.current += 1;
@@ -77,6 +80,7 @@ export function useMapLocation() {
               p.coords.longitude,
               p.coords.latitude,
             ];
+            fixAt.current = p.timestamp ?? 0;
             setUserCoord(next);
             // Jitter stays out of distances; a real move (> 250 m) counts.
             reportFix(next);
@@ -121,6 +125,7 @@ export function useMapLocation() {
         accuracy: Location.Accuracy.Balanced,
       });
       const fix: [number, number] = [pos.coords.longitude, pos.coords.latitude];
+      fixAt.current = pos.timestamp ?? 0;
       setUserCoord(fix);
       setHasFix(true);
       // A fresh request (Posisjon, the location sheet): distances follow the
@@ -178,6 +183,24 @@ export function useMapLocation() {
       // eslint-disable-next-line @typescript-eslint/no-require-imports
       const Location: LocationModule = require("expo-location");
       void startWatches(Location);
+      // The phone may have moved while the map was away, and the watch's first
+      // fix can take a while: until then the dot and Posisjon would use the
+      // old one (review of the speed pass). The phone's last known position
+      // (kept fresh by the map engine's own tracking) replaces it at once
+      // when it is newer; distances move only on a real move, as for any fix.
+      Location.getLastKnownPositionAsync?.()
+        .then((p) => {
+          if (!p || !following.current || (p.timestamp ?? 0) <= fixAt.current)
+            return;
+          fixAt.current = p.timestamp ?? 0;
+          const next: [number, number] = [
+            p.coords.longitude,
+            p.coords.latitude,
+          ];
+          setUserCoord(next);
+          reportFix(next);
+        })
+        .catch(() => {});
     } catch {
       // The native module is gone (it was there for the request): keep the fix.
     }

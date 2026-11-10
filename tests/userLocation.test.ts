@@ -2,7 +2,7 @@
 // pass 0346): only the dot reads this store, and a compass reading counts
 // only after a real turn and a short gap, so a phone in the hand no longer
 // renders the map up to 20 times a second.
-import { afterEach, describe, expect, it } from "@jest/globals";
+import { afterEach, describe, expect, it, jest } from "@jest/globals";
 
 import {
   clearUserFix,
@@ -16,7 +16,10 @@ import {
   setUserHeading,
 } from "@/lib/userLocation";
 
-afterEach(() => resetUserLocation());
+afterEach(() => {
+  resetUserLocation();
+  jest.useRealTimers();
+});
 
 describe("headingCounts", () => {
   it("takes the first reading and a clear to unknown", () => {
@@ -46,10 +49,41 @@ describe("headingCounts", () => {
 describe("the store", () => {
   it("keeps at most one compass reading per gap", () => {
     setUserHeading(0, 1000);
-    setUserHeading(45, 1050);
-    expect(getUserLocation().heading).toBe(0);
     setUserHeading(45, 1000 + HEADING_MIN_GAP_MS);
     expect(getUserLocation().heading).toBe(45);
+  });
+
+  // Review of the speed pass: the compass sends nothing more while the phone
+  // is held still, so a turn that ends inside the gap must still show.
+  it("shows a quick turn when the gap is over", () => {
+    jest.useFakeTimers();
+    setUserHeading(0, 1000);
+    setUserHeading(45, 1050);
+    expect(getUserLocation().heading).toBe(0);
+    jest.advanceTimersByTime(HEADING_MIN_GAP_MS - 50);
+    expect(getUserLocation().heading).toBe(45);
+  });
+
+  it("shows the latest of several quick readings, once", () => {
+    jest.useFakeTimers();
+    setUserHeading(0, 1000);
+    setUserHeading(30, 1050);
+    setUserHeading(60, 1100);
+    setUserHeading(90, 1150);
+    expect(getUserLocation().heading).toBe(0);
+    jest.advanceTimersByTime(HEADING_MIN_GAP_MS - 50);
+    expect(getUserLocation().heading).toBe(90);
+    jest.advanceTimersByTime(HEADING_MIN_GAP_MS * 2);
+    expect(getUserLocation().heading).toBe(90);
+  });
+
+  it("drops a held turn when the phone turns back", () => {
+    jest.useFakeTimers();
+    setUserHeading(0, 1000);
+    setUserHeading(45, 1050);
+    setUserHeading(2, 1100);
+    jest.advanceTimersByTime(HEADING_MIN_GAP_MS);
+    expect(getUserLocation().heading).toBe(0);
   });
 
   it("does not change for the same coordinate", () => {
@@ -74,5 +108,14 @@ describe("the store", () => {
     // The next reading counts at once.
     setUserHeading(91, 1001);
     expect(getUserLocation().heading).toBe(91);
+  });
+
+  it("a manual area drops a held turn", () => {
+    jest.useFakeTimers();
+    setUserHeading(0, 1000);
+    setUserHeading(45, 1050);
+    clearUserFix();
+    jest.advanceTimersByTime(HEADING_MIN_GAP_MS);
+    expect(getUserLocation().heading).toBe(null);
   });
 });
