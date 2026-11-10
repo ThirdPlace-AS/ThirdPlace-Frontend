@@ -310,6 +310,8 @@ export default function ChatThreadScreen() {
 
 // The message box keeps its own draft (speed pass 0352): typing used to
 // re-render the whole thread, every bubble and its gesture, per keystroke.
+// The text itself lives in a ref (R5, 0368): a keystroke renders nothing; the
+// box renders only when it turns empty or not (the send button wakes up).
 function Composer({
   replyTo,
   onCancelReply,
@@ -320,8 +322,13 @@ function Composer({
   onSend: (text: string) => void;
 }) {
   const colors = useThemeColors();
-  const [draft, setDraft] = useState("");
-  const ready = draft.trim().length > 0;
+  const input = useRef<TextInput>(null);
+  const text = useRef("");
+  const [ready, setReady] = useState(false);
+  const change = (t: string) => {
+    text.current = t;
+    setReady(t.trim().length > 0);
+  };
   return (
     <View className="gap-2 border-t border-line px-gutter pb-2 pt-2.5">
       {replyTo ? (
@@ -350,8 +357,9 @@ function Composer({
           style={{ fontFamily: fontFamilyFor("regular"), fontSize: 16 }}
           placeholder="Skriv en melding …"
           placeholderTextColor={colors.muted}
-          value={draft}
-          onChangeText={setDraft}
+          ref={input}
+          defaultValue=""
+          onChangeText={change}
           multiline
         />
         <IconButton
@@ -365,11 +373,12 @@ function Composer({
           pop={ready}
           disabled={!ready}
           onPress={() => {
-            const text = draft.trim();
-            if (!text) return;
+            const message = text.current.trim();
+            if (!message) return;
             haptics.tap();
-            onSend(text);
-            setDraft("");
+            onSend(message);
+            input.current?.clear();
+            change("");
           }}
         />
       </View>
