@@ -10,6 +10,8 @@ Photos added in Phase 19 (2026-11-08, the interest catalogue) come from the same
 
 The restaurant photos (`rest-*`, 2026-11-10) come from the same kind of searches, at 800 px, checked the same way; two first picks were swapped because a lid and a placemat carried brand print. None depicts the fictional restaurant it is shown with.
 
+Optimised on 2026-11-10: 432 full-size photos were encoded again from their Unsplash originals, fetched once more at the same size, each at the lowest WebP quality whose likeness to the original (SSIM) is no worse than the file it replaced. Portraits (`person-*`) now ship only their small file, which is the one the app draws. The photographers and sources below are unchanged.
+
 Photos added before Phase 11 (`person-*`, `venue-cafe/bar/restaurant/books/gallery/outdoor/workshop/music`, `group-run/wine/climb`, `market-*`) are also Unsplash License photos; their individual sources were not recorded when they were added.
 
 | File                 | Photographer                     | Source                                                                                                                                                 |
