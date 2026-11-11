@@ -52,9 +52,18 @@ composing hooks and components under `src/components/map/`.
   chat (`PlaceChatBar`: the last message and "Bli med i samtalen" / "Åpne
   samtalen"; guests get the sign-in prompt). Since 2026-11-10 a place's body
   keeps its Samtalen section too, like an experience's.
-- Not built (0382): keeping the page sheet mounted (closed) while the map is
-  focused, so the press could start the slide. About 0.4 s of the sheet's
-  mount and gorhom's layout pass remains between a press and its slide.
+- **Waiting sheet** (0384): the page sheet stays mounted while the map is
+  focused, closed at index -1 in the portal, so a tap only animates it up
+  (no mount and layout pass first). Closed, its body sits below the screen
+  inside gorhom's `box-none` containers, so taps reach the map's buttons, the
+  browse sheet and the tab bar; its backdrop starts with
+  `enableTouchThrough` (it remounts on every refocus) and the wrapper hides
+  it from the screen reader. While it slides closed it keeps its content;
+  once it is down the content goes and the stages reset. A group at the root
+  keeps the docked sheet, mounted when it opens (nothing opens one today:
+  groups open `/group/[id]`). Tried and dropped: starting the slide from the
+  press itself (`snapToIndex` before the render): the sheet arrived blank and
+  its content came later than without it.
 
 ## Rendering and memo boundaries
 

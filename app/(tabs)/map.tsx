@@ -597,20 +597,19 @@ export default function MapScreen() {
         />
       ) : null}
 
-      {/* Mounted only while open: a closed @gorhom sheet keeps a full-screen
-          container that would swallow taps meant for the map's floating buttons. */}
-      {selection.sheetStack.length > 0 ? (
-        <MapDetailSheet
-          ref={detailRef}
-          onPageChange={handlePageChange}
-          stack={selection.sheetStack}
-          openIndex={selection.openIndex}
-          openNonce={selection.openNonce}
-          push={selection.push}
-          onBack={selection.back}
-          onClose={selection.close}
-        />
-      ) : null}
+      {/* Always mounted (0384): closed, the page sheet waits at the app root,
+          so a marker tap only slides it up. Its closed body sits below the
+          screen in box-none containers: taps reach the map's buttons. */}
+      <MapDetailSheet
+        ref={detailRef}
+        onPageChange={handlePageChange}
+        stack={selection.sheetStack}
+        openIndex={selection.openIndex}
+        openNonce={selection.openNonce}
+        push={selection.push}
+        onBack={selection.back}
+        onClose={selection.close}
+      />
     </View>
   );
 }

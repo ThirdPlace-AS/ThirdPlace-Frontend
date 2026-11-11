@@ -18,7 +18,7 @@ import {
   useState,
 } from "react";
 import { useFocusEffect } from "expo-router";
-import { Share, View, useWindowDimensions } from "react-native";
+import { Share, StyleSheet, View, useWindowDimensions } from "react-native";
 import Animated, {
   Extrapolation,
   interpolate,
@@ -89,11 +89,21 @@ import type { PushFn, SheetTarget } from "./sheetTypes";
 // Pushed views keep the normal header, padded below the status bar at the
 // top snap. Groups keep the 92 % sheet docked above the tab bar.
 
+// Mounted while the map is focused (0384): closed, the page sheet waits in the
+// portal at index -1 (its body sits below the screen inside gorhom's box-none
+// containers, so taps reach the map, its buttons and the tab bar), and a
+// marker tap only animates it up instead of mounting and measuring it first.
+// While it slides closed it keeps showing what it showed; once it is down the
+// content goes and the stages reset. Groups still mount their docked sheet
+// when they open.
+
 // Page peek: 35 % of the window, at least PAGE_PEEK_MIN (300 dp: handle + ✕
 // row + the top of the gallery, sized when the floating card sat above the
 // peek; since 0342 the card shows only at the top snap and the peek keeps
 // this floor). Both live in services/pinCamera.ts, since the pin-tap camera
 // centres the pin above this same peek.
+
+const NO_STACK: SheetTarget[] = [];
 
 export type MapDetailSheetHandle = {
   /** Page → mid snap (Android back at the top snap). */
@@ -135,8 +145,19 @@ export const MapDetailSheet = memo(
         return () => setFocused(false);
       }, []),
     );
-    const root = stack[0];
-    const pageCapable = isPageKind(root?.kind);
+    const open = stack.length > 0;
+    // What the sheet shows: the open stack, or while it slides closed the
+    // last one (cleared once it is down, clearShown below).
+    const [shown, setShown] = useState<SheetTarget[]>(stack);
+    if (open && shown !== stack) setShown(stack);
+    const openRef = useRef(open);
+    useEffect(() => {
+      openRef.current = open;
+    }, [open]);
+    const root = shown[0];
+    // Closed and empty, the sheet waits as the page sheet (most taps open a
+    // place or an experience).
+    const pageCapable = root ? isPageKind(root.kind) : true;
     const { height: winH } = useWindowDimensions();
     // Short phones (H1, Phase 11 open item): at 35 % of a 640 dp screen only
     // the handle and ✕ showed above the floating join card. The page peek is
@@ -151,11 +172,10 @@ export const MapDetailSheet = memo(
     );
 
     const sheetRef = useRef<BottomSheet>(null);
-    const animatedIndex = useSharedValue(openIndex);
+    const animatedIndex = useSharedValue(-1);
     const [isPage, setIsPage] = useState(false);
-    const open = stack.length > 0;
-    const top = stack[stack.length - 1];
-    const nested = stack.length > 1;
+    const top = shown[shown.length - 1];
+    const nested = shown.length > 1;
     const topIsExperience = top?.kind === "experience";
     // The top view is a page (experience or place): the page top bar, Del +
     // Lagre in the header and the header folding away at the top snap.
@@ -201,15 +221,29 @@ export const MapDetailSheet = memo(
       rootKeyRef.current = rootKey;
     }, [rootKey]);
 
-    // Open → animate to the requested snap; closed → hide. `openNonce` is in
-    // the deps so EVERY tap re-snaps the sheet open. A new item while the
-    // sheet already rests at that snap (a tap on another pin at the peek,
+    // Down and closed: drop the content and the stages, so the next open
+    // mounts only what its peek shows (even for the same item again).
+    const clearShown = useCallback(() => {
+      if (openRef.current) return;
+      setShown(NO_STACK);
+      setSettledKey(null);
+      setRestKey(null);
+    }, []);
+
+    // Open → animate to the requested snap; closed → slide down. `openNonce`
+    // is in the deps so EVERY tap re-snaps the sheet open. A new item while
+    // the sheet already rests at that snap (a tap on another pin at the peek,
     // user 2026-11-11: "stay up, swap content") has nothing to animate, so
     // no snap event comes: it is at rest once FadeSwap has faded it in.
     const wasOpen = useRef(false);
     useEffect(() => {
       if (!open) {
         wasOpen.current = false;
+        // Pulled down (already at -1): no further snap event will come.
+        if (animatedIndex.value <= -0.99) {
+          const t = setTimeout(clearShown, 0);
+          return () => clearTimeout(t);
+        }
         sheetRef.current?.close();
         return;
       }
@@ -232,9 +266,13 @@ export const MapDetailSheet = memo(
     // first rows mount once the sheet has come to rest at a snap (onChange),
     // or after STAGE_FALLBACK_MS should no snap event come; the rest a
     // moment later. Pushed views render everything (the sheet is open).
-    const handleSnap = useCallback((i: number) => {
-      if (i >= 0) setSettledKey(rootKeyRef.current);
-    }, []);
+    const handleSnap = useCallback(
+      (i: number) => {
+        if (i >= 0) setSettledKey(rootKeyRef.current);
+        else clearShown();
+      },
+      [clearShown],
+    );
     useEffect(() => {
       if (!open) return;
       const key = rootKey;
@@ -310,6 +348,10 @@ export const MapDetailSheet = memo(
           appearsOnIndex={1}
           disappearsOnIndex={0}
           pressBehavior="close"
+          // Starts letting taps through (gorhom's default starts catching
+          // them until its first reaction): the closed sheet remounts each
+          // time the map comes back into focus (0384).
+          enableTouchThrough
           {...backdropA11y}
         />
       ),
@@ -335,12 +377,18 @@ export const MapDetailSheet = memo(
     }, [pageCapable, topIsPage, topPad]);
 
     const sheet = (
-      <>
+      // Closed, the waiting sheet is out of the screen reader's way too.
+      <View
+        style={StyleSheet.absoluteFill}
+        pointerEvents="box-none"
+        importantForAccessibility={open ? "auto" : "no-hide-descendants"}
+        accessibilityElementsHidden={!open}
+      >
         {isPage ? <StatusBarStyle style="auto" /> : null}
         <BottomSheet
           ref={sheetRef}
-          // Declarative open: mount already at the requested snap so the detail
-          // shows on the first frame.
+          // Closed it waits at -1; a group's docked sheet mounts already at
+          // the requested snap.
           index={open ? openIndex : -1}
           snapPoints={snapPoints}
           animatedIndex={animatedIndex}
@@ -406,10 +454,10 @@ export const MapDetailSheet = memo(
             <View />
           )}
         </BottomSheet>
-      </>
+      </View>
     );
-    // Experiences: a modal sheet at the app root, above the tab bar, only while
-    // the map is the focused screen.
+    // Experiences and places: a sheet at the app root, above the tab bar, only
+    // while the map is the focused screen.
     if (!pageCapable) return sheet;
     return focused ? <RootPortal>{sheet}</RootPortal> : null;
   }),
