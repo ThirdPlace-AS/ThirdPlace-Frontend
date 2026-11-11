@@ -148,8 +148,9 @@ describe("the origin", () => {
       savedIds: [],
     });
     const p1 = r.items.find((i) => i.id === "p1")!;
-    // "Bedrift · Grünerløkka · 38 km" (S3b: kind and area first).
-    expect(p1.subtitle).toMatch(/^Bedrift · Grünerløkka · \d+ km$/);
+    // "Kafé · Grünerløkka · 38 km" (S3b: kind and area first; a business by
+    // its kind of business since 2026-11-11).
+    expect(p1.subtitle).toMatch(/^Kafé · Grünerløkka · \d+ km$/);
     resetOrigin();
     const back = resultForMode({
       mode: "explore",
@@ -158,7 +159,7 @@ describe("the origin", () => {
       savedIds: [],
     });
     expect(back.items.find((i) => i.id === "p1")!.subtitle).toBe(
-      "Bedrift · Grünerløkka · 100 m",
+      "Kafé · Grünerløkka · 100 m",
     );
   });
 });

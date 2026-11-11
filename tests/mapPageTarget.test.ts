@@ -37,7 +37,8 @@ describe("page sheet targets", () => {
         savedKey: `place:${p.id}`,
       });
     }
-    expect(placeCaption(placeById("p1")!)).toMatch(/^Bedrift · /);
+    // A business by its kind of business (2026-11-11).
+    expect(placeCaption(placeById("p1")!)).toMatch(/^Kafé · /);
   });
 
   it("an experience's top bar is as before", () => {

@@ -11,7 +11,7 @@ Do not edit by hand; run the script again after a seed changes.
 - Interests: 84 in 8 categories, 84 with a seed entry.
 - Kinds per interest: Bedrift, Organisasjon, Byrom, Opplevelse, Arrangement, Gruppe. Cells marked **mangler**: 0.
 - Seeded places: 238 (legacy p1–p14 sit in inner Oslo and are not counted below), plus 8 restaurants (below).
-- Library photos: 622 full-size WebP (plus a small copy each), 36.5 MB in total; CREDITS.md rows: 599.
+- Library photos: 622 small WebP and 545 full-size ones (portraits ship only the small file), 32.6 MB in total; CREDITS.md rows: 599.
 
 ## Restaurants
 

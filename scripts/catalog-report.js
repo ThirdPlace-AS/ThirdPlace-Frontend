@@ -170,6 +170,7 @@ const regionLines = Object.entries(regions)
 const LIB = path.join(ROOT, "assets", "library");
 const webp = fs.readdirSync(LIB).filter((f) => f.endsWith(".webp"));
 const full = webp.filter((f) => !f.endsWith("-sm.webp"));
+const small = webp.length - full.length;
 const bytes = webp.reduce((s, f) => s + fs.statSync(path.join(LIB, f)).size, 0);
 const credits = read("assets", "library", "CREDITS.md")
   .split(/\r?\n/)
@@ -209,7 +210,7 @@ Do not edit by hand; run the script again after a seed changes.
 - Interests: ${interests.length} in ${Object.keys(CATEGORY_LABEL).length} categories, ${Object.keys(seeded).length} with a seed entry.
 - Kinds per interest: Bedrift, Organisasjon, Byrom, Opplevelse, Arrangement, Gruppe. Cells marked **mangler**: ${missing}.
 - Seeded places: ${placeCount} (legacy p1–p14 sit in inner Oslo and are not counted below), plus ${restaurants.length} restaurants (below).
-- Library photos: ${full.length} full-size WebP (plus a small copy each), ${(bytes / 1e6).toFixed(1)} MB in total; CREDITS.md rows: ${credits}.
+- Library photos: ${small} small WebP and ${full.length} full-size ones (portraits ship only the small file), ${(bytes / 1e6).toFixed(1)} MB in total; CREDITS.md rows: ${credits}.
 
 ## Restaurants
 

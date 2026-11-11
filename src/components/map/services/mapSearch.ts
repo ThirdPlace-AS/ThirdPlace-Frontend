@@ -332,7 +332,8 @@ export function searchFixtures(query: string): SearchGroups {
       kind: "place",
       id: p.id,
       title: p.name,
-      // "Bedrift · Sentrum · ★ 4,7" (PDF p5's search rows).
+      // "Buldresenter · Sentrum · ★ 4,7" (PDF p5's search rows; the kind of
+      // business or city space, "Organisasjon" for a club).
       subtitle: [
         placeTypeLabel(p),
         areaFor(p.coord).name,

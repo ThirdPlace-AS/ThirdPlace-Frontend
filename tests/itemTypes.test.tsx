@@ -28,6 +28,7 @@ import {
   experienceKindLabel,
   experienceType,
   experienceTypeLabel,
+  placeTypeLabel,
 } from "@/components/map/services/itemType";
 import { interestById } from "@/fixtures/catalog/interests";
 import {
@@ -134,11 +135,32 @@ describe("item types", () => {
     }
     const crag = spaces.find((i) => i.id === "p-klatring-r")!;
     expect(crag.subtitle.startsWith("Klatrefelt · Kolsås · ")).toBe(true);
-    // Bedrift and Organisasjon keep the kind; Filtre's Type still says Byrom.
-    expect(r.items.find((i) => i.type === "bedrift")!.typeLabel).toBe(
-      "Bedrift",
-    );
+    // Filtre's Type still says Byrom.
     expect(ITEM_TYPE_LABEL.byrom).toBe("Byrom");
+  });
+
+  it("names a business by its kind of business (2026-11-11)", () => {
+    const r = resultForMode({
+      mode: "explore",
+      places,
+      query: "",
+      savedIds: [],
+    });
+    const firms = r.items.filter((i) => i.type === "bedrift");
+    expect(firms.length).toBeGreaterThan(0);
+    for (const i of firms) {
+      const p = places.find((x) => x.id === i.id)!;
+      expect(i.typeLabel).toBe(p.category);
+      expect(i.typeLabel).not.toBe("Bedrift");
+    }
+    const gym = firms.find((i) => i.id === "p-klatring-b")!;
+    expect(gym.typeLabel).toBe("Buldresenter");
+    // An Organisasjon keeps the word; Filtre's Type still says Bedrift.
+    for (const i of r.items.filter((x) => x.type === "organisasjon"))
+      expect(i.typeLabel).toBe("Organisasjon");
+    expect(ITEM_TYPE_LABEL.bedrift).toBe("Bedrift");
+    // A place without a category falls back to its kind.
+    expect(placeTypeLabel({ kind: "bedrift", category: "" })).toBe("Bedrift");
   });
 });
 
@@ -211,7 +233,7 @@ describe("search", () => {
     );
     expect(g.groups.map((r) => r.id)).toContain("g-klatring");
     const gym = g.places.find((r) => r.id === "p-klatring-b")!;
-    expect(gym.subtitle).toMatch(/^Bedrift · Lillestrøm · ★ \d,\d$/);
+    expect(gym.subtitle).toMatch(/^Buldresenter · Lillestrøm · ★ \d,\d$/);
     expect(g.groups.find((r) => r.id === "g-klatring")!.subtitle).toBe(
       "Gruppe · 46 medlemmer",
     );

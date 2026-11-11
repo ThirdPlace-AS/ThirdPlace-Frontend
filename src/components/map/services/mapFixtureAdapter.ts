@@ -67,7 +67,8 @@ function placeToItem(
     coord: p.coord,
     category: p.category,
     title: p.name,
-    // Phase 19: "Bedrift · Sandvika · 12 km", the distance measured from
+    // Phase 19: "Buldresenter · Sandvika · 12 km" (a business's or city
+    // space's own kind; "Organisasjon" for a club), the distance measured from
     // the person (src/lib/origin.ts), not typed in.
     subtitle: `${typeLabel} · ${area} · ${formatDistance(distanceM)}`,
     distanceM,

@@ -2,7 +2,8 @@
 // Organisasjon or a Byrom (places), an Opplevelse or an Arrangement (an event,
 // or a festival over several days). Shown as a label on cards, the preview
 // and search rows ("Bedrift · Sandvika · 12 km") and picked in Filtre's
-// "Type" group. Pure.
+// "Type" group. On the map a business, a city space and an experience say
+// what kind they are instead ("Buldresenter", "Park", "Klatring"). Pure.
 import type { BadgeTone, IconName } from "@/components/ui";
 import {
   experienceById,
@@ -53,10 +54,6 @@ export function experienceTypeLabel(
   return (e.days ?? 1) > 1 ? "Festival" : ITEM_TYPE_LABEL.arrangement;
 }
 
-/** What to call a place on the map: its kind ("Bedrift", "Organisasjon"),
- *  but a city space by the kind of space it is ("Park", "Torg",
- *  "Klatrefelt"; user 2026-11-09: "should say what type of city space and
- *  not just city space"). Filtre's Type group still says "Byrom". */
 /** What an experience is on the map (user 2026-11-09: "Experiences on the
  *  map details and browse sheets should say the type of experience"): its
  *  activity, the interest's label ("Klatring", "Jazz"); a festival keeps the
@@ -72,10 +69,17 @@ export function experienceKindLabel(
     : activity;
 }
 
+/** What to call a place on the map: a city space by the kind of space it is
+ *  ("Park", "Torg", "Klatrefelt"; user 2026-11-09: "should say what type of
+ *  city space and not just city space") and a business by its kind of
+ *  business ("Buldresenter", "Pizzeria", "Kafé"; user 2026-11-11: "it should
+ *  say the business type and not just a business"). An Organisasjon keeps
+ *  the word, and so does a place without a category. Filtre's Type group
+ *  and search's type words still say "Bedrift" and "Byrom". */
 export function placeTypeLabel(
   p: Pick<MockPlace, "kind" | "category">,
 ): string {
-  return p.kind === "byrom" && p.category
+  return p.kind !== "organisasjon" && p.category
     ? p.category
     : ITEM_TYPE_LABEL[p.kind];
 }
@@ -108,8 +112,9 @@ function opensOnPhoto(item: CardItem): boolean {
 }
 
 /** The browse card's "what is it" line (founder 2026-11-08), no area:
- *  - a Bedrift or a Byrom: the type and how far away it is ("Bedrift ·
- *    1,2 km", from the person, the number the list is sorted by; 2026-11-09);
+ *  - a Bedrift or a Byrom: its kind and how far away it is ("Buldresenter ·
+ *    1,2 km", from the person, the number the list is sorted by; 2026-11-09,
+ *    the kind of business since 2026-11-11);
  *  - an Organisasjon: the type and its opening ("Organisasjon · Åpent");
  *  - an experience: its activity and its time ("Klatring · Lør 10:00",
  *    a festival "Klatring · Festival · Lør 10:00"; 2026-11-09). */

@@ -386,7 +386,8 @@ export const BrowseCard = memo(function BrowseCard({
         </View>
 
         {/* Body (founder 2026-11-08): title + rating, then what it is
-            ("Bedrift", "Opplevelse", "Festival" …) with a Bedrift's or
+            (a business's or city space's kind, "Buldresenter", "Park"; an
+            experience's activity; "Organisasjon") with a Bedrift's or
             Byrom's distance (2026-11-09), an Organisasjon's opening or an
             experience's time; for an experience who is going and its price
             (places show no price); tag chips. No pin category or area. */}
