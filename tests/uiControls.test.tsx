@@ -102,4 +102,18 @@ describe("SheetHeader", () => {
     expect(screen.getByText("Deltakere")).toBeTruthy();
     expect(screen.queryByText("Park")).toBeNull();
   });
+
+  // The map's sheet draws the item's pin by its label (user 2026-11-11).
+  it("draws the label icon with the label, and not without one", () => {
+    const icon = <Text testID="label-icon">o</Text>;
+    const { unmount } = render(
+      <SheetHeader label="Park" labelIcon={icon} onClose={() => {}} />,
+    );
+    expect(screen.getByTestId("label-icon")).toBeTruthy();
+    unmount();
+    render(
+      <SheetHeader title="Deltakere" labelIcon={icon} onClose={() => {}} />,
+    );
+    expect(screen.queryByTestId("label-icon")).toBeNull();
+  });
 });

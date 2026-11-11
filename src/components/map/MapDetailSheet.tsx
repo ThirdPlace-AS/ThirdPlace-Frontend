@@ -47,6 +47,7 @@ import { chatForPlace, experienceById, placeById } from "@/fixtures";
 import { elevation, gutterPx, useThemeColors } from "@/theme";
 
 import { PageActionCard } from "./content/PageActionCard";
+import { MiniPin } from "./MiniPin";
 import { useGuestMode } from "./hooks/useGuestMode";
 import { useMapSaved } from "./hooks/useMapSaved";
 import { markViewed } from "./hooks/useRecentlyViewed";
@@ -435,6 +436,9 @@ export const MapDetailSheet = memo(
                     // What the item is, top left (user 2026-11-11); the
                     // page top bar's caption takes over at the top snap.
                     label={pageInfo?.typeLabel}
+                    // Its pin, in its colour, beside it (the map has no
+                    // colour key; user 2026-11-11).
+                    labelIcon={pageInfo ? <MiniPin target={top} /> : null}
                     onBack={nested ? onBack : undefined}
                     onClose={onClose}
                     actions={pageInfo ? <ShareSave info={pageInfo} /> : null}

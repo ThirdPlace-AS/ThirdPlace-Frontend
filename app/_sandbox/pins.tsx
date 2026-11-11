@@ -1,19 +1,19 @@
-// Dev-only: every interest's map pin (Phase 19), grouped by colour, for
-// checking the glyphs on a device (thirdplace://_sandbox/pins). Uses the same
-// paint and glyphs as the map; a release build redirects _sandbox to the map.
+// Dev-only: the map's pin groups (user 2026-11-11, "familiar map colours")
+// with every interest's pin in its group, for checking colours and glyphs on
+// a device (thirdplace://_sandbox/pins). Uses the same paint and glyphs as the
+// map; a release build redirects _sandbox to the map.
 import { ScrollView, View } from "react-native";
 
 import { PinGlyph, Screen, Text } from "@/components/ui";
-import {
-  MARKER_GLYPH_TONE,
-  MARKER_LABEL,
-  markerFill,
-} from "@/components/map/services/markerCategory";
 import type { MarkerGlyph } from "@/components/map/services/markerIcon";
 import {
-  INTEREST_CATEGORIES,
-  interestsInCategory,
-} from "@/fixtures/catalog/interests";
+  INTEREST_PIN_GROUP,
+  PIN_GROUP_LABEL,
+  PIN_GROUP_TONE,
+  PIN_GROUPS,
+  pinGroupFill,
+} from "@/components/map/services/pinGroup";
+import { INTERESTS, type Interest } from "@/fixtures/catalog/interests";
 import { palette } from "@/theme";
 
 const pin = palette.light;
@@ -23,17 +23,20 @@ export default function SandboxPins() {
     <Screen edges={["top"]}>
       <ScrollView contentContainerClassName="gap-6 px-gutter py-4 pb-12">
         <Text variant="h2">Kartnåler</Text>
-        {INTEREST_CATEGORIES.map((cat) => {
-          const fill = markerFill(cat);
+        {PIN_GROUPS.map((group) => {
+          const fill = pinGroupFill(group);
           const glyph =
-            MARKER_GLYPH_TONE[cat] === "light" ? pin.surface : pin.ink;
+            PIN_GROUP_TONE[group] === "light" ? pin.surface : pin.ink;
+          const interests = (INTERESTS as readonly Interest[]).filter(
+            (i) => INTEREST_PIN_GROUP[i.id] === group,
+          );
           return (
-            <View key={cat} className="gap-3">
+            <View key={group} className="gap-3">
               <Text variant="label" weight="semibold">
-                {MARKER_LABEL[cat]}
+                {PIN_GROUP_LABEL[group]}
               </Text>
               <View className="flex-row flex-wrap gap-4">
-                {interestsInCategory(cat).map((i) => (
+                {interests.map((i) => (
                   <View key={i.id} className="w-16 items-center gap-1">
                     <View
                       className="h-8 w-8 items-center justify-center rounded-full border-2"

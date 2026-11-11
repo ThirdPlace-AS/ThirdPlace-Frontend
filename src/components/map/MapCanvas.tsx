@@ -305,18 +305,32 @@ function SoftMap({
               transform: [{ translateX: -22 }, { translateY: -22 }],
             }}
           >
+            {/* The native pins' edges: a soft shadow under every pin and,
+                for experiences, a thin white edge outside the ink ring. */}
             <View
-              className={`items-center justify-center rounded-full border-2 ${
-                selected ? "h-10 w-10" : "h-8 w-8"
-              }`}
-              // Same paint as the native pins (category fill, kind ring);
-              // the selected pin gets the brand ring.
-              style={{
-                backgroundColor: look.fill,
-                borderColor: selected ? PIN.ember : look.ring,
-              }}
+              className="rounded-full"
+              style={[
+                elevation.e1,
+                look.edge ? { padding: 1.5, backgroundColor: look.edge } : null,
+              ]}
             >
-              <PinGlyph name={markerIcon(item)} size={16} color={look.glyph} />
+              <View
+                className={`items-center justify-center rounded-full border-2 ${
+                  selected ? "h-10 w-10" : "h-8 w-8"
+                }`}
+                // Same paint as the native pins (pin group fill, kind ring);
+                // the selected pin gets the brand ring.
+                style={{
+                  backgroundColor: look.fill,
+                  borderColor: selected ? PIN.ember : look.ring,
+                }}
+              >
+                <PinGlyph
+                  name={markerIcon(item)}
+                  size={16}
+                  color={look.glyph}
+                />
+              </View>
             </View>
             {/* Title label under the pin (un-clustered markers only). The pill
                 keeps it legible regardless of the map background. */}

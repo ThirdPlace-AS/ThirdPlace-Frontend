@@ -32,7 +32,15 @@ import { PinGlyph } from "@/components/ui";
 import { motion, palette } from "@/theme";
 
 import type { MapStylePeriod } from "./mapStyles";
-import { markerPaint, pinPaint } from "./pinStyle";
+import {
+  markerPaint,
+  PIN_EDGE_RADIUS,
+  PIN_SELECTED_RING,
+  PIN_SHADOW,
+  PIN_SIZE,
+  PIN_ZOOMS,
+  pinPaint,
+} from "./pinStyle";
 import {
   INDEX_CONTOUR,
   TERRAIN_DEM_URL,
@@ -126,6 +134,23 @@ type HillshadeStyle = NonNullable<
 
 const MAP_STYLE = { flex: 1 } as const;
 const UNCLUSTERED: Filter = ["!", ["has", "point_count"]];
+// Experience pins: their ink ring gets a thin white edge (pinStyle.ts).
+const EXPERIENCE_PINS: Filter = [
+  "all",
+  ["!", ["has", "point_count"]],
+  ["==", ["get", "kind"], "experience"],
+];
+// A pin size (pinStyle.ts PIN_SIZE) interpolated between PIN_ZOOMS.
+const byZoom = (v: readonly [number, number]) =>
+  [
+    "interpolate",
+    ["linear"],
+    ["zoom"],
+    PIN_ZOOMS[0],
+    v[0],
+    PIN_ZOOMS[1],
+    v[1],
+  ] as unknown as number;
 const CLUSTERED: Filter = ["has", "point_count"];
 const HAS_HEADING: Filter = ["has", "heading"];
 const INDEX_ONLY: Filter = [">=", ["get", "index"], INDEX_CONTOUR];
@@ -344,6 +369,7 @@ export const MapboxMap = memo(function MapboxMap({
           properties: {
             markerId: m.markerId,
             category: m.category,
+            kind: m.kind,
             title: m.title,
             icon,
             fill: look.fill,
@@ -663,6 +689,8 @@ const HIT_STYLE: CircleStyle = {
 };
 
 type PinStyles = {
+  shadow: CircleStyle;
+  edge: CircleStyle;
   points: CircleStyle;
   title: SymbolStyle;
   clusters: CircleStyle;
@@ -714,27 +742,37 @@ const PinsSource = memo(function PinsSource({
   );
   const styles = useMemo<PinStyles>(
     () => ({
-      // Unclustered points, colored by category. A thick white stroke keeps
-      // every pin legible on any basemap (light/dark/satellite) — the pin
-      // color is a fixed per-category value and never derives from the map.
-      // circleEmissiveStrength:1 makes the pin fully self-lit so the Mapbox
-      // Standard light preset (day/dusk/night) can't dim it toward the dark
-      // basemap — without it, circle layers default to emissive 0 and the
-      // night preset renders them near-black.
+      // A soft dark edge under every pin, so light fills (yellow, sky blue)
+      // stand off pale map areas (user 2026-11-11). Self-lit like the pins.
+      shadow: {
+        circleColor: paint.shadow,
+        circleRadius: byZoom(PIN_EDGE_RADIUS.shadow),
+        circleOpacity: PIN_SHADOW.opacity,
+        circleBlur: PIN_SHADOW.blur,
+        circleEmissiveStrength: 1,
+      },
+      // Experiences: a thin white edge outside their ink ring, which alone
+      // vanished on the night basemap (user 2026-11-11).
+      edge: {
+        circleColor: paint.edge,
+        circleRadius: byZoom(PIN_EDGE_RADIUS.edge),
+        circleStrokeWidth: byZoom(PIN_SIZE.edge),
+        circleStrokeColor: paint.edge,
+        circleEmissiveStrength: 1,
+      },
+      // Unclustered points, filled by pin group (what the pin is). A thick
+      // white stroke keeps every pin legible on any basemap
+      // (light/dark/satellite) — the fill is a fixed value and never derives
+      // from the map. circleEmissiveStrength:1 makes the pin fully self-lit
+      // so the Mapbox Standard light preset (day/dusk/night) can't dim it
+      // toward the dark basemap — without it, circle layers default to
+      // emissive 0 and the night preset renders them near-black.
       points: {
         circleColor: paint.pointFill,
         // Small dots when zoomed far out (Phase 19: pins across Akershus),
         // full pins from zoom 11.
-        circleRadius: ["interpolate", ["linear"], ["zoom"], 8, 6, 11, 14],
-        circleStrokeWidth: [
-          "interpolate",
-          ["linear"],
-          ["zoom"],
-          8,
-          1.5,
-          11,
-          2.5,
-        ],
+        circleRadius: byZoom(PIN_SIZE.radius),
+        circleStrokeWidth: byZoom(PIN_SIZE.ring),
         circleStrokeColor: paint.pointStroke,
         circleEmissiveStrength: 1,
       },
@@ -805,15 +843,17 @@ const PinsSource = memo(function PinsSource({
       // Selected-point highlight ring
       selectedRing: {
         circleColor: "transparent",
-        circleRadius: 19,
-        circleStrokeWidth: 3,
+        circleRadius: PIN_SELECTED_RING.radius,
+        circleStrokeWidth: PIN_SELECTED_RING.width,
         circleStrokeColor: pin.ember,
         circleEmissiveStrength: 1,
       },
+      // The selected pin is drawn again at full size; its edges come from the
+      // layers under the pins, framed by the ember ring outside them.
       selectedPoint: {
         circleColor: paint.pointFill,
-        circleRadius: 14,
-        circleStrokeWidth: 2.5,
+        circleRadius: PIN_SIZE.radius[1],
+        circleStrokeWidth: PIN_SIZE.ring[1],
         circleStrokeColor: paint.pointStroke,
         circleEmissiveStrength: 1,
       },
@@ -853,6 +893,16 @@ const PinsSource = memo(function PinsSource({
       onPress={onPress}
     >
       <CircleLayer id="points-hit" filter={UNCLUSTERED} style={HIT_STYLE} />
+      <CircleLayer
+        id="points-shadow"
+        filter={UNCLUSTERED}
+        style={styles.shadow}
+      />
+      <CircleLayer
+        id="points-edge"
+        filter={EXPERIENCE_PINS}
+        style={styles.edge}
+      />
       <CircleLayer id="points" filter={UNCLUSTERED} style={styles.points} />
       <SymbolLayer
         id="point-title"

@@ -75,6 +75,7 @@ export function SheetHeader({
   actions,
   center = false,
   label,
+  labelIcon,
 }: {
   title?: string;
   onClose?: () => void;
@@ -88,6 +89,8 @@ export function SheetHeader({
   /** A short label at the left when there is no title (the map's page
    *  sheet says what the item is: "Park", "Kafé", "Klatring"). */
   label?: string;
+  /** Drawn before `label` (the map's page sheet: the pin in its colour). */
+  labelIcon?: ReactNode;
 }) {
   const dark = tone === "dark";
   const variant = dark ? "mediaSubtle" : "ghost";
@@ -112,12 +115,17 @@ export function SheetHeader({
           className="-ml-xs"
         />
       ) : null}
+      {!title && label ? labelIcon : null}
       {!title && label ? (
         <Text
           variant="label"
           weight="semibold"
           tone={dark ? "onMedia" : "ink"}
           numberOfLines={1}
+          // A long kind ("Vietnamesisk restaurant") shrinks a little beside
+          // its pin on a 360 dp phone instead of losing its end.
+          adjustsFontSizeToFit
+          minimumFontScale={0.85}
           className="flex-1"
         >
           {label}

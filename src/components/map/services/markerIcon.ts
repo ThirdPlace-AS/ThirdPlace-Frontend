@@ -6,20 +6,16 @@
 // business or city space") a place shows what it is, by its kind
 // (placeGlyph.ts: every park the tree, every café the cup; organisations by
 // their type too), and an experience keeps its interest's glyph. The pin's
-// colour stays the interest's category. Pure, so the native map, SoftMap and
-// the tests share it.
+// colour is its pin group (pinGroup.ts), and the glyph is drawn white or ink
+// to read on it. Pure, so the native map, SoftMap and the tests share it.
 import type { PinGlyphName } from "@/components/ui/PinGlyph";
 import { placeById, places } from "@/fixtures";
 import { INTERESTS, type Interest } from "@/fixtures/catalog/interests";
 
 import type { DiscoveryItem } from "../types/mapPresentation";
-import {
-  MARKER_GLYPH_TONE,
-  interestOfItem,
-  markerCategoryFor,
-  type MarkerCategory,
-} from "./markerCategory";
+import { interestOfItem } from "./markerCategory";
 import { placeKindGlyph } from "./placeGlyph";
+import { INTEREST_PIN_GROUP, PIN_GROUP_TONE, pinGroupFor } from "./pinGroup";
 
 export type MarkerGlyph = PinGlyphName;
 
@@ -46,8 +42,8 @@ export function markerIcon(
 }
 
 /** Every glyph a pin can show, with the tone(s) it is drawn in: each
- *  interest's glyph in its category's tone (experiences, created ones too),
- *  each place's kind glyph in the tone of its pin's colour, and the
+ *  interest's glyph in its pin group's tone (experiences, created ones
+ *  too), each place's kind glyph in its kind's group's tone, and the
  *  fallbacks in both. The map registers these once, so filtering never
  *  re-copies pin images; a pair missing here would draw a pin without its
  *  glyph. */
@@ -66,11 +62,11 @@ export function allPinGlyphs(): {
   for (const i of INTERESTS as readonly Interest[])
     add(
       i.glyph as MarkerGlyph,
-      MARKER_GLYPH_TONE[i.category as MarkerCategory],
+      PIN_GROUP_TONE[INTEREST_PIN_GROUP[i.id] ?? "social"],
     );
   for (const p of places) {
     const item = { kind: "place" as const, id: p.id };
-    add(markerIcon(item), MARKER_GLYPH_TONE[markerCategoryFor(item)]);
+    add(markerIcon(item), PIN_GROUP_TONE[pinGroupFor(item)]);
   }
   for (const g of Object.values(FALLBACK_GLYPH))
     for (const tone of ["light", "dark"] as const) add(g, tone);

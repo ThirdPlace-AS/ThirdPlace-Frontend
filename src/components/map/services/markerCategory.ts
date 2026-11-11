@@ -1,9 +1,10 @@
-// Marker categories (Phase 12 H3b). Founder (2026-11-06): every marker gets its
-// own colour by the category it fits; since Phase 19 (founder 2026-11-08) that
-// is the category of the item's interest (src/fixtures/catalog/interests.ts),
-// and markerIcon.ts takes the interest's glyph. Pure; shared by the native
-// map, the SoftMap fallback and the browse cards. Colours: `mapPalette` in
-// src/theme/tokens.js.
+// Marker categories (Phase 12 H3b; since Phase 19, founder 2026-11-08, the
+// category of the item's interest, src/fixtures/catalog/interests.ts). They
+// are Filtre's "Kategori" (and the InterestPicker's and catalogue screens'
+// headings): a place or experience is found under the interest it serves.
+// Pin colours no longer come from here: since 2026-11-11 (user: "the colors
+// need to change too") a pin's colour is its pin group, what it is
+// (pinGroup.ts). Pure.
 import type { IconName } from "@/components/ui";
 import { experienceById, placeById } from "@/fixtures";
 import {
@@ -11,7 +12,6 @@ import {
   interestForLabel,
   type Interest,
 } from "@/fixtures/catalog/interests";
-import { mapPalette } from "@/theme";
 
 import type { DiscoveryItem } from "../types/mapPresentation";
 
@@ -51,22 +51,6 @@ export const MARKER_FILTER_ICON: Record<MarkerCategory, IconName> = {
   kreativt: "brush-outline",
   velvaere: "flower-outline",
 };
-
-/** Glyph colour on the pin fill: whichever reads at ≥ 3:1 (tested). */
-export const MARKER_GLYPH_TONE: Record<MarkerCategory, "light" | "dark"> = {
-  kafe: "light",
-  mat: "dark",
-  sosialt: "dark",
-  natur: "light",
-  trening: "dark",
-  kultur: "light",
-  kreativt: "dark",
-  velvaere: "light",
-};
-
-export function markerFill(c: MarkerCategory): string {
-  return mapPalette[c] ?? mapPalette.velvaere ?? "";
-}
 
 // Experiences made in Legg til have no interest yet: a tag or their category
 // picks one, so their pin still has a colour and glyph that fit.

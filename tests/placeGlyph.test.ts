@@ -5,7 +5,9 @@ import { places } from "@/fixtures";
 import {
   PLACE_KIND_TYPES,
   placeKindGlyph,
+  placeKindGroup,
 } from "@/components/map/services/placeGlyph";
+import { PIN_GROUPS } from "@/components/map/services/pinGroup";
 
 // User 2026-11-11: "the same types of city space and businesses should share
 // the same marker icons, the icons must reflect the business or city space";
@@ -47,6 +49,27 @@ describe("placeKindGlyph", () => {
     same(["Badeplass", "Badestrand", "Sjøbad"], "beach");
     same(["Buldresenter", "Klatrefelt", "Klatrelag"], "carabiner");
     expect(placeKindGlyph("Torg")).toBe("fountain");
+  });
+
+  // User 2026-11-11: "the colors need to change too" (familiar map colours).
+  it("gives every kind a colour group, close kinds the same one", () => {
+    for (const t of PLACE_KIND_TYPES)
+      expect(PIN_GROUPS).toContain(placeKindGroup(t));
+    const same = (types: string[], group: string) => {
+      for (const t of types) expect(placeKindGroup(t)).toBe(group);
+    };
+    same(["Kafé", "Bakeri", "Tesalong", "Restaurant", "Pizzeria"], "eat");
+    same(["Bar", "Pub", "Bryggeri", "Konsertscene", "Utescene"], "night");
+    same(["Bruktbutikk", "Torg", "Spillforening", "Bowlinghall"], "social");
+    same(["Park", "Skulpturpark", "Nabolagshage", "Hundepark"], "nature");
+    same(["Badeplass", "Skogsvann", "Båthavn", "Kajakkutleie"], "water");
+    same(
+      ["Buldresenter", "Ballbane", "Treningssenter", "Dansestudio"],
+      "sport",
+    );
+    same(["Galleri", "Radiomuseum", "Festning", "Felles verksted"], "culture");
+    same(["Yogastudio", "Badstue", "Skjønnhetssalong"], "wellness");
+    expect(placeKindGroup("Ukjent")).toBeUndefined();
   });
 
   it("has nothing for an unknown or missing category", () => {

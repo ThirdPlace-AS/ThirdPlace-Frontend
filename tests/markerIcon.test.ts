@@ -8,15 +8,16 @@ import {
   type Interest,
 } from "@/fixtures/catalog/interests";
 import {
-  MARKER_GLYPH_TONE,
-  markerCategoryFor,
-} from "@/components/map/services/markerCategory";
-import {
   FALLBACK_GLYPH,
   allPinGlyphs,
   markerIcon,
 } from "@/components/map/services/markerIcon";
 import { placeKindGlyph } from "@/components/map/services/placeGlyph";
+import {
+  INTEREST_PIN_GROUP,
+  PIN_GROUP_TONE,
+  pinGroupFor,
+} from "@/components/map/services/pinGroup";
 
 // Founder request 2026-11-06: every map marker shows an icon that matches it.
 // Phase 19 (founder 2026-11-08): every interest has its own pin glyph, from
@@ -82,15 +83,23 @@ describe("markerIcon", () => {
     const all = allPinGlyphs();
     const keys = all.map((g) => `${g.glyph}:${g.tone}`);
     expect(new Set(keys).size).toBe(keys.length);
-    // Experiences (created ones too): every interest's glyph.
+    // Experiences (created ones too): every interest's glyph in its pin
+    // group's tone.
     for (const i of INTERESTS as readonly Interest[])
-      expect(keys).toContain(`${i.glyph}:${MARKER_GLYPH_TONE[i.category]}`);
-    // Places: the kind's glyph in the tone of the pin's colour, which comes
-    // from the interest, so a shared glyph needs every tone it sits on.
+      expect(keys).toContain(
+        `${i.glyph}:${PIN_GROUP_TONE[INTEREST_PIN_GROUP[i.id]!]}`,
+      );
+    // Places and experiences: the glyph each pin draws, in its group's tone.
     for (const p of places) {
       const item = { kind: "place" as const, id: p.id };
       expect(keys).toContain(
-        `${markerIcon(item)}:${MARKER_GLYPH_TONE[markerCategoryFor(item)]}`,
+        `${markerIcon(item)}:${PIN_GROUP_TONE[pinGroupFor(item)]}`,
+      );
+    }
+    for (const e of experiences) {
+      const item = { kind: "experience" as const, id: e.id };
+      expect(keys).toContain(
+        `${markerIcon(item)}:${PIN_GROUP_TONE[pinGroupFor(item)]}`,
       );
     }
     for (const g of all) expect(valid(g.glyph)).toBe(true);

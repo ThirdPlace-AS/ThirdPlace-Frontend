@@ -114,10 +114,27 @@ composing hooks and components under `src/components/map/`.
 
 ## Pins
 
-- Paint lives in `pinStyle.ts`: fill by the category of the item's interest
-  (`interestOfItem` / `markerCategoryFor` in `services/markerCategory.ts`,
-  colours in `tokens.js` `mapPalette`, never the brand pink), ring by kind
-  (places white, experiences ink), the pink ring only for selection.
+- Paint lives in `pinStyle.ts`. Fill by pin group, what the pin is
+  (`services/pinGroup.ts`; user 2026-11-11: "the colors need to change too",
+  then "familiar map colours", like Apple and Google Maps): eat orange, night
+  out purple, social and shops yellow, nature green, water blue, sport sky
+  blue, culture and making plum, wellness teal (`tokens.js` `mapPalette`,
+  never pink or red). A place takes its kind's group (`placeKindGroup`, the
+  same row as its icon), an experience its activity's (`INTEREST_PIN_GROUP`,
+  every interest listed). Glyphs are white or ink per group (≥ 3:1), and the
+  palette passes the protanopia and deuteranopia checks
+  (`tests/pinStyle.test.ts`). Filtre's Kategori still goes by the interest's
+  category (`markerCategoryFor`), so a Kategori result can mix colours.
+- Ring by kind (places white, experiences ink), the pink ring only for
+  selection. Two layers under the pins (`points-shadow`, `points-edge`, sizes
+  in `PIN_SIZE` / `PIN_EDGE_RADIUS`, emissive strength 1): a soft dark edge
+  under every pin, so light fills stand off pale map areas, and a thin white
+  edge outside an experience's ink ring, which alone vanished on night maps
+  (user 2026-11-11). The selection ring (`PIN_SELECTED_RING`) stays outside
+  both. SoftMap draws the same with a shadow and padding.
+- No colour key on the map (user 2026-11-11); the detail sheet's type label
+  carries the item's pin in its colour (`MiniPin` through `SheetHeader`'s
+  `labelIcon`), and a long label shrinks a little (to 85 %) beside it.
 - The glyph: a place shows what it is, one icon per kind of place
   (`services/placeGlyph.ts`, user 2026-11-11: "the same types of city space
   and businesses should share the same marker icons"; close kinds share one,
@@ -128,9 +145,8 @@ composing hooks and components under `src/components/map/`.
   `PinGlyph`, the only door to that family, with the font preloaded in
   `app/_layout.tsx`; Strikking's yarn is drawn. `MapboxMap` registers every
   pin image once from `allPinGlyphs()` (never per filter) and re-copies them
-  after mount: the interests' glyphs, and each place's kind glyph in the tone
-  of its pin's colour (a kind can sit on any interest's colour; 116 images,
-  was 90).
+  after mount: the interests' glyphs and each place's kind glyph, each in its
+  pin group's tone (100 images).
 - Dense maps: titles from zoom 13 with `symbolSortKey` = list rank, glyphs
   from zoom 11 (plain dots below), cluster bubbles step at 10/50/100, and the
   selected pin and its title are redrawn on top. Titles sit below the glyph
