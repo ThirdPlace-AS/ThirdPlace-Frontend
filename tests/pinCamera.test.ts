@@ -3,25 +3,53 @@
 import { describe, expect, it } from "@jest/globals";
 
 import {
+  FOCUS_ZOOM,
   PAGE_PEEK_MIN,
-  PIN_TAP_MAX_ZOOM,
   focusPadding,
   pagePeekHeight,
+  pinTapDuration,
   pinTapZoom,
   sameCoord,
 } from "@/components/map/services/pinCamera";
+import { duration } from "@/theme/motion";
 
+// User 2026-11-11: "clicking a marker should only zoom to a cearten zoom
+// level after that just move the screen to the next marker"; the user picked
+// 14.5 after seeing 14.5, 15 and 16 on the device.
 describe("pinTapZoom", () => {
-  it("steps one level closer", () => {
-    expect(pinTapZoom(13)).toBe(14);
-    expect(pinTapZoom(9.5)).toBe(10.5);
-    expect(pinTapZoom(15.25)).toBe(16.25);
+  it("zooms in to FOCUS_ZOOM once, from anywhere farther out", () => {
+    expect(FOCUS_ZOOM).toBe(14.5);
+    expect(pinTapZoom(11)).toBe(FOCUS_ZOOM);
+    expect(pinTapZoom(13.5)).toBe(FOCUS_ZOOM);
+    expect(pinTapZoom(14.2)).toBe(FOCUS_ZOOM);
   });
 
-  it("stops at street level and never zooms out", () => {
-    expect(pinTapZoom(16.5)).toBe(PIN_TAP_MAX_ZOOM);
-    expect(pinTapZoom(PIN_TAP_MAX_ZOOM)).toBe(PIN_TAP_MAX_ZOOM);
-    expect(pinTapZoom(18.4)).toBe(18.4);
+  it("at FOCUS_ZOOM or closer it only pans, and never zooms out", () => {
+    expect(pinTapZoom(FOCUS_ZOOM)).toBe(FOCUS_ZOOM);
+    // After a pick from the list (15.5) a tap only pans.
+    expect(pinTapZoom(15.5)).toBe(15.5);
+    expect(pinTapZoom(17.4)).toBe(17.4);
+    // Three taps in a row from county zoom: zoom once, then pan, pan.
+    let z = 12;
+    const seen: number[] = [];
+    for (let i = 0; i < 3; i++) {
+      z = pinTapZoom(z);
+      seen.push(z);
+    }
+    expect(seen).toEqual([FOCUS_ZOOM, FOCUS_ZOOM, FOCUS_ZOOM]);
+  });
+});
+
+describe("pinTapDuration", () => {
+  it("a pan or a short zoom takes duration.focus, a long zoom a bit more", () => {
+    expect(pinTapDuration(14.5, 14.5, false)).toBe(duration.focus);
+    expect(pinTapDuration(13.5, 14.5, false)).toBe(duration.focus);
+    expect(pinTapDuration(11.5, 14.5, false)).toBe(duration.focusFar);
+    expect(duration.focusFar).toBeGreaterThan(duration.focus);
+  });
+
+  it("reduced motion moves at once", () => {
+    expect(pinTapDuration(11.5, 14.5, true)).toBe(0);
   });
 });
 

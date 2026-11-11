@@ -1,6 +1,9 @@
 // Where the camera goes when a pin is picked (user 2026-11-10: a tapped
-// marker is centred on screen and the map zooms in a bit, smoothly). Pure, so
-// the tests pin the rules; MapboxMap applies them.
+// marker is centred on screen and the map zooms in a bit, smoothly; user
+// 2026-11-11: "clicking a marker should only zoom to a cearten zoom level
+// after that just move the screen to the next marker", street level, 16).
+// Pure, so the tests pin the rules; MapboxMap applies them.
+import { duration } from "@/theme/motion";
 
 /** The page sheet's lowest snap is 35 % of the window, and at least this tall:
  *  it shows the handle, the ✕ row and the top of the gallery. MapDetailSheet's
@@ -11,14 +14,33 @@ export function pagePeekHeight(windowH: number): number {
   return Math.max(Math.round(windowH * 0.35), PAGE_PEEK_MIN);
 }
 
-/** A pin tap zooms one step closer, up to this level. */
-export const PIN_TAP_MAX_ZOOM = 17;
+/** How close a pin tap takes the map: once there, taps only pan. The user
+ *  picked 14.5 after seeing 14.5, 15 and 16 on the device (16 showed about
+ *  250 m and left the next markers off screen; 14.5 keeps several in view,
+ *  names readable). A pick from the list or a link still zooms past the
+ *  clusters (`selectionZoom` in bounds.ts: 15.5 below 15), so its pin can be
+ *  seen; a tap after it then only pans. */
+export const FOCUS_ZOOM = 14.5;
 
-/** One step closer, never past street level, and never out (a pin tapped at
- *  zoom 18 keeps 18). */
+/** Up to FOCUS_ZOOM once, then the zoom stays: a tap at 14.5 or closer only
+ *  pans, and nothing ever zooms out (a pin tapped at 17.4 keeps 17.4). A
+ *  change of zoom also makes the map draw its tiles and pins again, which is
+ *  slow on a phone; a pan keeps them. A tapped pin is never in a cluster,
+ *  and zooming in only splits clusters, so it stays visible. */
 export function pinTapZoom(current: number): number {
-  if (current >= PIN_TAP_MAX_ZOOM) return current;
-  return Math.min(PIN_TAP_MAX_ZOOM, current + 1);
+  return current < FOCUS_ZOOM ? FOCUS_ZOOM : current;
+}
+
+/** How long the move takes: a pan or a short zoom `duration.focus`; from
+ *  far out (more than two levels to go) a little longer, so the zoom does
+ *  not lurch. Reduced motion: no animation. */
+export function pinTapDuration(
+  from: number,
+  to: number,
+  reduced: boolean,
+): number {
+  if (reduced) return 0;
+  return to - from > 2 ? duration.focusFar : duration.focus;
 }
 
 export type FocusPadding = {

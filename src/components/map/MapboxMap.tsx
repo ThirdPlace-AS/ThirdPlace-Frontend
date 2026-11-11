@@ -42,6 +42,7 @@ import {
 import { clusterZoom, firstViewCamera, selectionZoom } from "./services/bounds";
 import {
   focusPadding as paddingFor,
+  pinTapDuration,
   pinTapZoom,
   sameCoord,
   type FocusPadding,
@@ -373,18 +374,24 @@ export const MapboxMap = memo(function MapboxMap({
       const id = String(props.markerId);
       const coords = (f.geometry as Point | undefined)?.coordinates;
       // The camera moves from the press itself, before the selection
-      // renders the sheet (user 2026-11-10: centre the tapped marker and zoom
-      // in a bit, smoothly). A tap on the pin already open moves nothing.
+      // renders the sheet (user 2026-11-10: centre the tapped marker,
+      // smoothly). It zooms to street level once and then only pans (user
+      // 2026-11-11, pinTapZoom). A tap on the pin already open moves nothing.
       if (coords && id !== selectedRef.current) {
         const target: [number, number] = [coords[0]!, coords[1]!];
+        const from = zoomRef.current;
+        const zoom = pinTapZoom(from);
         flownRef.current = target;
         cameraRef.current?.setCamera({
           centerCoordinate: target,
-          zoomLevel: pinTapZoom(zoomRef.current),
+          zoomLevel: zoom,
           padding: paddingRef.current,
           animationMode: "easeTo",
-          animationDuration: reducedRef.current ? 0 : motion.duration.focus,
+          animationDuration: pinTapDuration(from, zoom, reducedRef.current),
         });
+        // Where the camera is going: a second tap before it comes to rest
+        // (onMapIdle) reads the destination, not the zoom it left.
+        zoomRef.current = zoom;
       }
       onSelectRef.current?.(id);
     }
