@@ -9,6 +9,7 @@ import {
 } from "@/components/experience/experienceMeta";
 import { experienceById, placeById } from "@/fixtures";
 
+import { experienceKindLabel, placeTypeLabel } from "./services/itemType";
 import type { SheetKind, SheetTarget } from "./sheetTypes";
 import { markerId } from "./types/mapPresentation";
 
@@ -43,6 +44,12 @@ export function pageReveal(index: number): number {
 export type PageInfo = {
   /** The small centred caption: "Sosialt · Grünerløkka", "Byrom · Kolsås". */
   caption: string;
+  /** What the item is, at the top left of the sheet header (user
+   *  2026-11-11: "at the top left of the details sheet it should say the
+   *  type of the city space, business or experiance"): the caption's first
+   *  part, from the same helpers the browse cards use ("Park", "Kafé",
+   *  "Klatring"). */
+  typeLabel: string;
   /** What Del shares. */
   shareMessage: string;
   /** markerId for the shared Saved store (Lagre). */
@@ -58,6 +65,7 @@ export function pageInfoFor(t: SheetTarget | undefined): PageInfo | null {
     return exp
       ? {
           caption: experienceCaption(exp),
+          typeLabel: experienceKindLabel(exp),
           shareMessage: `${exp.title} på ThirdPlace: thirdplace.app/experience/${exp.id}`,
           savedKey: markerId("experience", exp.id),
         }
@@ -68,6 +76,7 @@ export function pageInfoFor(t: SheetTarget | undefined): PageInfo | null {
     return place
       ? {
           caption: placeCaption(place),
+          typeLabel: placeTypeLabel(place),
           shareMessage: `${place.name} på ThirdPlace: thirdplace.app/place/${place.id}`,
           savedKey: markerId("place", place.id),
         }

@@ -265,6 +265,12 @@ clusters them on a 44 dp grid at cell centres and names the towns in view
     label through `experienceKindLabel` / `experienceCaption`, user
     2026-11-09).
     Filtre's Type group still says Bedrift, Byrom, Opplevelse and Arrangement.
+- The detail sheet's header says the same kind at its top left, beside Del,
+  Lagre and ✕ ("Park", "Vietnamesisk restaurant", "Klatring";
+  `PageInfo.typeLabel` through `SheetHeader`'s `label`, user 2026-11-11: "at
+  the top left of the details sheet it should say the type"). It folds away
+  with the header at the full page, where the top bar's caption ("Park ·
+  Grünerløkka") says it.
 - Browse cards name the type and no area (founder 2026-11-08): title and
   rating, then `browseCardLine` ("Buldresenter · 1,2 km" / "Organisasjon ·
   Åpent" / "Klatring · Festival · Lør 10:00"). A Bedrift's or Byrom's Åpent /

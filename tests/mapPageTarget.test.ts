@@ -7,6 +7,10 @@ import {
   placeCaption,
 } from "@/components/experience/experienceMeta";
 import { isPageKind, pageInfoFor } from "@/components/map/pageTarget";
+import {
+  experienceKindLabel,
+  placeTypeLabel,
+} from "@/components/map/services/itemType";
 import type { SheetKind } from "@/components/map/sheetTypes";
 import { experienceById, placeById, places } from "@/fixtures";
 
@@ -33,6 +37,7 @@ describe("page sheet targets", () => {
       const p = places.find((x) => x.kind === kind)!;
       expect(pageInfoFor({ kind: "place", id: p.id })).toEqual({
         caption: placeCaption(p),
+        typeLabel: placeTypeLabel(p),
         shareMessage: `${p.name} på ThirdPlace: thirdplace.app/place/${p.id}`,
         savedKey: `place:${p.id}`,
       });
@@ -45,9 +50,27 @@ describe("page sheet targets", () => {
     const e1 = experienceById("e1")!;
     expect(pageInfoFor({ kind: "experience", id: "e1" })).toEqual({
       caption: experienceCaption(e1),
+      typeLabel: experienceKindLabel(e1),
       shareMessage: `${e1.title} på ThirdPlace: thirdplace.app/experience/e1`,
       savedKey: "experience:e1",
     });
+  });
+
+  // User 2026-11-11: "at the top left of the details sheet it should say the
+  // type of the city space, business or experiance".
+  it("the sheet header says what the item is, as the caption starts", () => {
+    expect(pageInfoFor({ kind: "place", id: "p1" })?.typeLabel).toBe("Kafé");
+    const park = places.find(
+      (x) => x.kind === "byrom" && x.category === "Park",
+    )!;
+    expect(pageInfoFor({ kind: "place", id: park.id })?.typeLabel).toBe("Park");
+    for (const t of [
+      { kind: "place" as const, id: "p1" },
+      { kind: "experience" as const, id: "e1" },
+    ]) {
+      const info = pageInfoFor(t)!;
+      expect(info.caption.startsWith(`${info.typeLabel} · `)).toBe(true);
+    }
   });
 
   it("other targets, and unknown ids, have no page", () => {

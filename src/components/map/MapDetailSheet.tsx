@@ -432,6 +432,9 @@ export const MapDetailSheet = memo(
                 <View className="pb-2">
                   <SheetHeader
                     title={topIsPage ? undefined : titleFor(top)}
+                    // What the item is, top left (user 2026-11-11); the
+                    // page top bar's caption takes over at the top snap.
+                    label={pageInfo?.typeLabel}
                     onBack={nested ? onBack : undefined}
                     onClose={onClose}
                     actions={pageInfo ? <ShareSave info={pageInfo} /> : null}

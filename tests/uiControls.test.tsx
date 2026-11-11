@@ -1,7 +1,14 @@
 import { describe, expect, it, jest } from "@jest/globals";
 import { fireEvent, render, screen } from "@testing-library/react-native";
 
-import { Badge, Button, Chip, Switch, Text } from "@/components/ui";
+import {
+  Badge,
+  Button,
+  Chip,
+  SheetHeader,
+  Switch,
+  Text,
+} from "@/components/ui";
 
 describe("Button", () => {
   it("ignores presses and reports busy while loading", () => {
@@ -78,5 +85,21 @@ describe("Badge", () => {
     // Other tones have no solid look and ignore it.
     render(<Badge label="Ny" tone="neutral" solid />);
     expect(tone()).toBe("muted");
+  });
+});
+
+describe("SheetHeader", () => {
+  // The map's page sheet says what the item is at the top left (user
+  // 2026-11-11); a title, when there is one, wins.
+  it("shows a label at the left when there is no title", () => {
+    render(<SheetHeader label="Park" onClose={() => {}} />);
+    expect(screen.getByText("Park")).toBeTruthy();
+    expect(screen.getByLabelText("Lukk")).toBeTruthy();
+  });
+
+  it("a title wins over the label", () => {
+    render(<SheetHeader title="Deltakere" label="Park" onClose={() => {}} />);
+    expect(screen.getByText("Deltakere")).toBeTruthy();
+    expect(screen.queryByText("Park")).toBeNull();
   });
 });

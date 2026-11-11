@@ -74,6 +74,7 @@ export function SheetHeader({
   divider = false,
   actions,
   center = false,
+  label,
 }: {
   title?: string;
   onClose?: () => void;
@@ -84,6 +85,9 @@ export function SheetHeader({
   actions?: ReactNode;
   /** Centred title (a picker such as Kartlag), not the default left. */
   center?: boolean;
+  /** A short label at the left when there is no title (the map's page
+   *  sheet says what the item is: "Park", "Kafé", "Klatring"). */
+  label?: string;
 }) {
   const dark = tone === "dark";
   const variant = dark ? "mediaSubtle" : "ghost";
@@ -108,15 +112,27 @@ export function SheetHeader({
           className="-ml-xs"
         />
       ) : null}
-      <Text
-        variant="h2"
-        weight="bold"
-        tone={dark ? "onMedia" : "ink"}
-        numberOfLines={1}
-        className={center ? "flex-1 text-center" : "flex-1"}
-      >
-        {title ?? ""}
-      </Text>
+      {!title && label ? (
+        <Text
+          variant="label"
+          weight="semibold"
+          tone={dark ? "onMedia" : "ink"}
+          numberOfLines={1}
+          className="flex-1"
+        >
+          {label}
+        </Text>
+      ) : (
+        <Text
+          variant="h2"
+          weight="bold"
+          tone={dark ? "onMedia" : "ink"}
+          numberOfLines={1}
+          className={center ? "flex-1 text-center" : "flex-1"}
+        >
+          {title ?? ""}
+        </Text>
+      )}
       {actions}
       {onClose ? (
         <IconButton
