@@ -51,7 +51,13 @@ import { useGuestMode } from "./hooks/useGuestMode";
 import { useMapSaved } from "./hooks/useMapSaved";
 import { markViewed } from "./hooks/useRecentlyViewed";
 import { pagePeekHeight } from "./services/pinCamera";
-import { STAGE_FALLBACK_MS, SheetStageContext, stageReady } from "./sheetStage";
+import {
+  STAGE_FALLBACK_MS,
+  STAGE_REST_DELAY_MS,
+  STAGE_SWAP_MS,
+  SheetStageContext,
+  sheetStage,
+} from "./sheetStage";
 import { DetailContent, titleFor } from "./DetailContentRouter";
 import {
   atPageTop,
@@ -171,10 +177,13 @@ export const MapDetailSheet = memo(
       (atTop: boolean) => setIsPage(pageCapable && atTop),
       [pageCapable],
     );
+    // Not on the reaction's first run (prev null): the sheet opens below the
+    // top, and a same-value set state still rendered the whole sheet once
+    // more (about 50 ms of JS in the open, measured 2026-11-11).
     useAnimatedReaction(
       () => atPageTop(animatedIndex.value),
       (atTop, prev) => {
-        if (atTop !== prev) runOnJS(onTop)(atTop);
+        if (prev !== null && atTop !== prev) runOnJS(onTop)(atTop);
       },
       [onTop],
     );
@@ -183,11 +192,35 @@ export const MapDetailSheet = memo(
       collapse: () => sheetRef.current?.snapToIndex(1),
     }));
 
-    // Open → animate to the requested snap; closed → hide. `openNonce` is in
-    // the deps so EVERY tap re-snaps the sheet open.
+    // The stages (sheetStage.ts): the item the sheet has come to rest with,
+    // and the item whose lower part may mount.
+    const [settledKey, setSettledKey] = useState<string | null>(null);
+    const [restKey, setRestKey] = useState<string | null>(null);
+    const rootKeyRef = useRef(rootKey);
     useEffect(() => {
-      if (open) sheetRef.current?.snapToIndex(openIndex);
-      else sheetRef.current?.close();
+      rootKeyRef.current = rootKey;
+    }, [rootKey]);
+
+    // Open → animate to the requested snap; closed → hide. `openNonce` is in
+    // the deps so EVERY tap re-snaps the sheet open. A new item while the
+    // sheet already rests at that snap (a tap on another pin at the peek,
+    // user 2026-11-11: "stay up, swap content") has nothing to animate, so
+    // no snap event comes: it is at rest once FadeSwap has faded it in.
+    const wasOpen = useRef(false);
+    useEffect(() => {
+      if (!open) {
+        wasOpen.current = false;
+        sheetRef.current?.close();
+        return;
+      }
+      const resting =
+        wasOpen.current && Math.abs(animatedIndex.value - openIndex) < 0.01;
+      wasOpen.current = true;
+      sheetRef.current?.snapToIndex(openIndex);
+      if (!resting) return;
+      const key = rootKeyRef.current;
+      const t = setTimeout(() => setSettledKey(key), STAGE_SWAP_MS);
+      return () => clearTimeout(t);
       // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [open, rootKey, openNonce]);
 
@@ -195,27 +228,27 @@ export const MapDetailSheet = memo(
       onPageChange?.(isPage);
     }, [isPage, onPageChange]);
 
-    // R3a: a page opens with its first screen; the rest mounts once the
-    // sheet has come to rest at a snap (onChange), or after
-    // STAGE_FALLBACK_MS should no snap event come. Pushed views render
-    // everything (the sheet is already open).
-    const [settledNonce, setSettledNonce] = useState<number | null>(null);
-    const nonceRef = useRef(openNonce);
-    useEffect(() => {
-      nonceRef.current = openNonce;
-    }, [openNonce]);
+    // R3a + 0381: a page opens with what the peek shows; the title block and
+    // first rows mount once the sheet has come to rest at a snap (onChange),
+    // or after STAGE_FALLBACK_MS should no snap event come; the rest a
+    // moment later. Pushed views render everything (the sheet is open).
     const handleSnap = useCallback((i: number) => {
-      if (i >= 0) setSettledNonce(nonceRef.current);
+      if (i >= 0) setSettledKey(rootKeyRef.current);
     }, []);
     useEffect(() => {
       if (!open) return;
-      const t = setTimeout(
-        () => setSettledNonce(nonceRef.current),
-        STAGE_FALLBACK_MS,
-      );
+      const key = rootKey;
+      const t = setTimeout(() => setSettledKey(key), STAGE_FALLBACK_MS);
       return () => clearTimeout(t);
-    }, [open, openNonce]);
-    const stage = stageReady({ nested, openNonce, settledNonce });
+    }, [open, rootKey]);
+    useEffect(() => {
+      if (settledKey === null || settledKey !== rootKey) return;
+      if (restKey === settledKey) return;
+      const key = settledKey;
+      const t = setTimeout(() => setRestKey(key), STAGE_REST_DELAY_MS);
+      return () => clearTimeout(t);
+    }, [settledKey, restKey, rootKey]);
+    const stage = sheetStage({ nested, rootKey, settledKey, restKey });
 
     // A floating action card on the full-screen page (PageActionCard, top snap
     // only; user 2026-11-09): an experience's join action (PDF p6 + video, "Bli
@@ -315,7 +348,9 @@ export const MapDetailSheet = memo(
           enablePanDownToClose
           onChange={handleSnap}
           backdropComponent={renderBackdrop}
-          footerComponent={footerId ? renderFooter : undefined}
+          // The floating card shows on the full-screen page only: it mounts
+          // once the sheet has come to rest, not in the open (0381).
+          footerComponent={footerId && stage >= 1 ? renderFooter : undefined}
           onClose={() => {
             // Sync React state when the sheet is dismissed by gesture/backdrop.
             if (open) onClose();

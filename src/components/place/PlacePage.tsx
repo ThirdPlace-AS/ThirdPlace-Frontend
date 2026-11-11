@@ -8,7 +8,10 @@
 // fact once. MOCK fixture data; no booking or ranking (BLOCKED_CONTRACT_GAP).
 import type { Href } from "expo-router";
 import { useMemo, useState } from "react";
-import { useSheetStageReady } from "@/components/map/sheetStage";
+import {
+  useSheetStageFirst,
+  useSheetStageReady,
+} from "@/components/map/sheetStage";
 import { ScrollView, View } from "react-native";
 
 import { ReportSheet } from "@/components/actions/ActionSheets";
@@ -172,6 +175,9 @@ export function PlacePage({
   place: MockPlace;
   onNavigate: (href: Href) => void;
 }) {
+  // In the map sheet: the open shows the gallery (what the peek shows), the
+  // first rows come once the sheet rests, the rest a moment later (0381).
+  const first = useSheetStageFirst();
   const ready = useSheetStageReady();
   const [report, setReport] = useState(false);
   const reviews = reviewsForPlace(place.id);
@@ -186,8 +192,12 @@ export function PlacePage({
   const created = useCreatedVersion();
   const photos = useMemo(() => photosForPlace(place).map(libImage), [place]);
   const band = priceBandFor(place.priceNok);
-  // eslint-disable-next-line react-hooks/exhaustive-deps -- created: a place made in Legg til
-  const nearby = useMemo(() => nearbyPlaces(place), [place, created]);
+  // The lists below the first screen are worked out only once they show.
+  const nearby = useMemo(
+    () => (ready ? nearbyPlaces(place) : []),
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- created: a place made in Legg til
+    [place, created, ready],
+  );
   // Phase 19: who runs it, what happens here, which groups meet here.
   const business =
     place.kind === "bedrift" ? businessForPlace(place.id) : undefined;
@@ -196,132 +206,144 @@ export function PlacePage({
   const contact = org ? personById(org.contactPersonId) : undefined;
   const happening = useMemo(
     () =>
-      experiences.filter(
-        (e) =>
-          e.status !== "cancelled" &&
-          (e.placeId === place.id || e.organizerPlaceId === place.id),
-      ),
+      ready
+        ? experiences.filter(
+            (e) =>
+              e.status !== "cancelled" &&
+              (e.placeId === place.id || e.organizerPlaceId === place.id),
+          )
+        : [],
     // eslint-disable-next-line react-hooks/exhaustive-deps -- created: an experience made in Legg til
-    [place.id, created],
+    [place.id, created, ready],
   );
   const meetingHere = useMemo(
-    () => groups.filter((g) => g.homePlaceId === place.id),
+    () => (ready ? groups.filter((g) => g.homePlaceId === place.id) : []),
     // eslint-disable-next-line react-hooks/exhaustive-deps -- created: a group made in Legg til
-    [place.id, created],
+    [place.id, created, ready],
   );
 
   return (
     <View className="gap-6">
       <HeroGallery title={place.name} photos={photos} />
 
-      <View className="items-center gap-2 px-2">
-        <Text variant="h1" className="text-center" accessibilityRole="header">
-          {place.name}
-        </Text>
-        <Text variant="body" tone="muted" className="text-center">
-          {place.about}
-        </Text>
-        {count > 0 ? (
-          <UIPressable
-            accessibilityRole="link"
-            accessibilityLabel={`${formatRating(score)} av 5, ${count} vurderinger. Vis alle`}
-            onPress={() => onNavigate(reviewsHref)}
-            hitSlop={8}
-            contentClassName="mt-1 flex-row items-center gap-1"
-          >
-            <Icon name="star" size="sm" tone="ink" />
-            <Text variant="label" weight="semibold">
-              {formatRating(score)}
+      {first ? (
+        <>
+          <View className="items-center gap-2 px-2">
+            <Text
+              variant="h1"
+              className="text-center"
+              accessibilityRole="header"
+            >
+              {place.name}
             </Text>
-            <Text variant="label" tone="muted">
-              ·
+            <Text variant="body" tone="muted" className="text-center">
+              {place.about}
             </Text>
-            <Text variant="label" weight="semibold" className="underline">
-              {`${count} ${count === 1 ? "vurdering" : "vurderinger"}`}
-            </Text>
-          </UIPressable>
-        ) : null}
-        <View className="mt-1 flex-row flex-wrap justify-center gap-2">
-          {/* The place page is the business's one profile (user
+            {count > 0 ? (
+              <UIPressable
+                accessibilityRole="link"
+                accessibilityLabel={`${formatRating(score)} av 5, ${count} vurderinger. Vis alle`}
+                onPress={() => onNavigate(reviewsHref)}
+                hitSlop={8}
+                contentClassName="mt-1 flex-row items-center gap-1"
+              >
+                <Icon name="star" size="sm" tone="ink" />
+                <Text variant="label" weight="semibold">
+                  {formatRating(score)}
+                </Text>
+                <Text variant="label" tone="muted">
+                  ·
+                </Text>
+                <Text variant="label" weight="semibold" className="underline">
+                  {`${count} ${count === 1 ? "vurdering" : "vurderinger"}`}
+                </Text>
+              </UIPressable>
+            ) : null}
+            <View className="mt-1 flex-row flex-wrap justify-center gap-2">
+              {/* The place page is the business's one profile (user
               2026-11-10), so its verified mark sits here, as PDF p6 draws
               it. */}
-          {business?.verified ? <VerifiedChip /> : null}
-          {placeChips(place).map((c) => (
-            <Chip key={c} label={c} size="sm" />
-          ))}
-        </View>
-      </View>
+              {business?.verified ? <VerifiedChip /> : null}
+              {placeChips(place).map((c) => (
+                <Chip key={c} label={c} size="sm" />
+              ))}
+            </View>
+          </View>
 
-      <View className="h-px bg-line" />
+          <View className="h-px bg-line" />
 
-      <View className="gap-1">
-        <InfoRow
-          icon="location-outline"
-          title={place.address}
-          // How far away it is, from the person (the map's place sheet showed
-          // it before it became this page, 2026-11-09).
-          subtitle={`${place.category} · ${areaLabel(place.coord)} · ${distanceLabelFor(place.coord, origin)}`}
-        />
-        <InfoRow
-          icon="time-outline"
-          title={isPlaceOpen(place) ? "Åpent nå" : "Stengt nå"}
-          subtitle={place.hours}
-        />
-        <InfoRow
-          icon="pricetag-outline"
-          title="Prisnivå"
-          subtitle={band === "Gratis" ? "Gratis" : `${band} kr`}
-        />
-        {latest ? (
-          <InfoRow
-            icon="chatbox-ellipses-outline"
-            title="Siste anmeldelse"
-            subtitle={`«${latest.text}» · ${latest.when}`}
-            lines={2}
-          />
-        ) : null}
-        {/* Who runs it and what they say about themselves, as facts on this
-            page: a business or organisation has one profile, this one (user
-            2026-11-10, "don't need 2 business profiles"). */}
-        {business ? (
-          <InfoRow
-            icon="storefront-outline"
-            title={`Drives av ${business.name}`}
-            subtitle={business.about}
-            lines={2}
-          />
-        ) : null}
-        {org ? (
-          <>
+          <View className="gap-1">
             <InfoRow
-              icon={ITEM_TYPE_ICON.organisasjon}
-              // A club named like its place would say its name twice.
-              title={
-                org.name === place.name ? org.form : `${org.name} · ${org.form}`
-              }
-              subtitle={org.about}
-              lines={3}
+              icon="location-outline"
+              title={place.address}
+              // How far away it is, from the person (the map's place sheet showed
+              // it before it became this page, 2026-11-09).
+              subtitle={`${place.category} · ${areaLabel(place.coord)} · ${distanceLabelFor(place.coord, origin)}`}
             />
-            {contact ? (
+            <InfoRow
+              icon="time-outline"
+              title={isPlaceOpen(place) ? "Åpent nå" : "Stengt nå"}
+              subtitle={place.hours}
+            />
+            <InfoRow
+              icon="pricetag-outline"
+              title="Prisnivå"
+              subtitle={band === "Gratis" ? "Gratis" : `${band} kr`}
+            />
+            {latest ? (
               <InfoRow
-                icon="person-circle-outline"
-                title={contact.name}
-                subtitle="Kontaktperson"
-                onPress={() => onNavigate(`/people/${contact.id}` as Href)}
+                icon="chatbox-ellipses-outline"
+                title="Siste anmeldelse"
+                subtitle={`«${latest.text}» · ${latest.when}`}
+                lines={2}
               />
             ) : null}
-            <InfoRow
-              icon="list-outline"
-              title="Hva vi gjør"
-              subtitle={org.activities.join(" · ")}
-              lines={2}
-            />
-          </>
-        ) : null}
-      </View>
+            {/* Who runs it and what they say about themselves, as facts on this
+            page: a business or organisation has one profile, this one (user
+            2026-11-10, "don't need 2 business profiles"). */}
+            {business ? (
+              <InfoRow
+                icon="storefront-outline"
+                title={`Drives av ${business.name}`}
+                subtitle={business.about}
+                lines={2}
+              />
+            ) : null}
+            {org ? (
+              <>
+                <InfoRow
+                  icon={ITEM_TYPE_ICON.organisasjon}
+                  // A club named like its place would say its name twice.
+                  title={
+                    org.name === place.name
+                      ? org.form
+                      : `${org.name} · ${org.form}`
+                  }
+                  subtitle={org.about}
+                  lines={3}
+                />
+                {contact ? (
+                  <InfoRow
+                    icon="person-circle-outline"
+                    title={contact.name}
+                    subtitle="Kontaktperson"
+                    onPress={() => onNavigate(`/people/${contact.id}` as Href)}
+                  />
+                ) : null}
+                <InfoRow
+                  icon="list-outline"
+                  title="Hva vi gjør"
+                  subtitle={org.activities.join(" · ")}
+                  lines={2}
+                />
+              </>
+            ) : null}
+          </View>
+        </>
+      ) : null}
 
-      {/* Below the first screen: in the map sheet, once it has come to
-          rest (R3a, src/components/map/sheetStage.ts). */}
+      {/* Below the first screen: in the map sheet, a moment after it has
+          come to rest (R3a, 0381, src/components/map/sheetStage.ts). */}
       {ready ? (
         <>
           {isMenuVenue(place) ? (

@@ -8,7 +8,10 @@
 // action lives in the host's floating ExperienceJoinBar card.
 import type { Href } from "expo-router";
 import { useMemo, useState } from "react";
-import { useSheetStageReady } from "@/components/map/sheetStage";
+import {
+  useSheetStageFirst,
+  useSheetStageReady,
+} from "@/components/map/sheetStage";
 import {
   ScrollView,
   View,
@@ -130,6 +133,9 @@ export function ExperiencePage({
   onOpen,
   onNavigate,
 }: ExperiencePageProps) {
+  // In the map sheet: the open shows the gallery (what the peek shows), the
+  // first rows come once the sheet rests, the rest a moment later (0381).
+  const first = useSheetStageFirst();
   const ready = useSheetStageReady();
   const [user] = useExperienceJoin(
     exp.id,
@@ -148,21 +154,25 @@ export function ExperiencePage({
   // pass 0348), with each suggestion's rating.
   // Something made in Legg til joins the list (review of the speed pass).
   const created = useCreatedVersion();
+  // Worked out only once the lower part shows.
   const more = useMemo(
     () =>
-      moreExperiences(exp).map((e) => ({
-        e,
-        r: ratingOf(reviewsForExperience(e.id)),
-      })),
+      ready
+        ? moreExperiences(exp).map((e) => ({
+            e,
+            r: ratingOf(reviewsForExperience(e.id)),
+          }))
+        : [],
     // eslint-disable-next-line react-hooks/exhaustive-deps -- created: an experience made in Legg til
-    [exp, created],
+    [exp, created, ready],
   );
   const reviewsHref = `/experience/${exp.id}/reviews` as Href;
   // The direct chat with the host, matched by person (Phase 19: with many
   // hosts a first name is no longer enough).
-  const dm = host
-    ? chats.find((c) => c.type === "dm" && c.personId === host.id)
-    : undefined;
+  const dm =
+    ready && host
+      ? chats.find((c) => c.type === "dm" && c.personId === host.id)
+      : undefined;
   // An Arrangement names who puts it on (a club or a business).
   const organizer =
     exp.format === "event" ? placeById(exp.organizerPlaceId) : undefined;
@@ -171,116 +181,128 @@ export function ExperiencePage({
     <View className="gap-6">
       <HeroGallery title={exp.title} photos={exp.photos} />
 
-      {/* Title block, centred as in the reference. */}
-      <View className="items-center gap-2 px-2">
-        <Text variant="h1" className="text-center" accessibilityRole="header">
-          {exp.title}
-        </Text>
-        <Text variant="body" tone="muted" className="text-center">
-          {exp.about}
-        </Text>
-        {count > 0 ? (
-          <UIPressable
-            accessibilityRole="link"
-            accessibilityLabel={`${formatRating(score)} av 5, ${count} vurderinger. Vis alle`}
-            onPress={() => onNavigate(reviewsHref)}
-            hitSlop={8}
-            contentClassName="mt-1 flex-row items-center gap-1"
-          >
-            <Icon name="star" size="sm" tone="ink" />
-            <Text variant="label" weight="semibold">
-              {formatRating(score)}
+      {first ? (
+        <>
+          {/* Title block, centred as in the reference. */}
+          <View className="items-center gap-2 px-2">
+            <Text
+              variant="h1"
+              className="text-center"
+              accessibilityRole="header"
+            >
+              {exp.title}
             </Text>
-            <Text variant="label" tone="muted">
-              ·
+            <Text variant="body" tone="muted" className="text-center">
+              {exp.about}
             </Text>
-            <Text variant="label" weight="semibold" className="underline">
-              {count} vurderinger
-            </Text>
-          </UIPressable>
-        ) : null}
-        <View className="mt-1 flex-row flex-wrap justify-center gap-2">
-          {experienceChips(exp).map((c) => (
-            <Chip key={c} label={c} size="sm" />
-          ))}
-        </View>
-      </View>
+            {count > 0 ? (
+              <UIPressable
+                accessibilityRole="link"
+                accessibilityLabel={`${formatRating(score)} av 5, ${count} vurderinger. Vis alle`}
+                onPress={() => onNavigate(reviewsHref)}
+                hitSlop={8}
+                contentClassName="mt-1 flex-row items-center gap-1"
+              >
+                <Icon name="star" size="sm" tone="ink" />
+                <Text variant="label" weight="semibold">
+                  {formatRating(score)}
+                </Text>
+                <Text variant="label" tone="muted">
+                  ·
+                </Text>
+                <Text variant="label" weight="semibold" className="underline">
+                  {count} vurderinger
+                </Text>
+              </UIPressable>
+            ) : null}
+            <View className="mt-1 flex-row flex-wrap justify-center gap-2">
+              {experienceChips(exp).map((c) => (
+                <Chip key={c} label={c} size="sm" />
+              ))}
+            </View>
+          </View>
 
-      <View className="h-px bg-line" />
+          <View className="h-px bg-line" />
 
-      {/* Icon rows (the reference's host / where / time / included / review). */}
-      <View className="gap-1">
-        <InfoRow
-          leading={
-            <Avatar
-              name={hostName}
-              source={host ? libImage(host.avatar) : undefined}
-              size="sm"
-              decorative
+          {/* Icon rows (the reference's host / where / time / included / review). */}
+          <View className="gap-1">
+            <InfoRow
+              leading={
+                <Avatar
+                  name={hostName}
+                  source={host ? libImage(host.avatar) : undefined}
+                  size="sm"
+                  decorative
+                />
+              }
+              title={`Vert: ${hostName}`}
+              subtitle={
+                host?.area ? `Bor på ${host.area}` : "Arrangerer opplevelsen"
+              }
+              onPress={
+                host
+                  ? () => onNavigate(`/creator/${host.id}` as Href)
+                  : undefined
+              }
             />
-          }
-          title={`Vert: ${hostName}`}
-          subtitle={
-            host?.area ? `Bor på ${host.area}` : "Arrangerer opplevelsen"
-          }
-          onPress={
-            host ? () => onNavigate(`/creator/${host.id}` as Href) : undefined
-          }
-        />
-        {organizer ? (
-          <InfoRow
-            icon={ITEM_TYPE_ICON[organizer.kind]}
-            title={`Arrangør: ${organizer.name}`}
-            subtitle={`${PLACE_KIND_LABEL[organizer.kind]} · ${areaLabel(organizer.coord)}`}
-            onPress={() => onNavigate(`/place/${organizer.id}` as Href)}
-          />
-        ) : null}
-        <InfoRow
-          icon="location-outline"
-          title={place?.name ?? exp.meetingPoint.name}
-          subtitle={areaLabel(exp.meetingPoint.coord)}
-          onPress={
-            place ? () => onNavigate(`/place/${place.id}` as Href) : undefined
-          }
-        />
-        <InfoRow
-          icon="time-outline"
-          title={durationLabel(exp)}
-          subtitle={languageLabel(exp)}
-        />
-        <InfoRow
-          icon="clipboard-outline"
-          title="Hva er inkludert"
-          subtitle={includedLabel(exp)}
-          lines={2}
-        />
-        {latest ? (
-          <InfoRow
-            icon="chatbox-ellipses-outline"
-            title="Siste anmeldelse"
-            subtitle={`«${latest.text}» · ${latest.when}`}
-            lines={2}
-            onPress={() => onNavigate(reviewsHref)}
-          />
-        ) : null}
-        <InfoRow
-          icon="people-outline"
-          title={`${going} av ${exp.capacity} plasser tatt`}
-          subtitle="Se deltakere"
-          onPress={() => onOpen({ kind: "attendees", id: exp.id })}
-        />
-        {group ? (
-          <InfoRow
-            icon="people-outline"
-            title={group.name}
-            subtitle={`Gruppe · ${membersLabel(group.memberCount)}`}
-            onPress={() => onNavigate(`/group/${group.id}` as Href)}
-          />
-        ) : null}
-      </View>
+            {organizer ? (
+              <InfoRow
+                icon={ITEM_TYPE_ICON[organizer.kind]}
+                title={`Arrangør: ${organizer.name}`}
+                subtitle={`${PLACE_KIND_LABEL[organizer.kind]} · ${areaLabel(organizer.coord)}`}
+                onPress={() => onNavigate(`/place/${organizer.id}` as Href)}
+              />
+            ) : null}
+            <InfoRow
+              icon="location-outline"
+              title={place?.name ?? exp.meetingPoint.name}
+              subtitle={areaLabel(exp.meetingPoint.coord)}
+              onPress={
+                place
+                  ? () => onNavigate(`/place/${place.id}` as Href)
+                  : undefined
+              }
+            />
+            <InfoRow
+              icon="time-outline"
+              title={durationLabel(exp)}
+              subtitle={languageLabel(exp)}
+            />
+            <InfoRow
+              icon="clipboard-outline"
+              title="Hva er inkludert"
+              subtitle={includedLabel(exp)}
+              lines={2}
+            />
+            {latest ? (
+              <InfoRow
+                icon="chatbox-ellipses-outline"
+                title="Siste anmeldelse"
+                subtitle={`«${latest.text}» · ${latest.when}`}
+                lines={2}
+                onPress={() => onNavigate(reviewsHref)}
+              />
+            ) : null}
+            <InfoRow
+              icon="people-outline"
+              title={`${going} av ${exp.capacity} plasser tatt`}
+              subtitle="Se deltakere"
+              onPress={() => onOpen({ kind: "attendees", id: exp.id })}
+            />
+            {group ? (
+              <InfoRow
+                icon="people-outline"
+                title={group.name}
+                subtitle={`Gruppe · ${membersLabel(group.memberCount)}`}
+                onPress={() => onNavigate(`/group/${group.id}` as Href)}
+              />
+            ) : null}
+          </View>
+        </>
+      ) : null}
 
-      {/* Below the first screen: in the map sheet, once it has come to
-          rest (R3a, src/components/map/sheetStage.ts). */}
+      {/* Below the first screen: in the map sheet, a moment after it has
+          come to rest (R3a, 0381, src/components/map/sheetStage.ts). */}
       {ready ? (
         <>
           <View className="h-px bg-line" />
