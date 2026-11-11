@@ -15,14 +15,18 @@ export function pagePeekHeight(windowH: number): number {
 }
 
 /** How close a pin tap takes the map: once there, taps only pan. The user
- *  picked 14.5 after seeing 14.5, 15 and 16 on the device (16 showed about
- *  250 m and left the next markers off screen; 14.5 keeps several in view,
- *  names readable). A pick from the list or a link still zooms past the
- *  clusters (`selectionZoom` in bounds.ts: 15.5 below 15), so its pin can be
- *  seen; a tap after it then only pans. */
-export const FOCUS_ZOOM = 14.5;
+ *  picked, from three device screenshots, the one "about 1 km across" with
+ *  several markers and their names in view (16 showed about 250 m and left
+ *  the next markers off screen). That picture was labelled 14.5 but was the
+ *  old one-step zoom from the first view, measured afterwards at 13.6, so the
+ *  map uses 13.6 (2026-11-11; at 14.5 the first tap also blanked the map on
+ *  the emulator while it drew the closer tiles). Titles show from 13. A pick
+ *  from the list or a link still zooms past the clusters (`selectionZoom` in
+ *  bounds.ts: 15.5 below 15), so its pin can be seen; a tap after it then
+ *  only pans. */
+export const FOCUS_ZOOM = 13.6;
 
-/** Up to FOCUS_ZOOM once, then the zoom stays: a tap at 14.5 or closer only
+/** Up to FOCUS_ZOOM once, then the zoom stays: a tap at 13.6 or closer only
  *  pans, and nothing ever zooms out (a pin tapped at 17.4 keeps 17.4). A
  *  change of zoom also makes the map draw its tiles and pins again, which is
  *  slow on a phone; a pan keeps them. A tapped pin is never in a cluster,
@@ -31,16 +35,19 @@ export function pinTapZoom(current: number): number {
   return current < FOCUS_ZOOM ? FOCUS_ZOOM : current;
 }
 
-/** How long the move takes: a pan or a short zoom `duration.focus`; from
- *  far out (more than two levels to go) a little longer, so the zoom does
- *  not lurch. Reduced motion: no animation. */
+/** How long the move takes: a pan `duration.focus`; a tap that also zooms
+ *  in (the first one) `duration.focusFar`, so the zoom does not lurch and
+ *  the detail sheet arrives before the map comes to rest (user 2026-11-11:
+ *  "the details modal sheet is should slide in before the screen is done
+ *  redericting"; on the emulator the sheet starts at about 0.35–0.5 s).
+ *  Reduced motion: no animation. */
 export function pinTapDuration(
   from: number,
   to: number,
   reduced: boolean,
 ): number {
   if (reduced) return 0;
-  return to - from > 2 ? duration.focusFar : duration.focus;
+  return to > from ? duration.focusFar : duration.focus;
 }
 
 export type FocusPadding = {

@@ -15,13 +15,14 @@ import { duration } from "@/theme/motion";
 
 // User 2026-11-11: "clicking a marker should only zoom to a cearten zoom
 // level after that just move the screen to the next marker"; the user picked
-// 14.5 after seeing 14.5, 15 and 16 on the device.
+// the device screenshot about 1 km across, measured at zoom 13.6.
 describe("pinTapZoom", () => {
   it("zooms in to FOCUS_ZOOM once, from anywhere farther out", () => {
-    expect(FOCUS_ZOOM).toBe(14.5);
+    expect(FOCUS_ZOOM).toBe(13.6);
     expect(pinTapZoom(11)).toBe(FOCUS_ZOOM);
+    // The first view in Grünerløkka was 12.62 on the emulator.
+    expect(pinTapZoom(12.62)).toBe(FOCUS_ZOOM);
     expect(pinTapZoom(13.5)).toBe(FOCUS_ZOOM);
-    expect(pinTapZoom(14.2)).toBe(FOCUS_ZOOM);
   });
 
   it("at FOCUS_ZOOM or closer it only pans, and never zooms out", () => {
@@ -41,15 +42,19 @@ describe("pinTapZoom", () => {
 });
 
 describe("pinTapDuration", () => {
-  it("a pan or a short zoom takes duration.focus, a long zoom a bit more", () => {
-    expect(pinTapDuration(14.5, 14.5, false)).toBe(duration.focus);
-    expect(pinTapDuration(13.5, 14.5, false)).toBe(duration.focus);
-    expect(pinTapDuration(11.5, 14.5, false)).toBe(duration.focusFar);
+  it("a pan takes duration.focus, a tap that zooms in a bit longer", () => {
+    // Pans (every tap after the first) stay quick.
+    expect(pinTapDuration(13.6, 13.6, false)).toBe(duration.focus);
+    expect(pinTapDuration(17.4, 17.4, false)).toBe(duration.focus);
+    // The first tap zooms in: longer, so the sheet arrives before the map
+    // comes to rest (2026-11-11).
+    expect(pinTapDuration(12.62, 13.6, false)).toBe(duration.focusFar);
+    expect(pinTapDuration(11.5, 13.6, false)).toBe(duration.focusFar);
     expect(duration.focusFar).toBeGreaterThan(duration.focus);
   });
 
   it("reduced motion moves at once", () => {
-    expect(pinTapDuration(11.5, 14.5, true)).toBe(0);
+    expect(pinTapDuration(11.5, 13.6, true)).toBe(0);
   });
 });
 
