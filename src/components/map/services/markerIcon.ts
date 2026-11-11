@@ -1,17 +1,25 @@
 // Map pin glyphs (founder request 2026-11-06: every marker shows an icon that
 // matches it). Phase 19 (founder 2026-11-08): every interest has its own pin
 // glyph (src/fixtures/catalog/interests.ts, Material Community Icons plus the
-// hand-drawn yarn), so a pin shows the glyph of the item's interest. Pure, so
-// the native map, SoftMap and the tests share it.
+// hand-drawn yarn). Since 2026-11-11 (user: "the same types of city space and
+// businesses should share the same marker icons, the icons must reflect the
+// business or city space") a place shows what it is, by its kind
+// (placeGlyph.ts: every park the tree, every café the cup; organisations by
+// their type too), and an experience keeps its interest's glyph. The pin's
+// colour stays the interest's category. Pure, so the native map, SoftMap and
+// the tests share it.
 import type { PinGlyphName } from "@/components/ui/PinGlyph";
+import { placeById, places } from "@/fixtures";
 import { INTERESTS, type Interest } from "@/fixtures/catalog/interests";
 
 import type { DiscoveryItem } from "../types/mapPresentation";
 import {
   MARKER_GLYPH_TONE,
   interestOfItem,
+  markerCategoryFor,
   type MarkerCategory,
 } from "./markerCategory";
+import { placeKindGlyph } from "./placeGlyph";
 
 export type MarkerGlyph = PinGlyphName;
 
@@ -26,6 +34,10 @@ export function markerIcon(
   item: Pick<DiscoveryItem, "kind" | "id"> & { category?: string },
 ): MarkerGlyph {
   if (item.kind === "group") return FALLBACK_GLYPH.group;
+  if (item.kind === "place") {
+    const byKind = placeKindGlyph(placeById(item.id)?.category);
+    if (byKind) return byKind;
+  }
   const interest = interestOfItem(item);
   if (interest) return interest.glyph as MarkerGlyph;
   return item.kind === "experience"
@@ -34,17 +46,33 @@ export function markerIcon(
 }
 
 /** Every glyph a pin can show, with the tone(s) it is drawn in: each
- *  interest's glyph in its category's tone, and the fallbacks in both. The
- *  map registers these once, so filtering never re-copies pin images. */
+ *  interest's glyph in its category's tone (experiences, created ones too),
+ *  each place's kind glyph in the tone of its pin's colour, and the
+ *  fallbacks in both. The map registers these once, so filtering never
+ *  re-copies pin images; a pair missing here would draw a pin without its
+ *  glyph. */
 export function allPinGlyphs(): {
   glyph: MarkerGlyph;
   tone: "light" | "dark";
 }[] {
-  const out = (INTERESTS as readonly Interest[]).map((i) => ({
-    glyph: i.glyph as MarkerGlyph,
-    tone: MARKER_GLYPH_TONE[i.category as MarkerCategory],
-  }));
+  const out: { glyph: MarkerGlyph; tone: "light" | "dark" }[] = [];
+  const seen = new Set<string>();
+  const add = (glyph: MarkerGlyph, tone: "light" | "dark") => {
+    const key = `${glyph}:${tone}`;
+    if (seen.has(key)) return;
+    seen.add(key);
+    out.push({ glyph, tone });
+  };
+  for (const i of INTERESTS as readonly Interest[])
+    add(
+      i.glyph as MarkerGlyph,
+      MARKER_GLYPH_TONE[i.category as MarkerCategory],
+    );
+  for (const p of places) {
+    const item = { kind: "place" as const, id: p.id };
+    add(markerIcon(item), MARKER_GLYPH_TONE[markerCategoryFor(item)]);
+  }
   for (const g of Object.values(FALLBACK_GLYPH))
-    for (const tone of ["light", "dark"] as const) out.push({ glyph: g, tone });
+    for (const tone of ["light", "dark"] as const) add(g, tone);
   return out;
 }

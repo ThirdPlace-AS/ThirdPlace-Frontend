@@ -118,11 +118,19 @@ composing hooks and components under `src/components/map/`.
   (`interestOfItem` / `markerCategoryFor` in `services/markerCategory.ts`,
   colours in `tokens.js` `mapPalette`, never the brand pink), ring by kind
   (places white, experiences ink), the pink ring only for selection.
-- The glyph is the interest's own (Phase 19, founder 2026-11-08): Material
-  Community Icons through `PinGlyph`, the only door to that family, with the
-  font preloaded in `app/_layout.tsx`; Strikking's yarn is drawn. `MapboxMap`
-  registers every pin image once from `allPinGlyphs()` (never per filter) and
-  re-copies them after mount.
+- The glyph: a place shows what it is, one icon per kind of place
+  (`services/placeGlyph.ts`, user 2026-11-11: "the same types of city space
+  and businesses should share the same marker icons"; close kinds share one,
+  e.g. every café the cup, every restaurant the fork and knife, every park
+  the tree; organisations by their type too). Every place category is in its
+  table (`tests/placeGlyph.test.ts`). An experience shows its interest's own
+  glyph (Phase 19, founder 2026-11-08). Material Community Icons through
+  `PinGlyph`, the only door to that family, with the font preloaded in
+  `app/_layout.tsx`; Strikking's yarn is drawn. `MapboxMap` registers every
+  pin image once from `allPinGlyphs()` (never per filter) and re-copies them
+  after mount: the interests' glyphs, and each place's kind glyph in the tone
+  of its pin's colour (a kind can sit on any interest's colour; 116 images,
+  was 90).
 - Dense maps: titles from zoom 13 with `symbolSortKey` = list rank, glyphs
   from zoom 11 (plain dots below), cluster bubbles step at 10/50/100, and the
   selected pin and its title are redrawn on top. Titles sit below the glyph
