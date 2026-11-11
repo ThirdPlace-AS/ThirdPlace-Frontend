@@ -78,8 +78,11 @@ describe("search page", () => {
     const p = places[0]!;
     mockParams = { q: p.name };
     render(<SearchScreen />, { wrapper });
-    // Suggestion chips come first (they fill the field); the result row last.
-    fireEvent.press(screen.getAllByText(p.name).at(-1)!);
+    // No suggestion chips above the results (user 2026-11-11: "remove the
+    // five options"): the name shows once, in its result row.
+    const rows = screen.getAllByText(p.name);
+    expect(rows).toHaveLength(1);
+    fireEvent.press(rows[0]!);
     const arg = mockNavigate.mock.calls[0]![0] as {
       params: { focus: string };
     };

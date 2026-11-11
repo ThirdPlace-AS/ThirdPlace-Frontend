@@ -382,11 +382,3 @@ export function searchFixtures(query: string): SearchGroups {
     onMap: placeHits.length + experienceHits.length,
   };
 }
-
-// Lightweight title suggestions across all types (for the suggestion list).
-export function suggestFixtures(query: string, limit = 5): string[] {
-  const g = searchFixtures(query);
-  return [...g.places, ...g.experiences, ...g.groups]
-    .map((r) => r.title)
-    .slice(0, limit);
-}
