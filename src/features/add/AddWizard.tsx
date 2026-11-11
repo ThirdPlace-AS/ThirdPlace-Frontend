@@ -32,6 +32,8 @@ import {
 } from "@/components/illustrations/CategoryArt";
 import { areaFor } from "@/components/experience/experienceMeta";
 import { Input } from "@/components/Input";
+import { AreaChips } from "@/components/pickers/AreaChips";
+import { InterestPicker } from "@/components/pickers/InterestPicker";
 import { CategoryPicker, PlacePicker } from "@/components/pickers/Pickers";
 import {
   CANCELLATION_OPTIONS,
@@ -44,8 +46,8 @@ import {
   EXPERIENCE_VIBES,
   experienceById,
   experiences,
-  OSLO_AREAS,
-  people,
+  AREAS,
+  areaNameLabel,
   places,
   REPEAT_OPTIONS,
   type MockChatAccess,
@@ -85,10 +87,6 @@ const GROUP_POOL: LibraryKey[] = [
   "venue-outdoor",
   "venue-gallery",
 ];
-// Interests people already use in their profiles (no new taxonomy).
-const GROUP_INTERESTS = Array.from(
-  new Set(people.flatMap((p) => p.interests)),
-).slice(0, 14);
 // Who can join a group: the chat access modes with the chat's own labels
 // (the group chat header shows the same word).
 const GROUP_ACCESS: { value: MockChatAccess; title: string; hint: string }[] = [
@@ -240,7 +238,6 @@ export function AddWizard() {
   };
   const next = () => {
     if (!isLast) return setStepIndex((i) => i + 1);
-    haptics.light();
     if (draft.kind === "group") {
       setCreated(
         createGroup({
@@ -278,6 +275,9 @@ export function AddWizard() {
         }),
       });
     }
+    // Published, created or sent in: a real local completion, so the
+    // success tick (user 2026-11-09: haptics where it makes sense).
+    haptics.success();
     setSubmitted(true);
   };
 
@@ -450,10 +450,9 @@ function StepBody({
               maxLength={280}
             />
             <Label>Interesser</Label>
-            <ChipRow
-              options={GROUP_INTERESTS}
-              selected={draft.interests}
-              onPress={(i) => patch({ interests: toggle(draft.interests, i) })}
+            <InterestPicker
+              value={draft.interests}
+              onToggle={(i) => patch({ interests: toggle(draft.interests, i) })}
             />
           </Shell>
         );
@@ -498,7 +497,6 @@ function StepBody({
             onClose={() => setStartFrom(false)}
             onPick={(e) => {
               patch(copyOf(e));
-              haptics.light();
             }}
           />
           <Input
@@ -542,15 +540,14 @@ function StepBody({
               : "Velg området stedet ligger i."
           }
         >
-          <ChipRow
-            options={OSLO_AREAS.map((a) => a.name)}
-            selected={draft.area ? [draft.area] : []}
-            onPress={(a) => patch({ area: a })}
+          <AreaChips
+            value={draft.area || null}
+            onChange={(a) => patch({ area: a.name })}
           />
           {draft.area ? (
             <View className="flex-row items-center gap-2">
               <Icon name="location" size="sm" tone="ink" />
-              <Text variant="label">{draft.area}, Oslo</Text>
+              <Text variant="label">{areaNameLabel(draft.area)}</Text>
             </View>
           ) : null}
         </Shell>
@@ -579,7 +576,7 @@ function StepBody({
             <Text variant="caption" tone="muted" className="flex-1">
               {draft.area &&
               !HOST_PLACES.some((p) => p.name === draft.area) &&
-              !OSLO_AREAS.some((a) => a.name === draft.area)
+              !AREAS.some((a) => a.name === draft.area)
                 ? `Valgt: ${draft.area}`
                 : "Søk etter et annet sted …"}
             </Text>
@@ -591,10 +588,9 @@ function StepBody({
             />
           ) : null}
           <Label>Annet sted</Label>
-          <ChipRow
-            options={OSLO_AREAS.map((a) => a.name)}
-            selected={draft.area ? [draft.area] : []}
-            onPress={(a) => patch({ area: a })}
+          <AreaChips
+            value={draft.area || null}
+            onChange={(a) => patch({ area: a.name })}
           />
           <Input
             label="Valgfritt: eget oppmøtested"

@@ -38,7 +38,7 @@ The master spec asks for these before production (LIB L33736–33747, FG L10606�
 
 ## Product decisions still open (founder)
 
-- FA-1 type sizes and motion values; FA-2 For deg / Venner as same-for-everyone lists; FA-3 mock filter bands; category pin colours; the pink active-tab label.
+- FA-1 type sizes and motion values; FA-2 For deg / Venner as same-for-everyone lists; FA-3 mock filter bands; the pink active-tab label. (Pin colours: the founder chose familiar map colours by what a pin is, 2026-11-11, ledger 0387.)
 - Translations for English, Svenska and Dansk (Språk lists them; nothing is translated).
 - "Logg inn" with Google or Apple skips onboarding and the 18+ check for a brand-new user: the backend has to tell new and returning users apart.
 

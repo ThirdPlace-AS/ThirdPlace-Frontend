@@ -4,7 +4,7 @@
 // animation, and children mounted only while it is open (state seeds fresh on
 // every open — render the body unconditionally inside, the Overlay unmounts it
 // after the exit animation).
-import type { ReactNode } from "react";
+import { useState, type ReactNode } from "react";
 import {
   Modal,
   useWindowDimensions,
@@ -19,16 +19,7 @@ import { usePresence } from "./usePresence";
 
 export type OverlayEnter = "fade" | "up" | "left";
 
-export function Overlay({
-  visible,
-  onClose,
-  enter = "fade",
-  className,
-  style,
-  statusBarTranslucent = false,
-  accessibilityLabel,
-  children,
-}: {
+type OverlayProps = {
   visible: boolean;
   /** Android back / accessibility escape. */
   onClose: () => void;
@@ -40,7 +31,26 @@ export function Overlay({
   statusBarTranslucent?: boolean;
   accessibilityLabel?: string;
   children: ReactNode;
-}) {
+};
+
+/** Costs nothing until first opened, like <Sheet> (speed pass 0348); then
+ *  stays mounted for the exit animation and quick reopening. */
+export function Overlay(props: OverlayProps) {
+  const [opened, setOpened] = useState(props.visible);
+  if (props.visible && !opened) setOpened(true);
+  return opened ? <OverlayEngine {...props} /> : null;
+}
+
+function OverlayEngine({
+  visible,
+  onClose,
+  enter = "fade",
+  className,
+  style,
+  statusBarTranslucent = false,
+  accessibilityLabel,
+  children,
+}: OverlayProps) {
   const { mounted, progress, reduced, settled } = usePresence(visible);
   const { width, height } = useWindowDimensions();
 

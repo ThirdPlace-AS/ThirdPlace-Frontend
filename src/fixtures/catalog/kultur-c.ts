@@ -1,0 +1,971 @@
+// Seeds for the Bøker og kultur interests, part C (Phase 19): Film, Teater,
+// Museer. Hand-written MOCK content: businesses, clubs and events are
+// fictional; outdoor places use their public names with modest, general
+// descriptions (facilities as OpenStreetMap shows them). See
+// docs/fixtures/VOICE.md.
+import type { InterestSeed } from "./types";
+
+export const KULTUR_C: InterestSeed[] = [
+  {
+    interest: "film",
+    bedrift: {
+      name: "Lerretet",
+      category: "Kinobar",
+      coord: [10.508, 59.9165],
+      town: "Kolsås",
+      address: "Kolsåsstien, 1352 Kolsås",
+      hours: "Ons–søn 17–23",
+      priceNok: 130,
+      vibes: ["Koselig", "Intim"],
+      blurb:
+        "Liten kinobar på Kolsås med førti seter, nye og gamle filmer og noe godt i glasset.",
+      about:
+        "Lerretet er en kinosal med førti seter og en bar i gangen utenfor. Vi viser nye filmer, gamle favoritter og en og annen film du ikke finner på de store kinoene, og du kan ta med deg drikke og popcorn inn i salen.",
+      tags: ["Kino", "Bar", "Små visninger"],
+      accessibility: ["Trinnfri inngang", "Rullestol-WC"],
+      types: ["Kulturelle aktiviteter", "Natteliv"],
+      audiences: ["Par", "Lokalkjente", "Alenereisende"],
+      durationMin: 150,
+      photos: ["film-1", "film-4"],
+      reviews: [
+        [
+          "Kristoffer B.",
+          5,
+          "1 uke siden",
+          "Røde stoler, god lyd og en bartender som vet hva som går i kveld. Mye hyggeligere enn en stor kino.",
+        ],
+        [
+          "Lise M.",
+          4,
+          "3 uker siden",
+          "Fin liten sal, men setene på første rad er for nær lerretet.",
+        ],
+        [
+          "Navid S.",
+          5,
+          "2 måneder siden",
+          "Vi så en film fra sekstitallet som jeg aldri hadde fått sett ellers. Kommer tilbake.",
+        ],
+      ],
+      chat: [
+        [
+          "Lerretet",
+          "Fredag viser vi en klassiker fra femtitallet. Baren åpner klokka fem.",
+        ],
+        ["Lise", "Kan man velge sete selv?"],
+        ["Lerretet", "Ja, setene står på billetten."],
+      ],
+      business: {
+        name: "Lerretet Kinobar AS",
+        verified: true,
+        about:
+          "Kinobar på Kolsås, startet av to venner som savnet en liten kino i nabolaget.",
+      },
+    },
+    organisasjon: {
+      name: "Filmklubben i Vestby",
+      category: "Filmklubb",
+      coord: [10.7488, 59.6028],
+      town: "Vestby",
+      address: "Sentrumsveien, 1540 Vestby",
+      hours: "Ons 19–22",
+      priceNok: 0,
+      vibes: ["Sosial", "Rolig"],
+      blurb:
+        "Filmklubb i Vestby som ser en film sammen hver onsdag og snakker om den etterpå.",
+      about:
+        "Vi er en gjeng som liker film og liker å snakke om den. Hver onsdag ser vi en film i klubbrommet, og etterpå blir vi sittende og prate. Medlemmene foreslår filmer, og vi stemmer over neste måneds program.",
+      tags: ["Filmklubb", "Samtale", "Onsdager"],
+      accessibility: ["Trinnfri inngang"],
+      types: ["Kulturelle aktiviteter"],
+      photos: ["film-3", "film-5"],
+      reviews: [
+        [
+          "Solveig A.",
+          5,
+          "2 uker siden",
+          "Jeg kom for filmen og ble for praten etterpå. Nå er onsdag ukas beste kveld.",
+        ],
+        [
+          "Thomas R.",
+          4,
+          "2 måneder siden",
+          "Godt filmvalg, men samtalen etterpå kan bli lang. Jeg går ofte før den er ferdig.",
+        ],
+      ],
+      chat: [
+        [
+          "Filmklubben i Vestby",
+          "Onsdag ser vi en fransk film fra syttitallet, med norsk tekst.",
+        ],
+        ["Thomas", "Blir det kaffe i pausen?"],
+        ["Karoline Sunde", "Ja, og boller hvis noen baker."],
+      ],
+      org: {
+        form: "Klubb",
+        about:
+          "Filmklubb i Vestby. Vi ser film sammen hver onsdag, holder filmkvelder med samtale for nye og arrangerer en kortfilmhelg.",
+        activities: [
+          "Filmvisning hver onsdag",
+          "Samtale etter filmen",
+          "Filmkveld for nye",
+          "Kortfilmhelgen i Vestby",
+        ],
+        contactPersonId: "u53",
+      },
+    },
+    byrom: {
+      name: "Kulturparken",
+      category: "Park",
+      coord: [11.0433, 59.9544],
+      town: "Lillestrøm",
+      address: "Jonas Lies gate, 2000 Lillestrøm",
+      hours: "Alltid åpent",
+      priceNok: 0,
+      vibes: ["Rolig", "Sosial"],
+      blurb: "Park midt i Lillestrøm med benker, grillplass og lekeplass.",
+      about:
+        "En grønn park i sentrum av Lillestrøm, med benker under trærne, en grillplass og en lekeplass. Mange tar en pause her før eller etter kino og konserter i byen, og stiene er opplyst om kvelden.",
+      tags: ["Gratis", "Ute", "Grønt"],
+      accessibility: ["Trinnfri inngang"],
+      types: ["Friluftsliv", "Kulturelle aktiviteter"],
+      photos: ["film-2", "film-4"],
+      reviews: [
+        [
+          "Hanne K.",
+          5,
+          "1 måned siden",
+          "Vi grillet her før kinoen og rakk akkurat forestillingen. Fin plass midt i byen.",
+        ],
+        [
+          "Ali R.",
+          4,
+          "2 måneder siden",
+          "Hyggelig park, men det blir trangt rundt grillen en varm fredag.",
+        ],
+      ],
+      chat: [
+        [
+          "Hanne",
+          "Noen fra filmgjengen som vil møtes i Kulturparken før visningen?",
+        ],
+        ["Ali", "Jeg kan ta med kaffe på termos."],
+      ],
+      space: {
+        facilities: [
+          "Benker",
+          "Grillplass",
+          "Lekeplass",
+          "Toalett",
+          "Sykkelparkering",
+          "Belysning",
+        ],
+        access: "Åpent for alle",
+        season: "Hele året",
+      },
+    },
+    opplevelse: {
+      title: "Filmkveld med samtale",
+      hostId: "u53",
+      when: "Ons 19:00",
+      repeat: "Ukentlig",
+      venue: "organisasjon",
+      capacity: 25,
+      going: 14,
+      priceNok: 80,
+      about:
+        "En kveld for deg som vil se film med andre og snakke om den etterpå. Karoline sier noen ord før filmen, vi ser den sammen, og etterpå tar vi en runde rundt bordet om hva vi likte og hva vi ikke skjønte.",
+      category: "Kunst & kultur",
+      duration: "3 timer",
+      durationMin: 180,
+      languages: ["Norsk"],
+      included: ["Kaffe og te", "Popcorn"],
+      vibes: ["Sosialt", "Koselig"],
+      types: ["Kulturelle aktiviteter"],
+      audiences: ["Alenereisende", "Førstegangsbesøkende"],
+      tags: ["Film", "Samtale", "Onsdag"],
+      photos: ["film-3", "film-4"],
+      steps: [
+        [
+          "Noen ord først",
+          "Karoline forteller kort om filmen og hvorfor den ble valgt.",
+          "film-5",
+        ],
+        ["Filmen", "Vi ser filmen sammen i klubbrommet.", "film-3"],
+        ["Pause med kaffe", "Kaffe og popcorn før praten starter.", "film-4"],
+        [
+          "Rundt bordet",
+          "Alle som vil, sier hva de syntes. Det er lov å bare lytte.",
+          "film-1",
+        ],
+      ],
+      reviews: [
+        [
+          "Ingvild",
+          "Son",
+          5,
+          "1 uke siden",
+          "Jeg hadde aldri sett film med fremmede før. Etter tre onsdager føles det som en gjeng.",
+        ],
+        [
+          "Per Kristian",
+          "Vestby",
+          4,
+          "1 måned siden",
+          "Hyggelig og godt organisert. Lydanlegget kunne vært bedre.",
+        ],
+        [
+          "Dalia",
+          "Ås",
+          5,
+          "2 måneder siden",
+          "Samtalen etterpå fikk meg til å se filmen på nytt i hodet. Det er det beste med kvelden.",
+        ],
+      ],
+      chat: [
+        [
+          "Karoline Sunde",
+          "Velkommen! Onsdag ser vi en norsk film fra åttitallet. Kom gjerne litt før sju.",
+        ],
+        ["Per Kristian", "Er det greit å komme alene første gang?"],
+        ["Karoline Sunde", "Helt greit, de fleste gjorde det."],
+      ],
+    },
+    arrangement: {
+      title: "Kortfilmhelgen i Vestby",
+      hostId: "u53",
+      when: "Lør 12:00",
+      days: 2,
+      venue: "organisasjon",
+      organizer: "organisasjon",
+      capacity: 60,
+      going: 31,
+      priceNok: 150,
+      about:
+        "En helg med kortfilmer fra Follo og resten av landet, vist i blokker på en time. Lørdag er det visninger og samtale med noen av filmskaperne, og søndag viser vi filmene publikum likte best.",
+      category: "Kunst & kultur",
+      duration: "3 timer",
+      durationMin: 180,
+      included: ["Inngang begge dagene", "Kaffe"],
+      vibes: ["Kreativt", "Sosialt"],
+      types: ["Festivaler", "Kulturelle aktiviteter"],
+      audiences: ["Store grupper", "Lokalkjente", "Par"],
+      tags: ["Kortfilm", "Festival"],
+      photos: ["film-2", "film-1"],
+      steps: [
+        [
+          "Lør 12:00 · Første blokk",
+          "En time med korte filmer fra Follo.",
+          "film-2",
+        ],
+        [
+          "Lør 13:30 · Møt filmskaperne",
+          "Noen av filmskaperne svarer på spørsmål fra salen.",
+          "film-4",
+        ],
+        [
+          "Søn 12:00 · Andre blokk",
+          "Kortfilmer fra resten av landet.",
+          "film-3",
+        ],
+        [
+          "Søn 13:30 · Publikums favoritter",
+          "Vi viser filmene som fikk flest stemmer.",
+          "film-1",
+        ],
+      ],
+      reviews: [
+        [
+          "Marianne",
+          "Vestby",
+          5,
+          "1 år siden",
+          "Korte filmer passer meg perfekt. Likte jeg ikke en, kom den neste etter ti minutter.",
+        ],
+        [
+          "Endre",
+          "Drøbak",
+          4,
+          "1 år siden",
+          "Gode filmer, men salen ble varm på lørdag.",
+        ],
+        [
+          "Yusuf",
+          "Ski",
+          5,
+          "1 år siden",
+          "Å møte filmskaperne etterpå gjorde det til mer enn bare en visning.",
+        ],
+      ],
+      chat: [
+        [
+          "Filmklubben i Vestby",
+          "Billetten gjelder begge dagene. Første blokk starter lørdag klokka tolv.",
+        ],
+        ["Endre", "Blir det pause mellom blokkene?"],
+        ["Karoline Sunde", "Ja, en kort pause med kaffe."],
+      ],
+    },
+    gruppe: {
+      name: "Filmgjengen",
+      about:
+        "Vi går på kino sammen i Lillestrøm og Oslo, helst på filmer som ikke går så lenge. Etterpå tar vi en tur i parken eller på en kafé og snakker om det vi har sett.",
+      rules: "Foreslå film og visning i chatten. Alle kjøper sin egen billett.",
+      photos: ["film-1", "film-2"],
+      memberCount: 41,
+      home: "byrom",
+      access: "open",
+      chat: [
+        [
+          "Hanne",
+          "Ny film på kinoen i Lillestrøm torsdag. Noen som blir med på visningen klokka sju?",
+        ],
+        ["Magnus", "Jeg er med. Møtes vi i Kulturparken først?"],
+        ["Hanne", "Ja, kvart over halv sju ved grillplassen."],
+      ],
+    },
+  },
+  {
+    interest: "teater",
+    bedrift: {
+      name: "Sufflørbua",
+      category: "Teaterbar",
+      coord: [10.5195, 59.8908],
+      town: "Sandvika",
+      address: "Brodtkorbsgate, 1338 Sandvika",
+      hours: "Ons–lør 18–23",
+      priceNok: 180,
+      vibes: ["Intim", "Livlig"],
+      blurb:
+        "Liten teaterbar i Sandvika med scene for monologer, impro og opplesninger.",
+      about:
+        "En smal bar med en liten scene innerst og plass til seksti. Her spiller små kompanier og frie skuespillere korte forestillinger, og på onsdager er scenen åpen for alle som vil prøve seg.",
+      tags: ["Teater", "Bar", "Åpen scene"],
+      accessibility: ["Trinnfri inngang", "Rullestol-WC"],
+      types: ["Forestillinger", "Natteliv"],
+      audiences: ["Par", "Lokalkjente"],
+      durationMin: 120,
+      photos: ["teater-4", "teater-1"],
+      reviews: [
+        [
+          "Camilla H.",
+          5,
+          "2 uker siden",
+          "Så en monolog på tre meters avstand. Jeg glemte at jeg satt i en bar.",
+        ],
+        [
+          "Øystein N.",
+          3,
+          "1 måned siden",
+          "Sterk forestilling, men vi ventet tjue minutter på drikke i pausen.",
+        ],
+        [
+          "Rania J.",
+          5,
+          "3 måneder siden",
+          "Åpen scene på onsdag var morsommere enn jeg trodde. Folk heier på alle.",
+        ],
+      ],
+      chat: [
+        [
+          "Sufflørbua",
+          "Lørdag spiller et lite kompani fra Drammen en komedie for to skuespillere.",
+        ],
+        ["Øystein", "Går det an å bestille bord nær scenen?"],
+        ["Sufflørbua", "Ja, send oss en melding, så holder vi av."],
+      ],
+      business: {
+        name: "Sufflørbua AS",
+        verified: true,
+        about:
+          "Teaterbar i Sandvika, drevet av en skuespiller og en kokk siden 2019.",
+      },
+    },
+    organisasjon: {
+      name: "Improgruppa på Harestua",
+      category: "Teatergruppe",
+      coord: [10.7175, 60.2035],
+      town: "Harestua",
+      address: "Piperveien, 2743 Harestua",
+      hours: "Tor 19–21",
+      priceNok: 0,
+      vibes: ["Sosial", "Energisk"],
+      blurb:
+        "Improgruppe på Harestua for voksne som vil leke, le og spille uten manus.",
+      about:
+        "Vi øver på impro hver torsdag i et lokale på Harestua. Noen av oss har stått på scene før, de fleste har ikke det. Vi starter med oppvarming og enkle leker, og ender ofte med korte scener for hverandre.",
+      tags: ["Impro", "Teater", "Voksne"],
+      accessibility: ["Trinnfri inngang"],
+      types: ["Forestillinger", "Kulturelle aktiviteter"],
+      photos: ["teater-3", "teater-5"],
+      reviews: [
+        [
+          "Ellen T.",
+          5,
+          "1 måned siden",
+          "Jeg var livredd første kveld. Nå gleder jeg meg hele uka til torsdag.",
+        ],
+        [
+          "Bjørnar F.",
+          4,
+          "2 måneder siden",
+          "Morsomt og inkluderende, men gruppa er stor og man venter litt på tur.",
+        ],
+      ],
+      chat: [
+        [
+          "Improgruppa på Harestua",
+          "Torsdag øver vi på scener med tre personer. Ta med drikkeflaske.",
+        ],
+        ["Bjørnar", "Kan jeg ta med en kollega som vil prøve?"],
+        ["Joakim Brekke", "Selvfølgelig, nye er alltid velkomne."],
+      ],
+      org: {
+        form: "Lag",
+        about:
+          "Improgruppe på Harestua for voksne. Vi øver hver torsdag, holder kurs for nybegynnere og spiller for publikum et par ganger i året.",
+        activities: [
+          "Øving hver torsdag",
+          "Kurs for nybegynnere",
+          "Forestillinger for publikum",
+          "To dager med impro på Harestua",
+        ],
+        contactPersonId: "u54",
+      },
+    },
+    byrom: {
+      name: "Studenterlunden",
+      category: "Park",
+      coord: [10.736, 59.915],
+      town: "Sentrum",
+      address: "Karl Johans gate, 0162 Oslo",
+      hours: "Alltid åpent",
+      priceNok: 0,
+      vibes: ["Livlig", "Sosial"],
+      blurb: "Parken langs Karl Johan, rett ved Nationaltheatret.",
+      about:
+        "En lang park mellom Karl Johans gate og Stortingsgata, med benker under trærne og folk på vei til og fra teater og konserter. Det er drikkevann og sykkelparkering, og om kvelden er stiene opplyst.",
+      tags: ["Gratis", "Ute", "Sentralt"],
+      accessibility: ["Trinnfri inngang"],
+      types: ["Landemerker", "Forestillinger"],
+      photos: ["teater-1", "teater-2"],
+      reviews: [
+        [
+          "Hedda P.",
+          5,
+          "3 uker siden",
+          "Perfekt sted å vente på resten av gjengen før forestillingen. Man ser teatret fra benken.",
+        ],
+        [
+          "Morten S.",
+          4,
+          "2 måneder siden",
+          "Fin park, men det er mye folk og støy fra gata.",
+        ],
+      ],
+      chat: [
+        [
+          "Hedda",
+          "Vi møtes i Studenterlunden klokka sju før forestillingen. Jeg sitter på benkene nærmest teatret.",
+        ],
+        ["Morten", "Fint, jeg har med billettene."],
+      ],
+      space: {
+        facilities: ["Benker", "Sykkelparkering", "Drikkevann", "Belysning"],
+        access: "Åpent for alle",
+      },
+    },
+    opplevelse: {
+      title: "Improteater for voksne",
+      hostId: "u54",
+      when: "Tor 19:00",
+      repeat: "Ukentlig",
+      venue: "organisasjon",
+      capacity: 16,
+      going: 11,
+      priceNok: 120,
+      about:
+        "Et kurs for voksne som vil prøve impro uten å ha stått på scene før. Joakim leder oppvarming og enkle øvelser, og mot slutten spiller vi korte scener i små grupper. Ingen trenger å gjøre noe de ikke vil.",
+      category: "Kunst & kultur",
+      duration: "2 timer",
+      durationMin: 120,
+      languages: ["Norsk"],
+      included: ["Kaffe og frukt"],
+      vibes: ["Sosialt", "Hands-on"],
+      energy: "Middels",
+      types: ["Forestillinger", "Kulturelle aktiviteter"],
+      audiences: ["Alenereisende", "Førstegangsbesøkende"],
+      tags: ["Impro", "Nybegynner", "Torsdag"],
+      photos: ["teater-3", "teater-5"],
+      steps: [
+        [
+          "Oppvarming",
+          "Navneleker og øvelser som får alle til å slappe av.",
+          "teater-3",
+        ],
+        [
+          "Si ja",
+          "Vi øver på å bygge videre på det den andre sier.",
+          "teater-5",
+        ],
+        ["Små scener", "To og to spiller korte scener for gruppa.", "teater-2"],
+        [
+          "Runde til slutt",
+          "Vi snakker om hva som var gøy og hva som var vanskelig.",
+          "teater-1",
+        ],
+      ],
+      reviews: [
+        [
+          "Silje",
+          "Hakadal",
+          5,
+          "2 uker siden",
+          "Jeg lo mer på to timer enn jeg har gjort på lenge. Joakim får alle med uten å presse.",
+        ],
+        [
+          "Geir",
+          "Harestua",
+          4,
+          "1 måned siden",
+          "Gøy, men tempoet var høyt for meg de første gangene.",
+        ],
+        [
+          "Noor",
+          "Nittedal",
+          5,
+          "2 måneder siden",
+          "Jeg er sjenert og trodde dette ikke var for meg. Det var det.",
+        ],
+      ],
+      chat: [
+        [
+          "Joakim Brekke",
+          "Velkommen! Ha på klær du kan bevege deg i. Vi starter presis sju.",
+        ],
+        ["Geir", "Må jeg forberede noe?"],
+        ["Joakim Brekke", "Nei, alt skjer der og da. Det er hele poenget."],
+      ],
+    },
+    arrangement: {
+      title: "To dager med impro på Harestua",
+      hostId: "u54",
+      when: "Lør 14:00",
+      days: 2,
+      venue: "organisasjon",
+      organizer: "organisasjon",
+      capacity: 70,
+      going: 29,
+      priceNok: 150,
+      about:
+        "En helg der Improgruppa spiller for publikum. Lørdag er det kortformat med forslag fra salen, og søndag spiller vi en lengre forestilling som blir til mens du ser på.",
+      category: "Kunst & kultur",
+      duration: "3 timer",
+      durationMin: 180,
+      included: ["Inngang begge dagene", "Kaffe i pausen"],
+      vibes: ["Sosialt", "Kreativt"],
+      types: ["Forestillinger", "Festivaler"],
+      audiences: ["Par", "Store grupper", "Lokalkjente"],
+      tags: ["Impro", "Forestilling", "Helg"],
+      photos: ["teater-2", "teater-5"],
+      steps: [
+        [
+          "Lør 14:00 · Kortformat",
+          "Korte scener basert på forslag fra publikum.",
+          "teater-5",
+        ],
+        [
+          "Lør 15:30 · Publikum på scenen",
+          "Den som tør, får være med i en scene.",
+          "teater-3",
+        ],
+        [
+          "Søn 14:00 · Kaffe og prat",
+          "Møt spillerne før forestillingen.",
+          "teater-1",
+        ],
+        [
+          "Søn 15:00 · Langformat",
+          "En lang forestilling som blir til underveis.",
+          "teater-2",
+        ],
+      ],
+      reviews: [
+        [
+          "Kjersti",
+          "Harestua",
+          5,
+          "1 år siden",
+          "Ingen forestilling blir lik. Vi kom begge dagene og lo like mye.",
+        ],
+        [
+          "Anders",
+          "Gran",
+          4,
+          "1 år siden",
+          "Morsomt, men noen scener ble lange på søndagen.",
+        ],
+        [
+          "Hamid",
+          "Nittedal",
+          5,
+          "1 år siden",
+          "Kona mi ble med på scenen og har snakket om det siden.",
+        ],
+      ],
+      chat: [
+        [
+          "Improgruppa på Harestua",
+          "Billetten gjelder begge dagene. Dørene åpner halv to.",
+        ],
+        ["Anders", "Må man være med på scenen?"],
+        ["Joakim Brekke", "Nei, bare hvis du vil. De fleste ser på."],
+      ],
+    },
+    gruppe: {
+      name: "Teaterfølget",
+      about:
+        "Vi går i teatret sammen i Oslo og Bærum, fra de store scenene til små kjellerteatre. Vi møtes i Studenterlunden før forestillingen og tar en kopp kaffe etterpå for å snakke om den.",
+      rules:
+        "Del forestillinger i chatten i god tid. Hver og en kjøper sin egen billett.",
+      photos: ["teater-1", "teater-4"],
+      memberCount: 37,
+      home: "byrom",
+      access: "open",
+      chat: [
+        [
+          "Hedda",
+          "Det er billige billetter på første rad til komedien på lørdag. Noen som vil?",
+        ],
+        ["Sondre", "Jeg kjøper to. Møtes vi i Studenterlunden?"],
+        ["Hedda", "Ja, halv sju. Jeg tar med noe å spise."],
+      ],
+    },
+  },
+  {
+    interest: "museer",
+    bedrift: {
+      name: "Radiostua",
+      category: "Radiomuseum",
+      coord: [11.075, 59.9325],
+      town: "Fjerdingby",
+      address: "Kvennhusvegen, 2008 Fjerdingby",
+      hours: "Ons–søn 12–17",
+      priceNok: 90,
+      vibes: ["Koselig", "Rolig"],
+      blurb:
+        "Privat radiomuseum med kafé på Fjerdingby, med flere hundre radioer fra forrige århundre.",
+      about:
+        "Radiostua startet som en samling i en kjeller og fyller nå to etasjer i et gammelt hus. Du ser radioer fra tjuetallet til syttitallet, mange av dem virker fortsatt, og i kafeen kan du høre gamle opptak mens du drikker kaffe.",
+      tags: ["Radio", "Samling", "Kafé"],
+      accessibility: ["Trinnfri inngang"],
+      types: ["Museer", "Historie"],
+      audiences: ["Par", "Lokalkjente", "Førstegangsbesøkende"],
+      durationMin: 90,
+      photos: ["museer-5", "museer-4"],
+      reviews: [
+        [
+          "Arild V.",
+          5,
+          "1 uke siden",
+          "Fant akkurat den radioen bestefar hadde på kjøkkenet. Ble stående lenge foran den.",
+        ],
+        [
+          "Merete L.",
+          4,
+          "1 måned siden",
+          "Imponerende samling, men trangt i andre etasje når det er mange besøkende.",
+        ],
+        [
+          "Kamal H.",
+          5,
+          "2 måneder siden",
+          "Eieren fortalte historien bak hver radio vi pekte på. Kaffe og vafler til slutt.",
+        ],
+      ],
+      chat: [
+        [
+          "Radiostua",
+          "Denne uka har vi satt fram en radio fra 1938 som virker. Kom og hør på den.",
+        ],
+        ["Merete", "Går det an å komme med en gruppe på ti?"],
+        [
+          "Radiostua",
+          "Ja, gi oss beskjed på forhånd, så setter vi fram stoler i kafeen.",
+        ],
+      ],
+      business: {
+        name: "Radiostua AS",
+        verified: true,
+        about:
+          "Privat radiomuseum og kafé på Fjerdingby, drevet av en familie som har samlet på radioer i tre generasjoner.",
+      },
+    },
+    organisasjon: {
+      name: "Museumsklubben på Strømmen",
+      category: "Museumsklubb",
+      coord: [11.0025, 59.9475],
+      town: "Strømmen",
+      address: "Stasjonsveien, 1467 Strømmen",
+      hours: "Man 18–20",
+      priceNok: 0,
+      vibes: ["Sosial", "Rolig"],
+      blurb:
+        "Klubb på Strømmen som besøker museer sammen, store og små, i Akershus og Oslo.",
+      about:
+        "Vi er voksne i alle aldre som liker museer bedre når vi går sammen. På mandager møtes vi på Strømmen og planlegger neste tur, og i helgene drar vi til et museum vi ikke har sett før. Noen av medlemmene er frivillige omvisere.",
+      tags: ["Museer", "Turer", "Frivillige"],
+      accessibility: ["Trinnfri inngang", "Heis"],
+      types: ["Museer", "Kulturelle aktiviteter"],
+      photos: ["museer-1", "museer-2"],
+      reviews: [
+        [
+          "Turid O.",
+          5,
+          "3 uker siden",
+          "Jeg har bodd her i førti år og visste ikke om halvparten av museene vi har besøkt.",
+        ],
+        [
+          "Sebastian K.",
+          4,
+          "2 måneder siden",
+          "Fine turer, men planleggingen på mandagene kan ta lang tid.",
+        ],
+      ],
+      chat: [
+        [
+          "Museumsklubben på Strømmen",
+          "Lørdag tar vi bussen til et lite museum på Romerike. Vi møtes på stasjonen ti på ti.",
+        ],
+        ["Sebastian", "Hvor lang tid tar turen?"],
+        ["Johannes Aasheim", "Vi er tilbake rundt tre."],
+      ],
+      org: {
+        form: "Klubb",
+        about:
+          "Museumsklubb på Strømmen. Vi besøker museer sammen, har frivillige omvisere og holder en museumsdag i Radiostua.",
+        activities: [
+          "Planleggingsmøte hver mandag",
+          "Museumsturer i helgene",
+          "Frivillige omvisere i Radiostua",
+          "Museumsdag i Radiostua",
+        ],
+        contactPersonId: "u55",
+      },
+    },
+    byrom: {
+      name: "Bygdøynes",
+      category: "Odde",
+      coord: [10.6984, 59.9031],
+      town: "Bygdøy",
+      address: "Bygdøynesveien, 0286 Oslo",
+      hours: "Alltid åpent",
+      priceNok: 0,
+      vibes: ["Rolig", "Sosial"],
+      blurb:
+        "Odden ytterst på Bygdøy, der flere museer ligger tett ved fjorden.",
+      about:
+        "Ytterst på Bygdøy ligger flere museer innen gåavstand fra hverandre, med benker og plener ned mot vannet. Mange tar en pause her mellom to museer og ser båtene gå inn mot byen. Det er toaletter, drikkevann og både sykkel- og bilparkering.",
+      tags: ["Gratis", "Ute", "Utsikt"],
+      accessibility: ["Trinnfri inngang"],
+      types: ["Landemerker", "Museer"],
+      photos: ["museer-3", "museer-2"],
+      reviews: [
+        [
+          "Gro E.",
+          5,
+          "1 måned siden",
+          "Vi spiste matpakke på benken mellom to museer. Utsikten mot byen er nydelig.",
+        ],
+        [
+          "Faisal M.",
+          4,
+          "3 måneder siden",
+          "Fint sted, men parkeringen fylles fort i helgene.",
+        ],
+      ],
+      chat: [
+        [
+          "Gro",
+          "Noen som vil ta bussen ut til Bygdøynes på søndag og se et museum eller to?",
+        ],
+        ["Faisal", "Jeg blir med. Skal vi spise lunsj på benkene ved vannet?"],
+      ],
+      space: {
+        facilities: [
+          "Benker",
+          "Toalett",
+          "Drikkevann",
+          "Sykkelparkering",
+          "Parkering",
+        ],
+        access: "Åpent for alle",
+        season: "Hele året",
+      },
+    },
+    opplevelse: {
+      title: "Omvisning i Radiostua",
+      hostId: "u55",
+      when: "Tir 18:00",
+      repeat: "Ukentlig",
+      venue: "bedrift",
+      capacity: 12,
+      going: 8,
+      priceNok: 120,
+      about:
+        "En kveldsomvisning i Radiostua etter stengetid. Johannes viser deg samlingen fra de eldste radioene i første etasje til de nyeste i andre, slår på noen av dem og forteller hvordan folk hørte på radio før.",
+      category: "Kunst & kultur",
+      duration: "2 timer",
+      durationMin: 120,
+      languages: ["Norsk", "Engelsk"],
+      included: ["Omvisning", "Kaffe og vafler"],
+      vibes: ["Lærerikt", "Koselig"],
+      types: ["Museer", "Historie"],
+      audiences: ["Par", "Alenereisende", "Førstegangsbesøkende"],
+      tags: ["Radio", "Omvisning", "Kveld"],
+      photos: ["museer-4", "museer-5"],
+      steps: [
+        ["De eldste", "Vi starter med radioene fra tjuetallet.", "museer-5"],
+        [
+          "Veggen av radioer",
+          "Johannes slår på noen av dem, så du hører hvordan de låter.",
+          "museer-4",
+        ],
+        [
+          "Gamle opptak",
+          "Vi lytter til opptak fra radioens første tiår.",
+          "museer-3",
+        ],
+        ["Kaffe i kafeen", "Vafler og spørsmål til slutt.", "museer-1"],
+      ],
+      reviews: [
+        [
+          "Randi",
+          "Fjerdingby",
+          5,
+          "2 uker siden",
+          "Johannes kan alt om hver eneste radio, og han forteller så det blir morsomt.",
+        ],
+        [
+          "Leif",
+          "Lørenskog",
+          4,
+          "1 måned siden",
+          "Fin samling, men to timer ble litt lenge for meg.",
+        ],
+        [
+          "Zainab",
+          "Strømmen",
+          5,
+          "2 måneder siden",
+          "Å høre en gammel radio spille igjen var rørende. Vaflene var også gode.",
+        ],
+      ],
+      chat: [
+        [
+          "Johannes Aasheim",
+          "Velkommen! Vi møtes ved inngangen. Døra er låst etter stengetid, så ring på.",
+        ],
+        ["Leif", "Er det parkering ved huset?"],
+        ["Johannes Aasheim", "Ja, det er noen plasser i gårdsrommet."],
+      ],
+    },
+    arrangement: {
+      title: "Museumsdag i Radiostua",
+      hostId: "u55",
+      when: "Lør 11:00",
+      days: 1,
+      venue: "bedrift",
+      organizer: "organisasjon",
+      capacity: 120,
+      going: 34,
+      priceNok: 100,
+      about:
+        "En dag i Radiostua der Museumsklubben viser fram samlingen. Det er korte omvisninger hver time, et rom med gamle opptak du kan lytte til, og samlere fra Romerike som viser fram sine egne radioer.",
+      category: "Kunst & kultur",
+      duration: "Hele dagen",
+      durationMin: 300,
+      included: ["Inngang", "Omvisning", "Kaffe"],
+      vibes: ["Lærerikt", "Sosialt"],
+      types: ["Museer", "Festivaler"],
+      audiences: ["Store grupper", "Lokalkjente", "Førstegangsbesøkende"],
+      tags: ["Radio", "Museumsdag"],
+      photos: ["museer-5", "museer-3"],
+      steps: [
+        [
+          "11:00 · Dørene åpner",
+          "Første omvisning starter med en gang.",
+          "museer-5",
+        ],
+        [
+          "12:00 · Samlernes bord",
+          "Samlere fra Romerike viser fram sine egne radioer.",
+          "museer-4",
+        ],
+        [
+          "13:30 · Lytterommet",
+          "Gamle opptak du kan sette deg ned og høre på.",
+          "museer-3",
+        ],
+        [
+          "15:00 · Siste omvisning",
+          "Den siste runden før vi stenger.",
+          "museer-1",
+        ],
+      ],
+      reviews: [
+        [
+          "Inger",
+          "Rælingen",
+          5,
+          "1 år siden",
+          "Samlerne hadde med radioer jeg aldri hadde sett før. Folk delte historier hele dagen.",
+        ],
+        [
+          "Ola Martin",
+          "Fjerdingby",
+          4,
+          "1 år siden",
+          "Fin dag, men det ble kø ved lytterommet.",
+        ],
+        [
+          "Asma",
+          "Lillestrøm",
+          5,
+          "1 år siden",
+          "Vi kom for en time og ble i fire. Omviserne var tålmodige med alle spørsmålene.",
+        ],
+      ],
+      chat: [
+        [
+          "Museumsklubben på Strømmen",
+          "Omvisning hver hele time fra elleve. Kafeen er åpen hele dagen.",
+        ],
+        ["Ola Martin", "Kan jeg ta med en gammel radio og få den sett på?"],
+        ["Johannes Aasheim", "Ja, ta den med til samlernes bord."],
+      ],
+    },
+    gruppe: {
+      name: "Museumsgjengen",
+      about:
+        "Vi går på museum sammen en søndag i måneden, fra de store museene i Oslo til små bygdemuseer i Akershus. Etterpå spiser vi lunsj og snakker om det vi så.",
+      rules:
+        "Neste museum bestemmes i chatten. Vi går i vårt eget tempo, og ingen trenger å se alt.",
+      photos: ["museer-1", "museer-2"],
+      memberCount: 46,
+      home: "byrom",
+      access: "open",
+      chat: [
+        [
+          "Gro",
+          "Søndag tar vi bussen til Bygdøynes. Hvilket museum vil dere se?",
+        ],
+        [
+          "Turid",
+          "Et av dem med båter. Jeg har ikke vært der siden jeg var liten.",
+        ],
+        ["Gro", "Da sier vi det. Vi møtes ved bussholdeplassen klokka elleve."],
+      ],
+    },
+  },
+];

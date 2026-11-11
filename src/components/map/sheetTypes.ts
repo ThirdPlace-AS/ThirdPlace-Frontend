@@ -2,7 +2,6 @@
 // target onto a stack (content swaps + back chevron) instead of pushing a route.
 export type SheetKind =
   | "place"
-  | "business"
   | "experience"
   | "reviews"
   | "attendees"
@@ -11,8 +10,7 @@ export type SheetKind =
   | "guests"
   | "host"
   | "group"
-  | "checkin"
-  | "verification";
+  | "checkin";
 
 export type SheetTarget = { kind: SheetKind; id: string };
 

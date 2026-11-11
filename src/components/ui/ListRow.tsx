@@ -7,6 +7,8 @@
 import type { ReactNode } from "react";
 import { View } from "react-native";
 
+import { haptics } from "@/lib/haptics";
+
 import { Icon, type IconName } from "./Icon";
 import { Pressable } from "./Pressable";
 import { Text, type TextTone } from "./Text";
@@ -121,7 +123,16 @@ export function ListRow({
   return (
     <Pressable
       onPress={onPress}
-      onLongPress={onLongPress}
+      // A long press opens the row's menu with the platform's long-press
+      // tick (user 2026-11-09); a screen reader's "Flere valg" stays silent.
+      onLongPress={
+        onLongPress
+          ? () => {
+              haptics.longPress();
+              onLongPress();
+            }
+          : undefined
+      }
       delayLongPress={320}
       accessibilityRole="button"
       accessibilityLabel={accessibilityLabel ?? title}

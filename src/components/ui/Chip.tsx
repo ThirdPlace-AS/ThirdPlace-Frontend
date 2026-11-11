@@ -74,7 +74,7 @@ export const Chip = memo(function Chip({
     </>
   );
   // A plain chip without an action is a label (tags, vibes, interests): no
-  // press scale, no haptic, not announced as a button. Radio/checkbox chips
+  // press scale, not announced as a button. Radio/checkbox chips
   // stay controls.
   if (!onPress && role === "button") {
     return (
@@ -99,7 +99,6 @@ export const Chip = memo(function Chip({
       }
       onPress={onPress}
       disabled={disabled}
-      haptic="selection"
       pressedScale={0.95}
       // A 32 px chip still gets a 44 pt target vertically.
       hitSlop={size === "sm" ? 6 : 2}

@@ -28,6 +28,8 @@ export type TextTone =
   | "danger"
   | "warning"
   | "onEmber"
+  | "onSuccess"
+  | "onDanger"
   | "onMedia";
 
 // Literal class names so Tailwind's content scan generates them.
@@ -63,6 +65,8 @@ const TONE_CLASS: Record<TextTone, string> = {
   danger: "text-dangerText",
   warning: "text-warningText",
   onEmber: "text-onEmber",
+  onSuccess: "text-onSuccess",
+  onDanger: "text-onDanger",
   onMedia: "text-onMedia",
 };
 

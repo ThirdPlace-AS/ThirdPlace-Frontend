@@ -4,13 +4,17 @@ import {
   activeExtraFilterCount,
   applyFilters,
   DEFAULT_FILTERS,
-  sortPlaces,
 } from "@/components/map/services/mapFilters";
 import { places, placeRating } from "@/fixtures";
 
+// The exact id lists below were written for the legacy places (p1–p14);
+// Phase 19 adds catalogue places that may match too, so those lists run on
+// the legacy set and a whole-catalogue check proves the filter itself.
+const legacy = places.filter((p) => /^p\d+$/.test(p.id));
+
 describe("applyFilters — Airbnb-style filters", () => {
   it("types OR-match against place.types", () => {
-    const res = applyFilters(places, "", {
+    const res = applyFilters(legacy, "", {
       ...DEFAULT_FILTERS,
       types: ["Vannsport"],
     });
@@ -19,7 +23,7 @@ describe("applyFilters — Airbnb-style filters", () => {
   });
 
   it("price range keeps only places within [priceMin, priceMax]", () => {
-    const res = applyFilters(places, "", {
+    const res = applyFilters(legacy, "", {
       ...DEFAULT_FILTERS,
       priceMin: 0,
       priceMax: 100,
@@ -54,7 +58,7 @@ describe("applyFilters — Airbnb-style filters", () => {
   });
 
   it("languages OR-match against place.languages", () => {
-    const res = applyFilters(places, "", {
+    const res = applyFilters(legacy, "", {
       ...DEFAULT_FILTERS,
       languages: ["fransk"],
     });
@@ -88,8 +92,29 @@ describe("applyFilters — Airbnb-style filters", () => {
 
   it("query matches a place by tag (shared overlay matcher)", () => {
     // "Studievennlig" is a tag on p1, not in its name or category.
-    const res = applyFilters(places, "studievennlig", DEFAULT_FILTERS);
+    const res = applyFilters(legacy, "studievennlig", DEFAULT_FILTERS);
     expect(res.map((p) => p.id)).toEqual(["p1"]);
+  });
+
+  it("on the whole catalogue, keeps exactly the places that match", () => {
+    const ids = (list: { id: string }[]) => list.map((p) => p.id).sort();
+    expect(
+      ids(applyFilters(places, "", { ...DEFAULT_FILTERS, types: ["Trening"] })),
+    ).toEqual(ids(places.filter((p) => p.types.includes("Trening"))));
+    expect(
+      ids(
+        applyFilters(places, "", {
+          ...DEFAULT_FILTERS,
+          priceMin: 0,
+          priceMax: 100,
+        }),
+      ),
+    ).toEqual(ids(places.filter((p) => p.priceNok <= 100)));
+    expect(
+      ids(
+        applyFilters(places, "", { ...DEFAULT_FILTERS, languages: ["fransk"] }),
+      ),
+    ).toEqual(ids(places.filter((p) => p.languages.includes("fransk"))));
   });
 
   it("defaults return every place", () => {
@@ -116,23 +141,8 @@ describe("applyFilters — Airbnb-style filters", () => {
   });
 });
 
-describe("sortPlaces", () => {
-  it("'best' orders by rating desc", () => {
-    const res = sortPlaces(places, "best");
-    const r = res.map((p) => placeRating(p.id).score);
-    expect([...r].sort((a, b) => b - a)).toEqual(r);
-  });
-
-  it("'most' orders by reviews desc", () => {
-    const res = sortPlaces(places, "most");
-    const n = res.map((p) => placeRating(p.id).count);
-    expect([...n].sort((a, b) => b - a)).toEqual(n);
-  });
-
-  it("null leaves order unchanged", () => {
-    expect(sortPlaces(places, null)).toBe(places);
-  });
-});
+// The places-only "Sorter" (sortPlaces) became orderItems in Phase 19 S4a:
+// one order over places and experiences mixed (tests/countyLists.test.tsx).
 
 describe("activeExtraFilterCount", () => {
   it("is zero for defaults", () => {

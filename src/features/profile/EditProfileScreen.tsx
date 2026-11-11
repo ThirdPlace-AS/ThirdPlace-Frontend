@@ -18,7 +18,6 @@ import { showToast } from "@/components/Toast";
 import {
   Avatar,
   Chip,
-  ChipGroup,
   FormPage,
   IconButton,
   Pressable,
@@ -35,7 +34,7 @@ import {
   useMyProfile,
 } from "@/lib/myProfile";
 import { goBackOr } from "@/lib/navigation";
-import { INTEREST_OPTIONS } from "@/lib/preferences";
+import { InterestPicker } from "@/components/pickers/InterestPicker";
 import { useConfirmLeave } from "@/lib/useConfirmLeave";
 
 // The experiences you host are public on your person page (PDF p13).
@@ -176,13 +175,7 @@ export default function EditProfileScreen() {
         onClose={() => setInterestsOpen(false)}
         title="Interesser"
       >
-        <ChipGroup
-          multiple
-          label="Interesser"
-          options={INTEREST_OPTIONS}
-          value={interests}
-          onChange={toggleInterest}
-        />
+        <InterestPicker value={interests} onToggle={toggleInterest} />
         <Button
           label="Ferdig"
           variant="ink"

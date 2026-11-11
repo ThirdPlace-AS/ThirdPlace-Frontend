@@ -24,16 +24,13 @@ import { Button } from "@/components/Button";
 import { Chip } from "@/components/Chip";
 import { Input } from "@/components/Input";
 import { useGuestMode } from "@/components/map/hooks/useGuestMode";
+import { InterestPicker } from "@/components/pickers/InterestPicker";
 import { experiences, PERSONAS, type MockPersonaKey } from "@/fixtures";
 import { checkBirthday, formatBirthdayInput } from "@/features/onboarding/age";
 import { UnderageScreen } from "@/features/onboarding/UnderageScreen";
 import { resetTo } from "@/lib/navigation";
 import { OWN_PORTRAIT, updateMyProfile } from "@/lib/myProfile";
-import {
-  INTEREST_OPTIONS,
-  ONBOARDING_PREFERENCES,
-  setPreferences,
-} from "@/lib/preferences";
+import { ONBOARDING_PREFERENCES, setPreferences } from "@/lib/preferences";
 import { markOnboarded } from "@/lib/signupProgress";
 import { libThumb } from "@/fixtures/images";
 import { showToast } from "@/components/Toast";
@@ -267,7 +264,6 @@ export default function Onboarding() {
                   accessibilityLabel={
                     photo ? "Bytt profilbilde" : "Legg til profilbilde"
                   }
-                  haptic="selection"
                   onPress={() => {
                     if (!photo) showToast(confirmToast.photoAdded);
                     setPhoto(true);
@@ -381,16 +377,12 @@ export default function Onboarding() {
 
             {step === 4 ? (
               <Shell title="Hva liker du?" subtitle="Velg minst 5 interesser.">
-                <View className="flex-row flex-wrap gap-2">
-                  {INTEREST_OPTIONS.map((i) => (
-                    <Chip
-                      key={i}
-                      label={i}
-                      selected={interests.includes(i)}
-                      onPress={() => setInterests((s) => toggleIn(s, i))}
-                    />
-                  ))}
-                </View>
+                {/* Every interest in the catalogue (Phase 19, founder
+                    2026-11-08): the design's 22 first, then by category. */}
+                <InterestPicker
+                  value={interests}
+                  onToggle={(i) => setInterests((s) => toggleIn(s, i))}
+                />
                 <View
                   className={`self-start rounded-full px-3 py-1 ${
                     interests.length >= MIN_INTERESTS

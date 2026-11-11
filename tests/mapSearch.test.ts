@@ -4,7 +4,6 @@ import {
   experienceMatchesQuery,
   placeMatchesQuery,
   searchFixtures,
-  suggestFixtures,
 } from "@/components/map/services/mapSearch";
 import { experienceById, placeById } from "@/fixtures";
 
@@ -67,12 +66,5 @@ describe("shared query matchers", () => {
     expect(experienceMatchesQuery(e1, "maria")).toBe(true); // host
     expect(experienceMatchesQuery(e1, "sosialt")).toBe(true); // tag
     expect(experienceMatchesQuery(e1, "zzzzzz")).toBe(false);
-  });
-});
-
-describe("suggestFixtures", () => {
-  it("returns up to the limit of title suggestions", () => {
-    const s = suggestFixtures("a", 3);
-    expect(s.length).toBeLessThanOrEqual(3);
   });
 });

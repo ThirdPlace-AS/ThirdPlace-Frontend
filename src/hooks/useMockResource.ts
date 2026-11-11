@@ -41,7 +41,12 @@ export function useMockResource<T>(
 
   useEffect(() => {
     const t = setTimeout(() => {
-      setResolved({ tick, status: outcome(simulate, data.length) });
+      const status = outcome(simulate, data.length);
+      // Same result as before: keep the old state, so the screen does not
+      // render again for nothing (the map re-rendered 500 ms after opening).
+      setResolved((prev) =>
+        prev.tick === tick && prev.status === status ? prev : { tick, status },
+      );
     }, delayMs);
     return () => clearTimeout(t);
   }, [data.length, delayMs, simulate, tick]);

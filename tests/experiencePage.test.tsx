@@ -26,6 +26,7 @@ import {
   hostPerson,
   moreExperiences,
 } from "@/components/experience/experienceMeta";
+import { interestById } from "@/fixtures/catalog/interests";
 import {
   ChatSection,
   MeetingSection,
@@ -40,6 +41,7 @@ import { useGuestMode } from "@/components/map/hooks/useGuestMode";
 import {
   chatForExperience,
   experienceById,
+  experiencesHostedBy,
   placeById,
   ratingOf,
   reviewsForExperience,
@@ -168,17 +170,38 @@ describe("labels", () => {
       "Holdes på norsk og engelsk",
     );
   });
+
+  it("what's included reads well when an item holds its own og", () => {
+    expect(includedLabel({ included: ["En kopp kaffe", "Litt bakst"] })).toBe(
+      "En kopp kaffe og litt bakst",
+    );
+    expect(includedLabel({ included: ["Inngang", "Kaffe og kake"] })).toBe(
+      "Inngang, kaffe og kake",
+    );
+    expect(
+      includedLabel({ included: ["Papir og kull", "Blyanter", "Te og kaffe"] }),
+    ).toBe("Papir og kull, blyanter, te og kaffe");
+    expect(
+      includedLabel({
+        included: ["Symaskin til låns", "Tråd og knapper", "Kaffe"],
+      }),
+    ).toBe("Symaskin til låns, tråd og knapper, og kaffe");
+  });
 });
 
 describe("experienceMeta", () => {
   it("finds the host by id link, not by name", () => {
-    expect(hostPerson(e1)?.hostsExperienceId).toBe("e1");
-    expect(hostPerson({ id: "nope" })).toBeUndefined();
+    // Phase 19: the experience names its host (`hostId`); a person can
+    // host several.
+    expect(hostPerson(e1)?.id).toBe("u1");
+    expect(experiencesHostedBy("u1").map((e) => e.id)).toContain("e1");
+    expect(hostPerson({ hostId: "nope" })).toBeUndefined();
+    expect(hostPerson({})).toBeUndefined();
   });
 
-  it("captions with the category and the meeting point's area", () => {
+  it("captions with the activity and the meeting point's area (2026-11-09)", () => {
     expect(experienceCaption(e1)).toBe(
-      `${e1.category} · ${areaFor(e1.meetingPoint.coord)}`,
+      `${interestById(e1.interestId)!.label} · ${areaFor(e1.meetingPoint.coord)}`,
     );
     expect(areaFor([10.758, 59.9227])).toBe("Grünerløkka");
   });

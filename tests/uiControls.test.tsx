@@ -1,7 +1,14 @@
 import { describe, expect, it, jest } from "@jest/globals";
 import { fireEvent, render, screen } from "@testing-library/react-native";
 
-import { Badge, Button, Chip, Switch } from "@/components/ui";
+import {
+  Badge,
+  Button,
+  Chip,
+  SheetHeader,
+  Switch,
+  Text,
+} from "@/components/ui";
 
 describe("Button", () => {
   it("ignores presses and reports busy while loading", () => {
@@ -62,5 +69,51 @@ describe("Badge", () => {
   it("renders its label", () => {
     render(<Badge label="DEMO" />);
     expect(screen.getByText("DEMO")).toBeTruthy();
+  });
+
+  it("solid success / danger carry white on-colour text; tinted is the default", () => {
+    const tone = () => screen.UNSAFE_getByType(Text).props.tone;
+    render(<Badge label="Åpent" tone="success" solid />);
+    expect(tone()).toBe("onSuccess");
+    screen.unmount();
+    render(<Badge label="Stengt" tone="danger" solid />);
+    expect(tone()).toBe("onDanger");
+    screen.unmount();
+    render(<Badge label="Stengt" tone="danger" />);
+    expect(tone()).toBe("danger");
+    screen.unmount();
+    // Other tones have no solid look and ignore it.
+    render(<Badge label="Ny" tone="neutral" solid />);
+    expect(tone()).toBe("muted");
+  });
+});
+
+describe("SheetHeader", () => {
+  // The map's page sheet says what the item is at the top left (user
+  // 2026-11-11); a title, when there is one, wins.
+  it("shows a label at the left when there is no title", () => {
+    render(<SheetHeader label="Park" onClose={() => {}} />);
+    expect(screen.getByText("Park")).toBeTruthy();
+    expect(screen.getByLabelText("Lukk")).toBeTruthy();
+  });
+
+  it("a title wins over the label", () => {
+    render(<SheetHeader title="Deltakere" label="Park" onClose={() => {}} />);
+    expect(screen.getByText("Deltakere")).toBeTruthy();
+    expect(screen.queryByText("Park")).toBeNull();
+  });
+
+  // The map's sheet draws the item's pin by its label (user 2026-11-11).
+  it("draws the label icon with the label, and not without one", () => {
+    const icon = <Text testID="label-icon">o</Text>;
+    const { unmount } = render(
+      <SheetHeader label="Park" labelIcon={icon} onClose={() => {}} />,
+    );
+    expect(screen.getByTestId("label-icon")).toBeTruthy();
+    unmount();
+    render(
+      <SheetHeader title="Deltakere" labelIcon={icon} onClose={() => {}} />,
+    );
+    expect(screen.queryByTestId("label-icon")).toBeNull();
   });
 });

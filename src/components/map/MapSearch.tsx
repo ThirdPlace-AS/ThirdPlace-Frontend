@@ -5,29 +5,27 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import {
   Icon,
+  BACK_ICON,
   IconButton,
   type IconName,
   Text,
   Pressable as UIPressable,
 } from "@/components/ui";
-import { Chip } from "@/components/Chip";
 import { experienceById, placeById } from "@/fixtures";
 import { coverForPlace, libThumb, smallImage } from "@/fixtures/images";
 import { SearchBar } from "@/components/SearchBar";
 
 import { useRecentSearches } from "./hooks/useRecentSearches";
 import { useRecentlyViewed, type ViewedItem } from "./hooks/useRecentlyViewed";
-import {
-  searchFixtures,
-  suggestFixtures,
-  type SearchResult,
-} from "./services/mapSearch";
+import { searchFixtures, type SearchResult } from "./services/mapSearch";
 
 // Map search (Phase 12 H4c: the /search page, was a full-screen overlay).
 // Deterministic fixture search only (no network, no stored history — CB-8).
 // Focused field → recent searches and "Nylig sett" (empty query) or grouped
 // results (På kartet / Opplevelser / Grupper). The page decides where a
 // submit or a pick goes (back to the map with the query, or the item).
+// No suggestion chips above the results (user 2026-11-11: "remove the five
+// options that appears below the search"): they repeated the result rows.
 export function MapSearch({
   initialQuery,
   onBack,
@@ -45,7 +43,6 @@ export function MapSearch({
   const [query, setQuery] = useState(initialQuery);
 
   const results = useMemo(() => searchFixtures(query), [query]);
-  const suggestions = useMemo(() => suggestFixtures(query, 5), [query]);
   const hasQuery = query.trim() !== "";
 
   const submit = (q: string) => {
@@ -73,7 +70,7 @@ export function MapSearch({
         {/* Header: back + search field */}
         <View className="flex-row items-center gap-2 px-gutter pb-2">
           <IconButton
-            icon="chevron-back"
+            icon={BACK_ICON}
             label="Tilbake"
             onPress={() => {
               Keyboard.dismiss();
@@ -137,7 +134,25 @@ export function MapSearch({
             </View>
           ) : (
             <>
-              <SuggestionChips suggestions={suggestions} onPick={setQuery} />
+              {/* More matches than the rows show (a type search: "park",
+                  "festival"): the submit lists them all on the map. */}
+              {results.onMap >
+              results.places.length + results.experiences.length ? (
+                <UIPressable
+                  accessibilityRole="button"
+                  accessibilityLabel={`Vis alle ${results.onMap} på kartet`}
+                  onPress={() => submit(query)}
+                  contentClassName="flex-row items-center gap-3 rounded-md px-1 py-2"
+                >
+                  <View className="h-9 w-9 items-center justify-center rounded-full bg-surfaceMuted">
+                    <Icon name="map-outline" size="md" tone="ink" />
+                  </View>
+                  <Text variant="body" weight="semibold" className="flex-1">
+                    {`Vis alle ${results.onMap} på kartet`}
+                  </Text>
+                  <Icon name="chevron-forward" size="md" tone="muted" />
+                </UIPressable>
+              ) : null}
               <ResultGroup
                 title="På kartet"
                 icon="location-outline"
@@ -160,25 +175,6 @@ export function MapSearch({
           )}
         </ScrollView>
       </View>
-    </View>
-  );
-}
-
-// Bounded, non-personalized demo suggestions (entity titles) — a stand-in for
-// the contract-blocked /search/suggestions endpoint. Tapping fills the field.
-function SuggestionChips({
-  suggestions,
-  onPick,
-}: {
-  suggestions: string[];
-  onPick: (q: string) => void;
-}) {
-  if (suggestions.length === 0) return null;
-  return (
-    <View className="flex-row flex-wrap gap-2">
-      {suggestions.map((s) => (
-        <Chip key={s} label={s} selected={false} onPress={() => onPick(s)} />
-      ))}
     </View>
   );
 }

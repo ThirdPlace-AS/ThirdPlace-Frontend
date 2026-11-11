@@ -11,10 +11,20 @@ import type { ImageSourcePropType } from "react-native";
 
 import type { IconName } from "@/components/ui";
 import { goingLine } from "@/lib/going";
+import { experienceTypeLabel } from "@/components/map/services/itemType";
 import {
+  applyExperienceFilters,
+  applyFilters,
+  type MapFilters,
+} from "@/components/map/services/mapFilters";
+import {
+  PLACE_KIND_LABEL,
+  areaFor,
   chatForExperience,
   chatForPlace,
+  experiences,
   placeById,
+  places,
   ratingOf,
   reviewsForPlace,
   type MockExperience,
@@ -22,6 +32,9 @@ import {
 } from "@/fixtures";
 import { libImage, photosForPlace } from "@/fixtures/images";
 import { formatRating } from "@/lib/format";
+import { isPlaceOpen } from "@/lib/openingHours";
+import { distanceMeters } from "@/lib/distance";
+import { distanceLabelFor, getOrigin, type Origin } from "@/lib/origin";
 import { media } from "@/theme";
 
 export type DeckKind = "experience" | "place";
@@ -63,9 +76,18 @@ export function experienceToDeckItem(e: MockExperience): DeckItem {
     lines: [
       {
         icon: "location-outline",
-        text: place ? `${place.name} · ${place.distance}` : e.meetingPoint.name,
+        text: place
+          ? `${place.name} · ${distanceLabelFor(place.coord)}`
+          : e.meetingPoint.name,
       },
-      { icon: "calendar-outline", text: e.when },
+      {
+        icon: "calendar-outline",
+        // An event says so ("Festival · Lør 10:00", Phase 19).
+        text:
+          e.format === "event"
+            ? `${experienceTypeLabel(e)} · ${e.when}`
+            : e.when,
+      },
       {
         icon: "people-outline",
         text: spotsLine(e),
@@ -82,7 +104,10 @@ export function experienceToDeckItem(e: MockExperience): DeckItem {
 // white text legible over any photo (the card also lays a constant floor).
 const PLACE_SCRIM = media.base;
 
-export function placeToDeckItem(p: MockPlace): DeckItem {
+export function placeToDeckItem(
+  p: MockPlace,
+  now: Date = new Date(),
+): DeckItem {
   const photos = photosForPlace(p).map(libImage);
   const { score, count } = ratingOf(reviewsForPlace(p.id));
   return {
@@ -92,17 +117,48 @@ export function placeToDeckItem(p: MockPlace): DeckItem {
     photos,
     scrims: photos.map(() => PLACE_SCRIM),
     lines: [
-      { icon: "location-outline", text: `${p.category} · ${p.distance}` },
+      {
+        icon: "location-outline",
+        // "Byrom · Kolsås · 12 km" (Phase 19).
+        text: `${PLACE_KIND_LABEL[p.kind]} · ${areaFor(p.coord).name} · ${distanceLabelFor(p.coord)}`,
+      },
       {
         icon: "star-outline",
         text: count
           ? `${formatRating(score)} · ${count} ${count === 1 ? "vurdering" : "vurderinger"}`
           : "Ingen vurderinger ennå",
       },
-      { icon: "time-outline", text: p.openNow ? "Åpent nå" : "Stengt nå" },
+      {
+        icon: "time-outline",
+        text: isPlaceOpen(p, now) ? "Åpent nå" : "Stengt nå",
+      },
     ],
     chips: p.vibes,
     chatId: chatForPlace(p.id)?.id,
-    subtitle: `${p.category} · ${p.distance}`,
+    subtitle: `${PLACE_KIND_LABEL[p.kind]} · ${areaFor(p.coord).name} · ${distanceLabelFor(p.coord)}`,
   };
+}
+
+/** A Sveip deck (Phase 19, founder 2026-11-08): the tab's places or
+ *  experiences after the map's filters, nearest first from the person.
+ *  Built when the tab or the filters change, never on an origin move, so the
+ *  deck doesn't jump under the thumb. */
+export function deckFor(
+  placesTab: boolean,
+  filters: MapFilters,
+  origin: Origin = getOrigin(),
+): DeckItem[] {
+  const nearest = <T>(list: T[], coordOf: (x: T) => [number, number]) =>
+    list
+      .map((x, i) => ({ x, i, d: distanceMeters(origin.coord, coordOf(x)) }))
+      .sort((a, b) => a.d - b.d || a.i - b.i)
+      .map((r) => r.x);
+  return placesTab
+    ? nearest(applyFilters(places, "", filters, origin), (p) => p.coord).map(
+        (p) => placeToDeckItem(p),
+      )
+    : nearest(
+        applyExperienceFilters(experiences, "", filters, origin),
+        (x) => x.meetingPoint.coord,
+      ).map(experienceToDeckItem);
 }

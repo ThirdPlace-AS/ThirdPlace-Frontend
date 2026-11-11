@@ -13,11 +13,21 @@ import Animated, {
   withSpring,
 } from "react-native-reanimated";
 import { useReducedMotion } from "@/hooks/useReducedMotion";
+import { haptics } from "@/lib/haptics";
 
 import { motion, useThemeColors, elevation } from "@/theme";
 import { Text } from "@/components/ui";
 
+import { dragIntent } from "./sliderGesture";
+
 const THUMB = 28;
+
+/** The step under a point on the track: x from the first step's centre, w the
+ *  track's length between the first and last centres. */
+export function stepAt(x: number, w: number, last: number): number {
+  const ratio = w > 0 ? Math.min(1, Math.max(0, x / w)) : 0;
+  return Math.round(ratio * last);
+}
 
 // Single-handle slider that commits to discrete steps (used for "Varighet" /
 // "Avstand"). The thumb + progress fill live in a reanimated shared value so the
@@ -37,8 +47,16 @@ export function SteppedSlider({
   const colors = useThemeColors();
   const [trackW, setTrackW] = useState(0);
   const trackWRef = useRef(0);
-  const startIdx = useRef(index);
+  // Where the touch went down on the track, and whether it has become a drag.
+  const startX = useRef(0);
+  const moved = useRef(false);
+  // The touch went up or down first: a scroll of the sheet, so it neither
+  // moves the thumb nor counts as a tap (0360).
+  const scrolling = useRef(false);
   const dragging = useRef(false);
+  // The step last sent to onChange during a drag: moving within a step sends
+  // nothing (speed pass 0347: each send re-rendered Filtre and recounted).
+  const sent = useRef(index);
   const last = labels.length - 1 || 1;
 
   const reduced = useReducedMotion();
@@ -66,32 +84,65 @@ export function SteppedSlider({
   const latest = useRef({ index, last, onChange, reduced });
   latest.current = { index, last, onChange, reduced };
 
+  // The whole track takes the touch (Phase 19): the thumb rests at the right
+  // end by default ("Alle"), about 30 dp from the screen edge, where Android's
+  // back gesture starts, so a drag begun on the thumb closed Filtre instead.
+  // A tap jumps to the nearest step on release; a horizontal drag follows the
+  // finger from wherever it started. A touch that goes up or down first is the
+  // sheet scrolling (sliderGesture.ts, 0360): it moves nothing, even a little
+  // diagonally, and is no tap.
+  const settle = () => {
+    dragging.current = false;
+    const p = latest.current;
+    scale.value = p.reduced ? 1 : withSpring(1, motion.spring.snappy);
+    const x = (p.index / p.last) * (trackWRef.current || 0);
+    thumbX.value = p.reduced ? x : withSpring(x, motion.spring.snappy);
+  };
   const pan = useRef(
     PanResponder.create({
       onStartShouldSetPanResponder: () => true,
       onMoveShouldSetPanResponder: () => true,
-      onPanResponderGrant: () => {
-        dragging.current = true;
-        startIdx.current = latest.current.index;
-        scale.value = latest.current.reduced
-          ? 1
-          : withSpring(1.2, motion.spring.snappy);
+      onPanResponderGrant: (e) => {
+        const w = trackWRef.current || 1;
+        startX.current = Math.max(
+          0,
+          Math.min(w, e.nativeEvent.locationX - THUMB / 2),
+        );
+        moved.current = false;
+        scrolling.current = false;
+        sent.current = latest.current.index;
       },
       onPanResponderMove: (_e, g) => {
         const p = latest.current;
         const w = trackWRef.current || 1;
-        const startX = (startIdx.current / p.last) * w;
-        thumbX.value = Math.max(0, Math.min(w, startX + g.dx)); // follow finger
-        const ratio = Math.min(1, Math.max(0, (startX + g.dx) / w));
-        p.onChange(Math.round(ratio * p.last));
+        if (!moved.current) {
+          if (scrolling.current) return;
+          const intent = dragIntent(g.dx, g.dy);
+          if (intent === "scroll") scrolling.current = true;
+          if (intent !== "drag") return;
+          moved.current = true;
+          dragging.current = true;
+          scale.value = p.reduced ? 1 : withSpring(1.2, motion.spring.snappy);
+        }
+        const x = Math.max(0, Math.min(w, startX.current + g.dx));
+        thumbX.value = x; // follow the finger
+        const step = stepAt(x, w, p.last);
+        if (step !== sent.current) {
+          sent.current = step;
+          // A detent tick for each step the thumb crosses (user 2026-11-09:
+          // haptics where it makes sense; the price slider's 10 kr steps
+          // stay silent, they would buzz).
+          haptics.selection();
+          p.onChange(step);
+        }
       },
       onPanResponderRelease: () => {
-        dragging.current = false;
         const p = latest.current;
-        scale.value = p.reduced ? 1 : withSpring(1, motion.spring.snappy);
-        const x = (p.index / p.last) * (trackWRef.current || 0);
-        thumbX.value = p.reduced ? x : withSpring(x, motion.spring.snappy);
+        if (!moved.current && !scrolling.current)
+          p.onChange(stepAt(startX.current, trackWRef.current || 1, p.last));
+        settle();
       },
+      onPanResponderTerminate: settle,
     }),
   ).current;
 
@@ -102,8 +153,12 @@ export function SteppedSlider({
 
   return (
     <View>
-      <View onLayout={onLayout} className="h-7 justify-center">
-        <View className="h-0.5 flex-row justify-between">
+      <View
+        {...pan.panHandlers}
+        onLayout={onLayout}
+        className="h-7 justify-center"
+      >
+        <View pointerEvents="none" className="h-0.5 flex-row justify-between">
           {labels.map((l, i) => (
             <View
               key={l}
@@ -118,6 +173,7 @@ export function SteppedSlider({
           ))}
         </View>
         <View
+          pointerEvents="none"
           style={{
             position: "absolute",
             left: THUMB / 2,
@@ -129,6 +185,7 @@ export function SteppedSlider({
         />
         {trackW > 0 ? (
           <Animated.View
+            pointerEvents="none"
             style={[
               {
                 position: "absolute",
@@ -142,7 +199,7 @@ export function SteppedSlider({
           />
         ) : null}
         <Animated.View
-          {...pan.panHandlers}
+          pointerEvents="none"
           accessibilityRole="adjustable"
           accessibilityLabel="Verdi"
           accessibilityValue={{ text: labels[index] }}

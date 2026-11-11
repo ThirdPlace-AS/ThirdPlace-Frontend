@@ -72,9 +72,28 @@ jobs:
         run: npx expo export -p android --output-dir dist-android
 
       - name: Assert no secret (sk.*) token in exported bundles
-        # sk. must start a token: `back-icon-mask.<hash>` is not a secret.
+        # Every exported file is read as text (-a, byte by byte with LC_ALL=C),
+        # so the android bundle, which is Hermes bytecode (.hbc), is scanned as
+        # well as the web .js. Hermes stores its strings back to back, so in the
+        # .hbc the byte before a token can be a letter.
+        # Pattern 1, every file: sk. must start the token (the web .js has
+        # hashed asset names such as `back-icon-mask.<hash>`, not secrets).
+        # Pattern 2, every file: a Mapbox token body (sk.eyJ…) with no anchor.
+        # Pattern 3, .hbc only: any sk. token of 20+ characters with no anchor,
+        # so a token in another format is caught after a letter too.
         run: |
-          if grep -rIl --include='*.js' -E '(^|[^A-Za-z0-9_])sk\.[A-Za-z0-9._-]{20,}' dist-web dist-android; then
-            echo "::error::A secret sk.* token leaked into an exported bundle"; exit 1
+          if ! find dist-android -name '*.hbc' -print -quit | grep -q .; then
+            echo "::error::No Hermes bundle (.hbc) in dist-android to scan"; exit 1
           fi
-          echo "No sk.* token found in exported bundles."
+          scan() {
+            status=0
+            LC_ALL=C grep -rla "$@" || status=$?
+            if [ "$status" -eq 0 ]; then
+              echo "::error::A secret sk.* token leaked into an exported bundle"; exit 1
+            elif [ "$status" -ne 1 ]; then
+              echo "::error::The token scan failed (grep exit $status)"; exit 1
+            fi
+          }
+          scan -E '(^|[^A-Za-z0-9_])sk\.[A-Za-z0-9._-]{20,}|sk\.eyJ[A-Za-z0-9_-]{20,}' dist-web dist-android
+          scan --include='*.hbc' -E 'sk\.[A-Za-z0-9._-]{20,}' dist-android
+          echo "No sk.* token found in the exported web and android bundles."

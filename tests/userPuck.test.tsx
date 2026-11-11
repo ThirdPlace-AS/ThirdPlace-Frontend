@@ -18,13 +18,37 @@ describe("USER_PUCK", () => {
 });
 
 describe("useMapCamera", () => {
-  it("recenters at area zoom by default and at street zoom on request", () => {
+  // R1b (0363): the coordinate travels with the request, so a fly can never
+  // fall back to a default centre.
+  it("flies at area zoom by default and at street zoom on request", () => {
     const { result } = renderHook(() => useMapCamera());
-    expect(result.current.recenterSignal).toBe(0);
-    act(() => result.current.recenter());
-    expect(result.current.recenterZoom).toBe(13);
-    act(() => result.current.recenter(USER_PUCK.locateZoom));
-    expect(result.current.recenterSignal).toBe(2);
-    expect(result.current.recenterZoom).toBe(15);
+    expect(result.current.target).toBeNull();
+    const area: [number, number] = [10.52, 59.89];
+    act(() => {
+      result.current.flyTo(area);
+    });
+    expect(result.current.target).toMatchObject({ coord: area, zoom: 13 });
+    const me: [number, number] = [11.0496, 59.956];
+    let first = 0;
+    act(() => {
+      first = result.current.flyTo(me, USER_PUCK.locateZoom);
+    });
+    expect(result.current.target).toMatchObject({ coord: me, zoom: 15 });
+    expect(first).toBe(2);
+  });
+
+  it("names the fly a follow-up refines", () => {
+    const { result } = renderHook(() => useMapCamera());
+    let seq = 0;
+    act(() => {
+      seq = result.current.flyTo([11.0496, 59.956], 15);
+    });
+    act(() => {
+      result.current.flyTo([11.05, 59.957], 15, { followUp: seq });
+    });
+    expect(result.current.target).toMatchObject({
+      followUp: seq,
+      seq: seq + 1,
+    });
   });
 });

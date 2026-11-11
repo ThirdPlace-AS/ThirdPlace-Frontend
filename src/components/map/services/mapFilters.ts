@@ -4,6 +4,7 @@
 
 import {
   DURATION_STEPS,
+  experiences,
   placeById,
   places,
   ratingOf,
@@ -17,9 +18,15 @@ import {
   placeRating,
 } from "@/fixtures";
 
+import { distanceMeters } from "@/lib/distance";
 import { formatRating } from "@/lib/format";
+import { isPlaceOpen } from "@/lib/openingHours";
 import { shortDayMonth } from "@/lib/dates";
+import { getOrigin, type Origin } from "@/lib/origin";
 
+import { interestById } from "@/fixtures/catalog/interests";
+
+import { ITEM_TYPE_LABEL, experienceType, type ItemType } from "./itemType";
 import { experienceMatchesQuery, placeMatchesQuery } from "./mapSearch";
 import {
   MARKER_LABEL,
@@ -27,10 +34,21 @@ import {
   type MarkerCategory,
 } from "./markerCategory";
 
-// Price range bounds derived from the MOCK fixtures (not a pricing contract).
+// Price range bounds derived from the MOCK fixtures (not a pricing contract):
+// the dearest place or experience. The top of the range is open ("kr 1650+"),
+// so a dearer item, such as one made in Legg til, still shows by default.
 export const PRICE_FLOOR = 0;
-export const PRICE_CEIL = Math.max(...places.map((p) => p.priceNok));
+export const PRICE_CEIL = Math.max(
+  ...places.map((p) => p.priceNok),
+  ...experiences.map((e) => e.priceNok ?? 0),
+);
 export const PRICE_STEP = 10;
+
+/** The price range, with no upper limit while the slider is at its top. */
+export function withinPrice(price: number, f: MapFilters): boolean {
+  if (price < f.priceMin) return false;
+  return f.priceMax >= PRICE_CEIL || price <= f.priceMax;
+}
 // Duration is picked as a "max" step; the last step (999) means "no upper cap".
 export const DURATION_NO_CAP =
   DURATION_STEPS[DURATION_STEPS.length - 1]?.min ?? 999;
@@ -58,6 +76,14 @@ export type MapFilters = {
   // "Kategori": the map pins' eight categories (OR match). Phase 18, from
   // the screen benchmark: quick chips on the map, the same colours as the pins.
   categories: MarkerCategory[];
+  // Activities inside the chosen categories (Phase 19, founder 2026-11-08:
+  // nested so people can filter to one activity): interest ids. A category
+  // with picks keeps only those; one without keeps everything in it.
+  interests: string[];
+  // "Type" (Phase 19, founder 2026-11-08): Bedrift, Organisasjon, Byrom,
+  // Opplevelse, Arrangement (OR). Applies to places and experiences alike, so
+  // choosing only Byrom also empties the experience list.
+  kinds: ItemType[];
   types: string[]; // "Opplevelsestype" (OR match)
   whereArea: string | null; // "Where?" selected Oslo area — recenters, does NOT filter
   // "When?" picked dates (ISO). Phase 18: without a quick tile (`time`), they
@@ -86,6 +112,8 @@ export type MapFilters = {
 
 export const DEFAULT_FILTERS: MapFilters = {
   categories: [],
+  interests: [],
+  kinds: [],
   types: [],
   whereArea: null,
   dateStart: null,
@@ -109,20 +137,23 @@ export const DEFAULT_FILTERS: MapFilters = {
   hasSpots: false,
 };
 
-// Orders a filtered place list for the "Sorter" toggle. Demo ordering over MOCK
-// rating/reviews — not a ranking contract. Returns a new array; null = unchanged.
-export function sortPlaces(
-  list: MockPlace[],
-  sort: RatingSort | null,
-): MockPlace[] {
-  if (sort === null) return list;
-  const by =
-    sort === "best"
-      ? (a: MockPlace, b: MockPlace) =>
-          placeRating(b.id).score - placeRating(a.id).score
-      : (a: MockPlace, b: MockPlace) =>
-          placeRating(b.id).count - placeRating(a.id).count;
-  return [...list].sort(by);
+// The list's order (Sorter, nearest first, Trending) is set once, after places
+// and experiences are mixed: orderItems() in mapFixtureAdapter.ts (Phase 19).
+
+/** Kategori with its activities (Phase 19, founder 2026-11-08). Nothing
+ *  chosen keeps everything; a picked activity always matches; a chosen
+ *  category keeps all of itself until one of its activities is picked, then
+ *  only the picked ones. Items without an interest (made in Legg til) match
+ *  by category alone. */
+export function categoryMatch(
+  f: Pick<MapFilters, "categories" | "interests">,
+  category: MarkerCategory,
+  interestId?: string,
+): boolean {
+  if (f.categories.length === 0 && f.interests.length === 0) return true;
+  if (interestId !== undefined && f.interests.includes(interestId)) return true;
+  if (!f.categories.includes(category)) return false;
+  return !f.interests.some((i) => interestById(i)?.category === category);
 }
 
 // Applies search text + place-level filters to the place list. Time and
@@ -131,18 +162,29 @@ export function applyFilters(
   all: MockPlace[],
   query: string,
   f: MapFilters,
+  // Avstand is measured from the person (Phase 19): the phone, a picked area
+  // or Grünerløkka (src/lib/origin.ts).
+  origin: Origin = getOrigin(),
 ): MockPlace[] {
   const q = query.trim().toLowerCase();
   return all.filter((p) => {
     if (
-      f.categories.length > 0 &&
-      !f.categories.includes(markerCategoryFor({ kind: "place", id: p.id }))
+      !categoryMatch(
+        f,
+        markerCategoryFor({ kind: "place", id: p.id }),
+        p.interestId,
+      )
     )
       return false;
+    if (f.kinds.length > 0 && !f.kinds.includes(p.kind)) return false;
     if (f.types.length > 0 && !f.types.some((t) => p.types.includes(t)))
       return false;
-    if (f.maxDistanceM !== null && p.distanceM > f.maxDistanceM) return false;
-    if (p.priceNok < f.priceMin || p.priceNok > f.priceMax) return false;
+    if (
+      f.maxDistanceM !== null &&
+      distanceMeters(origin.coord, p.coord) > f.maxDistanceM
+    )
+      return false;
+    if (!withinPrice(p.priceNok, f)) return false;
     if (f.durationMaxMin < DURATION_NO_CAP && p.durationMin > f.durationMaxMin)
       return false;
     if (f.vibes.length > 0 && !f.vibes.some((v) => p.vibes.includes(v)))
@@ -171,7 +213,8 @@ export function applyFilters(
       !f.accessibility.every((a) => p.accessibility.includes(a))
     )
       return false;
-    if (f.openNowOnly && !p.openNow) return false;
+    // "Åpent nå" reads the place's hours at this moment (src/lib/openingHours.ts).
+    if (f.openNowOnly && !isPlaceOpen(p)) return false;
     // Same matcher as the overlay search (name/category/tags) so submitting a
     // query from the overlay narrows the map exactly as the overlay showed it.
     if (q !== "" && !placeMatchesQuery(p, q)) return false;
@@ -185,7 +228,8 @@ export function applyFilters(
 // narrow results, so they must not inflate the badge.
 export function activeExtraFilterCount(f: MapFilters): number {
   return (
-    (f.categories.length > 0 ? 1 : 0) +
+    (f.categories.length > 0 || f.interests.length > 0 ? 1 : 0) +
+    (f.kinds.length > 0 ? 1 : 0) +
     (f.types.length > 0 ? 1 : 0) +
     (f.maxDistanceM !== null ? 1 : 0) +
     (f.priceMin > PRICE_FLOOR || f.priceMax < PRICE_CEIL ? 1 : 0) +
@@ -207,9 +251,9 @@ export function activeExtraFilterCount(f: MapFilters): number {
 
 // ── Experiences (Phase 12 H5c: one filter pipeline for the map and Sveip) ──
 // Every facet reads a field the experience has (H2) or, for venue facts
-// (distance, facilities, accessibility), the place it is held at. An
-// experience without a venue has no distance (it passes the distance cap)
-// and no facilities or accessibility to match (it fails those). "Åpent nå"
+// (facilities, accessibility), the place it is held at; distance is measured
+// from the person to the meeting point (Phase 19). An experience without a
+// venue has no facilities or accessibility to match (it fails those). "Åpent nå"
 // is opening hours, a place concept: experiences pass it.
 
 const startHour = (when: string): number | null => {
@@ -254,24 +298,31 @@ export function applyExperienceFilters(
   all: MockExperience[],
   query: string,
   f: MapFilters,
+  origin: Origin = getOrigin(),
 ): MockExperience[] {
   const q = query.trim().toLowerCase();
   const out = all.filter((e) => {
     if (e.status === "cancelled") return false;
     if (
-      f.categories.length > 0 &&
-      !f.categories.includes(
+      !categoryMatch(
+        f,
         markerCategoryFor({ kind: "experience", id: e.id }),
+        e.interestId,
       )
     )
+      return false;
+    if (f.kinds.length > 0 && !f.kinds.includes(experienceType(e)))
       return false;
     const place = placeById(e.placeId);
     if (f.types.length > 0 && !f.types.some((t) => e.types.includes(t)))
       return false;
-    if (f.maxDistanceM !== null && place && place.distanceM > f.maxDistanceM)
+    // Measured to the meeting point, so an outdoor one is capped too.
+    if (
+      f.maxDistanceM !== null &&
+      distanceMeters(origin.coord, e.meetingPoint.coord) > f.maxDistanceM
+    )
       return false;
-    const price = e.priceNok ?? 0;
-    if (price < f.priceMin || price > f.priceMax) return false;
+    if (!withinPrice(e.priceNok ?? 0, f)) return false;
     if (f.durationMaxMin < DURATION_NO_CAP && e.durationMin > f.durationMaxMin)
       return false;
     if (
@@ -361,7 +412,49 @@ export function appliedFilterChips(f: MapFilters): AppliedFilterChip[] {
         }),
       });
   };
-  each("categories", f.categories, (c) => MARKER_LABEL[c as MarkerCategory]);
+  // Kategori (Phase 19 nested): a category with picked activities shows one
+  // chip per activity; removing the last one drops the category too, so the
+  // filter goes away instead of widening to the whole category.
+  for (const c of f.categories) {
+    const picks = f.interests.filter((i) => interestById(i)?.category === c);
+    if (picks.length === 0)
+      out.push({
+        key: `categories:${c}`,
+        label: MARKER_LABEL[c],
+        remove: (g) => ({
+          ...g,
+          categories: g.categories.filter((x) => x !== c),
+        }),
+      });
+    for (const i of picks)
+      out.push({
+        key: `interests:${i}`,
+        label: interestById(i)?.label ?? i,
+        remove: (g) => {
+          const interests = g.interests.filter((x) => x !== i);
+          const left = interests.some((x) => interestById(x)?.category === c);
+          return {
+            ...g,
+            interests,
+            categories: left
+              ? g.categories
+              : g.categories.filter((x) => x !== c),
+          };
+        },
+      });
+  }
+  // An activity picked without its category (not made by Filtre, but kept
+  // consistent).
+  for (const i of f.interests) {
+    const cat = interestById(i)?.category;
+    if (cat && f.categories.includes(cat)) continue;
+    out.push({
+      key: `interests:${i}`,
+      label: interestById(i)?.label ?? i,
+      remove: (g) => ({ ...g, interests: g.interests.filter((x) => x !== i) }),
+    });
+  }
+  each("kinds", f.kinds, (k) => ITEM_TYPE_LABEL[k as ItemType]);
   if (f.time !== null)
     out.push({
       key: "time",

@@ -1,7 +1,7 @@
 import { Ionicons } from "@expo/vector-icons";
 import BottomSheet, { BottomSheetFlatList } from "@gorhom/bottom-sheet";
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { View } from "react-native";
+import { useWindowDimensions, View } from "react-native";
 import Animated, {
   Extrapolation,
   interpolate,
@@ -11,6 +11,7 @@ import Animated, {
   useSharedValue,
 } from "react-native-reanimated";
 import {
+  Badge,
   HeartToggle,
   Icon,
   Loader,
@@ -19,18 +20,15 @@ import {
   Text,
   useSheetChrome,
 } from "@/components/ui";
-import { elevation } from "@/theme";
-import { MAP_CITY, type MockWeather } from "@/fixtures";
+import { elevation, gutterPx } from "@/theme";
+import { areaFor, type MockWeather } from "@/fixtures";
+import { useOrigin } from "@/lib/origin";
 import { formatRating } from "@/lib/format";
 import { GoingLine } from "@/components/GoingLine";
 import { PhotoPager } from "./PhotoPager";
 import { sheetA11yChrome } from "./sheetA11y";
 import { photosForItem } from "./services/itemCover";
-import {
-  MARKER_LABEL,
-  markerCategoryFor,
-  markerFill,
-} from "./services/markerCategory";
+import { browseCardLine, browseCardOpenBadge } from "./services/itemType";
 import type { DiscoveryItem } from "./types/mapPresentation";
 
 // Airbnb-style persistent "browse" sheet. Always peeks (handle + header,
@@ -42,14 +40,18 @@ import type { DiscoveryItem } from "./types/mapPresentation";
 // When a marker detail opens, `hidden` collapses this out of the way.
 // The sheet handle area above the header (indicator + vertical padding).
 const PEEK_HANDLE = 24;
+// The card's floating bookmark (IconButton size "sm") is this tall; the
+// opening badge on the other corner is centred on the same line.
+const BOOKMARK_PX = 36;
 
-export function MapBrowseSheet({
+// Memoised (speed pass 0345): the map screen passes stable props, so this
+// sheet renders only when its list, selection or state really change.
+export const MapBrowseSheet = memo(function MapBrowseSheet({
   items,
   selectedMarkerId,
   onSelect,
   isSaved,
   onToggleSave,
-  onItemActions,
   emptyMessage,
   areaLabel,
   weather,
@@ -64,8 +66,6 @@ export function MapBrowseSheet({
   onSelect: (item: DiscoveryItem) => void;
   isSaved: (markerId: string) => boolean;
   onToggleSave: (item: DiscoveryItem) => void;
-  /** Long-press on a card: quick actions (Phase 18). */
-  onItemActions?: (item: DiscoveryItem) => void;
   emptyMessage: string;
   areaLabel: string | null;
   weather: MockWeather;
@@ -83,7 +83,7 @@ export function MapBrowseSheet({
   // Peek = handle + the measured city/weather header, so no card photo shows
   // under it (review L11; a fixed 8% left a sliver of the first card).
   const [peek, setPeek] = useState<number | null>(null);
-  const snapPoints = useMemo(() => [peek ?? "8%", "49%", "84.5%"], [peek]);
+  const snapPoints = useMemo(() => [peek ?? "8%", "49%", "83.5%"], [peek]);
   const sheetRef = useRef<BottomSheet>(null);
   // Live fractional snap index (0 peek · 1 mid · 2 full), written by gorhom;
   // the floating "Kart" pill reads it. Per mount, so it starts at the peek.
@@ -140,12 +140,10 @@ export function MapBrowseSheet({
   // selected/saved state actually changed.
   const onSelectRef = useRef(onSelect);
   const onToggleSaveRef = useRef(onToggleSave);
-  const onItemActionsRef = useRef(onItemActions);
   useEffect(() => {
     onSelectRef.current = onSelect;
     onToggleSaveRef.current = onToggleSave;
-    onItemActionsRef.current = onItemActions;
-  }, [onSelect, onToggleSave, onItemActions]);
+  }, [onSelect, onToggleSave]);
   const handleSelect = useCallback(
     (item: DiscoveryItem) => onSelectRef.current(item),
     [],
@@ -154,25 +152,27 @@ export function MapBrowseSheet({
     (item: DiscoveryItem) => onToggleSaveRef.current(item),
     [],
   );
-  const handleActions = useCallback(
-    (item: DiscoveryItem) => onItemActionsRef.current?.(item),
-    [],
-  );
+  // The cards span the sheet (the window) less the list's gutters; measured
+  // here once instead of by every card's photo pager (speed pass 0349).
+  const cardWidth = Math.round(useWindowDimensions().width - 2 * gutterPx);
   const renderItem = useCallback(
     ({ item }: { item: DiscoveryItem }) => (
       <BrowseCard
         item={item}
+        width={cardWidth}
         selected={item.markerId === selectedMarkerId}
         saved={isSaved(item.markerId)}
         onSelect={handleSelect}
         onToggleSave={handleToggleSave}
-        onActions={handleActions}
       />
     ),
-    [selectedMarkerId, isSaved, handleSelect, handleToggleSave, handleActions],
+    [cardWidth, selectedMarkerId, isSaved, handleSelect, handleToggleSave],
   );
 
-  const cityLine = areaLabel ? `${MAP_CITY} · ${areaLabel}` : MAP_CITY;
+  // The municipality the person is in (Phase 19: Oslo and Akershus), then
+  // the picked area or "Min posisjon", as before.
+  const city = areaFor(useOrigin().coord).municipality;
+  const cityLine = areaLabel ? `${city} · ${areaLabel}` : city;
   // The pill is mounted whenever the sheet is live; its own opacity hides it
   // until the sheet nears full extent.
   const showMapPill = !hidden;
@@ -272,7 +272,10 @@ export function MapBrowseSheet({
           renderItem={renderItem}
           initialNumToRender={4}
           maxToRenderPerBatch={4}
-          windowSize={7}
+          // Two screens of cards above and below (was three; speed pass
+          // 0349). The cards differ in height (lines, tags, who is going),
+          // so there is no getItemLayout.
+          windowSize={5}
         />
       </BottomSheet>
 
@@ -285,13 +288,12 @@ export function MapBrowseSheet({
         // start — CLAUDE.md).
         <View
           pointerEvents={pillInteractive ? "box-none" : "none"}
-          className="absolute inset-x-0 bottom-8 items-center"
+          className="absolute inset-x-0 items-center bottom-8"
         >
           <Animated.View style={pillStyle}>
             <UIPressable
               accessibilityRole="button"
               accessibilityLabel="Vis kart"
-              haptic="selection"
               onPress={() => sheetRef.current?.snapToIndex(0)}
               contentClassName="flex-row items-center gap-sm rounded-full bg-ink px-lg py-md"
               contentStyle={elevation.e2}
@@ -306,44 +308,59 @@ export function MapBrowseSheet({
       ) : null}
     </>
   );
-}
+});
 
 // One result card. Memoized: props are primitives + stable callbacks, so it
 // re-renders only when its own item/selected/saved changes.
-const BrowseCard = memo(function BrowseCard({
+export const BrowseCard = memo(function BrowseCard({
   item,
+  width,
   selected,
   saved,
   onSelect,
   onToggleSave,
-  onActions,
 }: {
   item: DiscoveryItem;
+  /** The card's width, when the list knows it: the photos page without a
+   * layout pass of their own. */
+  width?: number;
   selected: boolean;
   saved: boolean;
   onSelect: (item: DiscoveryItem) => void;
   onToggleSave: (item: DiscoveryItem) => void;
-  onActions: (item: DiscoveryItem) => void;
 }) {
   const photos = photosForItem(item);
-  const marker = markerCategoryFor(item);
+  // Tags that repeat the type line ("Festival", the activity) are left out:
+  // every fact once.
+  const typeWords = new Set(
+    (item.typeLabel ?? "").toLowerCase().split(" · ").filter(Boolean),
+  );
+  const tags = (item.tags ?? [])
+    .filter((t) => !typeWords.has(t.toLowerCase()))
+    .slice(0, 3);
+  const line = browseCardLine(item);
+  const openBadge = browseCardOpenBadge(item);
   return (
-    // Card wrapper is a View; the save heart is a SIBLING of the
+    // Card wrapper is a View; the save button is a SIBLING of the
     // select Pressable (never nested) — nested <button> is invalid
     // DOM on web.
     <View className="relative gap-3">
       <UIPressable
         accessibilityRole="button"
         accessibilityState={{ selected }}
-        accessibilityLabel={`${item.title}, ${MARKER_LABEL[marker]}, ${item.subtitle}`}
+        // A screen reader hears the type, area and distance the card leaves
+        // out (founder 2026-11-08) and a place's opening (the badge on a
+        // Bedrift or Byrom photo is drawn only).
+        accessibilityLabel={`${item.title}, ${item.subtitle}${
+          item.openNow === undefined
+            ? ""
+            : item.openNow
+              ? ", åpent nå"
+              : ", stengt nå"
+        }`}
         onPress={() => onSelect(item)}
-        // Quick actions (Phase 18); screen readers get them as "Flere valg".
-        onLongPress={() => onActions(item)}
-        delayLongPress={320}
-        accessibilityActions={[{ name: "longpress", label: "Flere valg" }]}
-        onAccessibilityAction={(e) => {
-          if (e.nativeEvent.actionName === "longpress") onActions(item);
-        }}
+        // No long-press menu on the cards (user 2026-11-09); Lagret and
+        // Chat rows keep theirs.
         contentClassName="gap-3"
       >
         {/* Hero: bundled photo (placeholder when an item has none). */}
@@ -356,27 +373,24 @@ const BrowseCard = memo(function BrowseCard({
           }`}
         >
           {photos.length > 0 ? (
-            <PhotoPager photos={photos} />
+            <PhotoPager
+              photos={photos}
+              // The selected card's 2 px ink border sits inside the photo box.
+              width={
+                width === undefined ? undefined : width - (selected ? 4 : 0)
+              }
+            />
           ) : (
             <Icon name="image-outline" size="2xl" tone="muted" />
           )}
-
-          {/* Top-left: category chip, with the pin's colour as a dot so a
-              card and its map pin read as the same thing. */}
-          <View className="absolute left-3 top-3">
-            <View className="flex-row items-center gap-1.5 rounded-full bg-surface px-3 py-1">
-              <View
-                className="h-2 w-2 rounded-full"
-                style={{ backgroundColor: markerFill(marker) }}
-              />
-              <Text variant="caption" weight="semibold">
-                {MARKER_LABEL[marker]}
-              </Text>
-            </View>
-          </View>
         </View>
 
-        {/* Body — title + rating, subtitle, info line, tag chips. */}
+        {/* Body (founder 2026-11-08): title + rating, then what it is
+            (a business's or city space's kind, "Buldresenter", "Park"; an
+            experience's activity; "Organisasjon") with a Bedrift's or
+            Byrom's distance (2026-11-09), an Organisasjon's opening or an
+            experience's time; for an experience who is going and its price
+            (places show no price); tag chips. No pin category or area. */}
         <View className="gap-1">
           <View className="flex-row items-center gap-2">
             <Text
@@ -401,20 +415,25 @@ const BrowseCard = memo(function BrowseCard({
               </View>
             ) : null}
           </View>
-          <Text variant="caption" tone="muted" numberOfLines={1}>
-            {item.subtitle}
-          </Text>
-          {item.kind === "experience" ? (
-            // Who is going, live with your own join (Phase 16).
-            <GoingLine id={item.id} />
-          ) : item.meta ? (
-            <Text variant="label" weight="semibold" numberOfLines={1}>
-              {item.meta}
+          {line ? (
+            <Text variant="caption" tone="muted" numberOfLines={1}>
+              {line}
             </Text>
           ) : null}
-          {item.tags && item.tags.length > 0 ? (
+          {item.kind === "experience" ? (
+            <>
+              {/* Who is going, live with your own join (Phase 16). */}
+              <GoingLine id={item.id} />
+              {item.price ? (
+                <Text variant="label" weight="semibold" numberOfLines={1}>
+                  {item.price}
+                </Text>
+              ) : null}
+            </>
+          ) : null}
+          {tags.length > 0 ? (
             <View className="flex-row flex-wrap gap-1.5 mt-0.5">
-              {item.tags.slice(0, 3).map((t) => (
+              {tags.map((t) => (
                 <View
                   key={t}
                   className="px-2 py-0.5 rounded-full bg-surfaceMuted"
@@ -429,14 +448,34 @@ const BrowseCard = memo(function BrowseCard({
         </View>
       </UIPressable>
 
-      {/* Top-right save (heart) — sibling overlay over the hero. */}
+      {/* Top-right save — sibling overlay over the hero. The save icon (a
+          bookmark, as in Sveip), not a heart (founder 2026-11-08). */}
       <HeartToggle
+        kind="bookmark"
         selected={saved}
         onToggle={() => onToggleSave(item)}
         variant="floating"
         size="sm"
         className="absolute right-3 top-3"
       />
+
+      {/* Top-left: a Bedrift's or Byrom's opening, green "Åpent" or red
+          "Stengt" (user 2026-11-09). A plain View as tall as the bookmark, so the
+          two sit on one line; touches pass through to the photos. */}
+      {openBadge ? (
+        <View
+          pointerEvents="none"
+          className="absolute left-3 top-3 justify-center"
+          style={{ height: BOOKMARK_PX }}
+        >
+          <Badge
+            kind="status"
+            solid
+            tone={openBadge.tone}
+            label={openBadge.label}
+          />
+        </View>
+      ) : null}
     </View>
   );
 });

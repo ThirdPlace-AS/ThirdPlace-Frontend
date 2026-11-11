@@ -1,17 +1,26 @@
 import Constants, { ExecutionEnvironment } from "expo-constants";
-import type { ComponentType } from "react";
+import { memo, useMemo, useState, type ComponentType } from "react";
 import { Platform, Pressable, View } from "react-native";
 
 import { env } from "@/lib/env";
+import { useUserLocation } from "@/lib/userLocation";
 import { elevation, palette } from "@/theme";
 
 import type { MapStylePeriod } from "./mapStyles";
-import { clusterByGrid, projectToUnit } from "./services/softClustering";
+import {
+  clusterByGrid,
+  projectToUnit,
+  softBoxFor,
+  softTowns,
+  type SoftBox,
+} from "./services/softClustering";
 import type { DiscoveryItem } from "./types/mapPresentation";
+import type { FocusPadding } from "./services/pinCamera";
+import type { CameraTarget } from "./hooks/useMapCamera";
 import { markerPaint } from "./pinStyle";
 import { USER_PUCK } from "./userPuck";
 import { markerIcon } from "./services/markerIcon";
-import { Icon, Text } from "@/components/ui";
+import { PinGlyph, Text } from "@/components/ui";
 
 // Pins sit on the map, not the app surface: the light palette in every theme
 // (as the native pins), category fills from pinStyle.
@@ -26,18 +35,17 @@ type MapProps = {
   markers: DiscoveryItem[];
   // markerId of the current selection (highlights its pin).
   selectedMarkerId?: string | null;
-  onSelectMarker?: (markerId: string) => void;
-  // Bump to recenter the real map on `center` (SoftMap ignores it).
-  recenterSignal?: number;
-  // Zoom for that recenter (15 = fly to the user, 13 = an area).
-  recenterZoom?: number;
-  // Camera center (GPS fix / manual area / demo default). SoftMap ignores it.
+  // True when the screen took the selection (MapboxMap keeps the ring its
+  // press drew natively; otherwise it puts the old one back).
+  onSelectMarker?: (markerId: string) => boolean;
+  // Where the real map flies next (Posisjon, a picked area), once per request
+  // (hooks/useMapCamera.ts). SoftMap ignores it.
+  cameraTarget?: CameraTarget | null;
+  // Where the real map opens (read once; GPS fix / manual area / demo
+  // default). SoftMap ignores it. The user's position and heading are not
+  // props: both maps' location dots read them from src/lib/userLocation.ts
+  // (speed pass 0346), so a GPS fix or a compass reading renders only the dot.
   center?: [number, number];
-  // The user's real GPS fix (null until granted). Both maps draw the same
-  // puck (userPuck.ts); the native map also follows its own location updates.
-  userCoord?: [number, number] | null;
-  // Device facing heading in degrees (0 = north), or null: the puck's wedge.
-  heading?: number | null;
   // Tap on empty map (not a marker) — collapses selection + dismisses keyboard.
   onMapPress?: () => void;
   // SoftMap only: tapping a multi-item cluster (whose members have no individual
@@ -46,6 +54,9 @@ type MapProps = {
   // Coordinate of the selected marker to pan/center the camera onto (above the
   // detail sheet), Google-Maps style. SoftMap ignores it.
   focusCoord?: [number, number] | null;
+  // The pick came from the list or a link, not a pin: the native map zooms
+  // in until the pin leaves its cluster. SoftMap ignores it.
+  focusZoomIn?: boolean;
   // Mapbox base-map style URL (Kartlag). SoftMap ignores it.
   styleURL?: string;
   // Kartstil light preset and Terreng overlays (Kartlag). SoftMap ignores them.
@@ -57,6 +68,9 @@ type MapProps = {
   // and titles flip so they stay visible (pinStyle.ts). SoftMap follows the
   // theme.
   darkBasemap?: boolean;
+  // Room around a centred pin, below the top controls and above the detail
+  // sheet's peek (services/pinCamera.ts). SoftMap ignores it.
+  focusPadding?: FocusPadding;
 };
 
 // User-location puck for the SoftMap fallback: an ember dot with a white ring
@@ -65,12 +79,14 @@ type MapProps = {
 function SoftUserPuck({
   coord,
   heading,
+  box,
 }: {
   coord: [number, number];
   heading: number | null;
+  box: SoftBox;
 }) {
-  const { x, y } = projectToUnit(coord);
-  const box = USER_PUCK.haloRadius * 2;
+  const { x, y } = projectToUnit(coord, box);
+  const size = USER_PUCK.haloRadius * 2;
   const dot = (USER_PUCK.dotRadius + USER_PUCK.ringWidth) * 2;
   return (
     <View
@@ -79,18 +95,18 @@ function SoftUserPuck({
       style={{
         left: `${x * 100}%`,
         top: `${y * 100}%`,
-        width: box,
-        height: box,
-        transform: [{ translateX: -box / 2 }, { translateY: -box / 2 }],
+        width: size,
+        height: size,
+        transform: [{ translateX: -size / 2 }, { translateY: -size / 2 }],
       }}
     >
       {/* Same look as the native puck: halo, white ring, ember dot. */}
       <View
         className="absolute"
         style={{
-          width: box,
-          height: box,
-          borderRadius: box / 2,
+          width: size,
+          height: size,
+          borderRadius: size / 2,
           backgroundColor: USER_PUCK.halo,
           opacity: USER_PUCK.haloOpacity,
         }}
@@ -161,12 +177,41 @@ function SoftMap({
   onSelectMarker,
   onMapPress,
   onClusterPress,
-  userCoord,
-  heading,
 }: MapProps) {
-  const clusters = clusterByGrid(markers);
+  // The app's own fix only (the native map's engine position does not exist
+  // here); the fallback frames it with the markers.
+  const { coord: userCoord, heading } = useUserLocation();
+  // County scale (Phase 19 S4b): frame the markers on screen (and the
+  // person), cluster on a 44 dp grid, name the towns in view.
+  const [size, setSize] = useState({ w: 0, h: 0 });
+  const box = useMemo(
+    () =>
+      softBoxFor(
+        [...markers.map((m) => m.coord), ...(userCoord ? [userCoord] : [])],
+        size.w > 0 && size.h > 0 ? size.w / size.h : 1,
+      ),
+    [markers, userCoord, size.w, size.h],
+  );
+  const clusters = clusterByGrid(
+    markers,
+    size.w > 0 ? 44 / size.w : 0.04,
+    box,
+    size.h > 0 ? 44 / size.h : 0.04,
+  );
+  const towns = useMemo(
+    () => softTowns(box, size.w, size.h),
+    [box, size.w, size.h],
+  );
   return (
-    <View className="h-full w-full">
+    <View
+      className="h-full w-full"
+      onLayout={(e) =>
+        setSize({
+          w: e.nativeEvent.layout.width,
+          h: e.nativeEvent.layout.height,
+        })
+      }
+    >
       {/* Background tap target — sits behind the pins so tapping empty map
           collapses the selection / dismisses the keyboard. Pins are rendered
           after it and capture their own taps. */}
@@ -186,6 +231,29 @@ function SoftMap({
         className="absolute h-20 w-20 rounded-full bg-ember/10"
         style={{ bottom: 12, right: 28 }}
       />
+
+      {towns.map((t) => (
+        <View
+          key={t.name}
+          pointerEvents="none"
+          className="absolute"
+          style={{
+            left: `${t.x * 100}%`,
+            top: `${t.y * 100}%`,
+            transform: [{ translateX: -40 }, { translateY: -8 }],
+            width: 80,
+          }}
+        >
+          <Text
+            variant="micro"
+            tone="muted"
+            numberOfLines={1}
+            className="text-center"
+          >
+            {t.name}
+          </Text>
+        </View>
+      ))}
 
       {clusters.map((c) => {
         const left = `${c.x * 100}%` as const;
@@ -219,6 +287,7 @@ function SoftMap({
         }
         const item = c.items[0]!;
         const selected = item.markerId === selectedMarkerId;
+        const look = markerPaint(item, PIN);
         // 44×44 transparent hit box centered on the coord so the touch rect
         // aligns with the visible dot (a transformed small box used to miss).
         return (
@@ -236,22 +305,32 @@ function SoftMap({
               transform: [{ translateX: -22 }, { translateY: -22 }],
             }}
           >
+            {/* The native pins' edges: a soft shadow under every pin and,
+                for experiences, a thin white edge outside the ink ring. */}
             <View
-              className={`items-center justify-center rounded-full border-2 ${
-                selected ? "h-10 w-10" : "h-8 w-8"
-              }`}
-              // Same paint as the native pins (category fill, kind ring);
-              // the selected pin gets the brand ring.
-              style={{
-                backgroundColor: markerPaint(item, PIN).fill,
-                borderColor: selected ? PIN.ember : markerPaint(item, PIN).ring,
-              }}
+              className="rounded-full"
+              style={[
+                elevation.e1,
+                look.edge ? { padding: 1.5, backgroundColor: look.edge } : null,
+              ]}
             >
-              <Icon
-                name={markerIcon(item)}
-                size="sm"
-                color={markerPaint(item, PIN).glyph}
-              />
+              <View
+                className={`items-center justify-center rounded-full border-2 ${
+                  selected ? "h-10 w-10" : "h-8 w-8"
+                }`}
+                // Same paint as the native pins (pin group fill, kind ring);
+                // the selected pin gets the brand ring.
+                style={{
+                  backgroundColor: look.fill,
+                  borderColor: selected ? PIN.ember : look.ring,
+                }}
+              >
+                <PinGlyph
+                  name={markerIcon(item)}
+                  size={16}
+                  color={look.glyph}
+                />
+              </View>
             </View>
             {/* Title label under the pin (un-clustered markers only). The pill
                 keeps it legible regardless of the map background. */}
@@ -274,29 +353,32 @@ function SoftMap({
       })}
 
       {userCoord ? (
-        <SoftUserPuck coord={userCoord} heading={heading ?? null} />
+        <SoftUserPuck coord={userCoord} heading={heading ?? null} box={box} />
       ) : null}
     </View>
   );
 }
 
-export function MapCanvas({
+// Memoised (speed pass 0345): the map screen re-renders for many reasons that
+// do not concern the map (sheets, peek height, saved toggles), and each
+// render used to rebuild every pin layer. Its props come stable from
+// app/(tabs)/map.tsx.
+export const MapCanvas = memo(function MapCanvas({
   markers,
   selectedMarkerId,
   onSelectMarker,
-  recenterSignal,
-  recenterZoom,
+  cameraTarget,
   center,
-  userCoord,
-  heading,
   onMapPress,
   onClusterPress,
   focusCoord,
+  focusZoomIn,
   styleURL,
   lightPreset,
   terrain,
   ornamentBottom,
   darkBasemap = false,
+  focusPadding,
   height = 160,
   fill = false,
 }: MapProps & { height?: number; fill?: boolean }) {
@@ -314,18 +396,17 @@ export function MapCanvas({
           markers={markers}
           selectedMarkerId={selectedMarkerId}
           onSelectMarker={onSelectMarker}
-          recenterSignal={recenterSignal}
-          recenterZoom={recenterZoom}
+          cameraTarget={cameraTarget}
           center={center}
-          userCoord={userCoord}
-          heading={heading}
           onMapPress={onMapPress}
           focusCoord={focusCoord}
+          focusZoomIn={focusZoomIn}
           styleURL={styleURL}
           lightPreset={lightPreset}
           terrain={terrain}
           ornamentBottom={ornamentBottom}
           darkBasemap={darkBasemap}
+          focusPadding={focusPadding}
         />
       ) : (
         <SoftMap
@@ -334,10 +415,8 @@ export function MapCanvas({
           onSelectMarker={onSelectMarker}
           onMapPress={onMapPress}
           onClusterPress={onClusterPress}
-          userCoord={userCoord}
-          heading={heading}
         />
       )}
     </View>
   );
-}
+});

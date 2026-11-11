@@ -24,7 +24,7 @@ export const WHATS_NEW: {
     {
       icon: "hand-left-outline",
       title: "Hold inne for flere valg",
-      text: "Hold inne et kort på kartet eller en rad i Lagret for å se flere valg.",
+      text: "Hold inne en rad i Lagret for å se flere valg.",
     },
   ],
   done: "Fortsett",

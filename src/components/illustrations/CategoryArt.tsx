@@ -354,6 +354,33 @@ const ART: Record<ArtKey, () => React.JSX.Element> = {
       />
     </>
   ),
+  group: () => (
+    <>
+      <Shadow rx={24} />
+      {/* Three friends: two behind, one in front, in the Sted art's colours
+          (ember, green, grey). No ink figure (it would vanish on a dark
+          card) and no brown one (it would read as a skin tone). */}
+      {[
+        { x: 19, fill: C.grey },
+        { x: 45, fill: C.green },
+      ].map(({ x, fill }) => (
+        <G key={x}>
+          <Solid d={`M${x - 12} 51a12 11 0 0 1 24 0z`} fill={fill} depth={3} />
+          <Circle cx={x} cy={33.5} r={6.5} fill={shade(fill)} />
+          <Circle cx={x} cy={32} r={6.5} fill={fill} />
+          <Path
+            d={`M${x - 4.2} 30a4.6 4.6 0 0 1 2.8-2.9`}
+            {...hiStroke(fill, 1.6)}
+          />
+        </G>
+      ))}
+      <Solid d="M16 56a16 13 0 0 1 32 0z" fill={C.ember} depth={3} />
+      <Path d="M21.5 50a11 9 0 0 1 5.5-4.6" {...hiStroke(C.ember, 2.2)} />
+      <Circle cx={32} cy={32.5} r={8} fill={shade(C.ember)} />
+      <Circle cx={32} cy={31} r={8} fill={C.ember} />
+      <Path d="M26.6 28.4a6 6 0 0 1 3.6-3.5" {...hiStroke(C.ember, 2.2)} />
+    </>
+  ),
   location: () => (
     <>
       <Shadow rx={23} cy={60} />

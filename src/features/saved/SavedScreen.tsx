@@ -1,9 +1,16 @@
 import { Image } from "expo-image";
 import { router, type Href } from "expo-router";
 import { useMemo, useState } from "react";
-import { FlatList, View } from "react-native";
+import { View } from "react-native";
+import Animated, {
+  FadeIn,
+  FadeOut,
+  LinearTransition,
+} from "react-native-reanimated";
 
 import { HeartToggle, ListRow, Screen } from "@/components/ui";
+import { useReducedMotion } from "@/hooks/useReducedMotion";
+import { gutterPx, motion } from "@/theme";
 import { Chip } from "@/components/Chip";
 import { RouteHeader } from "@/components/RouteHeader";
 import { showToast } from "@/components/Toast";
@@ -17,12 +24,24 @@ import { useGuestMode } from "@/components/map/hooks/useGuestMode";
 import {
   businessById,
   experienceById,
+  PLACE_KIND_LABEL,
   placeById,
   placeRating,
 } from "@/fixtures";
+import { experienceTypeLabel } from "@/components/map/services/itemType";
 import { coverForPlace, libThumb } from "@/fixtures/images";
 import { Illustration } from "@/components/illustrations/Illustration";
 import { formatRating } from "@/lib/format";
+
+// The list's padding and gaps as a style (review of the speed pass: no
+// className on an animated component); the values the classes
+// "gap-2 px-gutter pb-10 flex-grow" resolved to (NativeWind's rem is 14).
+const LIST_CONTENT = {
+  gap: 7,
+  paddingHorizontal: gutterPx,
+  paddingBottom: 35,
+  flexGrow: 1,
+};
 
 type Kind = "place" | "experience" | "business";
 type Row = {
@@ -31,9 +50,14 @@ type Row = {
   title: string;
   meta: string;
   placeId?: string;
+  // Phase 19: every saved thing opens a page, and "Vis på kartet" focuses a
+  // pin (a saved business shows its place).
+  href: Href;
+  mapKey: string;
 };
 const FILTERS: { key: Kind | null; label: string }[] = [
   { key: null, label: "Alle" },
+  // Bedrifter are places too; Steder holds the clubs and city spaces.
   { key: "place", label: "Steder" },
   { key: "experience", label: "Opplevelser" },
   { key: "business", label: "Bedrifter" },
@@ -47,6 +71,7 @@ const FILTERS: { key: Kind | null; label: string }[] = [
 export default function SavedScreen() {
   const { savedIds, toggle } = useMapSaved();
   const { isGuest } = useGuestMode();
+  const reduced = useReducedMotion();
   const savedExperienceCount = savedIds.filter((k) =>
     k.startsWith("experience:"),
   ).length;
@@ -60,13 +85,21 @@ export default function SavedScreen() {
     key: string;
     title: string;
   } | null>(null);
+  // The row put back with "Angre": the only row that fades in.
+  const [restoredKey, setRestoredKey] = useState<string | null>(null);
   const unsave = (key: string, title: string) => {
     toggle(key);
     showToast({
       title: "Fjernet fra Lagret",
       body: title,
       icon: "bookmark-outline",
-      action: { label: "Angre", onPress: () => toggle(key) },
+      action: {
+        label: "Angre",
+        onPress: () => {
+          setRestoredKey(key);
+          toggle(key);
+        },
+      },
     });
   };
 
@@ -80,10 +113,12 @@ export default function SavedScreen() {
             ? [
                 {
                   key,
-                  kind: "place",
+                  kind: p.kind === "bedrift" ? "business" : "place",
                   title: p.name,
-                  meta: `Sted · ★ ${formatRating(placeRating(p.id).score)}`,
+                  meta: `${PLACE_KIND_LABEL[p.kind]} · ★ ${formatRating(placeRating(p.id).score)}`,
                   placeId: p.id,
+                  href: `/place/${p.id}` as Href,
+                  mapKey: key,
                 },
               ]
             : [];
@@ -96,8 +131,10 @@ export default function SavedScreen() {
                   key,
                   kind: "experience",
                   title: e.title,
-                  meta: `Opplevelse · ${e.when}`,
+                  meta: `${experienceTypeLabel(e)} · ${e.when}`,
                   placeId: e.placeId,
+                  href: `/experience/${e.id}` as Href,
+                  mapKey: key,
                 },
               ]
             : [];
@@ -112,6 +149,8 @@ export default function SavedScreen() {
                   title: b.name,
                   meta: `Bedrift · ${b.category}`,
                   placeId: b.placeId,
+                  href: `/place/${b.placeId}` as Href,
+                  mapKey: `place:${b.placeId}`,
                 },
               ]
             : [];
@@ -125,10 +164,18 @@ export default function SavedScreen() {
   return (
     <Screen edges={["top"]}>
       <RouteHeader title="Lagret" />
-      <FlatList
+      {/* Motion (user 2026-11-09: animations where they feel natural): an
+          unsaved row fades out and the rows below close up; the one put back
+          with "Angre" fades in. Nothing else fades in: not the list on
+          opening, rows mounted while scrolling or rows a filter chip shows
+          (review of the speed pass). */}
+      <Animated.FlatList
         data={visible}
         keyExtractor={(r) => r.key}
-        contentContainerClassName="gap-2 px-gutter pb-10 flex-grow"
+        itemLayoutAnimation={
+          reduced ? undefined : LinearTransition.duration(motion.duration.base)
+        }
+        contentContainerStyle={LIST_CONTENT}
         ListHeaderComponent={
           <View className="gap-3 pb-2">
             {/* Approved addition (2026-11-06): turn saved experiences into a
@@ -178,47 +225,51 @@ export default function SavedScreen() {
         renderItem={({ item }) => {
           const place = item.placeId ? placeById(item.placeId) : undefined;
           return (
-            <ListRow
-              variant="card"
-              title={item.title}
-              subtitle={item.meta}
-              onLongPress={() =>
-                setActionsFor({ key: item.key, title: item.title })
+            // The animated wrapper carries no className (dropped on a cold
+            // start, CLAUDE.md); the row inside keeps its own.
+            <Animated.View
+              entering={
+                reduced || item.key !== restoredKey
+                  ? undefined
+                  : FadeIn.duration(motion.duration.base)
               }
-              // Places and experiences open their page; a business opens
-              // its detail on the map (it has no page of its own).
-              onPress={() => {
-                const id = item.key.slice(item.key.indexOf(":") + 1);
-                if (item.kind === "business")
-                  router.navigate({
-                    pathname: "/map",
-                    params: { focus: item.key, at: String(Date.now()) },
-                  });
-                else router.push(`/${item.kind}/${id}` as Href);
-              }}
-              leading={
-                place ? (
-                  <Image
-                    source={libThumb(coverForPlace(place))}
-                    contentFit="cover"
-                    style={{ height: 48, width: 48, borderRadius: 10 }}
-                    accessible={false}
+              exiting={
+                reduced ? undefined : FadeOut.duration(motion.duration.fast)
+              }
+            >
+              <ListRow
+                variant="card"
+                title={item.title}
+                subtitle={item.meta}
+                onLongPress={() =>
+                  setActionsFor({ key: item.key, title: item.title })
+                }
+                // Everything opens its page (a business opens its place).
+                onPress={() => router.push(item.href)}
+                leading={
+                  place ? (
+                    <Image
+                      source={libThumb(coverForPlace(place))}
+                      contentFit="cover"
+                      style={{ height: 48, width: 48, borderRadius: 10 }}
+                      accessible={false}
+                    />
+                  ) : (
+                    <View className="h-12 w-12 rounded-md bg-surfaceMuted" />
+                  )
+                }
+                trailing={
+                  <HeartToggle
+                    kind="bookmark"
+                    selected
+                    variant="ghost"
+                    size="sm"
+                    label={`Fjern ${item.title} fra lagret`}
+                    onToggle={() => unsave(item.key, item.title)}
                   />
-                ) : (
-                  <View className="h-12 w-12 rounded-md bg-surfaceMuted" />
-                )
-              }
-              trailing={
-                <HeartToggle
-                  kind="bookmark"
-                  selected
-                  variant="ghost"
-                  size="sm"
-                  label={`Fjern ${item.title} fra lagret`}
-                  onToggle={() => unsave(item.key, item.title)}
-                />
-              }
-            />
+                }
+              />
+            </Animated.View>
           );
         }}
       />
@@ -246,7 +297,12 @@ export default function SavedScreen() {
               onPress: () =>
                 router.navigate({
                   pathname: "/map",
-                  params: { focus: actionsFor.key, at: String(Date.now()) },
+                  params: {
+                    focus:
+                      rows.find((r) => r.key === actionsFor.key)?.mapKey ??
+                      actionsFor.key,
+                    at: String(Date.now()),
+                  },
                 }),
             },
           ]}

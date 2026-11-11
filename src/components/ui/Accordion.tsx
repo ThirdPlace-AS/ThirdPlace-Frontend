@@ -2,6 +2,9 @@
 // titled disclosure with an animated height and a rotating chevron. Works
 // controlled (`open` + `onToggle`) or uncontrolled (`defaultOpen`). Collapsed
 // content stays measured but is hidden from touch and screen readers.
+// `lazy` mounts the content only once the row is first opened (it then stays
+// mounted, so closing still animates): for long lists of controls, such as
+// Filtre's Kategori rows, which made the sheet slow to open.
 import { useEffect, useState, type ReactNode } from "react";
 import { View, type LayoutChangeEvent } from "react-native";
 import Animated, {
@@ -29,6 +32,7 @@ export function Accordion({
   defaultOpen = false,
   onToggle,
   variant = "plain",
+  lazy = false,
   children,
 }: {
   title: string;
@@ -42,10 +46,15 @@ export function Accordion({
   onToggle?: () => void;
   /** "card" = bordered surface (chat groups); "plain" = inline section. */
   variant?: "plain" | "card";
+  /** Mount the content only once opened (heavy content). */
+  lazy?: boolean;
   children: ReactNode;
 }) {
   const [inner, setInner] = useState(defaultOpen);
   const open = openProp ?? inner;
+  // Opened at least once: a lazy body mounts then and stays.
+  const [opened, setOpened] = useState(open);
+  if (open && !opened) setOpened(true);
   const reduced = useReducedMotion();
   const progress = useSharedValue(open ? 1 : 0);
   const contentH = useSharedValue(0);
@@ -119,7 +128,7 @@ export function Accordion({
           accessibilityElementsHidden={!open}
           style={{ position: "absolute", left: 0, right: 0, top: 0 }}
         >
-          {children}
+          {lazy && !opened ? null : children}
         </View>
       </Animated.View>
     </View>

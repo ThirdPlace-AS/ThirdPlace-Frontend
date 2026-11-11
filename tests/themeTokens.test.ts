@@ -44,6 +44,7 @@ const TEXT_PAIRS: [fg: string, bg: string][] = [
   ["onInk", "ink"],
   ["onEmber", "emberStrong"],
   ["onSuccess", "success"],
+  ["onDanger", "danger"],
   ["emberText", "background"],
   ["emberText", "surface"],
   ["successText", "surface"],

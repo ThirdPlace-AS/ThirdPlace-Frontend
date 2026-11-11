@@ -23,7 +23,7 @@ import {
   ListRow,
   Screen,
 } from "@/components/ui";
-import { experienceById, people, profile } from "@/fixtures";
+import { experiencesHostedBy, people, profile } from "@/fixtures";
 import { directChatFor } from "@/fixtures/created";
 import { libImage } from "@/fixtures/images";
 import { toggleFollow, useFollowing } from "@/lib/following";
@@ -61,9 +61,8 @@ export default function PersonScreen() {
     );
   }
 
-  const hosts = person.hostsExperienceId
-    ? experienceById(person.hostsExperienceId)
-    : undefined;
+  // Everything the person hosts (catalogue hosts run several, Phase 19).
+  const hosted = experiencesHostedBy(person.id);
   const isFollowing = following.has(person.id);
   const shared = new Set(
     person.interests.filter((i) => me.interests.includes(i)),
@@ -102,7 +101,7 @@ export default function PersonScreen() {
           bio={person.bio}
           interests={person.interests}
           shared={shared}
-          hosted={hosts ? [hosts] : []}
+          hosted={hosted}
           onOpenExperience={(eid) => router.push(`/experience/${eid}` as Href)}
           actions={
             <View className="flex-row gap-3">

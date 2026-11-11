@@ -1,6 +1,5 @@
 // FollowButton (docs/design/DESIGN_SYSTEM.md §5) — "Følg" (ink pill) morphs to
-// "Følger" (quiet muted pill). The label cross-fades; a selection haptic
-// confirms the tap. Following is local demo state wherever it is used.
+// "Følger" (quiet muted pill). The label cross-fades to confirm the tap. Following is local demo state wherever it is used.
 import Animated, { FadeIn } from "react-native-reanimated";
 import { useReducedMotion } from "@/hooks/useReducedMotion";
 
@@ -40,7 +39,6 @@ export function FollowButton({
           : `${followLabel}${name ? ` ${name}` : ""}`
       }
       accessibilityState={{ selected: following }}
-      haptic="selection"
       pressedScale={0.95}
       onPress={onPress}
       className={fullWidth ? "w-full" : undefined}

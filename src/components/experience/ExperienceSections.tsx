@@ -51,7 +51,6 @@ import {
 } from "@/fixtures";
 import { dayLabel, shortSessionLabel, timeRange } from "@/lib/dates";
 import { env } from "@/lib/env";
-import { haptics } from "@/lib/haptics";
 import { isMember, joinChat, useJoinedChats } from "@/lib/joinedChats";
 import { useScheme } from "@/theme";
 
@@ -66,7 +65,8 @@ export function ItinerarySection({ exp }: { exp: MockExperience }) {
   return (
     <View className="gap-4">
       <Text variant="h2" accessibilityRole="header">
-        Hva dere skal gjøre
+        {/* An Arrangement shows its steps as the program (Phase 19). */}
+        {exp.format === "event" ? "Program" : "Hva dere skal gjøre"}
       </Text>
       <View>
         {steps.map((s, i) => (
@@ -226,7 +226,13 @@ export function AvailabilitySection({ exp }: { exp: MockExperience }) {
           Ledige tider
         </Text>
         <Text variant="caption" tone="muted">
-          {`${exp.repeat} · ${exp.duration}`}
+          {`${
+            exp.format === "event"
+              ? (exp.days ?? 1) > 1
+                ? `${exp.days} dager`
+                : "Én dag"
+              : exp.repeat
+          } · ${exp.duration}`}
         </Text>
       </View>
       <ScrollView
@@ -293,7 +299,6 @@ export function AvailabilitySection({ exp }: { exp: MockExperience }) {
         initial={sheetAt}
         onClose={() => setSheetAt(null)}
         onPick={(id) => {
-          haptics.selection();
           choose(id);
           setSheetAt(null);
         }}
@@ -364,7 +369,6 @@ export function SessionSheet({
                   accessibilityLabel={`${day}, ${timeRange(s.start, s.end)}, ${placesLeft(s)}`}
                   disabled={full}
                   dimWhenDisabled={false}
-                  haptic="selection"
                   onPress={() => setDraft(s.id)}
                   contentClassName={`flex-row items-center justify-between rounded-lg p-4 ${
                     on ? "border-2 border-ink" : "border border-line"
@@ -613,7 +617,6 @@ export function ChatSection({
         setPrompt(true);
         return;
       }
-      haptics.light();
       joinChat(chat.id);
     }
     onNavigate(`/chat/${chat.id}` as Href);
@@ -631,7 +634,11 @@ export function ChatSection({
               {chat.name}
             </Text>
             <Text variant="caption" tone="muted">
-              {`${chat.members ?? 0} medlemmer · ${CHAT_ACCESS_LABEL[chat.access]}`}
+              {/* Catalogue place and experience chats carry no count
+                  (Phase 19): the access mode alone, never "0 medlemmer". */}
+              {chat.members != null
+                ? `${chat.members} medlemmer · ${CHAT_ACCESS_LABEL[chat.access]}`
+                : CHAT_ACCESS_LABEL[chat.access]}
             </Text>
           </View>
         </View>

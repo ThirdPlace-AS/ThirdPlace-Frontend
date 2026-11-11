@@ -1,6 +1,7 @@
 import { describe, expect, it } from "@jest/globals";
 
 import {
+  applyExperienceFilters,
   applyFilters,
   DEFAULT_FILTERS,
 } from "@/components/map/services/mapFilters";
@@ -10,7 +11,12 @@ import {
 } from "@/components/map/services/mapFixtureAdapter";
 import { boundsOf } from "@/components/map/services/bounds";
 import { markerId } from "@/components/map/types/mapPresentation";
-import { experiences, places } from "@/fixtures";
+import {
+  experiences,
+  places,
+  ratingOf,
+  reviewsForExperience,
+} from "@/fixtures";
 
 const base = { places, query: "", savedIds: [] as string[] };
 
@@ -156,11 +162,22 @@ describe("countResults (Filtre footer = list, benchmark F11)", () => {
   });
 
   it("For deg counts the filtered places plus the experiences", () => {
+    // Experiences go through the same filters as places (H5c), so the
+    // rating floor applies to them too, scored from their own reviews.
     const filters = { ...DEFAULT_FILTERS, minRating: 4.5 };
-    expect(countResults({ ...base, mode: "forYou", filters })).toBe(
-      applyFilters(places, "", filters).length +
-        experiences.filter((e) => e.status !== "cancelled").length,
+    const kept = applyExperienceFilters(experiences, "", filters).filter(
+      (e) => e.status !== "cancelled",
     );
+    expect(countResults({ ...base, mode: "forYou", filters })).toBe(
+      applyFilters(places, "", filters).length + kept.length,
+    );
+    // An experience rated under the floor drops out of the count.
+    const below = experiences.find((e) => {
+      const { score, count } = ratingOf(reviewsForExperience(e.id));
+      return e.status !== "cancelled" && count > 0 && score < 4.5;
+    });
+    expect(below).toBeDefined();
+    expect(kept.map((e) => e.id)).not.toContain(below!.id);
   });
 
   it("equals the list the screen renders for every mode", () => {
