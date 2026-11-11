@@ -35,7 +35,9 @@ type MapProps = {
   markers: DiscoveryItem[];
   // markerId of the current selection (highlights its pin).
   selectedMarkerId?: string | null;
-  onSelectMarker?: (markerId: string) => void;
+  // True when the screen took the selection (MapboxMap keeps the ring its
+  // press drew natively; otherwise it puts the old one back).
+  onSelectMarker?: (markerId: string) => boolean;
   // Where the real map flies next (Posisjon, a picked area), once per request
   // (hooks/useMapCamera.ts). SoftMap ignores it.
   cameraTarget?: CameraTarget | null;

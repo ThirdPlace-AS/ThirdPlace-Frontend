@@ -261,13 +261,15 @@ export default function MapScreen() {
 
   // Handlers passed to memoized children are stabilized so the memo holds.
   // Tapping a marker opens the detail sheet at the 16% peek (see useMapSelection).
+  // Returns whether it selected: the map then keeps the ring it drew from the
+  // press (MapboxMap, services/pinSelection.ts) or puts the old one back.
   const handleSelectMarker = useCallback(
-    (markerId: string) => {
+    (markerId: string): boolean => {
       const item = itemByMarker.get(markerId);
-      if (item) {
-        setZoomToPick(false);
-        selectMarker(item);
-      }
+      if (!item) return false;
+      setZoomToPick(false);
+      selectMarker(item);
+      return true;
     },
     [itemByMarker, selectMarker],
   );

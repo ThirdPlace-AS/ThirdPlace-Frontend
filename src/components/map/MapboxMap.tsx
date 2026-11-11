@@ -15,6 +15,7 @@ import Mapbox, {
 } from "@rnmapbox/maps";
 import type { FeatureCollection, Point } from "geojson";
 import {
+  createRef,
   memo,
   useCallback,
   useEffect,
@@ -47,6 +48,7 @@ import {
   sameCoord,
   type FocusPadding,
 } from "./services/pinCamera";
+import { filterAfterPress, selectionFilter } from "./services/pinSelection";
 import { followUpAllowed, type CameraTarget } from "./hooks/useMapCamera";
 import { useReducedMotion } from "@/hooks/useReducedMotion";
 import { getOrigin } from "@/lib/origin";
@@ -146,7 +148,9 @@ export const MapboxMap = memo(function MapboxMap({
 }: {
   markers: DiscoveryItem[];
   selectedMarkerId?: string | null;
-  onSelectMarker?: (markerId: string) => void;
+  /** Returns true when the screen took the selection (a pin of the list):
+   *  the ring the press drew natively stays; otherwise it is put back. */
+  onSelectMarker?: (markerId: string) => boolean;
   /** Where to fly next (Posisjon, a picked area): hooks/useMapCamera.ts. */
   cameraTarget?: CameraTarget | null;
   /** Where the map opens (read once; then the camera is the user's). */
@@ -174,6 +178,14 @@ export const MapboxMap = memo(function MapboxMap({
   const cameraRef = useRef<Camera>(null);
   const mapRef = useRef<MapView>(null);
   const sourceRef = useRef<ShapeSource>(null);
+  // The four layers that draw the selected pin, for a filter set from the
+  // press itself (setSelectedFilter).
+  const [selectedLayers] = useState<SelectedLayers>(() => ({
+    ring: createRef(),
+    point: createRef(),
+    icon: createRef(),
+    title: createRef(),
+  }));
   // The latest callbacks and values, for handlers that stay the same between
   // renders.
   const onSelectRef = useRef(onSelectMarker);
@@ -346,56 +358,68 @@ export const MapboxMap = memo(function MapboxMap({
   }, [markers]);
 
   // A pin or cluster tap. Stable, so the pins source never re-renders for it.
-  const handlePinPress = useCallback((e: PinPress) => {
-    const f = e.features?.[0];
-    if (!f) return;
-    const props = f.properties ?? {};
-    if (props.point_count) {
-      // Cluster: zoom to where it splits (Phase 19 S4b: from county
-      // zoom a fixed 15 jumped past whole towns).
-      const coords = (f.geometry as Point | undefined)?.coordinates;
-      if (coords) {
-        void (async () => {
-          const expansion = await sourceRef.current
-            ?.getClusterExpansionZoom(f)
-            .catch(() => undefined);
-          const current =
-            expansion === undefined
-              ? await mapRef.current?.getZoom().catch(() => undefined)
-              : undefined;
+  const handlePinPress = useCallback(
+    (e: PinPress) => {
+      const f = e.features?.[0];
+      if (!f) return;
+      const props = f.properties ?? {};
+      if (props.point_count) {
+        // Cluster: zoom to where it splits (Phase 19 S4b: from county
+        // zoom a fixed 15 jumped past whole towns).
+        const coords = (f.geometry as Point | undefined)?.coordinates;
+        if (coords) {
+          void (async () => {
+            const expansion = await sourceRef.current
+              ?.getClusterExpansionZoom(f)
+              .catch(() => undefined);
+            const current =
+              expansion === undefined
+                ? await mapRef.current?.getZoom().catch(() => undefined)
+                : undefined;
+            cameraRef.current?.setCamera({
+              centerCoordinate: coords as [number, number],
+              zoomLevel: clusterZoom(expansion, current),
+              animationDuration: motion.duration.base,
+            });
+          })();
+        }
+      } else if (props.markerId) {
+        const id = String(props.markerId);
+        // The ring first (user 2026-11-11: "the red focus on the marker must
+        // be instant on click"): set natively now, it shows before the
+        // selection's render (which also mounts the sheet) has run.
+        setSelectedFilter(selectedLayers, selectionFilter(id));
+        const coords = (f.geometry as Point | undefined)?.coordinates;
+        // The camera moves from the press itself, before the selection
+        // renders the sheet (user 2026-11-10: centre the tapped marker,
+        // smoothly). It zooms in to FOCUS_ZOOM once and then only pans (user
+        // 2026-11-11, pinTapZoom). A tap on the pin already open moves nothing.
+        if (coords && id !== selectedRef.current) {
+          const target: [number, number] = [coords[0]!, coords[1]!];
+          const from = zoomRef.current;
+          const zoom = pinTapZoom(from);
+          flownRef.current = target;
           cameraRef.current?.setCamera({
-            centerCoordinate: coords as [number, number],
-            zoomLevel: clusterZoom(expansion, current),
-            animationDuration: motion.duration.base,
+            centerCoordinate: target,
+            zoomLevel: zoom,
+            padding: paddingRef.current,
+            animationMode: "easeTo",
+            animationDuration: pinTapDuration(from, zoom, reducedRef.current),
           });
-        })();
+          // Where the camera is going: a second tap before it comes to rest
+          // (onMapIdle) reads the destination, not the zoom it left.
+          zoomRef.current = zoom;
+        }
+        const accepted = onSelectRef.current?.(id) === true;
+        if (!accepted)
+          setSelectedFilter(
+            selectedLayers,
+            filterAfterPress(false, id, selectedRef.current),
+          );
       }
-    } else if (props.markerId) {
-      const id = String(props.markerId);
-      const coords = (f.geometry as Point | undefined)?.coordinates;
-      // The camera moves from the press itself, before the selection
-      // renders the sheet (user 2026-11-10: centre the tapped marker,
-      // smoothly). It zooms to street level once and then only pans (user
-      // 2026-11-11, pinTapZoom). A tap on the pin already open moves nothing.
-      if (coords && id !== selectedRef.current) {
-        const target: [number, number] = [coords[0]!, coords[1]!];
-        const from = zoomRef.current;
-        const zoom = pinTapZoom(from);
-        flownRef.current = target;
-        cameraRef.current?.setCamera({
-          centerCoordinate: target,
-          zoomLevel: zoom,
-          padding: paddingRef.current,
-          animationMode: "easeTo",
-          animationDuration: pinTapDuration(from, zoom, reducedRef.current),
-        });
-        // Where the camera is going: a second tap before it comes to rest
-        // (onMapIdle) reads the destination, not the zoom it left.
-        zoomRef.current = zoom;
-      }
-      onSelectRef.current?.(id);
-    }
-  }, []);
+    },
+    [selectedLayers],
+  );
 
   // Tap on empty map (a marker tap is consumed by the ShapeSource below and
   // does not fire this) — collapses the sheet + dismisses the keyboard.
@@ -481,6 +505,7 @@ export const MapboxMap = memo(function MapboxMap({
           shape={shape}
           paint={paint}
           selectedMarkerId={selectedMarkerId ?? null}
+          selectedLayers={selectedLayers}
           onPress={handlePinPress}
         />
         <UserPuck />
@@ -649,6 +674,23 @@ type PinStyles = {
   selectedTitle: SymbolStyle;
 };
 
+// The layers that draw the selected pin (the ring, then the pin, its glyph
+// and its title again on top).
+type SelectedLayers = {
+  ring: RefObject<CircleLayer | null>;
+  point: RefObject<CircleLayer | null>;
+  icon: RefObject<SymbolLayer | null>;
+  title: RefObject<SymbolLayer | null>;
+};
+
+// Sets the selected layers' filter on the native side, without a render
+// (services/pinSelection.ts). Fabric keeps the value until React's own filter
+// prop changes, so React's `selectedMarkerId` stays the source of truth.
+function setSelectedFilter(layers: SelectedLayers, filter: Filter): void {
+  for (const layer of [layers.ring, layers.point, layers.icon, layers.title])
+    layer.current?.setNativeProps?.({ filter });
+}
+
 // The pins: one clustered source with its layers. Renders only when the pins,
 // their paint or the selection change.
 const PinsSource = memo(function PinsSource({
@@ -656,16 +698,18 @@ const PinsSource = memo(function PinsSource({
   shape,
   paint,
   selectedMarkerId,
+  selectedLayers,
   onPress,
 }: {
   sourceRef: RefObject<ShapeSource | null>;
   shape: FeatureCollection<Point>;
   paint: PinPaint;
   selectedMarkerId: string | null;
+  selectedLayers: SelectedLayers;
   onPress: (e: PinPress) => void;
 }) {
   const isSelected = useMemo<Filter>(
-    () => ["==", ["get", "markerId"], selectedMarkerId ?? "__none__"],
+    () => selectionFilter(selectedMarkerId),
     [selectedMarkerId],
   );
   const styles = useMemo<PinStyles>(
@@ -832,6 +876,7 @@ const PinsSource = memo(function PinsSource({
         style={styles.icon}
       />
       <CircleLayer
+        ref={selectedLayers.ring}
         id="selected"
         filter={isSelected}
         style={styles.selectedRing}
@@ -839,16 +884,19 @@ const PinsSource = memo(function PinsSource({
       {/* The selected pin, its glyph and its title drawn again on top, so
           neighbours never hide them (Phase 19: dense maps). */}
       <CircleLayer
+        ref={selectedLayers.point}
         id="selected-point"
         filter={isSelected}
         style={styles.selectedPoint}
       />
       <SymbolLayer
+        ref={selectedLayers.icon}
         id="selected-icon"
         filter={isSelected}
         style={styles.selectedIcon}
       />
       <SymbolLayer
+        ref={selectedLayers.title}
         id="selected-title"
         filter={isSelected}
         style={styles.selectedTitle}

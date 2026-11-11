@@ -50,6 +50,8 @@ const all = resultForMode({
 }).items;
 const items = [all[0]!, all[all.length - 1]!];
 const noop = () => {};
+// The map's select handler says whether it took the selection (0380).
+const selectNone = () => false;
 
 describe("hooks hand the map stable values", () => {
   it("useSheetChrome returns the same styles on every render", () => {
@@ -104,7 +106,7 @@ describe("memo boundaries", () => {
             fill
             markers={items}
             selectedMarkerId={null}
-            onSelectMarker={noop}
+            onSelectMarker={selectNone}
             onMapPress={noop}
           />
         </>
