@@ -1,4 +1,4 @@
-import { useSyncExternalStore } from "react";
+import { createStore, useStore } from "zustand";
 
 import { chats, type MockChat } from "@/fixtures";
 import { isMember, useJoinedChats } from "@/lib/joinedChats";
@@ -7,42 +7,26 @@ import { isMember, useJoinedChats } from "@/lib/joinedChats";
 // it, so its unread count and the Chat tab badge drop. In memory like the
 // other demo stores; read state from a server is contract-blocked
 // (BLOCKED_CONTRACT_GAP). Counts come from the fixture chats, never invented.
-let read: ReadonlySet<string> = new Set();
-const listeners = new Set<() => void>();
-
-function emit() {
-  listeners.forEach((l) => l());
-}
-
-function subscribe(l: () => void) {
-  listeners.add(l);
-  return () => {
-    listeners.delete(l);
-  };
-}
+const store = createStore(() => ({ read: new Set() as ReadonlySet<string> }));
+const selectRead = (s: { read: ReadonlySet<string> }) => s.read;
 
 export function markChatRead(id: string) {
+  const { read } = store.getState();
   if (read.has(id)) return;
-  read = new Set([...read, id]);
-  emit();
+  store.setState({ read: new Set([...read, id]) });
 }
 
 /** Tests and logout. */
 export function resetChatReads() {
-  read = new Set();
-  emit();
+  store.setState({ read: new Set() });
 }
 
 export function useChatReads(): ReadonlySet<string> {
-  return useSyncExternalStore(
-    subscribe,
-    () => read,
-    () => read,
-  );
+  return useStore(store, selectRead);
 }
 
 export function getChatReads(): ReadonlySet<string> {
-  return read;
+  return store.getState().read;
 }
 
 /** Unread messages left in a chat after this session's reads. */

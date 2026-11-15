@@ -1,4 +1,4 @@
-import { useSyncExternalStore } from "react";
+import { createStore, useStore } from "zustand";
 
 import type { MockChat } from "@/fixtures";
 
@@ -7,54 +7,40 @@ import type { MockChat } from "@/fixtures";
 // a left chat leaves the list even when the fixtures make them a member). In
 // memory, like the other demo stores: persistence is contract-blocked
 // (BLOCKED_CONTRACT_GAP), a reload clears it.
-let joined: ReadonlySet<string> = new Set();
-let left: ReadonlySet<string> = new Set();
-const listeners = new Set<() => void>();
-
-function emit() {
-  listeners.forEach((l) => l());
-}
-
-function subscribe(l: () => void) {
-  listeners.add(l);
-  return () => {
-    listeners.delete(l);
-  };
-}
+type State = { joined: ReadonlySet<string>; left: ReadonlySet<string> };
+const store = createStore<State>(() => ({
+  joined: new Set(),
+  left: new Set(),
+}));
+const selectJoined = (s: State) => s.joined;
 
 export function joinChat(id: string) {
+  const { joined, left } = store.getState();
   if (joined.has(id) && !left.has(id)) return;
-  joined = new Set([...joined, id]);
+  let nextLeft = left;
   if (left.has(id)) {
     const back = new Set(left);
     back.delete(id);
-    left = back;
+    nextLeft = back;
   }
-  emit();
+  store.setState({ joined: new Set([...joined, id]), left: nextLeft });
 }
 
 export function leaveChat(id: string) {
+  const { joined, left } = store.getState();
   const next = new Set(joined);
   next.delete(id);
   // A new set either way, so every list subscribed to the store re-reads.
-  joined = next;
-  left = new Set([...left, id]);
-  emit();
+  store.setState({ joined: next, left: new Set([...left, id]) });
 }
 
 /** Test helper: forget every joined and left chat. */
 export function resetJoinedChats() {
-  joined = new Set();
-  left = new Set();
-  emit();
+  store.setState({ joined: new Set(), left: new Set() });
 }
 
 export function useJoinedChats(): ReadonlySet<string> {
-  return useSyncExternalStore(
-    subscribe,
-    () => joined,
-    () => joined,
-  );
+  return useStore(store, selectJoined);
 }
 
 /** Whether the viewer is in this chat (fixture member or joined here, and
@@ -63,6 +49,6 @@ export function isMember(
   chat: Pick<MockChat, "id" | "member">,
   set: ReadonlySet<string>,
 ) {
-  if (left.has(chat.id)) return false;
+  if (store.getState().left.has(chat.id)) return false;
   return chat.member !== false || set.has(chat.id);
 }

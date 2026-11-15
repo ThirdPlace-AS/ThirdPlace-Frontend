@@ -1,4 +1,4 @@
-import { useSyncExternalStore } from "react";
+import { createStore, useStore } from "zustand";
 
 import { people, profile, type MockPerson } from "@/fixtures";
 
@@ -9,40 +9,23 @@ import { people, profile, type MockPerson } from "@/fixtures";
 // reload restores the fixture list.
 const seed = (): ReadonlySet<string> => new Set(profile.followingIds);
 
-let following: ReadonlySet<string> = seed();
-const listeners = new Set<() => void>();
-
-function emit() {
-  listeners.forEach((l) => l());
-}
-
-function subscribe(l: () => void) {
-  listeners.add(l);
-  return () => {
-    listeners.delete(l);
-  };
-}
+const store = createStore(() => ({ following: seed() }));
+const selectFollowing = (s: { following: ReadonlySet<string> }) => s.following;
 
 export function toggleFollow(id: string) {
-  const next = new Set(following);
+  const next = new Set(store.getState().following);
   if (next.has(id)) next.delete(id);
   else next.add(id);
-  following = next;
-  emit();
+  store.setState({ following: next });
 }
 
 /** Logout and tests: back to the fixture list. */
 export function resetFollowing() {
-  following = seed();
-  emit();
+  store.setState({ following: seed() });
 }
 
 export function useFollowing(): ReadonlySet<string> {
-  return useSyncExternalStore(
-    subscribe,
-    () => following,
-    () => following,
-  );
+  return useStore(store, selectFollowing);
 }
 
 const inPeopleOrder = (ids: (id: string) => boolean): MockPerson[] =>

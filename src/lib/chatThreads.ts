@@ -1,4 +1,5 @@
-import { useSyncExternalStore } from "react";
+import { useCallback } from "react";
+import { createStore, useStore } from "zustand";
 
 import type { MockMessage } from "@/fixtures";
 
@@ -17,23 +18,13 @@ export type Thread = {
 };
 
 const EMPTY: Thread = { sent: [], reactions: {} };
-let threads: Readonly<Record<string, Thread>> = {};
-const listeners = new Set<() => void>();
-
-function emit() {
-  listeners.forEach((l) => l());
-}
-
-function subscribe(l: () => void) {
-  listeners.add(l);
-  return () => {
-    listeners.delete(l);
-  };
-}
+type State = { threads: Readonly<Record<string, Thread>> };
+const store = createStore<State>(() => ({ threads: {} }));
 
 function update(chatId: string, fn: (t: Thread) => Thread) {
-  threads = { ...threads, [chatId]: fn(threads[chatId] ?? EMPTY) };
-  emit();
+  store.setState(({ threads }) => ({
+    threads: { ...threads, [chatId]: fn(threads[chatId] ?? EMPTY) },
+  }));
 }
 
 export function sendMessage(chatId: string, text: string, replyTo?: Reply) {
@@ -69,14 +60,13 @@ export function toggleReaction(
 
 /** Tests and logout. */
 export function resetThreads() {
-  threads = {};
-  emit();
+  store.setState({ threads: {} });
 }
 
 export function useThread(chatId: string): Thread {
-  return useSyncExternalStore(
-    subscribe,
-    () => threads[chatId] ?? EMPTY,
-    () => threads[chatId] ?? EMPTY,
+  const select = useCallback(
+    (s: State) => s.threads[chatId] ?? EMPTY,
+    [chatId],
   );
+  return useStore(store, select);
 }

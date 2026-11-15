@@ -1,4 +1,4 @@
-import { useSyncExternalStore } from "react";
+import { createStore, useStore } from "zustand";
 
 // Who the viewer has blocked (Phase 15). Blokker on a person page or an
 // experience's host adds them here, so Blokkerte brukere (PDF p21) and the
@@ -28,47 +28,33 @@ const SEED: readonly BlockedEntry[] = [
   },
 ];
 
-let entries: readonly BlockedEntry[] = SEED;
-const listeners = new Set<() => void>();
-
-function emit() {
-  listeners.forEach((l) => l());
-}
-
-function subscribe(l: () => void) {
-  listeners.add(l);
-  return () => {
-    listeners.delete(l);
-  };
-}
+const store = createStore(() => ({ entries: SEED }));
+const selectEntries = (s: { entries: readonly BlockedEntry[] }) => s.entries;
 
 /** Blokker: adds the person (or blocks them again). */
 export function blockPerson(key: string, name: string) {
+  const { entries } = store.getState();
   const existing = entries.find((e) => e.key === key);
-  entries = existing
+  const next = existing
     ? entries.map((e) => (e.key === key ? { ...e, blocked: true } : e))
     : [...entries, { key, name, detail: "Blokkert i dag", blocked: true }];
-  emit();
+  store.setState({ entries: next });
 }
 
 /** Avblokkér / Angre on Blokkerte brukere: the row stays until you leave. */
 export function setBlocked(key: string, blocked: boolean) {
-  entries = entries.map((e) => (e.key === key ? { ...e, blocked } : e));
-  emit();
+  store.setState(({ entries }) => ({
+    entries: entries.map((e) => (e.key === key ? { ...e, blocked } : e)),
+  }));
 }
 
 /** Logout and tests: back to the fixture rows. */
 export function resetBlocked() {
-  entries = SEED;
-  emit();
+  store.setState({ entries: SEED });
 }
 
 export function useBlocked(): readonly BlockedEntry[] {
-  return useSyncExternalStore(
-    subscribe,
-    () => entries,
-    () => entries,
-  );
+  return useStore(store, selectEntries);
 }
 
 export function blockedCount(list: readonly BlockedEntry[]): number {
