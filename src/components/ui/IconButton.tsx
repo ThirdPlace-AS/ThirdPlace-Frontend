@@ -8,19 +8,15 @@ import { elevation, useThemeColors } from "@/theme";
 
 import { Icon, type IconName, type IconTone } from "./Icon";
 import { PopIcon } from "./PopIcon";
+import {
+  iconButtonTone,
+  iconButtonVariants,
+  type IconButtonVariant,
+} from "./base/button";
 import { Pressable } from "./Pressable";
 import { Text } from "./Text";
 
-export type IconButtonVariant =
-  | "ghost" // transparent; pressed tint (headers, toolbars)
-  | "outline" // surface + hairline (onboarding/back on light screens)
-  | "filled" // surfaceMuted fill
-  | "ink" // primary round action (FAB)
-  | "ember" // brand round action
-  | "floating" // raised surface over map/photos (e2 shadow)
-  | "media" // translucent dark disc over photos, light glyph
-  | "mediaSubtle" // faint light disc on dark media surfaces (expanded card)
-  | "mediaOutline"; // hairline ring on dark media surfaces
+export type { IconButtonVariant };
 
 export type IconButtonSize = "sm" | "md" | "lg" | "xl";
 
@@ -44,30 +40,6 @@ const MIN_TARGET = 44;
  *  circle on pages, plain in sheets and top bars). tests/designGuard.test.ts
  *  checks every "Tilbake" button uses it. */
 export const BACK_ICON: IconName = "arrow-back";
-
-// Literal class names so Tailwind generates them.
-const VARIANT_CLASS: Record<IconButtonVariant, string> = {
-  ghost: "",
-  outline: "border border-line bg-surface",
-  filled: "bg-surfaceMuted",
-  ink: "bg-ink",
-  ember: "bg-ember",
-  floating: "bg-surfaceRaised",
-  media: "bg-scrim/40",
-  mediaSubtle: "bg-onMedia/10",
-  mediaOutline: "border border-onMedia/25",
-};
-const VARIANT_TONE: Record<IconButtonVariant, IconTone> = {
-  ghost: "ink",
-  outline: "ink",
-  filled: "ink",
-  ink: "onInk",
-  ember: "onEmber",
-  floating: "ink",
-  media: "onMedia",
-  mediaSubtle: "onMedia",
-  mediaOutline: "onMedia",
-};
 
 export type IconButtonProps = {
   icon: IconName;
@@ -112,7 +84,7 @@ export function IconButton({
   const slop = Math.max(0, Math.ceil((MIN_TARGET - px) / 2));
   const count = typeof badge === "number" && badge > 0 ? badge : null;
   const showBadge = badge === true || count !== null;
-  const glyphTone = tone ?? VARIANT_TONE[variant];
+  const glyphTone = tone ?? iconButtonTone[variant];
   const state =
     selected != null || busy
       ? { ...(selected != null ? { selected } : {}), ...(busy ? { busy } : {}) }
@@ -129,7 +101,7 @@ export function IconButton({
       hitSlop={slop}
       pressedScale={0.92}
       className={className}
-      contentClassName={`items-center justify-center rounded-full ${VARIANT_CLASS[variant]}`}
+      contentClassName={iconButtonVariants({ variant })}
       contentStyle={[
         { width: px, height: px },
         variant === "floating" || variant === "ink" || variant === "ember"

@@ -5,6 +5,7 @@ import { useReducedMotion } from "@/hooks/useReducedMotion";
 
 import { duration } from "@/theme";
 
+import { followButtonVariants } from "./base/button";
 import { Pressable } from "./Pressable";
 import { Text } from "./Text";
 
@@ -42,9 +43,7 @@ export function FollowButton({
       pressedScale={0.95}
       onPress={onPress}
       className={fullWidth ? "w-full" : undefined}
-      contentClassName={`items-center justify-center rounded-full ${
-        size === "md" ? "px-6" : "px-4"
-      } ${following ? "border border-line bg-surfaceMuted" : "border border-ink bg-ink"}`}
+      contentClassName={followButtonVariants({ size, following })}
       contentStyle={{ height }}
     >
       <Animated.View

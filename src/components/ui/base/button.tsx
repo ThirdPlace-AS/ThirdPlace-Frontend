@@ -57,3 +57,56 @@ export const buttonHeight: Record<ButtonSize, number> = {
   md: 52,
   lg: 60,
 };
+
+// IconButton: a round glyph button. Same base; fills per variant, glyph tone
+// per variant (an explicit tone prop wins). Sizes are style (width/height).
+export const iconButtonVariants = cva(
+  "items-center justify-center rounded-full",
+  {
+    variants: {
+      variant: {
+        ghost: "",
+        outline: "border border-line bg-surface",
+        filled: "bg-surfaceMuted",
+        ink: "bg-ink",
+        ember: "bg-ember",
+        floating: "bg-surfaceRaised",
+        media: "bg-scrim/40",
+        mediaSubtle: "bg-onMedia/10",
+        mediaOutline: "border border-onMedia/25",
+      },
+    },
+    defaultVariants: { variant: "ghost" },
+  },
+);
+
+export type IconButtonVariant = NonNullable<
+  VariantProps<typeof iconButtonVariants>["variant"]
+>;
+
+export const iconButtonTone: Record<IconButtonVariant, IconTone> = {
+  ghost: "ink",
+  outline: "ink",
+  filled: "ink",
+  ink: "onInk",
+  ember: "onEmber",
+  floating: "ink",
+  media: "onMedia",
+  mediaSubtle: "onMedia",
+  mediaOutline: "onMedia",
+};
+
+// FollowButton: "Følg" (ink pill) and "Følger" (quiet muted pill).
+export const followButtonVariants = cva(
+  "items-center justify-center rounded-full",
+  {
+    variants: {
+      size: { sm: "px-4", md: "px-6" },
+      following: {
+        true: "border border-line bg-surfaceMuted",
+        false: "border border-ink bg-ink",
+      },
+    },
+    defaultVariants: { size: "sm", following: false },
+  },
+);
