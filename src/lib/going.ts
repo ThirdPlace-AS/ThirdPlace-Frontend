@@ -1,4 +1,4 @@
-import { useSyncExternalStore } from "react";
+import { createStore, useStore } from "zustand";
 
 import {
   attendeesForExperience,
@@ -75,24 +75,14 @@ export function goingLine(e: { capacity: number; going: number }): string {
 // The viewer's own "Vis meg som deltaker" (Personvern). Off by default and,
 // like the other Personvern switches, kept in memory only: visibility is an
 // account setting (BLOCKED_CONTRACT_GAP).
-let showMe = false;
-const listeners = new Set<() => void>();
+const store = createStore(() => ({ showMe: false }));
+const selectShowMe = (s: { showMe: boolean }) => s.showMe;
 
 export function setShowMeAsAttendee(next: boolean) {
-  if (showMe === next) return;
-  showMe = next;
-  listeners.forEach((l) => l());
+  if (store.getState().showMe === next) return;
+  store.setState({ showMe: next });
 }
 
 export function useShowMeAsAttendee(): boolean {
-  return useSyncExternalStore(
-    (l) => {
-      listeners.add(l);
-      return () => {
-        listeners.delete(l);
-      };
-    },
-    () => showMe,
-    () => showMe,
-  );
+  return useStore(store, selectShowMe);
 }

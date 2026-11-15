@@ -1,4 +1,4 @@
-import { useSyncExternalStore } from "react";
+import { createStore, useStore } from "zustand";
 
 // What the viewer answered in "Hvordan var det?" (PDF p25) this session
 // (Phase 18, screen benchmark: the answer stays with the plan, as on Airbnb's
@@ -7,37 +7,21 @@ import { useSyncExternalStore } from "react";
 // reviews or counts. BLOCKED_CONTRACT_GAP: no review backend.
 export type MyRating = { stars: number; liked: readonly string[] };
 
-let ratings: Readonly<Record<string, MyRating>> = {};
-const listeners = new Set<() => void>();
-
-function emit() {
-  listeners.forEach((l) => l());
-}
-
-function subscribe(l: () => void) {
-  listeners.add(l);
-  return () => {
-    listeners.delete(l);
-  };
-}
+type Ratings = Readonly<Record<string, MyRating>>;
+const store = createStore(() => ({ ratings: {} as Ratings }));
+const selectRatings = (s: { ratings: Ratings }) => s.ratings;
 
 export function saveMyRating(id: string, rating: MyRating) {
-  ratings = { ...ratings, [id]: rating };
-  emit();
+  store.setState(({ ratings }) => ({ ratings: { ...ratings, [id]: rating } }));
 }
 
 /** Logout and tests. */
 export function resetMyRatings() {
-  ratings = {};
-  emit();
+  store.setState({ ratings: {} });
 }
 
 export function useMyRatings(): Readonly<Record<string, MyRating>> {
-  return useSyncExternalStore(
-    subscribe,
-    () => ratings,
-    () => ratings,
-  );
+  return useStore(store, selectRatings);
 }
 
 /** "★ 5 · Stemningen, Verten" */

@@ -1,4 +1,4 @@
-import { useSyncExternalStore } from "react";
+import { createStore, useStore } from "zustand";
 
 import type { Href } from "expo-router";
 
@@ -12,41 +12,31 @@ import type { Href } from "expo-router";
 export type SignupProgress = { onboarded: boolean; accountCreated: boolean };
 
 const START: SignupProgress = { onboarded: false, accountCreated: false };
-let progress: SignupProgress = START;
-const listeners = new Set<() => void>();
+const store = createStore(() => ({ progress: START }));
+const selectProgress = (s: { progress: SignupProgress }) => s.progress;
 
 function set(next: SignupProgress) {
-  progress = next;
-  listeners.forEach((l) => l());
-}
-
-function subscribe(l: () => void) {
-  listeners.add(l);
-  return () => {
-    listeners.delete(l);
-  };
+  store.setState({ progress: next });
 }
 
 export function getSignupProgress(): SignupProgress {
-  return progress;
+  return store.getState().progress;
 }
 
 export function useSignupProgress(): SignupProgress {
-  return useSyncExternalStore(
-    subscribe,
-    () => progress,
-    () => progress,
-  );
+  return useStore(store, selectProgress);
 }
 
 /** Onboarding answered; returns where to go next. */
 export function markOnboarded(): Href {
+  const progress = getSignupProgress();
   set({ ...progress, onboarded: true });
   return progress.accountCreated ? "/map" : "/register";
 }
 
 /** Account created (code verified or social sign-in); returns where next. */
 export function markAccountCreated(): Href {
+  const progress = getSignupProgress();
   set({ ...progress, accountCreated: true });
   return progress.onboarded ? "/map" : "/onboarding";
 }

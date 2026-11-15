@@ -1,4 +1,4 @@
-import { useSyncExternalStore } from "react";
+import { createStore, useStore } from "zustand";
 
 // Personvern's switches (PDF p19 Synlighet, p21 Datadeling), shared by the
 // Personvern page and the Personvernsjekk walk (Phase 18) so both show and
@@ -27,40 +27,24 @@ export const DEFAULT_PRIVACY_PREFS: PrivacyPrefs = {
   analytics: false,
 };
 
-let prefs: PrivacyPrefs = DEFAULT_PRIVACY_PREFS;
-const listeners = new Set<() => void>();
-
-function emit() {
-  listeners.forEach((l) => l());
-}
-
-function subscribe(l: () => void) {
-  listeners.add(l);
-  return () => {
-    listeners.delete(l);
-  };
-}
+const store = createStore(() => ({ prefs: DEFAULT_PRIVACY_PREFS }));
+const selectPrefs = (s: { prefs: PrivacyPrefs }) => s.prefs;
 
 export function setPrivacyPref(key: keyof PrivacyPrefs, value: boolean) {
+  const { prefs } = store.getState();
   if (prefs[key] === value) return;
-  prefs = { ...prefs, [key]: value };
-  emit();
+  store.setState({ prefs: { ...prefs, [key]: value } });
 }
 
 export function getPrivacyPrefs(): PrivacyPrefs {
-  return prefs;
+  return store.getState().prefs;
 }
 
 /** Logout and tests. */
 export function resetPrivacyPrefs() {
-  prefs = DEFAULT_PRIVACY_PREFS;
-  emit();
+  store.setState({ prefs: DEFAULT_PRIVACY_PREFS });
 }
 
 export function usePrivacyPrefs(): PrivacyPrefs {
-  return useSyncExternalStore(
-    subscribe,
-    () => prefs,
-    () => prefs,
-  );
+  return useStore(store, selectPrefs);
 }

@@ -1,4 +1,4 @@
-import { useSyncExternalStore } from "react";
+import { createStore, useStore } from "zustand";
 
 // Interests and preferences the user picks in onboarding (PDF p2–p3) and can
 // change later under Innstillinger → Preferanser (PDF p13). One list of
@@ -77,42 +77,25 @@ export const PREFERENCE_ROWS: readonly PreferenceRow[] = [
 export type Preferences = Readonly<Record<string, string>>;
 
 const EMPTY: Preferences = {};
-let current: Preferences = EMPTY;
-const listeners = new Set<() => void>();
-
-function emit() {
-  listeners.forEach((l) => l());
-}
-
-function subscribe(l: () => void) {
-  listeners.add(l);
-  return () => {
-    listeners.delete(l);
-  };
-}
+const store = createStore(() => ({ current: EMPTY }));
+const selectCurrent = (s: { current: Preferences }) => s.current;
 
 /** Replaces the saved preferences; empty choices are dropped. */
 export function setPreferences(next: Record<string, string>) {
   const clean: Record<string, string> = {};
   for (const [k, v] of Object.entries(next)) if (v) clean[k] = v;
-  current = clean;
-  emit();
+  store.setState({ current: clean });
 }
 
 /** Logout and tests: nothing chosen. */
 export function resetPreferences() {
-  current = EMPTY;
-  emit();
+  store.setState({ current: EMPTY });
 }
 
 export function getPreferences(): Preferences {
-  return current;
+  return store.getState().current;
 }
 
 export function usePreferences(): Preferences {
-  return useSyncExternalStore(
-    subscribe,
-    () => current,
-    () => current,
-  );
+  return useStore(store, selectCurrent);
 }

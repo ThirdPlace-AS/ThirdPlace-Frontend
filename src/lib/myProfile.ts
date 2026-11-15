@@ -1,4 +1,4 @@
-import { useSyncExternalStore } from "react";
+import { createStore, useStore } from "zustand";
 
 import { profile } from "@/fixtures";
 import type { LibraryKey } from "@/fixtures/images";
@@ -31,29 +31,16 @@ const SEED: MyProfile = {
   avatar: profile.avatar,
 };
 
-let current: MyProfile = SEED;
-const listeners = new Set<() => void>();
-
-function emit() {
-  listeners.forEach((l) => l());
-}
-
-function subscribe(l: () => void) {
-  listeners.add(l);
-  return () => {
-    listeners.delete(l);
-  };
-}
+const store = createStore(() => ({ current: SEED }));
+const selectCurrent = (s: { current: MyProfile }) => s.current;
 
 export function updateMyProfile(patch: Partial<MyProfile>) {
-  current = { ...current, ...patch };
-  emit();
+  store.setState(({ current }) => ({ current: { ...current, ...patch } }));
 }
 
 /** Logout and tests: back to the fixture profile. */
 export function resetMyProfile() {
-  current = SEED;
-  emit();
+  store.setState({ current: SEED });
 }
 
 export type MyProfileDraft = Omit<MyProfile, "age">;
@@ -76,13 +63,9 @@ export function profileDraftChanged(
 }
 
 export function getMyProfile(): MyProfile {
-  return current;
+  return store.getState().current;
 }
 
 export function useMyProfile(): MyProfile {
-  return useSyncExternalStore(
-    subscribe,
-    () => current,
-    () => current,
-  );
+  return useStore(store, selectCurrent);
 }
