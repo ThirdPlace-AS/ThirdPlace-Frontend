@@ -7,6 +7,7 @@ import { TextInput, View, type TextInputProps } from "react-native";
 import { fontFamilyFor } from "@/theme/fonts";
 import { useThemeColors } from "@/theme";
 
+import { inputClass } from "./base/input";
 import { Text } from "./Text";
 
 export type InputProps = {
@@ -45,14 +46,10 @@ export function Input({
   const c = useThemeColors();
   const [focused, setFocused] = useState(false);
   const editable = typeof onChangeText === "function";
-  // Literal class names so Tailwind generates them. The 2 px emphasis border
-  // is compensated in padding so the text never shifts on focus/error.
+  // Border colour per state: base/input. The 2 px emphasis border is
+  // compensated in padding so the text never shifts on focus/error.
   const emphasized = !!error || focused;
-  const border = error
-    ? "border-danger"
-    : focused
-      ? "border-ink"
-      : "border-line";
+  const state = error ? "error" : focused ? "focused" : "idle";
   const bw = emphasized ? 2 : 1;
   return (
     <View className="w-full gap-1.5">
@@ -62,7 +59,7 @@ export function Input({
         </Text>
       ) : null}
       <TextInput
-        className={`w-full rounded-md bg-surface text-ink ${border}`}
+        className={inputClass({ state })}
         style={[
           {
             fontFamily: fontFamilyFor("regular"),

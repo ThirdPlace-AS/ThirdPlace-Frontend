@@ -8,6 +8,7 @@ import { Pressable, TextInput, View } from "react-native";
 import { fontFamilyFor } from "@/theme/fonts";
 import { useThemeColors } from "@/theme";
 
+import { searchFieldClass, searchShellClass } from "./base/input";
 import { Icon } from "./Icon";
 
 export function SearchBar({
@@ -39,12 +40,12 @@ export function SearchBar({
   const hasText = !!value && value.length > 0 && !!onChangeText;
   return (
     <View
-      className="flex-row items-center gap-sm rounded-full border border-line bg-surface px-gutter"
+      className={searchShellClass}
       style={{ minHeight: size === "sm" ? 44 : 48 }}
     >
       <Icon name="search" size={size === "sm" ? "sm" : "md"} tone="muted" />
       <TextInput
-        className="flex-1 text-ink"
+        className={searchFieldClass}
         style={{
           fontFamily: fontFamilyFor("regular"),
           fontSize: size === "sm" ? 15 : 16,
