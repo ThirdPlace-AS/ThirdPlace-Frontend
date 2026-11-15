@@ -142,6 +142,27 @@ const themeColors = Object.fromEntries(
   ]),
 );
 
+/**
+ * shadcn / React Native Reusables colour slots, aliased to our variables
+ * (DESIGN_SYSTEM.md §4 "Base layer"). Kept out of `palette` so they add no
+ * CSS variables and no contrast cases. No `muted` slot: ours is grey text,
+ * so shadcn's `bg-muted` is written `bg-surface-muted` and
+ * `text-muted-foreground` is written `text-muted`.
+ */
+const slot = (key) => `rgb(var(${cssVar(key)}) / <alpha-value>)`;
+const shadcnColors = {
+  foreground: slot("ink"),
+  border: slot("line"),
+  input: slot("line"),
+  ring: slot("ink"),
+  primary: { DEFAULT: slot("ink"), foreground: slot("onInk") },
+  secondary: { DEFAULT: slot("surfaceMuted"), foreground: slot("ink") },
+  accent: { DEFAULT: slot("surfaceMuted"), foreground: slot("ink") },
+  destructive: { DEFAULT: slot("danger"), foreground: slot("onDanger") },
+  card: { DEFAULT: slot("surface"), foreground: slot("ink") },
+  popover: { DEFAULT: slot("surface"), foreground: slot("ink") },
+};
+
 /** Back-compat: light hex values for native colour props. */
 const colors = palette.light;
 
@@ -195,6 +216,7 @@ module.exports = {
   fontFamily,
   colors,
   themeColors,
+  shadcnColors,
   cssVars,
   cssVar,
   channels,

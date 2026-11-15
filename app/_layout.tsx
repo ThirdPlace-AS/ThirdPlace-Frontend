@@ -7,6 +7,7 @@ import { Stack } from "expo-router";
 import { useEffect } from "react";
 import { LogBox, View } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
+import { PortalHost } from "@rn-primitives/portal";
 import { ReducedMotionConfig, ReduceMotion } from "react-native-reanimated";
 import {
   initialWindowMetrics,
@@ -67,6 +68,9 @@ export default function RootLayout() {
               <View className="flex-1 bg-background" />
             )}
             <RootPortalHost />
+            {/* React Native Reusables' portal (popovers, menus, tooltips from
+                src/components/ui/base); above the app, under toasts. */}
+            <PortalHost />
             <ToastHost />
             <MotionPreference />
           </ThemeRoot>

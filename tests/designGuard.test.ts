@@ -63,7 +63,8 @@ describe("design-system guard", () => {
     const hits = scan(
       (line) =>
         /(^|[\s"'`{])text-(xs|sm|base|lg|xl|2xl|3xl|4xl|\[\d)/.test(line),
-      (f) => !inUi(f),
+      // RNR sources in ui/base keep our type scale too
+      (f) => !inUi(f) || f.startsWith("src/components/ui/base/"),
     );
     expect(fmt(hits)).toEqual([]);
   });
@@ -112,6 +113,59 @@ describe("design-system guard", () => {
     const hits = scan(
       (line) => /<MaterialCommunityIcons\b/.test(line),
       (f) => f !== "src/components/ui/PinGlyph.tsx",
+    );
+    expect(fmt(hits)).toEqual([]);
+  });
+
+  // Base layer (React Native Reusables, DESIGN_SYSTEM.md §4): adapted sources
+  // in src/components/ui/base/ keep our tokens and are reached only through
+  // the src/components/ui primitives.
+  const inBase = (f: string) => f.startsWith("src/components/ui/base/");
+  const BASE_RULES: [string, RegExp][] = [
+    [
+      "shadcn muted slot (ours is grey text)",
+      /\b(bg|border)-muted\b|muted-foreground/,
+    ],
+    ["dark: variant (ThemeRoot sets the scheme)", /(^|[\s"'`])dark:[a-z]/],
+    ["active: variant (blocks presses on native)", /(^|[\s"'`])active:[a-z]/],
+    ["lucide icons (we use <Icon>)", /lucide/],
+  ];
+
+  it("base layer rules match their samples", () => {
+    const samples: Record<string, string> = {
+      "shadcn muted slot (ours is grey text)":
+        'className="bg-muted text-muted-foreground"',
+      "dark: variant (ThemeRoot sets the scheme)":
+        'className="bg-surface dark:bg-ink"',
+      "active: variant (blocks presses on native)":
+        'className="active:opacity-90"',
+      "lucide icons (we use <Icon>)":
+        'import { X } from "lucide-react-native";',
+    };
+    for (const [name, re] of BASE_RULES)
+      expect(re.test(samples[name] ?? "")).toBe(true);
+    // our own classes stay legal
+    for (const [, re] of BASE_RULES) {
+      expect(re.test('className="text-muted bg-surface-muted"')).toBe(false);
+      expect(re.test("const darkMode = 'x';")).toBe(false);
+    }
+  });
+
+  it("base layer keeps our tokens (no muted slot, dark:, active:, lucide)", () => {
+    const hits = scan(
+      (line) => BASE_RULES.some(([, re]) => re.test(line)),
+      inBase,
+    );
+    expect(fmt(hits)).toEqual([]);
+  });
+
+  it("src/components/ui/base is imported only by src/components/ui", () => {
+    const hits = scan(
+      (line) =>
+        /from\s+["'](@\/components\/ui\/base|\.\.?\/(.*\/)?base)(\/|["'])/.test(
+          line,
+        ),
+      (f) => !inUi(f),
     );
     expect(fmt(hits)).toEqual([]);
   });

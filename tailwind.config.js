@@ -1,6 +1,7 @@
 const plugin = require("tailwindcss/plugin");
 const {
   themeColors,
+  shadcnColors,
   radius,
   spacing,
   fontSize,
@@ -14,7 +15,8 @@ module.exports = {
   theme: {
     extend: {
       // Semantic colours read CSS variables set by ThemeRoot (light/dark).
-      colors: themeColors,
+      // shadcn/RNR slots alias the same variables (ours win on a clash).
+      colors: { ...shadcnColors, ...themeColors },
       borderRadius: radius,
       spacing,
       // Named type scale (text-display … text-micro); Tailwind's defaults stay.
