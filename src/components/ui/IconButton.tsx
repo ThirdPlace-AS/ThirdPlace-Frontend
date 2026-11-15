@@ -36,9 +36,10 @@ const MIN_TARGET = 44;
 
 /** The one back glyph, on every back button (user 2026-11-09: "change the
  *  back arrow everywhere on the app to the same arrow the map details sheet
- *  uses"): the ← of the page top bar. Buttons keep their own shape (outlined
- *  circle on pages, plain in sheets and top bars). tests/designGuard.test.ts
- *  checks every "Tilbake" button uses it. */
+ *  uses"): the ← of the page top bar, with no circle around it (user
+ *  2026-11-15: "remove the circle around every back arrows"), so a back
+ *  button is always the plain ghost variant. tests/designGuard.test.ts checks
+ *  every "Tilbake" button uses it and sets no variant. */
 export const BACK_ICON: IconName = "arrow-back";
 
 export type IconButtonProps = {

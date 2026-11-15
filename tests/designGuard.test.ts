@@ -238,6 +238,21 @@ describe("design-system guard", () => {
     expect(fmt(hits)).toEqual([]);
   });
 
+  it("back buttons have no circle: a Tilbake IconButton sets no variant (user 2026-11-15)", () => {
+    const button = /<IconButton\b(?:(?!<IconButton\b)[\s\S])*?\/>/g;
+    const hits = SOURCES.filter((f) =>
+      (fs.readFileSync(path.join(ROOT, f), "utf8").match(button) ?? []).some(
+        (el) => /label="Tilbake"/.test(el) && /\bvariant=/.test(el),
+      ),
+    );
+    expect(hits).toEqual([]);
+    // the pattern catches the old outlined back button
+    const old = `<IconButton\n  icon={BACK_ICON}\n  label="Tilbake"\n  variant="outline"\n  onPress={onBack}\n/>`;
+    expect((old.match(button) ?? []).some((el) => /\bvariant=/.test(el))).toBe(
+      true,
+    );
+  });
+
   it("no InteractionManager (deprecated; deferred updates did not paint in Modals)", () => {
     const hits = scan((line) => /\bInteractionManager\b/.test(line));
     expect(fmt(hits)).toEqual([]);

@@ -110,7 +110,7 @@ export function SheetHeader({
           icon={BACK_ICON}
           label="Tilbake"
           size="sm"
-          variant={variant}
+          tone={dark ? "onMedia" : undefined}
           onPress={onBack}
           className="-ml-xs"
         />

@@ -49,12 +49,7 @@ export function Header({
           {back === false ? (
             <View />
           ) : (
-            <IconButton
-              icon={BACK_ICON}
-              label="Tilbake"
-              variant="outline"
-              onPress={onBack}
-            />
+            <IconButton icon={BACK_ICON} label="Tilbake" onPress={onBack} />
           )}
           {trailing ? (
             <View className="flex-row items-center gap-xs">{trailing}</View>
@@ -75,12 +70,7 @@ export function Header({
       }`}
     >
       {showBack ? (
-        <IconButton
-          icon={BACK_ICON}
-          label="Tilbake"
-          variant="outline"
-          onPress={onBack}
-        />
+        <IconButton icon={BACK_ICON} label="Tilbake" onPress={onBack} />
       ) : null}
       <Text variant={large ? "h1" : "h2"} numberOfLines={1} className="flex-1">
         {title}
@@ -108,12 +98,7 @@ export function TitleBlock({
   return (
     <View className="gap-md">
       {back ? (
-        <IconButton
-          icon={BACK_ICON}
-          label="Tilbake"
-          variant="outline"
-          onPress={onBack}
-        />
+        <IconButton icon={BACK_ICON} label="Tilbake" onPress={onBack} />
       ) : null}
       <View className="gap-xs">
         <Text variant={size}>{title}</Text>
@@ -146,12 +131,7 @@ export function StepHeader({
   return (
     <View className="gap-md px-gutter pb-sm pt-xs">
       <View className="flex-row items-center justify-between">
-        <IconButton
-          icon={BACK_ICON}
-          label="Tilbake"
-          variant="outline"
-          onPress={onBack}
-        />
+        <IconButton icon={BACK_ICON} label="Tilbake" onPress={onBack} />
         {showProgress ? (
           <Text variant="caption" weight="medium" tone="muted">
             {text}

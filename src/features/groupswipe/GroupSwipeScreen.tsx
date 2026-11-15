@@ -119,12 +119,7 @@ export default function GroupSwipeScreen() {
   return (
     <Screen>
       <View className="flex-row items-center justify-between px-gutter pb-2 pt-1">
-        <IconButton
-          icon={BACK_ICON}
-          label="Tilbake"
-          variant="outline"
-          onPress={back}
-        />
+        <IconButton icon={BACK_ICON} label="Tilbake" onPress={back} />
         {phase === "swipe" ? (
           <Text variant="body" weight="semibold">
             {title}

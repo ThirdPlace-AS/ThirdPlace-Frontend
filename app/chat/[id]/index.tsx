@@ -184,7 +184,6 @@ export default function ChatThreadScreen() {
         <IconButton
           icon={BACK_ICON}
           label="Tilbake"
-          variant="outline"
           onPress={() => router.back()}
         />
         <Avatar
