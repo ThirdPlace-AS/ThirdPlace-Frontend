@@ -7,6 +7,8 @@
 import { cva, type VariantProps } from "class-variance-authority";
 import { createContext } from "react";
 
+import { memoVariants } from "@/lib/memoVariants";
+
 // Literal class names so Tailwind's content scan generates them.
 export const textVariants = cva("", {
   variants: {
@@ -37,6 +39,9 @@ export const textVariants = cva("", {
   },
   defaultVariants: { variant: "body", tone: "ink" },
 });
+
+/** textVariants, built once per variant and tone. */
+export const textClass = memoVariants(textVariants);
 
 type TextVariantProps = VariantProps<typeof textVariants>;
 export type TextVariant = NonNullable<TextVariantProps["variant"]>;

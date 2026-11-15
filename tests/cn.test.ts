@@ -1,5 +1,6 @@
 import { describe, expect, it } from "@jest/globals";
 
+import { memoVariants } from "@/lib/memoVariants";
 import { cn } from "@/lib/utils";
 
 describe("cn (tailwind-merge with our tokens)", () => {
@@ -32,5 +33,20 @@ describe("cn (tailwind-merge with our tokens)", () => {
     expect(cn("flex-1", false, undefined, null, "bg-surface")).toBe(
       "flex-1 bg-surface",
     );
+  });
+});
+
+describe("memoVariants", () => {
+  it("returns the same string and calls cva once per combination", () => {
+    let calls = 0;
+    const f = memoVariants((p: { a?: string; b?: boolean }) => {
+      calls += 1;
+      return `${p.a}-${p.b}`;
+    });
+    expect(f({ a: "x", b: true })).toBe("x-true");
+    expect(f({ a: "x", b: true })).toBe("x-true");
+    expect(f({ a: "x", b: false })).toBe("x-false");
+    expect(f({ a: "x" })).toBe("x-undefined");
+    expect(calls).toBe(3);
   });
 });

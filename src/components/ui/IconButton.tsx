@@ -10,7 +10,7 @@ import { Icon, type IconName, type IconTone } from "./Icon";
 import { PopIcon } from "./PopIcon";
 import {
   iconButtonTone,
-  iconButtonVariants,
+  iconButtonClass,
   type IconButtonVariant,
 } from "./base/button";
 import { Pressable } from "./Pressable";
@@ -101,7 +101,7 @@ export function IconButton({
       hitSlop={slop}
       pressedScale={0.92}
       className={className}
-      contentClassName={iconButtonVariants({ variant })}
+      contentClassName={iconButtonClass({ variant })}
       contentStyle={[
         { width: px, height: px },
         variant === "floating" || variant === "ink" || variant === "ember"

@@ -11,7 +11,7 @@ import { fontFamilyFor, type FontWeight } from "@/theme/fonts";
 
 import {
   TextClassContext,
-  textVariants,
+  textClass,
   type TextTone,
   type TextVariant,
 } from "./base/text";
@@ -70,7 +70,7 @@ export function Text({
       accessibilityRole={
         accessibilityRole ?? (HEADING.has(variant) ? "header" : undefined)
       }
-      className={`${textVariants({ variant, tone: tone ?? contextTone })}${
+      className={`${textClass({ variant, tone: tone ?? contextTone })}${
         className ? ` ${className}` : ""
       }`}
       style={[

@@ -11,7 +11,7 @@ import { brandGradient, useThemeColors } from "@/theme";
 import {
   buttonHeight,
   buttonTone,
-  buttonVariants,
+  buttonClass,
   type ButtonSize,
   type ButtonVariant,
 } from "./base/button";
@@ -75,7 +75,7 @@ export function Button({
       onPress={loading ? undefined : onPress}
       dimWhenDisabled={false}
       className={fullWidth ? "w-full" : "self-start"}
-      contentClassName={buttonVariants({ size, rounded, fill })}
+      contentClassName={buttonClass({ size, rounded, fill })}
       contentStyle={{ minHeight: buttonHeight[size] }}
     >
       {gradient ? (

@@ -8,6 +8,8 @@
 // the brand gradient and spinner stay in `Button`. No Slot/asChild.
 import { cva, type VariantProps } from "class-variance-authority";
 
+import { memoVariants } from "@/lib/memoVariants";
+
 import type { IconTone } from "../Icon";
 import type { TextTone } from "./text";
 
@@ -33,6 +35,8 @@ export const buttonVariants = cva(
     defaultVariants: { size: "md", rounded: "md", fill: "ink" },
   },
 );
+
+export const buttonClass = memoVariants(buttonVariants);
 
 type ButtonVariantProps = VariantProps<typeof buttonVariants>;
 export type ButtonSize = NonNullable<ButtonVariantProps["size"]>;
@@ -80,6 +84,8 @@ export const iconButtonVariants = cva(
   },
 );
 
+export const iconButtonClass = memoVariants(iconButtonVariants);
+
 export type IconButtonVariant = NonNullable<
   VariantProps<typeof iconButtonVariants>["variant"]
 >;
@@ -110,3 +116,5 @@ export const followButtonVariants = cva(
     defaultVariants: { size: "sm", following: false },
   },
 );
+
+export const followButtonClass = memoVariants(followButtonVariants);
