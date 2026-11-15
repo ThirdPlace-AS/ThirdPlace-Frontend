@@ -60,18 +60,20 @@ Opacity modifiers (`bg-scrim/40`, `bg-danger/15`) work on every token but only i
 
 One family, weight-led hierarchy. Use the `Text` primitive's `variant`, not raw size classes.
 
-| Variant   | Size / line | Weight       |
-| --------- | ----------- | ------------ |
-| `display` | 30 / 36     | 700          |
-| `h1`      | 24 / 30     | 700          |
-| `h2`      | 20 / 26     | 600          |
-| `title`   | 17 / 22     | 600          |
-| `body`    | 16 / 22     | 400          |
-| `label`   | 15 / 20     | 500          |
-| `caption` | 13 / 18     | 400          |
-| `micro`   | 11 / 14     | 500, tracked |
+| Variant   | Size / line | Weight        | Tracking |
+| --------- | ----------- | ------------- | -------- |
+| `display` | 28 / 39     | 700           |          |
+| `h1`      | 22 / 26     | 600           | −0.44 px |
+| `h2`      | 20 / 24     | 600           | −0.18 px |
+| `title`   | 16 / 20     | 600           |          |
+| `body`    | 16 / 24     | 400           |          |
+| `label`   | 14 / 18     | 500           |          |
+| `caption` | 13 / 16     | 400           |          |
+| `micro`   | 11 / 13     | 600, capitals | 0.32 px  |
 
-No arbitrary sizes (`text-[10px]`). Note: NativeWind uses rem = 14 px on native, so legacy Tailwind classes render smaller than their names suggest (`text-sm` ≈ 12 px, `text-base` = 14 px). The scale above is in real px, so migrated text is intentionally larger; migrate a screen as a whole rather than mixing old and new text in one block.
+Sizes, line heights and tracking follow shadcn.io's Airbnb DESIGN.md (user 2026-11-15), rounded to whole px. One change: `h1` is 600, not the design's 500, which read weaker than the 600 `h2` below it on the emulator. Button labels are 500 (`body`, `label` for `sm`).
+
+No `font-*` weight classes: on Android they rendered Roboto (2026-11-15). Set weight with the `Text` primitive's `weight`, and give a raw `TextInput` `fontFamily: fontFamilyFor("regular")` (the design guard checks). No arbitrary sizes (`text-[10px]`). Note: NativeWind uses rem = 14 px on native, so legacy Tailwind classes render smaller than their names suggest (`text-sm` ≈ 12 px, `text-base` = 14 px). The scale above is in real px, so migrated text is intentionally larger; migrate a screen as a whole rather than mixing old and new text in one block.
 
 ### Spacing
 

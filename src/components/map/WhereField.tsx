@@ -6,6 +6,7 @@ import { areasByRegion } from "@/fixtures";
 import { useThemeColors } from "@/theme";
 
 import { useRecentSearches } from "./hooks/useRecentSearches";
+import { fontFamilyFor } from "@/theme/fonts";
 
 // "Where?" search for the filter sheet. A text field over the MOCK AREAS
 // list (no geocoder), grouped by region until you type (Phase 19: Oslo and
@@ -65,8 +66,8 @@ export function WhereField({
           onChangeText={setText}
           placeholder="Søk etter sted eller landemerke"
           placeholderTextColor={colors.muted}
-          className="flex-1 text-ink font-normal"
-          style={{ fontSize: 16 }}
+          className="flex-1 text-ink"
+          style={{ fontSize: 16, fontFamily: fontFamilyFor("regular") }}
         />
         {text || value ? (
           <UIPressable

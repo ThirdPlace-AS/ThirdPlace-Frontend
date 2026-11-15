@@ -1,4 +1,4 @@
-import { Pressable, ScrollView, Text, View } from "react-native";
+import { Pressable, ScrollView, View } from "react-native";
 
 import {
   elevation,
@@ -126,10 +126,10 @@ export default function ThemeSandbox() {
     <Screen>
       <ScrollView contentContainerClassName="gap-section p-gutter pb-20">
         <View className="gap-sm">
-          <Text className="text-h1 font-bold text-ink">Designsystem</Text>
-          <Text className="text-caption text-muted font-normal">
+          <UIText variant="h1">Designsystem</UIText>
+          <UIText variant="caption" tone="muted">
             Forhåndsvisning — aktiv modus: {scheme}
-          </Text>
+          </UIText>
           <View
             className="flex-row gap-sm"
             accessibilityRole="radiogroup"
@@ -147,13 +147,12 @@ export default function ThemeSandbox() {
                     selected ? "bg-ink" : "bg-surfaceMuted"
                   }`}
                 >
-                  <Text
-                    className={`text-label font-medium ${
-                      selected ? "text-onInk" : "text-ink"
-                    }`}
+                  <UIText
+                    variant="label"
+                    className={selected ? "text-onInk" : "text-ink"}
                   >
                     {p}
-                  </Text>
+                  </UIText>
                 </Pressable>
               );
             })}
@@ -167,10 +166,12 @@ export default function ThemeSandbox() {
                 <View
                   className={`h-14 rounded-md border border-line ${SWATCH_CLASS[key] ?? ""}`}
                 />
-                <Text className="text-caption font-medium text-ink">{key}</Text>
-                <Text className="text-micro text-muted font-normal">
+                <UIText variant="caption" weight="medium">
+                  {key}
+                </UIText>
+                <UIText variant="caption" tone="muted">
                   {hex[key]}
-                </Text>
+                </UIText>
               </View>
             ))}
           </View>
@@ -225,9 +226,9 @@ export default function ThemeSandbox() {
                 <View
                   className={`h-14 w-14 border border-line bg-surface ${RADIUS_CLASS[r]}`}
                 />
-                <Text className="text-micro text-muted font-normal">
+                <UIText variant="caption" tone="muted">
                   {r} · {radius[r]}
-                </Text>
+                </UIText>
               </View>
             ))}
           </View>
@@ -241,7 +242,7 @@ export default function ThemeSandbox() {
                 style={elevation[e]}
                 className="h-20 flex-1 items-center justify-center rounded-lg bg-surfaceRaised"
               >
-                <Text className="text-label font-medium text-ink">{e}</Text>
+                <UIText variant="label">{e}</UIText>
               </View>
             ))}
           </View>
@@ -250,24 +251,32 @@ export default function ThemeSandbox() {
         <Section title="Knapper">
           <View className="gap-md">
             <View className="h-12 items-center justify-center rounded-full bg-ink">
-              <Text className="text-label font-semibold text-onInk">
+              <UIText variant="label" weight="semibold" className="text-onInk">
                 Logg inn
-              </Text>
+              </UIText>
             </View>
-            <View className="h-12 items-center justify-center rounded-full bg-ember">
-              <Text className="text-label font-semibold text-onEmber">
+            <View className="h-12 items-center justify-center rounded-full bg-emberStrong">
+              <UIText
+                variant="label"
+                weight="semibold"
+                className="text-onEmber"
+              >
                 Opprett konto
-              </Text>
+              </UIText>
             </View>
             <View className="h-12 items-center justify-center rounded-full bg-surfaceMuted">
-              <Text className="text-label font-semibold text-ink">
+              <UIText variant="label" weight="semibold">
                 Fortsett med Google
-              </Text>
+              </UIText>
             </View>
             <View className="h-12 items-center justify-center rounded-full bg-danger/15">
-              <Text className="text-label font-semibold text-dangerText">
+              <UIText
+                variant="label"
+                weight="semibold"
+                className="text-dangerText"
+              >
                 Opasitet: bg-danger/15
-              </Text>
+              </UIText>
             </View>
           </View>
         </Section>
@@ -285,9 +294,9 @@ function Section({
 }) {
   return (
     <View className="gap-md">
-      <Text className="text-micro font-medium uppercase text-muted">
+      <UIText variant="micro" tone="muted">
         {title}
-      </Text>
+      </UIText>
       {children}
     </View>
   );

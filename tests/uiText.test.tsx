@@ -14,10 +14,13 @@ describe("Text primitive", () => {
     render(
       <>
         <Text variant="h1">Tittel</Text>
+        <Text variant="micro">Liten</Text>
         <Text>Brødtekst</Text>
       </>,
     );
-    expect(familyOf("Tittel")).toBe(fontFamilyFor("bold"));
+    // Type scale 2026-11-15: h1 600 (the design's 500 read weaker than h2), micro 600.
+    expect(familyOf("Tittel")).toBe(fontFamilyFor("semibold"));
+    expect(familyOf("Liten")).toBe(fontFamilyFor("semibold"));
     expect(familyOf("Brødtekst")).toBe(fontFamilyFor("regular"));
   });
 

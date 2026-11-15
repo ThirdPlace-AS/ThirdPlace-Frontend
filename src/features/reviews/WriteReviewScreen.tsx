@@ -13,6 +13,7 @@ import { confirmToast } from "@/copy";
 import { experienceById, placeById } from "@/fixtures";
 import { goBackOr } from "@/lib/navigation";
 import { useThemeColors } from "@/theme";
+import { fontFamilyFor } from "@/theme/fonts";
 
 export default function WriteReviewScreen() {
   const { kind = "place", id = "" } = useLocalSearchParams<{
@@ -70,8 +71,8 @@ export default function WriteReviewScreen() {
         value={text}
         onChangeText={setText}
         multiline
-        className="min-h-32 rounded-md border border-line bg-surface p-3 text-ink font-normal"
-        style={{ fontSize: 16 }}
+        className="min-h-32 rounded-md border border-line bg-surface p-3 text-ink"
+        style={{ fontSize: 16, fontFamily: fontFamilyFor("regular") }}
         textAlignVertical="top"
       />
     </FormPage>

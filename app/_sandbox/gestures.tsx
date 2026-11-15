@@ -6,6 +6,7 @@ import Animated, {
   useSharedValue,
   withSpring,
 } from "react-native-reanimated";
+import { fontFamilyFor } from "@/theme/fonts";
 
 // Smoke test that react-native-reanimated (UI-thread animation) and
 // react-native-gesture-handler (pan gesture) are correctly wired through
@@ -33,7 +34,7 @@ export default function GestureSandbox() {
 
   return (
     <SafeAreaView style={styles.root}>
-      <Text className="font-normal" style={styles.hint}>
+      <Text style={[styles.hint, { fontFamily: fontFamilyFor("regular") }]}>
         Drag the box — it springs back.
       </Text>
       <View style={styles.stage}>

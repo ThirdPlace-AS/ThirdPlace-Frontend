@@ -189,16 +189,20 @@ const spacing = {
   section: "32px",
 };
 
-/** Type scale: [size, { lineHeight, letterSpacing? }] — Tailwind fontSize form. */
+/**
+ * Type scale: [size, { lineHeight, letterSpacing? }] — Tailwind fontSize form.
+ * Sizes, line heights and tracking follow shadcn.io's Airbnb DESIGN.md
+ * (user 2026-11-15), rounded to whole px; weights live in the Text primitive.
+ */
 const fontSize = {
-  display: ["30px", { lineHeight: "36px" }],
-  h1: ["24px", { lineHeight: "30px" }],
-  h2: ["20px", { lineHeight: "26px" }],
-  title: ["17px", { lineHeight: "22px" }],
-  body: ["16px", { lineHeight: "22px" }],
-  label: ["15px", { lineHeight: "20px" }],
-  caption: ["13px", { lineHeight: "18px" }],
-  micro: ["11px", { lineHeight: "14px", letterSpacing: "0.4px" }],
+  display: ["28px", { lineHeight: "39px" }],
+  h1: ["22px", { lineHeight: "26px", letterSpacing: "-0.44px" }],
+  h2: ["20px", { lineHeight: "24px", letterSpacing: "-0.18px" }],
+  title: ["16px", { lineHeight: "20px" }],
+  body: ["16px", { lineHeight: "24px" }],
+  label: ["14px", { lineHeight: "18px" }],
+  caption: ["13px", { lineHeight: "16px" }],
+  micro: ["11px", { lineHeight: "13px", letterSpacing: "0.32px" }],
 };
 
 /** Inter family name per weight (loaded in app/_layout via src/theme/fonts.ts). */

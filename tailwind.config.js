@@ -27,6 +27,9 @@ module.exports = {
   // fonts), so weight utilities select the family instead of setting
   // fontWeight. Later entries win when several are present (cascade order),
   // so "font-normal" on a Text is overridden by any heavier weight class.
+  // On the Android dev build these classes still rendered Roboto (2026-11-15),
+  // so code uses the Text primitive's weight or fontFamilyFor() instead; the
+  // design guard bans the classes.
   corePlugins: { fontWeight: false },
   plugins: [
     plugin(({ addUtilities }) => {

@@ -1,6 +1,6 @@
 import { router, useLocalSearchParams } from "expo-router";
 import { useEffect, useState } from "react";
-import { ScrollView, Text, View } from "react-native";
+import { ScrollView, View } from "react-native";
 
 import { Screen, Text as UIText } from "@/components/ui";
 import { CodeInput } from "@/components/auth/CodeInput";
@@ -67,7 +67,9 @@ export default function VerifyCode() {
         <View className="items-center gap-1">
           <UIText variant="caption" tone="muted">
             Fikk du ikke koden?{" "}
-            <Text
+            <UIText
+              variant="caption"
+              weight="semibold"
               onPress={
                 left <= 0
                   ? () => {
@@ -79,10 +81,10 @@ export default function VerifyCode() {
                     }
                   : undefined
               }
-              className={`font-semibold ${left <= 0 ? "text-emberText" : "text-muted"}`}
+              className={left <= 0 ? "text-emberText" : "text-muted"}
             >
               Send på nytt
-            </Text>
+            </UIText>
           </UIText>
           {left > 0 ? (
             <UIText variant="caption" tone="muted">

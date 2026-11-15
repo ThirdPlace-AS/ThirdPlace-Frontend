@@ -93,7 +93,7 @@ export function Button({
       >
         {icon ? <Icon name={icon} size="md" tone={fg} /> : null}
         <TextClassContext.Provider value={fg}>
-          <Text variant={size === "sm" ? "label" : "body"} weight="semibold">
+          <Text variant={size === "sm" ? "label" : "body"} weight="medium">
             {label}
           </Text>
         </TextClassContext.Provider>

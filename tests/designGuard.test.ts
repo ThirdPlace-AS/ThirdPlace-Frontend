@@ -69,6 +69,15 @@ describe("design-system guard", () => {
     expect(fmt(hits)).toEqual([]);
   });
 
+  it("no font-weight classes — use <Text weight> or fontFamilyFor (they render Roboto on Android)", () => {
+    const hits = scan((line) =>
+      /(^|[\s"'`{])font-(light|normal|medium|semibold|bold|extrabold)\b/.test(
+        line,
+      ),
+    );
+    expect(fmt(hits)).toEqual([]);
+  });
+
   it("no untokenised radii (rounded-3xl, bare `rounded`, rounded-[…])", () => {
     const hits = scan(
       (line) =>

@@ -23,6 +23,7 @@ import {
 } from "@/fixtures";
 import { libThumb } from "@/fixtures/images";
 import { gutterPx, useThemeColors } from "@/theme";
+import { fontFamilyFor } from "@/theme/fonts";
 
 // Marketplace, per the design (PDF p15–p16) and master spec §13: a B2B
 // collaboration space where creators, businesses and enterprises offer
@@ -111,8 +112,8 @@ export default function MarketplaceScreen() {
                 onChangeText={setQuery}
                 placeholder="Søk listings, samarbeid …"
                 placeholderTextColor={colors.muted}
-                className="flex-1 py-3 text-ink font-normal"
-                style={{ fontSize: 16 }}
+                className="flex-1 py-3 text-ink"
+                style={{ fontSize: 16, fontFamily: fontFamilyFor("regular") }}
                 accessibilityLabel="Søk i Marketplace"
               />
             </View>

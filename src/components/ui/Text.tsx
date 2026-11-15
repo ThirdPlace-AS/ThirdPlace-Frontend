@@ -20,13 +20,13 @@ export type { TextTone, TextVariant };
 
 const DEFAULT_WEIGHT: Record<TextVariant, FontWeight> = {
   display: "bold",
-  h1: "bold",
+  h1: "semibold",
   h2: "semibold",
   title: "semibold",
   body: "regular",
   label: "medium",
   caption: "regular",
-  micro: "medium",
+  micro: "semibold",
 };
 
 // Size and line height per variant (tokens.js fontSize), for "Større tekst"
