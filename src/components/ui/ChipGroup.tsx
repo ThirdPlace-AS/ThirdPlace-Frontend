@@ -2,6 +2,7 @@
 // (checkbox) selection. Replaces per-screen ChipRow helpers.
 import { View } from "react-native";
 
+import { toggleGroupClass } from "./base/toggle";
 import { Chip, type ChipSize, type ChipVariant } from "./Chip";
 
 type Common = {
@@ -30,7 +31,7 @@ export function ChipGroup(props: ChipGroupProps) {
     props.multiple ? props.value.includes(o) : props.value === o;
   return (
     <View
-      className="flex-row flex-wrap gap-sm"
+      className={toggleGroupClass}
       accessibilityRole={props.multiple ? undefined : "radiogroup"}
       accessibilityLabel={label}
     >

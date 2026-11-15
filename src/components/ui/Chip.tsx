@@ -2,15 +2,23 @@
 // "filled": selected = ink fill (filters, interests, segmented choices).
 // "outline": selected = 2 px ink ring, optional icon (map "Filtre" type grids,
 // per the PDF video). Replaces <Chip>, <TypeChip> and inline pills.
+// Shell tables: base/toggle.
 import { memo } from "react";
 import { View } from "react-native";
 
 import { Icon, type IconName } from "./Icon";
 import { Pressable } from "./Pressable";
 import { Text } from "./Text";
+import {
+  toggleClass,
+  toggleHeight,
+  toggleShell,
+  type ToggleSize,
+  type ToggleVariant,
+} from "./base/toggle";
 
-export type ChipVariant = "filled" | "outline";
-export type ChipSize = "sm" | "md";
+export type ChipVariant = ToggleVariant;
+export type ChipSize = ToggleSize;
 
 export type ChipProps = {
   label: string;
@@ -25,21 +33,6 @@ export type ChipProps = {
   testID?: string;
 };
 
-// Literal class names so Tailwind generates them.
-const SHELL: Record<ChipVariant, { on: string; off: string }> = {
-  filled: {
-    on: "border border-ink bg-ink",
-    // PDF (p5 Filtre, p22 Oppdag folk/Filter folk): unselected = grey fill, no visible border.
-    off: "border border-surfaceMuted bg-surfaceMuted",
-  },
-  outline: {
-    on: "border-2 border-ink bg-surface",
-    off: "border border-line bg-surface",
-  },
-};
-const PAD: Record<ChipSize, string> = { sm: "px-md", md: "px-gutter" };
-const HEIGHT: Record<ChipSize, number> = { sm: 32, md: 40 };
-
 export const Chip = memo(function Chip({
   label,
   selected = false,
@@ -52,9 +45,7 @@ export const Chip = memo(function Chip({
   testID,
 }: ChipProps) {
   const filledOn = variant === "filled" && selected;
-  const shell = `flex-row items-center gap-sm rounded-full ${PAD[size]} ${
-    selected ? SHELL[variant].on : SHELL[variant].off
-  }`;
+  const shell = toggleClass({ size, shell: toggleShell(variant, selected) });
   const body = (
     <>
       {icon ? (
@@ -83,7 +74,7 @@ export const Chip = memo(function Chip({
         accessible
         accessibilityLabel={label}
         className={shell}
-        style={{ minHeight: HEIGHT[size] }}
+        style={{ minHeight: toggleHeight[size] }}
       >
         {body}
       </View>
@@ -103,7 +94,7 @@ export const Chip = memo(function Chip({
       // A 32 px chip still gets a 44 pt target vertically.
       hitSlop={size === "sm" ? 6 : 2}
       contentClassName={shell}
-      contentStyle={{ minHeight: HEIGHT[size] }}
+      contentStyle={{ minHeight: toggleHeight[size] }}
     >
       {body}
     </Pressable>
