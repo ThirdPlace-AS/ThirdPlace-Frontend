@@ -74,7 +74,7 @@ export function ExperiencePageBody({ exp }: { exp: MockExperience }) {
         style={{ paddingBottom: Math.max(insets.bottom, 12) + 4 }}
       >
         <View
-          className="rounded-lg border border-line bg-surface px-4 py-3"
+          className="rounded-md border border-line bg-surface px-4 py-3"
           style={elevation.e2}
         >
           <ExperienceJoinBar id={exp.id} />

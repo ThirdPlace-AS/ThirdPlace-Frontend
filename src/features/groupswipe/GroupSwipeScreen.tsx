@@ -334,7 +334,7 @@ export default function GroupSwipeScreen() {
         <ScrollView contentContainerClassName="gap-4 p-gutter pb-8">
           {/* Next card fades in (it swapped in one frame). */}
           <FadeSwap swapKey={card.id} style={{ gap: 16 }}>
-            <View className="overflow-hidden rounded-xl bg-ink">
+            <View className="overflow-hidden rounded-lg bg-ink">
               <Image
                 source={card.photos[0]}
                 contentFit="cover"

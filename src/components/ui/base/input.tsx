@@ -12,7 +12,7 @@ import { cva, type VariantProps } from "class-variance-authority";
 import { memoVariants } from "@/lib/memoVariants";
 
 // Literal class names so Tailwind generates them.
-export const inputVariants = cva("w-full rounded-md bg-surface text-ink", {
+export const inputVariants = cva("w-full rounded-sm bg-surface text-ink", {
   variants: {
     state: {
       idle: "border-line",

@@ -459,7 +459,7 @@ export function PlacePage({
                         source={libThumb(coverForPlace(p))}
                         contentFit="cover"
                         transition={150}
-                        style={{ width: 176, height: 176, borderRadius: 16 }}
+                        style={{ width: 176, height: 176, borderRadius: 14 }}
                       />
                       <Text variant="label" weight="semibold" numberOfLines={1}>
                         {p.name}

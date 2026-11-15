@@ -50,7 +50,7 @@ export function PaymentStatusScreen() {
           Jazz-samarbeid · Oslo Kaffebar
         </Text>
 
-        <View className="flex-row items-center gap-3 rounded-lg border border-line bg-surface p-4">
+        <View className="flex-row items-center gap-3 rounded-md border border-line bg-surface p-4">
           <View className="h-11 w-11 items-center justify-center rounded-full bg-surfaceMuted">
             <Icon name="hourglass-outline" size="md" tone="ink" />
           </View>
@@ -100,7 +100,7 @@ export function PaymentStatusScreen() {
           <Text variant="title" accessibilityRole="header">
             Transaksjon
           </Text>
-          <View className="overflow-hidden rounded-lg border border-line bg-surface">
+          <View className="overflow-hidden rounded-md border border-line bg-surface">
             {TRANSACTION_ROWS.map((label, i) => (
               <View
                 key={label}
@@ -123,7 +123,7 @@ export function PaymentStatusScreen() {
           <Text variant="title" accessibilityRole="header">
             Utbetaling
           </Text>
-          <View className="gap-0.5 rounded-lg border border-line bg-surface p-4">
+          <View className="gap-0.5 rounded-md border border-line bg-surface p-4">
             <Text variant="label" weight="semibold">
               Ikke planlagt ennå
             </Text>
@@ -140,7 +140,7 @@ export function PaymentStatusScreen() {
           <UIPressable
             accessibilityRole="button"
             onPress={() => router.push("/collab" as Href)}
-            contentClassName="flex-row items-center gap-3 rounded-lg border border-line bg-surface p-4"
+            contentClassName="flex-row items-center gap-3 rounded-md border border-line bg-surface p-4"
             pressedScale={0.99}
           >
             <Icon name="musical-notes-outline" size="md" tone="ink" />
@@ -198,7 +198,7 @@ export function CollabHistoryScreen() {
           return (
             <View
               key={c.id}
-              className="gap-1.5 rounded-lg border border-line bg-surface p-4"
+              className="gap-1.5 rounded-md border border-line bg-surface p-4"
             >
               <View className="flex-row items-start justify-between gap-3">
                 <Text variant="body" weight="semibold" className="flex-1">

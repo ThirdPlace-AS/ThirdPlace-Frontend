@@ -43,7 +43,7 @@ export default function ListingWaitlistScreen() {
       </Text>
 
       {capacity !== undefined && taken !== undefined ? (
-        <View className="gap-2 rounded-lg border border-line bg-surface p-3.5">
+        <View className="gap-2 rounded-md border border-line bg-surface p-3.5">
           <View className="flex-row items-center justify-between">
             <Text variant="label" weight="semibold">
               Kapasitet
@@ -79,7 +79,7 @@ export default function ListingWaitlistScreen() {
         waitlist.map((w, i) => (
           <View
             key={w.name}
-            className="flex-row items-center gap-3 rounded-lg border border-line bg-surface px-3 py-3"
+            className="flex-row items-center gap-3 rounded-md border border-line bg-surface px-3 py-3"
           >
             <View className="h-8 w-8 items-center justify-center rounded-sm bg-ink">
               <Text variant="caption" weight="bold" tone="onInk">

@@ -331,7 +331,7 @@ function Composer({
   return (
     <View className="gap-2 border-t border-line px-gutter pb-2 pt-2.5">
       {replyTo ? (
-        <View className="flex-row items-center gap-2 rounded-md bg-surfaceMuted py-2 pl-3 pr-1">
+        <View className="flex-row items-center gap-2 rounded-sm bg-surfaceMuted py-2 pl-3 pr-1">
           <View className="flex-1 border-l-2 border-ember pl-2">
             <Text variant="caption" weight="semibold">
               Svarer {replyTo.author}
@@ -352,7 +352,7 @@ function Composer({
       <View className="flex-row items-end gap-2">
         <TextInput
           accessibilityLabel="Melding"
-          className="max-h-28 flex-1 rounded-2xl border border-line bg-surface px-4 py-2.5 text-ink"
+          className="max-h-28 flex-1 rounded-lg border border-line bg-surface px-4 py-2.5 text-ink"
           style={{ fontFamily: fontFamilyFor("regular"), fontSize: 16 }}
           placeholder="Skriv en melding …"
           placeholderTextColor={colors.muted}
@@ -479,7 +479,7 @@ const Bubble = memo(function Bubble({
       }
     >
       {mine ? (
-        <View className="rounded-lg rounded-br-sm bg-ink px-3.5 py-2.5">
+        <View className="rounded-md rounded-br-sm bg-ink px-3.5 py-2.5">
           {message.replyTo ? <Quote reply={message.replyTo} onInk /> : null}
           <Text variant="body" tone="onInk">
             {message.text}
@@ -489,7 +489,7 @@ const Bubble = memo(function Bubble({
           </Text>
         </View>
       ) : (
-        <View className="rounded-lg rounded-bl-sm border border-line bg-surface px-3.5 py-2.5">
+        <View className="rounded-md rounded-bl-sm border border-line bg-surface px-3.5 py-2.5">
           <Text variant="caption" weight="semibold" tone="muted">
             {message.author}
           </Text>

@@ -51,7 +51,7 @@ export default function AccountSwitch() {
         className="bg-black/50"
       />
       <View
-        className="gap-2 self-end rounded-lg bg-surface p-3"
+        className="gap-2 self-end rounded-md bg-surface p-3"
         style={{ width: 280 }}
       >
         {rows.map((r) => (
@@ -59,7 +59,7 @@ export default function AccountSwitch() {
             key={r.title}
             accessibilityRole="button"
             onPress={r.onPress}
-            contentClassName="flex-row items-center gap-3 rounded-md p-2.5"
+            contentClassName="flex-row items-center gap-3 rounded-sm p-2.5"
           >
             <Icon name={r.icon} size="xl" tone="ink" />
             <View className="flex-1">
@@ -80,7 +80,7 @@ export default function AccountSwitch() {
         <UIPressable
           accessibilityRole="button"
           onPress={() => router.replace("/settings" as Href)}
-          contentClassName="items-center rounded-md bg-surfaceMuted py-2.5"
+          contentClassName="items-center rounded-sm bg-surfaceMuted py-2.5"
         >
           <Text variant="label" weight="semibold">
             Administrer kontoer

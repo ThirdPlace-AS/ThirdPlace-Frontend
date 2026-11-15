@@ -41,7 +41,7 @@ export default function Welcome() {
           </Text>
         </View>
 
-        <View className="mx-3 mb-2 gap-4 rounded-xl bg-background p-6">
+        <View className="mx-3 mb-2 gap-4 rounded-lg bg-background p-6">
           <View className="h-1 w-10 self-center rounded-full bg-line" />
           <Text variant="h1" className="text-center">
             Velkommen hjem

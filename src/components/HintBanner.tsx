@@ -28,7 +28,7 @@ export function HintBanner({
     >
       <View
         accessibilityLiveRegion="polite"
-        className="flex-row items-center gap-3 rounded-lg border border-line bg-surface p-3"
+        className="flex-row items-center gap-3 rounded-md border border-line bg-surface p-3"
         style={elevation.e1}
       >
         <View className="h-9 w-9 items-center justify-center rounded-full bg-surfaceMuted">

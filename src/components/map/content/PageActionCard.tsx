@@ -71,7 +71,7 @@ export function PageActionCard({
       ]}
     >
       <View
-        className={`rounded-lg border border-line bg-surface px-4 ${
+        className={`rounded-md border border-line bg-surface px-4 ${
           compact ? "py-2" : "py-3"
         }`}
         style={elevation.e2}

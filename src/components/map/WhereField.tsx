@@ -42,7 +42,7 @@ export function WhereField({
         onPress={() => choose(name)}
         contentClassName="flex-row items-center gap-3 py-3"
       >
-        <View className="h-11 w-11 items-center justify-center rounded-md bg-surfaceMuted">
+        <View className="h-11 w-11 items-center justify-center rounded-sm bg-surfaceMuted">
           <Icon name="location-outline" size="md" tone="ink" />
         </View>
         <Text
@@ -59,7 +59,7 @@ export function WhereField({
 
   return (
     <View className="gap-4">
-      <View className="h-14 flex-row items-center gap-3 rounded-lg border border-line bg-surface px-4">
+      <View className="h-14 flex-row items-center gap-3 rounded-md border border-line bg-surface px-4">
         <Icon name="search" size="md" tone="muted" />
         <TextInput
           value={text}

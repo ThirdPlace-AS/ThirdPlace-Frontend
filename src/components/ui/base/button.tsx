@@ -19,7 +19,7 @@ export const buttonVariants = cva(
   {
     variants: {
       size: { sm: "px-lg", md: "px-xl", lg: "px-xl" },
-      rounded: { md: "rounded-md", full: "rounded-full" },
+      rounded: { md: "rounded-sm", full: "rounded-full" },
       fill: {
         ink: "bg-ink",
         // Flat AA-safe pink under the gradient (shows if it can't paint).

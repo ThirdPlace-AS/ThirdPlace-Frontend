@@ -399,7 +399,7 @@ export function LanguageScreen() {
       <Text variant="title" accessibilityRole="header" className="pt-2">
         Region
       </Text>
-      <View className="overflow-hidden rounded-lg border border-line bg-surface">
+      <View className="overflow-hidden rounded-md border border-line bg-surface">
         <NavRow icon="cash-outline" label="Valuta" value="NOK (kr)" />
         <NavRow icon="time-outline" label="Tidssone" value="Oslo (CET)" />
       </View>
@@ -462,7 +462,7 @@ export function HelpScreen() {
       <Text variant="title" accessibilityRole="header">
         Vanlige spørsmål
       </Text>
-      <View className="overflow-hidden rounded-lg border border-line bg-surface">
+      <View className="overflow-hidden rounded-md border border-line bg-surface">
         {faq.map((q) => (
           // Topics only: no answers exist yet, so the rows are not links.
           <NavRow key={q} icon="help-circle-outline" label={q} />

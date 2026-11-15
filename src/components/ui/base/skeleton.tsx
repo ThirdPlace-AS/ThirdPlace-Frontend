@@ -14,7 +14,7 @@ export const skeletonVariants = cva("h-full w-full bg-surfaceMuted", {
     rounded: {
       sm: "rounded-sm",
       md: "rounded-md",
-      lg: "rounded-lg",
+      lg: "rounded-md",
       full: "rounded-full",
     },
   },

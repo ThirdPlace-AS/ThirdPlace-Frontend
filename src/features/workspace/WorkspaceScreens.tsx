@@ -83,7 +83,7 @@ export function WorkspaceHub() {
           hint="Samarbeid med skapere og bedrifter"
           onPress={() => router.push("/marketplace" as Href)}
         />
-        <View className="flex-row items-center gap-3 rounded-lg bg-surfaceMuted p-4">
+        <View className="flex-row items-center gap-3 rounded-md bg-surfaceMuted p-4">
           <Icon name="person-circle-outline" size="xl" tone="ink" />
           <View className="flex-1">
             <Text variant="label" weight="semibold">
@@ -105,7 +105,7 @@ export function WorkspaceHub() {
             </Text>
           </UIPressable>
         </View>
-        <View className="gap-1 rounded-lg border border-line bg-surface p-4">
+        <View className="gap-1 rounded-md border border-line bg-surface p-4">
           <Text variant="label" weight="semibold">
             Kom i gang: 1 av 2 steg gjenstår
           </Text>
@@ -164,7 +164,7 @@ function TodayCard() {
   const now = new Date();
   const { today, week, waiting } = hubToday(ownExperiences(), now);
   return (
-    <View className="gap-1 rounded-lg border border-line bg-surface p-4">
+    <View className="gap-1 rounded-md border border-line bg-surface p-4">
       <Text variant="label" weight="semibold" accessibilityRole="header">
         I dag
       </Text>
@@ -239,10 +239,10 @@ function HubCard({
     <UIPressable
       accessibilityRole="button"
       onPress={onPress}
-      contentClassName="flex-row items-center gap-3 rounded-lg border border-line bg-surface p-4"
+      contentClassName="flex-row items-center gap-3 rounded-md border border-line bg-surface p-4"
       pressedScale={0.99}
     >
-      <View className="h-11 w-11 items-center justify-center rounded-md bg-surfaceMuted">
+      <View className="h-11 w-11 items-center justify-center rounded-sm bg-surfaceMuted">
         <Icon name={icon} size="md" tone="ink" />
       </View>
       <View className="flex-1">
@@ -307,7 +307,7 @@ export function WorkspaceAnalytics() {
           {STATS[range].map(([v, l]) => (
             <View
               key={l}
-              className="w-[48%] gap-0.5 rounded-lg bg-surfaceMuted p-4"
+              className="w-[48%] gap-0.5 rounded-md bg-surfaceMuted p-4"
             >
               <Text variant="h1" accessibilityRole="text">
                 {v}
@@ -322,7 +322,7 @@ export function WorkspaceAnalytics() {
           Visninger siste periode
         </Text>
         <View
-          className="flex-row items-end gap-1.5 rounded-lg border border-line bg-surface p-3"
+          className="flex-row items-end gap-1.5 rounded-md border border-line bg-surface p-3"
           style={{ height: 160 }}
         >
           {BARS[range].map((h, i) => (
@@ -410,7 +410,7 @@ export function WorkspaceLocations() {
               router.push(`/workspace/verification/${b.id}` as Href)
             }
             pressedScale={0.99}
-            contentClassName="gap-1 rounded-lg border border-line bg-surface p-4"
+            contentClassName="gap-1 rounded-md border border-line bg-surface p-4"
           >
             <View className="flex-row items-start justify-between gap-3">
               <Text variant="body" weight="semibold" className="flex-1">
@@ -436,7 +436,7 @@ export function WorkspaceLocations() {
         <View
           accessibilityRole="button"
           accessibilityState={{ disabled: true }}
-          className="items-center rounded-lg border border-dashed border-line py-4 opacity-50"
+          className="items-center rounded-md border border-dashed border-line py-4 opacity-50"
         >
           <Text variant="caption" weight="semibold" tone="muted">
             + Legg til lokasjon

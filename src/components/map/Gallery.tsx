@@ -23,7 +23,7 @@ export function Gallery({
         photos.length > 1 ? `${label}, ${photos.length} bilder` : label
       }
       style={{ height }}
-      className="overflow-hidden rounded-lg bg-surfaceMuted"
+      className="overflow-hidden rounded-md bg-surfaceMuted"
     >
       <PhotoPager photos={[...photos]} />
     </View>

@@ -142,7 +142,7 @@ export function MapSearch({
                   accessibilityRole="button"
                   accessibilityLabel={`Vis alle ${results.onMap} på kartet`}
                   onPress={() => submit(query)}
-                  contentClassName="flex-row items-center gap-3 rounded-md px-1 py-2"
+                  contentClassName="flex-row items-center gap-3 rounded-sm px-1 py-2"
                 >
                   <View className="h-9 w-9 items-center justify-center rounded-full bg-surfaceMuted">
                     <Icon name="map-outline" size="md" tone="ink" />
@@ -210,7 +210,7 @@ function RecentSearches({
       {recent.map((q) => (
         <View
           key={q}
-          className="flex-row items-center gap-3 rounded-md px-1 py-2"
+          className="flex-row items-center gap-3 rounded-sm px-1 py-2"
         >
           <UIPressable
             accessibilityRole="button"
@@ -278,7 +278,7 @@ function RecentlyViewed({
             accessibilityLabel={`${v.title}, ${v.kind === "place" ? "sted" : "opplevelse"}`}
             onPress={() => onPick(v)}
             pressedScale={0.99}
-            contentClassName="flex-row items-center gap-3 rounded-md px-1 py-2"
+            contentClassName="flex-row items-center gap-3 rounded-sm px-1 py-2"
           >
             {src ? (
               <Image
@@ -328,7 +328,7 @@ function ResultGroup({
           accessibilityRole="button"
           accessibilityLabel={`${r.title}, ${r.subtitle}`}
           onPress={() => onPick(r)}
-          contentClassName="flex-row items-center gap-3 rounded-md px-1 py-2"
+          contentClassName="flex-row items-center gap-3 rounded-sm px-1 py-2"
         >
           <View className="h-9 w-9 items-center justify-center rounded-full bg-surfaceMuted">
             <Icon name={icon} size="md" tone="ink" />

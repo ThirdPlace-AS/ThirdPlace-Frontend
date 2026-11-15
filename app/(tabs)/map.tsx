@@ -623,7 +623,7 @@ function MapStateCard({ children }: { children: React.ReactNode }) {
       className="absolute inset-0 items-center justify-center p-gutter"
     >
       <View
-        className="w-full max-w-sm rounded-lg bg-surface"
+        className="w-full max-w-sm rounded-md bg-surface"
         style={elevation.e2}
       >
         {children}

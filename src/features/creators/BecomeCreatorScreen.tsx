@@ -51,7 +51,7 @@ export default function BecomeCreatorScreen() {
           return (
             <View
               key={r.label}
-              className="gap-2 rounded-lg border border-line bg-surface p-4"
+              className="gap-2 rounded-md border border-line bg-surface p-4"
             >
               <View className="flex-row items-center gap-3">
                 <View

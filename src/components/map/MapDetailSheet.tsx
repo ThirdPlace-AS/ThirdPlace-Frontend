@@ -492,7 +492,7 @@ function PageBackground({ style, animatedIndex }: BottomSheetBackgroundProps) {
   const c = useThemeColors();
   const chrome = useSheetChrome();
   const radius =
-    (chrome.backgroundStyle.borderTopLeftRadius as number | undefined) ?? 28;
+    (chrome.backgroundStyle.borderTopLeftRadius as number | undefined) ?? 32;
   const a = useAnimatedStyle(() => {
     const r = interpolate(
       animatedIndex.value,

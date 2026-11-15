@@ -53,7 +53,7 @@ export default function MarketplaceAnalyticsScreen() {
             key={label}
             accessible
             accessibilityLabel={`${label}: ${value}`}
-            className="w-[48%] gap-0.5 rounded-lg bg-surfaceMuted p-4"
+            className="w-[48%] gap-0.5 rounded-md bg-surfaceMuted p-4"
           >
             <Text variant="h1">{value}</Text>
             <Text variant="caption" tone="muted">
@@ -70,7 +70,7 @@ export default function MarketplaceAnalyticsScreen() {
         <View
           accessible
           accessibilityLabel={`${CHART_TITLE[range]}: stolpediagram`}
-          className="flex-row items-end gap-1.5 rounded-lg border border-line bg-surface p-3"
+          className="flex-row items-end gap-1.5 rounded-md border border-line bg-surface p-3"
           style={{ height: 150 }}
         >
           {bars.map((h, i) => (
@@ -89,7 +89,7 @@ export default function MarketplaceAnalyticsScreen() {
         <Text variant="title" accessibilityRole="header">
           Topplistinger
         </Text>
-        <View className="overflow-hidden rounded-lg border border-line">
+        <View className="overflow-hidden rounded-md border border-line">
           {topListings(range).map(({ listing, views, requests }) => (
             <ListRow
               key={listing.id}
@@ -106,7 +106,7 @@ export default function MarketplaceAnalyticsScreen() {
           accessibilityRole="button"
           accessibilityLabel={`Gjennomsnittlig samarbeidsrating ${formatRating(rating.score)} av 5. Se samarbeidshistorikk`}
           onPress={() => router.push("/collab/history" as Href)}
-          contentClassName="flex-row items-center justify-between rounded-lg border border-line bg-surface p-4"
+          contentClassName="flex-row items-center justify-between rounded-md border border-line bg-surface p-4"
           pressedScale={0.99}
         >
           <Text variant="label" weight="regular" className="flex-1 pr-3">

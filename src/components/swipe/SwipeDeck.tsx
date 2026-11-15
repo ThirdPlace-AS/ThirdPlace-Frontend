@@ -926,7 +926,7 @@ function SwipeHint({ onDone }: { onDone: () => void }) {
         entering={reduced ? undefined : FadeIn.duration(motion.duration.base)}
         style={{ width: "100%", maxWidth: 360 }}
       >
-        <View className="gap-3 rounded-xl bg-surface p-5" style={elevation.e3}>
+        <View className="gap-3 rounded-lg bg-surface p-5" style={elevation.e3}>
           <Text variant="title" weight="semibold" accessibilityRole="header">
             Slik sveiper du
           </Text>

@@ -156,7 +156,7 @@ export function ChatInfoScreen() {
             <Image
               source={smallImage(src)}
               contentFit="cover"
-              style={{ aspectRatio: 1, width: "100%", borderRadius: 10 }}
+              style={{ aspectRatio: 1, width: "100%", borderRadius: 8 }}
             />
           </Pressable>
         ))}

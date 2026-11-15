@@ -108,7 +108,7 @@ export function SwipeCard({
   if (minimal) {
     return (
       <View
-        style={[StyleSheet.absoluteFill, { borderRadius: 16 }]}
+        style={[StyleSheet.absoluteFill, { borderRadius: 14 }]}
         className="overflow-hidden bg-ink"
       >
         <PhotoCarousel
@@ -122,7 +122,7 @@ export function SwipeCard({
 
   return (
     <View
-      style={[StyleSheet.absoluteFill, { borderRadius: 16 }]}
+      style={[StyleSheet.absoluteFill, { borderRadius: 14 }]}
       className="overflow-hidden bg-ink"
     >
       <PhotoCarousel

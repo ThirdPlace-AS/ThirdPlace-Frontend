@@ -216,14 +216,14 @@ function ListingCard({
     <UIPressable
       accessibilityRole="button"
       onPress={onPress}
-      contentClassName="flex-row gap-3 rounded-lg border border-line bg-surface p-3"
+      contentClassName="flex-row gap-3 rounded-md border border-line bg-surface p-3"
       pressedScale={0.99}
     >
       <Image
         source={libThumb(listing.cover)}
         contentFit="cover"
         transition={150}
-        style={{ height: 88, width: 88, borderRadius: 12 }}
+        style={{ height: 88, width: 88, borderRadius: 14 }}
         className="bg-surfaceMuted"
         accessibilityLabel={listing.title}
       />

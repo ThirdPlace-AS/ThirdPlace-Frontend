@@ -166,15 +166,18 @@ const shadcnColors = {
 /** Back-compat: light hex values for native colour props. */
 const colors = palette.light;
 
-/** Corner radius. Cards lg · inputs md · sheet tops 2xl · buttons/chips full. */
+/**
+ * Corner radius, shadcn.io's Airbnb DESIGN.md scale (user 2026-11-15).
+ * Cards md · inputs, buttons and small tiles sm · large panels lg ·
+ * sheet tops xl · chips, pills and avatars full.
+ */
 const radius = {
   none: "0px",
-  xs: "6px",
+  xs: "4px",
   sm: "8px",
-  md: "12px",
-  lg: "16px",
-  xl: "20px",
-  "2xl": "28px",
+  md: "14px",
+  lg: "20px",
+  xl: "32px",
   full: "9999px",
 };
 

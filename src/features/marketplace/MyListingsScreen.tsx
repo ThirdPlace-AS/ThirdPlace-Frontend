@@ -57,7 +57,7 @@ export default function MyListingsScreen() {
         {rows.map((l) => (
           <View
             key={l.id}
-            className="flex-row items-center gap-3 rounded-lg border border-line bg-surface p-3.5"
+            className="flex-row items-center gap-3 rounded-md border border-line bg-surface p-3.5"
           >
             <View className="flex-1 gap-1">
               <Text variant="body" weight="semibold">

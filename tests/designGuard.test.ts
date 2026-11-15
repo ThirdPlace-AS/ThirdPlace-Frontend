@@ -78,11 +78,13 @@ describe("design-system guard", () => {
     expect(fmt(hits)).toEqual([]);
   });
 
-  it("no untokenised radii (rounded-3xl, bare `rounded`, rounded-[…])", () => {
+  it("no untokenised radii (rounded-2xl/3xl, bare `rounded`, rounded-[…])", () => {
+    // Tailwind's own 2xl/3xl still exist (our radius scale extends it).
     const hits = scan(
       (line) =>
-        /(^|[\s"'`])rounded(-3xl|-\[|(?=[\s"'`]))/.test(line) &&
-        /className|contentClassName|`/.test(line),
+        /(^|[\s"'`])rounded((-[tblrse]{1,2})?-(2xl|3xl|\[)|(?=[\s"'`]))/.test(
+          line,
+        ) && /className|contentClassName|`/.test(line),
     );
     expect(fmt(hits)).toEqual([]);
   });

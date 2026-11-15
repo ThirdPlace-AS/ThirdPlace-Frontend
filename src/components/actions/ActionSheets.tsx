@@ -112,7 +112,7 @@ export function ItemActionsSheet({
               if (a.afterClose) setTimeout(a.onPress, 240);
               else a.onPress();
             }}
-            contentClassName="flex-row items-center gap-3 rounded-md py-3"
+            contentClassName="flex-row items-center gap-3 rounded-sm py-3"
           >
             <View className="h-10 w-10 items-center justify-center rounded-full bg-surfaceMuted">
               <Icon name={a.icon} size="md" tone="ink" />

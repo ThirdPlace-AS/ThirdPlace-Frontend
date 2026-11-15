@@ -28,7 +28,7 @@ export default function Splash() {
       style={{ backgroundColor: colors.ember }}
     >
       <StatusBarStyle style="light" />
-      <View className="rounded-lg bg-white p-2">
+      <View className="rounded-md bg-white p-2">
         <LogoMark size={56} variant="mark" />
       </View>
       <Text variant="h1" tone="onMedia" style={{ letterSpacing: -0.4 }}>

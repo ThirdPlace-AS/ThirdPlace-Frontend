@@ -47,7 +47,7 @@ export function ChatRow({
           : undefined
       }
       pressedScale={0.99}
-      contentClassName="flex-row items-center gap-md rounded-lg bg-surface px-md py-md"
+      contentClassName="flex-row items-center gap-md rounded-md bg-surface px-md py-md"
     >
       <Avatar
         name={chat.name}

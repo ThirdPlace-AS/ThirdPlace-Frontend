@@ -83,7 +83,7 @@ export function ItinerarySection({ exp }: { exp: MockExperience }) {
                 thumb
                 source={s.photo}
                 contentFit="cover"
-                style={{ width: 64, height: 64, borderRadius: 12 }}
+                style={{ width: 64, height: 64, borderRadius: 8 }}
               />
               {/* The thin line joining the steps, as in the reference. */}
               {i < steps.length - 1 ? (
@@ -175,7 +175,7 @@ function StepCards({
           <View
             // Hug the content (a horizontal list stretches items to its height).
             style={{ width: card, alignSelf: "flex-start" }}
-            className="mt-2 overflow-hidden rounded-xl border border-line bg-surface"
+            className="mt-2 overflow-hidden rounded-lg border border-line bg-surface"
             accessible
             accessibilityLabel={`Steg ${i + 1} av ${steps.length}: ${item.title}. ${item.text}`}
           >
@@ -252,7 +252,7 @@ export function AvailabilitySection({ exp }: { exp: MockExperience }) {
               accessibilityLabel={`${dayLabel(s.start, now)}, ${timeRange(s.start, s.end)}, ${placesLeft(s)}`}
               onPress={() => setSheetAt(s.id)}
               style={{ width: 200 }}
-              contentClassName={`gap-1 rounded-lg p-4 ${
+              contentClassName={`gap-1 rounded-md p-4 ${
                 on ? "border-2 border-ink" : "border border-line"
               }`}
             >
@@ -370,7 +370,7 @@ export function SessionSheet({
                   disabled={full}
                   dimWhenDisabled={false}
                   onPress={() => setDraft(s.id)}
-                  contentClassName={`flex-row items-center justify-between rounded-lg p-4 ${
+                  contentClassName={`flex-row items-center justify-between rounded-md p-4 ${
                     on ? "border-2 border-ink" : "border border-line"
                   }`}
                 >
@@ -508,7 +508,7 @@ export function MeetingMap({
       accessibilityLabel={`${label}. Vis på kartet`}
       onPress={onShowOnMap}
       pressedScale={0.99}
-      contentClassName="overflow-hidden rounded-xl border border-line bg-surfaceMuted"
+      contentClassName="overflow-hidden rounded-lg border border-line bg-surfaceMuted"
       contentStyle={{ height: h }}
     >
       {uri ? (
@@ -626,7 +626,7 @@ export function ChatSection({
       <Text variant="h2" accessibilityRole="header">
         Samtalen
       </Text>
-      <View className="gap-3 rounded-lg border border-line p-4">
+      <View className="gap-3 rounded-md border border-line p-4">
         <View className="flex-row items-center gap-3">
           <Avatar name={chat.name} icon="chatbubbles-outline" size="md" />
           <View className="flex-1">

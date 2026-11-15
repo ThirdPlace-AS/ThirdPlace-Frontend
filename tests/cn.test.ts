@@ -21,7 +21,7 @@ describe("cn (tailwind-merge with our tokens)", () => {
 
   it("radius tokens conflict with each other", () => {
     expect(cn("rounded-xs", "rounded-full")).toBe("rounded-full");
-    expect(cn("rounded-2xl", "rounded-md")).toBe("rounded-md");
+    expect(cn("rounded-xl", "rounded-md")).toBe("rounded-md");
   });
 
   it("the later colour wins and opacity steps stay", () => {

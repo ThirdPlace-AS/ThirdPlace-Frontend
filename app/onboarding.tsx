@@ -219,11 +219,11 @@ export default function Onboarding() {
                       }}
                       disabled={p.locked}
                       onPress={() => setRole(p.key)}
-                      className={`flex-row items-center gap-3 rounded-lg border bg-surface p-4 ${
+                      className={`flex-row items-center gap-3 rounded-md border bg-surface p-4 ${
                         active ? "border-ink" : "border-line"
                       } ${p.locked ? "opacity-60" : ""}`}
                     >
-                      <View className="h-10 w-10 items-center justify-center rounded-md bg-surfaceMuted">
+                      <View className="h-10 w-10 items-center justify-center rounded-sm bg-surfaceMuted">
                         <Icon name={p.icon as IconName} size="md" tone="ink" />
                       </View>
                       <View className="flex-1">
@@ -446,7 +446,7 @@ export default function Onboarding() {
                 {PERMISSIONS.map((p) => (
                   <View
                     key={p.key}
-                    className="flex-row items-center gap-3 rounded-lg border border-line bg-surface p-4"
+                    className="flex-row items-center gap-3 rounded-md border border-line bg-surface p-4"
                   >
                     <View className="h-10 w-10 items-center justify-center rounded-full bg-surfaceMuted">
                       <Icon name={p.icon} size="md" tone="ink" />
@@ -486,9 +486,9 @@ export default function Onboarding() {
                 {experiences.slice(0, 3).map((e) => (
                   <View
                     key={e.id}
-                    className="flex-row items-center gap-3 rounded-lg border border-line bg-surface p-3.5"
+                    className="flex-row items-center gap-3 rounded-md border border-line bg-surface p-3.5"
                   >
-                    <View className="h-10 w-10 items-center justify-center rounded-md bg-surfaceMuted">
+                    <View className="h-10 w-10 items-center justify-center rounded-sm bg-surfaceMuted">
                       <Icon name="tp-experience" size="md" tone="ink" />
                     </View>
                     <View className="flex-1">

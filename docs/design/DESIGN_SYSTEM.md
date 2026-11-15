@@ -9,7 +9,7 @@ The design system **restyles the PDF's layouts**. It never adds screens, section
 ## 1. Principles
 
 1. **Calm ink canvas, pink as a spark (Airbnb palette, founder decision 2026-11-06).** Ink (`#222222`) carries text, ink buttons and selection. The brand pink is used three ways: the **gradient** (`#E61E4D → #E31C5F → #D70466`, white text) for the main brand CTA (Button `variant="ember"`); **`ember` `#FF385C`** for fills without text — hearts, the active tab, text-less dots, map selection, the logo, FAB glyph discs; **`emberStrong` `#E31C5F`** for pink fills that carry text (number badges, Live tags) and **`emberText` `#DA1249`** for pink text. White on `#FF385C` is only 3.5:1, so it never sits behind text. Toggles, checkboxes, edit links, codes and the current chart bar are ink. Success green `#008A05` is for local completion.
-2. **Soft, round, tactile.** Pill actions and chips, 16 px cards, 28 px sheet tops, three soft elevation levels, press-scale feedback on everything tappable.
+2. **Soft, round, tactile.** Pill chips, 8 px buttons and inputs, 14 px cards, 32 px sheet tops, one soft shadow tier, press-scale feedback on everything tappable.
 3. **Photo-first.** Imagery runs full-bleed with a tokenised scrim; controls over imagery are round white floating buttons.
 4. **Clear feedback.** Every action responds immediately (motion, state change) and confirms in product voice (`confirmToast`). No demo markers (founder decision 2026-11-06). Still no delivery ticks, no "processing → success" sequences, no invented counts, and payments stay structure only. **No arrows on buttons or links** (founder 2026-11-06): labels never end in "→", and buttons carry no arrow icons (chat send is a paper plane, Sveip's expand is an "i"); only the header back button and list-row chevrons keep their glyphs. Back is always the ← arrow (`BACK_ICON`, user 2026-11-09), on page headers, sheet headers, the map search, the chat thread and the page top bars alike, with no circle around it (user 2026-11-15: a plain ghost `IconButton`, no `variant`; `tests/designGuard.test.ts` checks it). `tests/copyVoice.test.ts` enforces it.
 5. **One way to do each thing.** One button, one chip, one header, one sheet API, one icon entry point. If a screen needs something new, it becomes a primitive first.
@@ -81,7 +81,7 @@ No `font-*` weight classes: on Android they rendered Roboto (2026-11-15). Set we
 
 ### Radius
 
-`xs 6 · sm 8 · md 12 · lg 16 · xl 20 · 2xl 28 · full`. Cards `lg`, inputs `md`, sheets `2xl` (top corners), buttons and chips `full`. Before S2, `rounded-xl/2xl/3xl` are untokenised Tailwind defaults (in NativeWind rem = 14 px) and are migrated in S2.
+`xs 4 · sm 8 · md 14 · lg 20 · xl 32 · full`, shadcn.io's Airbnb DESIGN.md scale (user 2026-11-15). Cards `md`; inputs, buttons, small tiles, row highlights and notice strips `sm`; large panels `lg`; sheets `xl` (top corners); chips, pills and avatars `full`. Tailwind's own `2xl`/`3xl` still exist (the scale extends Tailwind's), so the guard bans them with any side prefix.
 
 ### Elevation
 
@@ -92,7 +92,7 @@ No `font-*` weight classes: on Android they rendered Roboto (2026-11-15). Set we
 | `e2`  | Floating controls: search pill, map buttons, FAB |
 | `e3`  | Sheets, modals, toasts                           |
 
-Shadows come only from `src/theme/elevation.ts` (iOS shadow + Android elevation together).
+The design has one shadow tier (a 1 px hairline ring at 2 %, 0 2 6 at 4 %, 0 4 8 at 10 %), so `e1`–`e3` render the same `boxShadow`; the names stay to say what a surface is. Shadows come only from `src/theme/elevation.ts` (cross-platform `boxShadow`).
 
 ### Icons
 
@@ -174,7 +174,7 @@ Rules when adapting an RNR file:
 
 ### Sheets & overlays
 
-One family, two engines, one look (handle, 28 px top radius, `e3`, `SheetHeader`):
+One family, two engines, one look (handle, 32 px top radius, `e3`, `SheetHeader`):
 
 | Need                                                                   | Use                                                         | Engine |
 | ---------------------------------------------------------------------- | ----------------------------------------------------------- | ------ | -------- | ----- |
@@ -255,7 +255,7 @@ Motion explains a change (where something came from, what it became); it never d
 
 Map pins are the one place with a second icon family (Phase 19, founder 2026-11-08): every interest has its own filled pin glyph from Material Community Icons (shipped inside `@expo/vector-icons`), drawn through `PinGlyph` (`src/components/ui/PinGlyph.tsx`; Strikking’s yarn ball is a hand-drawn SVG there). Everything else stays on `<Icon>`.
 
-`tests/designGuard.test.ts` enforces the mechanical rules in CI: no raw hex outside `src/theme`/fixtures/sandbox (escape: a `hex-ok:` comment with the reason), no legacy `text-xs…text-4xl`/`text-[Npx]` classes, no `rounded-3xl`/bare `rounded`/`rounded-[…]`, no raw `Modal` outside `Sheet`/`Overlay`, `MaterialCommunityIcons` only through `<PinGlyph>`, `Ionicons` only through `<Icon>` (escape: a `raw-icon:` comment saying why — animated colours, stamps with text shadows, caller-sized stars), no `active:/focus:/hover:` in `contentClassName`, no `InteractionManager`, no `expo-status-bar` import outside `StatusBarStyle`, and no `.toFixed(` outside `src/lib/format.ts`.
+`tests/designGuard.test.ts` enforces the mechanical rules in CI: no raw hex outside `src/theme`/fixtures/sandbox (escape: a `hex-ok:` comment with the reason), no legacy `text-xs…text-4xl`/`text-[Npx]` classes, no `rounded-2xl`/`rounded-3xl` (any side)/bare `rounded`/`rounded-[…]`, no raw `Modal` outside `Sheet`/`Overlay`, `MaterialCommunityIcons` only through `<PinGlyph>`, `Ionicons` only through `<Icon>` (escape: a `raw-icon:` comment saying why — animated colours, stamps with text shadows, caller-sized stars), no `active:/focus:/hover:` in `contentClassName`, no `InteractionManager`, no `expo-status-bar` import outside `StatusBarStyle`, and no `.toFixed(` outside `src/lib/format.ts`.
 
 **Numbers.** Display decimals use the Norwegian comma (4,8 · 1,1 km) through `src/lib/format.ts` (`formatRating`, `formatDecimal`, `formatThreshold`); fixture strings are written the same way. Times keep the full stop ("kl. 12.00").
 

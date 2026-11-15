@@ -21,7 +21,7 @@ export function PersonListRow({
   action: ReactNode;
 }) {
   return (
-    <View className="flex-row items-center gap-3 rounded-lg border border-line bg-surface px-3 py-3">
+    <View className="flex-row items-center gap-3 rounded-md border border-line bg-surface px-3 py-3">
       <Pressable
         accessibilityRole="button"
         accessibilityLabel={`${person.name}, ${line}`}

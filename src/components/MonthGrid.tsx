@@ -27,7 +27,7 @@ export function MonthGrid({
 }) {
   const todayIso = isoDay(today);
   return (
-    <View className="gap-2 rounded-lg border border-line bg-surface p-3">
+    <View className="gap-2 rounded-md border border-line bg-surface p-3">
       <View className="flex-row items-center">
         <Text
           variant="label"

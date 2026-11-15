@@ -81,14 +81,13 @@ const TYPE = [
   "caption",
   "micro",
 ] as const;
-const RADII = ["xs", "sm", "md", "lg", "xl", "2xl", "full"] as const;
+const RADII = ["xs", "sm", "md", "lg", "xl", "full"] as const;
 const RADIUS_CLASS: Record<(typeof RADII)[number], string> = {
   xs: "rounded-xs",
   sm: "rounded-sm",
   md: "rounded-md",
   lg: "rounded-lg",
   xl: "rounded-xl",
-  "2xl": "rounded-2xl",
   full: "rounded-full",
 };
 // Literal class names so Tailwind's content scan generates them.

@@ -367,7 +367,7 @@ export function ExperiencePage({
                         source={e.photos[0]}
                         contentFit="cover"
                         transition={150}
-                        style={{ width: 176, height: 176, borderRadius: 16 }}
+                        style={{ width: 176, height: 176, borderRadius: 14 }}
                       />
                       <Text variant="label" weight="semibold" numberOfLines={2}>
                         {e.title}
@@ -402,7 +402,7 @@ export function ExperiencePage({
                   : undefined
               }
               pressedScale={0.99}
-              contentClassName="items-center gap-2 rounded-xl border border-line bg-surface px-4 py-6"
+              contentClassName="items-center gap-2 rounded-lg border border-line bg-surface px-4 py-6"
             >
               <Avatar
                 name={hostName}
@@ -507,7 +507,7 @@ export function HeroGallery({
           accessibilityLabel={`${title}, ${photos.length} bilder. Åpne bildene`}
           accessibilityActions={[{ name: "activate" }]}
           onAccessibilityAction={() => setViewer(page)}
-          className="overflow-hidden rounded-xl bg-surfaceMuted"
+          className="overflow-hidden rounded-lg bg-surfaceMuted"
           style={{ height: Math.round((width - 32) * 0.78) }}
         >
           <PhotoPager photos={photos} onIndexChange={setPage} />
@@ -561,7 +561,7 @@ export function InfoRow({
       accessibilityRole="button"
       accessibilityLabel={subtitle ? `${title}, ${subtitle}` : title}
       onPress={onPress}
-      contentClassName="flex-row items-center gap-3 rounded-md py-2.5"
+      contentClassName="flex-row items-center gap-3 rounded-sm py-2.5"
       pressedScale={0.99}
     >
       {body}

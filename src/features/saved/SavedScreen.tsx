@@ -251,11 +251,11 @@ export default function SavedScreen() {
                     <Image
                       source={libThumb(coverForPlace(place))}
                       contentFit="cover"
-                      style={{ height: 48, width: 48, borderRadius: 10 }}
+                      style={{ height: 48, width: 48, borderRadius: 8 }}
                       accessible={false}
                     />
                   ) : (
-                    <View className="h-12 w-12 rounded-md bg-surfaceMuted" />
+                    <View className="h-12 w-12 rounded-sm bg-surfaceMuted" />
                   )
                 }
                 trailing={

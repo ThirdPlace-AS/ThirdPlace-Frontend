@@ -28,7 +28,7 @@ export function PayoutsScreen() {
           accessibilityRole="button"
           accessibilityState={{ disabled: true }}
           disabled
-          className="items-center rounded-lg border border-dashed border-line py-4 opacity-50"
+          className="items-center rounded-md border border-dashed border-line py-4 opacity-50"
         >
           <Text variant="label" weight="semibold">
             + Legg til bankkonto
@@ -98,7 +98,7 @@ export function SubmissionsScreen() {
         {list.map((s) => (
           <View
             key={s.name}
-            className="gap-1 rounded-lg border border-line bg-surface p-4"
+            className="gap-1 rounded-md border border-line bg-surface p-4"
           >
             <Text variant="body" weight="semibold">
               {s.name}

@@ -432,7 +432,7 @@ function SearchRow({
     return (
       <View
         style={cardShadow}
-        className="gap-4 rounded-lg border border-line bg-surface px-6 py-5"
+        className="gap-4 rounded-md border border-line bg-surface px-6 py-5"
       >
         <UIPressable
           accessibilityRole="button"
@@ -456,7 +456,7 @@ function SearchRow({
       accessibilityLabel={`${label}, ${value}`}
       onPress={onToggle}
       contentStyle={cardShadow}
-      contentClassName="flex-row items-center justify-between gap-2 rounded-lg border border-line bg-surface px-6 py-5"
+      contentClassName="flex-row items-center justify-between gap-2 rounded-md border border-line bg-surface px-6 py-5"
       pressedScale={0.99}
     >
       <Text variant="body" tone="muted" className="shrink-0">
@@ -816,7 +816,7 @@ function FilterBody({
                         })
                       }
                       style={{ minWidth: 104 }}
-                      className={`gap-0.5 rounded-lg border px-3 py-3 ${
+                      className={`gap-0.5 rounded-md border px-3 py-3 ${
                         selected ? "border-2 border-ink" : "border border-line"
                       }`}
                     >

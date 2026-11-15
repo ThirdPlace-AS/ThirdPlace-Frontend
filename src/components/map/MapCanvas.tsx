@@ -387,7 +387,7 @@ export const MapCanvas = memo(function MapCanvas({
       className={
         fill
           ? "flex-1 bg-surfaceMuted"
-          : "overflow-hidden rounded-xl border border-line bg-surfaceMuted"
+          : "overflow-hidden rounded-lg border border-line bg-surfaceMuted"
       }
       style={fill ? undefined : { height }}
     >

@@ -123,7 +123,7 @@ export function JoinedSheet({
               key={a.label}
               accessibilityRole="button"
               onPress={a.onPress}
-              contentClassName="flex-row items-center gap-3 rounded-md py-2.5"
+              contentClassName="flex-row items-center gap-3 rounded-sm py-2.5"
             >
               <View className="h-10 w-10 items-center justify-center rounded-full bg-surfaceMuted">
                 <Icon name={a.icon} size="md" tone="ink" />

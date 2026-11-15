@@ -75,8 +75,8 @@ describe("Sheet", () => {
     expect(screen.UNSAFE_queryAllByType(ScrollView)).toHaveLength(0);
   });
 
-  it("uses the 28 px sheet radius token", () => {
-    expect(SHEET_RADIUS).toBe(28);
+  it("uses the 32 px sheet radius token", () => {
+    expect(SHEET_RADIUS).toBe(32);
   });
 });
 

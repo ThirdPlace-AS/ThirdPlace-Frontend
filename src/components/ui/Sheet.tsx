@@ -48,7 +48,7 @@ import { Text } from "./Text";
 import { usePresence } from "./usePresence";
 
 /** Sheet top corners (radius token "2xl", 28 px). */
-export const SHEET_RADIUS = parseInt(radius["2xl"] ?? "28", 10);
+export const SHEET_RADIUS = parseInt(radius.xl ?? "32", 10);
 /** Scrim left visible above the tallest content sheet. */
 const SHEET_TOP_GAP = 16;
 
@@ -320,7 +320,7 @@ function SheetEngine({
           >
             <View
               accessibilityViewIsModal
-              className={`rounded-t-2xl ${cardBg ?? ""} ${
+              className={`rounded-t-xl ${cardBg ?? ""} ${
                 fullHeight ? "flex-1" : ""
               }`}
               style={[

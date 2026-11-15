@@ -27,7 +27,7 @@ export default function InviteScreen() {
         <Text variant="title" accessibilityRole="header">
           Din kode
         </Text>
-        <View className="items-center rounded-lg border border-line bg-surface py-5">
+        <View className="items-center rounded-md border border-line bg-surface py-5">
           <Text variant="h1" className="tracking-widest">
             OLA-TP2026
           </Text>

@@ -241,7 +241,7 @@ function FinishProfileCard({ me }: { me: MyProfile }) {
   if (open.length === 0) return null;
   const done = PROFILE_STEP_COUNT - open.length;
   return (
-    <View className="gap-3 rounded-lg border border-line bg-surface p-4">
+    <View className="gap-3 rounded-md border border-line bg-surface p-4">
       <View className="gap-1">
         <Text variant="body" weight="semibold" accessibilityRole="header">
           Fullfør profilen
@@ -311,7 +311,7 @@ function NextPlanCard() {
           <Image
             source={smallImage(exp.photos[0])}
             contentFit="cover"
-            style={{ height: 44, width: 44, borderRadius: 10 }}
+            style={{ height: 44, width: 44, borderRadius: 8 }}
             accessible={false}
           />
         }
@@ -333,7 +333,7 @@ function CreatorPathCard() {
       accessibilityValue={{ min: 0, max: required, now: hosted }}
       onPress={() => router.push("/become-creator")}
       pressedScale={0.99}
-      contentClassName="gap-2 rounded-lg bg-surfaceMuted p-4"
+      contentClassName="gap-2 rounded-md bg-surfaceMuted p-4"
     >
       <View className="flex-row items-center gap-2">
         <Icon name="color-palette-outline" size="md" tone="ink" />
@@ -401,7 +401,7 @@ function Row({
       title={title}
       subtitle={meta}
       leading={
-        <View className="h-10 w-10 items-center justify-center rounded-md bg-surfaceMuted">
+        <View className="h-10 w-10 items-center justify-center rounded-sm bg-surfaceMuted">
           <Icon name={icon} size="md" tone="ink" />
         </View>
       }

@@ -368,7 +368,7 @@ export const BrowseCard = memo(function BrowseCard({
             several (B3). */}
         <View
           style={{ aspectRatio: 1.05 }}
-          className={`w-full items-center justify-center overflow-hidden rounded-xl bg-surfaceMuted ${
+          className={`w-full items-center justify-center overflow-hidden rounded-lg bg-surfaceMuted ${
             selected ? "border-2 border-ink" : ""
           }`}
         >

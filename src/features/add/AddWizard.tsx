@@ -384,7 +384,7 @@ function KindMenu({ onPick }: { onPick: (k: AddKind) => void }) {
             key={r.kind}
             accessibilityRole="button"
             onPress={() => onPick(r.kind)}
-            contentClassName="flex-row items-center gap-3 rounded-lg border border-line bg-surface p-4"
+            contentClassName="flex-row items-center gap-3 rounded-md border border-line bg-surface p-4"
             pressedScale={0.99}
           >
             <View className="h-12 w-12 items-center justify-center">
@@ -475,7 +475,7 @@ function StepBody({
               accessibilityRole="button"
               accessibilityHint="Fyller inn fra en du har holdt før"
               onPress={() => setStartFrom(true)}
-              contentClassName="flex-row items-center gap-3 rounded-lg border border-line bg-surface p-3.5"
+              contentClassName="flex-row items-center gap-3 rounded-md border border-line bg-surface p-3.5"
               pressedScale={0.99}
             >
               <View className="h-10 w-10 items-center justify-center rounded-full bg-surfaceMuted">
@@ -638,7 +638,7 @@ function StepBody({
                       style={{
                         aspectRatio: 1,
                         width: "100%",
-                        borderRadius: 10,
+                        borderRadius: 8,
                       }}
                     />
                     {pos >= 0 ? (
@@ -1177,13 +1177,13 @@ function StartFromSheet({
               onClose();
               onPick(e);
             }}
-            contentClassName="flex-row items-center gap-3 rounded-lg border border-line bg-surface p-3"
+            contentClassName="flex-row items-center gap-3 rounded-md border border-line bg-surface p-3"
             pressedScale={0.99}
           >
             <Image
               source={smallImage(e.photos[0])}
               contentFit="cover"
-              style={{ width: 48, height: 48, borderRadius: 10 }}
+              style={{ width: 48, height: 48, borderRadius: 8 }}
               accessible={false}
             />
             <View className="flex-1">
@@ -1342,7 +1342,7 @@ function MonthPicker({
     });
   const label = `${MONTHS[cursor.m]} ${cursor.y}`;
   return (
-    <View className="gap-2 rounded-lg border border-line bg-surface p-3">
+    <View className="gap-2 rounded-md border border-line bg-surface p-3">
       <View className="flex-row items-center justify-between">
         <IconButton
           icon="chevron-back"

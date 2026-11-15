@@ -43,7 +43,7 @@ export function MapLocationSheet({
       </Text>
 
       {denied ? (
-        <View className="flex-row items-start gap-2 rounded-md border border-line bg-surfaceMuted px-3 py-2">
+        <View className="flex-row items-start gap-2 rounded-sm border border-line bg-surfaceMuted px-3 py-2">
           <Icon name="information-circle-outline" size="md" tone="muted" />
           <Text variant="caption" tone="muted" className="flex-1">
             Posisjon er avslått. Du kan slå den på i innstillinger, eller velge
@@ -53,7 +53,7 @@ export function MapLocationSheet({
       ) : null}
 
       {unavailable ? (
-        <View className="flex-row items-start gap-2 rounded-md border border-line bg-surfaceMuted px-3 py-2">
+        <View className="flex-row items-start gap-2 rounded-sm border border-line bg-surfaceMuted px-3 py-2">
           <Icon name="warning-outline" size="md" tone="muted" />
           <Text variant="caption" tone="muted" className="flex-1">
             Fant ikke posisjonen din. Sjekk at posisjon er slått på i telefonen
@@ -63,7 +63,7 @@ export function MapLocationSheet({
       ) : null}
 
       {granted && areaLabel ? (
-        <View className="flex-row items-center gap-2 rounded-md border border-success bg-success/10 px-3 py-2">
+        <View className="flex-row items-center gap-2 rounded-sm border border-success bg-success/10 px-3 py-2">
           <Icon name="location" size="md" tone="success" />
           <Text variant="label" weight="regular" className="flex-1">
             {areaLabel}

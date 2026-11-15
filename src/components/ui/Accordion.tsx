@@ -86,7 +86,7 @@ export function Accordion({
   return (
     <View
       className={
-        card ? "overflow-hidden rounded-lg border border-line bg-surface" : ""
+        card ? "overflow-hidden rounded-md border border-line bg-surface" : ""
       }
     >
       <Pressable

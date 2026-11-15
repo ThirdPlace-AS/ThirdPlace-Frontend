@@ -203,7 +203,7 @@ function NotificationCard({
 }) {
   return (
     <View
-      className={`rounded-lg border bg-surface ${
+      className={`rounded-md border bg-surface ${
         isRead ? "border-line" : "border-ink"
       }`}
     >

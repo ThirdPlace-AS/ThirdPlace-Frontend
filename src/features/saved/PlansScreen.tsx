@@ -167,7 +167,7 @@ export default function PlansScreen() {
           const countdown =
             item.state === "upcoming" ? planCountdown(exp) : null;
           return (
-            <View className="gap-0.5 rounded-lg border border-line bg-surface p-3.5">
+            <View className="gap-0.5 rounded-md border border-line bg-surface p-3.5">
               {/* Title + meta open the experience page; the plan
                   actions below stay separate buttons. */}
               <UIPressable

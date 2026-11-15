@@ -78,7 +78,7 @@ function ToastCard({
     // Side gutters as a style: sonner's wrapper is full width and the
     // mx-gutter class did not reach this view on Android.
     <View
-      className="flex-row items-center rounded-lg bg-ink"
+      className="flex-row items-center rounded-md bg-ink"
       style={[CARD_INSET, elevation.e3]}
     >
       <Pressable

@@ -333,7 +333,7 @@ export default function BusinessOnboarding() {
                 title="Se bedriften på kartet"
                 subtitle="Slik ser kundene dere når bedriften er verifisert."
               >
-                <View className="gap-3 rounded-lg border border-line bg-surface p-4">
+                <View className="gap-3 rounded-md border border-line bg-surface p-4">
                   <View className="flex-row items-center gap-1.5 self-start rounded-full border border-ember px-2.5 py-1">
                     <Icon name="eye-outline" size="sm" tone="ember" />
                     <Text variant="caption" weight="semibold" tone="ember">
@@ -397,7 +397,7 @@ function Perm({
   onChange: (v: boolean) => void;
 }) {
   return (
-    <View className="flex-row items-center gap-3 rounded-lg border border-line bg-surface p-4">
+    <View className="flex-row items-center gap-3 rounded-md border border-line bg-surface p-4">
       <View className="h-10 w-10 items-center justify-center rounded-full bg-surfaceMuted">
         <Icon name={icon} size="md" tone="ink" />
       </View>

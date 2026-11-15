@@ -85,7 +85,7 @@ export function ListRow({
   const showChevron = chevron ?? !!onPress;
   const shell =
     variant === "card"
-      ? "flex-row items-center gap-md rounded-lg border border-line bg-surface p-md"
+      ? "flex-row items-center gap-md rounded-md border border-line bg-surface p-md"
       : "flex-row items-center gap-md px-gutter py-md";
   const body = (
     <>
