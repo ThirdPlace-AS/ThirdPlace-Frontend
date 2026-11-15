@@ -2,7 +2,12 @@ import { memo } from "react";
 import { Ionicons } from "@expo/vector-icons";
 import { View } from "react-native";
 
-import { Icon, Text, Pressable as UIPressable } from "@/components/ui";
+import {
+  CheckboxMark,
+  Icon,
+  Text,
+  Pressable as UIPressable,
+} from "@/components/ui";
 
 // A labelled checkbox row (used by the filter sheet's "Tid på dagen", "Språk"
 // and "Tilgjengelighetsfunksjoner" sections). Square box, ember check when on.
@@ -51,13 +56,7 @@ export const CheckboxRow = memo(function CheckboxRow({
           ) : null}
         </View>
       </View>
-      <View
-        className={`h-6 w-6 items-center justify-center rounded-xs border ${
-          checked ? "border-ink bg-ink" : "border-line bg-surface"
-        }`}
-      >
-        {checked ? <Icon name="checkmark" size="sm" tone="onInk" /> : null}
-      </View>
+      <CheckboxMark checked={checked} />
     </UIPressable>
   );
 });

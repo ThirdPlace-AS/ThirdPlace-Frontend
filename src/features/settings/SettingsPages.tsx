@@ -18,6 +18,7 @@ import {
   Icon,
   Page,
   Pressable as UIPressable,
+  RadioMark,
   Text,
   type IconName,
 } from "@/components/ui";
@@ -391,11 +392,7 @@ export function LanguageScreen() {
             pressedScale={0.99}
           >
             <Text variant="body">{l}</Text>
-            <Icon
-              name={lang === l ? "radio-button-on" : "radio-button-off"}
-              size="lg"
-              tone="ink"
-            />
+            <RadioMark checked={lang === l} />
           </UIPressable>
         ))}
       </View>

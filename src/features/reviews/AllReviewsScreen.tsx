@@ -20,6 +20,7 @@ import {
   Icon,
   IconButton,
   Pressable,
+  RadioMark,
   Screen,
   SearchBar,
   Sheet,
@@ -171,11 +172,7 @@ function SortSheet({
               <Text variant="body" weight={on ? "semibold" : "regular"}>
                 {REVIEW_SORT_LABEL[s]}
               </Text>
-              <Icon
-                name={on ? "radio-button-on" : "radio-button-off"}
-                size="lg"
-                tone="ink"
-              />
+              <RadioMark checked={on} />
             </Pressable>
           );
         })}
