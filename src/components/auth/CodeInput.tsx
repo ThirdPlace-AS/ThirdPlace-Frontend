@@ -52,9 +52,11 @@ export function CodeInput({
 function Slot({ char, isActive }: SlotProps) {
   return (
     <View
-      className={`h-14 flex-1 items-center justify-center rounded-sm border-2 bg-surface ${
+      className={`flex-1 items-center justify-center rounded-sm border-2 bg-surface ${
         char ? "border-ink" : isActive ? "border-ink/40" : "border-line"
       }`}
+      // 56 px boxes (design system); a style, since h-14 is 49 under rem 14.
+      style={{ height: 56 }}
     >
       <Text variant="h2" accessibilityRole="text">
         {char ?? ""}
