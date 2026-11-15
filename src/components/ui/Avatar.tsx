@@ -5,34 +5,17 @@ import { Image, type ImageProps } from "expo-image";
 import { imagePreview, smallImage } from "@/fixtures/images";
 import { View } from "react-native";
 
-import type { IconSize } from "@/theme";
-
 import { Icon, type IconName } from "./Icon";
-import { Text, type TextVariant } from "./Text";
+import { Text } from "./Text";
+import {
+  avatarClass,
+  avatarIcon,
+  avatarPx,
+  avatarText,
+  type AvatarSize,
+} from "./base/avatar";
 
-export type AvatarSize = "xs" | "sm" | "md" | "lg" | "xl";
-
-const PX: Record<AvatarSize, number> = {
-  xs: 24,
-  sm: 32,
-  md: 40,
-  lg: 56,
-  xl: 88,
-};
-const ICON: Record<AvatarSize, IconSize> = {
-  xs: "sm",
-  sm: "sm",
-  md: "md",
-  lg: "lg",
-  xl: "xl",
-};
-const TEXT: Record<AvatarSize, TextVariant> = {
-  xs: "micro",
-  sm: "caption",
-  md: "label",
-  lg: "title",
-  xl: "h1",
-};
+export type { AvatarSize };
 
 export function initialsOf(name: string): string {
   const parts = name.trim().split(/\s+/).filter(Boolean);
@@ -60,7 +43,7 @@ export function Avatar({
   /** Hide from screen readers when the name is already read next to it. */
   decorative?: boolean;
 }) {
-  const px = PX[size];
+  const px = avatarPx[size];
   const a11y = decorative
     ? {
         accessible: false,
@@ -72,11 +55,7 @@ export function Avatar({
         accessibilityLabel: name,
       };
   return (
-    <View
-      {...a11y}
-      className="items-center justify-center overflow-hidden rounded-full bg-surfaceMuted"
-      style={{ width: px, height: px }}
-    >
+    <View {...a11y} className={avatarClass} style={{ width: px, height: px }}>
       {source ? (
         <Image
           // Avatars are small: the ≤256 px portrait file, blurred preview first.
@@ -92,9 +71,9 @@ export function Avatar({
           style={{ width: px, height: px }}
         />
       ) : icon ? (
-        <Icon name={icon} size={ICON[size]} tone="ink" />
+        <Icon name={icon} size={avatarIcon[size]} tone="ink" />
       ) : (
-        <Text variant={TEXT[size]} weight="semibold">
+        <Text variant={avatarText[size]} weight="semibold">
           {initials ?? (name ? initialsOf(name) : "")}
         </Text>
       )}
