@@ -6,7 +6,7 @@
 // store-aware variant; `useCreatedVersion()` lets lists re-render when
 // something is added. A reload clears them — persistence and publishing are
 // contract-blocked (BLOCKED_CONTRACT_GAP); nothing is sent anywhere.
-import { useSyncExternalStore } from "react";
+import { createStore, useStore } from "zustand";
 import type { ImageSourcePropType } from "react-native";
 
 import { media } from "@/theme/media";
@@ -35,8 +35,8 @@ import {
   type TimeWindow,
 } from "./index";
 
-let version = 0;
-const listeners = new Set<() => void>();
+const store = createStore(() => ({ version: 0 }));
+const selectVersion = (s: { version: number }) => s.version;
 const createdIds = {
   groups: new Set<string>(),
   chats: new Set<string>(),
@@ -45,25 +45,13 @@ const createdIds = {
 let seq = 0;
 
 function bump() {
-  version += 1;
   invalidateFixtureIndexes();
-  listeners.forEach((l) => l());
-}
-
-function subscribe(l: () => void) {
-  listeners.add(l);
-  return () => {
-    listeners.delete(l);
-  };
+  store.setState({ version: store.getState().version + 1 });
 }
 
 /** Changes whenever something is created (use it as a memo dependency). */
 export function useCreatedVersion(): number {
-  return useSyncExternalStore(
-    subscribe,
-    () => version,
-    () => version,
-  );
+  return useStore(store, selectVersion);
 }
 
 /** The experiences the viewer hosts: what they published this session

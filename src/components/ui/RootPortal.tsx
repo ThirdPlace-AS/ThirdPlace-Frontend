@@ -3,35 +3,20 @@
 // page: a Modal opened from a sheet's drag (no touch) took ~1 s to paint and
 // hid the sheet meanwhile. <RootPortalHost /> sits in app/_layout.tsx inside
 // the providers; <RootPortal> publishes its children there while mounted.
-import {
-  type ReactNode,
-  useEffect,
-  useLayoutEffect,
-  useSyncExternalStore,
-} from "react";
+import { type ReactNode, useEffect, useLayoutEffect } from "react";
 import { StyleSheet, View } from "react-native";
+import { createStore, useStore } from "zustand";
 
-let current: ReactNode = null;
-const listeners = new Set<() => void>();
+type State = { node: ReactNode };
+const store = createStore((): State => ({ node: null }));
+const selectNode = (s: State) => s.node;
 
 function publish(node: ReactNode) {
-  current = node;
-  listeners.forEach((l) => l());
-}
-
-function subscribe(l: () => void) {
-  listeners.add(l);
-  return () => {
-    listeners.delete(l);
-  };
+  store.setState({ node });
 }
 
 export function RootPortalHost() {
-  const node = useSyncExternalStore(
-    subscribe,
-    () => current,
-    () => current,
-  );
+  const node = useStore(store, selectNode);
   return node ? (
     <View style={StyleSheet.absoluteFill} pointerEvents="box-none">
       {node}
