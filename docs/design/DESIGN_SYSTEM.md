@@ -129,7 +129,7 @@ RNR components are copied in with its CLI (`components.json`, `ui` alias `@/comp
 
 Rules when adapting an RNR file:
 
-- **Colours:** shadcn slots alias our tokens: `primary` = ink / onInk, `secondary` and `accent` = surfaceMuted / ink, `destructive` = danger / onDanger, `card` and `popover` = surface / ink, `border` and `input` = line, `ring` and `foreground` = ink. shadcn's `bg-muted` becomes `bg-surface-muted` and `text-muted-foreground` becomes `text-muted`. Pink stays `ember*`.
+- **Colours:** shadcn slots alias our tokens: `primary` = ink / onInk, `secondary` and `accent` = surfaceMuted / ink, `destructive` = danger / onDanger, `card` and `popover` = surface / ink, `border` and `input` = line, `ring` and `foreground` = ink. shadcn's `bg-muted` becomes `bg-surfaceMuted` (colour classes use the camelCase keys) and `text-muted-foreground` becomes `text-muted`. Pink stays `ember*`.
 - **No `dark:` and no `active:` / `hover:` / `focus-visible:` classes:** the theme switches through CSS variables, and press feedback comes from our `Pressable`.
 - **Type and icons:** no `text-sm`-style sizes (labels take `<Text variant>`, which reads RNR's `TextClassContext`), no lucide (Ionicons through `<Icon>`).
 - **Sizes:** NativeWind's `inlineRem` stays 14; RNR's sizes are adapted, not the rem.

@@ -146,7 +146,7 @@ const themeColors = Object.fromEntries(
  * shadcn / React Native Reusables colour slots, aliased to our variables
  * (DESIGN_SYSTEM.md §4 "Base layer"). Kept out of `palette` so they add no
  * CSS variables and no contrast cases. No `muted` slot: ours is grey text,
- * so shadcn's `bg-muted` is written `bg-surface-muted` and
+ * so shadcn's `bg-muted` is written `bg-surfaceMuted` and
  * `text-muted-foreground` is written `text-muted`.
  */
 const slot = (key) => `rgb(var(${cssVar(key)}) / <alpha-value>)`;

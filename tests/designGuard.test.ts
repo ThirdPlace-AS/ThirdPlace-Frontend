@@ -127,8 +127,19 @@ describe("design-system guard", () => {
       /\b(bg|border)-muted\b|muted-foreground/,
     ],
     ["dark: variant (ThemeRoot sets the scheme)", /(^|[\s"'`])dark:[a-z]/],
-    ["active: variant (blocks presses on native)", /(^|[\s"'`])active:[a-z]/],
+    [
+      "press/hover/focus variants (our Pressable gives press feedback)",
+      /(^|[\s"'`])(group-)?(active|hover|focus|focus-visible):[a-z]/,
+    ],
+    [
+      "breakpoint variants (sizes come from our tokens)",
+      /(^|[\s"'`])(sm|md|lg|xl|2xl):[a-z]/,
+    ],
     ["lucide icons (we use <Icon>)", /lucide/],
+    [
+      "kebab colour keys (classes use the camelCase keys: bg-surfaceMuted)",
+      /\b(bg|text|border)-(surface-(muted|raised)|on-(ink|ember|success|danger|media)|ember-(strong|text)|(success|danger|warning)-text)\b/,
+    ],
   ];
 
   it("base layer rules match their samples", () => {
@@ -137,21 +148,34 @@ describe("design-system guard", () => {
         'className="bg-muted text-muted-foreground"',
       "dark: variant (ThemeRoot sets the scheme)":
         'className="bg-surface dark:bg-ink"',
-      "active: variant (blocks presses on native)":
-        'className="active:opacity-90"',
+      "press/hover/focus variants (our Pressable gives press feedback)":
+        'className="bg-primary group-active:text-accent-foreground"',
+      "breakpoint variants (sizes come from our tokens)":
+        'className="h-10 sm:h-9"',
       "lucide icons (we use <Icon>)":
         'import { X } from "lucide-react-native";',
+      "kebab colour keys (classes use the camelCase keys: bg-surfaceMuted)":
+        'className="bg-surface-muted"',
     };
+    // each press-state form is caught
+    const press = BASE_RULES[2]![1];
+    for (const s of [
+      "active:bg-x",
+      "hover:bg-x",
+      "focus-visible:ring-x",
+      "group-hover:underline",
+    ])
+      expect(press.test(`"${s}"`)).toBe(true);
     for (const [name, re] of BASE_RULES)
       expect(re.test(samples[name] ?? "")).toBe(true);
     // our own classes stay legal
     for (const [, re] of BASE_RULES) {
-      expect(re.test('className="text-muted bg-surface-muted"')).toBe(false);
+      expect(re.test('className="text-muted bg-surfaceMuted"')).toBe(false);
       expect(re.test("const darkMode = 'x';")).toBe(false);
     }
   });
 
-  it("base layer keeps our tokens (no muted slot, dark:, active:, lucide)", () => {
+  it("base layer keeps our tokens (no muted slot, dark:, press or breakpoint variants, lucide, kebab colours)", () => {
     const hits = scan(
       (line) => BASE_RULES.some(([, re]) => re.test(line)),
       inBase,

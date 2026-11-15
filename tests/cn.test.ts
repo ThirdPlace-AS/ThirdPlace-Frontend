@@ -25,7 +25,7 @@ describe("cn (tailwind-merge with our tokens)", () => {
 
   it("the later colour wins and opacity steps stay", () => {
     expect(cn("bg-surface", "bg-danger/15")).toBe("bg-danger/15");
-    expect(cn("text-ink", "text-ember-text")).toBe("text-ember-text");
+    expect(cn("text-ink", "text-emberText")).toBe("text-emberText");
   });
 
   it("drops falsy inputs", () => {
