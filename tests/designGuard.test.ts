@@ -201,6 +201,34 @@ describe("design-system guard", () => {
     expect(fmt(hits)).toEqual([]);
   });
 
+  it("radio and checkbox rows say checked, not selected (TalkBack, ledger 0404)", () => {
+    const ROLE = String.raw`accessibilityRole="(radio|checkbox)"`;
+    // `selected` as a key ({ selected } / { selected: x }), not as a value
+    const STATE = String.raw`accessibilityState=\{\{(?:[^}]*?,)?\s*selected\s*[:,}]`;
+    const sameElement = new RegExp(
+      `${ROLE}[^<]{0,400}?${STATE}|${STATE}[^<]{0,400}?${ROLE}`,
+    );
+    expect(
+      sameElement.test(
+        '<Pressable\n accessibilityRole="radio"\n accessibilityState={{ selected: on }}',
+      ),
+    ).toBe(true);
+    expect(
+      sameElement.test(
+        '<Pressable\n accessibilityRole="radio"\n accessibilityState={{ checked: selected }}',
+      ),
+    ).toBe(false);
+    expect(
+      sameElement.test(
+        '<Pressable\n accessibilityRole="checkbox"\n accessibilityState={{ disabled, selected }}',
+      ),
+    ).toBe(true);
+    const hits = SOURCES.filter((f) =>
+      sameElement.test(fs.readFileSync(path.join(ROOT, f), "utf8")),
+    );
+    expect(hits).toEqual([]);
+  });
+
   it("one back arrow: every Tilbake button uses BACK_ICON (user 2026-11-09)", () => {
     const hits = scan(
       (line, prev) =>
