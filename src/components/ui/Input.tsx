@@ -68,7 +68,8 @@ export function Input({
             paddingHorizontal: 16 - (bw - 1),
             paddingVertical: (multiline ? 12 : 14) - (bw - 1),
           },
-          multiline ? { minHeight: 96 } : null,
+          // The design system's 56 px field; multiline grows from 96.
+          { minHeight: multiline ? 96 : 56 },
         ]}
         placeholder={placeholder}
         placeholderTextColor={c.muted}

@@ -83,6 +83,8 @@ No `font-*` weight classes: on Android they rendered Roboto (2026-11-15). Set we
 
 `xs 4 · sm 8 · md 14 · lg 20 · xl 32 · full`, shadcn.io's Airbnb DESIGN.md scale (user 2026-11-15). Cards `md`; inputs, buttons, small tiles, row highlights and notice strips `sm`; large panels `lg`; sheets `xl` (top corners); chips, pills and avatars `full`. Tailwind's own `2xl`/`3xl` still exist (the scale extends Tailwind's), so the guard bans them with any side prefix.
 
+Component sizes from the same design: `Button` md is 48 px tall (sm 40, lg 60) with 8 px corners (`rounded="full"` for pills); `Input` is at least 56 px single-line (multiline from 96) with 8 px corners, a 1 px `line` border and a 2 px `ink` border on focus (`danger` on error), offset in padding so the text never moves; `CodeInput` boxes are 56 px with 8 px corners. The design's pink primary fill and pale-pink disabled state are not used: the ink, gradient and muted fills stay.
+
 ### Elevation
 
 | Level | Use                                              |

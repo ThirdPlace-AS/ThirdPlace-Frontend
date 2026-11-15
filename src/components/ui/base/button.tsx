@@ -55,10 +55,11 @@ export const buttonTone: Record<ButtonVariant, TextTone & IconTone> = {
   danger: "onEmber",
 };
 
-/** Minimum heights (style, so they stay exact under inlineRem). */
+/** Minimum heights (style, so they stay exact under inlineRem). md is the
+ * design system's 48 px primary button (shadcn.io Airbnb DESIGN.md). */
 export const buttonHeight: Record<ButtonSize, number> = {
   sm: 40,
-  md: 52,
+  md: 48,
   lg: 60,
 };
 

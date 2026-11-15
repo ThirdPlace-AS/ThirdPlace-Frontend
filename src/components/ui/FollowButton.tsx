@@ -19,7 +19,7 @@ export function FollowButton({
 }: {
   following: boolean;
   onPress: () => void;
-  /** sm = list rows (36), md = profile header (52, same as Button md). */
+  /** sm = list rows (36), md = profile header (48, same as Button md). */
   size?: "sm" | "md";
   /** Who is followed — makes the label specific for screen readers. */
   name?: string;
@@ -28,7 +28,7 @@ export function FollowButton({
   followLabel?: string;
 }) {
   const reduced = useReducedMotion();
-  const height = size === "md" ? 52 : 36;
+  const height = size === "md" ? 48 : 36;
   return (
     <Pressable
       accessibilityRole="button"
