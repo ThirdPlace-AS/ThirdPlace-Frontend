@@ -142,7 +142,7 @@ export default function ThemeSandbox() {
                   key={p}
                   onPress={() => setSchemePreference(p)}
                   accessibilityRole="radio"
-                  accessibilityState={{ selected }}
+                  accessibilityState={{ checked: selected }}
                   className={`h-11 justify-center rounded-full px-lg ${
                     selected ? "bg-ink" : "bg-surfaceMuted"
                   }`}

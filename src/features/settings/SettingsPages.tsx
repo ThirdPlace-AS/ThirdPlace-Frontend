@@ -386,7 +386,7 @@ export function LanguageScreen() {
           <UIPressable
             key={l}
             accessibilityRole="radio"
-            accessibilityState={{ selected: lang === l }}
+            accessibilityState={{ checked: lang === l }}
             onPress={() => setLang(l)}
             contentClassName="flex-row items-center justify-between rounded-md border border-line bg-surface px-4 py-3.5"
             pressedScale={0.99}

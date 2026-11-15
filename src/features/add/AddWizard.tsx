@@ -1287,7 +1287,7 @@ function SelectRow({
   return (
     <Pressable
       accessibilityRole="radio"
-      accessibilityState={{ selected }}
+      accessibilityState={{ checked: selected }}
       onPress={onPress}
       className={`flex-row items-center gap-3 rounded-md border bg-surface p-3.5 ${
         selected ? "border-ink" : "border-line"

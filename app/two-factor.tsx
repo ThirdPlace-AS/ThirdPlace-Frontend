@@ -61,7 +61,7 @@ export default function TwoFactor() {
                 <UIPressable
                   key={m.key}
                   accessibilityRole="radio"
-                  accessibilityState={{ selected: active }}
+                  accessibilityState={{ checked: active }}
                   onPress={() => setMethod(m.key)}
                   contentClassName={`flex-row items-center gap-3 rounded-lg border bg-surface p-4 ${
                     active ? "border-ink" : "border-line"

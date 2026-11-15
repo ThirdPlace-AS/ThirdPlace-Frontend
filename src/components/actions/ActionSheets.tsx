@@ -149,7 +149,7 @@ export function ReportSheet({ onClose }: Base) {
           <UIPressable
             key={r}
             accessibilityRole="radio"
-            accessibilityState={{ selected: reason === r }}
+            accessibilityState={{ checked: reason === r }}
             onPress={() => setReason(r)}
             contentClassName="flex-row items-center justify-between rounded-md border border-line bg-surface px-4 py-3.5"
             pressedScale={0.99}

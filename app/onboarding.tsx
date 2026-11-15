@@ -214,7 +214,7 @@ export default function Onboarding() {
                       key={p.key}
                       accessibilityRole="radio"
                       accessibilityState={{
-                        selected: active,
+                        checked: active,
                         disabled: !!p.locked,
                       }}
                       disabled={p.locked}

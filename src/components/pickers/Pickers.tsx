@@ -123,7 +123,7 @@ export function CategoryPicker({
           <UIPressable
             key={o}
             accessibilityRole="radio"
-            accessibilityState={{ selected: value === o }}
+            accessibilityState={{ checked: value === o }}
             onPress={() => {
               onPick(o);
               onClose();
