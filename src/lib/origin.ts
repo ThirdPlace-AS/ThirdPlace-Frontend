@@ -5,7 +5,7 @@
 // GPS moves a little all the time; the origin only moves on the first fix,
 // when Posisjon is pressed, or after the phone has really moved (more than
 // ORIGIN_MOVE_M), so lists and the Sveip deck don't jump on jitter.
-import { useSyncExternalStore } from "react";
+import { createStore, useStore } from "zustand";
 
 import { MAP_CENTER } from "@/fixtures";
 
@@ -17,27 +17,19 @@ export type Origin = { coord: [number, number]; source: OriginSource };
 export const ORIGIN_MOVE_M = 250;
 
 const DEFAULT: Origin = { coord: MAP_CENTER, source: "default" };
-let state: Origin = DEFAULT;
-const listeners = new Set<() => void>();
+const store = createStore(() => ({ state: DEFAULT }));
+const selectState = (s: { state: Origin }) => s.state;
 
 function set(next: Origin) {
-  state = next;
-  listeners.forEach((l) => l());
-}
-
-function subscribe(l: () => void) {
-  listeners.add(l);
-  return () => {
-    listeners.delete(l);
-  };
+  store.setState({ state: next });
 }
 
 export function getOrigin(): Origin {
-  return state;
+  return store.getState().state;
 }
 
 export function useOrigin(): Origin {
-  return useSyncExternalStore(subscribe, getOrigin, getOrigin);
+  return useStore(store, selectState);
 }
 
 /** A GPS fix. Moves the origin on the first fix, when `force` is set
@@ -46,6 +38,7 @@ export function reportFix(
   coord: [number, number],
   opts: { force?: boolean } = {},
 ): void {
+  const state = getOrigin();
   if (
     opts.force ||
     state.source !== "gps" ||
@@ -68,7 +61,7 @@ export function resetOrigin(): void {
 /** Distance from the origin to a point, in metres. */
 export function distanceFromOrigin(
   coord: [number, number],
-  origin: Origin = state,
+  origin: Origin = getOrigin(),
 ): number {
   return distanceMeters(origin.coord, coord);
 }
@@ -76,7 +69,7 @@ export function distanceFromOrigin(
 /** "350 m" · "1,4 km" · "38 km" from the origin. */
 export function distanceLabelFor(
   coord: [number, number],
-  origin: Origin = state,
+  origin: Origin = getOrigin(),
 ): string {
   return formatDistance(distanceFromOrigin(coord, origin));
 }

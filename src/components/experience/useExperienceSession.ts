@@ -1,41 +1,27 @@
-import { useCallback, useSyncExternalStore } from "react";
+import { useCallback } from "react";
+import { createStore, useStore } from "zustand";
 
 // The time the viewer picked for each experience ("Velg tidspunkt"), shared by
 // the Tilgjengelighet cards, the time sheet and the floating join card. In
 // memory like the other demo stores (persistence is contract-blocked); null =
 // the next session.
-let chosen: Readonly<Record<string, string>> = {};
-const listeners = new Set<() => void>();
-
-function emit() {
-  listeners.forEach((l) => l());
-}
-
-function subscribe(l: () => void) {
-  listeners.add(l);
-  return () => {
-    listeners.delete(l);
-  };
-}
+type State = { chosen: Readonly<Record<string, string>> };
+const store = createStore((): State => ({ chosen: {} }));
 
 /** Test helper: forget every picked time. */
 export function resetExperienceSessions() {
-  chosen = {};
-  emit();
+  store.setState({ chosen: {} });
 }
 
 export function useExperienceSession(expId: string) {
-  const all = useSyncExternalStore(
-    subscribe,
-    () => chosen,
-    () => chosen,
-  );
+  const chosen = useStore(store, (s) => s.chosen[expId]);
   const set = useCallback(
     (sessionId: string) => {
-      chosen = { ...chosen, [expId]: sessionId };
-      emit();
+      store.setState({
+        chosen: { ...store.getState().chosen, [expId]: sessionId },
+      });
     },
     [expId],
   );
-  return [all[expId] ?? null, set] as const;
+  return [chosen ?? null, set] as const;
 }

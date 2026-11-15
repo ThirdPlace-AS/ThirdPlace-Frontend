@@ -8,7 +8,7 @@
 // (the latest one wins): the compass sends nothing more while the phone is
 // held still, so the end of a quick turn would otherwise never show (review
 // of the speed pass). Device data, kept in memory only.
-import { useSyncExternalStore } from "react";
+import { createStore, useStore } from "zustand";
 
 export type UserLocationState = {
   /** The app's own fix (after Posisjon or the location sheet). */
@@ -31,7 +31,9 @@ const EMPTY: UserLocationState = {
   heading: null,
 };
 
-let state: UserLocationState = EMPTY;
+const store = createStore(() => ({ state: EMPTY }));
+const selectState = (s: { state: UserLocationState }) => s.state;
+const current = () => store.getState().state;
 let lastHeadingAt = Number.NEGATIVE_INFINITY;
 // A real turn that came before the gap was over, and the timer that shows it.
 let heldHeading: number | null = null;
@@ -42,18 +44,9 @@ function dropHeld() {
   if (heldTimer !== null) clearTimeout(heldTimer);
   heldTimer = null;
 }
-const listeners = new Set<() => void>();
 
 function set(next: UserLocationState) {
-  state = next;
-  listeners.forEach((l) => l());
-}
-
-function subscribe(l: () => void) {
-  listeners.add(l);
-  return () => {
-    listeners.delete(l);
-  };
+  store.setState({ state: next });
 }
 
 function sameCoord(
@@ -76,16 +69,19 @@ export function headingCounts(
 }
 
 export function setUserCoord(coord: [number, number] | null) {
+  const state = current();
   if (sameCoord(state.coord, coord)) return;
   set({ ...state, coord });
 }
 
 export function setNativeCoord(coord: [number, number] | null) {
+  const state = current();
   if (sameCoord(state.nativeCoord, coord)) return;
   set({ ...state, nativeCoord: coord });
 }
 
 export function setUserHeading(heading: number | null, now = Date.now()) {
+  const state = current();
   if (headingCounts(state.heading, heading, now - lastHeadingAt)) {
     dropHeld();
     lastHeadingAt = now;
@@ -108,7 +104,7 @@ export function setUserHeading(heading: number | null, now = Date.now()) {
           heldHeading = null;
           if (h === null) return;
           lastHeadingAt = due;
-          set({ ...state, heading: h });
+          set({ ...current(), heading: h });
         },
         Math.max(0, due - now),
       );
@@ -124,17 +120,18 @@ export function setUserHeading(heading: number | null, now = Date.now()) {
 export function clearUserFix() {
   lastHeadingAt = Number.NEGATIVE_INFINITY;
   dropHeld();
+  const state = current();
   if (state.coord === null && state.heading === null) return;
   set({ ...state, coord: null, heading: null });
 }
 
 export function getUserLocation(): UserLocationState {
-  return state;
+  return current();
 }
 
 /** The live position and heading (re-renders the caller on each change). */
 export function useUserLocation(): UserLocationState {
-  return useSyncExternalStore(subscribe, getUserLocation, getUserLocation);
+  return useStore(store, selectState);
 }
 
 /** Tests and sign-out: back to no position. */

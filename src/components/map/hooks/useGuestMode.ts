@@ -1,37 +1,21 @@
-import { useCallback, useSyncExternalStore } from "react";
+import { useCallback } from "react";
+import { createStore, useStore } from "zustand";
 
 // Demo guest-mode flag (in-memory, shared). There is NO real auth yet — account
 // gating is CONTRACT-BLOCKED. Default is a signed-in demo user so the demo
 // interactions work; flipping this (e.g. from Profile) lets you experience the
 // honest guest restrictions (account-only actions prompt sign-in).
 
-let guest = false;
-const listeners = new Set<() => void>();
-
-function emit() {
-  for (const l of listeners) l();
-}
-
-function subscribe(cb: () => void) {
-  listeners.add(cb);
-  return () => {
-    listeners.delete(cb);
-  };
-}
+const store = createStore(() => ({ guest: false }));
+const selectGuest = (s: { guest: boolean }) => s.guest;
 
 export function useGuestMode() {
-  const isGuest = useSyncExternalStore(
-    subscribe,
-    () => guest,
-    () => guest,
-  );
+  const isGuest = useStore(store, selectGuest);
   const setGuest = useCallback((next: boolean) => {
-    guest = next;
-    emit();
+    store.setState({ guest: next });
   }, []);
   const toggle = useCallback(() => {
-    guest = !guest;
-    emit();
+    store.setState({ guest: !store.getState().guest });
   }, []);
   return { isGuest, setGuest, toggle };
 }
