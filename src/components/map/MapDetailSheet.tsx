@@ -152,8 +152,11 @@ export const MapDetailSheet = memo(
     const [shown, setShown] = useState<SheetTarget[]>(stack);
     if (open && shown !== stack) setShown(stack);
     const openRef = useRef(open);
+    // Opened since the sheet last mounted (clearShown remounts it).
+    const openedRef = useRef(false);
     useEffect(() => {
       openRef.current = open;
+      if (open) openedRef.current = true;
     }, [open]);
     const root = shown[0];
     // Closed and empty, the sheet waits as the page sheet (most taps open a
@@ -224,11 +227,22 @@ export const MapDetailSheet = memo(
 
     // Down and closed: drop the content and the stages, so the next open
     // mounts only what its peek shows (even for the same item again).
+    // The wrapper is remounted too (a new key), already hidden from the
+    // screen reader: on Android, switching a mounted wrapper's
+    // importantForAccessibility to "no-hide-descendants" stopped every press
+    // in the app (the browse sheet's "Vis kart", cards, the tab bar) while
+    // drags still worked; a wrapper mounted hidden leaves them alone (0413,
+    // regression from 0384).
+    const [generation, setGeneration] = useState(0);
+    const a11yHidden = !open && shown.length === 0;
     const clearShown = useCallback(() => {
       if (openRef.current) return;
       setShown(NO_STACK);
       setSettledKey(null);
       setRestKey(null);
+      if (!openedRef.current) return;
+      openedRef.current = false;
+      setGeneration((g) => g + 1);
     }, []);
 
     // Open → animate to the requested snap; closed → slide down. `openNonce`
@@ -380,10 +394,13 @@ export const MapDetailSheet = memo(
     const sheet = (
       // Closed, the waiting sheet is out of the screen reader's way too.
       <View
+        key={generation}
         style={StyleSheet.absoluteFill}
         pointerEvents="box-none"
-        importantForAccessibility={open ? "auto" : "no-hide-descendants"}
-        accessibilityElementsHidden={!open}
+        // Never switched on a mounted wrapper (see clearShown): visible from
+        // the first open until it is down and cleared.
+        importantForAccessibility={a11yHidden ? "no-hide-descendants" : "auto"}
+        accessibilityElementsHidden={a11yHidden}
       >
         {isPage ? <StatusBarStyle style="auto" /> : null}
         <BottomSheet

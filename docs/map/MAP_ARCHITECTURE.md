@@ -59,7 +59,10 @@ composing hooks and components under `src/components/map/`.
   browse sheet and the tab bar; its backdrop starts with
   `enableTouchThrough` (it remounts on every refocus) and the wrapper hides
   it from the screen reader. While it slides closed it keeps its content;
-  once it is down the content goes and the stages reset. A group at the root
+  once it is down the content goes, the stages reset and the wrapper
+  remounts already hidden (0413): on Android, switching a mounted wrapper's
+  `importantForAccessibility` to `no-hide-descendants` stopped every press
+  in the app (drags still worked), so never toggle it on a live view. A group at the root
   keeps the docked sheet, mounted when it opens (nothing opens one today:
   groups open `/group/[id]`). Tried and dropped: starting the slide from the
   press itself (`snapToIndex` before the render): the sheet arrived blank and
