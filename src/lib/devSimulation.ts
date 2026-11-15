@@ -1,4 +1,4 @@
-import { useSyncExternalStore } from "react";
+import { createStore, useStore } from "zustand";
 
 // Dev-only switches for states that need a real network or GPS to appear:
 // the map's offline/error state and check-in distance. Set from the sandbox
@@ -13,29 +13,18 @@ export type DevSimulation = {
   slowLoad: boolean;
 };
 
-let state: DevSimulation = {
-  mapOffline: false,
-  checkinFar: false,
-  slowLoad: false,
-};
-const listeners = new Set<() => void>();
+type State = { state: DevSimulation };
+const store = createStore(
+  (): State => ({
+    state: { mapOffline: false, checkinFar: false, slowLoad: false },
+  }),
+);
+const selectState = (s: State) => s.state;
 
 export function setDevSimulation(patch: Partial<DevSimulation>) {
-  state = { ...state, ...patch };
-  listeners.forEach((l) => l());
-}
-
-function subscribe(l: () => void) {
-  listeners.add(l);
-  return () => {
-    listeners.delete(l);
-  };
+  store.setState({ state: { ...store.getState().state, ...patch } });
 }
 
 export function useDevSimulation(): DevSimulation {
-  return useSyncExternalStore(
-    subscribe,
-    () => state,
-    () => state,
-  );
+  return useStore(store, selectState);
 }

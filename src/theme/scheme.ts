@@ -4,8 +4,8 @@
 // Phase 5 dark-mode sweep has verified every route; the sandbox
 // (app/_sandbox/theme.tsx) can switch it for preview. In-memory only, like the
 // other demo stores — persistence is contract-blocked.
-import { useSyncExternalStore } from "react";
 import { useColorScheme } from "react-native";
+import { createStore, useStore } from "zustand";
 
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const tokens = require("./tokens.js") as {
@@ -17,32 +17,23 @@ export type SchemePreference = Scheme | "system";
 
 export const DEFAULT_SCHEME_PREFERENCE: SchemePreference = "system";
 
-let preference: SchemePreference = DEFAULT_SCHEME_PREFERENCE;
-const listeners = new Set<() => void>();
+type State = { preference: SchemePreference };
+const store = createStore(
+  (): State => ({ preference: DEFAULT_SCHEME_PREFERENCE }),
+);
+const selectPreference = (s: State) => s.preference;
 
 export function setSchemePreference(next: SchemePreference) {
-  if (next === preference) return;
-  preference = next;
-  listeners.forEach((l) => l());
+  if (next === store.getState().preference) return;
+  store.setState({ preference: next });
 }
 
 export function getSchemePreference(): SchemePreference {
-  return preference;
-}
-
-function subscribe(listener: () => void) {
-  listeners.add(listener);
-  return () => {
-    listeners.delete(listener);
-  };
+  return store.getState().preference;
 }
 
 export function useSchemePreference(): SchemePreference {
-  return useSyncExternalStore(
-    subscribe,
-    getSchemePreference,
-    getSchemePreference,
-  );
+  return useStore(store, selectPreference);
 }
 
 /** Pure resolver — exported for tests. */

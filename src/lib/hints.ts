@@ -1,4 +1,4 @@
-import { useSyncExternalStore } from "react";
+import { createStore, useStore } from "zustand";
 
 // One-time hints this phone has shown (Phase 16): a device setting, kept by
 // deviceSettings.ts like Kartlag and Tilgjengelighet, so a hint the user has
@@ -13,7 +13,7 @@ export const DEFAULT_HINTS: Hints = {
   profileSwitch: false,
 };
 
-let hints: Hints = DEFAULT_HINTS;
+const store = createStore(() => ({ hints: DEFAULT_HINTS }));
 // At most one hint per app session (screen benchmark: tips that pile up get
 // dismissed unread). Kept in memory only: a new session may show the next.
 let sessionHint: string | null = null;
@@ -21,7 +21,7 @@ let sessionHint: string | null = null;
 /** True when `key` may show now: not seen yet and no other hint has shown
  *  this session. Takes the session's slot for `key`. */
 export function claimHint(key: HintKey): boolean {
-  if (hints[key]) return false;
+  if (store.getState().hints[key]) return false;
   return claimSessionSlot(key);
 }
 
@@ -37,27 +37,19 @@ export function claimSessionSlot(id: string): boolean {
 export function resetHintSession() {
   sessionHint = null;
 }
-const listeners = new Set<() => void>();
 
-function emit() {
-  listeners.forEach((l) => l());
-}
-
-export function onHintsChange(l: () => void) {
-  listeners.add(l);
-  return () => {
-    listeners.delete(l);
-  };
+export function onHintsChange(l: () => void): () => void {
+  return store.subscribe(() => l());
 }
 
 export function getHints(): Hints {
-  return hints;
+  return store.getState().hints;
 }
 
 export function markHintSeen(key: HintKey) {
+  const { hints } = store.getState();
   if (hints[key]) return;
-  hints = { ...hints, [key]: true };
-  emit();
+  store.setState({ hints: { ...hints, [key]: true } });
 }
 
 /** Device settings on start-up, tests and the dev sandbox. Only `true`
@@ -67,14 +59,9 @@ export function restoreHints(saved: Partial<Hints> | undefined) {
   for (const key of Object.keys(DEFAULT_HINTS) as HintKey[]) {
     next[key] = saved?.[key] === true;
   }
-  hints = next;
-  emit();
+  store.setState({ hints: next });
 }
 
 export function useHintSeen(key: HintKey): boolean {
-  return useSyncExternalStore(
-    onHintsChange,
-    () => hints[key],
-    () => hints[key],
-  );
+  return useStore(store, (s) => s.hints[key]);
 }

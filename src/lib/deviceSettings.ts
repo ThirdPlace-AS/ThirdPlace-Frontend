@@ -1,4 +1,4 @@
-import { useSyncExternalStore } from "react";
+import { createStore, useStore } from "zustand";
 
 import {
   DEFAULT_A11Y_PREFS,
@@ -57,14 +57,13 @@ type Saved = {
   whatsNew?: unknown;
 };
 
-let ready = false;
-const listeners = new Set<() => void>();
+const readyStore = createStore(() => ({ ready: false }));
+const selectReady = (s: { ready: boolean }) => s.ready;
 let started: Promise<void> | null = null;
 let unsubscribe: (() => void) | null = null;
 
 function emitReady() {
-  ready = true;
-  listeners.forEach((l) => l());
+  readyStore.setState({ ready: true });
 }
 
 function write() {
@@ -125,18 +124,9 @@ export function resetDeviceSettings() {
   unsubscribe?.();
   unsubscribe = null;
   started = null;
-  ready = false;
+  readyStore.setState({ ready: false });
 }
 
 export function useDeviceSettingsReady(): boolean {
-  return useSyncExternalStore(
-    (l) => {
-      listeners.add(l);
-      return () => {
-        listeners.delete(l);
-      };
-    },
-    () => ready,
-    () => ready,
-  );
+  return useStore(readyStore, selectReady);
 }

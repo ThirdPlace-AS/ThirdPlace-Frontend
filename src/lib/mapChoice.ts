@@ -1,4 +1,4 @@
-import { useSyncExternalStore } from "react";
+import { createStore, useStore } from "zustand";
 
 import {
   DEFAULT_MAP_TYPE,
@@ -18,35 +18,28 @@ export const DEFAULT_MAP_CHOICE: MapChoice = {
   style: null,
 };
 
-let choice: MapChoice = DEFAULT_MAP_CHOICE;
-const listeners = new Set<() => void>();
+const store = createStore(() => ({ choice: DEFAULT_MAP_CHOICE }));
+const selectChoice = (s: { choice: MapChoice }) => s.choice;
 
-function emit() {
-  listeners.forEach((l) => l());
-}
-
-export function onMapChoiceChange(l: () => void) {
-  listeners.add(l);
-  return () => {
-    listeners.delete(l);
-  };
+export function onMapChoiceChange(l: () => void): () => void {
+  return store.subscribe(() => l());
 }
 
 export function setMapType(mapType: MapType) {
+  const { choice } = store.getState();
   if (choice.mapType === mapType) return;
-  choice = { ...choice, mapType };
-  emit();
+  store.setState({ choice: { ...choice, mapType } });
 }
 
 /** A style key turns Auto off; null turns it back on. */
 export function setMapStyle(style: MapStyleKey | null) {
+  const { choice } = store.getState();
   if (choice.style === style) return;
-  choice = { ...choice, style };
-  emit();
+  store.setState({ choice: { ...choice, style } });
 }
 
 export function getMapChoice(): MapChoice {
-  return choice;
+  return store.getState().choice;
 }
 
 /** Device settings on start-up, and tests. Unknown values fall back. */
@@ -57,14 +50,9 @@ export function restoreMapChoice(saved: Partial<MapChoice> | undefined) {
   const style = MAP_STYLES.some((s) => s.key === saved?.style)
     ? (saved?.style as MapStyleKey)
     : null;
-  choice = { mapType, style };
-  emit();
+  store.setState({ choice: { mapType, style } });
 }
 
 export function useMapChoice(): MapChoice {
-  return useSyncExternalStore(
-    onMapChoiceChange,
-    () => choice,
-    () => choice,
-  );
+  return useStore(store, selectChoice);
 }

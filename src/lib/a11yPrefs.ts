@@ -1,4 +1,4 @@
-import { useSyncExternalStore } from "react";
+import { createStore, useStore } from "zustand";
 
 import type { MapFilters } from "@/components/map/services/mapFilters";
 
@@ -27,60 +27,45 @@ export const TEXT_SCALE = 1.15;
 /** The filter "Vis kun rullestolvennlige" turns on. */
 export const WHEELCHAIR_FEATURE = "Trinnfri inngang";
 
-let prefs: A11yPrefs = DEFAULT_A11Y_PREFS;
-const listeners = new Set<() => void>();
-
-function emit() {
-  listeners.forEach((l) => l());
-}
-
-function subscribe(l: () => void) {
-  listeners.add(l);
-  return () => {
-    listeners.delete(l);
-  };
-}
+type State = { prefs: A11yPrefs };
+const store = createStore((): State => ({ prefs: DEFAULT_A11Y_PREFS }));
+const selectPrefs = (s: State) => s.prefs;
+const selectTextScale = (s: State) => (s.prefs.largerText ? TEXT_SCALE : 1);
 
 /** deviceSettings.ts writes the prefs to the phone when they change. */
-export const onA11yPrefsChange = subscribe;
+export function onA11yPrefsChange(l: () => void): () => void {
+  return store.subscribe(() => l());
+}
 
 export function setA11yPrefs(next: Partial<A11yPrefs>) {
-  prefs = { ...prefs, ...next };
-  emit();
+  store.setState({ prefs: { ...store.getState().prefs, ...next } });
 }
 
 /** Tests, and device settings on start-up (unknown values fall back). */
 export function resetA11yPrefs(to: Partial<A11yPrefs> = DEFAULT_A11Y_PREFS) {
   const pick = (k: keyof A11yPrefs) =>
     typeof to[k] === "boolean" ? (to[k] as boolean) : DEFAULT_A11Y_PREFS[k];
-  prefs = {
-    reduceMotion: pick("reduceMotion"),
-    largerText: pick("largerText"),
-    wheelchairOnly: pick("wheelchairOnly"),
-  };
-  emit();
+  store.setState({
+    prefs: {
+      reduceMotion: pick("reduceMotion"),
+      largerText: pick("largerText"),
+      wheelchairOnly: pick("wheelchairOnly"),
+    },
+  });
 }
 
 export function getA11yPrefs(): A11yPrefs {
-  return prefs;
+  return store.getState().prefs;
 }
 
 export function useA11yPrefs(): A11yPrefs {
-  return useSyncExternalStore(
-    subscribe,
-    () => prefs,
-    () => prefs,
-  );
+  return useStore(store, selectPrefs);
 }
 
 /** 1, or TEXT_SCALE with "Større tekst" (a number, so Text re-renders only
  *  when it changes). */
 export function useTextScale(): number {
-  return useSyncExternalStore(
-    subscribe,
-    () => (prefs.largerText ? TEXT_SCALE : 1),
-    () => (prefs.largerText ? TEXT_SCALE : 1),
-  );
+  return useStore(store, selectTextScale);
 }
 
 /** Filters with the step-free filter on or off. */
