@@ -13,15 +13,9 @@ import { useReducedMotion } from "@/hooks/useReducedMotion";
 
 import { duration } from "@/theme";
 
-export type SkeletonRadius = "sm" | "md" | "lg" | "full";
+import { skeletonClass, type SkeletonRadius } from "./base/skeleton";
 
-// Literal class names so Tailwind generates them.
-const RADIUS: Record<SkeletonRadius, string> = {
-  sm: "rounded-sm",
-  md: "rounded-md",
-  lg: "rounded-lg",
-  full: "rounded-full",
-};
+export type { SkeletonRadius };
 
 export function Skeleton({
   height = 16,
@@ -48,7 +42,7 @@ export function Skeleton({
 
   return (
     <Animated.View style={[{ height, width: width ?? "100%" }, style]}>
-      <View className={`h-full w-full bg-surfaceMuted ${RADIUS[rounded]}`} />
+      <View className={skeletonClass({ rounded })} />
     </Animated.View>
   );
 }
