@@ -17,15 +17,17 @@ The design system **restyles the PDF's layouts**. It never adds screens, section
 
 ## 2. Decisions
 
-| Topic             | Decision (2026-11-05)                                                                                                                                                                                                                                                                                                             |
-| ----------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Brand colour      | **Airbnb's palette (founder decision 2026-11-06, replaces "ember stays #D80000")**: brand pink `#FF385C`, button gradient `#E61E4D → #E31C5F → #D70466`, text `#222222`, link pink `#DA1249`; logo, splash and app-icon background `#FF385C`. Token names stay (`ember`, `emberText` …) so no call site changes.                  |
-| Typeface          | One open-licence geometric sans loaded via `expo-font` (candidate **DM Sans**, alternative Plus Jakarta Sans; a specimen in `app/_sandbox/` picks). Supersedes the Phase 0.3 "system fonts" decision.                                                                                                                             |
-| Theme             | Semantic tokens with **light and dark**, shipped together; the app follows the phone setting (`system`, dark palette approved 2026-11-05). Tokens are CSS variables so `className` utilities switch per scheme without `dark:` variants. Map basemap goes to the night style in dark; map pins and photo UI (`media`) stay fixed. |
-| Sheets            | One Sheet API with two engines: `@gorhom/bottom-sheet` for snapping map sheets, the Modal engine for action sheets. No raw `Modal` outside the engine.                                                                                                                                                                            |
-| Icons             | Ionicons behind a single `Icon` wrapper (outline = default, filled = selected). ThirdPlace-specific glyphs become custom SVGs behind the same wrapper.                                                                                                                                                                            |
-| Illustration / 3D | Art-direction spec, pipeline and named slots now, with themed SVG placeholders. Final art is supplied later and dropped into the slots. IMG.LY/Codesign is not used.                                                                                                                                                              |
-| Benchmark         | Airbnb is a **quality benchmark only**. No tracing, copying or lookalikes of its icons, illustrations, 3D renders, typeface or layouts.                                                                                                                                                                                           |
+| Topic             | Decision (2026-11-05)                                                                                                                                                                                                                                                                                                                                                                                |
+| ----------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Brand colour      | **Airbnb's palette (founder decision 2026-11-06, replaces "ember stays #D80000")**: brand pink `#FF385C`, button gradient `#E61E4D → #E31C5F → #D70466`, text `#222222`, link pink `#DA1249`; logo, splash and app-icon background `#FF385C`. Token names stay (`ember`, `emberText` …) so no call site changes.                                                                                     |
+| Typeface          | One open-licence geometric sans loaded via `expo-font` (candidate **DM Sans**, alternative Plus Jakarta Sans; a specimen in `app/_sandbox/` picks). Supersedes the Phase 0.3 "system fonts" decision.                                                                                                                                                                                                |
+| Theme             | Semantic tokens with **light and dark**, shipped together; the app follows the phone setting (`system`, dark palette approved 2026-11-05). Tokens are CSS variables so `className` utilities switch per scheme without `dark:` variants. Map basemap goes to the night style in dark; map pins and photo UI (`media`) stay fixed.                                                                    |
+| Sheets            | One Sheet API with two engines: `@gorhom/bottom-sheet` for snapping map sheets, the Modal engine for action sheets. No raw `Modal` outside the engine.                                                                                                                                                                                                                                               |
+| Icons             | Ionicons behind a single `Icon` wrapper (outline = default, filled = selected). ThirdPlace-specific glyphs become custom SVGs behind the same wrapper.                                                                                                                                                                                                                                               |
+| Illustration / 3D | Art-direction spec, pipeline and named slots now, with themed SVG placeholders. Final art is supplied later and dropped into the slots. IMG.LY/Codesign is not used.                                                                                                                                                                                                                                 |
+| UI base           | **shadcn/ui through its React Native port, React Native Reusables (RNR)** on `@rn-primitives` (user 2026-11-12). Our look stays: RNR sources are adapted to our tokens, shadcn colour slots alias our CSS variables (our `muted` keeps its meaning), and screens keep importing the same `@/components/ui` names. See §4 "Base layer".                                                               |
+| Toolkit           | After Emil Kowalski's `pick-ui-library` list, with RN substitutes where his pick is web-only (user 2026-11-12): clsx + class-variance-authority + tailwind-merge ~2.6, sonner-native, input-otp-native, zustand, FlashList v2, react-native-gifted-charts, react-native-sortables, react-native-keyboard-controller, zeego. Installing one is not a licence for new UI without a spec or user basis. |
+| Benchmark         | Airbnb is a **quality benchmark only**. No tracing, copying or lookalikes of its icons, illustrations, 3D renders, typeface or layouts.                                                                                                                                                                                                                                                              |
 
 ## 3. Foundations
 
@@ -120,6 +122,36 @@ All primitives live in `src/components/ui/`. Each one must implement the states 
 | Empty / error (screens) | `StateView` with an illustration slot and one or two actions                                                                                                                                                            |
 
 Touch targets are at least 44×44 (use `hitSlop` to reach it on small visuals).
+
+### Base layer (React Native Reusables)
+
+RNR components are copied in with its CLI (`components.json`, `ui` alias `@/components/ui/base`) and live in `src/components/ui/base/` in kebab-case, so they never collide with our PascalCase files on a case-insensitive disk. Only `src/components/ui/*` imports from `base/`; screens keep using our primitives, whose props do not change.
+
+Rules when adapting an RNR file:
+
+- **Colours:** shadcn slots alias our tokens: `primary` = ink / onInk, `secondary` and `accent` = surfaceMuted / ink, `destructive` = danger / onDanger, `card` and `popover` = surface / ink, `border` and `input` = line, `ring` and `foreground` = ink. shadcn's `bg-muted` becomes `bg-surface-muted` and `text-muted-foreground` becomes `text-muted`. Pink stays `ember*`.
+- **No `dark:` and no `active:` / `hover:` / `focus-visible:` classes:** the theme switches through CSS variables, and press feedback comes from our `Pressable`.
+- **Type and icons:** no `text-sm`-style sizes (labels take `<Text variant>`, which reads RNR's `TextClassContext`), no lucide (Ionicons through `<Icon>`).
+- **Sizes:** NativeWind's `inlineRem` stays 14; RNR's sizes are adapted, not the rem.
+- **Class merging:** `cn()` in `src/lib/utils.ts` uses tailwind-merge extended with our font-size, colour, radius and spacing keys, so `cn("text-display", "text-ink")` keeps both.
+- **Haptics:** only the moments allowed in `tests/designGuard.test.ts`; library defaults that vibrate are switched off.
+- **Portals:** `RootPortal` stays (map page sheet); `@rn-primitives`' `PortalHost` sits next to it, and a Modal that shows a portaled component needs its own named host inside.
+
+| Our primitive                          | RNR base                           | Phase |
+| -------------------------------------- | ---------------------------------- | ----- |
+| `Text`                                 | `text`                             | P2    |
+| `Button`, `IconButton`, `FollowButton` | `button`                           | P2    |
+| `Input`, `SearchBar`                   | `input`                            | P3    |
+| `Switch`                               | `switch`                           | P3    |
+| `Chip`, `ChipGroup`                    | `toggle`, `toggle-group`           | P3    |
+| `Divider`                              | `separator`                        | P3    |
+| `Badge`                                | `badge`                            | P3    |
+| `Skeleton*`                            | `skeleton`                         | P3    |
+| `Avatar` (expo-image kept)             | `avatar`                           | P3    |
+| `Accordion`                            | `accordion`                        | P3    |
+| Toasts (`showToast`, `confirmToast`)   | sonner-native                      | P4    |
+| Code inputs (register, two-factor)     | input-otp-native                   | P5    |
+| `Sheet`, `Overlay`, map sheets         | none: Modal engine and gorhom stay | —     |
 
 ### Feedback & states
 
