@@ -8,43 +8,19 @@ import { ActivityIndicator, StyleSheet, View } from "react-native";
 
 import { brandGradient, useThemeColors } from "@/theme";
 
-import { Icon, type IconName, type IconTone } from "./Icon";
+import {
+  buttonHeight,
+  buttonTone,
+  buttonVariants,
+  type ButtonSize,
+  type ButtonVariant,
+} from "./base/button";
+import { TextClassContext } from "./base/text";
+import { Icon, type IconName } from "./Icon";
 import { Pressable } from "./Pressable";
-import { Text, type TextTone } from "./Text";
+import { Text } from "./Text";
 
-export type ButtonVariant =
-  | "ink"
-  | "ember"
-  | "secondary"
-  | "outline"
-  | "ghost"
-  | "danger";
-export type ButtonSize = "sm" | "md" | "lg";
-
-// Literal class names so Tailwind generates them.
-const BG: Record<ButtonVariant, string> = {
-  ink: "bg-ink",
-  // Flat AA-safe pink under the gradient (shows if the gradient can't paint).
-  ember: "overflow-hidden bg-emberStrong",
-  secondary: "bg-surfaceMuted",
-  outline: "border border-line bg-surface",
-  ghost: "bg-transparent",
-  danger: "bg-danger",
-};
-const FG: Record<ButtonVariant, TextTone & IconTone> = {
-  ink: "onInk",
-  ember: "onEmber",
-  secondary: "ink",
-  outline: "ink",
-  ghost: "ink",
-  danger: "onEmber",
-};
-const HEIGHT: Record<ButtonSize, number> = { sm: 40, md: 52, lg: 60 };
-const PAD: Record<ButtonSize, string> = {
-  sm: "px-lg",
-  md: "px-xl",
-  lg: "px-xl",
-};
+export type { ButtonSize, ButtonVariant };
 
 export type ButtonProps = {
   label: string;
@@ -83,14 +59,9 @@ export function Button({
   // muted grey with a muted label at full opacity (a 40 % ink fill looked
   // like white text on mid-grey).
   const off = disabled && !loading;
-  const fg = off ? "muted" : FG[variant];
-  const bg = off
-    ? variant === "outline"
-      ? BG.outline
-      : variant === "ghost"
-        ? BG.ghost
-        : "bg-surfaceMuted"
-    : BG[variant];
+  const fg = off ? "muted" : buttonTone[variant];
+  const fill =
+    off && variant !== "outline" && variant !== "ghost" ? "muted" : variant;
   const gradient = variant === "ember" && !off;
   return (
     <Pressable
@@ -104,10 +75,8 @@ export function Button({
       onPress={loading ? undefined : onPress}
       dimWhenDisabled={false}
       className={fullWidth ? "w-full" : "self-start"}
-      contentClassName={`flex-row items-center justify-center gap-sm ${PAD[size]} ${
-        rounded === "full" ? "rounded-full" : "rounded-md"
-      } ${bg}`}
-      contentStyle={{ minHeight: HEIGHT[size] }}
+      contentClassName={buttonVariants({ size, rounded, fill })}
+      contentStyle={{ minHeight: buttonHeight[size] }}
     >
       {gradient ? (
         <LinearGradient
@@ -123,13 +92,11 @@ export function Button({
         style={loading ? { opacity: 0 } : undefined}
       >
         {icon ? <Icon name={icon} size="md" tone={fg} /> : null}
-        <Text
-          variant={size === "sm" ? "label" : "body"}
-          weight="semibold"
-          tone={fg}
-        >
-          {label}
-        </Text>
+        <TextClassContext.Provider value={fg}>
+          <Text variant={size === "sm" ? "label" : "body"} weight="semibold">
+            {label}
+          </Text>
+        </TextClassContext.Provider>
       </View>
       {loading ? (
         <View className="absolute inset-0 items-center justify-center">
