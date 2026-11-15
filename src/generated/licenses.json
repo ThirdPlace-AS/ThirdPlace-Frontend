@@ -423,7 +423,7 @@
     },
     {
       "name": "expo",
-      "version": "57.0.32",
+      "version": "57.0.33",
       "license": "MIT",
       "copyright": [
         "Copyright (c) 2015-present 650 Industries, Inc. (aka Expo)"
@@ -456,7 +456,7 @@
     },
     {
       "name": "expo-constants",
-      "version": "57.0.23",
+      "version": "57.0.24",
       "license": "MIT",
       "copyright": [
         "Copyright (c) 2015-present 650 Industries, Inc. (aka Expo)"
@@ -522,7 +522,7 @@
     },
     {
       "name": "expo-linking",
-      "version": "57.0.13",
+      "version": "57.0.14",
       "license": "MIT",
       "copyright": [
         "Copyright (c) 2015-present 650 Industries, Inc. (aka Expo)"
@@ -544,7 +544,7 @@
     },
     {
       "name": "expo-modules-core",
-      "version": "57.0.25",
+      "version": "57.0.26",
       "license": "MIT",
       "copyright": [
         "Copyright (c) 2015-present 650 Industries, Inc. (aka Expo)"
@@ -555,7 +555,7 @@
     },
     {
       "name": "expo-router",
-      "version": "57.0.30",
+      "version": "57.0.31",
       "license": "MIT",
       "copyright": [],
       "author": "650 Industries, Inc.",
