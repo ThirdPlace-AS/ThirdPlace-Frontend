@@ -1,22 +1,30 @@
 import { Ionicons } from "@expo/vector-icons";
-import { useEffect, useSyncExternalStore } from "react";
+import { useMemo } from "react";
 import { View } from "react-native";
-import Animated, { FadeInUp, FadeOutUp } from "react-native-reanimated";
-import { useReducedMotion } from "@/hooks/useReducedMotion";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
+import type { EntryExitAnimationFunction } from "react-native-reanimated";
+import { FadeInUp, FadeOutUp } from "react-native-reanimated";
+import { Toaster, toast } from "sonner-native";
 
 import { Icon, Pressable, Text } from "@/components/ui";
-import { duration, elevation } from "@/theme";
+import { useReducedMotion } from "@/hooks/useReducedMotion";
+import { duration, elevation, gutterPx } from "@/theme";
+
+const CARD_INSET = { marginHorizontal: gutterPx };
+// sonner's positioner has no height of its own (the toast inside is
+// absolute), and Android then leaves the toast out of the accessibility tree:
+// TalkBack could not reach it. A min height above the card's keeps it in; the
+// positioner passes touches through (box-none).
+const POSITIONER = { minHeight: 120 };
 
 // Flytende varsler (PDF p27): a floating banner at the top of the screen —
-// icon, bold title, one-line body. A tiny module store so any screen can call
-// `showToast(...)`; <ToastHost /> is mounted once in the root layout. Toasts
-// are local UI feedback only — they never claim a backend success
-// (callers pass demo-honest copy).
+// icon, bold title, one-line body. `showToast(...)` from any screen; the queue,
+// timers and swipe-to-dismiss are sonner-native's (DESIGN_SYSTEM.md §4, P4),
+// the card is ours. <ToastHost /> is mounted once in the root layout. Toasts
+// are local UI feedback only — they never claim a backend success.
 //
 // Limitation: the host renders in the root layer, so RN Modal-based Sheets
-// draw over it — only call showToast() from screen-level actions, not from
-// inside a Sheet.
+// draw over it on Android (sonner's full-window overlay is iOS only) — close
+// the sheet first, then call showToastAfterSheet().
 export type ToastInput = {
   title: string;
   body?: string;
@@ -25,16 +33,22 @@ export type ToastInput = {
    * "Angre" after removing something. The toast stays 5 s instead of 3.5. */
   action?: { label: string; onPress: () => void };
 };
-type Toast = ToastInput & { id: number };
 
-let current: Toast | null = null;
-let seq = 0;
-const listeners = new Set<() => void>();
-const emit = () => listeners.forEach((l) => l());
+// One toast at a time: a new one replaces the one on screen.
+let currentId: string | number | null = null;
 
 export function showToast(t: ToastInput) {
-  current = { ...t, id: ++seq };
-  emit();
+  if (currentId !== null) toast.dismiss(currentId);
+  const id = toast.custom(<ToastCard toast={t} onClose={dismissToast} />, {
+    duration: t.action ? 5000 : 3500,
+    onAutoClose: (closedId) => {
+      if (closedId === currentId) currentId = null;
+    },
+    onDismiss: (closedId) => {
+      if (closedId === currentId) currentId = null;
+    },
+  });
+  currentId = id;
 }
 
 // Sheets exit in 200 ms; a toast fired from inside one would draw under the
@@ -45,100 +59,104 @@ export function showToastAfterSheet(t: ToastInput) {
 }
 
 export function dismissToast() {
-  current = null;
-  emit();
+  if (currentId === null) return;
+  const id = currentId;
+  currentId = null;
+  toast.dismiss(id);
 }
 
-function subscribe(cb: () => void) {
-  listeners.add(cb);
-  return () => {
-    listeners.delete(cb);
-  };
-}
-
-export function ToastHost() {
-  const toast = useSyncExternalStore(
-    subscribe,
-    () => current,
-    () => current,
-  );
-  const insets = useSafeAreaInsets();
-  const reduced = useReducedMotion();
-
-  useEffect(() => {
-    if (!toast) return;
-    const t = setTimeout(dismissToast, toast.action ? 5000 : 3500);
-    return () => clearTimeout(t);
-  }, [toast]);
-
-  // The host stays mounted so the toast can animate out.
+function ToastCard({
+  toast: t,
+  onClose,
+}: {
+  toast: ToastInput;
+  onClose: () => void;
+}) {
   return (
+    // Row: tap-to-close body + an optional action as a SIBLING (no button
+    // inside a button on web).
+    // Side gutters as a style: sonner's wrapper is full width and the
+    // mx-gutter class did not reach this view on Android.
     <View
-      pointerEvents="box-none"
-      style={{ position: "absolute", left: 0, right: 0, top: insets.top + 8 }}
-      className="px-gutter"
-      accessibilityLiveRegion="polite"
+      className="flex-row items-center rounded-lg bg-ink"
+      style={[CARD_INSET, elevation.e3]}
     >
-      {toast ? (
-        <Animated.View
-          key={toast.id}
-          entering={reduced ? undefined : FadeInUp.duration(duration.base)}
-          exiting={reduced ? undefined : FadeOutUp.duration(duration.fast)}
+      <Pressable
+        accessibilityRole="alert"
+        accessibilityLabel={`${t.title}. ${t.body ?? ""}`}
+        accessibilityHint="Trykk for å lukke"
+        onPress={onClose}
+        pressedScale={0.98}
+        className="flex-1"
+        contentClassName="flex-row items-center gap-md px-md py-md"
+      >
+        <View className="h-9 w-9 items-center justify-center rounded-full bg-onInk/10">
+          <Icon
+            name={t.icon ?? "notifications-outline"}
+            size="md"
+            tone="onInk"
+          />
+        </View>
+        <View className="flex-1 gap-0.5">
+          <Text variant="label" weight="semibold" tone="onInk">
+            {t.title}
+          </Text>
+          {t.body ? (
+            <Text variant="caption" tone="onInk" numberOfLines={2}>
+              {t.body}
+            </Text>
+          ) : null}
+        </View>
+      </Pressable>
+      {t.action ? (
+        <Pressable
+          accessibilityRole="button"
+          accessibilityLabel={t.action.label}
+          hitSlop={8}
+          onPress={() => {
+            const run = t.action?.onPress;
+            onClose();
+            run?.();
+          }}
+          className="pr-md"
+          contentClassName="rounded-full bg-onInk/10 px-md py-2"
         >
-          {/* Row: tap-to-close body + an optional action as a SIBLING (no
-              button inside a button on web). */}
-          <View
-            className="flex-row items-center rounded-lg bg-ink"
-            style={elevation.e3}
-          >
-            <Pressable
-              accessibilityRole="alert"
-              accessibilityLabel={`${toast.title}. ${toast.body ?? ""}`}
-              accessibilityHint="Trykk for å lukke"
-              onPress={dismissToast}
-              pressedScale={0.98}
-              className="flex-1"
-              contentClassName="flex-row items-center gap-md px-md py-md"
-            >
-              <View className="h-9 w-9 items-center justify-center rounded-full bg-onInk/10">
-                <Icon
-                  name={toast.icon ?? "notifications-outline"}
-                  size="md"
-                  tone="onInk"
-                />
-              </View>
-              <View className="flex-1 gap-0.5">
-                <Text variant="label" weight="semibold" tone="onInk">
-                  {toast.title}
-                </Text>
-                {toast.body ? (
-                  <Text variant="caption" tone="onInk" numberOfLines={2}>
-                    {toast.body}
-                  </Text>
-                ) : null}
-              </View>
-            </Pressable>
-            {toast.action ? (
-              <Pressable
-                accessibilityRole="button"
-                accessibilityLabel={toast.action.label}
-                hitSlop={8}
-                onPress={() => {
-                  const run = toast.action?.onPress;
-                  dismissToast();
-                  run?.();
-                }}
-                className="pr-md"
-                contentClassName="rounded-full bg-onInk/10 px-md py-2"
-              >
-                <Text variant="label" weight="semibold" tone="onInk">
-                  {toast.action.label}
-                </Text>
-              </Pressable>
-            ) : null}
-          </View>
-        </Animated.View>
+          <Text variant="label" weight="semibold" tone="onInk">
+            {t.action.label}
+          </Text>
+        </Pressable>
       ) : null}
     </View>
+  );
+}
+
+// "Reduser bevegelse" (the phone's or Tilgjengelighet's): appear and leave in
+// place. sonner only reads the phone's setting, so we pass these ourselves.
+const STILL: EntryExitAnimationFunction = () => {
+  "worklet";
+  return { initialValues: {}, animations: {} };
+};
+const MOTION = {
+  enter: FadeInUp.duration(duration.base),
+  exit: FadeOutUp.duration(duration.fast),
+};
+
+export function ToastHost() {
+  const reduced = useReducedMotion();
+  const animation = useMemo(
+    () => (reduced ? { enter: STILL, exit: STILL } : MOTION),
+    [reduced],
+  );
+  return (
+    <Toaster
+      // No `offset`: with one, sonner drops the safe-area inset and the card
+      // sits under the status bar. Its default is insets.top + 8.
+      position="top-center"
+      positionerStyle={POSITIONER}
+      visibleToasts={1}
+      enableStacking={false}
+      swipeToDismissDirection="up"
+      animation={animation}
+    />
   );
 }
