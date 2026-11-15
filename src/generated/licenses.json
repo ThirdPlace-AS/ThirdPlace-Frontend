@@ -652,6 +652,15 @@
       "shared": false
     },
     {
+      "name": "input-otp-native",
+      "version": "0.6.0",
+      "license": "MIT",
+      "copyright": ["Copyright (c) 2024 Youssouf EL Azizi"],
+      "author": null,
+      "text": "4436a9ca3f",
+      "shared": false
+    },
+    {
       "name": "invariant",
       "version": "2.2.4",
       "license": "MIT",

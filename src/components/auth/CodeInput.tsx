@@ -1,10 +1,16 @@
-import { useRef } from "react";
-import { Pressable, TextInput, View } from "react-native";
+import { OTPInput, REGEXP_ONLY_DIGITS, type SlotProps } from "input-otp-native";
+import { useCallback } from "react";
+import { View } from "react-native";
+
 import { Text } from "@/components/ui";
 
 // Six-box one-time-code entry (PDF p2: "Sjekk innboksen", "Bekreft
-// identiteten"). One hidden TextInput drives the boxes so paste, autofill
-// (textContentType oneTimeCode) and backspace behave natively.
+// identiteten"). input-otp-native (DESIGN_SYSTEM.md §4, P5) drives the boxes
+// from one hidden TextInput, so paste, SMS/one-time-code autofill and
+// backspace behave natively; the boxes are ours.
+//
+// `value` seeds the field once (the library keeps its own state); every
+// change goes out through `onChange`.
 export function CodeInput({
   value,
   onChange,
@@ -14,41 +20,45 @@ export function CodeInput({
   onChange: (v: string) => void;
   length?: number;
 }) {
-  const ref = useRef<TextInput>(null);
+  // Pasted or autofilled text keeps only its digits, so "123 456" from an
+  // SMS still fills all six boxes.
+  const paste = useCallback(
+    (t: string) => t.replace(/\D/g, "").slice(0, length),
+    [length],
+  );
   return (
-    <Pressable
-      accessibilityRole="none"
-      onPress={() => ref.current?.focus()}
-      className="flex-row gap-2"
+    <OTPInput
+      maxLength={length}
+      defaultValue={value}
+      onChange={onChange}
+      pattern={REGEXP_ONLY_DIGITS}
+      pasteTransformer={paste}
+      // A tap focuses the field; it does not wipe what was typed.
+      clearTextOnFocus={false}
+      keyboardType="number-pad"
+      autoFocus
+      accessibilityLabel={`Kode, ${length} siffer`}
+      render={({ slots }) => (
+        <View className="flex-row gap-2">
+          {slots.map((slot, i) => (
+            <Slot key={i} {...slot} />
+          ))}
+        </View>
+      )}
+    />
+  );
+}
+
+function Slot({ char, isActive }: SlotProps) {
+  return (
+    <View
+      className={`h-14 flex-1 items-center justify-center rounded-md border-2 bg-surface ${
+        char ? "border-ink" : isActive ? "border-ink/40" : "border-line"
+      }`}
     >
-      {Array.from({ length }, (_, i) => {
-        const ch = value[i];
-        const active = i === Math.min(value.length, length - 1);
-        return (
-          <View
-            key={i}
-            className={`h-14 flex-1 items-center justify-center rounded-md border-2 bg-surface ${
-              ch ? "border-ink" : active ? "border-ink/40" : "border-line"
-            }`}
-          >
-            <Text variant="h2" accessibilityRole="text">
-              {ch ?? ""}
-            </Text>
-          </View>
-        );
-      })}
-      <TextInput
-        ref={ref}
-        value={value}
-        onChangeText={(t) => onChange(t.replace(/\D/g, "").slice(0, length))}
-        keyboardType="number-pad"
-        textContentType="oneTimeCode"
-        autoComplete="one-time-code"
-        maxLength={length}
-        autoFocus
-        accessibilityLabel={`Kode, ${length} siffer`}
-        className="absolute h-px w-px opacity-0 font-normal"
-      />
-    </Pressable>
+      <Text variant="h2" accessibilityRole="text">
+        {char ?? ""}
+      </Text>
+    </View>
   );
 }

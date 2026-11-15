@@ -140,22 +140,22 @@ Rules when adapting an RNR file:
 - **Kept, not swapped (P3):** `Switch` stays React Native's own (RNR's is a drawn View pair that animates only on web and loses the platform look and screen-reader role); `Accordion` stays ours (Filtre's controlled single-open and auto-advance already work, RNR's adds a dependency for nothing new). `base/checkbox` holds only the indicator tables: `CheckboxMark` / `RadioMark` draw the box or ring inside a row that owns the role, the press and `accessibilityState`; no `@rn-primitives` package.
 - **Selection state:** a checkbox or radio row says `accessibilityState={{ checked }}` (TalkBack reads "checked" / "not checked"); `selected` is for chips and tabs.
 
-| Our primitive                          | RNR base                           | Phase |
-| -------------------------------------- | ---------------------------------- | ----- |
-| `Text`                                 | `text`                             | P2    |
-| `Button`, `IconButton`, `FollowButton` | `button`                           | P2    |
-| `Input`, `SearchBar`                   | `input`                            | P3    |
-| `Switch`                               | none: React Native's `Switch` kept | P3    |
-| `Chip`, `ChipGroup`                    | `toggle`, `toggle-group`           | P3    |
-| `Divider`                              | `separator`                        | P3    |
-| `Badge`                                | `badge`                            | P3    |
-| `Skeleton*`                            | `skeleton`                         | P3    |
-| `Avatar` (expo-image kept)             | `avatar`                           | P3    |
-| `CheckboxMark`, `RadioMark`            | `checkbox`, `radio-group` (tables) | P3    |
-| `Accordion`                            | none: ours kept                    | P3    |
-| Toasts (`showToast`, `confirmToast`)   | sonner-native                      | P4    |
-| Code inputs (register, two-factor)     | input-otp-native                   | P5    |
-| `Sheet`, `Overlay`, map sheets         | none: Modal engine and gorhom stay | —     |
+| Our primitive                                               | RNR base                                                                                                     | Phase |
+| ----------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------ | ----- |
+| `Text`                                                      | `text`                                                                                                       | P2    |
+| `Button`, `IconButton`, `FollowButton`                      | `button`                                                                                                     | P2    |
+| `Input`, `SearchBar`                                        | `input`                                                                                                      | P3    |
+| `Switch`                                                    | none: React Native's `Switch` kept                                                                           | P3    |
+| `Chip`, `ChipGroup`                                         | `toggle`, `toggle-group`                                                                                     | P3    |
+| `Divider`                                                   | `separator`                                                                                                  | P3    |
+| `Badge`                                                     | `badge`                                                                                                      | P3    |
+| `Skeleton*`                                                 | `skeleton`                                                                                                   | P3    |
+| `Avatar` (expo-image kept)                                  | `avatar`                                                                                                     | P3    |
+| `CheckboxMark`, `RadioMark`                                 | `checkbox`, `radio-group` (tables)                                                                           | P3    |
+| `Accordion`                                                 | none: ours kept                                                                                              | P3    |
+| Toasts (`showToast`, `confirmToast`)                        | sonner-native                                                                                                | P4    |
+| `CodeInput` (`/verify-code`, after register and two-factor) | input-otp-native, our boxes; digits only, a tap keeps the code, a pasted or autofilled code keeps its digits | P5    |
+| `Sheet`, `Overlay`, map sheets                              | none: Modal engine and gorhom stay                                                                           | —     |
 
 ### Feedback & states
 
