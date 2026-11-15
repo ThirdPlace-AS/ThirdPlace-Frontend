@@ -20,7 +20,7 @@ export type { SkeletonRadius };
 export function Skeleton({
   height = 16,
   width,
-  rounded = "md",
+  rounded: radius = "md",
 }: {
   height?: number;
   width?: number | `${number}%`;
@@ -42,7 +42,7 @@ export function Skeleton({
 
   return (
     <Animated.View style={[{ height, width: width ?? "100%" }, style]}>
-      <View className={skeletonClass({ rounded })} />
+      <View className={skeletonClass({ rounded: radius })} />
     </Animated.View>
   );
 }
