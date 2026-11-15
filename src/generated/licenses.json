@@ -1,7 +1,7 @@
 {
   "packages": [
     {
-      "name": "@expo-google-fonts/dm-sans",
+      "name": "@expo-google-fonts/inter",
       "version": "0.4.2",
       "license": "MIT AND OFL-1.1",
       "copyright": ["Copyright (c) 2020 Expo"],
@@ -411,17 +411,6 @@
       "shared": false
     },
     {
-      "name": "DM Sans (skrift)",
-      "version": "0.4.2",
-      "license": "OFL-1.1",
-      "copyright": [
-        "Copyright 2014 The DM Sans Project Authors (https://github.com/googlefonts/dm-fonts)"
-      ],
-      "author": null,
-      "text": "0b304b33b0",
-      "shared": false
-    },
-    {
       "name": "escape-string-regexp",
       "version": "4.0.0",
       "license": "MIT",
@@ -658,6 +647,17 @@
       "copyright": ["Copyright (c) 2024 Youssouf EL Azizi"],
       "author": null,
       "text": "4436a9ca3f",
+      "shared": false
+    },
+    {
+      "name": "Inter (skrift)",
+      "version": "0.4.2",
+      "license": "OFL-1.1",
+      "copyright": [
+        "Copyright 2020 The Inter Project Authors (https://github.com/rsms/inter)"
+      ],
+      "author": null,
+      "text": "0b304b33b0",
       "shared": false
     },
     {

@@ -23,7 +23,7 @@ module.exports = {
       fontSize,
     },
   },
-  // DM Sans is one family per weight (Android ignores fontWeight for custom
+  // Inter is one family per weight (Android ignores fontWeight for custom
   // fonts), so weight utilities select the family instead of setting
   // fontWeight. Later entries win when several are present (cascade order),
   // so "font-normal" on a Text is overridden by any heavier weight class.

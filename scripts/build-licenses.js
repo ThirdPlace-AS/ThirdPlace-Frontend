@@ -10,7 +10,7 @@
 // package's package.json ("license") and its own LICENSE / COPYING file. The
 // texts are never typed by hand. Copyright lines stay with each package; the
 // rest of each text is stored once and shared (most MIT texts differ only in
-// the copyright line). The DM Sans font's OFL text comes from the font
+// the copyright line). The Inter font's OFL text comes from the font
 // package's own LICENSE_FONT. A package published without a licence file
 // gets its author from package.json and, when it is MIT, the MIT text most
 // MIT packages in the bundle ship (marked `shared`; the MIT text differs only
@@ -158,7 +158,7 @@ function main() {
     ROOT,
     "node_modules",
     "@expo-google-fonts",
-    "dm-sans",
+    "inter",
   );
   const fontPkg = JSON.parse(
     fs.readFileSync(path.join(fontDir, "package.json"), "utf8"),
@@ -167,7 +167,7 @@ function main() {
     fs.readFileSync(path.join(fontDir, "LICENSE_FONT"), "utf8"),
   );
   packages.push({
-    name: "DM Sans (skrift)",
+    name: "Inter (skrift)",
     version: fontPkg.version,
     license: "OFL-1.1",
     copyright: font.copyright,

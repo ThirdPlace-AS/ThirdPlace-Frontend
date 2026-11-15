@@ -179,7 +179,7 @@ export default function ThemeSandbox() {
         <Section title="Skrift">
           <View className="gap-xs rounded-lg border border-line bg-surface p-gutter">
             <UIText variant="micro" tone="muted">
-              DM Sans · valgt 2026-11-05
+              Inter · valgt 2026-11-15
             </UIText>
             <SpecimenLines />
           </View>

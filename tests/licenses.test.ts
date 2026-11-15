@@ -34,7 +34,7 @@ describe("Lisenser", () => {
       "react-native",
       "expo-router",
       "@rnmapbox/maps",
-      "DM Sans (skrift)",
+      "Inter (skrift)",
     ]) {
       expect(names.has(n)).toBe(true);
     }

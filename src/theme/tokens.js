@@ -201,12 +201,12 @@ const fontSize = {
   micro: ["11px", { lineHeight: "14px", letterSpacing: "0.4px" }],
 };
 
-/** DM Sans family name per weight (loaded in app/_layout via src/theme/fonts.ts). */
+/** Inter family name per weight (loaded in app/_layout via src/theme/fonts.ts). */
 const fontFamily = {
-  regular: "DMSans_400Regular",
-  medium: "DMSans_500Medium",
-  semibold: "DMSans_600SemiBold",
-  bold: "DMSans_700Bold",
+  regular: "Inter_400Regular",
+  medium: "Inter_500Medium",
+  semibold: "Inter_600SemiBold",
+  bold: "Inter_700Bold",
 };
 
 module.exports = {

@@ -44,10 +44,10 @@ native API but marked unverified until a device build runs
 
 ## C. Founder-approval-required (visual/product deviations)
 
-| ID   | Item                                            | Note                                                                                                                                             |
-| ---- | ----------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
-| FA-1 | Provisional tokens/typography                   | Palette (Airbnb, 0227) and DM Sans (2026-11-05) are founder decisions; type sizes and motion values are still marked provisional in `src/theme/` |
-| FA-2 | For You / Friends mode presence                 | non-personalized shells without markers (0215); confirm these modes should appear                                                                |
-| FA-3 | Mock vibe/time/price-NOK filter fields          | added to fixtures as non-contract; confirm UX bands                                                                                              |
-| FA-4 | Any deviation from `ThirdPlace_All_Screens.pdf` | documented per milestone with screenshots                                                                                                        |
-| FA-5 | Phase 10 additions without a PDF slot           | Nylig sett, group swipe from Lagret, Lagre til senere, Til samtalen, Neste plan — approved 2026-11-06 (SCREEN_INVENTORY)                         |
+| ID   | Item                                            | Note                                                                                                                                                                        |
+| ---- | ----------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| FA-1 | Provisional tokens/typography                   | Palette (Airbnb, 0227) and Inter (user 2026-11-15, replacing DM Sans) are founder/user decisions; type sizes and motion values are still marked provisional in `src/theme/` |
+| FA-2 | For You / Friends mode presence                 | non-personalized shells without markers (0215); confirm these modes should appear                                                                                           |
+| FA-3 | Mock vibe/time/price-NOK filter fields          | added to fixtures as non-contract; confirm UX bands                                                                                                                         |
+| FA-4 | Any deviation from `ThirdPlace_All_Screens.pdf` | documented per milestone with screenshots                                                                                                                                   |
+| FA-5 | Phase 10 additions without a PDF slot           | Nylig sett, group swipe from Lagret, Lagre til senere, Til samtalen, Neste plan — approved 2026-11-06 (SCREEN_INVENTORY)                                                    |
