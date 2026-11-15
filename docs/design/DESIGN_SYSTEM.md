@@ -130,8 +130,9 @@ RNR components are copied in with its CLI (`components.json`, `ui` alias `@/comp
 Rules when adapting an RNR file:
 
 - **Colours:** shadcn slots alias our tokens: `primary` = ink / onInk, `secondary` and `accent` = surfaceMuted / ink, `destructive` = danger / onDanger, `card` and `popover` = surface / ink, `border` and `input` = line, `ring` and `foreground` = ink. shadcn's `bg-muted` becomes `bg-surfaceMuted` (colour classes use the camelCase keys) and `text-muted-foreground` becomes `text-muted`. Pink stays `ember*`.
-- **No `dark:` and no `active:` / `hover:` / `focus-visible:` classes:** the theme switches through CSS variables, and press feedback comes from our `Pressable`.
-- **Type and icons:** no `text-sm`-style sizes (labels take `<Text variant>`, which reads RNR's `TextClassContext`), no lucide (Ionicons through `<Icon>`).
+- **No `dark:` and no `active:` / `hover:` / `focus-visible:` classes (nor their `group-` forms):** the theme switches through CSS variables, and press feedback comes from our `Pressable`.
+- **Type and icons:** no `text-sm`-style sizes (labels take `<Text variant>`), no lucide (Ionicons through `<Icon>`). `base/text` holds the variant and tone tables (cva) and `TextClassContext`, which here carries a **tone, not a class string**: a component sets its label colour with it, an explicit `tone` prop wins, ink otherwise. `Text` keeps its exact class string (no `cn()`), so no screen changes.
+- **No breakpoint variants** (`sm:` and up) and no kebab colour keys; `tests/designGuard.test.ts` checks `base/` for all of these.
 - **Sizes:** NativeWind's `inlineRem` stays 14; RNR's sizes are adapted, not the rem.
 - **Class merging:** `cn()` in `src/lib/utils.ts` uses tailwind-merge extended with our font-size, colour, radius and spacing keys, so `cn("text-display", "text-ink")` keeps both.
 - **Haptics:** only the moments allowed in `tests/designGuard.test.ts`; library defaults that vibrate are switched off.

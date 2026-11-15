@@ -2,47 +2,21 @@
 // Use `variant` for size/line-height and `tone` for colour instead of raw
 // `text-sm`/`text-[11px]`/`font-bold` classes. Weight picks the font family
 // (custom fonts need one family per weight on Android).
+import { useContext } from "react";
 import { Text as RNText, type TextProps as RNTextProps } from "react-native";
 
 import { useTextScale } from "@/lib/a11yPrefs";
 import { fontSizes } from "@/theme";
 import { fontFamilyFor, type FontWeight } from "@/theme/fonts";
 
-export type TextVariant =
-  | "display"
-  | "h1"
-  | "h2"
-  | "title"
-  | "body"
-  | "label"
-  | "caption"
-  | "micro";
+import {
+  TextClassContext,
+  textVariants,
+  type TextTone,
+  type TextVariant,
+} from "./base/text";
 
-export type TextTone =
-  | "ink"
-  | "muted"
-  | "inverse"
-  | "onInk"
-  | "ember"
-  | "success"
-  | "danger"
-  | "warning"
-  | "onEmber"
-  | "onSuccess"
-  | "onDanger"
-  | "onMedia";
-
-// Literal class names so Tailwind's content scan generates them.
-const VARIANT_CLASS: Record<TextVariant, string> = {
-  display: "text-display",
-  h1: "text-h1",
-  h2: "text-h2",
-  title: "text-title",
-  body: "text-body",
-  label: "text-label",
-  caption: "text-caption",
-  micro: "text-micro uppercase",
-};
+export type { TextTone, TextVariant };
 
 const DEFAULT_WEIGHT: Record<TextVariant, FontWeight> = {
   display: "bold",
@@ -53,21 +27,6 @@ const DEFAULT_WEIGHT: Record<TextVariant, FontWeight> = {
   label: "medium",
   caption: "regular",
   micro: "medium",
-};
-
-const TONE_CLASS: Record<TextTone, string> = {
-  ink: "text-ink",
-  muted: "text-muted",
-  inverse: "text-onInk",
-  onInk: "text-onInk",
-  ember: "text-emberText",
-  success: "text-successText",
-  danger: "text-dangerText",
-  warning: "text-warningText",
-  onEmber: "text-onEmber",
-  onSuccess: "text-onSuccess",
-  onDanger: "text-onDanger",
-  onMedia: "text-onMedia",
 };
 
 // Size and line height per variant (tokens.js fontSize), for "Større tekst"
@@ -95,7 +54,7 @@ export type TextProps = RNTextProps & {
 export function Text({
   variant = "body",
   weight,
-  tone = "ink",
+  tone,
   className,
   style,
   accessibilityRole,
@@ -103,12 +62,15 @@ export function Text({
 }: TextProps) {
   const fontFamily = fontFamilyFor(weight ?? DEFAULT_WEIGHT[variant]);
   const scale = useTextScale();
+  // An explicit tone wins; else the colour a parent component set (base
+  // TextClassContext); else ink.
+  const contextTone = useContext(TextClassContext);
   return (
     <RNText
       accessibilityRole={
         accessibilityRole ?? (HEADING.has(variant) ? "header" : undefined)
       }
-      className={`${VARIANT_CLASS[variant]} ${TONE_CLASS[tone]}${
+      className={`${textVariants({ variant, tone: tone ?? contextTone })}${
         className ? ` ${className}` : ""
       }`}
       style={[
