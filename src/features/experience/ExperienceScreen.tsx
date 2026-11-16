@@ -25,8 +25,9 @@ import { PageTopBar } from "@/features/entity/PageTopBar";
 import { goBackOr } from "@/lib/navigation";
 import { elevation } from "@/theme";
 
-// The floating join card's height (py-3 around the join bar, border).
-const JOIN_CARD = 76;
+// The floating join card's height before it is measured (0440: 110 dp on
+// a 411 dp phone, the join bar wraps to two lines).
+const JOIN_CARD = 110;
 
 export default function ExperienceScreen() {
   const { id = "" } = useLocalSearchParams<{ id: string }>();
@@ -51,6 +52,7 @@ export default function ExperienceScreen() {
 export function ExperiencePageBody({ exp }: { exp: MockExperience }) {
   const insets = useSafeAreaInsets();
   const [sub, setSub] = useState<SheetTarget[]>([]);
+  const [cardH, setCardH] = useState(JOIN_CARD);
   const top = sub[sub.length - 1];
   return (
     <View className="flex-1 bg-background">
@@ -64,7 +66,7 @@ export function ExperiencePageBody({ exp }: { exp: MockExperience }) {
         contentContainerClassName="px-gutter pt-4"
         // The last section ends 24 above the floating join card.
         contentContainerStyle={{
-          paddingBottom: Math.max(insets.bottom, 12) + 4 + JOIN_CARD + 24,
+          paddingBottom: Math.max(insets.bottom, 12) + 4 + cardH + 24,
         }}
         keyboardShouldPersistTaps="handled"
       >
@@ -83,6 +85,10 @@ export function ExperiencePageBody({ exp }: { exp: MockExperience }) {
         <View
           className="rounded-md border border-line bg-surface px-4 py-3"
           style={elevation.e2}
+          onLayout={(e) => {
+            const h = Math.round(e.nativeEvent.layout.height);
+            if (h > 0 && h !== cardH) setCardH(h);
+          }}
         >
           <ExperienceJoinBar id={exp.id} />
         </View>
