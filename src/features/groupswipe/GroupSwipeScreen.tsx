@@ -282,7 +282,7 @@ export default function GroupSwipeScreen() {
             <MemberRow key={f.id} person={f} ready={ready.includes(f.id)} />
           ))}
           {filters.length || time ? (
-            <View className="gap-2 rounded-md border border-line bg-surface p-3">
+            <View className="gap-2 rounded-md border border-line bg-surface p-4">
               <Text variant="title" accessibilityRole="header">
                 Økt-innstillinger
               </Text>

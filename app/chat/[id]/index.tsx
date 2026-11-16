@@ -277,13 +277,13 @@ export default function ChatThreadScreen() {
         />
 
         {chat.status === "archived" ? (
-          <View className="border-t border-line px-gutter pb-3 pt-3">
+          <View className="border-t border-line px-gutter py-3">
             <Text variant="caption" tone="muted" className="text-center">
               Arkivert. Du kan lese, men ikke sende meldinger.
             </Text>
           </View>
         ) : isGuest ? (
-          <View className="border-t border-line px-gutter pb-2 pt-3">
+          <View className="border-t border-line px-gutter py-3">
             <Button
               label="Logg inn for å skrive"
               variant="ink"
