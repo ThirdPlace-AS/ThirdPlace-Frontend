@@ -3,7 +3,12 @@ import { useMemo, useState } from "react";
 import { FlatList, Pressable, ScrollView, View } from "react-native";
 
 import { RateSheet, SpotOfferSheet } from "@/components/actions/ActionSheets";
-import { Pressable as UIPressable, Screen, Text } from "@/components/ui";
+import {
+  pageBody,
+  Pressable as UIPressable,
+  Screen,
+  Text,
+} from "@/components/ui";
 import { Chip } from "@/components/Chip";
 import { AddToCalendarLink } from "@/components/AddToCalendarLink";
 import { CountdownChip, planCountdown } from "@/components/CountdownChip";
@@ -83,7 +88,7 @@ export default function PlansScreen() {
       <FlatList
         data={rows}
         keyExtractor={(p) => `${p.state}-${p.experienceId}`}
-        contentContainerClassName="gap-2 px-gutter pb-12 pt-4 flex-grow"
+        contentContainerClassName={pageBody.items}
         ListHeaderComponent={
           <View className="gap-3 pb-2">
             {/* One scrolling row (like the map chips) instead of a wrap that

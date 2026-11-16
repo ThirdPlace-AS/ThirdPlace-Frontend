@@ -17,6 +17,7 @@ import {
   Icon,
   IconButton,
   type IconName,
+  pageBody,
   Pressable as UIPressable,
   Screen,
   Sheet,
@@ -297,7 +298,7 @@ export function AddWizard() {
         {/* New step: fresh scroll at its top, faded in. */}
         <FadeSwap swapKey={step} style={{ flex: 1 }}>
           <ScrollView
-            contentContainerClassName="gap-6 p-gutter pb-8"
+            contentContainerClassName={pageBody.sections}
             keyboardShouldPersistTaps="handled"
           >
             <StepBody step={step} draft={draft} patch={patch} />

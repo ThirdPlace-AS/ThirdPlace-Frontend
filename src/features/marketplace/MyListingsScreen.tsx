@@ -34,7 +34,7 @@ export default function MyListingsScreen() {
   return (
     <Screen edges={["top"]}>
       <RouteHeader title="Mine listings" />
-      <ScrollView contentContainerClassName="gap-3 px-gutter py-4 pb-28">
+      <ScrollView contentContainerClassName="grow gap-3 px-gutter pb-28 pt-4">
         <ScrollRow radio>
           {TABS.map((t) => (
             <Chip

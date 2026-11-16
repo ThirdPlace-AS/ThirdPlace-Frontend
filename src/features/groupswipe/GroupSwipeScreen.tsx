@@ -11,16 +11,17 @@ import {
 } from "react-native";
 import {
   Avatar,
-  Icon,
   BACK_ICON,
+  FadeSwap,
+  Icon,
   IconButton,
   ListRow,
+  pageBody,
+  Pressable as UIPressable,
   Screen,
-  FadeSwap,
   ScrollRow,
   StickyFooter,
   Text,
-  Pressable as UIPressable,
 } from "@/components/ui";
 import { Button } from "@/components/Button";
 import { Chip } from "@/components/Chip";
@@ -131,7 +132,7 @@ export default function GroupSwipeScreen() {
       {phase === "setup" ? (
         <KeyboardAvoidingView behavior="padding" className="flex-1">
           <ScrollView
-            contentContainerClassName="gap-4 p-gutter pb-8"
+            contentContainerClassName={pageBody.blocks}
             keyboardShouldPersistTaps="handled"
           >
             <Text variant="display">Start gruppe-sveip</Text>
@@ -259,7 +260,7 @@ export default function GroupSwipeScreen() {
       ) : null}
 
       {phase === "lobby" ? (
-        <ScrollView contentContainerClassName="gap-4 p-gutter pb-8">
+        <ScrollView contentContainerClassName={pageBody.blocks}>
           <Text variant="display" accessibilityRole="text">
             {title}
           </Text>
@@ -331,7 +332,7 @@ export default function GroupSwipeScreen() {
       ) : null}
 
       {phase === "swipe" && card ? (
-        <ScrollView contentContainerClassName="gap-4 p-gutter pb-8">
+        <ScrollView contentContainerClassName={pageBody.blocks}>
           {/* Next card fades in (it swapped in one frame). */}
           <FadeSwap swapKey={card.id} style={{ gap: 16 }}>
             <View className="overflow-hidden rounded-lg bg-ink">

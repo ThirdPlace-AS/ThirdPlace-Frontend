@@ -10,15 +10,16 @@ import {
 
 import { Switch } from "@/components/ui/Switch";
 import {
+  FadeSwap,
   Icon,
+  type IconName,
+  pageBody,
   Pressable as UIPressable,
   Screen,
   StepContent,
   StepHeader,
   StickyFooter,
-  type IconName,
   Text,
-  FadeSwap,
 } from "@/components/ui";
 import { Button } from "@/components/Button";
 import { Chip } from "@/components/Chip";
@@ -199,7 +200,7 @@ export default function Onboarding() {
         {/* New step: fresh scroll at its top, faded in. */}
         <FadeSwap swapKey={step} style={{ flex: 1 }}>
           <ScrollView
-            contentContainerClassName="gap-6 p-gutter pb-8"
+            contentContainerClassName={pageBody.sections}
             keyboardShouldPersistTaps="handled"
           >
             {step === 0 ? (

@@ -2,7 +2,7 @@ import { router, useLocalSearchParams } from "expo-router";
 import { useEffect, useState } from "react";
 import { ScrollView, View } from "react-native";
 
-import { Screen, Text as UIText } from "@/components/ui";
+import { pageBody, Screen, Text as UIText } from "@/components/ui";
 import { CodeInput } from "@/components/auth/CodeInput";
 import { Button } from "@/components/Button";
 import { ScreenHeader } from "@/components/ScreenHeader";
@@ -45,7 +45,7 @@ export default function VerifyCode() {
   return (
     <Screen>
       <ScrollView
-        contentContainerClassName="gap-6 p-gutter"
+        contentContainerClassName={pageBody.sections}
         keyboardShouldPersistTaps="handled"
       >
         <ScreenHeader

@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { ScrollView, View } from "react-native";
 
-import { Screen, Text } from "@/components/ui";
+import { pageBody, Screen, Text } from "@/components/ui";
 import { Button } from "@/components/Button";
 import { Input } from "@/components/Input";
 import { ScreenHeader } from "@/components/ScreenHeader";
@@ -20,7 +20,7 @@ export default function ResetPassword() {
   return (
     <Screen>
       <ScrollView
-        contentContainerClassName="gap-6 p-gutter"
+        contentContainerClassName={pageBody.sections}
         keyboardShouldPersistTaps="handled"
       >
         <ScreenHeader

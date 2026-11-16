@@ -7,7 +7,7 @@ import {
   View,
 } from "react-native";
 
-import { Screen, Text } from "@/components/ui";
+import { pageBody, Screen, Text } from "@/components/ui";
 import { Button } from "@/components/Button";
 import { Input } from "@/components/Input";
 import { ScreenHeader } from "@/components/ScreenHeader";
@@ -23,7 +23,7 @@ export default function ForgotPassword() {
           so the button under the fields can be scrolled to. */}
       <KeyboardAvoidingView behavior="padding" className="flex-1">
         <ScrollView
-          contentContainerClassName="gap-6 p-gutter"
+          contentContainerClassName={pageBody.sections}
           // The first tap on a button lands while the keyboard is open.
           keyboardShouldPersistTaps="handled"
         >

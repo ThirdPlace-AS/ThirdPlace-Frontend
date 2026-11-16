@@ -8,6 +8,7 @@ import {
   FadeSwap,
   Field,
   Icon,
+  pageBody,
   Screen,
   StepContent,
   StepHeader,
@@ -133,7 +134,7 @@ export default function BusinessOnboarding() {
         {/* New step: fresh scroll at its top, faded in. */}
         <FadeSwap swapKey={step} style={{ flex: 1 }}>
           <ScrollView
-            contentContainerClassName="gap-4 p-gutter pb-8"
+            contentContainerClassName={pageBody.blocks}
             keyboardShouldPersistTaps="handled"
           >
             {step === 2 ? (

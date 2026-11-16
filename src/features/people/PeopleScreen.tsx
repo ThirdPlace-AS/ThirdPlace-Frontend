@@ -59,7 +59,7 @@ export default function PeopleScreen() {
       <FlatList
         data={list}
         keyExtractor={(p) => p.id}
-        contentContainerClassName="px-gutter pb-10"
+        contentContainerClassName="px-gutter pb-12"
         ListEmptyComponent={
           <EmptyState
             fill={false}
