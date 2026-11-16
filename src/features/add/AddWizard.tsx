@@ -361,11 +361,10 @@ function KindMenu({ onPick }: { onPick: (k: AddKind) => void }) {
     },
   ];
   return (
-    <View
-      className="flex-1 justify-end bg-background"
-      style={{ paddingTop: insets.top }}
-    >
-      <View className="gap-3 p-gutter pb-6">
+    // Starts at the top like every page (it sat at the bottom, leaving
+    // half the screen empty above it).
+    <View className="flex-1 bg-background" style={{ paddingTop: insets.top }}>
+      <View className="gap-3 px-gutter pb-12 pt-4">
         <Text variant="h1" className="pb-1">
           Hva vil du legge til?
         </Text>

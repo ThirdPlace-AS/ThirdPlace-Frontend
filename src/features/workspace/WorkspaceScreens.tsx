@@ -310,7 +310,7 @@ export function WorkspaceAnalytics() {
           {STATS[range].map(([v, l]) => (
             <View
               key={l}
-              className="w-[48%] gap-1 rounded-md bg-surfaceMuted p-4"
+              className="min-w-[40%] flex-1 gap-1 rounded-md bg-surfaceMuted p-4"
             >
               <Text variant="h1" accessibilityRole="text">
                 {v}
