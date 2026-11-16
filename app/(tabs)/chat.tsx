@@ -15,7 +15,8 @@ import {
   Text,
   EmptyState,
 } from "@/components/ui";
-import { ItemActionsSheet } from "@/components/actions/ActionSheets";
+import type { ItemAction } from "@/components/actions/ActionSheets";
+import { ContextMenu } from "@/components/actions/ContextMenu";
 import { ChatRow } from "@/features/chat/ChatRow";
 import { useCreatedVersion } from "@/fixtures/created";
 import { isMember, useJoinedChats } from "@/lib/joinedChats";
@@ -46,7 +47,6 @@ export default function ChatScreen() {
   const { unread: unreadNotifs } = useNotificationReads();
   const pins = usePinnedChats();
   const reads = useChatReads();
-  const [actionsFor, setActionsFor] = useState<MockChat | null>(null);
 
   const q = query.trim().toLowerCase();
   // Experience and place chats the viewer has not joined stay out of the list.
@@ -98,14 +98,40 @@ export default function ChatScreen() {
 
   const openChat = (c: MockChat) =>
     router.push({ pathname: "/chat/[id]", params: { id: c.id } });
+  // Long press: pin or unpin, and mark as read when there is something new.
+  const actionsOf = (c: MockChat): ItemAction[] => [
+    isPinned(c)
+      ? {
+          label: "Løsne",
+          icon: "remove-circle-outline",
+          onPress: () => togglePinnedChat(c.id),
+        }
+      : {
+          label: "Fest øverst",
+          icon: "pin-outline",
+          onPress: () => togglePinnedChat(c.id),
+        },
+    ...(unreadOf(c, reads) > 0
+      ? [
+          {
+            label: "Merk som lest",
+            icon: "checkmark-done-outline" as const,
+            onPress: () => markChatRead(c.id),
+          },
+        ]
+      : []),
+  ];
   const row = (c: MockChat) => (
-    <ChatRow
-      key={c.id}
-      chat={c}
-      pinned={isPinned(c)}
-      onPress={() => openChat(c)}
-      onLongPress={() => setActionsFor(c)}
-    />
+    <ContextMenu key={c.id} title={c.name} actions={actionsOf(c)}>
+      {(openMenu) => (
+        <ChatRow
+          chat={c}
+          pinned={isPinned(c)}
+          onPress={() => openChat(c)}
+          onLongPress={openMenu}
+        />
+      )}
+    </ContextMenu>
   );
 
   const reorderPinned = (next: MockChat[]) =>
@@ -223,35 +249,6 @@ export default function ChatScreen() {
         onPress={() => router.push("/chat/new" as Href)}
         className="absolute bottom-6 right-4"
       />
-
-      {actionsFor ? (
-        <ItemActionsSheet
-          title={actionsFor.name}
-          actions={[
-            isPinned(actionsFor)
-              ? {
-                  label: "Løsne",
-                  icon: "remove-circle-outline",
-                  onPress: () => togglePinnedChat(actionsFor.id),
-                }
-              : {
-                  label: "Fest øverst",
-                  icon: "pin-outline",
-                  onPress: () => togglePinnedChat(actionsFor.id),
-                },
-            ...(unreadOf(actionsFor, reads) > 0
-              ? [
-                  {
-                    label: "Merk som lest",
-                    icon: "checkmark-done-outline" as const,
-                    onPress: () => markChatRead(actionsFor.id),
-                  },
-                ]
-              : []),
-          ]}
-          onClose={() => setActionsFor(null)}
-        />
-      ) : null}
     </Screen>
   );
 }

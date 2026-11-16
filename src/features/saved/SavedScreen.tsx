@@ -14,10 +14,8 @@ import { gutterPx, motion } from "@/theme";
 import { Chip } from "@/components/Chip";
 import { RouteHeader } from "@/components/RouteHeader";
 import { showToast } from "@/components/Toast";
-import {
-  ItemActionsSheet,
-  ShareSheet,
-} from "@/components/actions/ActionSheets";
+import { ShareSheet } from "@/components/actions/ActionSheets";
+import { ContextMenu } from "@/components/actions/ContextMenu";
 import { EmptyState } from "@/components/states/StateView";
 import { useMapSaved } from "@/components/map/hooks/useMapSaved";
 import { useGuestMode } from "@/components/map/hooks/useGuestMode";
@@ -76,11 +74,6 @@ export default function SavedScreen() {
     k.startsWith("experience:"),
   ).length;
   const [filter, setFilter] = useState<Kind | null>(null);
-  // Long-press on a row (Phase 18): Fjern, Del, Vis på kartet.
-  const [actionsFor, setActionsFor] = useState<{
-    key: string;
-    title: string;
-  } | null>(null);
   const [shareFor, setShareFor] = useState<{
     key: string;
     title: string;
@@ -237,77 +230,75 @@ export default function SavedScreen() {
                 reduced ? undefined : FadeOut.duration(motion.duration.fast)
               }
             >
-              <ListRow
-                variant="card"
+              {/* Long press (Phase 18): Fjern, Del, Vis på kartet. */}
+              <ContextMenu
                 title={item.title}
-                subtitle={item.meta}
-                onLongPress={() =>
-                  setActionsFor({ key: item.key, title: item.title })
-                }
-                // Everything opens its page (a business opens its place).
-                onPress={() => router.push(item.href)}
-                leading={
-                  place ? (
-                    <Image
-                      source={libThumb(coverForPlace(place))}
-                      contentFit="cover"
-                      style={{ height: 48, width: 48, borderRadius: 8 }}
-                      accessible={false}
-                    />
-                  ) : (
-                    <View className="h-12 w-12 rounded-sm bg-surfaceMuted" />
-                  )
-                }
-                trailing={
-                  <HeartToggle
-                    kind="bookmark"
-                    selected
-                    variant="ghost"
-                    size="sm"
-                    label={`Fjern ${item.title} fra lagret`}
-                    onToggle={() => unsave(item.key, item.title)}
+                actions={[
+                  {
+                    label: "Fjern fra Lagret",
+                    icon: "bookmark-outline",
+                    afterClose: true,
+                    onPress: () => unsave(item.key, item.title),
+                  },
+                  {
+                    label: "Del",
+                    icon: "share-outline",
+                    afterClose: true,
+                    onPress: () =>
+                      setShareFor({ key: item.key, title: item.title }),
+                  },
+                  {
+                    label: "Vis på kartet",
+                    icon: "map-outline",
+                    afterClose: true,
+                    onPress: () =>
+                      router.navigate({
+                        pathname: "/map",
+                        params: {
+                          focus: item.mapKey,
+                          at: String(Date.now()),
+                        },
+                      }),
+                  },
+                ]}
+              >
+                {(openMenu) => (
+                  <ListRow
+                    variant="card"
+                    title={item.title}
+                    subtitle={item.meta}
+                    onLongPress={openMenu}
+                    // Everything opens its page (a business opens its place).
+                    onPress={() => router.push(item.href)}
+                    leading={
+                      place ? (
+                        <Image
+                          source={libThumb(coverForPlace(place))}
+                          contentFit="cover"
+                          style={{ height: 48, width: 48, borderRadius: 8 }}
+                          accessible={false}
+                        />
+                      ) : (
+                        <View className="h-12 w-12 rounded-sm bg-surfaceMuted" />
+                      )
+                    }
+                    trailing={
+                      <HeartToggle
+                        kind="bookmark"
+                        selected
+                        variant="ghost"
+                        size="sm"
+                        label={`Fjern ${item.title} fra lagret`}
+                        onToggle={() => unsave(item.key, item.title)}
+                      />
+                    }
                   />
-                }
-              />
+                )}
+              </ContextMenu>
             </Animated.View>
           );
         }}
       />
-      {actionsFor ? (
-        <ItemActionsSheet
-          title={actionsFor.title}
-          onClose={() => setActionsFor(null)}
-          actions={[
-            {
-              label: "Fjern fra Lagret",
-              icon: "bookmark-outline",
-              afterClose: true,
-              onPress: () => unsave(actionsFor.key, actionsFor.title),
-            },
-            {
-              label: "Del",
-              icon: "share-outline",
-              afterClose: true,
-              onPress: () => setShareFor(actionsFor),
-            },
-            {
-              label: "Vis på kartet",
-              icon: "map-outline",
-              afterClose: true,
-              onPress: () =>
-                router.navigate({
-                  pathname: "/map",
-                  params: {
-                    focus:
-                      rows.find((r) => r.key === actionsFor.key)?.mapKey ??
-                      actionsFor.key,
-                    at: String(Date.now()),
-                  },
-                }),
-            },
-          ]}
-        />
-      ) : null}
       {shareFor ? (
         <ShareSheet
           title={shareFor.title}
