@@ -19,6 +19,7 @@ import {
   Page,
   Pressable as UIPressable,
   RadioMark,
+  Section,
   Text,
   type IconName,
 } from "@/components/ui";
@@ -180,40 +181,39 @@ export function AccountScreen() {
         label="Aldersverifisering"
         href="/age-verification"
       />
-      <Text variant="title" accessibilityRole="header" className="pt-1">
-        Aktive økter
-      </Text>
-      {sessions.map((s) => (
-        <Session
-          key={s.id}
-          icon={s.icon}
-          name={s.name}
-          meta={s.meta}
-          onSignOut={
-            s.current
-              ? undefined
-              : () => {
-                  setSessions((list) => list.filter((x) => x.id !== s.id));
-                  showToast(confirmToast.sessionSignedOut);
-                }
-          }
-        />
-      ))}
-      {sessions.some((s) => !s.current) ? (
-        <UIPressable
-          accessibilityRole="button"
-          onPress={() => {
-            setSessions((list) => list.filter((x) => x.current));
-            showToast(confirmToast.otherSessionsSignedOut);
-          }}
-          hitSlop={{ top: 12, bottom: 12, left: 8, right: 8 }}
-          className="self-start"
-        >
-          <Text variant="label" weight="semibold" tone="danger">
-            Logg ut alle andre enheter
-          </Text>
-        </UIPressable>
-      ) : null}
+      <Section title="Aktive økter" className="pt-2">
+        {sessions.map((s) => (
+          <Session
+            key={s.id}
+            icon={s.icon}
+            name={s.name}
+            meta={s.meta}
+            onSignOut={
+              s.current
+                ? undefined
+                : () => {
+                    setSessions((list) => list.filter((x) => x.id !== s.id));
+                    showToast(confirmToast.sessionSignedOut);
+                  }
+            }
+          />
+        ))}
+        {sessions.some((s) => !s.current) ? (
+          <UIPressable
+            accessibilityRole="button"
+            onPress={() => {
+              setSessions((list) => list.filter((x) => x.current));
+              showToast(confirmToast.otherSessionsSignedOut);
+            }}
+            hitSlop={{ top: 12, bottom: 12, left: 8, right: 8 }}
+            className="self-start"
+          >
+            <Text variant="label" weight="semibold" tone="danger">
+              Logg ut alle andre enheter
+            </Text>
+          </UIPressable>
+        ) : null}
+      </Section>
     </FormPage>
   );
 }
@@ -323,54 +323,56 @@ export function LinkedAccountsScreen() {
 // Varsler (PDF p19): PUSH categories + STILLE TIMER.
 export function NotificationSettingsScreen() {
   return (
-    <Page title="Varsler">
-      <Text variant="title" accessibilityRole="header">
-        Push
-      </Text>
-      <ToggleList
-        initial={{
-          Opplevelser: true,
-          Venteliste: true,
-          Venner: true,
-          Chat: true,
-        }}
-        items={[
-          {
-            label: "Opplevelser",
-            hint: "24t og 1t før, «skjer nå»",
-            icon: "tp-experience",
-          },
-          {
-            label: "Venteliste",
-            hint: "Når plass åpner seg",
-            icon: "time-outline",
-          },
-          {
-            label: "Venner",
-            hint: "Betydelige handlinger fra venner",
-            icon: "people-outline",
-          },
-          { label: "Chat", hint: "Nye meldinger", icon: "chatbubble-outline" },
-          {
-            label: "Anbefalinger",
-            hint: "Nye matcher i nærheten",
-            icon: "star-outline",
-          },
-        ]}
-      />
-      <Text variant="title" accessibilityRole="header">
-        Stille timer
-      </Text>
-      <ToggleList
-        initial={{ "Ikke forstyrr 23–08": true }}
-        items={[
-          {
-            label: "Ikke forstyrr 23–08",
-            hint: "Push holdes til morgenen",
-            icon: "moon-outline",
-          },
-        ]}
-      />
+    <Page title="Varsler" density="sections">
+      <Section title="Push" rows>
+        <ToggleList
+          initial={{
+            Opplevelser: true,
+            Venteliste: true,
+            Venner: true,
+            Chat: true,
+          }}
+          items={[
+            {
+              label: "Opplevelser",
+              hint: "24t og 1t før, «skjer nå»",
+              icon: "tp-experience",
+            },
+            {
+              label: "Venteliste",
+              hint: "Når plass åpner seg",
+              icon: "time-outline",
+            },
+            {
+              label: "Venner",
+              hint: "Betydelige handlinger fra venner",
+              icon: "people-outline",
+            },
+            {
+              label: "Chat",
+              hint: "Nye meldinger",
+              icon: "chatbubble-outline",
+            },
+            {
+              label: "Anbefalinger",
+              hint: "Nye matcher i nærheten",
+              icon: "star-outline",
+            },
+          ]}
+        />
+      </Section>
+      <Section title="Stille timer" rows>
+        <ToggleList
+          initial={{ "Ikke forstyrr 23–08": true }}
+          items={[
+            {
+              label: "Ikke forstyrr 23–08",
+              hint: "Push holdes til morgenen",
+              icon: "moon-outline",
+            },
+          ]}
+        />
+      </Section>
     </Page>
   );
 }
@@ -380,7 +382,7 @@ export function LanguageScreen() {
   const langs = ["Norsk (bokmål)", "English", "Svenska", "Dansk"];
   const [lang, setLang] = useState(langs[0]);
   return (
-    <Page title="Språk og region">
+    <Page title="Språk og region" density="sections">
       <View className="gap-2" accessibilityRole="radiogroup">
         {langs.map((l) => (
           <UIPressable
@@ -396,13 +398,12 @@ export function LanguageScreen() {
           </UIPressable>
         ))}
       </View>
-      <Text variant="title" accessibilityRole="header" className="pt-2">
-        Region
-      </Text>
-      <View className="overflow-hidden rounded-md border border-line bg-surface">
-        <NavRow icon="cash-outline" label="Valuta" value="NOK (kr)" />
-        <NavRow icon="time-outline" label="Tidssone" value="Oslo (CET)" />
-      </View>
+      <Section title="Region">
+        <View className="overflow-hidden rounded-md border border-line bg-surface">
+          <NavRow icon="cash-outline" label="Valuta" value="NOK (kr)" />
+          <NavRow icon="time-outline" label="Tidssone" value="Oslo (CET)" />
+        </View>
+      </Section>
     </Page>
   );
 }
@@ -416,7 +417,7 @@ export function LanguageScreen() {
 export function AccessibilitySettingsScreen() {
   const prefs = useA11yPrefs();
   return (
-    <Page title="Tilgjengelighet">
+    <Page title="Tilgjengelighet" density="sections">
       <View style={{ marginHorizontal: -gutterPx }}>
         <ToggleRow
           icon="text-outline"
@@ -432,18 +433,17 @@ export function AccessibilitySettingsScreen() {
           onValueChange={(v) => setA11yPrefs({ reduceMotion: v })}
         />
       </View>
-      <Text variant="title" accessibilityRole="header">
-        Kart
-      </Text>
-      <View style={{ marginHorizontal: -gutterPx }}>
-        <ToggleRow
-          icon="accessibility-outline"
-          label="Vis kun rullestolvennlige"
-          hint="Filtrerer steder automatisk"
-          value={prefs.wheelchairOnly}
-          onValueChange={(v) => setA11yPrefs({ wheelchairOnly: v })}
-        />
-      </View>
+      <Section title="Kart" rows>
+        <View style={{ marginHorizontal: -gutterPx }}>
+          <ToggleRow
+            icon="accessibility-outline"
+            label="Vis kun rullestolvennlige"
+            hint="Filtrerer steder automatisk"
+            value={prefs.wheelchairOnly}
+            onValueChange={(v) => setA11yPrefs({ wheelchairOnly: v })}
+          />
+        </View>
+      </Section>
     </Page>
   );
 }
@@ -459,15 +459,14 @@ export function HelpScreen() {
   ];
   return (
     <Page title="Hjelp og støtte">
-      <Text variant="title" accessibilityRole="header">
-        Vanlige spørsmål
-      </Text>
-      <View className="overflow-hidden rounded-md border border-line bg-surface">
-        {faq.map((q) => (
-          // Topics only: no answers exist yet, so the rows are not links.
-          <NavRow key={q} icon="help-circle-outline" label={q} />
-        ))}
-      </View>
+      <Section title="Vanlige spørsmål">
+        <View className="overflow-hidden rounded-md border border-line bg-surface">
+          {faq.map((q) => (
+            // Topics only: no answers exist yet, so the rows are not links.
+            <NavRow key={q} icon="help-circle-outline" label={q} />
+          ))}
+        </View>
+      </Section>
       <Button
         label="Opprett supportsak"
         variant="ink"

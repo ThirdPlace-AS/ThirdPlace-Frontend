@@ -7,6 +7,7 @@ import {
   pageBody,
   Pressable as UIPressable,
   Screen,
+  Section,
   Text,
 } from "@/components/ui";
 import { RouteHeader } from "@/components/RouteHeader";
@@ -52,50 +53,50 @@ export default function AgeVerificationScreen() {
   return (
     <Screen edges={["top"]}>
       <RouteHeader title="Aldersverifisering" />
-      <ScrollView contentContainerClassName={pageBody.blocks}>
+      <ScrollView contentContainerClassName={pageBody.sections}>
         <Text variant="caption" tone="muted">
           Noen opplevelser krever verifisert alder. Bekreft alderen din for
           tilgang.
         </Text>
 
-        <Text variant="title" accessibilityRole="header">
-          Verifiseringsmetode
-        </Text>
-        {METHODS.map((m) => (
-          <UIPressable
-            key={m.key}
-            accessibilityRole="button"
-            accessibilityState={{ selected: chosen === m.label }}
-            onPress={() => setChosen(m.label)}
-            contentClassName={`flex-row items-center gap-3 rounded-md border bg-surface p-4 ${
-              chosen === m.label ? "border-ink" : "border-line"
-            }`}
-            pressedScale={0.99}
-          >
-            <Icon name={m.icon} size="md" tone="ink" />
-            <View className="flex-1">
-              <Text variant="body" weight="semibold">
-                {m.label}
-              </Text>
-              <Text variant="caption" tone="muted">
-                {m.hint}
-              </Text>
-            </View>
-            <Icon name="chevron-forward" size="sm" tone="muted" />
-          </UIPressable>
-        ))}
+        <Section title="Verifiseringsmetode">
+          {METHODS.map((m) => (
+            <UIPressable
+              key={m.key}
+              accessibilityRole="button"
+              accessibilityState={{ selected: chosen === m.label }}
+              onPress={() => setChosen(m.label)}
+              contentClassName={`flex-row items-center gap-3 rounded-md border bg-surface p-4 ${
+                chosen === m.label ? "border-ink" : "border-line"
+              }`}
+              pressedScale={0.99}
+            >
+              <Icon name={m.icon} size="md" tone="ink" />
+              <View className="flex-1">
+                <Text variant="body" weight="semibold">
+                  {m.label}
+                </Text>
+                <Text variant="caption" tone="muted">
+                  {m.hint}
+                </Text>
+              </View>
+              <Icon name="chevron-forward" size="sm" tone="muted" />
+            </UIPressable>
+          ))}
+        </Section>
 
-        <Text variant="title" accessibilityRole="header">
-          Fordeler
-        </Text>
-        {BENEFITS.map((b) => (
-          <View key={b} className="flex-row items-center gap-2">
-            <Icon name="checkmark" size="sm" tone="success" />
-            <Text variant="label" weight="regular">
-              {b}
-            </Text>
+        <Section title="Fordeler">
+          <View className="gap-2">
+            {BENEFITS.map((b) => (
+              <View key={b} className="flex-row items-center gap-2">
+                <Icon name="checkmark" size="sm" tone="success" />
+                <Text variant="label" weight="regular">
+                  {b}
+                </Text>
+              </View>
+            ))}
           </View>
-        ))}
+        </Section>
       </ScrollView>
     </Screen>
   );

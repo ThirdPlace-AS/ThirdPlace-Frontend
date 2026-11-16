@@ -2,7 +2,7 @@ import type { ImageProps } from "expo-image";
 import type { ReactNode } from "react";
 import { View } from "react-native";
 
-import { Avatar, Chip, Icon, ListRow, Text } from "@/components/ui";
+import { Avatar, Chip, Icon, ListRow, Section, Text } from "@/components/ui";
 
 export type PublicExperience = { id: string; title: string; when: string };
 
@@ -81,13 +81,11 @@ export function PersonProfileBody({
       ) : null}
 
       {hosted.length > 0 ? (
-        <View className="gap-2">
-          <Text variant="title" accessibilityRole="header">
-            Offentlige opplevelser
-          </Text>
+        <Section title="Offentlige opplevelser">
           {hosted.map((h) => (
             <ListRow
               key={h.id}
+              variant="card"
               icon="pricetag-outline"
               title={h.title}
               subtitle={`Vert · ${h.when}`}
@@ -96,7 +94,7 @@ export function PersonProfileBody({
               }
             />
           ))}
-        </View>
+        </Section>
       ) : null}
 
       {actions}

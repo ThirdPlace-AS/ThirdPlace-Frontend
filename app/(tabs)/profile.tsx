@@ -6,15 +6,16 @@ import { ScrollView, View } from "react-native";
 import { Button } from "@/components/Button";
 import { CountdownChip, planCountdown } from "@/components/CountdownChip";
 import {
+  Avatar,
   Header,
   Icon,
   IconButton,
-  Screen,
-  Avatar,
-  ListRow,
-  Pressable as UIPressable,
-  Text,
   type IconName,
+  ListRow,
+  pageBody,
+  Pressable as UIPressable,
+  Screen,
+  Text,
 } from "@/components/ui";
 import { GuestLock } from "@/components/GuestLock";
 import { HintBanner } from "@/components/HintBanner";
@@ -60,7 +61,7 @@ export default function ProfileScreen() {
 
   return (
     <Screen edges={["top"]}>
-      <ScrollView contentContainerClassName="gap-6 p-gutter pb-10">
+      <ScrollView contentContainerClassName={pageBody.sections}>
         <Header
           title="Profil"
           size="large"
@@ -128,7 +129,7 @@ export default function ProfileScreen() {
 
             {/* Counted from the follow lists (src/lib/following.ts); each
                 opens its list (PDF p13). */}
-            <View className="flex-row items-center gap-8">
+            <View className="flex-row items-center gap-6">
               <Stat
                 value={counts.followers}
                 label="Følgere"

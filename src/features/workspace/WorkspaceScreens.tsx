@@ -9,6 +9,7 @@ import {
   pageBody,
   Pressable as UIPressable,
   Screen,
+  Section,
   Text,
 } from "@/components/ui";
 import { byStart } from "@/features/workspace/calendarOrder";
@@ -320,13 +321,12 @@ export function WorkspaceAnalytics() {
             </View>
           ))}
         </View>
-        <Text variant="title" accessibilityRole="header">
-          Visninger siste periode
-        </Text>
-        <Chart
-          values={BARS[range]}
-          accessibilityLabel="Visninger siste periode: stolpediagram"
-        />
+        <Section title="Visninger siste periode" className="pt-2">
+          <Chart
+            values={BARS[range]}
+            accessibilityLabel="Visninger siste periode: stolpediagram"
+          />
+        </Section>
       </ScrollView>
     </Screen>
   );

@@ -122,12 +122,9 @@ export default function PersonScreen() {
                   fullWidth
                 />
               </View>
-              <Button
-                label="Melding"
-                variant="secondary"
-                fullWidth={false}
-                onPress={message}
-              />
+              <View className="flex-1">
+                <Button label="Melding" variant="secondary" onPress={message} />
+              </View>
             </View>
           }
         />

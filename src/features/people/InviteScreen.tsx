@@ -1,7 +1,7 @@
 import { router } from "expo-router";
 import { ScrollView, Share, View } from "react-native";
 
-import { pageBody, Screen, Text } from "@/components/ui";
+import { pageBody, Screen, Section, Text } from "@/components/ui";
 import { Button } from "@/components/Button";
 import { RouteHeader } from "@/components/RouteHeader";
 import { showToast } from "@/components/Toast";
@@ -20,63 +20,62 @@ export default function InviteScreen() {
   return (
     <Screen edges={["top"]}>
       <RouteHeader title="Inviter venner" />
-      <ScrollView contentContainerClassName={pageBody.blocks}>
+      <ScrollView contentContainerClassName={pageBody.sections}>
         <Text variant="caption" tone="muted">
           Del ThirdPlace med vennene dine.
         </Text>
-        <Text variant="title" accessibilityRole="header">
-          Din kode
-        </Text>
-        <View className="items-center rounded-md border border-line bg-surface py-4">
-          <Text variant="h1" className="tracking-widest">
-            OLA-TP2026
-          </Text>
-        </View>
-        <View className="flex-row gap-3">
-          <View className="flex-1">
-            <Button
-              label="Kopier lenke"
-              variant="secondary"
-              onPress={() => showToast(confirmToast.linkCopied)}
-            />
+        <Section title="Din kode">
+          <View className="items-center rounded-md border border-line bg-surface py-4">
+            <Text variant="h1" className="tracking-widest">
+              OLA-TP2026
+            </Text>
           </View>
-          <View className="flex-1">
-            <Button
-              label="Del via …"
-              variant="ember"
-              onPress={() =>
-                void Share.share({
-                  message: "Bli med på ThirdPlace: thirdplace.app/i/OLA-TP2026",
-                })
-              }
-            />
-          </View>
-        </View>
-
-        <Button
-          label="Inviter kontakter"
-          variant="secondary"
-          onPress={() => router.push("/invite-contacts")}
-        />
-
-        <Text variant="title" accessibilityRole="header">
-          Aktivitet
-        </Text>
-        <View className="flex-row gap-2">
-          {ACTIVITY.map((a) => (
-            <View
-              key={a.label}
-              className="flex-1 items-center gap-1 rounded-md border border-line bg-surface py-3"
-            >
-              <Text variant="h2" weight="bold" accessibilityRole="text">
-                {a.value}
-              </Text>
-              <Text variant="caption" tone="muted">
-                {a.label}
-              </Text>
+          <View className="flex-row gap-3">
+            <View className="flex-1">
+              <Button
+                label="Kopier lenke"
+                variant="secondary"
+                onPress={() => showToast(confirmToast.linkCopied)}
+              />
             </View>
-          ))}
-        </View>
+            <View className="flex-1">
+              <Button
+                label="Del via …"
+                variant="ember"
+                onPress={() =>
+                  void Share.share({
+                    message:
+                      "Bli med på ThirdPlace: thirdplace.app/i/OLA-TP2026",
+                  })
+                }
+              />
+            </View>
+          </View>
+
+          <Button
+            label="Inviter kontakter"
+            variant="secondary"
+            onPress={() => router.push("/invite-contacts")}
+          />
+        </Section>
+
+        <Section title="Aktivitet">
+          <View className="flex-row gap-2">
+            {ACTIVITY.map((a) => (
+              <View
+                key={a.label}
+                className="flex-1 items-center gap-1 rounded-md border border-line bg-surface py-3"
+              >
+                <Text variant="h2" weight="bold" accessibilityRole="text">
+                  {a.value}
+                </Text>
+                <Text variant="caption" tone="muted">
+                  {a.label}
+                </Text>
+              </View>
+            ))}
+          </View>
+        </Section>
       </ScrollView>
     </Screen>
   );

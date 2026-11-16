@@ -2,7 +2,14 @@ import { router } from "expo-router";
 import { useState } from "react";
 import { Pressable, ScrollView, View } from "react-native";
 
-import { Badge, pageBody, Screen, ScrollRow, Text } from "@/components/ui";
+import {
+  Badge,
+  pageBody,
+  Screen,
+  ScrollRow,
+  Section,
+  Text,
+} from "@/components/ui";
 import { Button } from "@/components/Button";
 import { Chip } from "@/components/Chip";
 import { RouteHeader } from "@/components/RouteHeader";
@@ -18,34 +25,37 @@ export function PayoutsScreen() {
   return (
     <Screen edges={["top"]}>
       <RouteHeader title="Utbetalinger" />
-      <ScrollView contentContainerClassName={pageBody.blocks}>
+      <ScrollView contentContainerClassName={pageBody.sections}>
         <Text variant="caption" tone="muted">
           Sett opp hvordan du mottar penger fra opplevelser.
         </Text>
 
-        <Section>Utbetalingsmetode</Section>
-        <Pressable
-          accessibilityRole="button"
-          accessibilityState={{ disabled: true }}
-          disabled
-          className="items-center rounded-md border border-dashed border-line py-4 opacity-50"
-        >
-          <Text variant="label" weight="semibold">
-            + Legg til bankkonto
-          </Text>
-        </Pressable>
-        <Section>Valuta</Section>
-        <View className="rounded-md border border-line bg-surface px-4 py-4">
-          <Text variant="label" weight="regular">
-            NOK · norske kroner
-          </Text>
-        </View>
-        <Section>Utbetalingshistorikk</Section>
-        <EmptyState
-          icon="wallet-outline"
-          title="Ingen utbetalinger ennå"
-          message="Når du arrangerer betalte opplevelser, vises utbetalingene her."
-        />
+        <Section title="Utbetalingsmetode">
+          <Pressable
+            accessibilityRole="button"
+            accessibilityState={{ disabled: true }}
+            disabled
+            className="items-center rounded-md border border-dashed border-line py-4 opacity-50"
+          >
+            <Text variant="label" weight="semibold">
+              + Legg til bankkonto
+            </Text>
+          </Pressable>
+        </Section>
+        <Section title="Valuta">
+          <View className="rounded-md border border-line bg-surface p-4">
+            <Text variant="label" weight="regular">
+              NOK · norske kroner
+            </Text>
+          </View>
+        </Section>
+        <Section title="Utbetalingshistorikk">
+          <EmptyState
+            icon="wallet-outline"
+            title="Ingen utbetalinger ennå"
+            message="Når du arrangerer betalte opplevelser, vises utbetalingene her."
+          />
+        </Section>
       </ScrollView>
     </Screen>
   );
@@ -130,13 +140,5 @@ export function SubmissionsScreen() {
         />
       </ScrollView>
     </Screen>
-  );
-}
-
-function Section({ children }: { children: string }) {
-  return (
-    <Text variant="title" accessibilityRole="header">
-      {children}
-    </Text>
   );
 }

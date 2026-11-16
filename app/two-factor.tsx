@@ -7,6 +7,7 @@ import {
   pageBody,
   Pressable as UIPressable,
   Screen,
+  Section,
   Text,
 } from "@/components/ui";
 import { Switch } from "@/components/ui/Switch";
@@ -58,50 +59,46 @@ export default function TwoFactor() {
 
         {on ? (
           <>
-            <Text variant="title" accessibilityRole="header">
-              Metode
-            </Text>
-            {methods.map((m) => {
-              const active = method === m.key;
-              return (
-                <UIPressable
-                  key={m.key}
-                  accessibilityRole="radio"
-                  accessibilityState={{ checked: active }}
-                  onPress={() => setMethod(m.key)}
-                  contentClassName={`flex-row items-center gap-3 rounded-md border bg-surface p-4 ${
-                    active ? "border-ink" : "border-line"
-                  }`}
-                  pressedScale={0.99}
-                >
-                  <Icon name={m.icon} size="md" tone="ink" />
-                  <View className="flex-1">
-                    <Text variant="body" weight="semibold">
-                      {m.label}
-                    </Text>
-                    <Text variant="caption" tone="muted">
-                      {m.hint}
-                    </Text>
-                  </View>
-                  <View
-                    className={`h-5 w-5 items-center justify-center rounded-full border-2 ${
-                      active ? "border-ink bg-ink" : "border-line"
+            <Section title="Metode" className="pt-2">
+              {methods.map((m) => {
+                const active = method === m.key;
+                return (
+                  <UIPressable
+                    key={m.key}
+                    accessibilityRole="radio"
+                    accessibilityState={{ checked: active }}
+                    onPress={() => setMethod(m.key)}
+                    contentClassName={`flex-row items-center gap-3 rounded-md border bg-surface p-4 ${
+                      active ? "border-ink" : "border-line"
                     }`}
+                    pressedScale={0.99}
                   >
-                    {active ? (
-                      <Icon name="checkmark" size="sm" tone="onInk" />
-                    ) : null}
-                  </View>
-                </UIPressable>
-              );
-            })}
+                    <Icon name={m.icon} size="md" tone="ink" />
+                    <View className="flex-1">
+                      <Text variant="body" weight="semibold">
+                        {m.label}
+                      </Text>
+                      <Text variant="caption" tone="muted">
+                        {m.hint}
+                      </Text>
+                    </View>
+                    <View
+                      className={`h-5 w-5 items-center justify-center rounded-full border-2 ${
+                        active ? "border-ink bg-ink" : "border-line"
+                      }`}
+                    >
+                      {active ? (
+                        <Icon name="checkmark" size="sm" tone="onInk" />
+                      ) : null}
+                    </View>
+                  </UIPressable>
+                );
+              })}
+            </Section>
 
             {method === "app" ? (
-              <>
-                <Text variant="title" accessibilityRole="header">
-                  QR-kode
-                </Text>
-                <View className="items-center gap-2 rounded-md border border-line bg-surface p-6">
+              <Section title="QR-kode" className="pt-2">
+                <View className="items-center gap-2 rounded-md border border-line bg-surface p-4">
                   <View
                     className="items-center justify-center rounded-md bg-surfaceMuted"
                     style={{ height: 128, width: 128 }}
@@ -112,7 +109,7 @@ export default function TwoFactor() {
                     Skann med autentiseringsappen
                   </Text>
                 </View>
-              </>
+              </Section>
             ) : null}
 
             <Text variant="caption" tone="muted">

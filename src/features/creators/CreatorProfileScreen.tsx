@@ -2,7 +2,14 @@ import { router, useLocalSearchParams, type Href } from "expo-router";
 import { useState } from "react";
 import { ScrollView, View } from "react-native";
 
-import { Avatar, FollowButton, pageBody, Screen, Text } from "@/components/ui";
+import {
+  Avatar,
+  FollowButton,
+  pageBody,
+  Screen,
+  Section,
+  Text,
+} from "@/components/ui";
 import { Button } from "@/components/Button";
 import { RouteHeader } from "@/components/RouteHeader";
 import { EmptyState } from "@/components/states/StateView";
@@ -35,7 +42,7 @@ export default function CreatorProfileScreen() {
   return (
     <Screen edges={["top"]}>
       <RouteHeader title="Skaper" />
-      <ScrollView contentContainerClassName={pageBody.blocks}>
+      <ScrollView contentContainerClassName={pageBody.sections}>
         <View className="items-center gap-2">
           <Avatar
             name={person.name}
@@ -82,34 +89,32 @@ export default function CreatorProfileScreen() {
           </View>
         </View>
 
-        <Text variant="title" accessibilityRole="header">
-          Kommende
-        </Text>
-        {hosted.length > 0 ? (
-          hosted.map((h) => (
-            <View
-              key={h.id}
-              className="gap-1 rounded-md border border-line bg-surface p-4"
-            >
-              <Text variant="body" weight="semibold">
-                {h.title}
-              </Text>
-              <Text variant="caption" tone="muted">
-                {h.when}
-              </Text>
-            </View>
-          ))
-        ) : (
+        <Section title="Kommende">
+          {hosted.length > 0 ? (
+            hosted.map((h) => (
+              <View
+                key={h.id}
+                className="gap-1 rounded-md border border-line bg-surface p-4"
+              >
+                <Text variant="body" weight="semibold">
+                  {h.title}
+                </Text>
+                <Text variant="caption" tone="muted">
+                  {h.when}
+                </Text>
+              </View>
+            ))
+          ) : (
+            <Text variant="caption" tone="muted">
+              Ingen kommende opplevelser.
+            </Text>
+          )}
+        </Section>
+        <Section title="Tidligere">
           <Text variant="caption" tone="muted">
-            Ingen kommende opplevelser.
+            Tidligere opplevelser vises her når de finnes.
           </Text>
-        )}
-        <Text variant="title" accessibilityRole="header">
-          Tidligere
-        </Text>
-        <Text variant="caption" tone="muted">
-          Tidligere opplevelser vises her når de finnes.
-        </Text>
+        </Section>
       </ScrollView>
     </Screen>
   );
