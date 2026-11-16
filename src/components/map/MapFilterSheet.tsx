@@ -1354,7 +1354,8 @@ function FilterBody({
         <Text variant="h1" accessibilityRole="header">
           Filtre
         </Text>
-        {searchRows}
+        {/* pb-2: 24 above the first divider, like each section's (8 + gap 16). */}
+        <View className="pb-2">{searchRows}</View>
 
         {/* All sections mount with the sheet: on the production bundle the
             400 ms deferral made the lower half settle 1.2–1.4 s after the tap
