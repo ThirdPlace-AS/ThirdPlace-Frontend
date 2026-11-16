@@ -49,7 +49,7 @@ export default function CreatorWelcomeScreen() {
     router.canGoBack() ? router.back() : router.replace("/profile");
   return (
     <Screen>
-      <ScrollView contentContainerClassName="gap-6 px-gutter pb-8 pt-12">
+      <ScrollView contentContainerClassName="grow justify-center gap-6 px-gutter py-12">
         <View className="items-center gap-4">
           <View
             accessible
@@ -70,7 +70,7 @@ export default function CreatorWelcomeScreen() {
           </Text>
         </View>
 
-        <View className="gap-2">
+        <View className="gap-3">
           {ROWS.map((r) => (
             <ListRow
               key={r.title}

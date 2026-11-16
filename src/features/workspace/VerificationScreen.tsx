@@ -10,6 +10,7 @@ import {
   pageBody,
   Pressable as UIPressable,
   Screen,
+  Section,
   Text,
 } from "@/components/ui";
 import { businessById } from "@/fixtures";
@@ -133,10 +134,7 @@ function VerificationBody({
         ))}
       </View>
 
-      <View className="gap-2">
-        <Text variant="label" weight="semibold" accessibilityRole="header">
-          Dokumenter
-        </Text>
+      <Section title="Dokumenter">
         {verificationDocs(verified).map((d) => (
           <View
             key={d.name}
@@ -153,7 +151,7 @@ function VerificationBody({
             />
           </View>
         ))}
-      </View>
+      </Section>
 
       <UIPressable
         accessibilityRole="link"

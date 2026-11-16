@@ -86,7 +86,7 @@ export function AllReviewsScreen({ kind }: { kind: "experience" | "place" }) {
         keyboardShouldPersistTaps="handled"
         contentContainerClassName="px-gutter pb-12"
         ListHeaderComponent={
-          <View className="gap-1 pb-4 pt-2">
+          <View className="gap-1 pb-4 pt-4">
             <Text variant="display" accessibilityRole="header">
               {count ? `★ ${formatRating(score)}` : "Ingen vurderinger ennå"}
             </Text>

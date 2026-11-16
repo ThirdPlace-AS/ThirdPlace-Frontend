@@ -20,6 +20,7 @@ import {
   ListRow,
   Page,
   PhotoViewer,
+  Section,
   Text,
   Pressable as UIPressable,
 } from "@/components/ui";
@@ -37,7 +38,7 @@ import {
   type MockPerson,
 } from "@/fixtures";
 import { interestById } from "@/fixtures/catalog/interests";
-import { libImage, libThumb, smallImage } from "@/fixtures/images";
+import { libImage, smallImage } from "@/fixtures/images";
 import { chatInviteSlug } from "@/lib/entityRoutes";
 import { leaveChat } from "@/lib/joinedChats";
 
@@ -111,56 +112,58 @@ export function ChatInfoScreen() {
     else showToast(confirmToast.muted);
   };
   return (
-    <Page title={chat.name}>
-      <Text variant="caption" tone="muted">
-        {CHAT_TYPE_LABEL[chat.type]} · {CHAT_ACCESS_LABEL[chat.access]}
-      </Text>
-      {exp ? (
-        <ListRow
-          variant="card"
-          icon="pricetag-outline"
-          title={exp.title}
-          subtitle={`Tilknyttet opplevelse · ${exp.when}`}
-          onPress={() => router.push(`/experience/${exp.id}` as Href)}
-        />
-      ) : null}
-      <View className="flex-row items-center justify-between">
-        <Text variant="label" weight="semibold">
-          Medlemmer
+    <Page title={chat.name} density="sections">
+      <View className="gap-4">
+        <Text variant="caption" tone="muted">
+          {CHAT_TYPE_LABEL[chat.type]} · {CHAT_ACCESS_LABEL[chat.access]}
         </Text>
-        <Pressable
-          accessibilityRole="button"
-          onPress={() => router.push(`/chat/${chat.id}/members` as Href)}
-          hitSlop={8}
-        >
-          <Text variant="label" weight="semibold" className="underline">
-            {`Se alle (${chat.members ?? members.length})`}
-          </Text>
-        </Pressable>
+        {exp ? (
+          <ListRow
+            variant="card"
+            icon="pricetag-outline"
+            title={exp.title}
+            subtitle={`Tilknyttet opplevelse · ${exp.when}`}
+            onPress={() => router.push(`/experience/${exp.id}` as Href)}
+          />
+        ) : null}
       </View>
-      {members.slice(0, 3).map((m) => (
-        <MemberRow key={m.person.id} {...m} />
-      ))}
-      <Text variant="label" weight="semibold">
-        Delte bilder
-      </Text>
-      <View className="flex-row gap-2">
-        {SHARED.map((src, i) => (
+      <Section
+        title="Medlemmer"
+        trailing={
           <Pressable
-            key={i}
-            accessibilityRole="imagebutton"
-            accessibilityLabel={`Delt bilde ${i + 1}`}
-            onPress={() => setViewer(i)}
-            className="flex-1"
+            accessibilityRole="button"
+            onPress={() => router.push(`/chat/${chat.id}/members` as Href)}
+            hitSlop={8}
           >
-            <Image
-              source={smallImage(src)}
-              contentFit="cover"
-              style={{ aspectRatio: 1, width: "100%", borderRadius: 8 }}
-            />
+            <Text variant="label" weight="semibold" className="underline">
+              {`Se alle (${chat.members ?? members.length})`}
+            </Text>
           </Pressable>
+        }
+      >
+        {members.slice(0, 3).map((m) => (
+          <MemberRow key={m.person.id} {...m} />
         ))}
-      </View>
+      </Section>
+      <Section title="Delte bilder">
+        <View className="flex-row gap-2">
+          {SHARED.map((src, i) => (
+            <Pressable
+              key={i}
+              accessibilityRole="imagebutton"
+              accessibilityLabel={`Delt bilde ${i + 1}`}
+              onPress={() => setViewer(i)}
+              className="flex-1"
+            >
+              <Image
+                source={smallImage(src)}
+                contentFit="cover"
+                style={{ aspectRatio: 1, width: "100%", borderRadius: 8 }}
+              />
+            </Pressable>
+          ))}
+        </View>
+      </Section>
       <View className="flex-row gap-2">
         {[
           { icon: "notifications-off-outline" as const, label: "Demp" },
@@ -221,7 +224,7 @@ export function ChatMembersScreen() {
     m.person.name.toLowerCase().includes(q.trim().toLowerCase()),
   );
   return (
-    <Page title="Medlemmer">
+    <Page title="Medlemmer" density="list">
       <Text variant="caption" tone="muted">
         {chat.members ?? all.length} i chatten
       </Text>
@@ -250,62 +253,62 @@ export function ChatInviteScreen() {
   if (!chat) return <Missing title="Inviter til chat" />;
   const slug = chatInviteSlug(chat.name);
   return (
-    <Page title="Inviter til chat">
+    <Page title="Inviter til chat" density="sections">
       <SearchField
         autoFocus={false}
         value={q}
         onChange={setQ}
         placeholder="Søk brukere …"
       />
-      <Text variant="title" accessibilityRole="header">
-        Del invitasjonslenke
-      </Text>
-      <View className="gap-1 rounded-md border border-line bg-surface p-3">
-        <Text variant="label" weight="regular" tone="ember">
-          thirdplace.app/join/{slug}
-        </Text>
-        <UIPressable
-          accessibilityRole="button"
-          hitSlop={{ top: 12, bottom: 12, left: 8, right: 8 }}
-          onPress={() => showToast(confirmToast.linkCopied)}
-          className="self-start"
-        >
-          <Text variant="caption" weight="semibold" tone="ember">
-            Kopier lenke
+      <Section title="Del invitasjonslenke">
+        <View className="gap-1 rounded-md border border-line bg-surface p-3">
+          <Text variant="label" weight="regular" tone="ember">
+            thirdplace.app/join/{slug}
           </Text>
-        </UIPressable>
-      </View>
-      <View className="items-center gap-2 rounded-md border border-line bg-surface p-4">
-        <Icon name="qr-code-outline" size="3xl" tone="muted" />
-        <Text variant="caption" tone="muted">
-          QR-kode
-        </Text>
-      </View>
-      <Text variant="title" accessibilityRole="header">
-        Foreslåtte
-      </Text>
-      {people
-        .filter((p) => p.name.toLowerCase().includes(q.trim().toLowerCase()))
-        .slice(0, 4)
-        .map((p) => (
-          <View
-            key={p.id}
-            className="flex-row items-center gap-3 rounded-md border border-line bg-surface p-3"
+          <UIPressable
+            accessibilityRole="button"
+            hitSlop={{ top: 12, bottom: 12, left: 8, right: 8 }}
+            onPress={() => showToast(confirmToast.linkCopied)}
+            className="self-start"
           >
-            <Image
-              source={libThumb(p.avatar)}
-              style={{ height: 36, width: 36, borderRadius: 18 }}
-            />
-            <Text variant="label" weight="semibold" className="flex-1">
-              {p.name}
+            <Text variant="caption" weight="semibold" tone="ember">
+              Kopier lenke
             </Text>
-            <Button
-              label={done.includes(p.id) ? "Invitert" : "Inviter"}
-              variant={done.includes(p.id) ? "secondary" : "ink"}
-              onPress={() => setDone((d) => [...d, p.id])}
-            />
-          </View>
-        ))}
+          </UIPressable>
+        </View>
+        <View className="items-center gap-2 rounded-md border border-line bg-surface p-4">
+          <Icon name="qr-code-outline" size="3xl" tone="muted" />
+          <Text variant="caption" tone="muted">
+            QR-kode
+          </Text>
+        </View>
+      </Section>
+      <Section title="Foreslåtte">
+        {people
+          .filter((p) => p.name.toLowerCase().includes(q.trim().toLowerCase()))
+          .slice(0, 4)
+          .map((p) => (
+            <View
+              key={p.id}
+              className="flex-row items-center gap-3 rounded-md border border-line bg-surface p-3"
+            >
+              <Avatar
+                name={p.name}
+                source={libImage(p.avatar)}
+                size="md"
+                decorative
+              />
+              <Text variant="label" weight="semibold" className="flex-1">
+                {p.name}
+              </Text>
+              <Button
+                label={done.includes(p.id) ? "Invitert" : "Inviter"}
+                variant={done.includes(p.id) ? "secondary" : "ink"}
+                onPress={() => setDone((d) => [...d, p.id])}
+              />
+            </View>
+          ))}
+      </Section>
     </Page>
   );
 }

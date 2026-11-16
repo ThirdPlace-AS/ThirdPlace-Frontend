@@ -208,7 +208,7 @@ export default function EditProfileScreen() {
       >
         <ScrollView
           className="flex-1"
-          contentContainerClassName="gap-6 pb-10 pt-2"
+          contentContainerClassName="gap-6 pb-12 pt-2"
           showsVerticalScrollIndicator={false}
         >
           <Text variant="caption" tone="muted">
