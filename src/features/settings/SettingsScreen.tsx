@@ -9,10 +9,10 @@ import {
   Screen,
   SearchBar,
   Text,
+  Button,
+  Sheet,
 } from "@/components/ui";
-import { Button } from "@/components/Button";
 import { RouteHeader } from "@/components/RouteHeader";
-import { Sheet } from "@/components/Sheet";
 import { SignInPrompt } from "@/components/SignInPrompt";
 import { useGuestMode } from "@/components/map/hooks/useGuestMode";
 import { profile } from "@/fixtures";

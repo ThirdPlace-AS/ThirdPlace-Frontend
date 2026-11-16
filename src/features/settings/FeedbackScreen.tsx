@@ -2,10 +2,8 @@ import { type Href, useLocalSearchParams } from "expo-router";
 import { useState } from "react";
 import { View } from "react-native";
 
-import { Button } from "@/components/Button";
-import { Input } from "@/components/Input";
 import { showToast } from "@/components/Toast";
-import { Chip, FormPage, Text } from "@/components/ui";
+import { Chip, FormPage, Text, Button, Input } from "@/components/ui";
 import { confirmToast } from "@/copy";
 import { goBackOr } from "@/lib/navigation";
 

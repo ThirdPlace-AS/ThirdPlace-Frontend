@@ -11,10 +11,10 @@ import {
   Avatar,
   Pressable as UIPressable,
   Text,
+  Button,
+  Chip,
+  Sheet,
 } from "@/components/ui";
-import { Button } from "@/components/Button";
-import { Chip } from "@/components/Chip";
-import { Sheet } from "@/components/Sheet";
 import { SignInPrompt } from "@/components/SignInPrompt";
 import { useGuestMode } from "@/components/map/hooks/useGuestMode";
 import { people, type MockPerson } from "@/fixtures";

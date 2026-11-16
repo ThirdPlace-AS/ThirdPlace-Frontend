@@ -11,9 +11,6 @@ import { type Href } from "expo-router";
 import { useState } from "react";
 import { ScrollView, View } from "react-native";
 
-import { Button } from "@/components/Button";
-import { Input } from "@/components/Input";
-import { Sheet } from "@/components/Sheet";
 import { showToast } from "@/components/Toast";
 import {
   Avatar,
@@ -25,6 +22,9 @@ import {
   Text,
   moveActions,
   onMoveAction,
+  Button,
+  Input,
+  Sheet,
 } from "@/components/ui";
 import { moveItem } from "@/lib/reorder";
 import { confirmToast } from "@/copy";

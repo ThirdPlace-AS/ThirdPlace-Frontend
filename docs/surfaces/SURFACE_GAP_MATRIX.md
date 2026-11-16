@@ -95,7 +95,7 @@ Directory routes with no PDF page (`experiences`, `places`, `groups`,
   sheet push/back — verified on the emulator only.
 - **Native verification outstanding** for real GPS/heading and haptics on a
   physical device (see `docs/map/MAP_BLOCKERS.md`, NV register).
-- **iOS keyboard layouts unverified** — `KeyboardAvoidingView` padding (0201) was checked on Android only.
+- **iOS keyboard layouts unverified** — `KeyboardAvoider` (react-native-keyboard-controller, 0447; earlier `KeyboardAvoidingView` padding, 0201) was checked on Android only.
 - **PDF screens still missing** — none (Phase 13 built p13 Preferanser, Følgere / Følger, Venner and p18 Venteliste; status per page in `docs/SCREEN_INVENTORY.md`, "Pages").
 
 ## Phase 6 review (2026-11-06)

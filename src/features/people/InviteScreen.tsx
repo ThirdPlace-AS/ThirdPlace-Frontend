@@ -1,8 +1,7 @@
 import { router } from "expo-router";
 import { ScrollView, Share, View } from "react-native";
 
-import { pageBody, Screen, Section, Text } from "@/components/ui";
-import { Button } from "@/components/Button";
+import { pageBody, Screen, Section, Text, Button } from "@/components/ui";
 import { RouteHeader } from "@/components/RouteHeader";
 import { showToast } from "@/components/Toast";
 import { confirmToast } from "@/copy";

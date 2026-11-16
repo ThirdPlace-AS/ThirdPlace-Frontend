@@ -1,7 +1,6 @@
 import { View } from "react-native";
 
-import { Icon, Screen, Text } from "@/components/ui";
-import { Button } from "@/components/Button";
+import { Icon, Screen, Text, Button } from "@/components/ui";
 import { resetTo } from "@/lib/navigation";
 
 // Safe blocked path for under-18s (TP-D-001). No data is kept; the only way on

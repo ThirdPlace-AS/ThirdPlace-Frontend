@@ -21,7 +21,6 @@ import {
 import { Gesture, GestureDetector } from "react-native-gesture-handler";
 
 import { BlockSheet, ReportSheet } from "@/components/actions/ActionSheets";
-import { Button } from "@/components/Button";
 import { ReviewsSection } from "@/components/reviews/ReviewsSection";
 import { sortReviews } from "@/components/reviews/reviewSort";
 import {
@@ -33,6 +32,7 @@ import {
   Text,
   Pressable as UIPressable,
   type IconName,
+  Button,
 } from "@/components/ui";
 import {
   PLACE_KIND_LABEL,

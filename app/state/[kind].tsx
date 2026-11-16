@@ -1,11 +1,10 @@
 import { router, useLocalSearchParams } from "expo-router";
 import { Linking, ScrollView, View } from "react-native";
-import { Icon, Screen, Text, type IconName } from "@/components/ui";
+import { Icon, Screen, Text, type IconName, Button } from "@/components/ui";
 import {
   Illustration,
   type IllustrationName,
 } from "@/components/illustrations/Illustration";
-import { Button } from "@/components/Button";
 import { showToast } from "@/components/Toast";
 import { confirmToast } from "@/copy";
 import { experienceById } from "@/fixtures";

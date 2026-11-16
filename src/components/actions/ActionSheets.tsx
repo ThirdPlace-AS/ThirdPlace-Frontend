@@ -1,11 +1,15 @@
 import { Ionicons } from "@expo/vector-icons";
 import { useState } from "react";
 import { Pressable, Share, View } from "react-native";
-import { Icon, Text, Pressable as UIPressable } from "@/components/ui";
-import { Button } from "@/components/Button";
-import { Chip } from "@/components/Chip";
-import { Input } from "@/components/Input";
-import { Sheet } from "@/components/Sheet";
+import {
+  Icon,
+  Text,
+  Pressable as UIPressable,
+  Button,
+  Chip,
+  Input,
+  Sheet,
+} from "@/components/ui";
 import { showToastAfterSheet } from "@/components/Toast";
 import { blockedToast, confirmToast } from "@/copy";
 import { blockPerson } from "@/lib/blocked";

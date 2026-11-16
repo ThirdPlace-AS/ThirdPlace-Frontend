@@ -2,10 +2,8 @@
 // Personvern (they used to differ). A short choice + confirm, so it stays a
 // sheet. BLOCKED_CONTRACT_GAP: nothing is exported; it confirms in product
 // voice and states no delivery rule.
-import { Button } from "@/components/Button";
-import { Sheet } from "@/components/Sheet";
 import { showToastAfterSheet } from "@/components/Toast";
-import { Text } from "@/components/ui";
+import { Text, Button, Sheet } from "@/components/ui";
 import { confirmToast } from "@/copy";
 
 import { ToggleList } from "./settingsUi";

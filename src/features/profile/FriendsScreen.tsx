@@ -7,10 +7,16 @@
 import { router, type Href } from "expo-router";
 import { useState } from "react";
 
-import { Button } from "@/components/Button";
 import { SignInPrompt } from "@/components/SignInPrompt";
 import { useGuestMode } from "@/components/map/hooks/useGuestMode";
-import { EmptyState, IconButton, Page, SearchBar, Text } from "@/components/ui";
+import {
+  EmptyState,
+  IconButton,
+  Page,
+  SearchBar,
+  Text,
+  Button,
+} from "@/components/ui";
 import { directChatFor } from "@/fixtures/created";
 import { PersonListRow } from "@/features/people/PersonListRow";
 import { friendPeople, useFollowing } from "@/lib/following";

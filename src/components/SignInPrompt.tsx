@@ -1,8 +1,6 @@
 import { View } from "react-native";
 
-import { Icon, Text } from "@/components/ui";
-import { Button } from "@/components/Button";
-import { Sheet } from "@/components/Sheet";
+import { Icon, Text, Button, Sheet } from "@/components/ui";
 import { resetTo } from "@/lib/navigation";
 
 // Respectful sign-in prompt shown when a guest tries an account-only action

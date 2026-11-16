@@ -6,11 +6,8 @@ import { useLocalSearchParams, type Href } from "expo-router";
 import { useState } from "react";
 import { View } from "react-native";
 
-import { Button } from "@/components/Button";
-import { Chip } from "@/components/Chip";
-import { Input } from "@/components/Input";
 import { showToast } from "@/components/Toast";
-import { FormPage, Text } from "@/components/ui";
+import { FormPage, Text, Button, Chip, Input } from "@/components/ui";
 import { confirmToast } from "@/copy";
 import { LISTING_TYPES, listingById, type MockListingType } from "@/fixtures";
 import { goBackOr } from "@/lib/navigation";

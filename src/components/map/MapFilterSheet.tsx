@@ -6,16 +6,16 @@ import {
   Icon,
   Text,
   Pressable as UIPressable,
+  Button,
+  Chip,
+  Sheet,
 } from "@/components/ui";
 import { elevation } from "@/theme";
-import { Button } from "@/components/Button";
 import { Calendar } from "@/components/Calendar";
 import { CheckboxRow } from "@/components/CheckboxRow";
-import { Chip } from "@/components/Chip";
 import { PriceHistogram } from "./PriceHistogram";
 import { RangeSlider, createReporter } from "@/components/RangeSlider";
 import { RatingStars } from "@/components/RatingStars";
-import { Sheet } from "@/components/Sheet";
 import { SteppedSlider } from "@/components/SteppedSlider";
 import { Stepper } from "@/components/Stepper";
 import { WhereField } from "./WhereField";

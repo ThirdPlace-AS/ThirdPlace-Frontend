@@ -18,7 +18,6 @@ import {
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-import { Button } from "@/components/Button";
 import { AddToCalendarLink } from "@/components/AddToCalendarLink";
 import { DirectionsButton } from "@/components/DirectionsButton";
 import { useGuestMode } from "@/components/map/hooks/useGuestMode";
@@ -36,6 +35,7 @@ import {
   StatusBarStyle,
   Text,
   type IconName,
+  Button,
 } from "@/components/ui";
 import { confirmToast } from "@/copy";
 import {

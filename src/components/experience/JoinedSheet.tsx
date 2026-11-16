@@ -3,7 +3,6 @@ import { useEffect } from "react";
 import { View } from "react-native";
 import Animated, { ZoomIn } from "react-native-reanimated";
 
-import { Button } from "@/components/Button";
 import { useReducedMotion } from "@/hooks/useReducedMotion";
 import { haptics } from "@/lib/haptics";
 import { showToast } from "@/components/Toast";
@@ -13,6 +12,7 @@ import {
   Pressable as UIPressable,
   Sheet,
   Text,
+  Button,
 } from "@/components/ui";
 import {
   chatForExperience,

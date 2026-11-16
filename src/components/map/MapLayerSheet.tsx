@@ -2,8 +2,7 @@ import { Image } from "expo-image";
 import { useState } from "react";
 import { View, type ImageSourcePropType } from "react-native";
 
-import { IconButton, Pressable, Text } from "@/components/ui";
-import { Sheet } from "@/components/Sheet";
+import { IconButton, Pressable, Text, Sheet } from "@/components/ui";
 import { env } from "@/lib/env";
 
 import {

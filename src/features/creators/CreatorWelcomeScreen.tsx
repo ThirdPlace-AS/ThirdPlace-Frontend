@@ -1,7 +1,6 @@
 import { router, type Href } from "expo-router";
 import { ScrollView, View } from "react-native";
 
-import { Button } from "@/components/Button";
 import {
   Icon,
   ListRow,
@@ -9,6 +8,7 @@ import {
   Screen,
   StickyFooter,
   Text,
+  Button,
 } from "@/components/ui";
 
 // "Du er nå Skaper!", per the design (PDF p14, bottom left): the

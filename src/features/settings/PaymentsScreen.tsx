@@ -7,9 +7,9 @@ import {
   Pressable as UIPressable,
   Screen,
   Text,
+  Sheet,
 } from "@/components/ui";
 import { RouteHeader } from "@/components/RouteHeader";
-import { Sheet } from "@/components/Sheet";
 
 import { SettingsSection } from "./settingsUi";
 

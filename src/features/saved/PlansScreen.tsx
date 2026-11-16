@@ -8,8 +8,8 @@ import {
   Pressable as UIPressable,
   Screen,
   Text,
+  Chip,
 } from "@/components/ui";
-import { Chip } from "@/components/Chip";
 import { AddToCalendarLink } from "@/components/AddToCalendarLink";
 import { CountdownChip, planCountdown } from "@/components/CountdownChip";
 import { RouteHeader } from "@/components/RouteHeader";

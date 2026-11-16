@@ -6,11 +6,10 @@ import {
   PaySheet,
   WaitlistSheet,
 } from "@/components/actions/ActionSheets";
-import { Button } from "@/components/Button";
 import { JoinedSheet } from "@/components/experience/JoinedSheet";
 import { FaceStack } from "@/components/FaceStack";
 import { SignInPrompt } from "@/components/SignInPrompt";
-import { Text } from "@/components/ui";
+import { Text, Button } from "@/components/ui";
 import { experienceById, sessionsFor } from "@/fixtures";
 import { shortSessionLabel } from "@/lib/dates";
 import { goingLabel } from "@/lib/going";

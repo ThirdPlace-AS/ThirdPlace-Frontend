@@ -2,9 +2,14 @@ import { router, type Href } from "expo-router";
 import { useState } from "react";
 import { ScrollView, View } from "react-native";
 
-import { Button } from "@/components/Button";
-
-import { ListRow, pageBody, Screen, Switch, Text } from "@/components/ui";
+import {
+  ListRow,
+  pageBody,
+  Screen,
+  Switch,
+  Text,
+  Button,
+} from "@/components/ui";
 import { RouteHeader } from "@/components/RouteHeader";
 import { setDevSimulation, useDevSimulation } from "@/lib/devSimulation";
 import { simulateUpdate } from "@/lib/whatsNew";

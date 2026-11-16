@@ -8,8 +8,7 @@ import { ScrollView } from "react-native";
 
 import { titleFor, DetailContent } from "@/components/map/DetailContentRouter";
 import type { PushFn, SheetTarget } from "@/components/map/sheetTypes";
-import { Sheet } from "@/components/Sheet";
-import { EmptyState, Header, pageBody, Screen } from "@/components/ui";
+import { EmptyState, Header, pageBody, Screen, Sheet } from "@/components/ui";
 import { routeFor } from "@/lib/entityRoutes";
 import { goBackOr } from "@/lib/navigation";
 

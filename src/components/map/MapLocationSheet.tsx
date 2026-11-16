@@ -1,9 +1,7 @@
 import { Linking, View } from "react-native";
 
-import { Icon, Text } from "@/components/ui";
-import { Button } from "@/components/Button";
+import { Icon, Text, Button, Sheet } from "@/components/ui";
 import { CategoryArt } from "@/components/illustrations/CategoryArt";
-import { Sheet } from "@/components/Sheet";
 import { AreaChips } from "@/components/pickers/AreaChips";
 import type { MockArea } from "@/fixtures";
 

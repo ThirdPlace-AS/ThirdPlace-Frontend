@@ -2,9 +2,8 @@ import { router, type Href } from "expo-router";
 import { useState } from "react";
 import { View } from "react-native";
 
-import { Button } from "@/components/Button";
 import { SignInPrompt } from "@/components/SignInPrompt";
-import { Text } from "@/components/ui";
+import { Text, Button } from "@/components/ui";
 import { CHAT_ACCESS_LABEL, chatForPlace, messagesForChat } from "@/fixtures";
 import { isMember, joinChat, useJoinedChats } from "@/lib/joinedChats";
 

@@ -6,9 +6,8 @@ import { useLocalSearchParams } from "expo-router";
 import { useState } from "react";
 import { Pressable, TextInput, View } from "react-native";
 
-import { Button } from "@/components/Button";
 import { showToast } from "@/components/Toast";
-import { FormPage, Icon, Text } from "@/components/ui";
+import { FormPage, Icon, Text, Button } from "@/components/ui";
 import { confirmToast } from "@/copy";
 import { experienceById, placeById } from "@/fixtures";
 import { goBackOr } from "@/lib/navigation";

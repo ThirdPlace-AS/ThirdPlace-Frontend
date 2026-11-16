@@ -9,9 +9,9 @@ import {
   ScrollRow,
   Section,
   Text,
+  Button,
+  Chip,
 } from "@/components/ui";
-import { Button } from "@/components/Button";
-import { Chip } from "@/components/Chip";
 import { RouteHeader } from "@/components/RouteHeader";
 import { EmptyState } from "@/components/states/StateView";
 

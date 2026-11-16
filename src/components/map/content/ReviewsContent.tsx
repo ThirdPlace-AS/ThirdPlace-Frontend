@@ -1,8 +1,7 @@
 import { router, type Href } from "expo-router";
 import { View } from "react-native";
 
-import { Icon, Text } from "@/components/ui";
-import { Button } from "@/components/Button";
+import { Icon, Text, Button } from "@/components/ui";
 import { Card } from "@/components/Card";
 import { placeById, ratingOf, reviewsForPlace } from "@/fixtures";
 import { formatRating } from "@/lib/format";

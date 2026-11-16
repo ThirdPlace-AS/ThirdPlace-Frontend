@@ -10,7 +10,6 @@ import { useState } from "react";
 import { Pressable, View } from "react-native";
 
 import { LeaveSheet, ReportSheet } from "@/components/actions/ActionSheets";
-import { Button } from "@/components/Button";
 import { SearchField } from "@/components/pickers/Pickers";
 import { showToast, showToastAfterSheet } from "@/components/Toast";
 import {
@@ -23,6 +22,7 @@ import {
   Section,
   Text,
   Pressable as UIPressable,
+  Button,
 } from "@/components/ui";
 import { confirmToast } from "@/copy";
 import {

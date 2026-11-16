@@ -2,10 +2,15 @@ import { Link, router } from "expo-router";
 import { useState } from "react";
 import { Pressable, ScrollView, View } from "react-native";
 
-import { pageBody, Screen, Text, KeyboardAvoider } from "@/components/ui";
+import {
+  pageBody,
+  Screen,
+  Text,
+  KeyboardAvoider,
+  Button,
+  Input,
+} from "@/components/ui";
 import { SocialAuthButtons } from "@/components/auth/SocialAuthButtons";
-import { Button } from "@/components/Button";
-import { Input } from "@/components/Input";
 import { Logo } from "@/components/Logo";
 import { ScreenHeader } from "@/components/ScreenHeader";
 import { useGuestMode } from "@/components/map/hooks/useGuestMode";

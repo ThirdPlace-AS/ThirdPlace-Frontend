@@ -2,9 +2,8 @@ import { useFocusEffect } from "expo-router";
 import { useCallback, useState } from "react";
 import { View } from "react-native";
 
-import { Button } from "@/components/Button";
 import { useGuestMode } from "@/components/map/hooks/useGuestMode";
-import { Icon, Sheet, Text } from "@/components/ui";
+import { Icon, Sheet, Text, Button } from "@/components/ui";
 import { WHATS_NEW } from "@/copy/whatsNew";
 import { appVersion, claimWhatsNew, markWhatsNewSeen } from "@/lib/whatsNew";
 

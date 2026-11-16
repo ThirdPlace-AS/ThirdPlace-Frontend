@@ -3,7 +3,6 @@ import { router, type Href } from "expo-router";
 import { useState } from "react";
 import { ScrollView, View } from "react-native";
 
-import { Button } from "@/components/Button";
 import { CountdownChip, planCountdown } from "@/components/CountdownChip";
 import {
   Avatar,
@@ -15,6 +14,7 @@ import {
   Pressable as UIPressable,
   Screen,
   Text,
+  Button,
 } from "@/components/ui";
 import { GuestLock } from "@/components/GuestLock";
 import { HintBanner } from "@/components/HintBanner";

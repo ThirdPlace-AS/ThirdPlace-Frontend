@@ -18,8 +18,13 @@ import { ExperienceJoinBar } from "@/components/map/content/ExperienceJoinBar";
 import { DetailContent, titleFor } from "@/components/map/DetailContentRouter";
 import type { SheetTarget } from "@/components/map/sheetTypes";
 import { markerId } from "@/components/map/types/mapPresentation";
-import { Sheet } from "@/components/Sheet";
-import { EmptyState, Header, Screen, StatusBarStyle } from "@/components/ui";
+import {
+  EmptyState,
+  Header,
+  Screen,
+  StatusBarStyle,
+  Sheet,
+} from "@/components/ui";
 import { experienceById, type MockExperience } from "@/fixtures";
 import { PageTopBar } from "@/features/entity/PageTopBar";
 import { goBackOr } from "@/lib/navigation";

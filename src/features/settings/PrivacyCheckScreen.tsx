@@ -2,9 +2,8 @@ import { router, type Href } from "expo-router";
 import { useState } from "react";
 import { View } from "react-native";
 
-import { Button } from "@/components/Button";
 import { showToast } from "@/components/Toast";
-import { FadeSwap, FormPage, Text } from "@/components/ui";
+import { FadeSwap, FormPage, Text, Button } from "@/components/ui";
 import { confirmToast } from "@/copy";
 import { goBackOr } from "@/lib/navigation";
 

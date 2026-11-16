@@ -9,9 +9,9 @@ import {
   Screen,
   Section,
   Text,
+  Button,
 } from "@/components/ui";
 import { Switch } from "@/components/ui/Switch";
-import { Button } from "@/components/Button";
 import { RouteHeader } from "@/components/RouteHeader";
 
 type Method = "sms" | "app";

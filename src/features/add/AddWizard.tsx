@@ -21,15 +21,15 @@ import {
   StickyFooter,
   Text,
   KeyboardAvoider,
+  Button,
+  Input,
 } from "@/components/ui";
-import { Button } from "@/components/Button";
 import { haptics } from "@/lib/haptics";
 import {
   CategoryArt,
   hasCategoryArt,
 } from "@/components/illustrations/CategoryArt";
 import { areaFor } from "@/components/experience/experienceMeta";
-import { Input } from "@/components/Input";
 import { AreaChips } from "@/components/pickers/AreaChips";
 import { InterestPicker } from "@/components/pickers/InterestPicker";
 import { CategoryPicker, PlacePicker } from "@/components/pickers/Pickers";

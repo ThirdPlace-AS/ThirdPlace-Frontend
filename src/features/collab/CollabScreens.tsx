@@ -15,11 +15,11 @@ import {
   StickyFooter,
   Text,
   KeyboardAvoider,
+  Button,
+  Input,
 } from "@/components/ui";
-import { Button } from "@/components/Button";
 import { showToast, type ToastInput } from "@/components/Toast";
 import { confirmToast } from "@/copy";
-import { Input } from "@/components/Input";
 import { RouteHeader } from "@/components/RouteHeader";
 import { listingById, listings } from "@/fixtures";
 import { goBackOr } from "@/lib/navigation";

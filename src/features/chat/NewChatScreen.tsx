@@ -5,9 +5,6 @@
 import { useState } from "react";
 import { View } from "react-native";
 
-import { Button } from "@/components/Button";
-import { Chip } from "@/components/Chip";
-import { Input } from "@/components/Input";
 import { UserSearch } from "@/components/pickers/Pickers";
 import { showToast } from "@/components/Toast";
 import {
@@ -15,6 +12,9 @@ import {
   Icon,
   Pressable as UIPressable,
   Text,
+  Button,
+  Chip,
+  Input,
 } from "@/components/ui";
 import { confirmToast } from "@/copy";
 import { CHAT_ACCESS_LABEL, type MockChatAccess } from "@/fixtures";

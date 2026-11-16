@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { View } from "react-native";
-import { Icon, Text } from "@/components/ui";
-import { Button } from "@/components/Button";
+import { Icon, Text, Button } from "@/components/ui";
 import { experienceById } from "@/fixtures";
 import { useDevSimulation } from "@/lib/devSimulation";
 

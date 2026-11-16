@@ -15,10 +15,10 @@ import {
   StickyFooter,
   Text,
   KeyboardAvoider,
+  Button,
+  Chip,
+  Input,
 } from "@/components/ui";
-import { Button } from "@/components/Button";
-import { Chip } from "@/components/Chip";
-import { Input } from "@/components/Input";
 import { useGuestMode } from "@/components/map/hooks/useGuestMode";
 import { AreaChips } from "@/components/pickers/AreaChips";
 import { checkBirthday, formatBirthdayInput } from "@/features/onboarding/age";

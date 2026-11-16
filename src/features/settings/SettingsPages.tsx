@@ -9,9 +9,6 @@ import { router, type Href } from "expo-router";
 import { useState } from "react";
 import { View } from "react-native";
 
-import { Button } from "@/components/Button";
-import { Chip } from "@/components/Chip";
-import { Input } from "@/components/Input";
 import { showToast } from "@/components/Toast";
 import {
   FormPage,
@@ -22,6 +19,9 @@ import {
   Section,
   Text,
   type IconName,
+  Button,
+  Chip,
+  Input,
 } from "@/components/ui";
 import { confirmToast } from "@/copy";
 import { gutterPx } from "@/theme";

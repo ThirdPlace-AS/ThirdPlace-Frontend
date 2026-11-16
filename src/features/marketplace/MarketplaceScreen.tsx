@@ -11,11 +11,11 @@ import {
   Pressable as UIPressable,
   Screen,
   Text,
+  Button,
+  Chip,
+  Sheet,
 } from "@/components/ui";
-import { Button } from "@/components/Button";
-import { Chip } from "@/components/Chip";
 import { RouteHeader } from "@/components/RouteHeader";
-import { Sheet } from "@/components/Sheet";
 import {
   LISTING_TYPES,
   listings,

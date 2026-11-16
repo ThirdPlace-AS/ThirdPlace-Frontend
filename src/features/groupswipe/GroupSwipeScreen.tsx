@@ -17,10 +17,10 @@ import {
   StickyFooter,
   Text,
   KeyboardAvoider,
+  Button,
+  Chip,
+  Input,
 } from "@/components/ui";
-import { Button } from "@/components/Button";
-import { Chip } from "@/components/Chip";
-import { Input } from "@/components/Input";
 import { showToast } from "@/components/Toast";
 import { SignInPrompt } from "@/components/SignInPrompt";
 import { useGuestMode } from "@/components/map/hooks/useGuestMode";

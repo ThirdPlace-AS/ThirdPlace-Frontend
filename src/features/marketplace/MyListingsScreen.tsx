@@ -9,8 +9,8 @@ import {
   Screen,
   ScrollRow,
   Text,
+  Chip,
 } from "@/components/ui";
-import { Chip } from "@/components/Chip";
 import { RouteHeader } from "@/components/RouteHeader";
 import { listingById, myListingStates } from "@/fixtures";
 

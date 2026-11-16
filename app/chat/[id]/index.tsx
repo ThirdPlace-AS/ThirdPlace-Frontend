@@ -21,8 +21,8 @@ import {
   Pressable as UIPressable,
   Screen,
   Text,
+  Button,
 } from "@/components/ui";
-import { Button } from "@/components/Button";
 import { useGuestMode } from "@/components/map/hooks/useGuestMode";
 import { SignInPrompt } from "@/components/SignInPrompt";
 import {

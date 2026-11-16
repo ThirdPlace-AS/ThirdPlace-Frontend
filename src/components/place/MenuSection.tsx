@@ -8,8 +8,7 @@ import type { Href } from "expo-router";
 import { useState } from "react";
 import { View } from "react-native";
 
-import { Button } from "@/components/Button";
-import { Badge, Chip, Text } from "@/components/ui";
+import { Badge, Chip, Text, Button } from "@/components/ui";
 import type { MockPlace } from "@/fixtures";
 import {
   isMenuVenue,

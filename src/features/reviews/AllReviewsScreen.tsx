@@ -7,7 +7,6 @@ import { useLocalSearchParams } from "expo-router";
 import { useMemo, useState } from "react";
 import { FlatList, View } from "react-native";
 
-import { Button } from "@/components/Button";
 import { ReviewCard, type ReviewLike } from "@/components/reviews/ReviewCard";
 import {
   matchesReview,
@@ -25,6 +24,7 @@ import {
   SearchBar,
   Sheet,
   Text,
+  Button,
 } from "@/components/ui";
 import {
   experienceById,

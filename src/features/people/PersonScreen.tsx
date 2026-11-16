@@ -11,8 +11,6 @@ import { useState } from "react";
 import { ScrollView, View } from "react-native";
 
 import { BlockSheet, ReportSheet } from "@/components/actions/ActionSheets";
-import { Button } from "@/components/Button";
-import { Sheet } from "@/components/Sheet";
 import { SignInPrompt } from "@/components/SignInPrompt";
 import { useGuestMode } from "@/components/map/hooks/useGuestMode";
 import {
@@ -23,6 +21,8 @@ import {
   ListRow,
   pageBody,
   Screen,
+  Button,
+  Sheet,
 } from "@/components/ui";
 import { experiencesHostedBy, people, profile } from "@/fixtures";
 import { directChatFor } from "@/fixtures/created";

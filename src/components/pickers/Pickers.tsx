@@ -7,12 +7,12 @@ import {
   SearchBar,
   Pressable as UIPressable,
   Text,
+  Sheet,
 } from "@/components/ui";
 import {
   CategoryArt,
   hasCategoryArt,
 } from "@/components/illustrations/CategoryArt";
-import { Sheet } from "@/components/Sheet";
 import { people, places, type MockPerson, type MockPlace } from "@/fixtures";
 import { libThumb } from "@/fixtures/images";
 import { distanceFromOrigin, distanceLabelFor, useOrigin } from "@/lib/origin";

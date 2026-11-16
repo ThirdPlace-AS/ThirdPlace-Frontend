@@ -2,9 +2,7 @@ import { router, type Href } from "expo-router";
 import { useState } from "react";
 import { ScrollView, View } from "react-native";
 
-import { Icon, pageBody, Screen, Text } from "@/components/ui";
-import { Button } from "@/components/Button";
-import { Input } from "@/components/Input";
+import { Icon, pageBody, Screen, Text, Button, Input } from "@/components/ui";
 import { RouteHeader } from "@/components/RouteHeader";
 import { showToast } from "@/components/Toast";
 import { confirmToast } from "@/copy";

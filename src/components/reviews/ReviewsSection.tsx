@@ -6,8 +6,7 @@
 import { useState } from "react";
 import { ScrollView, View } from "react-native";
 
-import { Button } from "@/components/Button";
-import { Pressable, Sheet, Text } from "@/components/ui";
+import { Pressable, Sheet, Text, Button } from "@/components/ui";
 import { ratingOf } from "@/fixtures";
 import { formatRating } from "@/lib/format";
 

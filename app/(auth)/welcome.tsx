@@ -4,12 +4,11 @@ import { Pressable, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { StatusBarStyle } from "@/components/ui/StatusBarStyle";
-import { Button } from "@/components/Button";
 import { LogoMark } from "@/components/Logo";
 import { useGuestMode } from "@/components/map/hooks/useGuestMode";
 import { imagePreview, swipeImage } from "@/fixtures/images";
 import { resetTo } from "@/lib/navigation";
-import { Text } from "@/components/ui";
+import { Text, Button } from "@/components/ui";
 
 // Welcome (PDF p1): a full-bleed café photo with the ThirdPlace mark, and a
 // bottom card — "Velkommen hjem", the pitch, "Kom i gang" (→ register),

@@ -2,9 +2,8 @@ import { router } from "expo-router";
 import { useState } from "react";
 import { View } from "react-native";
 
-import { Icon, Text, Pressable as UIPressable } from "@/components/ui";
+import { Icon, Text, Pressable as UIPressable, Button } from "@/components/ui";
 import { CancelSheet } from "@/components/actions/ActionSheets";
-import { Button } from "@/components/Button";
 import { Card } from "@/components/Card";
 import {
   attendeesForExperience,

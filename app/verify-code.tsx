@@ -2,9 +2,8 @@ import { router, useLocalSearchParams } from "expo-router";
 import { useEffect, useState } from "react";
 import { ScrollView, View } from "react-native";
 
-import { pageBody, Screen, Text as UIText } from "@/components/ui";
+import { pageBody, Screen, Text as UIText, Button } from "@/components/ui";
 import { CodeInput } from "@/components/auth/CodeInput";
-import { Button } from "@/components/Button";
 import { ScreenHeader } from "@/components/ScreenHeader";
 import { showToast } from "@/components/Toast";
 import { useGuestMode } from "@/components/map/hooks/useGuestMode";

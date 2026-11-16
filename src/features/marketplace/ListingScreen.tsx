@@ -7,11 +7,18 @@ import { router, useLocalSearchParams, type Href } from "expo-router";
 import { useState } from "react";
 import { View } from "react-native";
 
-import { Button } from "@/components/Button";
 import { Gallery } from "@/components/map/Gallery";
 import { useGuestMode } from "@/components/map/hooks/useGuestMode";
 import { SignInPrompt } from "@/components/SignInPrompt";
-import { Badge, EmptyState, FormPage, Icon, Page, Text } from "@/components/ui";
+import {
+  Badge,
+  EmptyState,
+  FormPage,
+  Icon,
+  Page,
+  Text,
+  Button,
+} from "@/components/ui";
 import { listingById } from "@/fixtures";
 import { libImage } from "@/fixtures/images";
 import { goBackOr } from "@/lib/navigation";

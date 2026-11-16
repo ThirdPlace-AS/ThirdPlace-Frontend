@@ -1,9 +1,7 @@
 import { useState } from "react";
 import { ScrollView, View } from "react-native";
 
-import { pageBody, Screen, Text } from "@/components/ui";
-import { Button } from "@/components/Button";
-import { Input } from "@/components/Input";
+import { pageBody, Screen, Text, Button, Input } from "@/components/ui";
 import { ScreenHeader } from "@/components/ScreenHeader";
 import { resetTo } from "@/lib/navigation";
 

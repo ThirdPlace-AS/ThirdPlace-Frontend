@@ -8,10 +8,9 @@ import Animated, {
   LinearTransition,
 } from "react-native-reanimated";
 
-import { HeartToggle, ListRow, Screen } from "@/components/ui";
+import { HeartToggle, ListRow, Screen, Chip } from "@/components/ui";
 import { useReducedMotion } from "@/hooks/useReducedMotion";
 import { gutterPx, motion } from "@/theme";
-import { Chip } from "@/components/Chip";
 import { RouteHeader } from "@/components/RouteHeader";
 import { showToast } from "@/components/Toast";
 import { ShareSheet } from "@/components/actions/ActionSheets";

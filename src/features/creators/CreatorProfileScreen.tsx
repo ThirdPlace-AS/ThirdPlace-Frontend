@@ -9,8 +9,8 @@ import {
   Screen,
   Section,
   Text,
+  Button,
 } from "@/components/ui";
-import { Button } from "@/components/Button";
 import { RouteHeader } from "@/components/RouteHeader";
 import { EmptyState } from "@/components/states/StateView";
 import { chats, experiencesHostedBy, personById } from "@/fixtures";

@@ -11,11 +11,11 @@ import {
   Screen,
   Section,
   Text,
+  Chip,
 } from "@/components/ui";
 import { byStart } from "@/features/workspace/calendarOrder";
 import { hubToday } from "@/features/workspace/hubToday";
 import { clock } from "@/lib/dates";
-import { Chip } from "@/components/Chip";
 import { RouteHeader } from "@/components/RouteHeader";
 import {
   OWNED_BUSINESS_IDS,

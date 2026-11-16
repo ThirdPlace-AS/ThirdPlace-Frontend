@@ -1,8 +1,7 @@
 import { View } from "react-native";
 import Animated, { FadeIn, FadeOut } from "react-native-reanimated";
 
-import { Button } from "@/components/Button";
-import { Icon, type IconName, Text } from "@/components/ui";
+import { Icon, type IconName, Text, Button } from "@/components/ui";
 import { useReducedMotion } from "@/hooks/useReducedMotion";
 import { elevation, motion } from "@/theme";
 

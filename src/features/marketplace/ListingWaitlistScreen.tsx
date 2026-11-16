@@ -8,8 +8,7 @@
 import { router, useLocalSearchParams, type Href } from "expo-router";
 import { View } from "react-native";
 
-import { Button } from "@/components/Button";
-import { Avatar, EmptyState, Page, Text } from "@/components/ui";
+import { Avatar, EmptyState, Page, Text, Button } from "@/components/ui";
 import { listingById } from "@/fixtures";
 import { libImage } from "@/fixtures/images";
 import { goBackOr } from "@/lib/navigation";

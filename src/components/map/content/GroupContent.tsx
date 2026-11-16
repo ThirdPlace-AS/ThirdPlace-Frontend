@@ -3,7 +3,6 @@ import { useState } from "react";
 import { View } from "react-native";
 
 import { Avatar } from "@/components/Avatar";
-import { Button } from "@/components/Button";
 import { GuestLock } from "@/components/GuestLock";
 import { SignInPrompt } from "@/components/SignInPrompt";
 import { ChatSection } from "@/components/experience/ExperienceSections";
@@ -22,7 +21,7 @@ import { interestById } from "@/fixtures/catalog/interests";
 import { libImage } from "@/fixtures/images";
 import { shortSessionLabel } from "@/lib/dates";
 import { membersLabel } from "@/lib/format";
-import { Chip, ListRow, Text } from "@/components/ui";
+import { Chip, ListRow, Text, Button } from "@/components/ui";
 
 import { Gallery } from "../Gallery";
 import { useGuestMode } from "../hooks/useGuestMode";
