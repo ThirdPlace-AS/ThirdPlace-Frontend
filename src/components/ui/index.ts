@@ -29,6 +29,7 @@ export { Header, StepContent, StepHeader, TitleBlock } from "./Header";
 export { ChipGroup, type ChipGroupProps } from "./ChipGroup";
 export { Screen } from "./Screen";
 export { StickyFooter } from "./StickyFooter";
+export { KeyboardAvoider, KeyboardRoot } from "./KeyboardAvoider";
 export { FormPage, Page, pageBody, type PageDensity } from "./Page";
 export { Field, Section } from "./Section";
 export { ScrollRow } from "./ScrollRow";

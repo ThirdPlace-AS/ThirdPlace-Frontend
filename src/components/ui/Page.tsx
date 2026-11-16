@@ -4,14 +4,15 @@
 // not a sheet (founder 2026-11-06). These shells keep every converted page
 // the same: back header, scroll body, and for forms a sticky footer that
 // rides above the keyboard (edge-to-edge Android does not resize the window,
-// so KeyboardAvoidingView pads instead — CLAUDE.md "Keyboard").
+// so KeyboardAvoider pads instead — CLAUDE.md "Keyboard").
 //
 //   <Page title>      header + scroll body (lists, details, settings)
 //   <FormPage title>  header + scroll body + sticky footer above the keyboard
 import type { ReactNode } from "react";
-import { KeyboardAvoidingView, ScrollView } from "react-native";
+import { ScrollView } from "react-native";
 
 import { Header } from "./Header";
+import { KeyboardAvoider } from "./KeyboardAvoider";
 import { Screen } from "./Screen";
 import { StickyFooter } from "./StickyFooter";
 
@@ -78,7 +79,7 @@ export function FormPage({
   return (
     <Screen edges={["top"]}>
       <Header title={title} trailing={trailing} onBack={onBack} />
-      <KeyboardAvoidingView behavior="padding" className="flex-1">
+      <KeyboardAvoider>
         <ScrollView
           className="flex-1"
           contentContainerClassName={pageBody[density]}
@@ -87,7 +88,7 @@ export function FormPage({
           {children}
         </ScrollView>
         {footer ? <StickyFooter safeBottom>{footer}</StickyFooter> : null}
-      </KeyboardAvoidingView>
+      </KeyboardAvoider>
     </Screen>
   );
 }

@@ -15,6 +15,7 @@ import {
 } from "react-native-safe-area-context";
 
 import { ToastHost } from "@/components/Toast";
+import { KeyboardRoot } from "@/components/ui/KeyboardAvoider";
 import { PIN_GLYPH_FONT } from "@/components/ui/PinGlyph";
 import { RootPortalHost } from "@/components/ui/RootPortal";
 import { queryClient } from "@/services/api/queryClient";
@@ -61,19 +62,22 @@ export default function RootLayout() {
           inset (fresh-eyes review H1). */}
       <SafeAreaProvider initialMetrics={initialWindowMetrics}>
         <QueryClientProvider client={queryClient}>
-          <ThemeRoot>
-            {(fontsLoaded || fontError) && settingsReady ? (
-              <RootStack />
-            ) : (
-              <View className="flex-1 bg-background" />
-            )}
-            <RootPortalHost />
-            {/* React Native Reusables' portal (popovers, menus, tooltips from
+          {/* Keyboard frames for KeyboardAvoider (react-native-keyboard-controller). */}
+          <KeyboardRoot>
+            <ThemeRoot>
+              {(fontsLoaded || fontError) && settingsReady ? (
+                <RootStack />
+              ) : (
+                <View className="flex-1 bg-background" />
+              )}
+              <RootPortalHost />
+              {/* React Native Reusables' portal (popovers, menus, tooltips from
                 src/components/ui/base); above the app, under toasts. */}
-            <PortalHost />
-            <ToastHost />
-            <MotionPreference />
-          </ThemeRoot>
+              <PortalHost />
+              <ToastHost />
+              <MotionPreference />
+            </ThemeRoot>
+          </KeyboardRoot>
         </QueryClientProvider>
       </SafeAreaProvider>
     </GestureHandlerRootView>

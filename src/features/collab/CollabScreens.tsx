@@ -1,11 +1,6 @@
 import { router, useLocalSearchParams, type Href } from "expo-router";
 import { useState } from "react";
-import {
-  KeyboardAvoidingView,
-  Pressable,
-  ScrollView,
-  View,
-} from "react-native";
+import { Pressable, ScrollView, View } from "react-native";
 
 import {
   ChipGroup,
@@ -19,6 +14,7 @@ import {
   Screen,
   StickyFooter,
   Text,
+  KeyboardAvoider,
 } from "@/components/ui";
 import { Button } from "@/components/Button";
 import { showToast, type ToastInput } from "@/components/Toast";
@@ -53,7 +49,7 @@ export function NewCollabScreen() {
   return (
     <Screen edges={["top"]}>
       <RouteHeader title="Nytt samarbeid" />
-      <KeyboardAvoidingView behavior="padding" className="flex-1">
+      <KeyboardAvoider>
         <ScrollView
           contentContainerClassName={pageBody.blocks}
           keyboardShouldPersistTaps="handled"
@@ -122,7 +118,7 @@ export function NewCollabScreen() {
             </Text>
           ) : null}
         </StickyFooter>
-      </KeyboardAvoidingView>
+      </KeyboardAvoider>
     </Screen>
   );
 }

@@ -3,7 +3,7 @@
 // pushed below the fold on a short phone. A hairline and the page background
 // separate it from content scrolling underneath.
 //
-// Place it as a sibling AFTER the ScrollView (inside a KeyboardAvoidingView
+// Place it as a sibling AFTER the ScrollView (inside a KeyboardAvoider
 // when the screen has inputs). `safeBottom` adds the bottom inset for screens
 // whose <Screen> does not pad the bottom edge (stack routes use edges top).
 import type { ReactNode } from "react";

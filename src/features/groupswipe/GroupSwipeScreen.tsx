@@ -2,13 +2,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { Image } from "expo-image";
 import { type Href, router, useLocalSearchParams } from "expo-router";
 import { useEffect, useMemo, useState } from "react";
-import {
-  KeyboardAvoidingView,
-  Pressable,
-  ScrollView,
-  useWindowDimensions,
-  View,
-} from "react-native";
+import { Pressable, ScrollView, useWindowDimensions, View } from "react-native";
 import {
   Avatar,
   BACK_ICON,
@@ -22,6 +16,7 @@ import {
   ScrollRow,
   StickyFooter,
   Text,
+  KeyboardAvoider,
 } from "@/components/ui";
 import { Button } from "@/components/Button";
 import { Chip } from "@/components/Chip";
@@ -130,7 +125,7 @@ export default function GroupSwipeScreen() {
       </View>
 
       {phase === "setup" ? (
-        <KeyboardAvoidingView behavior="padding" className="flex-1">
+        <KeyboardAvoider>
           <ScrollView
             contentContainerClassName={pageBody.blocks}
             keyboardShouldPersistTaps="handled"
@@ -267,7 +262,7 @@ export default function GroupSwipeScreen() {
               </Text>
             ) : null}
           </StickyFooter>
-        </KeyboardAvoidingView>
+        </KeyboardAvoider>
       ) : null}
 
       {phase === "lobby" ? (

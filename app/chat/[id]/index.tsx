@@ -1,12 +1,6 @@
 import { router, useLocalSearchParams, type Href } from "expo-router";
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
-import {
-  FlatList,
-  KeyboardAvoidingView,
-  Pressable,
-  TextInput,
-  View,
-} from "react-native";
+import { FlatList, Pressable, TextInput, View } from "react-native";
 import { Gesture, GestureDetector } from "react-native-gesture-handler";
 import Animated, {
   FadeInDown,
@@ -23,6 +17,7 @@ import {
   Icon,
   BACK_ICON,
   IconButton,
+  KeyboardAvoider,
   Pressable as UIPressable,
   Screen,
   Text,
@@ -250,11 +245,8 @@ export default function ChatThreadScreen() {
         </View>
       ) : null}
 
-      <KeyboardAvoidingView
-        className="flex-1"
-        // Edge-to-edge Android does not resize for the keyboard either.
-        behavior="padding"
-      >
+      {/* Edge-to-edge Android does not resize for the keyboard either. */}
+      <KeyboardAvoider>
         <FlatList
           ref={listRef}
           data={messages}
@@ -297,7 +289,7 @@ export default function ChatThreadScreen() {
             onSend={send}
           />
         )}
-      </KeyboardAvoidingView>
+      </KeyboardAvoider>
       <SignInPrompt
         visible={promptOpen}
         onClose={() => setPromptOpen(false)}

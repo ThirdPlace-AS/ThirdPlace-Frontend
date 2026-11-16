@@ -12,7 +12,6 @@
 // buttons are never nested inside a <button> on web (CLAUDE.md "Sheets").
 import { useMemo, useState, type ReactNode } from "react";
 import {
-  KeyboardAvoidingView,
   type LayoutChangeEvent,
   Modal,
   Pressable as RNPressable,
@@ -44,6 +43,7 @@ import {
 } from "@/theme";
 
 import { BACK_ICON, IconButton } from "./IconButton";
+import { KeyboardAvoider } from "./KeyboardAvoider";
 import { Text } from "./Text";
 import { usePresence } from "./usePresence";
 
@@ -290,8 +290,7 @@ function SheetEngine({
       <GestureHandlerRootView style={{ flex: 1 }}>
         {/* The keyboard pads the bottom (edge-to-edge Android does not resize
             the Modal window), and the card shrinks so it stays on screen. */}
-        <KeyboardAvoidingView
-          behavior="padding"
+        <KeyboardAvoider
           className="flex-1 justify-end"
           // Keeps a content sheet below the status bar when the keyboard
           // leaves it less room than maxCardH.
@@ -359,7 +358,7 @@ function SheetEngine({
               )}
             </View>
           </Animated.View>
-        </KeyboardAvoidingView>
+        </KeyboardAvoider>
       </GestureHandlerRootView>
     </Modal>
   );

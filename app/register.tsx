@@ -1,13 +1,8 @@
 import { Link, router } from "expo-router";
 import { useState } from "react";
-import {
-  KeyboardAvoidingView,
-  Pressable,
-  ScrollView,
-  View,
-} from "react-native";
+import { Pressable, ScrollView, View } from "react-native";
 
-import { pageBody, Screen, Text } from "@/components/ui";
+import { pageBody, Screen, Text, KeyboardAvoider } from "@/components/ui";
 import { SocialAuthButtons } from "@/components/auth/SocialAuthButtons";
 import { Button } from "@/components/Button";
 import { Input } from "@/components/Input";
@@ -36,7 +31,7 @@ export default function Register() {
     <Screen>
       {/* Edge-to-edge Android does not resize for the keyboard: pad instead,
           so the button under the fields can be scrolled to. */}
-      <KeyboardAvoidingView behavior="padding" className="flex-1">
+      <KeyboardAvoider>
         <ScrollView
           contentContainerClassName={pageBody.sections}
           // The first tap on a button lands while the keyboard is open.
@@ -104,7 +99,7 @@ export default function Register() {
             </Link>
           </View>
         </ScrollView>
-      </KeyboardAvoidingView>
+      </KeyboardAvoider>
     </Screen>
   );
 }

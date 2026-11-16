@@ -1,7 +1,7 @@
 import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
 import { useState } from "react";
-import { KeyboardAvoidingView, ScrollView, View } from "react-native";
+import { ScrollView, View } from "react-native";
 
 import { Switch } from "@/components/ui/Switch";
 import {
@@ -14,6 +14,7 @@ import {
   StepHeader,
   StickyFooter,
   Text,
+  KeyboardAvoider,
 } from "@/components/ui";
 import { Button } from "@/components/Button";
 import { Chip } from "@/components/Chip";
@@ -130,7 +131,7 @@ export default function BusinessOnboarding() {
 
       {/* Edge-to-edge Android does not resize for the keyboard: the step and
           its footer move up themselves. */}
-      <KeyboardAvoidingView behavior="padding" className="flex-1">
+      <KeyboardAvoider>
         {/* New step: fresh scroll at its top, faded in. */}
         <FadeSwap swapKey={step} style={{ flex: 1 }}>
           <ScrollView
@@ -370,7 +371,7 @@ export default function BusinessOnboarding() {
         <StickyFooter>
           <Button label={cta} variant="ink" disabled={!can} onPress={next} />
         </StickyFooter>
-      </KeyboardAvoidingView>
+      </KeyboardAvoider>
     </Screen>
   );
 }

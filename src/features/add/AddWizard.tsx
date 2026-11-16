@@ -1,12 +1,7 @@
 import { Image } from "expo-image";
 import { router, useLocalSearchParams, type Href } from "expo-router";
 import { useState } from "react";
-import {
-  KeyboardAvoidingView,
-  Pressable,
-  ScrollView,
-  View,
-} from "react-native";
+import { Pressable, ScrollView, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { Switch } from "@/components/ui/Switch";
@@ -25,6 +20,7 @@ import {
   StepHeader,
   StickyFooter,
   Text,
+  KeyboardAvoider,
 } from "@/components/ui";
 import { Button } from "@/components/Button";
 import { haptics } from "@/lib/haptics";
@@ -294,7 +290,7 @@ export function AddWizard() {
 
       {/* Edge-to-edge Android does not resize for the keyboard, so the step
           and its footer move up themselves (padding on both platforms). */}
-      <KeyboardAvoidingView behavior="padding" className="flex-1">
+      <KeyboardAvoider>
         {/* New step: fresh scroll at its top, faded in. */}
         <FadeSwap swapKey={step} style={{ flex: 1 }}>
           <ScrollView
@@ -328,7 +324,7 @@ export function AddWizard() {
             </Text>
           ) : null}
         </StickyFooter>
-      </KeyboardAvoidingView>
+      </KeyboardAvoider>
     </Screen>
   );
 }
