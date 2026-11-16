@@ -98,6 +98,7 @@ Roles — use these, not a value picked by eye:
 | Card padding                                            | `p-4` (compact `p-3`)                                                                                                     | 16 / 12      |
 | List row                                                | `px-4 py-3` (or `px-gutter`)                                                                                              | 16 / 12      |
 | Sticky footer                                           | `px-gutter pt-3`                                                                                                          | 16 / 12      |
+| Floating button (FAB)                                   | `absolute bottom-6 right-4` over a `pb-28` body                                                                           | 24 / 16      |
 
 A heading sits closer to its own block than to the block above (24 between sections, 12 under a heading), so it reads as that block's heading: wrap a titled block in `Section` and a labelled control in `Field` (`src/components/ui/Section.tsx`, 0429) instead of leaving headings loose in the page's gap.
 

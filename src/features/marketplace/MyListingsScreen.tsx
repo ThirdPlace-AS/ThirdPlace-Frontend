@@ -103,7 +103,7 @@ export default function MyListingsScreen() {
         variant="ember"
         size="xl"
         onPress={() => router.push("/my-listings/new" as Href)}
-        className="absolute bottom-6 right-5"
+        className="absolute bottom-6 right-4"
       />
     </Screen>
   );

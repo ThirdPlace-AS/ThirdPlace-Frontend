@@ -108,7 +108,7 @@ export function SortableList<T>({
       keyExtractor={keyOf}
       renderItem={render}
       columns={1}
-      rowGap={8}
+      rowGap={12}
       customHandle
       overDrag="vertical"
       onDragEnd={({ data: next }) => onReorder(next)}

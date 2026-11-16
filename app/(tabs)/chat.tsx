@@ -11,6 +11,7 @@ import {
   SortableList,
   Accordion,
   Pressable as UIPressable,
+  Section,
   Text,
   EmptyState,
 } from "@/components/ui";
@@ -138,10 +139,7 @@ export default function ChatScreen() {
         />
 
         {pinnedChats.length > 0 ? (
-          <View className="gap-2">
-            <Text variant="title" accessibilityRole="header">
-              Festet
-            </Text>
+          <Section title="Festet" className="pt-2">
             {pinnedChats.length > 1 && !q ? (
               // Drag to reorder (P9): the ≡ handle at each row's end; the
               // row keeps its press and long press. Not while searching.
@@ -153,18 +151,15 @@ export default function ChatScreen() {
                 onReorder={reorderPinned}
               />
             ) : (
-              pinnedChats.map(row)
+              <View className="gap-3">{pinnedChats.map(row)}</View>
             )}
-          </View>
+          </Section>
         ) : null}
 
         {active.length > 0 ? (
-          <View className="gap-2">
-            <Text variant="title" accessibilityRole="header">
-              Aktive samtaler
-            </Text>
-            {active.map(row)}
-          </View>
+          <Section title="Aktive samtaler" className="pt-2">
+            <View className="gap-3">{active.map(row)}</View>
+          </Section>
         ) : null}
 
         {groups.map((g) =>
@@ -178,7 +173,7 @@ export default function ChatScreen() {
               open={!!open[g.key] || !!q}
               onToggle={() => setOpen((s) => ({ ...s, [g.key]: !s[g.key] }))}
             >
-              <View className="gap-2 px-2 pb-2">{g.items.map(row)}</View>
+              <View className="gap-3 px-2 pb-2">{g.items.map(row)}</View>
             </Accordion>
           ) : null,
         )}
@@ -226,7 +221,7 @@ export default function ChatScreen() {
         variant="ink"
         size="xl"
         onPress={() => router.push("/chat/new" as Href)}
-        className="absolute bottom-5 right-5"
+        className="absolute bottom-6 right-4"
       />
 
       {actionsFor ? (

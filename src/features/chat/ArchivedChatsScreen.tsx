@@ -16,7 +16,7 @@ export default function ArchivedChatsScreen() {
         Bare lesing. Du kan ikke sende nye meldinger.
       </Text>
       {archived.length ? (
-        <View className="gap-2">
+        <View className="gap-3">
           {archived.map((c) => (
             <ChatRow
               key={c.id}
