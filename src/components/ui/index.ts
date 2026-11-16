@@ -30,6 +30,7 @@ export { ChipGroup, type ChipGroupProps } from "./ChipGroup";
 export { Screen } from "./Screen";
 export { StickyFooter } from "./StickyFooter";
 export { FormPage, Page, pageBody, type PageDensity } from "./Page";
+export { Field, Section } from "./Section";
 export { ScrollRow } from "./ScrollRow";
 export { FadeSwap } from "./FadeSwap";
 export { Avatar, initialsOf, type AvatarSize } from "./Avatar";

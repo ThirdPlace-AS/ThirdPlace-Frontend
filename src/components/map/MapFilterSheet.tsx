@@ -197,7 +197,7 @@ function Section({
   children: React.ReactNode;
 }) {
   return (
-    <View className="gap-3 border-t border-line py-6">
+    <View className="gap-3 border-t border-line pb-2 pt-6">
       <View className="gap-1">
         <Text variant="body" weight="semibold">
           {title}
@@ -432,7 +432,7 @@ function SearchRow({
     return (
       <View
         style={cardShadow}
-        className="gap-4 rounded-md border border-line bg-surface px-6 py-4"
+        className="gap-4 rounded-md border border-line bg-surface p-4"
       >
         <UIPressable
           accessibilityRole="button"
@@ -456,7 +456,7 @@ function SearchRow({
       accessibilityLabel={`${label}, ${value}`}
       onPress={onToggle}
       contentStyle={cardShadow}
-      contentClassName="flex-row items-center justify-between gap-2 rounded-md border border-line bg-surface px-6 py-4"
+      contentClassName="flex-row items-center justify-between gap-2 rounded-md border border-line bg-surface p-4"
       pressedScale={0.99}
     >
       <Text variant="body" tone="muted" className="shrink-0">

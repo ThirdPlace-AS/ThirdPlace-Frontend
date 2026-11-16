@@ -463,7 +463,7 @@ export const MapDetailSheet = memo(
                 </View>
               </Animated.View>
               <BottomSheetScrollView
-                contentContainerClassName={`gap-4 px-gutter ${pageCapable ? "pt-4" : ""} ${footerId ? "pb-36" : "pb-16"}`}
+                contentContainerClassName={`gap-4 px-gutter pt-4 ${footerId ? "pb-36" : "pb-16"}`}
                 keyboardShouldPersistTaps="handled"
               >
                 {/* In-sheet push/back fades the new content in (was one frame). */}
@@ -603,17 +603,22 @@ function PageTopBar({
         className="flex-row items-center gap-1 border-b border-line px-2"
         style={{ paddingTop: topPad, height: full }}
       >
-        <IconButton icon={BACK_ICON} label="Tilbake" onPress={onBack} />
+        <View className="flex-1 flex-row">
+          <IconButton icon={BACK_ICON} label="Tilbake" onPress={onBack} />
+        </View>
         <Text
           variant="caption"
           weight="semibold"
           tone="muted"
-          className="flex-1 text-center"
+          className="text-center"
+          style={{ flex: 2 }}
           numberOfLines={1}
         >
           {info.caption}
         </Text>
-        <ShareSave info={info} />
+        <View className="flex-1 flex-row justify-end">
+          <ShareSave info={info} />
+        </View>
       </View>
     </Animated.View>
   );

@@ -20,13 +20,15 @@ import { StickyFooter } from "./StickyFooter";
  * sides, 16 below the header, 48 at the end. The gap is the page's density:
  * `sections` (24) between titled sections, `blocks` (16) between cards and
  * forms, `list` (12) between rows of one list, `items` (8) for a tight list.
- * Screens with their own ScrollView take the same strings.
+ * The body grows to the screen's height, so a lone state (EmptyState is
+ * flex-1) centres in the space left (0429). Screens with their own
+ * ScrollView take the same strings.
  */
 export const pageBody = {
-  sections: "gap-6 px-gutter pb-12 pt-4",
-  blocks: "gap-4 px-gutter pb-12 pt-4",
-  list: "gap-3 px-gutter pb-12 pt-4",
-  items: "gap-2 px-gutter pb-12 pt-4",
+  sections: "grow gap-6 px-gutter pb-12 pt-4",
+  blocks: "grow gap-4 px-gutter pb-12 pt-4",
+  list: "grow gap-3 px-gutter pb-12 pt-4",
+  items: "grow gap-2 px-gutter pb-12 pt-4",
 } as const;
 export type PageDensity = keyof typeof pageBody;
 

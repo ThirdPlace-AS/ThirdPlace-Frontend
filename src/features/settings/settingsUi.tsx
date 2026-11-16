@@ -22,7 +22,7 @@ export function SettingsSection({
   children: ReactNode;
 }) {
   return (
-    <View className="gap-1">
+    <View>
       {title ? (
         <Text variant="title" accessibilityRole="header">
           {title}
@@ -80,11 +80,11 @@ export function ToggleRow({
     <UIPressable
       accessible={false}
       onPress={() => onValueChange(!value)}
-      contentClassName="flex-row items-center gap-3 border-b border-line px-gutter py-4"
+      contentClassName="flex-row items-center gap-3 border-b border-line px-gutter py-3"
       pressedScale={0.99}
     >
       <Icon name={icon} size="md" tone="ink" />
-      <View className="flex-1">
+      <View className="flex-1 gap-1">
         <Text variant="body">{label}</Text>
         {hint ? (
           <Text variant="caption" tone="muted">
