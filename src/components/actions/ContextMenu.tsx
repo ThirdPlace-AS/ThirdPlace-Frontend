@@ -7,7 +7,7 @@
 // outside hit testing, and opens from the row's own long press: taps, the
 // long-press haptic and the screen reader's "Flere valg" stay the row's.
 import { MenuView, type MenuComponentRef } from "@react-native-menu/menu";
-import { useState, type ReactNode } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 import { Platform, UIManager, View } from "react-native";
 
 import { ItemActionsSheet, type ItemAction } from "./ActionSheets";
@@ -28,40 +28,54 @@ export function ContextMenu({
   /** The row, given the function that opens its menu. */
   children: (open: () => void) => ReactNode;
 }) {
+  // Android builds its PopupMenu when the view mounts, so a row mounts the
+  // anchor only on its first long press (a long chat list builds none up
+  // front), then keeps it for later presses.
+  const [armed, setArmed] = useState(false);
   // The menu as state (a callback ref), so opening it reads no ref in render.
   const [menu, setMenu] = useState<MenuComponentRef | null>(null);
   const [sheet, setSheet] = useState(false);
   const openSheet = () => setSheet(true);
-  // Before the native view mounts there is no menu yet: the sheet stands in.
-  const openMenu = () => (menu ? menu.show() : openSheet());
+  // A popup shown before its anchor is laid out opens in the screen's
+  // top-left corner, so the first press waits for the anchor's layout.
+  const [placed, setPlaced] = useState(false);
+  const openMenu = () => (menu && placed ? menu.show() : setArmed(true));
+  // The view mounts only after a press arms it, so a menu that is placed for
+  // the first time means that first press: open it then.
+  useEffect(() => {
+    if (placed) menu?.show();
+  }, [menu, placed]);
 
   return (
     <>
       {NATIVE_MENU ? (
         <View>
           {children(openMenu)}
-          <View
-            pointerEvents="none"
-            style={{
-              position: "absolute",
-              left: 0,
-              right: 0,
-              bottom: 0,
-              height: 1,
-            }}
-          >
-            <MenuView
-              ref={setMenu}
-              style={{ flex: 1 }}
-              actions={actions.map((a, i) => ({
-                id: String(i),
-                title: a.label,
-              }))}
-              onPressAction={({ nativeEvent }) =>
-                actions[Number(nativeEvent.event)]?.onPress()
-              }
-            />
-          </View>
+          {armed ? (
+            <View
+              onLayout={() => setPlaced(true)}
+              pointerEvents="none"
+              style={{
+                position: "absolute",
+                left: 0,
+                right: 0,
+                bottom: 0,
+                height: 1,
+              }}
+            >
+              <MenuView
+                ref={setMenu}
+                style={{ flex: 1 }}
+                actions={actions.map((a, i) => ({
+                  id: String(i),
+                  title: a.label,
+                }))}
+                onPressAction={({ nativeEvent }) =>
+                  actions[Number(nativeEvent.event)]?.onPress()
+                }
+              />
+            </View>
+          ) : null}
         </View>
       ) : (
         children(openSheet)
