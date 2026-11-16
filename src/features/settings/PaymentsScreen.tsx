@@ -1,7 +1,13 @@
 import { useState } from "react";
 import { ScrollView, View } from "react-native";
 
-import { Icon, Screen, Pressable as UIPressable, Text } from "@/components/ui";
+import {
+  Icon,
+  pageBody,
+  Pressable as UIPressable,
+  Screen,
+  Text,
+} from "@/components/ui";
 import { RouteHeader } from "@/components/RouteHeader";
 import { Sheet } from "@/components/Sheet";
 
@@ -16,7 +22,7 @@ export default function PaymentsScreen() {
   return (
     <Screen edges={["top"]}>
       <RouteHeader title="Betaling" />
-      <ScrollView contentContainerClassName="gap-6 px-gutter py-4 pb-12">
+      <ScrollView contentContainerClassName={pageBody.sections}>
         <SettingsSection title="Betalingsmetoder">
           <View className="items-center gap-2 px-4 py-8">
             <Icon name="card-outline" size="xl" tone="muted" />

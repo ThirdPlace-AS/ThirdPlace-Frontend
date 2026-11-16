@@ -15,22 +15,45 @@ import { Header } from "./Header";
 import { Screen } from "./Screen";
 import { StickyFooter } from "./StickyFooter";
 
+/**
+ * A page's scroll body (DESIGN_SYSTEM.md "Spacing", 0428): the gutter on the
+ * sides, 16 below the header, 48 at the end. The gap is the page's density:
+ * `sections` (24) between titled sections, `blocks` (16) between cards and
+ * forms, `list` (12) between rows of one list, `items` (8) for a tight list.
+ * Screens with their own ScrollView take the same strings.
+ */
+export const pageBody = {
+  sections: "gap-6 px-gutter pb-12 pt-4",
+  blocks: "gap-4 px-gutter pb-12 pt-4",
+  list: "gap-3 px-gutter pb-12 pt-4",
+  items: "gap-2 px-gutter pb-12 pt-4",
+} as const;
+export type PageDensity = keyof typeof pageBody;
+
 type PageProps = {
   title: string;
   /** Header actions (icon buttons). */
   trailing?: ReactNode;
   /** Override back (defaults to back, or the map from a cold deep link). */
   onBack?: () => void;
+  /** Gap between the page's children (default `blocks`, 16). */
+  density?: PageDensity;
   children: ReactNode;
 };
 
-export function Page({ title, trailing, onBack, children }: PageProps) {
+export function Page({
+  title,
+  trailing,
+  onBack,
+  density = "blocks",
+  children,
+}: PageProps) {
   return (
     <Screen edges={["top", "bottom"]}>
       <Header title={title} trailing={trailing} onBack={onBack} />
       <ScrollView
         className="flex-1"
-        contentContainerClassName="gap-4 px-gutter pb-12 pt-2"
+        contentContainerClassName={pageBody[density]}
         keyboardShouldPersistTaps="handled"
       >
         {children}
@@ -43,6 +66,7 @@ export function FormPage({
   title,
   trailing,
   onBack,
+  density = "blocks",
   footer,
   children,
 }: PageProps & {
@@ -55,7 +79,7 @@ export function FormPage({
       <KeyboardAvoidingView behavior="padding" className="flex-1">
         <ScrollView
           className="flex-1"
-          contentContainerClassName="gap-4 px-gutter pb-8 pt-2"
+          contentContainerClassName={pageBody[density]}
           keyboardShouldPersistTaps="handled"
         >
           {children}

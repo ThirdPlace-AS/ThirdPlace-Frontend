@@ -4,7 +4,7 @@
 // map; a release build redirects _sandbox to the map.
 import { ScrollView, View } from "react-native";
 
-import { PinGlyph, Screen, Text } from "@/components/ui";
+import { pageBody, PinGlyph, Screen, Text } from "@/components/ui";
 import type { MarkerGlyph } from "@/components/map/services/markerIcon";
 import {
   INTEREST_PIN_GROUP,
@@ -21,7 +21,7 @@ const pin = palette.light;
 export default function SandboxPins() {
   return (
     <Screen edges={["top"]}>
-      <ScrollView contentContainerClassName="gap-6 px-gutter py-4 pb-12">
+      <ScrollView contentContainerClassName={pageBody.sections}>
         <Text variant="h2">Kartnåler</Text>
         {PIN_GROUPS.map((group) => {
           const fill = pinGroupFill(group);

@@ -2,7 +2,7 @@ import { router } from "expo-router";
 import { useState } from "react";
 import { Pressable, ScrollView, View } from "react-native";
 
-import { Badge, Screen, ScrollRow, Text } from "@/components/ui";
+import { Badge, pageBody, Screen, ScrollRow, Text } from "@/components/ui";
 import { Button } from "@/components/Button";
 import { Chip } from "@/components/Chip";
 import { RouteHeader } from "@/components/RouteHeader";
@@ -18,7 +18,7 @@ export function PayoutsScreen() {
   return (
     <Screen edges={["top"]}>
       <RouteHeader title="Utbetalinger" />
-      <ScrollView contentContainerClassName="gap-4 px-gutter py-4 pb-12">
+      <ScrollView contentContainerClassName={pageBody.blocks}>
         <Text variant="caption" tone="muted">
           Sett opp hvordan du mottar penger fra opplevelser.
         </Text>
@@ -80,7 +80,7 @@ export function SubmissionsScreen() {
   return (
     <Screen edges={["top"]}>
       <RouteHeader title="Innleveringer" />
-      <ScrollView contentContainerClassName="gap-3 px-gutter py-4 pb-12">
+      <ScrollView contentContainerClassName={pageBody.list}>
         <Text variant="caption" tone="muted">
           Steder du har foreslått til ThirdPlace.
         </Text>

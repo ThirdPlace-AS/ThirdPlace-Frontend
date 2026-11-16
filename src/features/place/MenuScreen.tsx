@@ -17,7 +17,7 @@ import {
   offeringIndex,
 } from "@/components/place/MenuSection";
 import { RouteHeader } from "@/components/RouteHeader";
-import { Screen, Text } from "@/components/ui";
+import { pageBody, Screen, Text } from "@/components/ui";
 import { placeById } from "@/fixtures";
 import { menuForPlace } from "@/fixtures/menus";
 
@@ -40,7 +40,7 @@ export default function MenuScreen() {
   return (
     <Screen edges={["top"]}>
       <RouteHeader title="Meny" />
-      <ScrollView contentContainerClassName="gap-6 px-gutter py-4 pb-12">
+      <ScrollView contentContainerClassName={pageBody.sections}>
         {!place ? (
           <Text variant="body" tone="muted">
             Fant ikke stedet.

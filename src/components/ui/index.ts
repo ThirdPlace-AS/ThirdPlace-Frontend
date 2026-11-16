@@ -29,7 +29,7 @@ export { Header, StepContent, StepHeader, TitleBlock } from "./Header";
 export { ChipGroup, type ChipGroupProps } from "./ChipGroup";
 export { Screen } from "./Screen";
 export { StickyFooter } from "./StickyFooter";
-export { FormPage, Page } from "./Page";
+export { FormPage, Page, pageBody, type PageDensity } from "./Page";
 export { ScrollRow } from "./ScrollRow";
 export { FadeSwap } from "./FadeSwap";
 export { Avatar, initialsOf, type AvatarSize } from "./Avatar";

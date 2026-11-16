@@ -35,11 +35,11 @@ import { formatRating } from "@/lib/format";
 
 // The list's padding and gaps as a style (review of the speed pass: no
 // className on an animated component); the values the classes
-// "gap-2 px-gutter pb-10 flex-grow" resolved to (NativeWind's rem is 14).
+// "gap-2 px-gutter pb-12 flex-grow" resolve to (true px since 0427).
 const LIST_CONTENT = {
-  gap: 7,
+  gap: 8,
   paddingHorizontal: gutterPx,
-  paddingBottom: 35,
+  paddingBottom: 48,
   flexGrow: 1,
 };
 

@@ -4,7 +4,7 @@ import { ScrollView, View } from "react-native";
 
 import { Button } from "@/components/Button";
 
-import { ListRow, Screen, Switch, Text } from "@/components/ui";
+import { ListRow, pageBody, Screen, Switch, Text } from "@/components/ui";
 import { RouteHeader } from "@/components/RouteHeader";
 import { setDevSimulation, useDevSimulation } from "@/lib/devSimulation";
 import { simulateUpdate } from "@/lib/whatsNew";
@@ -19,7 +19,7 @@ export default function SimulateSandbox() {
   return (
     <Screen edges={["top"]}>
       <RouteHeader title="Simulering (dev)" />
-      <ScrollView contentContainerClassName="gap-3 px-gutter py-4 pb-12">
+      <ScrollView contentContainerClassName={pageBody.list}>
         <Text variant="caption" tone="muted">
           Bare for utvikling. Bryterne nullstilles når appen lastes på nytt.
         </Text>

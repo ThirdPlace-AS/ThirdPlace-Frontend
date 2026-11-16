@@ -2,7 +2,13 @@ import { Ionicons } from "@expo/vector-icons";
 import { useState } from "react";
 import { ScrollView, View } from "react-native";
 
-import { Icon, Screen, Text, Pressable as UIPressable } from "@/components/ui";
+import {
+  Icon,
+  pageBody,
+  Pressable as UIPressable,
+  Screen,
+  Text,
+} from "@/components/ui";
 import { RouteHeader } from "@/components/RouteHeader";
 
 // Aldersverifisering, per the design (PDF p22): methods BankID /
@@ -46,7 +52,7 @@ export default function AgeVerificationScreen() {
   return (
     <Screen edges={["top"]}>
       <RouteHeader title="Aldersverifisering" />
-      <ScrollView contentContainerClassName="gap-4 px-gutter py-4 pb-12">
+      <ScrollView contentContainerClassName={pageBody.blocks}>
         <Text variant="caption" tone="muted">
           Noen opplevelser krever verifisert alder. Bekreft alderen din for
           tilgang.

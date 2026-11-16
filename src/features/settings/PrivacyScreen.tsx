@@ -2,7 +2,7 @@ import { router, type Href } from "expo-router";
 import { useState } from "react";
 import { ScrollView } from "react-native";
 
-import { ListRow, Screen } from "@/components/ui";
+import { ListRow, pageBody, Screen } from "@/components/ui";
 import { RouteHeader } from "@/components/RouteHeader";
 import { SignInPrompt } from "@/components/SignInPrompt";
 import { useGuestMode } from "@/components/map/hooks/useGuestMode";
@@ -33,7 +33,7 @@ export default function PrivacyScreen() {
   return (
     <Screen edges={["top"]}>
       <RouteHeader title="Personvern" />
-      <ScrollView contentContainerClassName="gap-6 px-gutter py-4 pb-12">
+      <ScrollView contentContainerClassName={pageBody.sections}>
         <ListRow
           variant="card"
           icon="shield-checkmark-outline"

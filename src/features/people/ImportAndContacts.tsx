@@ -2,7 +2,7 @@ import { router, type Href } from "expo-router";
 import { useState } from "react";
 import { ScrollView, View } from "react-native";
 
-import { Icon, Screen, Text } from "@/components/ui";
+import { Icon, pageBody, Screen, Text } from "@/components/ui";
 import { Button } from "@/components/Button";
 import { Input } from "@/components/Input";
 import { RouteHeader } from "@/components/RouteHeader";
@@ -19,7 +19,7 @@ export function ImportContentScreen() {
     <Screen edges={["top"]}>
       <RouteHeader title="Importer innhold" />
       <ScrollView
-        contentContainerClassName="gap-4 px-gutter py-4 pb-12"
+        contentContainerClassName={pageBody.blocks}
         keyboardShouldPersistTaps="handled"
       >
         <Text variant="caption" tone="muted">
@@ -74,7 +74,7 @@ export function InviteContactsScreen() {
   return (
     <Screen edges={["top"]}>
       <RouteHeader title="Inviter kontakter" />
-      <ScrollView contentContainerClassName="gap-4 px-gutter py-6 pb-12">
+      <ScrollView contentContainerClassName={pageBody.blocks}>
         <View className="items-center gap-3">
           <View className="h-16 w-16 items-center justify-center rounded-full bg-surfaceMuted">
             <Icon name="people-outline" size="xl" tone="ink" />

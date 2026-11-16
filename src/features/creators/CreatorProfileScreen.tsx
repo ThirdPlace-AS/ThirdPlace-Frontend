@@ -2,7 +2,7 @@ import { router, useLocalSearchParams, type Href } from "expo-router";
 import { useState } from "react";
 import { ScrollView, View } from "react-native";
 
-import { FollowButton, Screen, Avatar, Text } from "@/components/ui";
+import { Avatar, FollowButton, pageBody, Screen, Text } from "@/components/ui";
 import { Button } from "@/components/Button";
 import { RouteHeader } from "@/components/RouteHeader";
 import { EmptyState } from "@/components/states/StateView";
@@ -35,7 +35,7 @@ export default function CreatorProfileScreen() {
   return (
     <Screen edges={["top"]}>
       <RouteHeader title="Skaper" />
-      <ScrollView contentContainerClassName="gap-4 px-gutter py-4 pb-12">
+      <ScrollView contentContainerClassName={pageBody.blocks}>
         <View className="items-center gap-2">
           <Avatar
             name={person.name}

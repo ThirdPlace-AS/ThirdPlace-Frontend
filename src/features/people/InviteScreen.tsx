@@ -1,7 +1,7 @@
 import { router } from "expo-router";
 import { ScrollView, Share, View } from "react-native";
 
-import { Screen, Text } from "@/components/ui";
+import { pageBody, Screen, Text } from "@/components/ui";
 import { Button } from "@/components/Button";
 import { RouteHeader } from "@/components/RouteHeader";
 import { showToast } from "@/components/Toast";
@@ -20,7 +20,7 @@ export default function InviteScreen() {
   return (
     <Screen edges={["top"]}>
       <RouteHeader title="Inviter venner" />
-      <ScrollView contentContainerClassName="gap-4 px-gutter py-4 pb-12">
+      <ScrollView contentContainerClassName={pageBody.blocks}>
         <Text variant="caption" tone="muted">
           Del ThirdPlace med vennene dine.
         </Text>

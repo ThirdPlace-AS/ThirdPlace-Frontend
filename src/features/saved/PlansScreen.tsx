@@ -83,7 +83,7 @@ export default function PlansScreen() {
       <FlatList
         data={rows}
         keyExtractor={(p) => `${p.state}-${p.experienceId}`}
-        contentContainerClassName="gap-2 px-gutter pb-10 pt-4 flex-grow"
+        contentContainerClassName="gap-2 px-gutter pb-12 pt-4 flex-grow"
         ListHeaderComponent={
           <View className="gap-3 pb-2">
             {/* One scrolling row (like the map chips) instead of a wrap that

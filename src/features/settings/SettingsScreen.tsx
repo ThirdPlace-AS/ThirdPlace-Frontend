@@ -3,11 +3,12 @@ import { useState } from "react";
 import { ScrollView, View } from "react-native";
 
 import {
+  type IconName,
   ListRow,
+  pageBody,
   Screen,
   SearchBar,
   Text,
-  type IconName,
 } from "@/components/ui";
 import { Button } from "@/components/Button";
 import { RouteHeader } from "@/components/RouteHeader";
@@ -146,7 +147,7 @@ export default function SettingsScreen() {
     <Screen edges={["top"]}>
       <RouteHeader title="Innstillinger" />
       <ScrollView
-        contentContainerClassName="gap-6 px-gutter py-4 pb-12"
+        contentContainerClassName={pageBody.sections}
         keyboardShouldPersistTaps="handled"
       >
         <SearchBar

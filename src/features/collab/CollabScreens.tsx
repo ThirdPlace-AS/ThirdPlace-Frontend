@@ -11,12 +11,13 @@ import {
   ChipGroup,
   FormPage,
   Icon,
+  type IconName,
   Page,
+  pageBody,
+  Pressable as UIPressable,
   Screen,
   StickyFooter,
   Text,
-  type IconName,
-  Pressable as UIPressable,
 } from "@/components/ui";
 import { Button } from "@/components/Button";
 import { showToast, type ToastInput } from "@/components/Toast";
@@ -53,7 +54,7 @@ export function NewCollabScreen() {
       <RouteHeader title="Nytt samarbeid" />
       <KeyboardAvoidingView behavior="padding" className="flex-1">
         <ScrollView
-          contentContainerClassName="gap-4 px-gutter py-4 pb-12"
+          contentContainerClassName={pageBody.blocks}
           keyboardShouldPersistTaps="handled"
         >
           <Text variant="caption" tone="muted">
@@ -131,7 +132,7 @@ export function CollabDetailScreen() {
   return (
     <Screen edges={["top"]}>
       <RouteHeader title="Jazz-samarbeid" />
-      <ScrollView contentContainerClassName="gap-4 px-gutter py-4 pb-12">
+      <ScrollView contentContainerClassName={pageBody.blocks}>
         <Label>Parter</Label>
         <View className="flex-row gap-3">
           <Party name="Maria Movik" role="Skaper · Primærvert" />

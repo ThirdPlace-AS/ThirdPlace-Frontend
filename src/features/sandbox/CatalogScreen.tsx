@@ -7,7 +7,14 @@ import { SectionList, View } from "react-native";
 
 import { ITEM_TYPE_ICON } from "@/components/map/services/itemType";
 import { MARKER_LABEL } from "@/components/map/services/markerCategory";
-import { Icon, Pressable, Screen, Text, type IconName } from "@/components/ui";
+import {
+  Icon,
+  type IconName,
+  pageBody,
+  Pressable,
+  Screen,
+  Text,
+} from "@/components/ui";
 import {
   INTERESTS,
   INTEREST_CATEGORIES,
@@ -48,7 +55,7 @@ export default function CatalogScreen() {
       <SectionList
         sections={sections}
         keyExtractor={(i) => i.id}
-        contentContainerClassName="gap-4 px-gutter py-4 pb-12"
+        contentContainerClassName={pageBody.blocks}
         stickySectionHeadersEnabled={false}
         ListHeaderComponent={
           <View className="gap-1">

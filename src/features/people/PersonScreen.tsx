@@ -21,6 +21,7 @@ import {
   Header,
   IconButton,
   ListRow,
+  pageBody,
   Screen,
 } from "@/components/ui";
 import { experiencesHostedBy, people, profile } from "@/fixtures";
@@ -93,7 +94,7 @@ export default function PersonScreen() {
           />
         }
       />
-      <ScrollView contentContainerClassName="gap-6 px-gutter pb-12 pt-4">
+      <ScrollView contentContainerClassName={pageBody.sections}>
         <PersonProfileBody
           name={person.name}
           avatar={libImage(person.avatar)}

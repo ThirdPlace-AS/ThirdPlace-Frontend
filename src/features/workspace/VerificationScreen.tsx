@@ -7,9 +7,10 @@ import { RouteHeader } from "@/components/RouteHeader";
 import {
   Badge,
   Icon,
+  pageBody,
+  Pressable as UIPressable,
   Screen,
   Text,
-  Pressable as UIPressable,
 } from "@/components/ui";
 import { businessById } from "@/fixtures";
 
@@ -54,7 +55,7 @@ export default function VerificationScreen() {
   return (
     <Screen edges={["top"]}>
       <RouteHeader title="Verifisering" />
-      <ScrollView contentContainerClassName="gap-6 px-gutter py-4 pb-12">
+      <ScrollView contentContainerClassName={pageBody.sections}>
         {isGuest ? (
           <GuestLock message="Logg inn som bedrift for å se og starte verifisering." />
         ) : !business ? (

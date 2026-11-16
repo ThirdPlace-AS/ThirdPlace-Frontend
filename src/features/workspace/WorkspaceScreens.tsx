@@ -3,12 +3,13 @@ import { router, type Href } from "expo-router";
 import { useState } from "react";
 import { Pressable, ScrollView, View } from "react-native";
 import {
+  Badge,
   Chart,
   Icon,
-  Screen,
+  pageBody,
   Pressable as UIPressable,
+  Screen,
   Text,
-  Badge,
 } from "@/components/ui";
 import { byStart } from "@/features/workspace/calendarOrder";
 import { hubToday } from "@/features/workspace/hubToday";
@@ -42,7 +43,7 @@ export function WorkspaceHub() {
   return (
     <Screen edges={["top"]}>
       <RouteHeader title={BIZ?.name ?? "Bedrift"} />
-      <ScrollView contentContainerClassName="gap-3 px-gutter py-4 pb-12">
+      <ScrollView contentContainerClassName={pageBody.list}>
         <View className="flex-row items-center gap-2">
           <Icon
             name={BIZ?.verified ? "checkmark-circle" : "time-outline"}
@@ -293,7 +294,7 @@ export function WorkspaceAnalytics() {
   return (
     <Screen edges={["top"]}>
       <RouteHeader title="Analyse" />
-      <ScrollView contentContainerClassName="gap-4 px-gutter py-4 pb-12">
+      <ScrollView contentContainerClassName={pageBody.blocks}>
         <View className="flex-row items-center gap-2">
           {RANGES.map((r) => (
             <Chip
@@ -338,7 +339,7 @@ export function WorkspaceCalendar() {
   return (
     <Screen edges={["top"]}>
       <RouteHeader title="Kalender" />
-      <ScrollView contentContainerClassName="gap-3 px-gutter py-4 pb-12">
+      <ScrollView contentContainerClassName={pageBody.list}>
         <Text variant="title" accessibilityRole="header">
           Kommende
         </Text>
@@ -384,7 +385,7 @@ export function WorkspaceLocations() {
   return (
     <Screen edges={["top"]}>
       <RouteHeader title="Lokasjoner" />
-      <ScrollView contentContainerClassName="gap-3 px-gutter py-4 pb-12">
+      <ScrollView contentContainerClassName={pageBody.list}>
         <Text variant="caption" tone="muted">
           {ownBusinesses().length} lokasjoner
         </Text>

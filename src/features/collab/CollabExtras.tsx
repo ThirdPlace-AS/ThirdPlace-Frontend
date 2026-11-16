@@ -6,9 +6,10 @@ import {
   Badge,
   ChipGroup,
   Icon,
+  pageBody,
+  Pressable as UIPressable,
   Screen,
   Text,
-  Pressable as UIPressable,
 } from "@/components/ui";
 import { collabHistory } from "@/fixtures";
 import { collabMonth } from "@/features/marketplace/marketplaceStats";
@@ -45,7 +46,7 @@ export function PaymentStatusScreen() {
   return (
     <Screen edges={["top"]}>
       <RouteHeader title="Betalingsstatus" />
-      <ScrollView contentContainerClassName="gap-6 px-gutter py-4 pb-12">
+      <ScrollView contentContainerClassName={pageBody.sections}>
         <Text variant="caption" tone="muted">
           Jazz-samarbeid · Oslo Kaffebar
         </Text>
@@ -183,7 +184,7 @@ export function CollabHistoryScreen() {
   return (
     <Screen edges={["top"]}>
       <RouteHeader title="Samarbeidshistorikk" />
-      <ScrollView contentContainerClassName="gap-3 px-gutter py-4 pb-12">
+      <ScrollView contentContainerClassName={pageBody.list}>
         <Text variant="caption" tone="muted">
           {done} fullførte · {ended} avsluttede
         </Text>

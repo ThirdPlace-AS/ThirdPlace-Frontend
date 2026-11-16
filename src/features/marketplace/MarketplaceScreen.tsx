@@ -7,8 +7,9 @@ import {
   Badge,
   EmptyState,
   Icon,
-  Screen,
+  pageBody,
   Pressable as UIPressable,
+  Screen,
   Text,
 } from "@/components/ui";
 import { Button } from "@/components/Button";
@@ -61,7 +62,7 @@ export default function MarketplaceScreen() {
       <FlatList
         data={data}
         keyExtractor={(l) => l.id}
-        contentContainerClassName="gap-3 px-gutter pb-10 pt-4"
+        contentContainerClassName={pageBody.list}
         keyboardShouldPersistTaps="handled"
         ListHeaderComponent={
           <View className="gap-3 pb-1">

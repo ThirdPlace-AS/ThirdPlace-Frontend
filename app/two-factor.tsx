@@ -2,7 +2,13 @@ import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
 import { useState } from "react";
 import { ScrollView, View } from "react-native";
-import { Icon, Screen, Text, Pressable as UIPressable } from "@/components/ui";
+import {
+  Icon,
+  pageBody,
+  Pressable as UIPressable,
+  Screen,
+  Text,
+} from "@/components/ui";
 import { Switch } from "@/components/ui/Switch";
 import { Button } from "@/components/Button";
 import { RouteHeader } from "@/components/RouteHeader";
@@ -39,7 +45,7 @@ export default function TwoFactor() {
   return (
     <Screen edges={["top"]}>
       <RouteHeader title="Totrinnsbekreftelse" />
-      <ScrollView contentContainerClassName="gap-6 px-gutter py-4 pb-12">
+      <ScrollView contentContainerClassName={pageBody.sections}>
         <Text variant="caption" tone="muted">
           Legg til et ekstra sikkerhetslag på kontoen din.
         </Text>

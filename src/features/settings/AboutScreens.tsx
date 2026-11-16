@@ -5,7 +5,7 @@ import { FlatList, View } from "react-native";
 
 import { SearchField } from "@/components/pickers/Pickers";
 import { EmptyState } from "@/components/states/StateView";
-import { ListRow, Page, Screen, Text } from "@/components/ui";
+import { ListRow, Page, pageBody, Screen, Text } from "@/components/ui";
 import { Header } from "@/components/ui/Header";
 import { MAP_PREVIEW_CREDIT } from "@/components/map/MapLayerSheet";
 import { LogoMark } from "@/components/Logo";
@@ -84,7 +84,7 @@ export function LicensesScreen() {
         data={list}
         keyExtractor={(p) => `${p.name}@${p.version}`}
         keyboardShouldPersistTaps="handled"
-        contentContainerClassName="gap-2 px-gutter pb-12 pt-2"
+        contentContainerClassName={pageBody.items}
         ListHeaderComponent={
           <View className="gap-3 pb-2">
             <Text variant="caption" tone="muted">

@@ -1,7 +1,13 @@
 import { router, type Href } from "expo-router";
 import { useState } from "react";
 import { ScrollView, View } from "react-native";
-import { Icon, Screen, Text, Pressable as UIPressable } from "@/components/ui";
+import {
+  Icon,
+  pageBody,
+  Pressable as UIPressable,
+  Screen,
+  Text,
+} from "@/components/ui";
 import { Button } from "@/components/Button";
 import { RouteHeader } from "@/components/RouteHeader";
 import { showToast } from "@/components/Toast";
@@ -40,7 +46,7 @@ export default function BecomeCreatorScreen() {
   return (
     <Screen edges={["top"]}>
       <RouteHeader title="Bli Skaper" />
-      <ScrollView contentContainerClassName="gap-4 px-gutter py-4 pb-12">
+      <ScrollView contentContainerClassName={pageBody.blocks}>
         <Text variant="caption" tone="muted">
           Kravene under viser veien til Skaper-rollen.
         </Text>

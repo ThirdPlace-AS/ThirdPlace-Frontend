@@ -83,18 +83,19 @@ Why: NativeWind renders `rem` at 14 px on native, so before 0427 `p-4` was 14 px
 
 Roles — use these, not a value picked by eye:
 
-| Role                                                    | Class                                             | px           |
-| ------------------------------------------------------- | ------------------------------------------------- | ------------ |
-| Screen side padding                                     | `px-gutter`                                       | 16           |
-| Page top / bottom                                       | `pt-2` / `pb-12` (above a tab bar or FAB `pb-28`) | 8 / 48 / 112 |
-| Between sections of a page                              | `gap-6` (`Screen` scroll)                         | 24           |
-| Between blocks in a section, sheet body                 | `gap-4`                                           | 16           |
-| Between rows of a list block, a heading and its block   | `gap-3`                                           | 12           |
-| Between items (chips, buttons in a row, icon and label) | `gap-2`                                           | 8            |
-| A text pair (title and its sub-line)                    | `gap-1`                                           | 4            |
-| Card padding                                            | `p-4` (compact `p-3`)                             | 16 / 12      |
-| List row                                                | `px-4 py-3` (or `px-gutter`)                      | 16 / 12      |
-| Sticky footer                                           | `px-gutter pt-3`                                  | 16 / 12      |
+| Role                                                    | Class                                                                                                                | px           |
+| ------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------- | ------------ |
+| Screen side padding                                     | `px-gutter`                                                                                                          | 16           |
+| Page body                                               | `pageBody.sections · blocks · list · items` (`Page`/`FormPage` `density`): `px-gutter pt-4 pb-12`, gap 6 · 4 · 3 · 2 | 16 / 16 / 48 |
+| Page bottom above a tab bar or FAB                      | `pb-28`                                                                                                              | 112          |
+| Between sections of a page                              | `gap-6` (`Screen` scroll)                                                                                            | 24           |
+| Between blocks in a section, sheet body                 | `gap-4`                                                                                                              | 16           |
+| Between rows of a list block, a heading and its block   | `gap-3`                                                                                                              | 12           |
+| Between items (chips, buttons in a row, icon and label) | `gap-2`                                                                                                              | 8            |
+| A text pair (title and its sub-line)                    | `gap-1`                                                                                                              | 4            |
+| Card padding                                            | `p-4` (compact `p-3`)                                                                                                | 16 / 12      |
+| List row                                                | `px-4 py-3` (or `px-gutter`)                                                                                         | 16 / 12      |
+| Sticky footer                                           | `px-gutter pt-3`                                                                                                     | 16 / 12      |
 
 Centre a lone state (empty, error, success) both ways in the space it has (`StateView`); a page's content otherwise starts at the top and runs full width inside the gutter.
 
