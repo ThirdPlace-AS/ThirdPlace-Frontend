@@ -96,7 +96,7 @@ export function TitleBlock({
   size?: "display" | "h1";
 }) {
   return (
-    <View className="gap-3">
+    <View className="gap-4">
       {back ? (
         <IconButton icon={BACK_ICON} label="Tilbake" onPress={onBack} />
       ) : null}
