@@ -12,17 +12,18 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Switch } from "@/components/ui/Switch";
 import {
   ChipGroup,
+  FadeSwap,
+  Field,
   Icon,
+  IconButton,
+  type IconName,
+  Pressable as UIPressable,
   Screen,
+  Sheet,
   StepContent,
   StepHeader,
   StickyFooter,
-  type IconName,
-  Pressable as UIPressable,
   Text,
-  IconButton,
-  FadeSwap,
-  Sheet,
 } from "@/components/ui";
 import { Button } from "@/components/Button";
 import { haptics } from "@/lib/haptics";
@@ -449,11 +450,14 @@ function StepBody({
               multiline
               maxLength={280}
             />
-            <Label>Interesser</Label>
-            <InterestPicker
-              value={draft.interests}
-              onToggle={(i) => patch({ interests: toggle(draft.interests, i) })}
-            />
+            <Field label="Interesser">
+              <InterestPicker
+                value={draft.interests}
+                onToggle={(i) =>
+                  patch({ interests: toggle(draft.interests, i) })
+                }
+              />
+            </Field>
           </Shell>
         );
       return (
@@ -587,11 +591,12 @@ function StepBody({
               onClose={() => setPicker(false)}
             />
           ) : null}
-          <Label>Annet sted</Label>
-          <AreaChips
-            value={draft.area || null}
-            onChange={(a) => patch({ area: a.name })}
-          />
+          <Field label="Annet sted">
+            <AreaChips
+              value={draft.area || null}
+              onChange={(a) => patch({ area: a.name })}
+            />
+          </Field>
           <Input
             label="Valgfritt: eget oppmøtested"
             placeholder="F.eks. «Møt ved inngangen»"
@@ -691,12 +696,13 @@ function StepBody({
               </View>
             ))}
           </View>
-          <Label>Sesong</Label>
-          <ChipRow
-            options={["Hele året", "Sommer", "Vinter"]}
-            selected={[draft.season]}
-            onPress={(s) => patch({ season: s })}
-          />
+          <Field label="Sesong">
+            <ChipRow
+              options={["Hele året", "Sommer", "Vinter"]}
+              selected={[draft.season]}
+              onPress={(s) => patch({ season: s })}
+            />
+          </Field>
         </Shell>
       );
 
@@ -707,29 +713,32 @@ function StepBody({
             value={draft.date}
             onChange={(d) => patch({ date: d })}
           />
-          <Label>Starter</Label>
-          <ChipRow
-            options={START_TIMES}
-            selected={draft.startTime ? [draft.startTime] : []}
-            onPress={(t) => patch({ startTime: t })}
-          />
+          <Field label="Starter">
+            <ChipRow
+              options={START_TIMES}
+              selected={draft.startTime ? [draft.startTime] : []}
+              onPress={(t) => patch({ startTime: t })}
+            />
+          </Field>
           {draft.date && draft.startTime ? (
             <Text variant="label">
               {formatDate(draft.date)} · {draft.startTime}
             </Text>
           ) : null}
-          <Label>Varighet</Label>
-          <ChipRow
-            options={DURATIONS}
-            selected={[draft.duration]}
-            onPress={(d) => patch({ duration: d })}
-          />
-          <Label>Gjentas</Label>
-          <ChipRow
-            options={REPEATS}
-            selected={[draft.repeat]}
-            onPress={(r) => patch({ repeat: r })}
-          />
+          <Field label="Varighet">
+            <ChipRow
+              options={DURATIONS}
+              selected={[draft.duration]}
+              onPress={(d) => patch({ duration: d })}
+            />
+          </Field>
+          <Field label="Gjentas">
+            <ChipRow
+              options={REPEATS}
+              selected={[draft.repeat]}
+              onPress={(r) => patch({ repeat: r })}
+            />
+          </Field>
         </Shell>
       );
 
@@ -753,22 +762,24 @@ function StepBody({
             onChangeText={(t) => patch({ price: t.replace(/\D/g, "") })}
             maxLength={5}
           />
-          <Label>Hvem kan bli med?</Label>
-          <ChipRow
-            options={ACCESS}
-            selected={[draft.access]}
-            onPress={(a) => patch({ access: a })}
-          />
+          <Field label="Hvem kan bli med?">
+            <ChipRow
+              options={ACCESS}
+              selected={[draft.access]}
+              onPress={(a) => patch({ access: a })}
+            />
+          </Field>
           <Text variant="caption" tone="muted">
             Alle = hvem som helst kan bli med · Godkjenning = du bestemmer ·
             Invitasjon = kun inviterte
           </Text>
-          <Label>Avbestilling</Label>
-          <ChipRow
-            options={CANCELLATION}
-            selected={[draft.cancellation]}
-            onPress={(c) => patch({ cancellation: c })}
-          />
+          <Field label="Avbestilling">
+            <ChipRow
+              options={CANCELLATION}
+              selected={[draft.cancellation]}
+              onPress={(c) => patch({ cancellation: c })}
+            />
+          </Field>
         </Shell>
       );
 
@@ -778,24 +789,27 @@ function StepBody({
           title="Sett stemningen"
           subtitle="Vibes hjelper folk å finne opplevelser som passer dem."
         >
-          <Label>Vibes</Label>
-          <ChipRow
-            options={VIBES}
-            selected={draft.vibes}
-            onPress={(v) => patch({ vibes: toggle(draft.vibes, v) })}
-          />
-          <Label>Energinivå</Label>
-          <ChipRow
-            options={ENERGY}
-            selected={draft.energy ? [draft.energy] : []}
-            onPress={(e) => patch({ energy: e })}
-          />
-          <Label>Språk</Label>
-          <ChipRow
-            options={LANGUAGES}
-            selected={draft.languages}
-            onPress={(l) => patch({ languages: toggle(draft.languages, l) })}
-          />
+          <Field label="Vibes">
+            <ChipRow
+              options={VIBES}
+              selected={draft.vibes}
+              onPress={(v) => patch({ vibes: toggle(draft.vibes, v) })}
+            />
+          </Field>
+          <Field label="Energinivå">
+            <ChipRow
+              options={ENERGY}
+              selected={draft.energy ? [draft.energy] : []}
+              onPress={(e) => patch({ energy: e })}
+            />
+          </Field>
+          <Field label="Språk">
+            <ChipRow
+              options={LANGUAGES}
+              selected={draft.languages}
+              onPress={(l) => patch({ languages: toggle(draft.languages, l) })}
+            />
+          </Field>
         </Shell>
       );
 
@@ -805,29 +819,30 @@ function StepBody({
           title="Hva skjer underveis?"
           subtitle="Valgfritt. Vises på siden til opplevelsen."
         >
-          <Label>Hva er inkludert</Label>
-          <View className="flex-row items-end gap-2">
-            <View className="flex-1">
-              <Input
-                label="Legg til noe som er inkludert"
-                placeholder="F.eks. «En kopp kaffe»"
-                value={newItem}
-                onChangeText={setNewItem}
-                maxLength={50}
-              />
+          <Field label="Hva er inkludert">
+            <View className="flex-row items-end gap-2">
+              <View className="flex-1">
+                <Input
+                  label="Legg til noe som er inkludert"
+                  placeholder="F.eks. «En kopp kaffe»"
+                  value={newItem}
+                  onChangeText={setNewItem}
+                  maxLength={50}
+                />
+              </View>
+              <View className="pb-1">
+                <Button
+                  label="Legg til"
+                  variant="secondary"
+                  disabled={newItem.trim().length < 2}
+                  onPress={() => {
+                    patch({ included: [...draft.included, newItem.trim()] });
+                    setNewItem("");
+                  }}
+                />
+              </View>
             </View>
-            <View className="pb-1">
-              <Button
-                label="Legg til"
-                variant="secondary"
-                disabled={newItem.trim().length < 2}
-                onPress={() => {
-                  patch({ included: [...draft.included, newItem.trim()] });
-                  setNewItem("");
-                }}
-              />
-            </View>
-          </View>
+          </Field>
           {draft.included.length ? (
             <View className="flex-row flex-wrap gap-2">
               {draft.included.map((it) => (

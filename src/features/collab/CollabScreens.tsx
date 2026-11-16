@@ -9,6 +9,7 @@ import {
 
 import {
   ChipGroup,
+  Field,
   FormPage,
   Icon,
   type IconName,
@@ -60,31 +61,36 @@ export function NewCollabScreen() {
           <Text variant="caption" tone="muted">
             Foreslå et samarbeid basert på en listing.
           </Text>
-          <Label>Knyttet listing</Label>
-          <View className="gap-1 rounded-md border border-line bg-surface p-3">
-            <Text variant="label" weight="semibold">
-              {listing?.title}
-            </Text>
-            <Text variant="caption" tone="muted">
-              {listing?.owner} · {listing?.type}
-            </Text>
-          </View>
+          <Field label="Knyttet listing">
+            <View className="gap-1 rounded-md border border-line bg-surface p-3">
+              <Text variant="label" weight="semibold">
+                {listing?.title}
+              </Text>
+              <Text variant="caption" tone="muted">
+                {listing?.owner} · {listing?.type}
+              </Text>
+            </View>
+          </Field>
           {partner ? (
             <>
-              <Label>Partner</Label>
-              <View className="rounded-md border border-line bg-surface p-3">
-                <Text variant="label" weight="semibold">
-                  {partner}
-                </Text>
-              </View>
+              <Field label="Partner">
+                <View className="rounded-md border border-line bg-surface p-3">
+                  <Text variant="label" weight="semibold">
+                    {partner}
+                  </Text>
+                </View>
+              </Field>
             </>
           ) : null}
-          <Label>Samarbeidstype</Label>
-          <ChipRow options={TYPES} value={type} onChange={setType} />
-          <Label>Hosting-type</Label>
-          <ChipRow options={HOSTING} value={hosting} onChange={setHosting} />
-          <Label>Inntektsdeling (du / partner)</Label>
-          <ChipRow options={SPLITS} value={split} onChange={setSplit} />
+          <Field label="Samarbeidstype">
+            <ChipRow options={TYPES} value={type} onChange={setType} />
+          </Field>
+          <Field label="Hosting-type">
+            <ChipRow options={HOSTING} value={hosting} onChange={setHosting} />
+          </Field>
+          <Field label="Inntektsdeling (du / partner)">
+            <ChipRow options={SPLITS} value={split} onChange={setSplit} />
+          </Field>
 
           <Input
             label="Melding"
@@ -133,15 +139,16 @@ export function CollabDetailScreen() {
     <Screen edges={["top"]}>
       <RouteHeader title="Jazz-samarbeid" />
       <ScrollView contentContainerClassName={pageBody.blocks}>
-        <Label>Parter</Label>
-        <View className="flex-row gap-3">
-          <Party name="Maria Movik" role="Skaper · Primærvert" />
-          <Party
-            name="Oslo Kaffebar"
-            role="Venue · Co-vert"
-            icon="tp-business"
-          />
-        </View>
+        <Field label="Parter">
+          <View className="flex-row gap-3">
+            <Party name="Maria Movik" role="Skaper · Primærvert" />
+            <Party
+              name="Oslo Kaffebar"
+              role="Venue · Co-vert"
+              icon="tp-business"
+            />
+          </View>
+        </Field>
         <View className="overflow-hidden rounded-md border border-line bg-surface">
           {[
             ["Type", "Co-hosting (primær/sekundær)"],
@@ -264,8 +271,9 @@ export function CollabOfferScreen() {
       </View>
       {counter ? (
         <>
-          <Label>Din inntektsdeling</Label>
-          <ChipRow options={SPLITS} value={split} onChange={setSplit} />
+          <Field label="Din inntektsdeling">
+            <ChipRow options={SPLITS} value={split} onChange={setSplit} />
+          </Field>
         </>
       ) : (
         <Pressable

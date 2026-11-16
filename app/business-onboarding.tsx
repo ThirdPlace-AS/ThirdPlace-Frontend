@@ -5,13 +5,14 @@ import { KeyboardAvoidingView, ScrollView, View } from "react-native";
 
 import { Switch } from "@/components/ui/Switch";
 import {
+  FadeSwap,
+  Field,
   Icon,
   Screen,
   StepContent,
   StepHeader,
   StickyFooter,
   Text,
-  FadeSwap,
 } from "@/components/ui";
 import { Button } from "@/components/Button";
 import { Chip } from "@/components/Chip";
@@ -186,17 +187,18 @@ export default function BusinessOnboarding() {
                   value={name}
                   onChangeText={setName}
                 />
-                <Label>Kategori</Label>
-                <View className="flex-row flex-wrap gap-2">
-                  {CATEGORIES.map((c) => (
-                    <Chip
-                      key={c}
-                      label={c}
-                      selected={category === c}
-                      onPress={() => setCategory(c)}
-                    />
-                  ))}
-                </View>
+                <Field label="Kategori">
+                  <View className="flex-row flex-wrap gap-2">
+                    {CATEGORIES.map((c) => (
+                      <Chip
+                        key={c}
+                        label={c}
+                        selected={category === c}
+                        onPress={() => setCategory(c)}
+                      />
+                    ))}
+                  </View>
+                </Field>
                 <Input
                   label="Beskrivelse"
                   placeholder="Hva gjør stedet deres spesielt?"
@@ -303,28 +305,30 @@ export default function BusinessOnboarding() {
                 title="Hva vil dere oppnå?"
                 subtitle="Velg det som passer best for dere."
               >
-                <Label>Mål</Label>
-                <View className="flex-row flex-wrap gap-2">
-                  {GOALS.map((g) => (
-                    <Chip
-                      key={g}
-                      label={g}
-                      selected={goals.includes(g)}
-                      onPress={() => setGoals((s) => toggle(s, g))}
-                    />
-                  ))}
-                </View>
-                <Label>Stikkord</Label>
-                <View className="flex-row flex-wrap gap-2">
-                  {TAGS.map((t) => (
-                    <Chip
-                      key={t}
-                      label={t}
-                      selected={tags.includes(t)}
-                      onPress={() => setTags((s) => toggle(s, t))}
-                    />
-                  ))}
-                </View>
+                <Field label="Mål">
+                  <View className="flex-row flex-wrap gap-2">
+                    {GOALS.map((g) => (
+                      <Chip
+                        key={g}
+                        label={g}
+                        selected={goals.includes(g)}
+                        onPress={() => setGoals((s) => toggle(s, g))}
+                      />
+                    ))}
+                  </View>
+                </Field>
+                <Field label="Stikkord">
+                  <View className="flex-row flex-wrap gap-2">
+                    {TAGS.map((t) => (
+                      <Chip
+                        key={t}
+                        label={t}
+                        selected={tags.includes(t)}
+                        onPress={() => setTags((s) => toggle(s, t))}
+                      />
+                    ))}
+                  </View>
+                </Field>
               </Shell>
             ) : null}
 
@@ -372,14 +376,6 @@ export default function BusinessOnboarding() {
 
 // Wizard step body (design-system StepContent).
 const Shell = StepContent;
-
-function Label({ children }: { children: string }) {
-  return (
-    <Text variant="label" weight="semibold">
-      {children}
-    </Text>
-  );
-}
 
 function Perm({
   icon,
