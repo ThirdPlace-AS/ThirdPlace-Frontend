@@ -96,10 +96,16 @@ describe("Fullfør profilen", () => {
 });
 
 describe("Rediger profil", () => {
-  it("compares interests by content", () => {
+  // Since P9 the interests can be dragged into a new order, which is saved,
+  // so a new order is a change (an equal copy is not).
+  it("compares interests by content and order", () => {
     const me = getMyProfile();
+    expect(
+      profileDraftChanged(me, { ...me, interests: [...me.interests] }),
+    ).toBe(false);
     const draft = { ...me, interests: [...me.interests].reverse() };
-    expect(profileDraftChanged(me, draft)).toBe(false);
+    expect(me.interests.length).toBeGreaterThan(1);
+    expect(profileDraftChanged(me, draft)).toBe(true);
     expect(profileDraftChanged(me, { ...me, bio: "Ny bio" })).toBe(true);
   });
 

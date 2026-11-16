@@ -834,6 +834,15 @@
       "shared": false
     },
     {
+      "name": "react-native-haptic-feedback",
+      "version": "3.0.0",
+      "license": "MIT",
+      "copyright": ["Copyright (c) 2018 Michael Kuczera"],
+      "author": null,
+      "text": "4436a9ca3f",
+      "shared": false
+    },
+    {
       "name": "react-native-is-edge-to-edge",
       "version": "1.3.1",
       "license": "MIT",
@@ -868,6 +877,15 @@
       "author": null,
       "text": "f1083e4aa4",
       "shared": false
+    },
+    {
+      "name": "react-native-sortables",
+      "version": "1.10.1",
+      "license": "MIT",
+      "copyright": [],
+      "author": "Mateusz Łopaciński",
+      "text": "4436a9ca3f",
+      "shared": true
     },
     {
       "name": "react-native-svg",

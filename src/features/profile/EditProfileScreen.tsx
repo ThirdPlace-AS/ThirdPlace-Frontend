@@ -21,8 +21,12 @@ import {
   FormPage,
   IconButton,
   Pressable,
+  SortableChips,
   Text,
+  moveActions,
+  onMoveAction,
 } from "@/components/ui";
+import { moveItem } from "@/lib/reorder";
 import { confirmToast } from "@/copy";
 import { experienceById, profile } from "@/fixtures";
 import { libImage } from "@/fixtures/images";
@@ -61,6 +65,8 @@ export default function EditProfileScreen() {
 
   const toggleInterest = (i: string) =>
     setInterests((s) => (s.includes(i) ? s.filter((x) => x !== i) : [...s, i]));
+  const moveInterest = (from: number, to: number) =>
+    setInterests((s) => moveItem(s, from, to));
 
   return (
     <FormPage
@@ -118,21 +124,30 @@ export default function EditProfileScreen() {
         <Text variant="label" weight="semibold">
           Interesser
         </Text>
-        <View className="flex-row flex-wrap gap-2">
-          {interests.map((i) => (
+        {/* Drag to reorder (P9): hold a chip and drag; a tap removes it. */}
+        <SortableChips
+          items={interests.map((i, index) => ({
+            key: i,
+            node: (
+              <Chip
+                label={i}
+                selected
+                onPress={() => toggleInterest(i)}
+                accessibilityHint="Trykk for å fjerne, hold og dra for å flytte"
+                accessibilityActions={moveActions(index, interests.length)}
+                onAccessibilityAction={onMoveAction(index, moveInterest)}
+              />
+            ),
+          }))}
+          trailing={
             <Chip
-              key={i}
-              label={i}
-              selected
-              onPress={() => toggleInterest(i)}
+              label="+ Legg til"
+              variant="outline"
+              onPress={() => setInterestsOpen(true)}
             />
-          ))}
-          <Chip
-            label="+ Legg til"
-            variant="outline"
-            onPress={() => setInterestsOpen(true)}
-          />
-        </View>
+          }
+          onReorder={moveInterest}
+        />
       </View>
 
       <Input label="Språk" value={lang} onChangeText={setLang} />

@@ -51,8 +51,9 @@ export function profileDraftChanged(
   saved: MyProfile,
   draft: MyProfileDraft,
 ): boolean {
+  // Order counts: interests can be dragged into a new order (P9).
   const same = (a: readonly string[], b: readonly string[]) =>
-    a.length === b.length && a.every((x) => b.includes(x));
+    a.length === b.length && a.every((x, i) => b[i] === x);
   return (
     saved.name !== draft.name ||
     saved.bio !== draft.bio ||

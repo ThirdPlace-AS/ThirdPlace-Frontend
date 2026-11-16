@@ -53,6 +53,14 @@ export {
 export { usePresence } from "./usePresence";
 export { Accordion } from "./Accordion";
 export { Chart, type ChartProps } from "./Chart";
+export {
+  SortableChips,
+  SortableList,
+  moveActions,
+  onMoveAction,
+  type SortableChipsProps,
+  type SortableListProps,
+} from "./Sortable";
 export { FollowButton } from "./FollowButton";
 export { HeartToggle, type HeartKind } from "./HeartToggle";
 export { PopIcon } from "./PopIcon";

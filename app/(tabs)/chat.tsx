@@ -8,6 +8,7 @@ import {
   IconButton,
   Screen,
   SearchBar,
+  SortableList,
   Accordion,
   Pressable as UIPressable,
   Text,
@@ -19,8 +20,15 @@ import { useCreatedVersion } from "@/fixtures/created";
 import { isMember, useJoinedChats } from "@/lib/joinedChats";
 import { useNotificationReads } from "@/hooks/useNotificationReads";
 import { markChatRead, unreadOf, useChatReads } from "@/lib/chatReads";
-import { togglePinnedChat, usePinnedChats } from "@/lib/pinnedChats";
+import {
+  setPinnedOrder,
+  togglePinnedChat,
+  usePinnedChats,
+} from "@/lib/pinnedChats";
 import { chats, type MockChat } from "@/fixtures";
+
+const chatKey = (c: MockChat) => c.id;
+const chatName = (c: MockChat) => c.name;
 
 // Chat tab, laid out per the design (PDF p9): search, "Aktive samtaler", then
 // collapsible Opplevelser / Steder groups, a pencil FAB for "Ny chat" (p10) and
@@ -99,6 +107,9 @@ export default function ChatScreen() {
     />
   );
 
+  const reorderPinned = (next: MockChat[]) =>
+    setPinnedOrder(next.map((c) => c.id));
+
   return (
     <Screen edges={["top"]}>
       <ScrollView
@@ -131,7 +142,19 @@ export default function ChatScreen() {
             <Text variant="title" accessibilityRole="header">
               Festet
             </Text>
-            {pinnedChats.map(row)}
+            {pinnedChats.length > 1 && !q ? (
+              // Drag to reorder (P9): the ≡ handle at each row's end; the
+              // row keeps its press and long press. Not while searching.
+              <SortableList
+                data={pinnedChats}
+                keyOf={chatKey}
+                nameOf={chatName}
+                renderItem={row}
+                onReorder={reorderPinned}
+              />
+            ) : (
+              pinnedChats.map(row)
+            )}
           </View>
         ) : null}
 

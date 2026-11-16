@@ -123,6 +123,22 @@ describe("Rediger profil", () => {
     expect(mockBack).toHaveBeenCalledTimes(1);
   });
 
+  it("saves the interests in the order they were moved to (P9)", () => {
+    const before = getMyProfile().interests;
+    expect(before.length).toBeGreaterThan(1);
+    render(<EditProfileScreen />, { wrapper });
+    // The screen-reader action does what the drag does.
+    fireEvent(screen.getByLabelText(before[0]!), "accessibilityAction", {
+      nativeEvent: { actionName: "moveDown" },
+    });
+    fireEvent.press(screen.getByText("Lagre"));
+    expect(getMyProfile().interests).toEqual([
+      before[1],
+      before[0],
+      ...before.slice(2),
+    ]);
+  });
+
   it("Lagre needs a name", () => {
     render(<EditProfileScreen />, { wrapper });
     fireEvent.changeText(screen.getByDisplayValue("Ola Nordmann"), "  ");

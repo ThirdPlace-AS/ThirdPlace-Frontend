@@ -37,3 +37,9 @@ jest.mock("expo-router/react-navigation", () => {
     useNavigation: () => navigation,
   };
 });
+
+// Drag to reorder (P9): react-native-sortables needs Reanimated's worklet
+// runtime, which the mock above leaves out. Under Jest a Grid renders its rows
+// in order and Flex / Handle render their children; the screen-reader move
+// actions (src/components/ui/Sortable.tsx) are what tests drive.
+jest.mock("react-native-sortables", () => require("./sortablesMock"));

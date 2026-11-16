@@ -161,10 +161,15 @@ Rules when adapting an RNR file:
 | `CodeInput` (`/verify-code`, after register and two-factor) | input-otp-native, our boxes; digits only, a tap keeps the code, a pasted or autofilled code keeps its digits | P5    |
 | `Sheet`, `Overlay`, map sheets                              | none: Modal engine and gorhom stay                                                                           | —     |
 | `Chart`                                                     | none: react-native-gifted-charts `BarChart`                                                                  | P8    |
+| `SortableList`, `SortableChips`                             | none: react-native-sortables `Grid` / `Flex` + `Handle`                                                      | P9    |
 
 ### Charts
 
 `Chart` is the one bar chart (react-native-gifted-charts, P8). It draws relative heights (0–100): the stats screens (Arbeidsflate Analyse, Marketplace-analyse) show a shape, never invented values, so there are no axes, rules or labels. Bars are `success`, the current period (the last bar) `ink`; the card is `rounded-md border-line bg-surface`. The grow-in is off under reduced motion, presses are off, and the card is one `image` with a summary label ("… : stolpediagram"). A new chart type goes through this primitive, not straight to the library.
+
+### Sortable
+
+`SortableList` and `SortableChips` are the one way to drag things into a new order (react-native-sortables, P9), used where the viewer owns an order: Festet chats on the Chat tab (two or more pins, not while searching) and the interests in Rediger profil. A list row is dragged by the ≡ handle at its end, so the row keeps its press and long press; a chip is dragged after a long press, a tap still reaches it, and a trailing "+ Legg til" stays put (`mode="fixed-order"`). Both are controlled: the caller keeps the order (`moveItem` / `reorderSubset` in `src/lib/reorder.ts`; a search-filtered list keeps the hidden items in their places). Screen readers get "Flytt opp" / "Flytt ned" actions on every item (`moveActions` / `onMoveAction`) that call the same move. The lifted item scales to 1.03 and the rest dim to 85 %; under reduced motion nothing lifts, slides or fades. No vibration: the library's own feedback stays off, per the haptics rule.
 
 ### Feedback & states
 

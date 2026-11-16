@@ -7,7 +7,7 @@ import { memo } from "react";
 import { View } from "react-native";
 
 import { Icon, type IconName } from "./Icon";
-import { Pressable } from "./Pressable";
+import { Pressable, type PressableProps } from "./Pressable";
 import { Text } from "./Text";
 import {
   toggleClass,
@@ -31,6 +31,10 @@ export type ChipProps = {
   /** "radio" when the chip is one of a single-choice group. */
   role?: "button" | "radio" | "checkbox";
   testID?: string;
+  /** Extra screen-reader actions, e.g. "Flytt opp" on a sortable chip (P9). */
+  accessibilityActions?: PressableProps["accessibilityActions"];
+  onAccessibilityAction?: PressableProps["onAccessibilityAction"];
+  accessibilityHint?: string;
 };
 
 export const Chip = memo(function Chip({
@@ -43,6 +47,9 @@ export const Chip = memo(function Chip({
   disabled,
   role = "button",
   testID,
+  accessibilityActions,
+  onAccessibilityAction,
+  accessibilityHint,
 }: ChipProps) {
   const filledOn = variant === "filled" && selected;
   const shell = toggleClass({ size, shell: toggleShell(variant, selected) });
@@ -85,9 +92,12 @@ export const Chip = memo(function Chip({
       testID={testID}
       accessibilityRole={role}
       accessibilityLabel={label}
+      accessibilityHint={accessibilityHint}
       accessibilityState={
         role === "button" ? { selected } : { checked: selected }
       }
+      accessibilityActions={accessibilityActions}
+      onAccessibilityAction={onAccessibilityAction}
       onPress={onPress}
       disabled={disabled}
       pressedScale={0.95}
