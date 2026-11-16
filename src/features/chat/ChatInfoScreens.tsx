@@ -304,6 +304,8 @@ export function ChatInviteScreen() {
               <Button
                 label={done.includes(p.id) ? "Invitert" : "Inviter"}
                 variant={done.includes(p.id) ? "secondary" : "ink"}
+                size="sm"
+                fullWidth={false}
                 onPress={() => setDone((d) => [...d, p.id])}
               />
             </View>
