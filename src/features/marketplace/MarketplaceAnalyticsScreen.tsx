@@ -60,7 +60,7 @@ export default function MarketplaceAnalyticsScreen() {
             key={label}
             accessible
             accessibilityLabel={`${label}: ${value}`}
-            className="w-[48%] gap-0.5 rounded-md bg-surfaceMuted p-4"
+            className="w-[48%] gap-1 rounded-md bg-surfaceMuted p-4"
           >
             <Text variant="h1">{value}</Text>
             <Text variant="caption" tone="muted">

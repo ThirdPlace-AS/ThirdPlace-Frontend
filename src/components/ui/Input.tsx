@@ -52,7 +52,7 @@ export function Input({
   const state = error ? "error" : focused ? "focused" : "idle";
   const bw = emphasized ? 2 : 1;
   return (
-    <View className="w-full gap-1.5">
+    <View className="w-full gap-2">
       {label ? (
         <Text variant="label" weight="medium">
           {label}

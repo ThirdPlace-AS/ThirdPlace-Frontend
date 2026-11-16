@@ -47,7 +47,7 @@ export function ChatRow({
           : undefined
       }
       pressedScale={0.99}
-      contentClassName="flex-row items-center gap-md rounded-md bg-surface px-md py-md"
+      contentClassName="flex-row items-center gap-3 rounded-md bg-surface px-3 py-3"
     >
       <Avatar
         name={chat.name}
@@ -57,7 +57,7 @@ export function ChatRow({
         decorative
       />
       {/* Unread rows read as unread: bold name, ink preview and time. */}
-      <View className="flex-1 gap-0.5">
+      <View className="flex-1 gap-1">
         <Text
           variant="body"
           weight={count > 0 ? "bold" : "semibold"}
@@ -85,7 +85,7 @@ export function ChatRow({
         <View className="h-5 flex-row items-center gap-1">
           {pinned ? <Icon name="pin" size="sm" tone="muted" /> : null}
           {count > 0 ? (
-            <View className="h-5 min-w-5 items-center justify-center rounded-full bg-emberStrong px-1.5">
+            <View className="h-5 min-w-5 items-center justify-center rounded-full bg-emberStrong px-2">
               <Text
                 variant="micro"
                 weight="bold"

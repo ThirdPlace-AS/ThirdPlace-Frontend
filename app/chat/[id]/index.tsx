@@ -222,7 +222,7 @@ export default function ChatThreadScreen() {
           accessibilityLabel={`Festet: ${pinned.title}. Åpne opplevelsen`}
           onPress={() => router.push(`/experience/${pinned.id}` as Href)}
           pressedScale={0.99}
-          contentClassName="flex-row items-center gap-2 border-b border-line px-gutter py-2.5"
+          contentClassName="flex-row items-center gap-2 border-b border-line px-gutter py-3"
         >
           <Icon name="pricetag-outline" size="sm" tone="ember" />
           <Text
@@ -283,7 +283,7 @@ export default function ChatThreadScreen() {
             </Text>
           </View>
         ) : isGuest ? (
-          <View className="border-t border-line px-gutter pb-2 pt-2.5">
+          <View className="border-t border-line px-gutter pb-2 pt-3">
             <Button
               label="Logg inn for å skrive"
               variant="ink"
@@ -329,7 +329,7 @@ function Composer({
     setReady(t.trim().length > 0);
   };
   return (
-    <View className="gap-2 border-t border-line px-gutter pb-2 pt-2.5">
+    <View className="gap-2 border-t border-line px-gutter pb-2 pt-3">
       {replyTo ? (
         <View className="flex-row items-center gap-2 rounded-sm bg-surfaceMuted py-2 pl-3 pr-1">
           <View className="flex-1 border-l-2 border-ember pl-2">
@@ -352,7 +352,7 @@ function Composer({
       <View className="flex-row items-end gap-2">
         <TextInput
           accessibilityLabel="Melding"
-          className="max-h-28 flex-1 rounded-lg border border-line bg-surface px-4 py-2.5 text-ink"
+          className="max-h-28 flex-1 rounded-lg border border-line bg-surface px-4 py-3 text-ink"
           style={{ fontFamily: fontFamilyFor("regular"), fontSize: 16 }}
           placeholder="Skriv en melding …"
           placeholderTextColor={colors.muted}
@@ -479,23 +479,23 @@ const Bubble = memo(function Bubble({
       }
     >
       {mine ? (
-        <View className="rounded-md rounded-br-sm bg-ink px-3.5 py-2.5">
+        <View className="rounded-md rounded-br-sm bg-ink px-4 py-3">
           {message.replyTo ? <Quote reply={message.replyTo} onInk /> : null}
           <Text variant="body" tone="onInk">
             {message.text}
           </Text>
-          <Text variant="caption" tone="onInk" className="pt-0.5 opacity-70">
+          <Text variant="caption" tone="onInk" className="pt-1 opacity-70">
             {message.time}
           </Text>
         </View>
       ) : (
-        <View className="rounded-md rounded-bl-sm border border-line bg-surface px-3.5 py-2.5">
+        <View className="rounded-md rounded-bl-sm border border-line bg-surface px-4 py-3">
           <Text variant="caption" weight="semibold" tone="muted">
             {message.author}
           </Text>
           {message.replyTo ? <Quote reply={message.replyTo} /> : null}
           <Text variant="body">{message.text}</Text>
-          <Text variant="caption" tone="muted" className="pt-0.5">
+          <Text variant="caption" tone="muted" className="pt-1">
             {message.time}
           </Text>
         </View>
@@ -543,7 +543,7 @@ const Bubble = memo(function Bubble({
           accessibilityLabel={`Fjern reaksjonen ${reaction}`}
           onPress={() => onReact(reaction)}
           hitSlop={8}
-          className={`rounded-full border border-line bg-surface px-1.5 py-0.5 ${
+          className={`rounded-full border border-line bg-surface px-2 py-1 ${
             mine ? "self-end" : "ml-10 self-start"
           }`}
         >
@@ -558,7 +558,7 @@ const Bubble = memo(function Bubble({
 function Quote({ reply, onInk = false }: { reply: Reply; onInk?: boolean }) {
   return (
     <View
-      className={`mb-1.5 rounded-sm border-l-2 px-2 py-1 ${
+      className={`mb-2 rounded-sm border-l-2 px-2 py-1 ${
         onInk ? "border-onInk bg-onInk/15" : "border-ember bg-surfaceMuted"
       }`}
     >
@@ -597,7 +597,7 @@ function ReactionBar({
     <View
       accessibilityRole="toolbar"
       accessibilityLabel="Reager på meldingen"
-      className={`flex-row items-center gap-0.5 rounded-full border border-line bg-surface px-1.5 py-1 ${
+      className={`flex-row items-center gap-1 rounded-full border border-line bg-surface px-2 py-1 ${
         alignEnd ? "self-end" : "self-start"
       }`}
     >
@@ -620,7 +620,7 @@ function ReactionBar({
           accessibilityRole="button"
           accessibilityLabel="Svar"
           onPress={onReply}
-          className="h-9 items-center justify-center rounded-full px-2.5"
+          className="h-9 items-center justify-center rounded-full px-3"
         >
           <Text variant="label" weight="semibold">
             Svar

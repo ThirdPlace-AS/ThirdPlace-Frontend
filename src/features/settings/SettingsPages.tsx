@@ -75,7 +75,7 @@ function Session({
 // fields above it.
 function PasswordRow() {
   return (
-    <View className="gap-1.5">
+    <View className="gap-2">
       <Text variant="label" weight="semibold">
         Passord
       </Text>
@@ -388,7 +388,7 @@ export function LanguageScreen() {
             accessibilityRole="radio"
             accessibilityState={{ checked: lang === l }}
             onPress={() => setLang(l)}
-            contentClassName="flex-row items-center justify-between rounded-md border border-line bg-surface px-4 py-3.5"
+            contentClassName="flex-row items-center justify-between rounded-md border border-line bg-surface px-4 py-4"
             pressedScale={0.99}
           >
             <Text variant="body">{l}</Text>

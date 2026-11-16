@@ -359,7 +359,7 @@ export function ExperiencePage({
                       accessibilityLabel={`${e.title}, ${e.category}`}
                       onPress={() => onNavigate(`/experience/${e.id}` as Href)}
                       style={{ width: 176 }}
-                      contentClassName="gap-1.5"
+                      contentClassName="gap-2"
                       pressedScale={0.98}
                     >
                       <LoadingImage
@@ -561,7 +561,7 @@ export function InfoRow({
       accessibilityRole="button"
       accessibilityLabel={subtitle ? `${title}, ${subtitle}` : title}
       onPress={onPress}
-      contentClassName="flex-row items-center gap-3 rounded-sm py-2.5"
+      contentClassName="flex-row items-center gap-3 rounded-sm py-3"
       pressedScale={0.99}
     >
       {body}
@@ -570,7 +570,7 @@ export function InfoRow({
     <View
       accessible
       accessibilityLabel={subtitle ? `${title}, ${subtitle}` : title}
-      className="flex-row items-center gap-3 py-2.5"
+      className="flex-row items-center gap-3 py-3"
     >
       {body}
     </View>

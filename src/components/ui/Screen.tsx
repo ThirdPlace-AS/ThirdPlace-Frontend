@@ -38,7 +38,7 @@ export function Screen({
     >
       {scroll ? (
         <ScrollView
-          contentContainerClassName={`gap-lg ${padded ? "p-gutter" : ""}`}
+          contentContainerClassName={`gap-6 ${padded ? "p-gutter" : ""}`}
           keyboardShouldPersistTaps="handled"
         >
           {children}

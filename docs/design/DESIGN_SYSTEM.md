@@ -77,7 +77,26 @@ No `font-*` weight classes: on Android they rendered Roboto (2026-11-15). Set we
 
 ### Spacing
 
-4-point scale. Tailwind's numeric scale works (verified with `tailwindcss/resolveConfig`: `h-52` = 13rem, `w-28` = 7rem); the named tokens `xs 4 · sm 8 · md 12 · gutter 16 · lg 20 · xl 24 · section 32` add to it. Screen side padding is `gutter`.
+4-point scale in **real px** (0427). Padding, margin, gap, space and inset take Tailwind's numbers at their web value in px: `p-1` = 4, `p-2` = 8, `p-3` = 12, `p-4` = 16, `p-6` = 24, `p-8` = 32, `p-12` = 48 (`tailwind.config.js` builds the scale from Tailwind's defaults × 16). The one named step is `gutter` (16), the screen side padding. Width and height keep Tailwind's rem scale (NativeWind's rem is 14 on native), so component and touch-target sizes stay as tuned.
+
+Why: NativeWind renders `rem` at 14 px on native, so before 0427 `p-4` was 14 px next to the 16 px `gutter` and the named steps (`xs` … `section`) were a second vocabulary for the same numbers. Both are gone; the guard (`tests/designGuard.test.ts`, "spacing stays on the 4-pt scale") fails on named steps, arbitrary values (`gap-[3px]`), half steps (2 px micro gaps only in the badge tag and the price histogram) and 5/7/9/11 outside `src/components/ui/` (the Button sizes keep `px-5`).
+
+Roles — use these, not a value picked by eye:
+
+| Role                                                    | Class                                             | px           |
+| ------------------------------------------------------- | ------------------------------------------------- | ------------ |
+| Screen side padding                                     | `px-gutter`                                       | 16           |
+| Page top / bottom                                       | `pt-2` / `pb-12` (above a tab bar or FAB `pb-28`) | 8 / 48 / 112 |
+| Between sections of a page                              | `gap-6` (`Screen` scroll)                         | 24           |
+| Between blocks in a section, sheet body                 | `gap-4`                                           | 16           |
+| Between rows of a list block, a heading and its block   | `gap-3`                                           | 12           |
+| Between items (chips, buttons in a row, icon and label) | `gap-2`                                           | 8            |
+| A text pair (title and its sub-line)                    | `gap-1`                                           | 4            |
+| Card padding                                            | `p-4` (compact `p-3`)                             | 16 / 12      |
+| List row                                                | `px-4 py-3` (or `px-gutter`)                      | 16 / 12      |
+| Sticky footer                                           | `px-gutter pt-3`                                  | 16 / 12      |
+
+Centre a lone state (empty, error, success) both ways in the space it has (`StateView`); a page's content otherwise starts at the top and runs full width inside the gutter.
 
 ### Radius
 

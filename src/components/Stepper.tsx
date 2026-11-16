@@ -28,7 +28,7 @@ export function Stepper({
   const atMax = value >= max;
   return (
     <View
-      className={`flex-row items-center justify-between py-5 ${
+      className={`flex-row items-center justify-between py-4 ${
         divider ? "border-b border-line" : ""
       }`}
     >

@@ -35,7 +35,7 @@ export function PayoutsScreen() {
           </Text>
         </Pressable>
         <Section>Valuta</Section>
-        <View className="rounded-md border border-line bg-surface px-4 py-3.5">
+        <View className="rounded-md border border-line bg-surface px-4 py-4">
           <Text variant="label" weight="regular">
             NOK · norske kroner
           </Text>

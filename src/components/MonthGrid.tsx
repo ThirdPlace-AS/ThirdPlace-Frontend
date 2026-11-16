@@ -81,7 +81,7 @@ export function MonthGrid({
                 accessibilityState={{ selected: isSel }}
                 onPress={() => onSelect(isSel ? null : iso)}
                 className="flex-1 items-center"
-                contentClassName="items-center gap-0.5 py-1"
+                contentClassName="items-center gap-1 py-1"
               >
                 <View
                   className={`h-9 w-9 items-center justify-center rounded-full ${

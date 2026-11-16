@@ -88,7 +88,7 @@ function ToastCard({
         onPress={onClose}
         pressedScale={0.98}
         className="flex-1"
-        contentClassName="flex-row items-center gap-md px-md py-md"
+        contentClassName="flex-row items-center gap-3 px-3 py-3"
       >
         <View className="h-9 w-9 items-center justify-center rounded-full bg-onInk/10">
           <Icon
@@ -97,7 +97,7 @@ function ToastCard({
             tone="onInk"
           />
         </View>
-        <View className="flex-1 gap-0.5">
+        <View className="flex-1 gap-1">
           <Text variant="label" weight="semibold" tone="onInk">
             {t.title}
           </Text>
@@ -118,8 +118,8 @@ function ToastCard({
             onClose();
             run?.();
           }}
-          className="pr-md"
-          contentClassName="rounded-full bg-onInk/10 px-md py-2"
+          className="pr-3"
+          contentClassName="rounded-full bg-onInk/10 px-3 py-2"
         >
           <Text variant="label" weight="semibold" tone="onInk">
             {t.action.label}

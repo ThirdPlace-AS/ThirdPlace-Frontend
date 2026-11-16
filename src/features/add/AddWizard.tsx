@@ -296,7 +296,7 @@ export function AddWizard() {
         {/* New step: fresh scroll at its top, faded in. */}
         <FadeSwap swapKey={step} style={{ flex: 1 }}>
           <ScrollView
-            contentContainerClassName="gap-5 p-gutter pb-8"
+            contentContainerClassName="gap-6 p-gutter pb-8"
             keyboardShouldPersistTaps="handled"
           >
             <StepBody step={step} draft={draft} patch={patch} />
@@ -475,7 +475,7 @@ function StepBody({
               accessibilityRole="button"
               accessibilityHint="Fyller inn fra en du har holdt før"
               onPress={() => setStartFrom(true)}
-              contentClassName="flex-row items-center gap-3 rounded-md border border-line bg-surface p-3.5"
+              contentClassName="flex-row items-center gap-3 rounded-md border border-line bg-surface p-4"
               pressedScale={0.99}
             >
               <View className="h-10 w-10 items-center justify-center rounded-full bg-surfaceMuted">
@@ -569,7 +569,7 @@ function StepBody({
           <UIPressable
             accessibilityRole="button"
             onPress={() => setPicker(true)}
-            contentClassName="flex-row items-center gap-2 rounded-md border border-line bg-surface p-3.5"
+            contentClassName="flex-row items-center gap-2 rounded-md border border-line bg-surface p-4"
             pressedScale={0.99}
           >
             <Icon name="search" size="sm" tone="muted" />
@@ -642,14 +642,14 @@ function StepBody({
                       }}
                     />
                     {pos >= 0 ? (
-                      <View className="absolute right-1.5 top-1.5 h-6 min-w-6 items-center justify-center rounded-full bg-ink px-1.5">
+                      <View className="absolute right-1.5 top-1.5 h-6 min-w-6 items-center justify-center rounded-full bg-ink px-2">
                         <Text variant="caption" weight="bold" tone="onInk">
                           {pos + 1}
                         </Text>
                       </View>
                     ) : null}
                     {pos === 0 ? (
-                      <View className="absolute bottom-1.5 left-1.5 rounded-full bg-ink px-2 py-0.5">
+                      <View className="absolute bottom-1.5 left-1.5 rounded-full bg-ink px-2 py-1">
                         <Text variant="caption" weight="semibold" tone="onInk">
                           Hovedbilde
                         </Text>
@@ -816,7 +816,7 @@ function StepBody({
                 maxLength={50}
               />
             </View>
-            <View className="pb-0.5">
+            <View className="pb-1">
               <Button
                 label="Legg til"
                 variant="secondary"
@@ -840,7 +840,7 @@ function StepBody({
                       included: draft.included.filter((x) => x !== it),
                     })
                   }
-                  contentClassName="flex-row items-center gap-1.5 rounded-full bg-surfaceMuted px-3 py-1.5"
+                  contentClassName="flex-row items-center gap-2 rounded-full bg-surfaceMuted px-3 py-2"
                 >
                   <Text variant="caption" weight="medium">
                     {it}
@@ -1067,7 +1067,7 @@ function SubmittedState({
   const isGroup = draft.kind === "group";
   return (
     <Screen edges={["top"]}>
-      <View className="flex-1 items-center justify-center gap-5 p-gutter">
+      <View className="flex-1 items-center justify-center gap-6 p-gutter">
         <View className="h-16 w-16 items-center justify-center rounded-full bg-success/15">
           <Icon name="checkmark" size="xl" tone="success" />
         </View>
@@ -1217,7 +1217,7 @@ function CategoryField({
 }) {
   const [open, setOpen] = useState(false);
   return (
-    <View className="gap-1.5">
+    <View className="gap-2">
       <Text variant="label">Kategori</Text>
       <UIPressable
         accessibilityRole="button"
@@ -1289,7 +1289,7 @@ function SelectRow({
       accessibilityRole="radio"
       accessibilityState={{ checked: selected }}
       onPress={onPress}
-      className={`flex-row items-center gap-3 rounded-md border bg-surface p-3.5 ${
+      className={`flex-row items-center gap-3 rounded-md border bg-surface p-4 ${
         selected ? "border-ink" : "border-line"
       }`}
     >

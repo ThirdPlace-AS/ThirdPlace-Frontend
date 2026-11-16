@@ -133,7 +133,7 @@ function TabButton({
       onPress={onPress}
       feedback="none"
       className="flex-1"
-      contentClassName={`items-center pb-2.5 ${
+      contentClassName={`items-center pb-3 ${
         active ? "border-b-2 border-ink" : ""
       }`}
     >

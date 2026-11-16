@@ -60,7 +60,7 @@ export function NewCollabScreen() {
             Foreslå et samarbeid basert på en listing.
           </Text>
           <Label>Knyttet listing</Label>
-          <View className="gap-0.5 rounded-md border border-line bg-surface p-3">
+          <View className="gap-1 rounded-md border border-line bg-surface p-3">
             <Text variant="label" weight="semibold">
               {listing?.title}
             </Text>
@@ -151,7 +151,7 @@ export function CollabDetailScreen() {
           ].map(([k, v]) => (
             <View
               key={k}
-              className="flex-row justify-between border-b border-line px-3.5 py-3"
+              className="flex-row justify-between border-b border-line px-4 py-3"
             >
               <Text variant="caption" tone="muted">
                 {k}
@@ -253,7 +253,7 @@ export function CollabOfferScreen() {
         )
       }
     >
-      <View className="gap-0.5 rounded-md border border-line bg-surface p-3">
+      <View className="gap-1 rounded-md border border-line bg-surface p-3">
         <Text variant="label" weight="semibold">
           Maria Movik
         </Text>
@@ -336,7 +336,7 @@ function Party({
   icon?: IconName;
 }) {
   return (
-    <View className="flex-1 gap-0.5 rounded-md border border-line bg-surface p-3">
+    <View className="flex-1 gap-1 rounded-md border border-line bg-surface p-3">
       <Icon name={icon} size="lg" tone="ink" />
       <Text variant="label" weight="semibold">
         {name}

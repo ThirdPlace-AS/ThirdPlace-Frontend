@@ -99,7 +99,7 @@ export function AllReviewsScreen({ kind }: { kind: "experience" | "place" }) {
                   accessibilityRole="button"
                   accessibilityLabel={`Sorter: ${REVIEW_SORT_LABEL[sort]}`}
                   onPress={() => setSortOpen(true)}
-                  contentClassName="flex-row items-center gap-1 rounded-full border border-line px-3 py-1.5"
+                  contentClassName="flex-row items-center gap-1 rounded-full border border-line px-3 py-2"
                 >
                   <Text variant="caption" weight="semibold">
                     {REVIEW_SORT_LABEL[sort]}
@@ -110,7 +110,7 @@ export function AllReviewsScreen({ kind }: { kind: "experience" | "place" }) {
             </View>
           </View>
         }
-        ItemSeparatorComponent={() => <View className="my-5 h-px bg-line" />}
+        ItemSeparatorComponent={() => <View className="my-6 h-px bg-line" />}
         renderItem={({ item }) => <ReviewCard review={item} variant="list" />}
         ListEmptyComponent={
           query ? (

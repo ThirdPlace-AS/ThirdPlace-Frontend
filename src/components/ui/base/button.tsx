@@ -15,10 +15,10 @@ import type { TextTone } from "./text";
 
 // Literal class names so Tailwind generates them. Key order is output order.
 export const buttonVariants = cva(
-  "flex-row items-center justify-center gap-sm",
+  "flex-row items-center justify-center gap-2",
   {
     variants: {
-      size: { sm: "px-lg", md: "px-xl", lg: "px-xl" },
+      size: { sm: "px-5", md: "px-6", lg: "px-6" },
       rounded: { md: "rounded-sm", full: "rounded-full" },
       fill: {
         ink: "bg-ink",

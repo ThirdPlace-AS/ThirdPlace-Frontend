@@ -230,7 +230,7 @@ export const MapBrowseSheet = memo(function MapBrowseSheet({
             <View
               accessible
               accessibilityLabel={`Vær: ${weather.tempC} grader`}
-              className="flex-row items-center gap-1.5 rounded-full border border-line bg-surface px-3 py-1"
+              className="flex-row items-center gap-2 rounded-full border border-line bg-surface px-3 py-1"
             >
               <Icon
                 name={weather.icon as keyof typeof Ionicons.glyphMap}
@@ -295,7 +295,7 @@ export const MapBrowseSheet = memo(function MapBrowseSheet({
               accessibilityRole="button"
               accessibilityLabel="Vis kart"
               onPress={() => sheetRef.current?.snapToIndex(0)}
-              contentClassName="flex-row items-center gap-sm rounded-full bg-ink px-lg py-md"
+              contentClassName="flex-row items-center gap-2 rounded-full bg-ink px-4 py-3"
               contentStyle={elevation.e2}
             >
               <Text variant="label" weight="semibold" tone="onInk">
@@ -432,11 +432,11 @@ export const BrowseCard = memo(function BrowseCard({
             </>
           ) : null}
           {tags.length > 0 ? (
-            <View className="flex-row flex-wrap gap-1.5 mt-0.5">
+            <View className="flex-row flex-wrap gap-2 mt-1">
               {tags.map((t) => (
                 <View
                   key={t}
-                  className="px-2 py-0.5 rounded-full bg-surfaceMuted"
+                  className="px-2 py-1 rounded-full bg-surfaceMuted"
                 >
                   <Text variant="caption" tone="muted">
                     {t}

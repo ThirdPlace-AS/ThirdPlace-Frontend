@@ -198,7 +198,7 @@ function Section({
 }) {
   return (
     <View className="gap-3 border-t border-line py-6">
-      <View className="gap-0.5">
+      <View className="gap-1">
         <Text variant="body" weight="semibold">
           {title}
         </Text>
@@ -432,7 +432,7 @@ function SearchRow({
     return (
       <View
         style={cardShadow}
-        className="gap-4 rounded-md border border-line bg-surface px-6 py-5"
+        className="gap-4 rounded-md border border-line bg-surface px-6 py-4"
       >
         <UIPressable
           accessibilityRole="button"
@@ -456,13 +456,13 @@ function SearchRow({
       accessibilityLabel={`${label}, ${value}`}
       onPress={onToggle}
       contentStyle={cardShadow}
-      contentClassName="flex-row items-center justify-between gap-2 rounded-md border border-line bg-surface px-6 py-5"
+      contentClassName="flex-row items-center justify-between gap-2 rounded-md border border-line bg-surface px-6 py-4"
       pressedScale={0.99}
     >
       <Text variant="body" tone="muted" className="shrink-0">
         {label}
       </Text>
-      <View className="flex-1 flex-row items-center justify-end gap-1.5">
+      <View className="flex-1 flex-row items-center justify-end gap-2">
         <Text
           numberOfLines={1}
           variant="body"
@@ -816,7 +816,7 @@ function FilterBody({
                         })
                       }
                       style={{ minWidth: 104 }}
-                      className={`gap-0.5 rounded-md border px-3 py-3 ${
+                      className={`gap-1 rounded-md border px-3 py-3 ${
                         selected ? "border-2 border-ink" : "border border-line"
                       }`}
                     >
@@ -1190,7 +1190,7 @@ function FilterBody({
                   accessibilityState={{ selected }}
                   accessibilityLabel={`${formatThreshold(r)} stjerner og over`}
                   onPress={() => setDraft((d) => ({ ...d, minRating: r }))}
-                  contentClassName={`flex-row items-center gap-1.5 rounded-full bg-surface px-3 py-2 ${
+                  contentClassName={`flex-row items-center gap-2 rounded-full bg-surface px-3 py-2 ${
                     selected ? "border-2 border-ink" : "border border-line"
                   }`}
                   pressedScale={0.95}

@@ -50,7 +50,7 @@ export function Skeleton({
 /** Card-shaped placeholder (photo + two lines), e.g. map browse cards. */
 export function SkeletonCard({ media = false }: { media?: boolean }) {
   return (
-    <View className="gap-sm">
+    <View className="gap-2">
       {media ? <Skeleton height={180} rounded="lg" /> : null}
       <Skeleton height={18} width="60%" />
       <Skeleton height={12} width="35%" />
@@ -61,9 +61,9 @@ export function SkeletonCard({ media = false }: { media?: boolean }) {
 /** Row placeholder (avatar + two lines), e.g. chat or people lists. */
 export function SkeletonRow() {
   return (
-    <View className="flex-row items-center gap-md py-sm">
+    <View className="flex-row items-center gap-3 py-2">
       <Skeleton height={44} width={44} rounded="full" />
-      <View className="flex-1 gap-sm">
+      <View className="flex-1 gap-2">
         <Skeleton height={14} width="55%" />
         <Skeleton height={12} width="80%" />
       </View>
@@ -85,7 +85,7 @@ export function SkeletonList({
       accessible
       accessibilityLabel={label}
       accessibilityState={{ busy: true }}
-      className={variant === "row" ? "gap-xs" : "gap-xl"}
+      className={variant === "row" ? "gap-1" : "gap-6"}
     >
       {Array.from({ length: count }, (_, i) =>
         variant === "row" ? (

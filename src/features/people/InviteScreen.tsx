@@ -27,7 +27,7 @@ export default function InviteScreen() {
         <Text variant="title" accessibilityRole="header">
           Din kode
         </Text>
-        <View className="items-center rounded-md border border-line bg-surface py-5">
+        <View className="items-center rounded-md border border-line bg-surface py-4">
           <Text variant="h1" className="tracking-widest">
             OLA-TP2026
           </Text>
@@ -66,7 +66,7 @@ export default function InviteScreen() {
           {ACTIVITY.map((a) => (
             <View
               key={a.label}
-              className="flex-1 items-center gap-0.5 rounded-md border border-line bg-surface py-3"
+              className="flex-1 items-center gap-1 rounded-md border border-line bg-surface py-3"
             >
               <Text variant="h2" weight="bold" accessibilityRole="text">
                 {a.value}

@@ -33,7 +33,7 @@ export function ShareSheet({
   return (
     <Sheet visible onClose={onClose} title="Del">
       <View className="gap-4">
-        <View className="gap-0.5 rounded-md border border-line bg-surface p-3">
+        <View className="gap-1 rounded-md border border-line bg-surface p-3">
           <Text variant="label" weight="semibold">
             {title}
           </Text>
@@ -151,7 +151,7 @@ export function ReportSheet({ onClose }: Base) {
             accessibilityRole="radio"
             accessibilityState={{ checked: reason === r }}
             onPress={() => setReason(r)}
-            contentClassName="flex-row items-center justify-between rounded-md border border-line bg-surface px-4 py-3.5"
+            contentClassName="flex-row items-center justify-between rounded-md border border-line bg-surface px-4 py-4"
             pressedScale={0.99}
           >
             <Text variant="label">{r}</Text>
@@ -290,7 +290,7 @@ export function PaySheet({
   return (
     <Sheet visible onClose={onClose} title="Bli med">
       <View className="gap-3">
-        <View className="gap-0.5 rounded-md border border-line bg-surface p-3">
+        <View className="gap-1 rounded-md border border-line bg-surface p-3">
           <Text variant="label" weight="semibold">
             {title}
           </Text>
@@ -365,7 +365,7 @@ export function SpotOfferSheet({ title, onClose }: Base & { title: string }) {
   return (
     <Sheet visible onClose={onClose} title="En plass åpnet seg!">
       <View className="gap-3">
-        <View className="gap-0.5 rounded-md border border-line bg-surface p-3">
+        <View className="gap-1 rounded-md border border-line bg-surface p-3">
           <Text variant="label" weight="semibold">
             {title}
           </Text>

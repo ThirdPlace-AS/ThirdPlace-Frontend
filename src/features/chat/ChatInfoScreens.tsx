@@ -260,7 +260,7 @@ export function ChatInviteScreen() {
       <Text variant="title" accessibilityRole="header">
         Del invitasjonslenke
       </Text>
-      <View className="gap-0.5 rounded-md border border-line bg-surface p-3">
+      <View className="gap-1 rounded-md border border-line bg-surface p-3">
         <Text variant="label" weight="regular" tone="ember">
           thirdplace.app/join/{slug}
         </Text>

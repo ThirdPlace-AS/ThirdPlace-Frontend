@@ -97,7 +97,7 @@ export function SheetHeader({
   if (!title && !onClose && !onBack && !actions) return null;
   return (
     <View
-      className={`flex-row items-center gap-sm ${
+      className={`flex-row items-center gap-2 ${
         divider
           ? dark
             ? "border-b border-onMedia/10 pb-3"
@@ -112,7 +112,7 @@ export function SheetHeader({
           size="sm"
           tone={dark ? "onMedia" : undefined}
           onPress={onBack}
-          className="-ml-xs"
+          className="-ml-1"
         />
       ) : null}
       {!title && label ? labelIcon : null}
@@ -149,7 +149,7 @@ export function SheetHeader({
           size="sm"
           variant={variant}
           onPress={onClose}
-          className="-mr-xs"
+          className="-mr-1"
         />
       ) : null}
     </View>
@@ -331,10 +331,7 @@ function SheetEngine({
               ]}
             >
               <GestureDetector gesture={pan}>
-                <View
-                  collapsable={false}
-                  className="gap-3 px-gutter pb-4 pt-2.5"
-                >
+                <View collapsable={false} className="gap-3 px-gutter pb-4 pt-3">
                   <SheetHandle tone={tone} />
                   <SheetHeader
                     title={title}

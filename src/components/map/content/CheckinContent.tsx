@@ -21,7 +21,7 @@ export function CheckinContent({ id }: { id: string }) {
   }
 
   return (
-    <View className="gap-5">
+    <View className="gap-6">
       <View>
         <Text variant="body" weight="semibold">
           {exp.title}

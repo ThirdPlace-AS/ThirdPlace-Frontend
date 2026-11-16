@@ -54,7 +54,7 @@ export default function VerificationScreen() {
   return (
     <Screen edges={["top"]}>
       <RouteHeader title="Verifisering" />
-      <ScrollView contentContainerClassName="gap-5 px-gutter py-4 pb-12">
+      <ScrollView contentContainerClassName="gap-6 px-gutter py-4 pb-12">
         {isGuest ? (
           <GuestLock message="Logg inn som bedrift for å se og starte verifisering." />
         ) : !business ? (

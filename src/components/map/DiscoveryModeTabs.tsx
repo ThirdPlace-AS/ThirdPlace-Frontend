@@ -38,7 +38,7 @@ export const DiscoveryModeTabs = memo(function DiscoveryModeTabs({
             accessibilityLabel={DISCOVERY_MODE_LABELS[m]}
             onPress={() => onChange(m)}
             style={elevation.e1}
-            className={`flex-row items-center gap-1.5 rounded-full border px-4 py-2 ${
+            className={`flex-row items-center gap-2 rounded-full border px-4 py-2 ${
               selected ? "border-ink bg-ink" : "border-line bg-surface"
             }`}
           >

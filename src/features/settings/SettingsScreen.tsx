@@ -146,7 +146,7 @@ export default function SettingsScreen() {
     <Screen edges={["top"]}>
       <RouteHeader title="Innstillinger" />
       <ScrollView
-        contentContainerClassName="gap-5 px-gutter py-4 pb-12"
+        contentContainerClassName="gap-6 px-gutter py-4 pb-12"
         keyboardShouldPersistTaps="handled"
       >
         <SearchBar

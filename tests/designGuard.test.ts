@@ -89,6 +89,32 @@ describe("design-system guard", () => {
     expect(fmt(hits)).toEqual([]);
   });
 
+  it("spacing stays on the 4-pt scale (DESIGN_SYSTEM.md Spacing)", () => {
+    // Padding, margin and gap: Tailwind numbers (true px since 0427) plus
+    // `gutter`. No named steps (xs … section), no arbitrary values, half steps
+    // only for the 2 px micro gaps, 5/7/9/11 only inside the ui primitives.
+    const cls =
+      /(^|[\s"'`{(:,])-?(gap-x|gap-y|space-x|space-y|gap|p[xytblrse]?|m[xytblrse]?)-([\w.[\]]+)/g;
+    const MICRO_OK = [
+      "src/components/ui/base/badge.tsx",
+      "src/components/map/PriceHistogram.tsx",
+    ];
+    const hits = scan((line, _prev, file) => {
+      for (const m of line.matchAll(cls)) {
+        const v = m[3] ?? "";
+        if (/^(xs|sm|md|lg|xl|section)$/.test(v) || v.startsWith("[")) {
+          return true;
+        }
+        if (/^\d\.5$/.test(v) && !(v === "0.5" && MICRO_OK.includes(file))) {
+          return true;
+        }
+        if (/^(5|7|9|11)$/.test(v) && !inUi(file)) return true;
+      }
+      return false;
+    });
+    expect(fmt(hits)).toEqual([]);
+  });
+
   it("no raw Modal outside the Sheet/Overlay engine", () => {
     const hits = scan(
       (line) =>

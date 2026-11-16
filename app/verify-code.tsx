@@ -93,7 +93,7 @@ export default function VerifyCode() {
           ) : null}
         </View>
         {identity ? (
-          <View className="gap-0.5 rounded-md border border-line bg-surface p-3">
+          <View className="gap-1 rounded-md border border-line bg-surface p-3">
             <UIText variant="label" weight="semibold">
               Mistet tilgang?
             </UIText>

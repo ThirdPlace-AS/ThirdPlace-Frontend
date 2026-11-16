@@ -25,7 +25,7 @@ export function WhatsNewSheet({
             <View className="h-10 w-10 items-center justify-center rounded-full bg-surfaceMuted">
               <Icon name={item.icon} size="md" tone="ink" />
             </View>
-            <View className="flex-1 gap-0.5">
+            <View className="flex-1 gap-1">
               <Text variant="label" weight="semibold">
                 {item.title}
               </Text>

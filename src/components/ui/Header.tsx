@@ -52,7 +52,7 @@ export function Header({
             <IconButton icon={BACK_ICON} label="Tilbake" onPress={onBack} />
           )}
           {trailing ? (
-            <View className="flex-row items-center gap-xs">{trailing}</View>
+            <View className="flex-row items-center gap-1">{trailing}</View>
           ) : null}
         </View>
         <Text variant="h1" accessibilityRole="header" numberOfLines={2}>
@@ -65,8 +65,8 @@ export function Header({
   const showBorder = border ?? !large;
   return (
     <View
-      className={`min-h-12 flex-row items-center gap-md ${inset ? "px-gutter" : ""} ${
-        showBorder ? "border-b border-line pb-md" : ""
+      className={`min-h-12 flex-row items-center gap-3 ${inset ? "px-gutter" : ""} ${
+        showBorder ? "border-b border-line pb-3" : ""
       }`}
     >
       {showBack ? (
@@ -76,7 +76,7 @@ export function Header({
         {title}
       </Text>
       {trailing ? (
-        <View className="flex-row items-center gap-xs">{trailing}</View>
+        <View className="flex-row items-center gap-1">{trailing}</View>
       ) : null}
     </View>
   );
@@ -96,11 +96,11 @@ export function TitleBlock({
   size?: "display" | "h1";
 }) {
   return (
-    <View className="gap-md">
+    <View className="gap-3">
       {back ? (
         <IconButton icon={BACK_ICON} label="Tilbake" onPress={onBack} />
       ) : null}
-      <View className="gap-xs">
+      <View className="gap-1">
         <Text variant={size}>{title}</Text>
         {subtitle ? (
           <Text variant="body" tone="muted">
@@ -129,7 +129,7 @@ export function StepHeader({
 }) {
   const text = label ?? `${current + 1} av ${total}`;
   return (
-    <View className="gap-md px-gutter pb-sm pt-xs">
+    <View className="gap-3 px-gutter pb-2 pt-1">
       <View className="flex-row items-center justify-between">
         <IconButton icon={BACK_ICON} label="Tilbake" onPress={onBack} />
         {showProgress ? (
@@ -140,7 +140,7 @@ export function StepHeader({
       </View>
       {showProgress ? (
         <View
-          className="flex-row gap-1.5"
+          className="flex-row gap-2"
           accessible
           accessibilityRole="progressbar"
           accessibilityLabel={text}

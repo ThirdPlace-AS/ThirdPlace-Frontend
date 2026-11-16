@@ -124,7 +124,7 @@ export function PhotoCarousel({
               bars. */}
           <View
             className={`absolute inset-x-0 flex-row px-3 ${
-              variant === "card" ? "justify-center gap-1.5" : "gap-1"
+              variant === "card" ? "justify-center gap-2" : "gap-1"
             }`}
             style={{ top: indicatorTop }}
           >

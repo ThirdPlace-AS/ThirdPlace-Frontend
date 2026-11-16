@@ -341,7 +341,7 @@ function SoftMap({
             >
               <View
                 style={elevation.e1}
-                className="max-w-full rounded-md border border-line bg-surface px-1.5 py-0.5"
+                className="max-w-full rounded-md border border-line bg-surface px-2 py-1"
               >
                 <Text numberOfLines={1} variant="caption" weight="semibold">
                   {item.title}

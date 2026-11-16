@@ -88,7 +88,7 @@ export function Button({
         />
       ) : null}
       <View
-        className="flex-row items-center gap-sm"
+        className="flex-row items-center gap-2"
         style={loading ? { opacity: 0 } : undefined}
       >
         {icon ? <Icon name={icon} size="md" tone={fg} /> : null}

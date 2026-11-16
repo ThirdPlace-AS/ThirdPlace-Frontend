@@ -30,7 +30,7 @@ export default function SystemState() {
 
   return (
     <Screen>
-      <ScrollView contentContainerClassName="flex-grow justify-center gap-5 p-gutter">
+      <ScrollView contentContainerClassName="flex-grow justify-center gap-6 p-gutter">
         {kind === "offline" ? (
           <State
             icon="cloud-offline-outline"
@@ -147,7 +147,7 @@ function State({
   children?: React.ReactNode;
 }) {
   return (
-    <View className="gap-5">
+    <View className="gap-6">
       <View className="items-center gap-3">
         {art ? (
           <Illustration name={art} width={176} />

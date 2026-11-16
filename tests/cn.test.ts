@@ -16,7 +16,7 @@ describe("cn (tailwind-merge with our tokens)", () => {
   it("named spacing conflicts with numeric spacing", () => {
     expect(cn("p-gutter", "p-4")).toBe("p-4");
     expect(cn("px-4", "px-gutter")).toBe("px-gutter");
-    expect(cn("gap-section", "gap-2")).toBe("gap-2");
+    expect(cn("gap-gutter", "gap-2")).toBe("gap-2");
   });
 
   it("radius tokens conflict with each other", () => {

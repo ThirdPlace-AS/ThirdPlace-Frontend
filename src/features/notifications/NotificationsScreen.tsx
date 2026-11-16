@@ -212,13 +212,13 @@ function NotificationCard({
         accessibilityLabel={`${actor} ${n.text}${isRead ? "" : ", ulest"}`}
         accessibilityHint="Åpner det varselet gjelder"
         onPress={onOpen}
-        contentClassName="flex-row items-start gap-3 p-3.5"
+        contentClassName="flex-row items-start gap-3 p-4"
         pressedScale={0.99}
       >
         <View className="h-10 w-10 items-center justify-center rounded-full bg-surfaceMuted">
           <Icon name={TYPE_ICON[n.type]} size="md" tone="ink" />
         </View>
-        <View className="flex-1 gap-0.5">
+        <View className="flex-1 gap-1">
           <Text variant="label" weight="semibold">
             {actor}
           </Text>
@@ -226,7 +226,7 @@ function NotificationCard({
             {n.text}
           </Text>
         </View>
-        <View className="items-end gap-1.5">
+        <View className="items-end gap-2">
           <Text variant="caption" tone="muted">
             {notificationTimeLabel(n.minutesAgo)}
           </Text>
@@ -235,7 +235,7 @@ function NotificationCard({
       </UIPressable>
       {follow ? (
         <View
-          className="flex-row pb-3.5 pr-3.5"
+          className="flex-row pb-4 pr-4"
           style={{ paddingLeft: FOLLOW_INDENT }}
         >
           <FollowButton

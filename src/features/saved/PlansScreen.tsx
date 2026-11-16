@@ -167,7 +167,7 @@ export default function PlansScreen() {
           const countdown =
             item.state === "upcoming" ? planCountdown(exp) : null;
           return (
-            <View className="gap-0.5 rounded-md border border-line bg-surface p-3.5">
+            <View className="gap-1 rounded-md border border-line bg-surface p-4">
               {/* Title + meta open the experience page; the plan
                   actions below stay separate buttons. */}
               <UIPressable
@@ -177,7 +177,7 @@ export default function PlansScreen() {
                 }`}
                 onPress={() => router.push(`/experience/${exp.id}` as Href)}
                 pressedScale={0.99}
-                contentClassName="gap-0.5"
+                contentClassName="gap-1"
               >
                 <View className="flex-row items-start gap-2">
                   <Text variant="body" weight="semibold" className="flex-1">
@@ -190,7 +190,7 @@ export default function PlansScreen() {
                 </Text>
               </UIPressable>
               {item.state === "past" ? (
-                <View className="flex-row flex-wrap items-center gap-x-5">
+                <View className="flex-row flex-wrap items-center gap-x-6">
                   {myRatings[exp.id] ? (
                     <Text
                       variant="caption"
@@ -231,7 +231,7 @@ export default function PlansScreen() {
                       (s) => s.start.getTime() > now.getTime(),
                     );
                     return (
-                      <View className="flex-row flex-wrap gap-x-5">
+                      <View className="flex-row flex-wrap gap-x-6">
                         {chat ? (
                           <PlanAction
                             label="Til samtalen"

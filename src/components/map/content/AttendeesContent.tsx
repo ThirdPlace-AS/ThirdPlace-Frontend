@@ -75,7 +75,7 @@ export function AttendeesContent({
                 {a.name}
               </Text>
               {a.isHost ? (
-                <View className="rounded-full bg-ink px-2 py-0.5">
+                <View className="rounded-full bg-ink px-2 py-1">
                   <Text variant="caption" weight="semibold" tone="onInk">
                     Vert
                   </Text>

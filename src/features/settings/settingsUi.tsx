@@ -80,7 +80,7 @@ export function ToggleRow({
     <UIPressable
       accessible={false}
       onPress={() => onValueChange(!value)}
-      contentClassName="flex-row items-center gap-3 border-b border-line px-gutter py-3.5"
+      contentClassName="flex-row items-center gap-3 border-b border-line px-gutter py-4"
       pressedScale={0.99}
     >
       <Icon name={icon} size="md" tone="ink" />

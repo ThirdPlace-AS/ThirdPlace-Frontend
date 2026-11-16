@@ -334,7 +334,7 @@ export default function BusinessOnboarding() {
                 subtitle="Slik ser kundene dere når bedriften er verifisert."
               >
                 <View className="gap-3 rounded-md border border-line bg-surface p-4">
-                  <View className="flex-row items-center gap-1.5 self-start rounded-full border border-ember px-2.5 py-1">
+                  <View className="flex-row items-center gap-2 self-start rounded-full border border-ember px-3 py-1">
                     <Icon name="eye-outline" size="sm" tone="ember" />
                     <Text variant="caption" weight="semibold" tone="ember">
                       Forhåndsvisning. Bare du ser den.
@@ -401,7 +401,7 @@ function Perm({
       <View className="h-10 w-10 items-center justify-center rounded-full bg-surfaceMuted">
         <Icon name={icon} size="md" tone="ink" />
       </View>
-      <View className="flex-1 gap-0.5">
+      <View className="flex-1 gap-1">
         <View className="flex-row items-center gap-2">
           <Text variant="body" weight="semibold">
             {label}
@@ -410,7 +410,7 @@ function Perm({
             variant="caption"
             weight="bold"
             tone="muted"
-            className="rounded-xs bg-surfaceMuted px-1.5 py-0.5"
+            className="rounded-xs bg-surfaceMuted px-2 py-1"
           >
             {tag}
           </Text>
@@ -434,7 +434,7 @@ function NextStep({
   hint: string;
 }) {
   return (
-    <View className="flex-row items-center gap-3 rounded-md border border-line bg-surface p-3.5">
+    <View className="flex-row items-center gap-3 rounded-md border border-line bg-surface p-4">
       <View className="h-7 w-7 items-center justify-center rounded-full bg-surfaceMuted">
         <Text variant="caption" weight="bold">
           {n}

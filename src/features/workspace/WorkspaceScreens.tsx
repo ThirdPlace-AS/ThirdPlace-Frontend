@@ -43,7 +43,7 @@ export function WorkspaceHub() {
     <Screen edges={["top"]}>
       <RouteHeader title={BIZ?.name ?? "Bedrift"} />
       <ScrollView contentContainerClassName="gap-3 px-gutter py-4 pb-12">
-        <View className="flex-row items-center gap-1.5">
+        <View className="flex-row items-center gap-2">
           <Icon
             name={BIZ?.verified ? "checkmark-circle" : "time-outline"}
             size="sm"
@@ -98,7 +98,7 @@ export function WorkspaceHub() {
             hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
             accessibilityRole="button"
             onPress={() => router.navigate("/profile")}
-            contentClassName="rounded-full border border-line bg-surface px-3 py-1.5"
+            contentClassName="rounded-full border border-line bg-surface px-3 py-2"
             pressedScale={0.99}
           >
             <Text variant="caption" weight="semibold">
@@ -213,7 +213,7 @@ function TodayRow({
       accessibilityRole="button"
       accessibilityLabel={label}
       onPress={onPress}
-      contentClassName="flex-row items-center gap-2 py-1.5"
+      contentClassName="flex-row items-center gap-2 py-2"
       pressedScale={0.99}
     >
       <Icon name={icon} size="sm" tone="muted" />
@@ -308,7 +308,7 @@ export function WorkspaceAnalytics() {
           {STATS[range].map(([v, l]) => (
             <View
               key={l}
-              className="w-[48%] gap-0.5 rounded-md bg-surfaceMuted p-4"
+              className="w-[48%] gap-1 rounded-md bg-surfaceMuted p-4"
             >
               <Text variant="h1" accessibilityRole="text">
                 {v}

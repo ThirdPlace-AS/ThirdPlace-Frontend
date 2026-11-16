@@ -16,7 +16,7 @@ export default function PaymentsScreen() {
   return (
     <Screen edges={["top"]}>
       <RouteHeader title="Betaling" />
-      <ScrollView contentContainerClassName="gap-5 px-gutter py-4 pb-12">
+      <ScrollView contentContainerClassName="gap-6 px-gutter py-4 pb-12">
         <SettingsSection title="Betalingsmetoder">
           <View className="items-center gap-2 px-4 py-8">
             <Icon name="card-outline" size="xl" tone="muted" />
@@ -28,7 +28,7 @@ export default function PaymentsScreen() {
           <UIPressable
             accessibilityRole="button"
             onPress={() => setInfoOpen(true)}
-            contentClassName="flex-row items-center gap-3 border-t border-line px-4 py-3.5"
+            contentClassName="flex-row items-center gap-3 border-t border-line px-4 py-4"
             pressedScale={0.99}
           >
             <Icon name="add-circle-outline" size="md" tone="ink" />

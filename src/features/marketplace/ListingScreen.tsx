@@ -79,7 +79,7 @@ export default function ListingScreen() {
           (d) => (
             <View
               key={d.label}
-              className="flex-row justify-between border-b border-line px-3.5 py-3"
+              className="flex-row justify-between border-b border-line px-4 py-3"
             >
               <Text variant="caption" tone="muted">
                 {d.label}

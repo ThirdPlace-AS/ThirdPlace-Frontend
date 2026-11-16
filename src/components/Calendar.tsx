@@ -141,7 +141,7 @@ export function Calendar({
         onScroll={onScroll}
       >
         {months.map(({ year, month }) => (
-          <View key={`${year}-${month}`} className="gap-2 pb-5">
+          <View key={`${year}-${month}`} className="gap-2 pb-4">
             {/* Month name ABOVE its grid (it sat under the grid, where it read
                 as the label of the next month). */}
             <Text variant="body" weight="semibold" className="capitalize">

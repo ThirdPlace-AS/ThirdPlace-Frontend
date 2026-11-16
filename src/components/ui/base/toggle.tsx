@@ -11,9 +11,9 @@ import { cva, type VariantProps } from "class-variance-authority";
 import { memoVariants } from "@/lib/memoVariants";
 
 // Literal class names so Tailwind generates them. Key order is output order.
-export const toggleVariants = cva("flex-row items-center gap-sm rounded-full", {
+export const toggleVariants = cva("flex-row items-center gap-2 rounded-full", {
   variants: {
-    size: { sm: "px-md", md: "px-gutter" },
+    size: { sm: "px-3", md: "px-gutter" },
     shell: {
       filledOn: "border border-ink bg-ink",
       // PDF (p5 Filtre, p22 Oppdag folk/Filter folk): unselected = grey
@@ -45,4 +45,4 @@ export function toggleShell(
 export const toggleHeight: Record<ToggleSize, number> = { sm: 32, md: 40 };
 
 /** The group's row. */
-export const toggleGroupClass = "flex-row flex-wrap gap-sm";
+export const toggleGroupClass = "flex-row flex-wrap gap-2";

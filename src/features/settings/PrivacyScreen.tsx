@@ -33,7 +33,7 @@ export default function PrivacyScreen() {
   return (
     <Screen edges={["top"]}>
       <RouteHeader title="Personvern" />
-      <ScrollView contentContainerClassName="gap-5 px-gutter py-4 pb-12">
+      <ScrollView contentContainerClassName="gap-6 px-gutter py-4 pb-12">
         <ListRow
           variant="card"
           icon="shield-checkmark-outline"

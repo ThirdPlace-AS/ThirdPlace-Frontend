@@ -199,7 +199,7 @@ export default function Onboarding() {
         {/* New step: fresh scroll at its top, faded in. */}
         <FadeSwap swapKey={step} style={{ flex: 1 }}>
           <ScrollView
-            contentContainerClassName="gap-5 p-gutter pb-8"
+            contentContainerClassName="gap-6 p-gutter pb-8"
             keyboardShouldPersistTaps="handled"
           >
             {step === 0 ? (
@@ -235,7 +235,7 @@ export default function Onboarding() {
                         </Text>
                       </View>
                       {p.locked ? (
-                        <View className="flex-row items-center gap-1 rounded-full bg-surfaceMuted px-2 py-0.5">
+                        <View className="flex-row items-center gap-1 rounded-full bg-surfaceMuted px-2 py-1">
                           <Icon name="lock-closed" size="sm" tone="muted" />
                           <Text
                             variant="caption"
@@ -451,7 +451,7 @@ export default function Onboarding() {
                     <View className="h-10 w-10 items-center justify-center rounded-full bg-surfaceMuted">
                       <Icon name={p.icon} size="md" tone="ink" />
                     </View>
-                    <View className="flex-1 gap-0.5">
+                    <View className="flex-1 gap-1">
                       <View className="flex-row items-center gap-2">
                         <Text variant="body" weight="semibold">
                           {p.label}
@@ -460,7 +460,7 @@ export default function Onboarding() {
                           variant="caption"
                           weight="bold"
                           tone="muted"
-                          className="rounded-xs bg-surfaceMuted px-1.5 py-0.5"
+                          className="rounded-xs bg-surfaceMuted px-2 py-1"
                         >
                           {p.tag}
                         </Text>
@@ -486,7 +486,7 @@ export default function Onboarding() {
                 {experiences.slice(0, 3).map((e) => (
                   <View
                     key={e.id}
-                    className="flex-row items-center gap-3 rounded-md border border-line bg-surface p-3.5"
+                    className="flex-row items-center gap-3 rounded-md border border-line bg-surface p-4"
                   >
                     <View className="h-10 w-10 items-center justify-center rounded-sm bg-surfaceMuted">
                       <Icon name="tp-experience" size="md" tone="ink" />

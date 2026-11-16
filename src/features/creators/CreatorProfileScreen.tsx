@@ -89,7 +89,7 @@ export default function CreatorProfileScreen() {
           hosted.map((h) => (
             <View
               key={h.id}
-              className="gap-0.5 rounded-md border border-line bg-surface p-4"
+              className="gap-1 rounded-md border border-line bg-surface p-4"
             >
               <Text variant="body" weight="semibold">
                 {h.title}

@@ -181,15 +181,14 @@ const radius = {
   full: "9999px",
 };
 
-/** Named spacing (Tailwind's numeric scale stays available alongside). */
+/**
+ * Spacing (DESIGN_SYSTEM.md "Spacing", 0427). Layout spacing is Tailwind's
+ * numbers on a true-px 4-pt scale (p-4 = 16 px; tailwind.config.js), plus one
+ * named role: the screen gutter. The old named steps (xs … section) are gone:
+ * they duplicated the numbers in a second vocabulary.
+ */
 const spacing = {
-  xs: "4px",
-  sm: "8px",
-  md: "12px",
   gutter: "16px", // screen side padding
-  lg: "20px",
-  xl: "24px",
-  section: "32px",
 };
 
 /**

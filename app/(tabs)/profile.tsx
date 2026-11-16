@@ -60,7 +60,7 @@ export default function ProfileScreen() {
 
   return (
     <Screen edges={["top"]}>
-      <ScrollView contentContainerClassName="gap-5 p-gutter pb-10">
+      <ScrollView contentContainerClassName="gap-6 p-gutter pb-10">
         <Header
           title="Profil"
           size="large"
@@ -154,7 +154,7 @@ export default function ProfileScreen() {
               {me.interests.map((i) => (
                 <View
                   key={i}
-                  className="rounded-full border border-line bg-surface px-3.5 py-1.5"
+                  className="rounded-full border border-line bg-surface px-4 py-2"
                 >
                   <Text variant="label">{i}</Text>
                 </View>
@@ -368,7 +368,7 @@ function TabBar({ tab, onChange }: { tab: Tab; onChange: (t: Tab) => void }) {
             onPress={() => onChange(t.key)}
             feedback="none"
             className="flex-1"
-            contentClassName={`items-center pb-2.5 ${
+            contentClassName={`items-center pb-3 ${
               active ? "border-b-2 border-ink" : ""
             }`}
           >

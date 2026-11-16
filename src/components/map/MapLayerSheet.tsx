@@ -136,7 +136,7 @@ export function MapLayerSheet({
     <Sheet visible={visible} onClose={close} title="Kartlag" centerTitle>
       <View
         testID="kartlag-body"
-        className="gap-5"
+        className="gap-6"
         onLayout={(e) => setWidth(Math.round(e.nativeEvent.layout.width))}
       >
         <View className="gap-3">

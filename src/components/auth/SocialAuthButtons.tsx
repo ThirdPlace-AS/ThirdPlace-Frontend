@@ -40,7 +40,7 @@ export function SocialAuthButtons({
           key={p.name}
           accessibilityRole="button"
           onPress={onContinue}
-          contentClassName="flex-row items-center justify-center gap-2 rounded-full border border-line bg-surface py-3.5"
+          contentClassName="flex-row items-center justify-center gap-2 rounded-full border border-line bg-surface py-4"
           pressedScale={0.99}
         >
           <Icon name={p.icon} size="md" tone="ink" />

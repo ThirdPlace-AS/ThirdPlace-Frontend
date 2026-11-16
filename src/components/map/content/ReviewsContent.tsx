@@ -45,7 +45,7 @@ export function ReviewsContent({ id }: { id: string }) {
                 </Text>
               </View>
             </View>
-            <Text variant="caption" tone="muted" className="mt-0.5">
+            <Text variant="caption" tone="muted" className="mt-1">
               {item.when}
             </Text>
             <Text variant="caption" tone="muted" className="mt-1">

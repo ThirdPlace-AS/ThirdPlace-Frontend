@@ -13,7 +13,7 @@ import type { TextTone } from "./text";
 // Literal class names so Tailwind generates them. Key order is output order.
 export const badgeVariants = cva("self-start rounded-full", {
   variants: {
-    kind: { tag: "px-sm py-0.5", status: "px-2.5 py-1" },
+    kind: { tag: "px-2 py-0.5", status: "px-3 py-1" },
     fill: {
       neutral: "border border-line bg-surfaceMuted",
       ink: "bg-ink",

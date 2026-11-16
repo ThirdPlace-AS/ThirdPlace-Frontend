@@ -33,7 +33,7 @@ export function CountdownChip({
     <View
       accessible={false}
       importantForAccessibility="no-hide-descendants"
-      className={`self-start rounded-full px-2.5 py-1 ${
+      className={`self-start rounded-full px-3 py-1 ${
         soon ? "bg-ink" : "bg-surfaceMuted"
       }`}
     >

@@ -45,7 +45,7 @@ export function PaymentStatusScreen() {
   return (
     <Screen edges={["top"]}>
       <RouteHeader title="Betalingsstatus" />
-      <ScrollView contentContainerClassName="gap-5 px-gutter py-4 pb-12">
+      <ScrollView contentContainerClassName="gap-6 px-gutter py-4 pb-12">
         <Text variant="caption" tone="muted">
           Jazz-samarbeid · Oslo Kaffebar
         </Text>
@@ -123,7 +123,7 @@ export function PaymentStatusScreen() {
           <Text variant="title" accessibilityRole="header">
             Utbetaling
           </Text>
-          <View className="gap-0.5 rounded-md border border-line bg-surface p-4">
+          <View className="gap-1 rounded-md border border-line bg-surface p-4">
             <Text variant="label" weight="semibold">
               Ikke planlagt ennå
             </Text>
@@ -198,7 +198,7 @@ export function CollabHistoryScreen() {
           return (
             <View
               key={c.id}
-              className="gap-1.5 rounded-md border border-line bg-surface p-4"
+              className="gap-2 rounded-md border border-line bg-surface p-4"
             >
               <View className="flex-row items-start justify-between gap-3">
                 <Text variant="body" weight="semibold" className="flex-1">

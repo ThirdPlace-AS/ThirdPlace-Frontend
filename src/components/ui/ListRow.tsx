@@ -27,7 +27,7 @@ export function MetaRow({
 }) {
   const media = tone === "media";
   return (
-    <View className="flex-row items-center gap-sm">
+    <View className="flex-row items-center gap-2">
       <Icon name={icon} size="sm" tone={media ? "onMedia" : "muted"} />
       <Text
         variant={media ? "label" : "caption"}
@@ -85,15 +85,15 @@ export function ListRow({
   const showChevron = chevron ?? !!onPress;
   const shell =
     variant === "card"
-      ? "flex-row items-center gap-md rounded-md border border-line bg-surface p-md"
-      : "flex-row items-center gap-md px-gutter py-md";
+      ? "flex-row items-center gap-3 rounded-md border border-line bg-surface p-3"
+      : "flex-row items-center gap-3 px-gutter py-3";
   const body = (
     <>
       {leading ??
         (icon ? (
           <Icon name={icon} size="md" tone={danger ? "ember" : "ink"} />
         ) : null)}
-      <View className="flex-1 gap-0.5">
+      <View className="flex-1 gap-1">
         <Text
           variant="body"
           weight={variant === "card" ? "semibold" : "regular"}

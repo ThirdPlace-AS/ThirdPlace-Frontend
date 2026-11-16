@@ -87,7 +87,7 @@ export function PhotoPager({
           pointerEvents="none"
           accessibilityElementsHidden
           importantForAccessibility="no-hide-descendants"
-          className="absolute inset-x-0 bottom-3 flex-row justify-center gap-1.5"
+          className="absolute inset-x-0 bottom-3 flex-row justify-center gap-2"
         >
           {photos.slice(0, 5).map((_, i) => (
             <View

@@ -48,7 +48,7 @@ export function ReviewsSection({
             <View
               key={r.id}
               style={{ width: 292 }}
-              className={`pr-5 ${i > 0 ? "border-l border-line pl-5" : ""}`}
+              className={`pr-4 ${i > 0 ? "border-l border-line pl-4" : ""}`}
             >
               <ReviewCard review={r} />
             </View>

@@ -134,7 +134,7 @@ export function MenuItemRow({
         </Text>
       ) : null}
       {!compact && item.labels ? (
-        <View className="flex-row flex-wrap gap-1.5">
+        <View className="flex-row flex-wrap gap-2">
           {item.labels.map((l) => (
             <Badge key={l} kind="status" label={l} />
           ))}

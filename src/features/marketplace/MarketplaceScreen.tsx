@@ -86,7 +86,7 @@ export default function MarketplaceScreen() {
                 accessibilityRole="button"
                 hitSlop={{ top: 12, bottom: 12, left: 8, right: 8 }}
                 onPress={() => setFilterOpen(true)}
-                contentClassName="flex-row items-center gap-1.5"
+                contentClassName="flex-row items-center gap-2"
               >
                 <Icon name="options-outline" size="sm" tone="ink" />
                 <Text variant="label" weight="semibold">
@@ -97,7 +97,7 @@ export default function MarketplaceScreen() {
                 accessibilityRole="button"
                 hitSlop={{ top: 12, bottom: 12, left: 8, right: 8 }}
                 onPress={() => router.push("/marketplace/analytics" as Href)}
-                contentClassName="flex-row items-center gap-1.5"
+                contentClassName="flex-row items-center gap-2"
               >
                 <Icon name="stats-chart-outline" size="sm" tone="ink" />
                 <Text variant="label" weight="semibold">

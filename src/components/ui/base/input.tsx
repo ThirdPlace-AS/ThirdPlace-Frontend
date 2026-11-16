@@ -31,6 +31,6 @@ export type InputState = NonNullable<
 
 /** SearchBar: the pill around the magnifier, the field and the clear button. */
 export const searchShellClass =
-  "flex-row items-center gap-sm rounded-full border border-line bg-surface px-gutter";
+  "flex-row items-center gap-2 rounded-full border border-line bg-surface px-gutter";
 /** SearchBar's field inside the pill. */
 export const searchFieldClass = "flex-1 text-ink";

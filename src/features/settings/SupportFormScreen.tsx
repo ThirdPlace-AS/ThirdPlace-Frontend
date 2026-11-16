@@ -39,7 +39,7 @@ export default function SupportFormScreen() {
       {exp ? (
         <View className="flex-row items-center gap-3 rounded-md border border-line bg-surface p-3">
           <Icon name="tp-experience" size="md" tone="ink" />
-          <View className="flex-1 gap-0.5">
+          <View className="flex-1 gap-1">
             <Text variant="caption" tone="muted">
               Gjelder
             </Text>

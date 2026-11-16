@@ -40,7 +40,7 @@ export default function MenuScreen() {
   return (
     <Screen edges={["top"]}>
       <RouteHeader title="Meny" />
-      <ScrollView contentContainerClassName="gap-5 px-gutter py-4 pb-12">
+      <ScrollView contentContainerClassName="gap-6 px-gutter py-4 pb-12">
         {!place ? (
           <Text variant="body" tone="muted">
             Fant ikke stedet.

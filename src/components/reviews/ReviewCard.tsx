@@ -55,7 +55,7 @@ export function ReviewCard({
           ) : null}
         </View>
       </View>
-      <View className="flex-row items-center gap-1.5">
+      <View className="flex-row items-center gap-2">
         <Stars rating={review.rating} />
         <Text variant="caption" tone="muted">
           · {review.when}

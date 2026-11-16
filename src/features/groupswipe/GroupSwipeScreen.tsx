@@ -165,7 +165,7 @@ export default function GroupSwipeScreen() {
                     contentClassName="items-center gap-1"
                   >
                     <View
-                      className={`rounded-full border-2 p-0.5 ${on ? "border-ink" : "border-transparent"}`}
+                      className={`rounded-full border-2 p-1 ${on ? "border-ink" : "border-transparent"}`}
                     >
                       <Image
                         source={libThumb(p.avatar)}
@@ -397,7 +397,7 @@ export default function GroupSwipeScreen() {
       ) : null}
 
       {phase === "match" && card ? (
-        <ScrollView contentContainerClassName="flex-grow justify-center gap-5 p-gutter">
+        <ScrollView contentContainerClassName="flex-grow justify-center gap-6 p-gutter">
           <Image
             source={card.photos[0]}
             contentFit="cover"
@@ -409,7 +409,7 @@ export default function GroupSwipeScreen() {
           <Text variant="caption" tone="muted" className="text-center">
             Alle sveipet høyre på {card.title}.
           </Text>
-          <View className="flex-row items-center gap-1.5 self-center rounded-full bg-success/15 px-3 py-1">
+          <View className="flex-row items-center gap-2 self-center rounded-full bg-success/15 px-3 py-1">
             <Icon name="checkmark" size="sm" tone="success" />
             <Text variant="caption" weight="semibold" tone="success">
               Alle er enige

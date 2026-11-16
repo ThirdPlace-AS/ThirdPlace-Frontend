@@ -14,13 +14,13 @@ describe("Text on the base layer", () => {
     render(
       <>
         <Text>a</Text>
-        <Text variant="micro" tone="ember" className="mt-sm">
+        <Text variant="micro" tone="ember" className="mt-2">
           b
         </Text>
       </>,
     );
     expect(cls("a")).toBe("text-body text-ink");
-    expect(cls("b")).toBe("text-micro uppercase text-emberText mt-sm");
+    expect(cls("b")).toBe("text-micro uppercase text-emberText mt-2");
   });
 
   it("takes the context tone; an explicit tone wins", () => {

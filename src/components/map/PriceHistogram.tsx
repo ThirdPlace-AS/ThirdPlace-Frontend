@@ -70,7 +70,7 @@ export const PriceHistogram = memo(function PriceHistogram({
   }, [values, min, max]);
 
   return (
-    <View className="h-14 flex-row items-end gap-[2px]">
+    <View className="h-14 flex-row items-end gap-0.5">
       {counts.map((c, i) => {
         const inRange = bucketInRange(i, min, span, low, high);
         const h = c === 0 ? 2 : 6 + (c / peak) * 44;

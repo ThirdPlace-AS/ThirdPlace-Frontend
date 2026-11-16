@@ -74,7 +74,7 @@ function VerifiedChip() {
     <View
       accessible
       accessibilityLabel="Verifisert bedrift"
-      className="flex-row items-center gap-1 rounded-full bg-success/15 px-md"
+      className="flex-row items-center gap-1 rounded-full bg-success/15 px-3"
       style={{ minHeight: 32 }}
     >
       <Icon name="checkmark-circle" size="sm" tone="success" />
@@ -367,7 +367,7 @@ export function PlacePage({
               Hvor du finner oss
             </Text>
             <View className="flex-row items-start gap-3">
-              <View className="flex-1 gap-0.5">
+              <View className="flex-1 gap-1">
                 <Text variant="label" weight="semibold">
                   {place.name}
                 </Text>
@@ -451,7 +451,7 @@ export function PlacePage({
                       accessibilityLabel={`${p.name}, ${p.category}`}
                       onPress={() => onNavigate(`/place/${p.id}` as Href)}
                       style={{ width: 176 }}
-                      contentClassName="gap-1.5"
+                      contentClassName="gap-2"
                       pressedScale={0.98}
                     >
                       <LoadingImage

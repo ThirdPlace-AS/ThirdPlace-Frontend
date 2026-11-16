@@ -39,7 +39,7 @@ export default function TwoFactor() {
   return (
     <Screen edges={["top"]}>
       <RouteHeader title="Totrinnsbekreftelse" />
-      <ScrollView contentContainerClassName="gap-5 px-gutter py-4 pb-12">
+      <ScrollView contentContainerClassName="gap-6 px-gutter py-4 pb-12">
         <Text variant="caption" tone="muted">
           Legg til et ekstra sikkerhetslag på kontoen din.
         </Text>
@@ -95,7 +95,7 @@ export default function TwoFactor() {
                 <Text variant="title" accessibilityRole="header">
                   QR-kode
                 </Text>
-                <View className="items-center gap-2 rounded-md border border-line bg-surface p-5">
+                <View className="items-center gap-2 rounded-md border border-line bg-surface p-6">
                   <View
                     className="items-center justify-center rounded-md bg-surfaceMuted"
                     style={{ height: 128, width: 128 }}

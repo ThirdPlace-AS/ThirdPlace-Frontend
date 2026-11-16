@@ -43,7 +43,7 @@ export default function ListingWaitlistScreen() {
       </Text>
 
       {capacity !== undefined && taken !== undefined ? (
-        <View className="gap-2 rounded-md border border-line bg-surface p-3.5">
+        <View className="gap-2 rounded-md border border-line bg-surface p-4">
           <View className="flex-row items-center justify-between">
             <Text variant="label" weight="semibold">
               Kapasitet

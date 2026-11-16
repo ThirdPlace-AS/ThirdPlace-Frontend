@@ -43,7 +43,7 @@ export function StateView({
   const danger = tone === "danger";
   return (
     <View
-      className={`items-center justify-center gap-lg p-gutter ${fill ? "flex-1" : ""}`}
+      className={`items-center justify-center gap-6 p-gutter ${fill ? "flex-1" : ""}`}
     >
       {illustration ?? (
         <View
@@ -54,7 +54,7 @@ export function StateView({
           <Icon name={icon} size="xl" tone={danger ? "danger" : "muted"} />
         </View>
       )}
-      <View className="max-w-xs items-center gap-xs">
+      <View className="max-w-xs items-center gap-1">
         <Text
           variant="title"
           weight="semibold"
@@ -70,7 +70,7 @@ export function StateView({
         ) : null}
       </View>
       {actionLabel && secondaryLabel ? (
-        <View className="w-full max-w-xs gap-md">
+        <View className="w-full max-w-xs gap-3">
           <Button
             label={actionLabel}
             variant="ink"

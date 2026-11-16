@@ -108,7 +108,7 @@ export function JoinedSheet({
               <Icon name="checkmark" size="md" tone="success" />
             </View>
           </Animated.View>
-          <View className="flex-1 gap-0.5">
+          <View className="flex-1 gap-1">
             <Text variant="label" weight="semibold" numberOfLines={2}>
               {experience.title}
             </Text>
@@ -123,7 +123,7 @@ export function JoinedSheet({
               key={a.label}
               accessibilityRole="button"
               onPress={a.onPress}
-              contentClassName="flex-row items-center gap-3 rounded-sm py-2.5"
+              contentClassName="flex-row items-center gap-3 rounded-sm py-3"
             >
               <View className="h-10 w-10 items-center justify-center rounded-full bg-surfaceMuted">
                 <Icon name={a.icon} size="md" tone="ink" />

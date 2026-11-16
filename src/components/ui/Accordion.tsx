@@ -96,12 +96,12 @@ export function Accordion({
         accessibilityHint={subtitle}
         onPress={toggle}
         pressedScale={0.99}
-        contentClassName={`flex-row items-center gap-md ${
-          card ? "px-md py-3.5" : "py-sm"
+        contentClassName={`flex-row items-center gap-3 ${
+          card ? "px-3 py-4" : "py-2"
         }`}
       >
         {icon ? <Icon name={icon} size="md" tone="ink" /> : null}
-        <View className="flex-1 gap-0.5">
+        <View className="flex-1 gap-1">
           <Text variant="body" weight="semibold">
             {title}
           </Text>

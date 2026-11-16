@@ -49,7 +49,7 @@ export function SwipeFilterBar({
   const compact = useWindowDimensions().width < 380;
   return (
     <View
-      className={`flex-row items-center gap-xs ${compact ? "px-3" : "px-gutter"}`}
+      className={`flex-row items-center gap-1 ${compact ? "px-3" : "px-gutter"}`}
     >
       <IconButton
         icon="options-outline"
@@ -82,8 +82,8 @@ export function SwipeFilterBar({
               // light screen it is the theme ink (so it also works in dark mode).
               contentClassName={
                 active
-                  ? `rounded-full ${compact ? "px-3" : "px-3.5"} py-2 ${onLight ? "bg-ink" : ""}`
-                  : `${compact ? "px-2" : "px-2.5"} py-2`
+                  ? `rounded-full ${compact ? "px-3" : "px-4"} py-2 ${onLight ? "bg-ink" : ""}`
+                  : `${compact ? "px-2" : "px-3"} py-2`
               }
               contentStyle={
                 active && !onLight

@@ -93,7 +93,7 @@ export function ItinerarySection({ exp }: { exp: MockExperience }) {
                 />
               ) : null}
             </View>
-            <View className="flex-1 gap-1 pb-5">
+            <View className="flex-1 gap-1 pb-4">
               <Text variant="label" weight="semibold">
                 {s.title}
               </Text>
@@ -184,7 +184,7 @@ function StepCards({
               contentFit="cover"
               style={{ width: card, height: card }}
             />
-            <View className="gap-2 p-5">
+            <View className="gap-2 p-6">
               <Text variant="h2">{item.title}</Text>
               <Text variant="body" tone="muted">
                 {item.text}
@@ -221,7 +221,7 @@ export function AvailabilitySection({ exp }: { exp: MockExperience }) {
   if (sessions.length === 0) return null;
   return (
     <View className="gap-3">
-      <View className="gap-0.5">
+      <View className="gap-1">
         <Text variant="h2" accessibilityRole="header">
           Ledige tider
         </Text>
@@ -350,7 +350,7 @@ export function SessionSheet({
     >
       <ScrollView
         className="flex-1"
-        contentContainerClassName="gap-5 pb-4"
+        contentContainerClassName="gap-6 pb-4"
         showsVerticalScrollIndicator={false}
       >
         {days.map(([day, list]) => (
@@ -374,7 +374,7 @@ export function SessionSheet({
                     on ? "border-2 border-ink" : "border border-line"
                   }`}
                 >
-                  <View className="gap-0.5">
+                  <View className="gap-1">
                     <Text
                       variant="body"
                       weight="semibold"
@@ -440,7 +440,7 @@ export function MeetingSection({
         Hvor vi møtes
       </Text>
       <View className="flex-row items-start gap-3">
-        <View className="flex-1 gap-0.5">
+        <View className="flex-1 gap-1">
           <Text variant="label" weight="semibold">
             {mp.name}
           </Text>
@@ -530,7 +530,7 @@ export function MeetingMap({
         <View className="h-9 w-9 items-center justify-center rounded-full border-2 border-surface bg-ink">
           <View className="h-2.5 w-2.5 rounded-full bg-surface" />
         </View>
-        <View className="mt-1 rounded-full bg-surface px-2 py-0.5">
+        <View className="mt-1 rounded-full bg-surface px-2 py-1">
           <Text variant="caption" weight="semibold" numberOfLines={1}>
             {label}
           </Text>

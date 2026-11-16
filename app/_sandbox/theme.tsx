@@ -123,14 +123,14 @@ export default function ThemeSandbox() {
 
   return (
     <Screen>
-      <ScrollView contentContainerClassName="gap-section p-gutter pb-20">
-        <View className="gap-sm">
+      <ScrollView contentContainerClassName="gap-8 p-gutter pb-20">
+        <View className="gap-2">
           <UIText variant="h1">Designsystem</UIText>
           <UIText variant="caption" tone="muted">
             Forhåndsvisning — aktiv modus: {scheme}
           </UIText>
           <View
-            className="flex-row gap-sm"
+            className="flex-row gap-2"
             accessibilityRole="radiogroup"
             accessibilityLabel="Fargemodus"
           >
@@ -142,7 +142,7 @@ export default function ThemeSandbox() {
                   onPress={() => setSchemePreference(p)}
                   accessibilityRole="radio"
                   accessibilityState={{ checked: selected }}
-                  className={`h-11 justify-center rounded-full px-lg ${
+                  className={`h-11 justify-center rounded-full px-4 ${
                     selected ? "bg-ink" : "bg-surfaceMuted"
                   }`}
                 >
@@ -159,9 +159,9 @@ export default function ThemeSandbox() {
         </View>
 
         <Section title="Farger">
-          <View className="flex-row flex-wrap gap-md">
+          <View className="flex-row flex-wrap gap-3">
             {Object.keys(hex).map((key) => (
-              <View key={key} className="w-[30%] gap-xs">
+              <View key={key} className="w-[30%] gap-1">
                 <View
                   className={`h-14 rounded-md border border-line ${SWATCH_CLASS[key] ?? ""}`}
                 />
@@ -177,7 +177,7 @@ export default function ThemeSandbox() {
         </Section>
 
         <Section title="Skrift">
-          <View className="gap-xs rounded-lg border border-line bg-surface p-gutter">
+          <View className="gap-1 rounded-lg border border-line bg-surface p-gutter">
             <UIText variant="micro" tone="muted">
               Inter · valgt 2026-11-15
             </UIText>
@@ -219,9 +219,9 @@ export default function ThemeSandbox() {
         </Section>
 
         <Section title="Hjørner">
-          <View className="flex-row flex-wrap gap-md">
+          <View className="flex-row flex-wrap gap-3">
             {RADII.map((r) => (
-              <View key={r} className="items-center gap-xs">
+              <View key={r} className="items-center gap-1">
                 <View
                   className={`h-14 w-14 border border-line bg-surface ${RADIUS_CLASS[r]}`}
                 />
@@ -234,7 +234,7 @@ export default function ThemeSandbox() {
         </Section>
 
         <Section title="Høyde (elevation)">
-          <View className="flex-row gap-lg">
+          <View className="flex-row gap-6">
             {(["e1", "e2", "e3"] as const).map((e) => (
               <View
                 key={e}
@@ -248,7 +248,7 @@ export default function ThemeSandbox() {
         </Section>
 
         <Section title="Knapper">
-          <View className="gap-md">
+          <View className="gap-3">
             <View className="h-12 items-center justify-center rounded-full bg-ink">
               <UIText variant="label" weight="semibold" className="text-onInk">
                 Logg inn
@@ -292,7 +292,7 @@ function Section({
   children: React.ReactNode;
 }) {
   return (
-    <View className="gap-md">
+    <View className="gap-3">
       <UIText variant="micro" tone="muted">
         {title}
       </UIText>

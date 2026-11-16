@@ -7,6 +7,20 @@ const {
   fontSize,
   fontFamily,
 } = require("./src/theme/tokens.js");
+const defaultTheme = require("tailwindcss/defaultTheme");
+
+// Padding, margin, gap and inset in real px (0427). NativeWind's rem is 14 on
+// native, so Tailwind's rem scale rendered p-4 as 14 px next to the 16 px
+// gutter. Here every step is its web value in px (p-4 = 16, gap-6 = 24), the
+// 4-pt scale DESIGN_SYSTEM.md "Spacing" names. Width and height keep the rem
+// scale (component and touch-target sizes were tuned on it).
+const pxScale = Object.fromEntries(
+  Object.entries(defaultTheme.spacing).map(([k, v]) => [
+    k,
+    v.endsWith("rem") ? `${parseFloat(v) * 16}px` : v,
+  ]),
+);
+const layoutSpacing = { ...pxScale, ...spacing };
 
 /** @type {import('tailwindcss').Config} */
 module.exports = {
@@ -19,6 +33,11 @@ module.exports = {
       colors: { ...shadcnColors, ...themeColors },
       borderRadius: radius,
       spacing,
+      padding: layoutSpacing,
+      margin: layoutSpacing,
+      gap: layoutSpacing,
+      space: layoutSpacing,
+      inset: layoutSpacing,
       // Named type scale (text-display … text-micro); Tailwind's defaults stay.
       fontSize,
     },
