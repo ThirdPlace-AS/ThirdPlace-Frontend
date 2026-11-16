@@ -1382,7 +1382,7 @@ function FilterBody({
           Hopp over / Neste, with Nullstill once a date is picked. Otherwise the
           reset link + "Vis N resultater". */}
       {openSection === "when" ? (
-        <View className="flex-row items-center justify-between gap-2 border-t border-line pt-3">
+        <View className="flex-row items-center gap-4 border-t border-line pt-3">
           <UIPressable
             accessibilityRole="button"
             onPress={() =>
@@ -1405,8 +1405,9 @@ function FilterBody({
               {hasDate ? "Nullstill" : "Hopp over"}
             </Text>
           </UIPressable>
-          {/* Fixed width: a bare Button stretched past the sheet edge. */}
-          <View style={{ width: 160 }}>
+          {/* The same width as "Vis N resultater" below, so the button does
+              not jump when Når closes (a bare Button stretched past the edge). */}
+          <View className="flex-1">
             <Button
               label="Neste"
               variant="ink"
@@ -1416,7 +1417,7 @@ function FilterBody({
           </View>
         </View>
       ) : (
-        <View className="flex-row items-center gap-2 border-t border-line pt-3">
+        <View className="flex-row items-center gap-4 border-t border-line pt-3">
           <UIPressable
             accessibilityRole="button"
             accessibilityState={{ disabled: !canClear }}

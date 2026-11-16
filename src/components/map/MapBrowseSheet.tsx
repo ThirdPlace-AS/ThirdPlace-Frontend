@@ -261,7 +261,7 @@ export const MapBrowseSheet = memo(function MapBrowseSheet({
                 />
               )
             ) : (
-              <View className="items-center gap-2 p-gutter">
+              <View className="items-center gap-3 py-12">
                 <Icon name="compass-outline" size="xl" tone="muted" />
                 <Text variant="caption" tone="muted" className="text-center">
                   {emptyMessage}
