@@ -25,6 +25,9 @@ import { PageTopBar } from "@/features/entity/PageTopBar";
 import { goBackOr } from "@/lib/navigation";
 import { elevation } from "@/theme";
 
+// The floating join card's height (py-3 around the join bar, border).
+const JOIN_CARD = 76;
+
 export default function ExperienceScreen() {
   const { id = "" } = useLocalSearchParams<{ id: string }>();
   const exp = experienceById(id);
@@ -58,7 +61,11 @@ export function ExperiencePageBody({ exp }: { exp: MockExperience }) {
         savedKey={markerId("experience", exp.id)}
       />
       <ScrollView
-        contentContainerClassName="px-gutter pb-40 pt-4"
+        contentContainerClassName="px-gutter pt-4"
+        // The last section ends 24 above the floating join card.
+        contentContainerStyle={{
+          paddingBottom: Math.max(insets.bottom, 12) + 4 + JOIN_CARD + 24,
+        }}
         keyboardShouldPersistTaps="handled"
       >
         <ExperiencePage

@@ -13,6 +13,9 @@ import { SignInPrompt } from "@/components/SignInPrompt";
 import { BACK_ICON, HeartToggle, IconButton, Text } from "@/components/ui";
 import { goBackOr } from "@/lib/navigation";
 
+// One md IconButton (40): the right side has one more button than the left.
+const CAPTION_BALANCE = 40;
+
 export function PageTopBar({
   caption,
   shareMessage,
@@ -38,6 +41,9 @@ export function PageTopBar({
         label="Tilbake"
         onPress={() => goBackOr("/map")}
       />
+      {/* Balances Del + Lagre on the right so the caption sits on the
+          screen's centre line, not left of it. */}
+      <View style={{ width: CAPTION_BALANCE }} />
       <Text
         variant="caption"
         weight="semibold"

@@ -4,6 +4,7 @@
 // map pins open the same PlacePage in the map's page sheet (2026-11-09).
 import { router, useLocalSearchParams, type Href } from "expo-router";
 import { ScrollView, View } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { placeCaption } from "@/components/experience/experienceMeta";
 import { markerId } from "@/components/map/types/mapPresentation";
@@ -29,6 +30,15 @@ export default function PlaceScreen() {
       </Screen>
     );
   }
+  return <PlacePageBody place={place} />;
+}
+
+function PlacePageBody({
+  place,
+}: {
+  place: NonNullable<ReturnType<typeof placeById>>;
+}) {
+  const insets = useSafeAreaInsets();
   return (
     <View className="flex-1 bg-background">
       <StatusBarStyle style="auto" />
@@ -39,7 +49,9 @@ export default function PlaceScreen() {
         savedKey={markerId("place", place.id)}
       />
       <ScrollView
-        contentContainerClassName="px-gutter pb-16 pt-4"
+        contentContainerClassName="px-gutter pt-4"
+        // The page bottom (48) above the home indicator.
+        contentContainerStyle={{ paddingBottom: insets.bottom + 48 }}
         keyboardShouldPersistTaps="handled"
       >
         <PlacePage
