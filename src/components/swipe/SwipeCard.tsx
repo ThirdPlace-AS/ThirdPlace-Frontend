@@ -168,7 +168,7 @@ export function SwipeCard({
           Reports its resolved top Y so the deck can pin the expand arrow to the
           title row (the block height varies with title lines / meta / pills). */}
       <View
-        style={{ bottom: SWIPE_CONTENT_BOTTOM, gap: 8 }}
+        style={{ bottom: SWIPE_CONTENT_BOTTOM, gap: 12 }}
         className="absolute inset-x-0 px-gutter pr-16"
         onLayout={(e) => onInfoTop?.(e.nativeEvent.layout.y)}
       >
@@ -183,7 +183,7 @@ export function SwipeCard({
           {item.title}
         </Text>
 
-        <View style={{ gap: 6 }}>
+        <View style={{ gap: 4 }}>
           {item.lines.map((l) =>
             l.goingId ? (
               // Who is going: faces of people who opted in, then the count.

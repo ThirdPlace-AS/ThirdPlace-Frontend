@@ -192,7 +192,7 @@ export default function ChatThreadScreen() {
           size="md"
           decorative
         />
-        <View className="flex-1">
+        <View className="flex-1 gap-1">
           <Text variant="body" weight="semibold" numberOfLines={1}>
             {chat.name}
           </Text>
@@ -329,7 +329,7 @@ function Composer({
     setReady(t.trim().length > 0);
   };
   return (
-    <View className="gap-2 border-t border-line px-gutter pb-2 pt-3">
+    <View className="gap-2 border-t border-line px-gutter py-3">
       {replyTo ? (
         <View className="flex-row items-center gap-2 rounded-sm bg-surfaceMuted py-2 pl-3 pr-1">
           <View className="flex-1 border-l-2 border-ember pl-2">
@@ -361,25 +361,29 @@ function Composer({
           onChangeText={change}
           multiline
         />
-        <IconButton
-          // A paper plane, not an arrow (founder 2026-11-06: no
-          // arrows on buttons).
-          icon="send"
-          label="Send"
-          variant={ready ? "ink" : "filled"}
-          tone={ready ? "onInk" : "muted"}
-          // The plane pops as the button wakes up with the first character.
-          pop={ready}
-          disabled={!ready}
-          onPress={() => {
-            const message = text.current.trim();
-            if (!message) return;
-            haptics.tap();
-            onSend(message);
-            input.current?.clear();
-            change("");
-          }}
-        />
+        {/* pb-1 centres the 40 button on the 48 one-line input; it stays
+            at the bottom while the input grows. */}
+        <View className="pb-1">
+          <IconButton
+            // A paper plane, not an arrow (founder 2026-11-06: no
+            // arrows on buttons).
+            icon="send"
+            label="Send"
+            variant={ready ? "ink" : "filled"}
+            tone={ready ? "onInk" : "muted"}
+            // The plane pops as the button wakes up with the first character.
+            pop={ready}
+            disabled={!ready}
+            onPress={() => {
+              const message = text.current.trim();
+              if (!message) return;
+              haptics.tap();
+              onSend(message);
+              input.current?.clear();
+              change("");
+            }}
+          />
+        </View>
       </View>
     </View>
   );

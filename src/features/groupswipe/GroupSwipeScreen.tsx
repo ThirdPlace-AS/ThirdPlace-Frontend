@@ -119,7 +119,7 @@ export default function GroupSwipeScreen() {
 
   return (
     <Screen>
-      <View className="flex-row items-center justify-between px-gutter pb-2 pt-1">
+      <View className="min-h-12 flex-row items-center justify-between px-gutter">
         <IconButton icon={BACK_ICON} label="Tilbake" onPress={back} />
         {phase === "swipe" ? (
           <Text variant="body" weight="semibold">
@@ -135,10 +135,12 @@ export default function GroupSwipeScreen() {
             contentContainerClassName={pageBody.blocks}
             keyboardShouldPersistTaps="handled"
           >
-            <Text variant="display">Start gruppe-sveip</Text>
-            <Text variant="caption" tone="muted">
-              Sveip sammen med venner og finn noe alle har lyst til.
-            </Text>
+            <View className="gap-1">
+              <Text variant="display">Start gruppe-sveip</Text>
+              <Text variant="caption" tone="muted">
+                Sveip sammen med venner og finn noe alle har lyst til.
+              </Text>
+            </View>
             <Input
               label="Navn på økten"
               placeholder="F.eks. «Lørdagsplanlegging»"
@@ -146,49 +148,52 @@ export default function GroupSwipeScreen() {
               onChangeText={setName}
               maxLength={40}
             />
-            <Text variant="label" weight="semibold">
-              Inviter venner{invited.length ? ` · ${invited.length} valgt` : ""}
-            </Text>
-            <ScrollRow gap="gap-3">
-              {network.map((p) => {
-                const on = invited.includes(p.id);
-                return (
-                  <UIPressable
-                    key={p.id}
-                    accessibilityRole="checkbox"
-                    accessibilityState={{ checked: on }}
-                    accessibilityLabel={p.name}
-                    onPress={() =>
-                      setInvited((s) =>
-                        on ? s.filter((x) => x !== p.id) : [...s, p.id],
-                      )
-                    }
-                    contentClassName="items-center gap-1"
-                  >
-                    <View
-                      className={`rounded-full border-2 p-1 ${on ? "border-ink" : "border-transparent"}`}
+            <View className="gap-2">
+              <Text variant="label" weight="semibold">
+                Inviter venner
+                {invited.length ? ` · ${invited.length} valgt` : ""}
+              </Text>
+              <ScrollRow gap="gap-3">
+                {network.map((p) => {
+                  const on = invited.includes(p.id);
+                  return (
+                    <UIPressable
+                      key={p.id}
+                      accessibilityRole="checkbox"
+                      accessibilityState={{ checked: on }}
+                      accessibilityLabel={p.name}
+                      onPress={() =>
+                        setInvited((s) =>
+                          on ? s.filter((x) => x !== p.id) : [...s, p.id],
+                        )
+                      }
+                      contentClassName="items-center gap-1"
                     >
-                      <Image
-                        source={libThumb(p.avatar)}
-                        style={{ height: 48, width: 48, borderRadius: 24 }}
-                      />
-                      {on ? (
-                        // A filled check makes the choice readable at a glance.
-                        <View className="absolute -bottom-0.5 -right-0.5 h-5 w-5 items-center justify-center rounded-full border-2 border-background bg-ink">
-                          <Icon name="checkmark" size="sm" tone="onInk" />
-                        </View>
-                      ) : null}
-                    </View>
-                    <Text
-                      variant="caption"
-                      weight={on ? "semibold" : "regular"}
-                    >
-                      {p.name.split(" ")[0]}
-                    </Text>
-                  </UIPressable>
-                );
-              })}
-            </ScrollRow>
+                      <View
+                        className={`rounded-full border-2 p-1 ${on ? "border-ink" : "border-transparent"}`}
+                      >
+                        <Image
+                          source={libThumb(p.avatar)}
+                          style={{ height: 48, width: 48, borderRadius: 24 }}
+                        />
+                        {on ? (
+                          // A filled check makes the choice readable at a glance.
+                          <View className="absolute -bottom-0.5 -right-0.5 h-5 w-5 items-center justify-center rounded-full border-2 border-background bg-ink">
+                            <Icon name="checkmark" size="sm" tone="onInk" />
+                          </View>
+                        ) : null}
+                      </View>
+                      <Text
+                        variant="caption"
+                        weight={on ? "semibold" : "regular"}
+                      >
+                        {p.name.split(" ")[0]}
+                      </Text>
+                    </UIPressable>
+                  );
+                })}
+              </ScrollRow>
+            </View>
             {fromSaved ? (
               <View className="gap-1 rounded-md border border-line bg-surface p-3">
                 <Text variant="label" weight="semibold">
@@ -200,37 +205,43 @@ export default function GroupSwipeScreen() {
               </View>
             ) : (
               <>
-                <Text variant="label" weight="semibold">
-                  Filtre for gruppen
-                </Text>
-                <ScrollRow>
-                  {FILTERS.map((f) => (
-                    <Chip
-                      key={f}
-                      label={f}
-                      selected={filters.includes(f)}
-                      onPress={() =>
-                        setFilters((s) =>
-                          s.includes(f) ? s.filter((x) => x !== f) : [...s, f],
-                        )
-                      }
-                    />
-                  ))}
-                </ScrollRow>
-                <Text variant="label" weight="semibold">
-                  Tid tilgjengelig
-                </Text>
-                <ScrollRow radio>
-                  {TIMES.map((t) => (
-                    <Chip
-                      key={t}
-                      role="radio"
-                      label={t}
-                      selected={time === t}
-                      onPress={() => setTime(t)}
-                    />
-                  ))}
-                </ScrollRow>
+                <View className="gap-2">
+                  <Text variant="label" weight="semibold">
+                    Filtre for gruppen
+                  </Text>
+                  <ScrollRow>
+                    {FILTERS.map((f) => (
+                      <Chip
+                        key={f}
+                        label={f}
+                        selected={filters.includes(f)}
+                        onPress={() =>
+                          setFilters((s) =>
+                            s.includes(f)
+                              ? s.filter((x) => x !== f)
+                              : [...s, f],
+                          )
+                        }
+                      />
+                    ))}
+                  </ScrollRow>
+                </View>
+                <View className="gap-2">
+                  <Text variant="label" weight="semibold">
+                    Tid tilgjengelig
+                  </Text>
+                  <ScrollRow radio>
+                    {TIMES.map((t) => (
+                      <Chip
+                        key={t}
+                        role="radio"
+                        label={t}
+                        selected={time === t}
+                        onPress={() => setTime(t)}
+                      />
+                    ))}
+                  </ScrollRow>
+                </View>
               </>
             )}
             <View className="rounded-md bg-surfaceMuted p-3">

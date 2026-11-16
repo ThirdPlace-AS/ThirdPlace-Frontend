@@ -44,7 +44,7 @@ export function Header({
   const large = size === "large";
   if (size === "page") {
     return (
-      <View className={`gap-3 pb-2 ${inset ? "px-gutter" : ""}`}>
+      <View className={`gap-4 pb-2 ${inset ? "px-gutter" : ""}`}>
         <View className="min-h-12 flex-row items-center justify-between">
           {back === false ? (
             <View />
