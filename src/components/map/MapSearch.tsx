@@ -4,9 +4,11 @@ import { Keyboard, Pressable, ScrollView, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import {
+  EmptyState,
   Icon,
   BACK_ICON,
   IconButton,
+  pageBody,
   type IconName,
   Text,
   Pressable as UIPressable,
@@ -18,6 +20,9 @@ import { SearchBar } from "@/components/SearchBar";
 import { useRecentSearches } from "./hooks/useRecentSearches";
 import { useRecentlyViewed, type ViewedItem } from "./hooks/useRecentlyViewed";
 import { searchFixtures, type SearchResult } from "./services/mapSearch";
+
+// Every result row leads with the same 40 px square (icon disc or photo).
+const LEAD = { height: 40, width: 40 } as const;
 
 // Map search (Phase 12 H4c: the /search page, was a full-screen overlay).
 // Deterministic fixture search only (no network, no stored history — CB-8).
@@ -90,7 +95,7 @@ export function MapSearch({
 
         <ScrollView
           className="flex-1"
-          contentContainerClassName="gap-4 px-gutter pb-16 pt-2"
+          contentContainerClassName={pageBody.sections}
           keyboardShouldPersistTaps="handled"
         >
           {!hasQuery ? (
@@ -123,15 +128,12 @@ export function MapSearch({
               />
             </>
           ) : results.total === 0 ? (
-            <View className="items-center gap-2 pt-10">
-              <Icon name="search" size="xl" tone="muted" />
-              <Text variant="body" weight="semibold">
-                Ingen treff
-              </Text>
-              <Text variant="caption" tone="muted" className="text-center">
-                Prøv et annet søkeord.
-              </Text>
-            </View>
+            <EmptyState
+              fill={false}
+              icon="search"
+              title="Ingen treff"
+              message="Prøv et annet søkeord."
+            />
           ) : (
             <>
               {/* More matches than the rows show (a type search: "park",
@@ -142,9 +144,12 @@ export function MapSearch({
                   accessibilityRole="button"
                   accessibilityLabel={`Vis alle ${results.onMap} på kartet`}
                   onPress={() => submit(query)}
-                  contentClassName="flex-row items-center gap-3 rounded-sm px-1 py-2"
+                  contentClassName="flex-row items-center gap-3 rounded-sm py-2"
                 >
-                  <View className="h-9 w-9 items-center justify-center rounded-full bg-surfaceMuted">
+                  <View
+                    style={LEAD}
+                    className="items-center justify-center rounded-full bg-surfaceMuted"
+                  >
                     <Icon name="map-outline" size="md" tone="ink" />
                   </View>
                   <Text variant="body" weight="semibold" className="flex-1">
@@ -208,10 +213,7 @@ function RecentSearches({
         </Pressable>
       </View>
       {recent.map((q) => (
-        <View
-          key={q}
-          className="flex-row items-center gap-3 rounded-sm px-1 py-2"
-        >
+        <View key={q} className="flex-row items-center gap-3 rounded-sm py-2">
           <UIPressable
             accessibilityRole="button"
             accessibilityLabel={`Søk etter ${q}`}
@@ -278,17 +280,17 @@ function RecentlyViewed({
             accessibilityLabel={`${v.title}, ${v.kind === "place" ? "sted" : "opplevelse"}`}
             onPress={() => onPick(v)}
             pressedScale={0.99}
-            contentClassName="flex-row items-center gap-3 rounded-sm px-1 py-2"
+            contentClassName="flex-row items-center gap-3 rounded-sm py-2"
           >
             {src ? (
               <Image
                 source={src}
                 contentFit="cover"
-                style={{ height: 40, width: 40, borderRadius: 8 }}
+                style={[LEAD, { borderRadius: 8 }]}
                 accessible={false}
               />
             ) : (
-              <View className="h-10 w-10 rounded-sm bg-surfaceMuted" />
+              <View style={LEAD} className="rounded-sm bg-surfaceMuted" />
             )}
             <View className="flex-1">
               <Text variant="body" numberOfLines={1}>
@@ -328,9 +330,12 @@ function ResultGroup({
           accessibilityRole="button"
           accessibilityLabel={`${r.title}, ${r.subtitle}`}
           onPress={() => onPick(r)}
-          contentClassName="flex-row items-center gap-3 rounded-sm px-1 py-2"
+          contentClassName="flex-row items-center gap-3 rounded-sm py-2"
         >
-          <View className="h-9 w-9 items-center justify-center rounded-full bg-surfaceMuted">
+          <View
+            style={LEAD}
+            className="items-center justify-center rounded-full bg-surfaceMuted"
+          >
             <Icon name={icon} size="md" tone="ink" />
           </View>
           <View className="flex-1">
