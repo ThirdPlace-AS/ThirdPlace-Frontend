@@ -8,7 +8,14 @@ import { router, type Href } from "expo-router";
 import { useState } from "react";
 import { View } from "react-native";
 
-import { ChipGroup, ListRow, Page, Pressable, Text } from "@/components/ui";
+import {
+  Chart,
+  ChipGroup,
+  ListRow,
+  Page,
+  Pressable,
+  Text,
+} from "@/components/ui";
 import { requestBars, STATS_RANGES, type StatsRange } from "@/fixtures";
 import { formatDecimal, formatRating } from "@/lib/format";
 
@@ -67,22 +74,11 @@ export default function MarketplaceAnalyticsScreen() {
         <Text variant="title" accessibilityRole="header">
           {CHART_TITLE[range]}
         </Text>
-        <View
-          accessible
+        <Chart
+          values={bars}
+          height={150}
           accessibilityLabel={`${CHART_TITLE[range]}: stolpediagram`}
-          className="flex-row items-end gap-1.5 rounded-md border border-line bg-surface p-3"
-          style={{ height: 150 }}
-        >
-          {bars.map((h, i) => (
-            <View
-              key={i}
-              className={`flex-1 rounded-t ${
-                i === bars.length - 1 ? "bg-ink" : "bg-success"
-              }`}
-              style={{ height: `${h}%` }}
-            />
-          ))}
-        </View>
+        />
       </View>
 
       <View className="gap-2">

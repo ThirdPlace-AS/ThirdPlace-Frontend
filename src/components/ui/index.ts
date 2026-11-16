@@ -52,6 +52,7 @@ export {
 } from "./Sheet";
 export { usePresence } from "./usePresence";
 export { Accordion } from "./Accordion";
+export { Chart, type ChartProps } from "./Chart";
 export { FollowButton } from "./FollowButton";
 export { HeartToggle, type HeartKind } from "./HeartToggle";
 export { PopIcon } from "./PopIcon";

@@ -3,6 +3,7 @@ import { router, type Href } from "expo-router";
 import { useState } from "react";
 import { Pressable, ScrollView, View } from "react-native";
 import {
+  Chart,
   Icon,
   Screen,
   Pressable as UIPressable,
@@ -321,20 +322,10 @@ export function WorkspaceAnalytics() {
         <Text variant="title" accessibilityRole="header">
           Visninger siste periode
         </Text>
-        <View
-          className="flex-row items-end gap-1.5 rounded-md border border-line bg-surface p-3"
-          style={{ height: 160 }}
-        >
-          {BARS[range].map((h, i) => (
-            <View
-              key={i}
-              className={`flex-1 rounded-t ${
-                i === BARS[range].length - 1 ? "bg-ink" : "bg-success"
-              }`}
-              style={{ height: `${h}%` }}
-            />
-          ))}
-        </View>
+        <Chart
+          values={BARS[range]}
+          accessibilityLabel="Visninger siste periode: stolpediagram"
+        />
       </ScrollView>
     </Screen>
   );

@@ -632,6 +632,15 @@
       "shared": false
     },
     {
+      "name": "gifted-charts-core",
+      "version": "0.1.83",
+      "license": "MIT",
+      "copyright": [],
+      "author": "Abhinandan Kushwaha",
+      "text": "4436a9ca3f",
+      "shared": true
+    },
+    {
       "name": "hoist-non-react-statics",
       "version": "3.3.2",
       "license": "BSD-3-Clause",
@@ -813,6 +822,15 @@
       "copyright": ["Copyright (c) 2016 Software Mansion <swmansion.com>"],
       "author": null,
       "text": "f1083e4aa4",
+      "shared": false
+    },
+    {
+      "name": "react-native-gifted-charts",
+      "version": "1.4.81",
+      "license": "MIT",
+      "copyright": ["Copyright (c) 2022 Abhinandan Kushwaha"],
+      "author": null,
+      "text": "4436a9ca3f",
       "shared": false
     },
     {

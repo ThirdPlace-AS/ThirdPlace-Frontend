@@ -160,6 +160,11 @@ Rules when adapting an RNR file:
 | Toasts (`showToast`, `confirmToast`)                        | sonner-native                                                                                                | P4    |
 | `CodeInput` (`/verify-code`, after register and two-factor) | input-otp-native, our boxes; digits only, a tap keeps the code, a pasted or autofilled code keeps its digits | P5    |
 | `Sheet`, `Overlay`, map sheets                              | none: Modal engine and gorhom stay                                                                           | —     |
+| `Chart`                                                     | none: react-native-gifted-charts `BarChart`                                                                  | P8    |
+
+### Charts
+
+`Chart` is the one bar chart (react-native-gifted-charts, P8). It draws relative heights (0–100): the stats screens (Arbeidsflate Analyse, Marketplace-analyse) show a shape, never invented values, so there are no axes, rules or labels. Bars are `success`, the current period (the last bar) `ink`; the card is `rounded-md border-line bg-surface`. The grow-in is off under reduced motion, presses are off, and the card is one `image` with a summary label ("… : stolpediagram"). A new chart type goes through this primitive, not straight to the library.
 
 ### Feedback & states
 
