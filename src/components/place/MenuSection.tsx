@@ -185,12 +185,14 @@ export function MenuSection({
               <MenuItemRow key={it.name} item={it} compact />
             ))}
           </View>
-          <Button
-            label="Vis hele menyen"
-            variant="secondary"
-            // The page opens on the offering chosen here.
-            onPress={() => onNavigate(menuHref(place.id, active))}
-          />
+          <View className="pt-1">
+            <Button
+              label="Vis hele menyen"
+              variant="secondary"
+              // The page opens on the offering chosen here.
+              onPress={() => onNavigate(menuHref(place.id, active))}
+            />
+          </View>
         </>
       )}
     </View>

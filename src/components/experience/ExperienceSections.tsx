@@ -753,7 +753,7 @@ export function ThingsToKnowSection({ exp }: { exp: MockExperience }) {
 export function KnowSection({ items }: { items: Know[] }) {
   const [open, setOpen] = useState<Know | null>(null);
   return (
-    <View className="gap-2">
+    <View>
       <Text variant="h2" accessibilityRole="header">
         Ting å vite
       </Text>
@@ -767,7 +767,7 @@ export function KnowSection({ items }: { items: Know[] }) {
           contentClassName="flex-row items-center gap-3 py-3"
         >
           <Icon name={k.icon} size="lg" tone="ink" />
-          <View className="flex-1">
+          <View className="flex-1 gap-1">
             <Text variant="label" weight="semibold">
               {k.title}
             </Text>

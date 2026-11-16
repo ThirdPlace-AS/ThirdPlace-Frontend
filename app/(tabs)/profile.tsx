@@ -12,7 +12,6 @@ import {
   IconButton,
   type IconName,
   ListRow,
-  pageBody,
   Pressable as UIPressable,
   Screen,
   Text,
@@ -61,7 +60,7 @@ export default function ProfileScreen() {
 
   return (
     <Screen edges={["top"]}>
-      <ScrollView contentContainerClassName={pageBody.sections}>
+      <ScrollView contentContainerClassName="grow gap-6 px-gutter pb-12">
         <Header
           title="Profil"
           size="large"
