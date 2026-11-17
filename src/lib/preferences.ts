@@ -56,11 +56,12 @@ const ALCOHOL: PreferenceRow = {
   options: ["Nei", "Av og til", "Gjerne"],
 };
 
-/** Onboarding "Dine preferanser" (PDF p3). */
+/** Onboarding "Slik er du sosialt" (founder regroup 2026-11-17, 0455). */
+export const ONBOARDING_SOCIAL: readonly PreferenceRow[] = [SOCIAL, ENERGY];
+
+/** Onboarding "Dine preferanser" (PDF p3; the social rows moved, 0455). */
 export const ONBOARDING_PREFERENCES: readonly PreferenceRow[] = [
-  SOCIAL,
   SPENDING,
-  ENERGY,
   ALCOHOL,
 ];
 

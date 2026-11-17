@@ -153,6 +153,7 @@ describe("onboarding answers carry over", () => {
   it("name, interests and preferences reach the profile and Preferanser", () => {
     render(<Onboarding />, { wrapper });
     const next = () => fireEvent.press(screen.getByText("Fortsett"));
+    const skip = () => fireEvent.press(screen.getByText("Hopp over"));
     next(); // role
     fireEvent.changeText(
       screen.getByPlaceholderText("Fornavn Etternavn"),
@@ -163,13 +164,20 @@ describe("onboarding answers carry over", () => {
       "12.05.1990",
     );
     next(); // Dette er deg
-    next(); // Hvem er du?
-    next(); // Hva ser du etter?
+    // 0455: the social questions sit together on step 2; an optional step
+    // with nothing picked offers "Hopp over".
+    expect(screen.getByText("Slik er du sosialt")).toBeTruthy();
+    expect(screen.getByText("Hopp over")).toBeTruthy();
+    fireEvent.press(screen.getByText("Stor"));
+    expect(screen.queryByText("Hopp over")).toBeNull();
+    next(); // Slik er du sosialt
+    skip(); // Hva ser du etter?
     for (const i of ["Kaffe", "Jazz", "Løping", "Fotografi", "Keramikk"])
       fireEvent.press(screen.getByText(i));
     next(); // Hva liker du?
-    fireEvent.press(screen.getByText("Stor"));
-    next(); // Dine preferanser
+    expect(screen.getByText("Om deg (valgfritt)")).toBeTruthy();
+    expect(screen.getByText("Kjønn")).toBeTruthy();
+    skip(); // Dine preferanser
     fireEvent.press(screen.getByText("Gi tillatelser"));
     fireEvent.press(screen.getByText("Utforsk byen din"));
     expect(getMyProfile().name).toBe("Kari Nordmann");

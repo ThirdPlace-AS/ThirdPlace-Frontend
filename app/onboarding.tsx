@@ -27,7 +27,11 @@ import { checkBirthday, formatBirthdayInput } from "@/features/onboarding/age";
 import { UnderageScreen } from "@/features/onboarding/UnderageScreen";
 import { resetTo } from "@/lib/navigation";
 import { OWN_PORTRAIT, updateMyProfile } from "@/lib/myProfile";
-import { ONBOARDING_PREFERENCES, setPreferences } from "@/lib/preferences";
+import {
+  ONBOARDING_PREFERENCES,
+  ONBOARDING_SOCIAL,
+  setPreferences,
+} from "@/lib/preferences";
 import { markOnboarded } from "@/lib/signupProgress";
 import { useStepBack } from "@/lib/useStepBack";
 import { libThumb } from "@/fixtures/images";
@@ -39,7 +43,12 @@ import { confirmToast } from "@/copy";
 // etter?" → "Hva liker du?" (min 5) → "Dine preferanser" → "Nesten i mål"
 // (permissions) → feed preview. Reached after the (inert) register form.
 // Optional steps can be passed with nothing chosen — skipped means unknown
-// (REG §9). Answers stay in memory for the session (src/lib/myProfile.ts,
+// (REG §9); their button reads "Hopp over" until something is picked.
+// Founder regroup (2026-11-17, 0455): one topic per screen. Step 2 "Slik er
+// du sosialt" holds Personlighet, Planleggingsstil, Sosial komfort and
+// Energinivå; "Dine preferanser" holds Forbruksstil, Alkohol,
+// Matrestriksjoner and, last, "Om deg (valgfritt)" with Kjønn and
+// Nasjonalitet. Answers stay in memory for the session (src/lib/myProfile.ts,
 // src/lib/preferences.ts); nothing is sent, no permission is requested and no
 // account is created (BLOCKED_CONTRACT_GAP).
 const STEP_COUNT = 8;
@@ -56,13 +65,16 @@ const INTENTS = [
   "Familie",
 ];
 const MIN_INTERESTS = 5;
-const IDENTITY: { label: string; options: string[] }[] = [
-  { label: "Kjønn", options: ["Kvinne", "Mann", "Ikke-binær", "Vil ikke si"] },
+type ChoiceRow = { label: string; options: string[] };
+const SOCIAL_STYLE: ChoiceRow[] = [
   { label: "Personlighet", options: ["Introvert", "Ambivert", "Ekstrovert"] },
   {
     label: "Planleggingsstil",
     options: ["Spontan", "Fleksibel", "Planlegger"],
   },
+];
+const ABOUT_YOU: ChoiceRow[] = [
+  { label: "Kjønn", options: ["Kvinne", "Mann", "Ikke-binær", "Vil ikke si"] },
 ];
 const DIET = ["Vegetar", "Vegansk", "Glutenfri", "Halal", "Ingen"];
 const PERMISSIONS: {
@@ -177,12 +189,29 @@ export default function Onboarding() {
 
   if (blocked) return <UnderageScreen />;
 
+  // Optional steps with nothing picked offer "Hopp over" instead.
+  const picked = (rows: readonly { label: string }[], from: object) =>
+    rows.some((r) => !!(from as Record<string, string>)[r.label]);
+  const stepIsEmpty =
+    step === 2
+      ? !picked(SOCIAL_STYLE, identity) && !picked(ONBOARDING_SOCIAL, prefs)
+      : step === 3
+        ? intents.length === 0
+        : step === 5
+          ? !picked(ONBOARDING_PREFERENCES, prefs) &&
+            diet.length === 0 &&
+            !picked(ABOUT_YOU, identity) &&
+            nationality.trim().length === 0
+          : false;
+
   const cta =
     step === 6
       ? "Gi tillatelser"
       : step === STEP_COUNT - 1
         ? "Utforsk byen din"
-        : "Fortsett";
+        : stepIsEmpty
+          ? "Hopp over"
+          : "Fortsett";
 
   return (
     <Screen>
@@ -324,36 +353,25 @@ export default function Onboarding() {
 
             {step === 2 ? (
               <Shell
-                title="Hvem er du?"
-                subtitle="Fortell litt om deg selv. Alt er valgfritt."
+                title="Slik er du sosialt"
+                subtitle="Alt er valgfritt. Trykk på et valg igjen for å fjerne det."
               >
-                {IDENTITY.map((g) => (
-                  <Group key={g.label} label={g.label}>
-                    {g.options.map((o) => (
-                      <Chip
-                        key={o}
-                        label={o}
-                        selected={identity[g.label] === o}
-                        onPress={() =>
-                          setIdentity((s) => ({
-                            ...s,
-                            [g.label]: s[g.label] === o ? "" : o,
-                          }))
-                        }
-                      />
-                    ))}
-                  </Group>
+                {SOCIAL_STYLE.map((g) => (
+                  <ChoiceGroup
+                    key={g.label}
+                    row={g}
+                    value={identity}
+                    onChange={setIdentity}
+                  />
                 ))}
-                <Input
-                  label="Nasjonalitet"
-                  placeholder="F.eks. Norge"
-                  value={nationality}
-                  onChangeText={setNationality}
-                  maxLength={40}
-                />
-                <Text variant="caption" tone="muted">
-                  Alt her er valgfritt. Trykk på et valg igjen for å fjerne det.
-                </Text>
+                {ONBOARDING_SOCIAL.map((g) => (
+                  <ChoiceGroup
+                    key={g.label}
+                    row={g}
+                    value={prefs}
+                    onChange={setPrefs}
+                  />
+                ))}
               </Shell>
             ) : null}
 
@@ -406,24 +424,15 @@ export default function Onboarding() {
             {step === 5 ? (
               <Shell
                 title="Dine preferanser"
-                subtitle="Velg det som betyr noe for deg."
+                subtitle="Velg det som betyr noe for deg. Alt er valgfritt."
               >
                 {ONBOARDING_PREFERENCES.map((g) => (
-                  <Group key={g.label} label={g.label}>
-                    {g.options.map((o) => (
-                      <Chip
-                        key={o}
-                        label={o}
-                        selected={prefs[g.label] === o}
-                        onPress={() =>
-                          setPrefs((s) => ({
-                            ...s,
-                            [g.label]: s[g.label] === o ? "" : o,
-                          }))
-                        }
-                      />
-                    ))}
-                  </Group>
+                  <ChoiceGroup
+                    key={g.label}
+                    row={g}
+                    value={prefs}
+                    onChange={setPrefs}
+                  />
                 ))}
                 <Group label="Matrestriksjoner">
                   {DIET.map((o) => (
@@ -435,6 +444,26 @@ export default function Onboarding() {
                     />
                   ))}
                 </Group>
+                <View className="gap-4 pt-4">
+                  <Text variant="title" accessibilityRole="header">
+                    Om deg (valgfritt)
+                  </Text>
+                  {ABOUT_YOU.map((g) => (
+                    <ChoiceGroup
+                      key={g.label}
+                      row={g}
+                      value={identity}
+                      onChange={setIdentity}
+                    />
+                  ))}
+                  <Input
+                    label="Nasjonalitet"
+                    placeholder="F.eks. Norge"
+                    value={nationality}
+                    onChangeText={setNationality}
+                    maxLength={40}
+                  />
+                </View>
               </Shell>
             ) : null}
 
@@ -528,6 +557,37 @@ export default function Onboarding() {
 
 // Wizard step body (design-system StepContent).
 const Shell = StepContent;
+
+// One single-choice chip row; a second tap on the chosen chip clears it.
+function ChoiceGroup({
+  row,
+  value,
+  onChange,
+}: {
+  row: { label: string; options: readonly string[] };
+  value: Record<string, string>;
+  onChange: (
+    update: (s: Record<string, string>) => Record<string, string>,
+  ) => void;
+}) {
+  return (
+    <Group label={row.label}>
+      {row.options.map((o) => (
+        <Chip
+          key={o}
+          label={o}
+          selected={value[row.label] === o}
+          onPress={() =>
+            onChange((s) => ({
+              ...s,
+              [row.label]: s[row.label] === o ? "" : o,
+            }))
+          }
+        />
+      ))}
+    </Group>
+  );
+}
 
 function Group({
   label,
