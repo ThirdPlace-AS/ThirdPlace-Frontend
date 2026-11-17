@@ -17,11 +17,8 @@ export const confirmToast = {
   otherSessionsSignedOut: { title: "Andre enheter er logget ut", icon: ok },
   chatCreated: { title: "Chatten er opprettet", icon: "chatbubbles-outline" },
   exportRequested: { title: "Eksporten er bestilt", icon: "download-outline" },
-  supportCreated: {
-    title: "Supportsaken er opprettet",
-    body: "Vi svarer deg så snart vi kan.",
-    icon: ok,
-  },
+  // No reply time or promise (0463): nothing specifies when support answers.
+  supportCreated: { title: "Supportsaken er opprettet", icon: ok },
   accountDeleted: { title: "Kontoen er slettet", icon: ok },
   reviewSent: { title: "Takk for anmeldelsen", icon: "star-outline" },
   ratingSent: { title: "Takk for vurderingen", icon: "star-outline" },

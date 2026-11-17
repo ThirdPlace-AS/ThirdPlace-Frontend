@@ -7,7 +7,8 @@ import { useDevSimulation } from "@/lib/devSimulation";
 export function CheckinContent({ id }: { id: string }) {
   const exp = experienceById(id);
   // In range unless the dev switch says otherwise (app/_sandbox/simulate).
-  // BLOCKED_CONTRACT_GAP: no GPS arrival check is wired.
+  // BLOCKED_CONTRACT_GAP: no GPS arrival check is wired, so the copy names
+  // no distance (0463: "rundt 40 m" and "~1,2 km" were made up).
   const near = !useDevSimulation().checkinFar;
   const [checkedIn, setCheckedIn] = useState(false);
 
@@ -47,13 +48,13 @@ export function CheckinContent({ id }: { id: string }) {
             ? "Du er sjekket inn"
             : near
               ? "Du er fremme!"
-              : "For langt unna (~1,2 km)"}
+              : "For langt unna"}
         </Text>
         <Text variant="caption" tone="muted" className="text-center">
           {checkedIn
             ? "God tur!"
             : near
-              ? "Du er rundt 40 m unna. Du kan sjekke inn nå."
+              ? "Du kan sjekke inn nå."
               : "Kom nærmere stedet for å sjekke inn."}
         </Text>
       </View>

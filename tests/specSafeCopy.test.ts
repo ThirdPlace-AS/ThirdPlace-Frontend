@@ -34,6 +34,12 @@ const ruleClaims = [
   "PÅKREVD",
   "Andre kan se at du er innsjekket",
   "Du får en e-post når filen er klar",
+  // 0463 (phone run 2026-11-17): a reply-time promise, made-up distances on
+  // the check-in screen, English on a Marketplace button.
+  "så snart vi kan",
+  "rundt 40 m unna",
+  "~1,2 km",
+  "} listings`",
 ];
 
 const hiddenNonGoals = ["Del regningen", "Belønninger", "Utbetalingsplan"];

@@ -422,3 +422,16 @@ Founder request: "Turn off the vibration when clicking on the app". The PDF draw
 User request later the same day: "Add haptic feedback where it makes sense and in the right strength". Asked which rule applies, the user chose "Also key taps", which replaces the no-tap rule above. The PDF draws no haptics. Now: a light tick when a dragged Sveip card crosses the commit line, a chat message is swiped to reply or the Avstand or Varighet slider moves a step; a toggle tick when save or like turns on (not off); a light tap when a message is sent; the long-press tick when a long press opens a menu (Lagret and Chat rows, chat reactions); a success when you join an experience ("Du er med") or publish or create something in Legg til. Plain buttons, navigation, chips, switches and the price slider stay silent. On Android the phone's own feedback constants are used, so its touch-feedback setting applies.
 
 Also added with it (user 2026-11-09: "Add interactions and animations where it feels natural"): an unsaved Lagret row fades out and the rows below close up, the "Du er med" check springs in, and the chat's send button pops as it wakes up.
+
+## Founder questions: PDF copy that states a rule (2026-11-17, 0463)
+
+The phone run found copy that states a rule or a promise. Lines with no PDF or spec basis were removed (0463: the support toast's reply-time promise, the check-in screen's made-up distances, "Vis N listings" now reads the PDF's "Vis N resultater"). The lines below are drawn in the PDF, so they stay as drawn until the founder decides:
+
+- p2 Sjekk innboksen: "Du kan sende ny kode om 60 sekunder" (a resend wait the spec does not set).
+- p12 Rammene: Avbestilling "Gratis frem til 24 t før" (a refund rule; every fixture experience shows it as the host's choice).
+- p12 Innleveringer: "Avviste innleveringer kan sendes på nytt".
+- Gruppe-sveip: "Det blir match når alle sveiper til høyre" (a matching rule).
+- Bli Skaper: the listed requirements.
+- Varsler settings: "24t og 1t før" and "23–08".
+- p15–p18 Marketplace: "Mine listings", "Ny listing", "Publiser listing" are English; "annonser" would be the Norwegian word.
+- p7 Innsjekk: the spec has GPS attendance; until GPS is wired, the screen lets you check in from anywhere the dev switch allows. Should it show at all before that?

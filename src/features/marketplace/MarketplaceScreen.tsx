@@ -196,7 +196,7 @@ export default function MarketplaceScreen() {
             />
           </View>
           <Button
-            label={`Vis ${data.length} listings`}
+            label={`Vis ${data.length} resultater`}
             variant="ink"
             onPress={() => setFilterOpen(false)}
           />
