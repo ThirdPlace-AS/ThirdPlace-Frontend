@@ -394,7 +394,7 @@ export function SwipeDeck() {
 
   return (
     <>
-      <View className="flex-1 bg-ink">
+      <View className="flex-1" style={{ backgroundColor: media.base }}>
         {deck.done ? (
           // PDF p8 "Du har sett alt for nå" — light screen, two actions.
           <View

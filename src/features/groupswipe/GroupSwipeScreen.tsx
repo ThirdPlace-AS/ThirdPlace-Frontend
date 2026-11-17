@@ -36,6 +36,7 @@ import {
 } from "@/fixtures";
 import { useFollowing } from "@/lib/following";
 import { libImage, libThumb } from "@/fixtures/images";
+import { media } from "@/theme";
 
 type Phase = "setup" | "lobby" | "swipe" | "match";
 
@@ -341,7 +342,10 @@ export default function GroupSwipeScreen() {
         <ScrollView contentContainerClassName={pageBody.blocks}>
           {/* Next card fades in (it swapped in one frame). */}
           <FadeSwap swapKey={card.id} style={{ gap: 16 }}>
-            <View className="overflow-hidden rounded-lg bg-ink">
+            <View
+              className="overflow-hidden rounded-lg"
+              style={{ backgroundColor: media.base }}
+            >
               <Image
                 source={card.photos[0]}
                 contentFit="cover"

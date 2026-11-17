@@ -9,6 +9,7 @@ import { useGuestMode } from "@/components/map/hooks/useGuestMode";
 import { imagePreview, swipeImage } from "@/fixtures/images";
 import { resetTo } from "@/lib/navigation";
 import { Text, Button } from "@/components/ui";
+import { media } from "@/theme";
 
 // Welcome (PDF p1): a full-bleed café photo with the ThirdPlace mark, and a
 // bottom card — "Velkommen hjem", the pitch, "Kom i gang" (→ register),
@@ -17,7 +18,7 @@ import { Text, Button } from "@/components/ui";
 export default function Welcome() {
   const { setGuest } = useGuestMode();
   return (
-    <View className="flex-1 bg-ink">
+    <View className="flex-1" style={{ backgroundColor: media.base }}>
       <StatusBarStyle style="light" />
       <Image
         // A portrait photo: the landscape venue shot was stretched ~3× to

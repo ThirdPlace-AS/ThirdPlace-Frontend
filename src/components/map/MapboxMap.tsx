@@ -536,6 +536,16 @@ export const MapboxMap = memo(function MapboxMap({
         />
         <UserPuck />
       </MapView>
+      {/* Until the first style has loaded, the native surface shows a black
+          frame and then Mapbox's white background (0462: a flash on the
+          first map in dark mode). Cover it in the placeholder's colour
+          (MapCanvas's bg-surfaceMuted) so the map appears in one step. */}
+      {loadedStyle === null ? (
+        <View
+          pointerEvents="none"
+          className="absolute inset-0 bg-surfaceMuted"
+        />
+      ) : null}
     </View>
   );
 });

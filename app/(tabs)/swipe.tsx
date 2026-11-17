@@ -2,6 +2,7 @@ import { View } from "react-native";
 
 import { StatusBarStyle } from "@/components/ui/StatusBarStyle";
 import { SwipeDeck } from "@/components/swipe/SwipeDeck";
+import { media } from "@/theme";
 
 // Swipe surface (PDF 7-8) — a Tinder-style card deck over MOCK experience
 // fixtures. Left = Hopp over, right = Bli med, up = Lagre. Fixtures only; no
@@ -11,7 +12,7 @@ import { SwipeDeck } from "@/components/swipe/SwipeDeck";
 // action row handle the safe-area insets, so no page header here.
 export default function SwipeScreen() {
   return (
-    <View className="flex-1 bg-ink">
+    <View className="flex-1" style={{ backgroundColor: media.base }}>
       {/* Light status-bar content (time, battery, signal) so the native bar stays
           clearly legible over the dark full-bleed card — the root default is
           "dark", invisible here. */}
