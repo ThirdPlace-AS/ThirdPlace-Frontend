@@ -28,6 +28,7 @@ import {
   KeyboardAvoider,
   Button,
   Input,
+  LoadingImage,
 } from "@/components/ui";
 import { haptics } from "@/lib/haptics";
 import { getMyProfile } from "@/lib/myProfile";
@@ -665,8 +666,11 @@ function StepBody({
                     }
                     className="w-[31.5%]"
                   >
-                    <Image
-                      source={smallImage(src)}
+                    {/* Its blurred preview paints at once, so the grid
+                        holds its shape while the photos decode (0471). */}
+                    <LoadingImage
+                      source={src}
+                      thumb
                       contentFit="cover"
                       style={{
                         aspectRatio: 1,

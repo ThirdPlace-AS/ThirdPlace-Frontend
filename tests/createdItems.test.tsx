@@ -3,6 +3,7 @@
 // a published experience, and resetCreated() forgets everything.
 import { afterEach, describe, expect, it, jest } from "@jest/globals";
 import { fireEvent, render, screen } from "@testing-library/react-native";
+import { Image } from "expo-image";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 
 import { resultForMode } from "@/components/map/services/mapFixtureAdapter";
@@ -196,5 +197,36 @@ describe("Add flow rules", () => {
     expect(screen.queryByText(/ — /)).toBeNull();
     fireEvent.press(screen.getByText("Gruppe"));
     expect(screen.getByText("Om gruppen")).toBeTruthy();
+  });
+
+  // Phone test (0471): on a slow first load the photos that had not decoded
+  // left empty cells, so the grid looked staggered. Every tile now paints
+  // its blurred preview from the first frame.
+  it("the Bilder step's tiles paint a preview while they load", () => {
+    render(
+      <SafeAreaProvider
+        initialMetrics={{
+          frame: { x: 0, y: 0, width: 360, height: 640 },
+          insets: { top: 24, left: 0, right: 0, bottom: 0 },
+        }}
+      >
+        <AddWizard />
+      </SafeAreaProvider>,
+    );
+    fireEvent.press(screen.getByText("Gruppe"));
+    fireEvent.changeText(
+      screen.getByPlaceholderText("F.eks. «Løpegjengen på Løkka»"),
+      "Løp",
+    );
+    fireEvent.press(screen.getByLabelText("Kaffe"));
+    fireEvent.press(screen.getByText("Neste"));
+    fireEvent.press(screen.getByLabelText("Grünerløkka"));
+    fireEvent.press(screen.getByText("Neste"));
+    expect(screen.getByText("Bilder")).toBeTruthy();
+    const tiles = screen.getAllByLabelText(/^Bilde \d+$/);
+    expect(tiles.length).toBeGreaterThan(2);
+    const images = screen.UNSAFE_queryAllByType(Image);
+    expect(images).toHaveLength(tiles.length);
+    for (const img of images) expect(img.props.placeholder).toBeTruthy();
   });
 });
