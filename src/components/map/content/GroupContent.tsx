@@ -5,6 +5,8 @@ import { View } from "react-native";
 import { Avatar } from "@/components/Avatar";
 import { GuestLock } from "@/components/GuestLock";
 import { SignInPrompt } from "@/components/SignInPrompt";
+import { showToastAfterSheet } from "@/components/Toast";
+import { LeaveSheet } from "@/components/actions/ActionSheets";
 import { ChatSection } from "@/components/experience/ExperienceSections";
 import {
   PLACE_KIND_LABEL,
@@ -68,6 +70,7 @@ export function GroupContent({ id }: { id: string }) {
   // The creator of a group (made in Legg til) is already in it.
   const [member, setMember] = useState(group?.mine === true);
   const [promptOpen, setPromptOpen] = useState(false);
+  const [leaveOpen, setLeaveOpen] = useState(false);
 
   if (!group) {
     return (
@@ -79,9 +82,11 @@ export function GroupContent({ id }: { id: string }) {
 
   // Joining is an account action: guests get the sign-in prompt, the
   // signed-in demo flips local state only (BLOCKED_CONTRACT_GAP).
+  // Leaving asks first, as leaving a chat does (0467).
   const toggle = () => {
     if (isGuest) return setPromptOpen(true);
-    setMember((m) => !m);
+    if (member) return setLeaveOpen(true);
+    setMember(true);
   };
 
   const topics = group.interests.flatMap((i) => {
@@ -190,6 +195,19 @@ export function GroupContent({ id }: { id: string }) {
         onClose={() => setPromptOpen(false)}
         action="bli medlem"
       />
+      {leaveOpen ? (
+        <LeaveSheet
+          title="Forlate gruppen?"
+          onClose={() => setLeaveOpen(false)}
+          onConfirm={() => {
+            setMember(false);
+            showToastAfterSheet({
+              title: "Du har forlatt gruppen",
+              icon: "exit-outline",
+            });
+          }}
+        />
+      ) : null}
     </View>
   );
 }

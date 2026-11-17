@@ -45,6 +45,10 @@ export const confirmToast = {
   contactsSynced: { title: "Kontaktene er hentet", icon: "people-outline" },
   photoAdded: { title: "Profilbildet er lagt til", icon: "camera-outline" },
   muted: { title: "Chatten er dempet", icon: "notifications-off-outline" },
+  unmuted: {
+    title: "Chatten er ikke lenger dempet",
+    icon: "notifications-outline",
+  },
   joinedChat: { title: "Du er med i samtalen", icon: "chatbubbles-outline" },
   followed: { title: "Du følger nå", icon: ok },
   messageSent: { title: "Meldingen er sendt", icon: "paper-plane-outline" },

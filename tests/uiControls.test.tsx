@@ -1,5 +1,6 @@
 import { describe, expect, it, jest } from "@jest/globals";
-import { fireEvent, render, screen } from "@testing-library/react-native";
+import { act, fireEvent, render, screen } from "@testing-library/react-native";
+import { Switch as RNSwitch } from "react-native";
 
 import {
   Badge,
@@ -9,6 +10,7 @@ import {
   Switch,
   Text,
 } from "@/components/ui";
+import { palette, setSchemePreference } from "@/theme";
 
 describe("Button", () => {
   it("ignores presses and reports busy while loading", () => {
@@ -62,6 +64,22 @@ describe("Switch", () => {
     expect(sw.props.accessibilityState).toMatchObject({ checked: false });
     fireEvent(sw, "valueChange", true);
     expect(onValueChange).toHaveBeenCalledWith(true);
+  });
+
+  // 0467: in dark mode the off track was the border grey (about 1.5:1 on
+  // the page); it is the muted grey there, with a surface-coloured thumb.
+  it("off in dark mode: muted track, surface thumb", () => {
+    act(() => setSchemePreference("dark"));
+    try {
+      render(
+        <Switch value={false} onValueChange={jest.fn()} label="Varsler" />,
+      );
+      const sw = screen.UNSAFE_getByType(RNSwitch);
+      expect(sw.props.trackColor.false).toBe(palette.dark.muted);
+      expect(sw.props.thumbColor).toBe(palette.dark.surface);
+    } finally {
+      act(() => setSchemePreference("system"));
+    }
   });
 });
 

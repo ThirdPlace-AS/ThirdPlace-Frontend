@@ -38,6 +38,7 @@ import {
   type MockPerson,
 } from "@/fixtures";
 import { interestById } from "@/fixtures/catalog/interests";
+import { toggleMutedChat, useIsChatMuted } from "@/lib/mutedChats";
 import { libImage, smallImage } from "@/fixtures/images";
 import { chatInviteSlug } from "@/lib/entityRoutes";
 import { leaveChat } from "@/lib/joinedChats";
@@ -100,6 +101,7 @@ export function ChatInfoScreen() {
   const [report, setReport] = useState(false);
   const [leave, setLeave] = useState(false);
   const [viewer, setViewer] = useState<number | null>(null);
+  const muted = useIsChatMuted(chat?.id ?? "");
   if (!chat) return <Missing title="Chat-info" />;
   const exp = chat.pinnedExperienceId
     ? experienceById(chat.pinnedExperienceId)
@@ -109,7 +111,10 @@ export function ChatInfoScreen() {
     if (label === "Inviter") router.push(`/chat/${chat.id}/invite` as Href);
     else if (label === "Rapporter") setReport(true);
     else if (label === "Forlat") setLeave(true);
-    else showToast(confirmToast.muted);
+    else
+      showToast(
+        toggleMutedChat(chat.id) ? confirmToast.muted : confirmToast.unmuted,
+      );
   };
   return (
     <Page title={chat.name} density="sections">
@@ -166,7 +171,13 @@ export function ChatInfoScreen() {
       </Section>
       <View className="flex-row gap-2">
         {[
-          { icon: "notifications-off-outline" as const, label: "Demp" },
+          // 0467: Demp toggles; the tile says what a tap does next.
+          muted
+            ? {
+                icon: "notifications-outline" as const,
+                label: "Opphev demping",
+              }
+            : { icon: "notifications-off-outline" as const, label: "Demp" },
           // A direct message has two people: nobody to invite.
           ...(chat.type === "dm"
             ? []
@@ -183,7 +194,7 @@ export function ChatInfoScreen() {
             pressedScale={0.99}
           >
             <Icon name={a.icon} size="md" tone="ink" />
-            <Text variant="caption" weight="medium">
+            <Text variant="caption" weight="medium" className="text-center">
               {a.label}
             </Text>
           </UIPressable>
