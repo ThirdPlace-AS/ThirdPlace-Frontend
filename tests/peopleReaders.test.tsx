@@ -56,7 +56,9 @@ describe("chat members", () => {
     // Henrik likes Badstue; the coffee host Maria does not and comes later.
     const at = (id: string) => members.findIndex((m) => m.person.id === id);
     expect(at("u10")).toBeLessThan(at("u1"));
-    const likes = members.map((m) => m.person.interests.includes("Badstue"));
+    const likes = members.map((m) =>
+      people.find((p) => p.id === m.person.id)?.interests.includes("Badstue"),
+    );
     const firstOther = likes.indexOf(false);
     expect(likes.slice(firstOther).every((l) => !l)).toBe(true);
   });

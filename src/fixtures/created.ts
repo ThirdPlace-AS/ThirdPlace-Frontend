@@ -81,6 +81,12 @@ export function isHostedByMe(id: string): boolean {
   return createdIds.experiences.has(id);
 }
 
+/** Whether this chat was started in this session (a new group, experience or
+ *  direct message): only its creator is in it so far, nothing shared (0470). */
+export function isCreatedChat(id: string): boolean {
+  return createdIds.chats.has(id);
+}
+
 /** Forget everything created this session (tests, and Logg ut: the next
  *  account starts without the last one's groups and experiences). */
 export function resetCreated() {

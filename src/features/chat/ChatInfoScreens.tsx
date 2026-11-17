@@ -44,6 +44,9 @@ import { toggleMutedChat, useIsChatMuted } from "@/lib/mutedChats";
 import { libImage, smallImage } from "@/fixtures/images";
 import { chatInviteSlug } from "@/lib/entityRoutes";
 import { leaveChat } from "@/lib/joinedChats";
+import { getMyProfile, useMyProfile, type MyProfile } from "@/lib/myProfile";
+import { isCreatedChat } from "@/fixtures/created";
+import type { LibraryKey } from "@/fixtures/images";
 
 const ROLES = ["Vert · Admin", "Deltar", "Venn", "Kun i chatten"];
 /** What a chat is about: its experience's, place's or group's interest. */
@@ -57,9 +60,25 @@ function chatInterest(chat: MockChat): string | undefined {
   return id ? interestById(id)?.label : undefined;
 }
 
+type Member = {
+  person: { id: string; name: string; avatar: LibraryKey | null };
+  role: string;
+};
+
 /** Stand-in members (MOCK): the experience's host first, then people who
- *  like what the chat is about, then everyone else in fixture order. */
-export const membersOf = (chat: MockChat) => {
+ *  like what the chat is about, then everyone else in fixture order. A group
+ *  or experience started in this session holds only its creator (0470). */
+export const membersOf = (
+  chat: MockChat,
+  me: Pick<MyProfile, "name" | "avatar"> = getMyProfile(),
+): Member[] => {
+  if (isCreatedChat(chat.id) && chat.type !== "dm")
+    return [
+      {
+        person: { id: "me", name: me.name, avatar: me.avatar },
+        role: ROLES[0]!,
+      },
+    ];
   const hostId = chat.pinnedExperienceId
     ? experienceById(chat.pinnedExperienceId)?.hostId
     : undefined;
@@ -105,11 +124,14 @@ export function ChatInfoScreen() {
   const [viewer, setViewer] = useState<number | null>(null);
   const [viewerFrom, setViewerFrom] = useState<Rect | null>(null);
   const muted = useIsChatMuted(chat?.id ?? "");
+  const me = useMyProfile();
   if (!chat) return <Missing title="Chat-info" />;
   const exp = chat.pinnedExperienceId
     ? experienceById(chat.pinnedExperienceId)
     : undefined;
-  const members = membersOf(chat);
+  const members = membersOf(chat, me);
+  // A chat started in this session has nothing shared in it yet (0470).
+  const shared = isCreatedChat(chat.id) ? [] : SHARED;
   const act = (label: string) => {
     if (label === "Inviter") router.push(`/chat/${chat.id}/invite` as Href);
     else if (label === "Rapporter") setReport(true);
@@ -153,31 +175,33 @@ export function ChatInfoScreen() {
           <MemberRow key={m.person.id} {...m} />
         ))}
       </Section>
-      <Section title="Delte bilder">
-        <View className="flex-row gap-2">
-          {SHARED.map((src, i) => (
-            <Pressable
-              key={i}
-              accessibilityRole="imagebutton"
-              accessibilityLabel={`Delt bilde ${i + 1}`}
-              onPress={(e) =>
-                // The photo grows out of the tapped thumbnail (0457).
-                measureRect(e.currentTarget as unknown as View, (rect) => {
-                  setViewerFrom(rect);
-                  setViewer(i);
-                })
-              }
-              className="flex-1"
-            >
-              <Image
-                source={smallImage(src)}
-                contentFit="cover"
-                style={{ aspectRatio: 1, width: "100%", borderRadius: 8 }}
-              />
-            </Pressable>
-          ))}
-        </View>
-      </Section>
+      {shared.length > 0 ? (
+        <Section title="Delte bilder">
+          <View className="flex-row gap-2">
+            {shared.map((src, i) => (
+              <Pressable
+                key={i}
+                accessibilityRole="imagebutton"
+                accessibilityLabel={`Delt bilde ${i + 1}`}
+                onPress={(e) =>
+                  // The photo grows out of the tapped thumbnail (0457).
+                  measureRect(e.currentTarget as unknown as View, (rect) => {
+                    setViewerFrom(rect);
+                    setViewer(i);
+                  })
+                }
+                className="flex-1"
+              >
+                <Image
+                  source={smallImage(src)}
+                  contentFit="cover"
+                  style={{ aspectRatio: 1, width: "100%", borderRadius: 8 }}
+                />
+              </Pressable>
+            ))}
+          </View>
+        </Section>
+      ) : null}
       <View className="flex-row gap-2">
         {[
           // 0467: Demp toggles; the tile says what a tap does next.
@@ -226,7 +250,7 @@ export function ChatInfoScreen() {
         />
       ) : null}
       <PhotoViewer
-        photos={SHARED}
+        photos={shared}
         index={viewer}
         onClose={() => setViewer(null)}
         label="Delte bilder"
@@ -239,8 +263,9 @@ export function ChatInfoScreen() {
 export function ChatMembersScreen() {
   const chat = useRouteChat();
   const [q, setQ] = useState("");
+  const me = useMyProfile();
   if (!chat) return <Missing title="Medlemmer" />;
-  const all = membersOf(chat);
+  const all = membersOf(chat, me);
   const list = all.filter((m) =>
     m.person.name.toLowerCase().includes(q.trim().toLowerCase()),
   );
@@ -336,13 +361,7 @@ export function ChatInviteScreen() {
   );
 }
 
-function MemberRow({
-  person,
-  role,
-}: {
-  person: (typeof people)[number];
-  role: string;
-}) {
+function MemberRow({ person, role }: Member) {
   return (
     <ListRow
       variant="card"
@@ -351,7 +370,7 @@ function MemberRow({
       leading={
         <Avatar
           name={person.name}
-          source={libImage(person.avatar)}
+          source={person.avatar ? libImage(person.avatar) : undefined}
           size="sm"
           decorative
         />

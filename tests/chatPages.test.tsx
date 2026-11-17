@@ -1,6 +1,13 @@
 // Phase 12 H4c: chat info, members, invite, archived chats and "Ny chat" are
 // pages (were sheets). Links carry no arrows; the info page states no rule.
-import { beforeEach, describe, expect, it, jest } from "@jest/globals";
+import {
+  afterEach,
+  beforeEach,
+  describe,
+  expect,
+  it,
+  jest,
+} from "@jest/globals";
 import { fireEvent, render, screen } from "@testing-library/react-native";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 
@@ -12,6 +19,8 @@ import {
 } from "@/features/chat/ChatInfoScreens";
 import NewChatScreen from "@/features/chat/NewChatScreen";
 import { chatById, chats } from "@/fixtures";
+import { createGroup, resetCreated } from "@/fixtures/created";
+import { getMyProfile } from "@/lib/myProfile";
 import { isMember, resetJoinedChats } from "@/lib/joinedChats";
 
 const mockPush = jest.fn();
@@ -107,5 +116,31 @@ describe("chat pages", () => {
     );
     fireEvent.press(screen.getByText("Opprett chat"));
     expect(mockBack).toHaveBeenCalledTimes(1);
+  });
+});
+
+describe("a group made in this session (0470)", () => {
+  afterEach(() => resetCreated());
+
+  it("lists only its creator and shows no shared photos", () => {
+    const { chatId } = createGroup({
+      name: "Brettspillkveld",
+      about: "",
+      interests: [],
+      area: "Grünerløkka",
+      photos: ["kaffe-1"],
+      access: "open",
+    });
+    const me = getMyProfile();
+    const members = membersOf(chatById(chatId)!);
+    expect(members).toHaveLength(1);
+    expect(members[0]!.person.name).toBe(me.name);
+    expect(members[0]!.role).toBe("Vert · Admin");
+
+    mockChatId = chatId;
+    render(<ChatInfoScreen />, { wrapper });
+    expect(screen.getByText("Se alle (1)")).toBeTruthy();
+    expect(screen.getByText(me.name)).toBeTruthy();
+    expect(screen.queryByText("Delte bilder")).toBeNull();
   });
 });
