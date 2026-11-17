@@ -19,6 +19,7 @@ import {
   groups,
   invalidateFixtureIndexes,
   AREAS,
+  areaNameLabel,
   places,
   profile,
   type CancellationOption,
@@ -43,6 +44,9 @@ const createdIds = {
   experiences: new Set<string>(),
 };
 let seq = 0;
+// Places sent in from Legg til, newest first: Innleveringer lists them as
+// Ventende (0464: the success screen pointed there, but the list was fixed).
+const submittedPlaceNames: string[] = [];
 
 function bump() {
   invalidateFixtureIndexes();
@@ -69,7 +73,16 @@ export function hostedExperiences(): MockExperience[] {
     .filter((e): e is MockExperience => !!e);
 }
 
-/** Test helper: forget everything created this session. */
+/** Whether the viewer hosts this experience: one they published in this
+ *  session. Only the host sees Administrer (0464: it was on every page, and
+ *  the creator saw Bli med on their own experience). Profil's "Arrangert"
+ *  fixture rows are not counted: their pages name another host. */
+export function isHostedByMe(id: string): boolean {
+  return createdIds.experiences.has(id);
+}
+
+/** Forget everything created this session (tests, and Logg ut: the next
+ *  account starts without the last one's groups and experiences). */
 export function resetCreated() {
   const drop = <T extends { id: string }>(list: T[], ids: Set<string>) => {
     for (let i = list.length - 1; i >= 0; i -= 1)
@@ -79,6 +92,7 @@ export function resetCreated() {
   drop(groups, createdIds.groups);
   drop(chats, createdIds.chats);
   drop(experiences, createdIds.experiences);
+  submittedPlaceNames.length = 0;
   seq = 0;
   bump();
 }
@@ -92,10 +106,23 @@ const initialsOf = (name: string) =>
     .join("") || "TP";
 
 /** The viewer as a host label: "Ola Nordmann" → "Ola N.". */
-const hostLabel = () => {
-  const [first, last] = profile.name.split(" ");
-  return last ? `${first} ${last[0]}.` : (first ?? profile.name);
+const hostLabel = (name: string) => {
+  const [first, last] = name.trim().split(/\s+/);
+  return last ? `${first} ${last[0]}.` : (first ?? name);
 };
+
+/** Sends a place in for review from Legg til: "Navn, Område". It is not on
+ *  the map; Innleveringer shows it as Ventende. */
+export function submitPlace(name: string, area: string | null) {
+  const title = name.trim();
+  submittedPlaceNames.unshift(area ? `${title}, ${area}` : title);
+  bump();
+}
+
+/** The places sent in this session, newest first. */
+export function submittedPlaces(): readonly string[] {
+  return submittedPlaceNames;
+}
 
 export type NewGroupInput = {
   name: string;
@@ -106,6 +133,8 @@ export type NewGroupInput = {
   access: MockChatAccess;
   /** Optional, the creator's own words (Phase 18). */
   rules?: string;
+  /** The signed-in viewer's name (Rediger profil can change it; 0464). */
+  hostName?: string;
 };
 
 /** Creates a group and its group chat; returns both ids. */
@@ -131,7 +160,7 @@ export function createGroup(input: NewGroupInput): {
     name: input.name.trim(),
     about: input.about.trim() || `En gruppe på ${input.area}.`,
     memberCount: 1,
-    members: [initialsOf(profile.name)],
+    members: [initialsOf(input.hostName ?? profile.name)],
     cover: input.photos[0]!,
     photos: input.photos,
     mine: true,
@@ -215,6 +244,9 @@ export type NewExperienceInput = {
   languages: string[];
   included: string[];
   steps: string[];
+  /** The signed-in viewer's name, shown as the host (0464: it was always
+   *  the fixture profile's). */
+  hostName?: string;
 };
 
 const WEEKDAY_SHORT = ["Søn", "Man", "Tir", "Ons", "Tor", "Fre", "Lør"];
@@ -248,7 +280,7 @@ export function createExperience(input: NewExperienceInput): string {
   const exp: MockExperience = {
     id,
     title: input.title.trim(),
-    host: hostLabel(),
+    host: hostLabel(input.hostName ?? profile.name),
     when: `${WEEKDAY_SHORT[date.getDay()]} ${input.startTime}`,
     firstDate: input.date,
     placeId: place?.id,
@@ -277,7 +309,8 @@ export function createExperience(input: NewExperienceInput): string {
     audiences: [],
     meetingPoint: {
       name: input.meetingPoint.trim() || place?.name || input.area,
-      address: place?.address ?? `${input.area}, Oslo`,
+      // The picked area only (0464: ", Oslo" was added to areas outside it).
+      address: place?.address ?? areaNameLabel(input.area),
       coord: place?.coord ?? areaCoord,
     },
     itinerary: input.steps

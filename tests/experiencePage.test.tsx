@@ -3,7 +3,7 @@
 // description, icon rows for host / where / duration + language / what's
 // included / latest review / participants, a Vurderinger section, and no
 // duplicated "when"/"påmeldt"/Lagre-Del-Rapporter row.
-import { describe, expect, it, jest } from "@jest/globals";
+import { afterEach, describe, expect, it, jest } from "@jest/globals";
 import {
   act,
   fireEvent,
@@ -47,6 +47,7 @@ import {
   reviewsForExperience,
   sessionsFor,
 } from "@/fixtures";
+import { createExperience, resetCreated } from "@/fixtures/created";
 import { shortSessionLabel } from "@/lib/dates";
 import { formatRating } from "@/lib/format";
 import { resetJoinedChats } from "@/lib/joinedChats";
@@ -100,7 +101,6 @@ describe("ExperiencePage", () => {
       "Flere opplevelser i området",
       "Om verten",
       "Sjekk inn når du er der",
-      "Administrer (vert)",
       "Rapporter opplevelsen",
       ...experienceChips(e1),
     ]) {
@@ -133,8 +133,8 @@ describe("ExperiencePage", () => {
     renderPage({ onOpen, onNavigate });
     fireEvent.press(screen.getByRole("button", { name: /Se deltakere/ }));
     expect(onOpen).toHaveBeenCalledWith({ kind: "attendees", id: "e1" });
-    fireEvent.press(screen.getByText("Administrer (vert)"));
-    expect(onOpen).toHaveBeenCalledWith({ kind: "host", id: "e1" });
+    // Not the viewer's experience: no host view (0464).
+    expect(screen.queryByText("Administrer")).toBeNull();
     fireEvent.press(screen.getByText("Vis alle vurderinger"));
     expect(onNavigate).toHaveBeenCalledWith("/experience/e1/reviews");
   });
@@ -158,6 +158,56 @@ describe("ExperiencePage", () => {
     render(<ExperienceJoinBar id="e1" />, { wrapper });
     expect(screen.getByText("Gratis")).toBeTruthy();
     expect(screen.getByText("Bli med")).toBeTruthy();
+  });
+
+  // 0464: the host saw Bli med on what they published, and anyone could
+  // open the host view.
+  describe("an experience the viewer published", () => {
+    const publish = () =>
+      createExperience({
+        title: "Strikkekveld",
+        about: "Vi strikker sammen.",
+        category: e1.category,
+        area: "Grünerløkka",
+        meetingPoint: "",
+        photos: e1.photos,
+        date: "2026-11-20",
+        startTime: "18:00",
+        duration: "2 timer",
+        repeat: "Ukentlig",
+        capacity: 6,
+        priceNok: 0,
+        access: "Alle",
+        cancellation: "",
+        vibes: [],
+        energy: null,
+        languages: ["Norsk"],
+        included: [],
+        steps: [],
+        hostName: "Aj Jibril",
+      });
+    afterEach(() => act(() => resetCreated()));
+
+    it("the page offers Administrer, which opens the host view", () => {
+      const id = publish();
+      const onOpen = jest.fn();
+      renderPage({ exp: experienceById(id)!, onOpen });
+      fireEvent.press(screen.getByText("Administrer"));
+      expect(onOpen).toHaveBeenCalledWith({ kind: "host", id });
+      // Nothing aimed at themselves.
+      expect(screen.queryByText(/^Send melding til/)).toBeNull();
+      expect(screen.queryByText(/^Blokker/)).toBeNull();
+      expect(screen.queryByText("Rapporter opplevelsen")).toBeNull();
+    });
+
+    it("the join card says Administrer instead of Bli med", () => {
+      const id = publish();
+      const onManage = jest.fn();
+      render(<ExperienceJoinBar id={id} onManage={onManage} />, { wrapper });
+      expect(screen.queryByText("Bli med")).toBeNull();
+      fireEvent.press(screen.getByText("Administrer"));
+      expect(onManage).toHaveBeenCalled();
+    });
   });
 });
 

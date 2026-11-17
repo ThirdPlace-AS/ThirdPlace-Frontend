@@ -45,7 +45,7 @@ import {
   reviewsForExperience,
   type MockExperience,
 } from "@/fixtures";
-import { useCreatedVersion } from "@/fixtures/created";
+import { isHostedByMe, useCreatedVersion } from "@/fixtures/created";
 import { libImage } from "@/fixtures/images";
 import { formatRating, membersLabel } from "@/lib/format";
 
@@ -146,6 +146,9 @@ export function ExperiencePage({
   const group = groupById(exp.groupId);
   const host = hostPerson(exp);
   const hostName = host?.name ?? exp.host;
+  // The viewer hosts it (0464): Administrer, and no message, report or block
+  // aimed at themselves.
+  const mine = isHostedByMe(exp.id);
   const going = exp.going + (user === "joined" ? 1 : 0);
   const reviews = reviewsForExperience(exp.id);
   const { score, count } = ratingOf(reviews);
@@ -418,13 +421,15 @@ export function ExperiencePage({
               </Text>
             </UIPressable>
             {host?.bio ? <Text variant="body">{host.bio}</Text> : null}
-            <Button
-              label={`Send melding til ${hostName.split(" ")[0]}`}
-              variant="secondary"
-              onPress={() =>
-                onNavigate((dm ? `/chat/${dm.id}` : "/chat") as Href)
-              }
-            />
+            {mine ? null : (
+              <Button
+                label={`Send melding til ${hostName.split(" ")[0]}`}
+                variant="secondary"
+                onPress={() =>
+                  onNavigate((dm ? `/chat/${dm.id}` : "/chat") as Href)
+                }
+              />
+            )}
           </View>
 
           <View className="h-px bg-line" />
@@ -440,11 +445,14 @@ export function ExperiencePage({
               label="Sjekk inn når du er der"
               onPress={() => onOpen({ kind: "checkin", id: exp.id })}
             />
-            <FooterLink
-              icon="settings-outline"
-              label="Administrer (vert)"
-              onPress={() => onOpen({ kind: "host", id: exp.id })}
-            />
+            {/* Only for the host (0464: anyone could open the host view). */}
+            {mine ? (
+              <FooterLink
+                icon="settings-outline"
+                label="Administrer"
+                onPress={() => onOpen({ kind: "host", id: exp.id })}
+              />
+            ) : null}
             {/* Phase 18: help that starts from this experience (Uber, Amazon). */}
             <FooterLink
               icon="help-buoy-outline"
@@ -453,16 +461,20 @@ export function ExperiencePage({
                 onNavigate(`/settings/support?about=${exp.id}` as Href)
               }
             />
-            <FooterLink
-              icon="flag-outline"
-              label="Rapporter opplevelsen"
-              onPress={() => setSheet("report")}
-            />
-            <FooterLink
-              icon="ban-outline"
-              label={`Blokker ${hostName.split(" ")[0]}`}
-              onPress={() => setSheet("block")}
-            />
+            {mine ? null : (
+              <>
+                <FooterLink
+                  icon="flag-outline"
+                  label="Rapporter opplevelsen"
+                  onPress={() => setSheet("report")}
+                />
+                <FooterLink
+                  icon="ban-outline"
+                  label={`Blokker ${hostName.split(" ")[0]}`}
+                  onPress={() => setSheet("block")}
+                />
+              </>
+            )}
           </View>
 
           {sheet === "report" ? (

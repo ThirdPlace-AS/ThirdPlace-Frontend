@@ -39,6 +39,7 @@ export function PageActionCard({
   animatedIndex,
   bottomPad,
   compact,
+  onManage,
 }: {
   kind: "experience" | "place";
   id: string;
@@ -48,6 +49,8 @@ export function PageActionCard({
   bottomPad: number;
   /** Short phones: a tighter card. */
   compact: boolean;
+  /** Opens the host view (the viewer hosts this experience, 0464). */
+  onManage?: () => void;
 }) {
   const reduce = useReducedMotion();
   // Starts hidden: the sheet opens at the peek or mid snap, and the reaction
@@ -96,7 +99,7 @@ export function PageActionCard({
         {kind === "place" ? (
           <PlaceChatBar placeId={id} />
         ) : (
-          <ExperienceJoinBar id={id} />
+          <ExperienceJoinBar id={id} onManage={onManage} />
         )}
       </View>
     </Animated.View>

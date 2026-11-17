@@ -10,6 +10,7 @@ import { AddWizard } from "@/features/add/AddWizard";
 import {
   advanceHint,
   canAdvance,
+  draftFromExperience,
   EMPTY_DRAFT,
   stepsFor,
 } from "@/features/add/types";
@@ -26,7 +27,10 @@ import {
   createExperience,
   createGroup,
   durationMinutes,
+  isHostedByMe,
   resetCreated,
+  submitPlace,
+  submittedPlaces,
   windowFor,
 } from "@/fixtures/created";
 
@@ -83,6 +87,16 @@ describe("created groups", () => {
   });
 });
 
+describe("places sent in", () => {
+  it("wait in Innleveringer, newest first, until reset (0464)", () => {
+    submitPlace("Bakgården", "Kampen");
+    submitPlace("Takterrassen", null);
+    expect(submittedPlaces()).toEqual(["Takterrassen", "Bakgården, Kampen"]);
+    resetCreated();
+    expect(submittedPlaces()).toEqual([]);
+  });
+});
+
 describe("published experiences", () => {
   it("are found, start on the picked date and have a chat", () => {
     const id = createExperience(BASE_EXP);
@@ -99,6 +113,26 @@ describe("published experiences", () => {
     expect(first.start.getDate()).toBe(20);
     expect(first.start.getHours()).toBe(18);
     expect(chatForExperience(id)?.pinnedExperienceId).toBe(id);
+  });
+
+  it("name the signed-in host, and only they host it (0464)", () => {
+    const id = createExperience({ ...BASE_EXP, hostName: "Aj Jibril" });
+    expect(experienceById(id)!.host).toBe("Aj J.");
+    expect(isHostedByMe(id)).toBe(true);
+    // A fixture experience, even one Profil lists as Arrangert, is not.
+    expect(isHostedByMe("e1")).toBe(false);
+    resetCreated();
+    expect(isHostedByMe(id)).toBe(false);
+  });
+
+  it("meet in the picked area, with no city added (0464)", () => {
+    const id = createExperience({ ...BASE_EXP, area: "Jevnaker" });
+    expect(experienceById(id)!.meetingPoint.address).not.toMatch(/Oslo/);
+  });
+
+  it("open Rediger with their category, so Neste works (0464)", () => {
+    const e = experienceById(createExperience(BASE_EXP))!;
+    expect(draftFromExperience(e).category).toBe("Kreativt");
   });
 
   it("appear on the map", () => {

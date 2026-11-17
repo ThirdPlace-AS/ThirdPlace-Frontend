@@ -5,6 +5,13 @@ import { afterAll, beforeEach, expect, jest, test } from "@jest/globals";
 import { act, renderHook } from "@testing-library/react-native";
 
 import { useMapSaved } from "@/components/map/hooks/useMapSaved";
+import {
+  isHostedByMe,
+  resetCreated,
+  submitPlace,
+  submittedPlaces,
+} from "@/fixtures/created";
+import { experiences } from "@/fixtures";
 import { blockPerson, resetBlocked, useBlocked } from "@/lib/blocked";
 import { getChatReads, markChatRead, resetChatReads } from "@/lib/chatReads";
 import { getMyProfile, resetMyProfile, updateMyProfile } from "@/lib/myProfile";
@@ -98,6 +105,16 @@ test("Logg ut resets the account stores and goes to /welcome", () => {
   expect(pinned.result.current).toEqual([]);
   expect(ratings.result.current).toEqual({});
   expect(mockResetTo).toHaveBeenCalledWith("/welcome");
+});
+
+test("Logg ut forgets what the account sent in (0464)", () => {
+  // The next account must not own the last one's places or experiences.
+  act(() => submitPlace("Bakgården", "Kampen"));
+  expect(submittedPlaces()).toHaveLength(1);
+  act(() => signOut());
+  expect(submittedPlaces()).toEqual([]);
+  expect(experiences.some((e) => isHostedByMe(e.id))).toBe(false);
+  resetCreated();
 });
 
 test("Logg ut leaves the stores it never reset: saved, chat reads, origin", () => {

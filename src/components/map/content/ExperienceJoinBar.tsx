@@ -11,6 +11,7 @@ import { FaceStack } from "@/components/FaceStack";
 import { SignInPrompt } from "@/components/SignInPrompt";
 import { Text, Button } from "@/components/ui";
 import { experienceById, sessionsFor } from "@/fixtures";
+import { isHostedByMe } from "@/fixtures/created";
 import { shortSessionLabel } from "@/lib/dates";
 import { goingLabel } from "@/lib/going";
 
@@ -28,7 +29,15 @@ import { useGuestMode } from "../hooks/useGuestMode";
 // Phase 16 (founder, after the section benchmark): above it, who is going:
 // faces of people who chose "Vis meg som deltaker" (the viewer once joined
 // and opted in) and "N skal", which counts everyone.
-export function ExperienceJoinBar({ id }: { id: string }) {
+// 0464: the host of an experience they published sees "Administrer" (the
+// host view) instead of Bli med; onManage opens it where the bar sits.
+export function ExperienceJoinBar({
+  id,
+  onManage,
+}: {
+  id: string;
+  onManage?: () => void;
+}) {
   const experience = experienceById(id);
   const [user, setUser] = useExperienceJoin(
     id,
@@ -67,7 +76,10 @@ export function ExperienceJoinBar({ id }: { id: string }) {
     ? shortSessionLabel(session.start, now)
     : experience.when;
 
+  const hosting = isHostedByMe(id);
   const primary = (() => {
+    if (hosting)
+      return { label: "Administrer", action: onManage, disabled: !onManage };
     if (user === "joined")
       return { label: "Forlat", action: () => setConfirm("leave") };
     if (user === "waitlisted")
@@ -111,7 +123,7 @@ export function ExperienceJoinBar({ id }: { id: string }) {
           <Button
             label={primary.label}
             rounded="full"
-            variant={user === "none" ? "ember" : "secondary"}
+            variant={user === "none" && !hosting ? "ember" : "secondary"}
             disabled={primary.disabled}
             onPress={primary.action}
           />

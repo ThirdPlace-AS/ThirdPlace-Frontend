@@ -14,6 +14,7 @@ import {
 } from "@/components/ui";
 import { RouteHeader } from "@/components/RouteHeader";
 import { EmptyState } from "@/components/states/StateView";
+import { submittedPlaces, useCreatedVersion } from "@/fixtures/created";
 
 // Utbetalinger (PDF p21) — STRUCTURE ONLY. Shows the payout method slot, the
 // payout schedule and an empty history. It never asks for or shows bank or
@@ -86,7 +87,17 @@ const TABS = ["Alle", "Ventende", "Godkjent", "Avvist"] as const;
 
 export function SubmissionsScreen() {
   const [tab, setTab] = useState<(typeof TABS)[number]>("Alle");
-  const list = tab === "Alle" ? SUBS : SUBS.filter((s) => s.status === tab);
+  // Places sent in from Legg til come first, waiting for review (0464).
+  useCreatedVersion();
+  const all: Sub[] = [
+    ...submittedPlaces().map((name) => ({
+      name,
+      status: "Ventende" as const,
+      meta: "Under gjennomgang",
+    })),
+    ...SUBS,
+  ];
+  const list = tab === "Alle" ? all : all.filter((s) => s.status === tab);
   return (
     <Screen edges={["top"]}>
       <RouteHeader title="Innleveringer" />

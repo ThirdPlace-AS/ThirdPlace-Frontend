@@ -1,6 +1,11 @@
 import { Image } from "expo-image";
-import { router, useLocalSearchParams, type Href } from "expo-router";
-import { useState } from "react";
+import {
+  router,
+  useFocusEffect,
+  useLocalSearchParams,
+  type Href,
+} from "expo-router";
+import { useCallback, useState } from "react";
 import { Pressable, ScrollView, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
@@ -25,6 +30,7 @@ import {
   Input,
 } from "@/components/ui";
 import { haptics } from "@/lib/haptics";
+import { getMyProfile } from "@/lib/myProfile";
 import { useStepBack } from "@/lib/useStepBack";
 import {
   CategoryArt,
@@ -56,6 +62,7 @@ import {
   createExperience,
   createGroup,
   hostedExperiences,
+  submitPlace,
 } from "@/fixtures/created";
 import { libThumb, smallImage, type LibraryKey } from "@/fixtures/images";
 
@@ -215,6 +222,21 @@ export function AddWizard() {
   // step it returns to "Hva vil du legge til?" (0454). Called before the
   // early returns so the hook order stays fixed.
   useStepBack(!submitted && !!draft.kind, back);
+  // Leaving the success screen ends it (0464): the tab stays mounted, so the
+  // next tap on Legg til showed the old "sendt inn" screen again. The edit
+  // request stays seeded, so its params don't fill the wizard again.
+  useFocusEffect(
+    useCallback(() => {
+      if (!submitted) return undefined;
+      return () => {
+        setDraft(EMPTY_DRAFT);
+        setStepIndex(0);
+        setSubmitted(false);
+        setEditing(false);
+        setCreated({});
+      };
+    }, [submitted]),
+  );
 
   if (submitted && draft.kind) {
     return (
@@ -252,8 +274,11 @@ export function AddWizard() {
           photos: draft.photos.map((i) => GROUP_POOL[i]!),
           access: draft.groupAccess,
           rules: draft.groupRules,
+          hostName: getMyProfile().name,
         }),
       );
+    } else if (draft.kind === "place") {
+      submitPlace(draft.title, draft.area);
     } else if (draft.kind === "experience" && !editing) {
       setCreated({
         experienceId: createExperience({
@@ -276,6 +301,7 @@ export function AddWizard() {
           languages: draft.languages,
           included: draft.included,
           steps: draft.steps,
+          hostName: getMyProfile().name,
         }),
       });
     }
@@ -974,9 +1000,9 @@ function ReviewStep({ draft }: { draft: AddDraft }) {
         <Text variant="title">{draft.title}</Text>
         <Text variant="caption" tone="muted">
           {isPlace
-            ? `${draft.category} · ${draft.area}, Oslo`
+            ? `${draft.category} · ${areaNameLabel(draft.area ?? "")}`
             : isGroup
-              ? `Gruppe · ${draft.area}, Oslo`
+              ? `Gruppe · ${areaNameLabel(draft.area ?? "")}`
               : `${draft.date ? formatDate(draft.date) : ""} · ${draft.startTime} · ${draft.area}`}
         </Text>
         {draft.summary ? (

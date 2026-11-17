@@ -112,10 +112,13 @@ export function stepsFor(kind: AddKind | null): StepKey[] {
 export const minPhotos = (kind: AddKind | null) => (kind === "group" ? 2 : 1);
 
 // Kalender "Rediger" opens the experience flow pre-filled with what the
-// example experience already says (title, description, capacity).
+// example experience already says (title, description, category, capacity).
+// The category too (0464): without it Kategori was empty and Neste stayed
+// disabled on the first step.
 export function draftFromExperience(e: {
   title: string;
   about: string;
+  category: string;
   capacity: number;
 }): AddDraft {
   return {
@@ -123,6 +126,7 @@ export function draftFromExperience(e: {
     kind: "experience",
     title: e.title,
     summary: e.about,
+    category: e.category,
     capacity: String(e.capacity),
   };
 }

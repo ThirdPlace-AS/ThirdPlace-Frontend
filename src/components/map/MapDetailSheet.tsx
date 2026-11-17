@@ -331,6 +331,13 @@ export const MapDetailSheet = memo(
       }
     }, [topKind, topId]);
 
+    // The host view for an experience the viewer hosts (0464), through a ref
+    // so renderFooter keeps its identity whatever push the parent passes.
+    const pushRef = useRef(push);
+    useEffect(() => {
+      pushRef.current = push;
+    }, [push]);
+
     // Keep this callback stable (no page state in its deps): gorhom renders it
     // as a component type, so a new identity remounts the card.
     const renderFooter = useCallback(
@@ -344,6 +351,7 @@ export const MapDetailSheet = memo(
               // The portal sheet reaches the screen bottom (gesture bar).
               bottomPad={pageCapable ? Math.max(insets.bottom, 12) : 12}
               compact={compact}
+              onManage={() => pushRef.current({ kind: "host", id: footerId })}
             />
           </BottomSheetFooter>
         ) : null,

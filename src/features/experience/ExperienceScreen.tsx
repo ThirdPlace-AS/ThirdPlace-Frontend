@@ -95,7 +95,10 @@ export function ExperiencePageBody({ exp }: { exp: MockExperience }) {
             if (h > 0 && h !== cardH) setCardH(h);
           }}
         >
-          <ExperienceJoinBar id={exp.id} />
+          <ExperienceJoinBar
+            id={exp.id}
+            onManage={() => setSub([{ kind: "host", id: exp.id }])}
+          />
         </View>
       </View>
       {top ? (

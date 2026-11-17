@@ -1,3 +1,4 @@
+import { resetCreated } from "@/fixtures/created";
 import { resetBlocked } from "@/lib/blocked";
 import { resetMyProfile } from "@/lib/myProfile";
 import { resetMyRatings } from "@/lib/myRatings";
@@ -21,5 +22,8 @@ export function signOut() {
   resetPrivacyPrefs();
   resetPinnedChats();
   resetMyRatings();
+  // What this account published leaves with it (0464: a new sign-in still
+  // owned it and saw Administrer).
+  resetCreated();
   resetTo("/welcome");
 }
