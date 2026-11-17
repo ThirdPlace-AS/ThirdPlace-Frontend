@@ -26,6 +26,7 @@ jest.mock("expo-router", () => ({
     canGoBack: () => true,
   },
   useLocalSearchParams: () => mockParams,
+  useFocusEffect: () => {},
 }));
 
 const METRICS = {

@@ -26,6 +26,13 @@ export function mapBackAction(
   return "none";
 }
 
+// With no detail open, back lowers a pulled-up browse list to its peek
+// instead of leaving the map or the app (0454). `index` is the sheet's
+// animated index; a sliver above 0 still counts as resting at the peek.
+export function browseBackCollapses(index: number, hidden: boolean): boolean {
+  return !hidden && index > 0.05;
+}
+
 export function useMapSelection() {
   const [sheetStack, setSheetStack] = useState<SheetTarget[]>([]);
   const [openIndex, setOpenIndex] = useState<number>(SNAP_PEEK);

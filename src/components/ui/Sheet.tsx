@@ -185,6 +185,9 @@ export type SheetProps = {
   title?: string;
   /** In-sheet back (nested content). */
   onBack?: () => void;
+  /** System back only, no header ← (0454): an open section inside the
+   *  sheet closes before the sheet does. `onBack` wins when both are set. */
+  onSystemBack?: () => void;
   /** "dark" matches a dark overlay (e.g. swipe detail); default light. */
   tone?: SheetTone;
   /** "muted" paints the card light grey so white content cards read on it. */
@@ -211,6 +214,7 @@ function SheetEngine({
   onClose,
   title,
   onBack,
+  onSystemBack,
   tone = "light",
   surfaceTone = "default",
   fullHeight = false,
@@ -285,7 +289,9 @@ function SheetEngine({
       visible={mounted}
       transparent
       animationType="none"
-      onRequestClose={onClose}
+      // System back undoes the last step (0454): an inner step goes back to
+      // the step before it, like the header ←; only the first step closes.
+      onRequestClose={onBack ?? onSystemBack ?? onClose}
     >
       <GestureHandlerRootView style={{ flex: 1 }}>
         {/* The keyboard pads the bottom (edge-to-edge Android does not resize

@@ -25,6 +25,7 @@ import { checkBirthday, formatBirthdayInput } from "@/features/onboarding/age";
 import { UnderageScreen } from "@/features/onboarding/UnderageScreen";
 import { resetTo } from "@/lib/navigation";
 import { markOnboarded } from "@/lib/signupProgress";
+import { useStepBack } from "@/lib/useStepBack";
 
 // Business onboarding, per the design (PDF p3–p5). It continues the
 // role step ("1 av 8") with steps 2–8: Personen bak bedriften → Om bedriften →
@@ -100,6 +101,8 @@ export default function BusinessOnboarding() {
           : true;
 
   const back = () => (step === 2 ? router.back() : setStep((s) => s - 1));
+  // System back goes to the step before, like the header ← (0454).
+  useStepBack(step > 2 && !blocked, back);
   const next = () => {
     if (step === 2 && age.status === "underage") {
       setBlocked(true);

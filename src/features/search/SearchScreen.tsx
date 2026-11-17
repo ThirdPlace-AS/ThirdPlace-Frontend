@@ -25,7 +25,8 @@ export default function SearchScreen() {
         }
         onSelect={(r) => {
           if (r.kind === "group") {
-            router.replace(`/group/${r.id}` as Href);
+            // Pushed (0454): back returns to the search and its query.
+            router.push(`/group/${r.id}` as Href);
             return;
           }
           router.navigate({

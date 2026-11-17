@@ -33,6 +33,7 @@ jest.mock("expo-router", () => ({
     navigate: jest.fn(),
     canGoBack: () => true,
   },
+  useFocusEffect: () => {},
 }));
 
 const METRICS = {

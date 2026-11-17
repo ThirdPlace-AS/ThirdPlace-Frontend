@@ -88,7 +88,7 @@ export default function CreatorWelcomeScreen() {
         <Button
           label="Utforsk ditt nye hjem"
           variant="ink"
-          onPress={() => router.replace("/marketplace" as Href)}
+          onPress={() => router.push("/marketplace" as Href)}
         />
         <Pressable
           hitSlop={{ top: 6, bottom: 6, left: 8, right: 8 }}

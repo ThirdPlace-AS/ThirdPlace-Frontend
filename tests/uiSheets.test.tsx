@@ -1,6 +1,6 @@
 import { describe, expect, it, jest } from "@jest/globals";
 import { fireEvent, render, screen } from "@testing-library/react-native";
-import { ScrollView, Text } from "react-native";
+import { Modal, ScrollView, Text } from "react-native";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 
 import { Overlay, Sheet, SHEET_RADIUS } from "@/components/ui";
@@ -27,6 +27,27 @@ describe("Sheet", () => {
     expect(screen.getByText("Rapporter")).toBeTruthy();
     expect(screen.getByText("Innhold")).toBeTruthy();
     fireEvent.press(screen.getByRole("button", { name: "Lukk" }));
+    expect(onClose).toHaveBeenCalledTimes(1);
+  });
+
+  it("system back steps back inside a nested sheet, else closes (0454)", () => {
+    const onClose = jest.fn();
+    const onBack = jest.fn();
+    const { rerender, UNSAFE_getByType } = render(
+      <Sheet visible onClose={onClose} onBack={onBack} title="Velg">
+        <Text>Innhold</Text>
+      </Sheet>,
+      { wrapper },
+    );
+    UNSAFE_getByType(Modal).props.onRequestClose();
+    expect(onBack).toHaveBeenCalledTimes(1);
+    expect(onClose).not.toHaveBeenCalled();
+    rerender(
+      <Sheet visible onClose={onClose} title="Velg">
+        <Text>Innhold</Text>
+      </Sheet>,
+    );
+    UNSAFE_getByType(Modal).props.onRequestClose();
     expect(onClose).toHaveBeenCalledTimes(1);
   });
 

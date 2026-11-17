@@ -6,6 +6,7 @@ import { showToast } from "@/components/Toast";
 import { FadeSwap, FormPage, Text, Button } from "@/components/ui";
 import { confirmToast } from "@/copy";
 import { goBackOr } from "@/lib/navigation";
+import { useStepBack } from "@/lib/useStepBack";
 
 import { FindYouRows, SeeYouRows, SharingRows } from "./privacyRows";
 import { SettingsSection } from "./settingsUi";
@@ -25,6 +26,8 @@ export default function PrivacyCheckScreen() {
   const [step, setStep] = useState(0);
   const current = STEPS[step] ?? STEPS[0];
   const last = step === STEPS.length - 1;
+  // System back goes to the step before, like "Forrige" (0454).
+  useStepBack(step > 0, () => setStep((s) => s - 1));
 
   return (
     <FormPage

@@ -1,7 +1,8 @@
 import { Ionicons } from "@expo/vector-icons";
 import BottomSheet, { BottomSheetFlatList } from "@gorhom/bottom-sheet";
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { useWindowDimensions, View } from "react-native";
+import { useFocusEffect } from "expo-router";
+import { BackHandler, useWindowDimensions, View } from "react-native";
 import Animated, {
   Extrapolation,
   interpolate,
@@ -29,6 +30,7 @@ import { PhotoPager } from "./PhotoPager";
 import { sheetA11yChrome } from "./sheetA11y";
 import { photosForItem } from "./services/itemCover";
 import { browseCardLine, browseCardOpenBadge } from "./services/itemType";
+import { browseBackCollapses } from "./hooks/useMapSelection";
 import type { DiscoveryItem } from "./types/mapPresentation";
 
 // Airbnb-style persistent "browse" sheet. Always peeks (handle + header,
@@ -129,6 +131,23 @@ export const MapBrowseSheet = memo(function MapBrowseSheet({
   useEffect(() => {
     sheetRef.current?.snapToIndex(0);
   }, [hidden]);
+
+  // System back (0454): with the list pulled up and no detail open, back
+  // lowers it to the peek instead of leaving the map (or the app). The map
+  // screen's own handler only acts while a detail is open, so the two never
+  // both claim one press.
+  useFocusEffect(
+    useCallback(() => {
+      const sub = BackHandler.addEventListener("hardwareBackPress", () => {
+        if (!browseBackCollapses(browseAnimatedIndex.get(), hidden)) {
+          return false;
+        }
+        sheetRef.current?.snapToIndex(0);
+        return true;
+      });
+      return () => sub.remove();
+    }, [hidden, browseAnimatedIndex]),
+  );
 
   // Expand on demand (cluster tap).
   useEffect(() => {

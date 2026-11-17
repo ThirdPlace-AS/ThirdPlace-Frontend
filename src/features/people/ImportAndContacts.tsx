@@ -56,6 +56,8 @@ export function ImportContentScreen() {
           variant="ink"
           disabled={!valid}
           onPress={() => {
+            // Replace on purpose (0454): the import is done, so back from
+            // Legg til must not reopen the finished form.
             router.replace("/add" as Href);
             showToast(confirmToast.imported);
           }}
@@ -89,6 +91,8 @@ export function InviteContactsScreen() {
           label="Gi tilgang til kontakter"
           variant="ink"
           onPress={() => {
+            // Replace on purpose (0454): access is given, so back from Folk
+            // must not land on the permission step again.
             router.replace("/people" as Href);
             showToast(confirmToast.contactsSynced);
           }}

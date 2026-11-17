@@ -1,4 +1,13 @@
-import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import {
+  memo,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  type Dispatch,
+  type SetStateAction,
+} from "react";
 import { Pressable, ScrollView, View } from "react-native";
 
 import {
@@ -504,10 +513,16 @@ export function MapFilterSheet({
   // A reopened sheet starts at its top, so the big title shows again and the
   // header must not repeat it (it kept "Filtre" from the last scroll).
   if (!visible && headerTitle) setHeaderTitle(false);
+  // Hvor/Når/Hvem: the open section lives here so system back closes it
+  // before it closes Filtre (0454); a reopened sheet starts with none open.
+  const [openSection, setOpenSection] = useState<OpenSection>(null);
+  if (!visible && openSection) setOpenSection(null);
+  const closeSection = useCallback(() => setOpenSection(null), []);
   return (
     <Sheet
       visible={visible}
       onClose={onClose}
+      onSystemBack={openSection ? closeSection : undefined}
       title={headerTitle ? "Filtre" : undefined}
       fullHeight
     >
@@ -523,6 +538,8 @@ export function MapFilterSheet({
           onClose={onClose}
           onApply={onApply}
           onTitleScrolledAway={setHeaderTitle}
+          openSection={openSection}
+          setOpenSection={setOpenSection}
         />
       ) : null}
     </Sheet>
@@ -629,6 +646,8 @@ function FilterBody({
   onClose,
   onApply,
   onTitleScrolledAway,
+  openSection,
+  setOpenSection,
 }: {
   filters: MapFilters;
   query: string;
@@ -638,10 +657,11 @@ function FilterBody({
   onClose: () => void;
   onApply: (f: MapFilters) => void;
   onTitleScrolledAway: (away: boolean) => void;
+  openSection: OpenSection;
+  setOpenSection: Dispatch<SetStateAction<OpenSection>>;
 }) {
   const titleAway = useRef(false);
   const [draft, setDraft] = useState<MapFilters>(filters);
-  const [openSection, setOpenSection] = useState<OpenSection>(null);
   const [langExpanded, setLangExpanded] = useState(false);
 
   // Live "show N results" count — instant, no artificial delay, and the same
@@ -676,7 +696,7 @@ function FilterBody({
   const toggleSection = useCallback(
     (s: Exclude<OpenSection, null>) =>
       setOpenSection((cur) => (cur === s ? null : s)),
-    [],
+    [setOpenSection],
   );
 
   const setPrice = useCallback(
@@ -942,6 +962,7 @@ function FilterBody({
     ),
     [
       openSection,
+      setOpenSection,
       toggleSection,
       whenValue,
       guestTotal,

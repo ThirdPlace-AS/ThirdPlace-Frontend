@@ -2,6 +2,7 @@ import { describe, expect, it } from "@jest/globals";
 import { act, renderHook } from "@testing-library/react-native";
 
 import {
+  browseBackCollapses,
   mapBackAction,
   SNAP_MID,
   SNAP_PEEK,
@@ -68,5 +69,19 @@ describe("mapBackAction", () => {
     expect(mapBackAction(1, true)).toBe("collapse");
     expect(mapBackAction(2, true)).toBe("back");
     expect(mapBackAction(0, true)).toBe("none");
+  });
+});
+
+describe("browseBackCollapses", () => {
+  it("lowers a pulled-up list to its peek while no detail is open", () => {
+    expect(browseBackCollapses(1, false)).toBe(true);
+    expect(browseBackCollapses(2, false)).toBe(true);
+    expect(browseBackCollapses(0.5, false)).toBe(true);
+  });
+
+  it("lets back through at the peek or while a detail covers the list", () => {
+    expect(browseBackCollapses(0, false)).toBe(false);
+    expect(browseBackCollapses(0.01, false)).toBe(false);
+    expect(browseBackCollapses(2, true)).toBe(false);
   });
 });

@@ -23,6 +23,7 @@ import { confirmToast } from "@/copy";
 import { RouteHeader } from "@/components/RouteHeader";
 import { listingById, listings } from "@/fixtures";
 import { goBackOr } from "@/lib/navigation";
+import { useStepBack } from "@/lib/useStepBack";
 
 // Collaboration flow, per the design (PDF p16–p18): Nytt samarbeid →
 // Innkommende tilbud (Godta / Avslå / Mottilbud) → Samarbeid (parter,
@@ -221,6 +222,8 @@ export function CollabDetailScreen() {
 // Innkommende tilbud + Mottilbud (p17), a page since Phase 12 H4c.
 export function CollabOfferScreen() {
   const [counter, setCounter] = useState(false);
+  // System back leaves the counter-offer form for the offer (0454).
+  useStepBack(counter, () => setCounter(false));
   const [split, setSplit] = useState("50 / 50");
   const finish = (t: ToastInput) => {
     goBackOr("/collab" as Href);

@@ -36,6 +36,9 @@ export default function TabsLayout() {
   const unreadChats = useUnreadChatCount();
   return (
     <Tabs
+      // System back returns to the tab you came from (0454), not to Kart
+      // each time; on Kart with no history left it closes the app.
+      backBehavior="history"
       screenOptions={{
         headerShown: false,
         // The bar would ride on top of the keyboard (Add steps, chat search).

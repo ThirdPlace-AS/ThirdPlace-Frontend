@@ -29,6 +29,7 @@ import { resetTo } from "@/lib/navigation";
 import { OWN_PORTRAIT, updateMyProfile } from "@/lib/myProfile";
 import { ONBOARDING_PREFERENCES, setPreferences } from "@/lib/preferences";
 import { markOnboarded } from "@/lib/signupProgress";
+import { useStepBack } from "@/lib/useStepBack";
 import { libThumb } from "@/fixtures/images";
 import { showToast } from "@/components/Toast";
 import { confirmToast } from "@/copy";
@@ -139,6 +140,8 @@ export default function Onboarding() {
   })();
 
   const back = () => (step === 0 ? router.back() : setStep((s) => s - 1));
+  // System back goes to the step before, like the header ← (0454).
+  useStepBack(step > 0 && !blocked, back);
   const next = () => {
     // Bedrift / Enterprise continue in the business branch (PDF p3–p5).
     if (step === 0 && (role === "business" || role === "enterprise")) {

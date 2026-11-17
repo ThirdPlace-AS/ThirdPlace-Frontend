@@ -25,6 +25,7 @@ import {
   Input,
 } from "@/components/ui";
 import { haptics } from "@/lib/haptics";
+import { useStepBack } from "@/lib/useStepBack";
 import {
   CategoryArt,
   hasCategoryArt,
@@ -205,6 +206,16 @@ export function AddWizard() {
     setCreated({});
   };
 
+  const back = () => {
+    if (stepIndex > 0) return setStepIndex((i) => i - 1);
+    setDraft(EMPTY_DRAFT);
+    setEditing(false);
+  };
+  // System back goes to the step before, like the header ←; on the first
+  // step it returns to "Hva vil du legge til?" (0454). Called before the
+  // early returns so the hook order stays fixed.
+  useStepBack(!submitted && !!draft.kind, back);
+
   if (submitted && draft.kind) {
     return (
       <SubmittedState
@@ -229,11 +240,6 @@ export function AddWizard() {
   }
 
   const isLast = step === "review";
-  const back = () => {
-    if (stepIndex > 0) return setStepIndex((i) => i - 1);
-    setDraft(EMPTY_DRAFT);
-    setEditing(false);
-  };
   const next = () => {
     if (!isLast) return setStepIndex((i) => i + 1);
     if (draft.kind === "group") {
