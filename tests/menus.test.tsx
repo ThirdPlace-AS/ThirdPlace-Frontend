@@ -17,11 +17,14 @@ import {
 import { PlacePage } from "@/components/place/PlacePage";
 import MenuScreen, { MENU_FOOTNOTE } from "@/features/place/MenuScreen";
 import { placeById, places } from "@/fixtures";
+import { LIBRARY } from "@/fixtures/images";
 import {
+  MENU_ITEM_IMAGES,
   MENU_LABELS,
   isMenuVenue,
   item,
   menuForPlace,
+  menuItemImage,
   menus,
   servesFoodOrDrink,
   sized,
@@ -319,5 +322,32 @@ describe("the menu page", () => {
     mockParams = { id: "nope" };
     render(<MenuScreen />, { wrapper });
     expect(screen.getByText("Fant ikke stedet.")).toBeTruthy();
+  });
+});
+
+describe("menu item photos (0456)", () => {
+  const itemNames = new Set(
+    menus.flatMap((m) =>
+      m.offerings.flatMap((o) =>
+        o.sections.flatMap((s) => s.items.map((i) => i.name)),
+      ),
+    ),
+  );
+  const entries = Object.entries(MENU_ITEM_IMAGES);
+
+  it("names only real menu items and real library photos", () => {
+    for (const [name, key] of entries) {
+      expect(itemNames.has(name)).toBe(true);
+      expect(key && key in LIBRARY).toBe(true);
+    }
+  });
+
+  it("covers at least 50 items", () => {
+    expect(entries.length).toBeGreaterThanOrEqual(50);
+  });
+
+  it("looks an item up by its name and leaves others without one", () => {
+    expect(menuItemImage({ name: "Cappuccino" })).toBe("menu-cappuccino");
+    expect(menuItemImage({ name: "Ingen slik rett" })).toBeUndefined();
   });
 });

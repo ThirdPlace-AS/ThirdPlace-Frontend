@@ -9,6 +9,7 @@ import { LEGACY_MENUS } from "./legacy";
 import { RESTAURANT_MENUS } from "./restaurants";
 import type { MockMenu } from "./types";
 
+export * from "./images";
 export * from "./types";
 
 export const menus: MockMenu[] = [

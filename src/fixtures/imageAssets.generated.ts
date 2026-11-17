@@ -294,6 +294,59 @@ export const LIBRARY_FULL = {
   "meditasjon-5": require("../../assets/library/meditasjon-5.webp"),
   "meditasjon-6": require("../../assets/library/meditasjon-6.webp"),
   "meditasjon-7": require("../../assets/library/meditasjon-7.webp"),
+  "menu-avokado": require("../../assets/library/menu-avokado.webp"),
+  "menu-banh-mi": require("../../assets/library/menu-banh-mi.webp"),
+  "menu-biff": require("../../assets/library/menu-biff.webp"),
+  "menu-blaskjell": require("../../assets/library/menu-blaskjell.webp"),
+  "menu-brownie": require("../../assets/library/menu-brownie.webp"),
+  "menu-burrata": require("../../assets/library/menu-burrata.webp"),
+  "menu-cappuccino": require("../../assets/library/menu-cappuccino.webp"),
+  "menu-cha-gio": require("../../assets/library/menu-cha-gio.webp"),
+  "menu-chai": require("../../assets/library/menu-chai.webp"),
+  "menu-croissant": require("../../assets/library/menu-croissant.webp"),
+  "menu-diavola": require("../../assets/library/menu-diavola.webp"),
+  "menu-espresso": require("../../assets/library/menu-espresso.webp"),
+  "menu-espresso-martini": require("../../assets/library/menu-espresso-martini.webp"),
+  "menu-falafel": require("../../assets/library/menu-falafel.webp"),
+  "menu-fish-chips": require("../../assets/library/menu-fish-chips.webp"),
+  "menu-fiskesuppe": require("../../assets/library/menu-fiskesuppe.webp"),
+  "menu-flat-white": require("../../assets/library/menu-flat-white.webp"),
+  "menu-gin-tonic": require("../../assets/library/menu-gin-tonic.webp"),
+  "menu-gronn-te": require("../../assets/library/menu-gronn-te.webp"),
+  "menu-gulrotkake": require("../../assets/library/menu-gulrotkake.webp"),
+  "menu-hvitvin": require("../../assets/library/menu-hvitvin.webp"),
+  "menu-ipa": require("../../assets/library/menu-ipa.webp"),
+  "menu-iskaffe": require("../../assets/library/menu-iskaffe.webp"),
+  "menu-kaffe": require("../../assets/library/menu-kaffe.webp"),
+  "menu-kakao": require("../../assets/library/menu-kakao.webp"),
+  "menu-kamskjell": require("../../assets/library/menu-kamskjell.webp"),
+  "menu-kanelbolle": require("../../assets/library/menu-kanelbolle.webp"),
+  "menu-kyllingvinger": require("../../assets/library/menu-kyllingvinger.webp"),
+  "menu-latte": require("../../assets/library/menu-latte.webp"),
+  "menu-margarita": require("../../assets/library/menu-margarita.webp"),
+  "menu-margherita": require("../../assets/library/menu-margherita.webp"),
+  "menu-musserende": require("../../assets/library/menu-musserende.webp"),
+  "menu-nachos": require("../../assets/library/menu-nachos.webp"),
+  "menu-negroni": require("../../assets/library/menu-negroni.webp"),
+  "menu-old-fashioned": require("../../assets/library/menu-old-fashioned.webp"),
+  "menu-oliven": require("../../assets/library/menu-oliven.webp"),
+  "menu-ostebrett": require("../../assets/library/menu-ostebrett.webp"),
+  "menu-ostres": require("../../assets/library/menu-ostres.webp"),
+  "menu-pho-bo": require("../../assets/library/menu-pho-bo.webp"),
+  "menu-pils": require("../../assets/library/menu-pils.webp"),
+  "menu-pommes": require("../../assets/library/menu-pommes.webp"),
+  "menu-popkorn": require("../../assets/library/menu-popkorn.webp"),
+  "menu-porter": require("../../assets/library/menu-porter.webp"),
+  "menu-rodvin": require("../../assets/library/menu-rodvin.webp"),
+  "menu-scones": require("../../assets/library/menu-scones.webp"),
+  "menu-sjokoladekake": require("../../assets/library/menu-sjokoladekake.webp"),
+  "menu-spekemat": require("../../assets/library/menu-spekemat.webp"),
+  "menu-spritz": require("../../assets/library/menu-spritz.webp"),
+  "menu-tacos": require("../../assets/library/menu-tacos.webp"),
+  "menu-te": require("../../assets/library/menu-te.webp"),
+  "menu-tiramisu": require("../../assets/library/menu-tiramisu.webp"),
+  "menu-vn-iskaffe": require("../../assets/library/menu-vn-iskaffe.webp"),
+  "menu-yoghurt": require("../../assets/library/menu-yoghurt.webp"),
   "mote-1": require("../../assets/library/mote-1.webp"),
   "mote-2": require("../../assets/library/mote-2.webp"),
   "mote-3": require("../../assets/library/mote-3.webp"),
@@ -922,6 +975,59 @@ export const LIBRARY_SMALL: Record<
   "meditasjon-5": require("../../assets/library/meditasjon-5-sm.webp"),
   "meditasjon-6": require("../../assets/library/meditasjon-6-sm.webp"),
   "meditasjon-7": require("../../assets/library/meditasjon-7-sm.webp"),
+  "menu-avokado": require("../../assets/library/menu-avokado-sm.webp"),
+  "menu-banh-mi": require("../../assets/library/menu-banh-mi-sm.webp"),
+  "menu-biff": require("../../assets/library/menu-biff-sm.webp"),
+  "menu-blaskjell": require("../../assets/library/menu-blaskjell-sm.webp"),
+  "menu-brownie": require("../../assets/library/menu-brownie-sm.webp"),
+  "menu-burrata": require("../../assets/library/menu-burrata-sm.webp"),
+  "menu-cappuccino": require("../../assets/library/menu-cappuccino-sm.webp"),
+  "menu-cha-gio": require("../../assets/library/menu-cha-gio-sm.webp"),
+  "menu-chai": require("../../assets/library/menu-chai-sm.webp"),
+  "menu-croissant": require("../../assets/library/menu-croissant-sm.webp"),
+  "menu-diavola": require("../../assets/library/menu-diavola-sm.webp"),
+  "menu-espresso": require("../../assets/library/menu-espresso-sm.webp"),
+  "menu-espresso-martini": require("../../assets/library/menu-espresso-martini-sm.webp"),
+  "menu-falafel": require("../../assets/library/menu-falafel-sm.webp"),
+  "menu-fish-chips": require("../../assets/library/menu-fish-chips-sm.webp"),
+  "menu-fiskesuppe": require("../../assets/library/menu-fiskesuppe-sm.webp"),
+  "menu-flat-white": require("../../assets/library/menu-flat-white-sm.webp"),
+  "menu-gin-tonic": require("../../assets/library/menu-gin-tonic-sm.webp"),
+  "menu-gronn-te": require("../../assets/library/menu-gronn-te-sm.webp"),
+  "menu-gulrotkake": require("../../assets/library/menu-gulrotkake-sm.webp"),
+  "menu-hvitvin": require("../../assets/library/menu-hvitvin-sm.webp"),
+  "menu-ipa": require("../../assets/library/menu-ipa-sm.webp"),
+  "menu-iskaffe": require("../../assets/library/menu-iskaffe-sm.webp"),
+  "menu-kaffe": require("../../assets/library/menu-kaffe-sm.webp"),
+  "menu-kakao": require("../../assets/library/menu-kakao-sm.webp"),
+  "menu-kamskjell": require("../../assets/library/menu-kamskjell-sm.webp"),
+  "menu-kanelbolle": require("../../assets/library/menu-kanelbolle-sm.webp"),
+  "menu-kyllingvinger": require("../../assets/library/menu-kyllingvinger-sm.webp"),
+  "menu-latte": require("../../assets/library/menu-latte-sm.webp"),
+  "menu-margarita": require("../../assets/library/menu-margarita-sm.webp"),
+  "menu-margherita": require("../../assets/library/menu-margherita-sm.webp"),
+  "menu-musserende": require("../../assets/library/menu-musserende-sm.webp"),
+  "menu-nachos": require("../../assets/library/menu-nachos-sm.webp"),
+  "menu-negroni": require("../../assets/library/menu-negroni-sm.webp"),
+  "menu-old-fashioned": require("../../assets/library/menu-old-fashioned-sm.webp"),
+  "menu-oliven": require("../../assets/library/menu-oliven-sm.webp"),
+  "menu-ostebrett": require("../../assets/library/menu-ostebrett-sm.webp"),
+  "menu-ostres": require("../../assets/library/menu-ostres-sm.webp"),
+  "menu-pho-bo": require("../../assets/library/menu-pho-bo-sm.webp"),
+  "menu-pils": require("../../assets/library/menu-pils-sm.webp"),
+  "menu-pommes": require("../../assets/library/menu-pommes-sm.webp"),
+  "menu-popkorn": require("../../assets/library/menu-popkorn-sm.webp"),
+  "menu-porter": require("../../assets/library/menu-porter-sm.webp"),
+  "menu-rodvin": require("../../assets/library/menu-rodvin-sm.webp"),
+  "menu-scones": require("../../assets/library/menu-scones-sm.webp"),
+  "menu-sjokoladekake": require("../../assets/library/menu-sjokoladekake-sm.webp"),
+  "menu-spekemat": require("../../assets/library/menu-spekemat-sm.webp"),
+  "menu-spritz": require("../../assets/library/menu-spritz-sm.webp"),
+  "menu-tacos": require("../../assets/library/menu-tacos-sm.webp"),
+  "menu-te": require("../../assets/library/menu-te-sm.webp"),
+  "menu-tiramisu": require("../../assets/library/menu-tiramisu-sm.webp"),
+  "menu-vn-iskaffe": require("../../assets/library/menu-vn-iskaffe-sm.webp"),
+  "menu-yoghurt": require("../../assets/library/menu-yoghurt-sm.webp"),
   "mote-1": require("../../assets/library/mote-1-sm.webp"),
   "mote-2": require("../../assets/library/mote-2-sm.webp"),
   "mote-3": require("../../assets/library/mote-3-sm.webp"),
@@ -1869,6 +1975,112 @@ export const PLACEHOLDER: Record<string, string> = {
     "data:image/webp;base64,UklGRkoAAABXRUJQVlA4ID4AAACwAQCdASoQAAoAA4BaJQBOgCHYg6sgAP7gCwrxNNMaut32Eu7K2cl75p3PDrB/dF/21DYtZN8qc7/nAKuoAA==",
   "library/meditasjon-7":
     "data:image/webp;base64,UklGRm4AAABXRUJQVlA4IGIAAACQAwCdASoQABgAPu1iqk2ppaQiMAgBMB2JQBWABCRISDJAOrqAAP7nwODUMye4FBaRZTbNvATuqxL8z8tmBj4xavnGmqFXRfXsbrcXQqpe2YVqYVYPD4b3vEUijGnng2rYAA==",
+  "library/menu-avokado":
+    "data:image/webp;base64,UklGRn4AAABXRUJQVlA4IHIAAADQAwCdASoQABYAPu1iqU2ppaOiMAgBMB2JYgAAW5xOYOlTNVrqFgAA/t6rvrzfdhdJnkh1qRYvBuAlx1N5moPvKoNgRmCkFss+FuBA/4DwC+gkqI6sKXjDBferClL2Ache/CsSqFAGrH5+KYZmm9VAAAA=",
+  "library/menu-banh-mi":
+    "data:image/webp;base64,UklGRu4AAABXRUJQVlA4IOIAAABQBACdASoQABgAPu1iqU2ppaOiMAgBMB2JbACdMoAlnhWf4rJ94Ljo3JqAAM3zZ5HX+e4N1CfLisBdK9pLkcvjoOr6uPPqsMXCx3gelvHq/zEM9OsuiZmb6wLY2qzp4v6zqxjZ7v6Mm8X/DmCyyuonVqzEXsy9TJ69pWF0ePWleev/UPWsmSk5zI46rs02yELoEih4k33UE3a9gX9nr3N7nAH3Qb5mpJuifeUlU9C4tNb4+3ZCKfptscn7zM92J4lLYdWBeRDvM8aHckC4qShhot6+VO1pVl4xLklHcFi5AAAA",
+  "library/menu-biff":
+    "data:image/webp;base64,UklGRnYAAABXRUJQVlA4IGoAAABQAgCdASoQAAoAA4BaJZACdAYu5vud4sz5XsAA/f09bJd04fuJkwGKtgrfoWCtOzGm5M167XlnmPI/2G7vHKjUFV7Tzb3r6MYXyRqmvO/htCkk/HyfG+amkQrayE4drjsTeRBqJoo8wAAA",
+  "library/menu-blaskjell":
+    "data:image/webp;base64,UklGRqQAAABXRUJQVlA4IJgAAABwBACdASoQABQAPu1iqU2ppaOiMAgBMB2JZAC7IKnguxgCbD5McajwPtr5EgD+7AALe5vchMRbw/hp608ZuMtC4H7h22VqPsz9LiRlisY36PIePnBh4r+Rf/jqdvHu238n7AXbpK99u0GTKNoItiy2auv/VZd8/dGfSPdrXdLNu1mmghBlmj1UdKuSawvGU9KIFT2mxEYAAA==",
+  "library/menu-brownie":
+    "data:image/webp;base64,UklGRmYAAABXRUJQVlA4IFoAAAAQAgCdASoQAAoAA4BaJQBOgCBbAa15wSqAAP5ms+ISpbhZ8QIQTa7yyNVI/zJFDsmIKqj4esC9bKS5hyW9kL3jEftX8Fzc3QZ6d/y3A0vvd/wjSjZemRkRIAA=",
+  "library/menu-burrata":
+    "data:image/webp;base64,UklGRmAAAABXRUJQVlA4IFQAAABwAwCdASoQABgAPu1iqk4ppaQiMAgBMB2JYwCdACHew29wzbwA/sNSbMCp0v2pJ3NleTV/TrmpxvOnGrx8+tAvG/GZZQQqTNOm8ZJ1NUpyG2gAAAA=",
+  "library/menu-cappuccino":
+    "data:image/webp;base64,UklGRm4AAABXRUJQVlA4IGIAAAAwAgCdASoQAAwAA4BaJZACdAEVNW2U9/tjgAD+9MMch6lzLeueZmerprJjonkWQZfBIaBVIG/LHQpX1ZMOFGK2NX/x0Vf+srUim4oVvS2G+SKKXsd67wrSqsibtbuzY4AAAA==",
+  "library/menu-cha-gio":
+    "data:image/webp;base64,UklGRuIAAABXRUJQVlA4INYAAABwBACdASoQABgAPu1iqU2ppaOiMAgBMB2JbACdMoRwAdA0VlxzK+SSaSygtAD+vlyK7lwLomsQb8i3e2jJk/PDayu2RMcoAPPaA8W82hBlylSLrJ+Gaw8gIIQOSIghF8ViD81oPRZeqbfNQCeuj2FR/mS8stx+HI1n+Zs/cTc9DJTOX6I1PwziFZHDtWJJ5kFN+XlxivevRegn/mZ3xf01aii/uv+qTEOla9Mr6PS8Zk5O2Au/XuLXnCXG2PxT4oKjqaUX0QagoWmgFcsSy0nhpebNzCAA",
+  "library/menu-chai":
+    "data:image/webp;base64,UklGRlYAAABXRUJQVlA4IEoAAAAwAgCdASoQAAoAA4BaJYwCdAYqNmpVn2cAAAD+9Inub2RxZrsP2AcE5A9CAYyZa+Q20/2n3mBAemKjz4qvDbRkFW2mgjHPSQAAAA==",
+  "library/menu-croissant":
+    "data:image/webp;base64,UklGRmwAAABXRUJQVlA4IGAAAABwAgCdASoQABAAA4BaJbACdGaAEDKX+uNDoUCgAP74sC7z1jcMjzPq+XzvZqT5+KR+PqjHgGqsrJvBSujp6BTJ7Af/tYQO2oO319W7F/51TBOOCjL+025fWF08yjJBwAA=",
+  "library/menu-diavola":
+    "data:image/webp;base64,UklGRnIAAABXRUJQVlA4IGYAAABQAgCdASoQAAoAA4BaJbACdAEUq0VnMCku1kAA/raj0UZlzcAOlKQUoskH29trgtMqBMyy/Ho9JEHsiF4q+8E78AQU8/QBm52FJKWQqebDbhyJh21vfCBEVnMmPbNrk03VddCAeAA=",
+  "library/menu-espresso":
+    "data:image/webp;base64,UklGRnAAAABXRUJQVlA4IGQAAADQAwCdASoQABgAPu1iqU2ppaQiMAgBMB2JZQAAW4VA/F8jUPF6Q3AA/uVqUoZIUcHs4582TvhvA2huwRET+1APWBs3qOL1xxOq3rM1x/7+haGiVOsi1Wluv3Mg7pjdeF2MyAAA",
+  "library/menu-espresso-martini":
+    "data:image/webp;base64,UklGRpQAAABXRUJQVlA4IIgAAAAQBACdASoQABgAPu1kqU2ppaQiMAgBMB2JZACsACHUnTqY838YeWfFEAD+9CoijlBZqYbpRWLBHYFNF2Xrd9VGPrMKshB1RDIVgON33lNsfCQYhUQjUNQ5TCkUl/2PZCu3xGPW06a5O6ixNe9Dn/juWLjHzhebNo6voLhRTpiPTSWNmxjWgAAA",
+  "library/menu-falafel":
+    "data:image/webp;base64,UklGRoAAAABXRUJQVlA4IHQAAABQAgCdASoQAAwAA4BaJbACdAYt9lJoXxDmMsAAzeiV69k59t4AjEwwXRnA1zgMA+V+4wSXmQr0/CmnzZZ7Ruv/lF5amakWS3jlmOXf5BS0/tmI2/5D/uSo1PENWQX1XSZ+9tMIC6uWG6FWVypLfGkAVqAAAA==",
+  "library/menu-fish-chips":
+    "data:image/webp;base64,UklGRsIAAABXRUJQVlA4ILYAAAAwBACdASoQABgAPu1iqU2ppaOiMAgBMB2JbACdAB08us8vWdb9af8ADJgA+/hVU01Zuxd2neUm+f/lgzJ/JrUoZH9z44kEBrML56GMC1wcRKQonVB4dMLVy/ragMBO5F4i9zwgqEcbNhuhuUwkxUGAm8Lk57r2/M+EPc0qanPdhf6RnfdPxZTIBN5sY8JHKU7wR5Ysak1wJckCmX5Lh1GKp3M5Br1RRPWhS+dN+gTm70uymzCAAA==",
+  "library/menu-fiskesuppe":
+    "data:image/webp;base64,UklGRmgAAABXRUJQVlA4IFwAAAAwAgCdASoQAAoAA4BaJbACdAEPh9tA7qgdAAD+63OM7r0sTpslGotP0mYTqSsa7lKuVRE4Hzbkn6jEeh8GxwZlOTaUwololKfsixzmSAprfwJGoO8Lw3cTVcoAAA==",
+  "library/menu-flat-white":
+    "data:image/webp;base64,UklGRm4AAABXRUJQVlA4IGIAAADwAwCdASoQABYAPu1iqU2ppaOiMAgBMB2JZwC+SCHZrbtjp7nlf4bwAP7ufrrudJxzLUHbRS+ZmbrWDpqq0yj9JfF6HqqTWOn4ud84ab3TIsMVI4Ny6kdAy2g4tQpbBmsuAA==",
+  "library/menu-gin-tonic":
+    "data:image/webp;base64,UklGRpwAAABXRUJQVlA4IJAAAABQBACdASoQABYAPu1iqU2ppaOiMAgBMB2JQBadMYsWz72LkUQaLnvHc7sAAP7uoMCNQet7xJEvwqTd90Bxp69F3MKZ8oyRMyhs1AKIOIG9en/GN1wRa1yQQtcky5xHncbjI9CDp2XNFgNHhVo7Iy549Y+yioLZGPkOMOZ8AXldZ5QfKNcUOGd8hKlL/smgAAA=",
+  "library/menu-gronn-te":
+    "data:image/webp;base64,UklGRnAAAABXRUJQVlA4IGQAAACwAwCdASoQABgAPu1iqk2ppaQiMAgBMB2JZACw7CGFHzwOqxg1yAD+IYIOooFNRp8PQ8q12vkX3oAShKTFlu0g4PISvvqw5GYoDs+XmtL3NPW2Hbo4zxbHIdQuYpxgVcOywgAA",
+  "library/menu-gulrotkake":
+    "data:image/webp;base64,UklGRrgAAABXRUJQVlA4IKwAAABQBACdASoQABgAPu1iqU2ppaOiMAgBMB2JaACdMoADf2cVK0S+KshGx7twAP7nw+hsdM1BM8IAK5xcpWZUy/oYHpACIncv8nLKITb7U824cWyIhuRFPmJcxr/NTUBvqDIPBKwoS2F2nf5OJWUzeAqViPK4hde6aLRnPuMz/k281ePf49yidIcGBijTlnQN7hEj8cBPjKfnVNKvF6fdwkp6D7rdM6K9ebASh4AA",
+  "library/menu-hvitvin":
+    "data:image/webp;base64,UklGRmQAAABXRUJQVlA4IFgAAADQAQCdASoQAAoAA4BaJZQCdABiNHzIAAD+0OwxBMr5fRklE02gPKiH8cksL9HXiEKRJb1yIABOXlgufXuQFDrgF/SdtSJtnTNC0m9Lt96JxSHGijy2EAAA",
+  "library/menu-ipa":
+    "data:image/webp;base64,UklGRmgAAABXRUJQVlA4IFwAAAAQBACdASoQABYAPu1iqU2ppaOiMAgBMB2JQBhQBDwBTkrGKPHQNH494AD+9WeftX8DdDpn5c7VnOA3o3vrYZvfPoCBgstUFUesf4hYFcETeteSAybhCCTwH4AAAA==",
+  "library/menu-iskaffe":
+    "data:image/webp;base64,UklGRmoAAABXRUJQVlA4IF4AAADwAQCdASoQAAoAA4BaJYgCdACUd+YLRAAA/C+0LEes2yuZoUn1krynGwa9YdMRMkPPiAREESJcrgVJNjHX3I4JdY+hgIrt2ObocnMSygTfQUIX9qINLYQQygbDgAAA",
+  "library/menu-kaffe":
+    "data:image/webp;base64,UklGRjoAAABXRUJQVlA4IC4AAADQAQCdASoQAAoAA4BaJZwAAudlmEZloAD++E73rxJuW0xD22UVjpnk5APzgAAA",
+  "library/menu-kakao":
+    "data:image/webp;base64,UklGRsoAAABXRUJQVlA4IL4AAABwBACdASoQABgAPu1iqU2ppaOiMAgBMB2JYgAFExbpT7+rRykOIT4JVOCPCAD0WtayV4PDSCGsvC6bxNJm2IN/XNce/vLo9WVIKcW5fN8e/3O0H6m2DPvG3UDN/n9zPZoXMiWn7iy0CjcPWyrfY8nAMndPDPZqU1iwdf4taF5QSiZH+M75E9hF7ZN2etcPHoJ4v3m90Deb4cbVR8riC2UAOVKZ+kvOLHYGOt6uoN2nTSaXk1JxuF4T8yYjqJAA",
+  "library/menu-kamskjell":
+    "data:image/webp;base64,UklGRsgAAABXRUJQVlA4ILwAAADwBACdASoQABgAPu1iqU2ppaOiMAgBMB2JbACdMoRwAdDRCFBOmK2uQW0MII17XMAA/tmXiTlf5OSluIpj3dndLsNvjgrDi2zR8WBt8RfBjtV4fSquaL0DgtiC7as8H0L4a1qmp6U6m/NL4+01wqt1StOhbkXz59v87WC77WEXpWNUNwyd2+SpDxotafB7zw3cH/2ijdEUYcsppHldPl3LXYQalwYtphtNpKNBmYfCcsnxGWJxUR82hgAAAA==",
+  "library/menu-kanelbolle":
+    "data:image/webp;base64,UklGRmgAAABXRUJQVlA4IFwAAAAQAgCdASoQAAwAA4BaJbACdADpMvbhmNCAAPs8xQct8JMPaDb1lJgORkeDHGyXJXf3gCnzZF/7GyBnG5G+1Zt/DYYVMK7p8+J+F/TOuO9DEXraIDoVZ3VXxRAAAA==",
+  "library/menu-kyllingvinger":
+    "data:image/webp;base64,UklGRrQAAABXRUJQVlA4IKgAAAAQBACdASoQABQAPu1iqU2ppaOiMAgBMB2JbACdL1ABHN6RDHrpKpkk/AD+eJxkl+fyA5CAdogwUU8EjAUQtYpKUWM1bqOc/8EPCQuPqwF22a9pLK7DEsMyu+nJMqbT7xOKDxUYRZxwKPl5vtA0+elBWKbR38XBd1OTA35cm43x/q+P69lN4ZYQhZsmpWdaZNC2MrpsgFrqVPEzvdmpWQOyW9srr8HECAA=",
+  "library/menu-latte":
+    "data:image/webp;base64,UklGRo4AAABXRUJQVlA4IIIAAAAwBACdASoQABgAPu1iqU2ppaOiMAgBMB2JQBfnA9E8eNKiOm4WaJy1igAA/r/1+bkQ0iRLLNVIUO4ZZBHah0ZCcCCRp1nrR8LI6t6VqogCTLkP1hXnhcSWbKyJlLFd4YLkW6Ez8PZw1FeL3pHXdcBNCP0JGp8mWdUmUKQVzPZ44AAA",
+  "library/menu-margarita":
+    "data:image/webp;base64,UklGRpIAAABXRUJQVlA4IIYAAABwBACdASoQABgAPu1iqU2ppaQiMAgBMB2JQBOkERwVQv7d7d7WT0BSXZ8uAAD+8wF73+jBmunYuK55RzW/ETAftzox4/aPSNMa2hLpjSTLshhSB98ozhATgibSS/dMbm2xumnsy7UJ4wYFz0oIDdnZUf9QcdevO+PeLzSdmpOOQGj2p+AAAA==",
+  "library/menu-margherita":
+    "data:image/webp;base64,UklGRngAAABXRUJQVlA4IGwAAAAQAgCdASoQAAoAA4BaJbACdAEXb6ffYrf4APoQoAJqJ/8NT01dRROlE3YGBwP8tfMjkc7ba88yEUdsaZgfIL6gknmMzLt9LU7InBcQpUKOuVpmegbYyw1MU81BJj+Snx7/el3I+qvx35AAAAA=",
+  "library/menu-musserende":
+    "data:image/webp;base64,UklGRsYAAABXRUJQVlA4ILoAAACwBACdASoQABgAPu1iqU2ppaOiMAgBMB2JYwC06dwLhUYt/4akheZJopVD02+AAP7AX6MYFoXnm+wHoMT1D5ZxDL+oXu185VC+fVjiNoBSWM6EqAP/4A7uogIWR3nffRH9V9NeCOjPQ2ORvNJoKuvu6tudvyeBy9SGX/4mPsHwJ3SpE2LhXiF/avKCz/fIQ3kFxrPg0FhO777I/LdMg3s7hbUmTXjUy9L1+BFD2b8vV336Nu2OiQwoAAA=",
+  "library/menu-nachos":
+    "data:image/webp;base64,UklGRnwAAABXRUJQVlA4IHAAAADQAQCdASoQAAoAA4BaJbACdLoAAQxQ8AD+5gdzgCVN9HjspecGtDVL356H+X1eZhwrFl5QHjlv0j+bdidrL5pRA7m/zz981QLFj8NLsWPWzwYazh//m4fV+9250NqSLCSy4V67qzb+GOyt+ljoAAAA",
+  "library/menu-negroni":
+    "data:image/webp;base64,UklGRsgAAABXRUJQVlA4ILwAAACQBACdASoQABgAPu1iqU2ppaOiMAgBMB2JaACdIMnOAAMQ8PIy6C0aoluRU4AA/vDq6oRiXuXrbzEHIh2K17ObB8xs4+Otp3pL+TmkrSkbLEkl5fYdEGLwYDql47+UTD+/Dq+WjmBZ2DemFK1ng8seo15jZWUbAnLBBOW1rC8QD1Y4sT2VYAygQ6rA4nebXZmv4HEN71BVyfBT2G9ugRfAi8zttTZw+PiCa7SMKPuCHur+L+3lQ8BF6qAAAA==",
+  "library/menu-old-fashioned":
+    "data:image/webp;base64,UklGRpAAAABXRUJQVlA4IIQAAAAwBACdASoQABwAPu1iqk2ppaQiMAgBMB2JZgC7ACIGtaxgsEuvVn7BAwAA/u+0jNicaII8tzFaBT+0nTuY+pmFnU9eI6DyxRJu63LJZvnMmJ+ILO+dsK1YlGwQdIbuW/tmueF01Ot8EVfPHqVkP/oQv4wAK53D64Kmy62px/95+Ak/AAA=",
+  "library/menu-oliven":
+    "data:image/webp;base64,UklGRloAAABXRUJQVlA4IE4AAADwAQCdASoQAAoAA4BaJaAAArP+eY9Z7EgA/tzqRsmnBl1wKpqwAR7dcNLInjSIDh77ndWGRfOlAwYfRKeNTBuq3YT0NJl79MLqbGZVgAA=",
+  "library/menu-ostebrett":
+    "data:image/webp;base64,UklGRmYAAABXRUJQVlA4IFoAAADwAQCdASoQAAoAA4BaJZgCdAEVuFNxWwAA/uxae/IDidpGpdelDsPfcrrMQIcLoSr6w9UH7ij1t4dy2CU80Airq43+lGs0vNRzGQ2CHl8J9SXThf0q9aJEYAA=",
+  "library/menu-ostres":
+    "data:image/webp;base64,UklGRoYAAABXRUJQVlA4IHoAAAAQBACdASoQABgAPu1iqU2ppaOiMAgBMB2JZQAD5GoveJHbkpi6k3DBAAD2o03C6/WybG3JNvoMft8C3axnsPIcjv+XsdRKcC2342Jx5LHyacHswgQq6eGcR2WIxCK/7VAOgRwmkzEeZ5CseO/tVe1PUknIAUTYnk0AAA==",
+  "library/menu-pho-bo":
+    "data:image/webp;base64,UklGRqYAAABXRUJQVlA4IJoAAAAwBACdASoQABgAPu1iqU2ppaOiMAgBMB2JZgCdMoABpzmsMYBzKNITgAAA/ofvLN+4RepqgXr1oBmkVdT7vWhRVBlHNUZa0Fp7f29Vc9hnW1VXl0LcWCEFbBT+yU0B35OJ9CNrBwRjwsxs8cRVjns9jGR+7rCEoKpT6rB1J+LV6vTcKGsq8KZxVnOFDXQvH4nQaNc+6Fw8awAA",
+  "library/menu-pils":
+    "data:image/webp;base64,UklGRm4AAABXRUJQVlA4IGIAAAAQAgCdASoQAAoAA4BaJbACdAENy4AKksCAAP7CrTa76WEWGF99Wz0TslS97cjFGj9x9kO/2K73gPjfn+LdL/zKtp4jLSRas4nkJ0PeUzRdhG2lBgO5JYbk1Wo8R+RtB4eAAA==",
+  "library/menu-pommes":
+    "data:image/webp;base64,UklGRnQAAABXRUJQVlA4IGgAAACQAgCdASoQAAoAA4BaJbACdLoAEJeYhAfG1stFgAD+yf8Ki0tBBUH7K9qP50/HQRQK7SVzt6dKOWFBNNKWjlQNrDFBWbNzEsJ/RuWfxuHwqmnx7IuRY1xfpz/gJW/3K0mn4oBQc+AAAA==",
+  "library/menu-popkorn":
+    "data:image/webp;base64,UklGRjoAAABXRUJQVlA4IC4AAABQAQCdASoQAAoAA4BaJZwABDOAAP7w1JwakR7HfJ8/PbeLCR6U7s2ZqL0J2gAA",
+  "library/menu-porter":
+    "data:image/webp;base64,UklGRs4AAABXRUJQVlA4IMIAAADwBACdASoQABYAPu1iqU2ppaOiMAgBMB2JbACdMoRwGQgFPwKXjxIXD9JQJdENIAAA/uXby8TmyKa/rRKRz0Jr48dbGwjdkY2031I5b7n+6CsX3hY/3DY0Y6begI26Lssz0p/4Pl+Wri1U28vMrjbu5CrRwqwOL69GjjDZKdcpzwX4yYOVFUZOxnyQMiOY69M+qXiVmhN3+TSD4EWR55mzULeqhVbpxNCY/hFF85tadSg6sxPG/HtWPuZrRWKohumAAA==",
+  "library/menu-rodvin":
+    "data:image/webp;base64,UklGRmoAAABXRUJQVlA4IF4AAADwAwCdASoQABgAPu1orU6ppiSiMAgBMB2JZwAAW9vwk8c9v3Ogy+SwAP7yn/0nDYAd+4JYOCelXiRvffTy50mWT0wUkg5B9f4wFSy/4E+xfQcHeWKeD8NF7OrBjAAA",
+  "library/menu-scones":
+    "data:image/webp;base64,UklGRmwAAABXRUJQVlA4IGAAAADwAQCdASoQAAoAA4BaJbACdADwuYYUCEAA/u9ociXP+qV2XWTrKDkpZOtgq3hq19o7kdQgx4aAkNj2NwxeVzHYa6mujoGFu4V/4uZweQ2XLLo9Ziccg8N70UihNNfQAAA=",
+  "library/menu-sjokoladekake":
+    "data:image/webp;base64,UklGRnIAAABXRUJQVlA4IGYAAACwAwCdASoQABgAPu1iqk2ppaQiMAgBMB2JYwAAOTJfN1blpXBq2ABrh4L1Q9K1nj1sj/fQCC2k9UyBaVDszrwgIyLPBnKiAFTj3yAofyPE6bvRmcgL8klXpAMeac5igpeLyhxgAAA=",
+  "library/menu-spekemat":
+    "data:image/webp;base64,UklGRnwAAABXRUJQVlA4IHAAAAAwAgCdASoQAA4AA4BaJbACdAYu5oDh1GN6MAD8j0R4kjmMZdt/LxP6mXYf9zjxGcGqyO4C4onhR+OcuIrpqFgYzeuyB2NLbAoAb8iLz2KXKT5LM0Gb/ohAkeJgoyH5+PsYzb7+53efRQij9UHBGAAA",
+  "library/menu-spritz":
+    "data:image/webp;base64,UklGRpAAAABXRUJQVlA4IIQAAADwAwCdASoQABwAPu1qrU8ppiQiMAgBMB2JbACdMoR2WAPHKPbGkFgAAM4ujLmFssDzB1pCK8Boi/Iw70op7Mg3nvEf15KEVQf8T95yCzPlMcYj0veSzSajmchvfawpHLfanhVEMlVeZqd9JL7kSbSXqBc2urySyXrdu6wRbwGIbLxAAAA=",
+  "library/menu-tacos":
+    "data:image/webp;base64,UklGRnQAAABXRUJQVlA4IGgAAADwAQCdASoQAAoAA4BaJZgCdAChrmNHc8AA98p2Ih1RdSLoEWg53mEdrJst720MbJkYnCS59dGDDzvl+zton4Xlrd9ddZe6/6yUBzeNt+QJGJFtg0EUoSeW/mddA5bJrHsyszN1OeoAAA==",
+  "library/menu-te":
+    "data:image/webp;base64,UklGRmYAAABXRUJQVlA4IFoAAADwAQCdASoQAAoAA4BaJQBOgBt1RHvZjgAA/vhtBoAmkuT/xdHUKstNJTBL8HAaciPnLYxVstbjycKbRfVsDKQDwarS9bxg4+NbO/qwn/hS7gcVbsDLDJ3YAAA=",
+  "library/menu-tiramisu":
+    "data:image/webp;base64,UklGRnwAAABXRUJQVlA4IHAAAAAQAgCdASoQAAoAA4BaJbACdAYu5YqXlpCgAP7vhGDwXIPe5VKVgcLFaILIo6hVbI1Qmkq+rza+HpHDvpkw/tjeKbk5dzoMMg7K5Azjq+2RCpjKjKj7LraocDtLvpRfVlmHwGKQR6erMP4shOs4PcAA",
+  "library/menu-vn-iskaffe":
+    "data:image/webp;base64,UklGRoIAAABXRUJQVlA4IHYAAABQBACdASoQABgAPu1kqU2ppaQiMAgBMB2JZAC7ACHhvflzoWHve6ttMowAAP5SwtGxbhJhZ0rTkVYcc2TOy0ZaE9ZSwCJIjyqrvJvM1JKtkctcXYDw7Rve2NHpxKN2eN6rN5WnO8AyTy5cyN4gQbUxd9tNgAAA",
+  "library/menu-yoghurt":
+    "data:image/webp;base64,UklGRq4AAABXRUJQVlA4IKIAAAAwBACdASoQABgAPu1iqU2ppaOiMAgBMB2JQBdmUASywq5Mwifh1LkTA8AA/mYL16G/LZSOMk5A/6GKyt3dQ3y5jfPZzJsHOL00/lwaU+mF3JKC0uwBtcbGMIH2IwBGy7wve4yHrU/10KqAuCPOMz8aC04v6/O9Rbfj/ggHaHWHuP6Wx/XwsR6xXQe2ZAycm61I/4XPgBsyR6bIlhGw+aQAAAA=",
   "library/mote-1":
     "data:image/webp;base64,UklGRooAAABXRUJQVlA4IH4AAADwAwCdASoQABgAPu1iqk2ppaQiMAgBMB2JZwAANxlBv3NN2p/AxuYsAPxUY9YW+phLPKbuuDclBeZr/fE8xOdkbf7+Pln7G33p35VKZ68z62YOYnZ//CrX7tWKuCtmPducPFgiIr6UWZj9jqJMS1gLFBCVrxRcGCA5L6dOwAA=",
   "library/mote-2":

@@ -615,3 +615,63 @@ Photos added before Phase 11 (`person-*`, `venue-cafe/bar/restaurant/books/galle
 | rest-kokk-1.webp     | Roman                            | https://unsplash.com/photos/a-chef-works-in-a-modern-kitchen-with-gold-lamps-twRLNRkUkxQ                                                               |
 | rest-kokk-2.webp     | Ali Aziz                         | https://unsplash.com/photos/woman-receiving-pizza-from-restaurant-chef-uUwJF7aAa7E                                                                     |
 | rest-kokk-3.webp     | Fumiaki Hayashi                  | https://unsplash.com/photos/chef-preparing-food-behind-a-counter-with-warm-lights--S9DvsRu05k                                                          |
+
+## Menu dishes (2026-11-17)
+
+Dish photos for menu items (ledger 0456), Unsplash free licence.
+
+| File                       | Photographer             | Source                                                                                                  |
+| -------------------------- | ------------------------ | ------------------------------------------------------------------------------------------------------- |
+| menu-avokado.webp          | Caroline Green           | https://unsplash.com/photos/a-white-plate-topped-with-a-piece-of-bread-covered-in-guacamole-C4nT6Ulm0ao |
+| menu-banh-mi.webp          | Luke Tokaryk             | https://unsplash.com/photos/a-sandwich-with-meat-lettuce-and-sauce-on-a-plate-nRT6m3GGC4c               |
+| menu-biff.webp             | Paras Kapoor             | https://unsplash.com/photos/a-plate-of-steak-and-french-fries-on-a-table-74Yok80QXyY                    |
+| menu-blaskjell.webp        | Nafsika G.               | https://unsplash.com/photos/steamed-mussels-in-a-flavorful-broth-with-herbs-uagmnrb7e5w                 |
+| menu-brownie.webp          | Arwen                    | https://unsplash.com/photos/a-rich-chocolate-brownie-on-a-white-plate-yBNwcGFDqBk                       |
+| menu-burrata.webp          | Klara Kulikova           | https://unsplash.com/photos/white-round-ceramic-plate-with-white-cream-MnHjM1XiTrc                      |
+| menu-cappuccino.webp       | Joe Hepburn              | https://unsplash.com/photos/cup-of-cappuccino-EcWFOYOpkpY                                               |
+| menu-cha-gio.webp          | tommao wang              | https://unsplash.com/photos/fried-spring-rolls-on-plate-5L-7s-OSjlo                                     |
+| menu-chai.webp             | blackieshoot             | https://unsplash.com/photos/a-cup-of-coffee-with-cinnamon-and-star-anise-on-top-hlgKiC9t4N8             |
+| menu-croissant.webp        | personalgraphic.com      | https://unsplash.com/photos/a-croissant-sitting-on-top-of-a-white-surface-VzUE5RtCuBA                   |
+| menu-diavola.webp          | amirali mirhashemian     | https://unsplash.com/photos/pepperoni-pizza-on-a-wooden-tray-w1iMfs6yxuo                                |
+| menu-espresso.webp         | Nathan Dumlao            | https://unsplash.com/photos/white-ceramic-cup-with-brown-liquid-dAYJfrtVjh0                             |
+| menu-espresso-martini.webp | Kike Salazar N           | https://unsplash.com/photos/clear-wine-glass-with-black-liquid-sui13fYo_NM                              |
+| menu-falafel.webp          | Zoshua Colah             | https://unsplash.com/photos/mediterranean-lunch-plate-with-falafel-3jLoOyaleKg                          |
+| menu-fish-chips.webp       | Winston Tjia             | https://unsplash.com/photos/a-white-plate-topped-with-fried-fish-and-fries-DyGo_AGOQwI                  |
+| menu-fiskesuppe.webp       | Milan Trninic            | https://unsplash.com/photos/a-bowl-of-creamy-orange-soup-with-fish-and-vegetables-F9bp_6QmzzM           |
+| menu-flat-white.webp       | Haberdoedas              | https://unsplash.com/photos/a-white-cup-of-latte-with-latte-art-yVwtB6uOBRI                             |
+| menu-gin-tonic.webp        | Rochelle Lee             | https://unsplash.com/photos/a-clear-cocktail-with-ice-and-lemon-slice-ku9KvMzd8xY                       |
+| menu-gronn-te.webp         | Iryna Marienko           | https://unsplash.com/photos/a-cup-of-green-tea-next-to-a-spoon-lXoAF3lKjE4                              |
+| menu-gulrotkake.webp       | Orkun Orcan              | https://unsplash.com/photos/a-piece-of-carrot-cake-on-a-plate-with-a-fork-EvfXG4aK9d8                   |
+| menu-hvitvin.webp          | Big Dodzy                | https://unsplash.com/photos/clear-wine-glass-with-yellow-liquid-saw2ahar17s                             |
+| menu-ipa.webp              | Jan Gunnar Nygård        | https://unsplash.com/photos/a-glass-of-beer-on-a-black-table-6C6PNsRxqMg                                |
+| menu-iskaffe.webp          | Demi DeHerrera           | https://unsplash.com/photos/glass-cup-filled-with-ice-latte-on-tabletop-L-sm1B4L1Ns                     |
+| menu-kaffe.webp            | Ceyda Çiftci             | https://unsplash.com/photos/black-ceramic-mug-with-brown-liquid-fr3Nttk364E                             |
+| menu-kakao.webp            | Elena Leya               | https://unsplash.com/photos/a-cup-of-hot-chocolate-with-marshmallows-on-a-saucer-NtmNhrdfs-o            |
+| menu-kamskjell.webp        | Geoffrey Moffett         | https://unsplash.com/photos/seared-scallops-are-elegantly-presented-on-a-shell-HnSt26SdiaQ              |
+| menu-kanelbolle.webp       | David Eduardo Lopez Diaz | https://unsplash.com/photos/three-sweet-cinnamon-rolls-on-a-black-plate-7Qv51sxpghM                     |
+| menu-kyllingvinger.webp    | Chad Montano             | https://unsplash.com/photos/buffalo-chicken-wings-appetizer-gE28aTnlqJA                                 |
+| menu-latte.webp            | Marina Piano             | https://unsplash.com/photos/clear-glass-mug-with-white-liquid-LL1EA1cdP1w                               |
+| menu-margarita.webp        | Ani Augustine            | https://unsplash.com/photos/margarita-cocktail-with-lime-on-a-reflective-surface-fQ3f7UOnNSg            |
+| menu-margherita.webp       | Alfonso Scarpa           | https://unsplash.com/photos/a-delicious-pizza-with-mozzarella-tomato-sauce-and-fresh-basil-qPorOVdCFzc  |
+| menu-musserende.webp       | Karol Chomka             | https://unsplash.com/photos/two-glasses-of-champagne-on-a-table-YY-phoTAZjw                             |
+| menu-nachos.webp           | Zoshua Colah             | https://unsplash.com/photos/nachos-with-cheese-and-jalapeno-peppers-ZA3Du_y2ydc                         |
+| menu-negroni.webp          | Molly Keesling           | https://unsplash.com/photos/clear-drinking-glass-with-red-liquid-on-white-table-ptWu-xNAOlw             |
+| menu-old-fashioned.webp    | Tomi Saputra             | https://unsplash.com/photos/a-dark-amber-cocktail-with-orange-peel-garnish-NFaDWUXM3mU                  |
+| menu-oliven.webp           | blackieshoot             | https://unsplash.com/photos/a-white-bowl-filled-with-green-olives-on-a-table-1Ek2sUGv8S4                |
+| menu-ostebrett.webp        | Daniel                   | https://unsplash.com/photos/a-plate-of-cheese-and-crackers-on-a-wooden-table-uftGdvvlsys                |
+| menu-ostres.webp           | okeykat                  | https://unsplash.com/photos/three-oysters-on-ice-on-a-black-plate-kTgcnTj2NdI                           |
+| menu-pho-bo.webp           | Vincent Yap              | https://unsplash.com/photos/beef-pho-bowls-on-wooden-table-Z_agFOyEY5A                                  |
+| menu-pils.webp             | YesMore Content          | https://unsplash.com/photos/clear-drinking-glass-with-beer-0wElfttgYbM                                  |
+| menu-pommes.webp           | lap lap                  | https://unsplash.com/photos/a-basket-of-golden-french-fries-AQO133kB9fc                                 |
+| menu-popkorn.webp          | Edgar Soto               | https://unsplash.com/photos/white-popcorn-in-white-ceramic-bowl-brXWdf2HuOA                             |
+| menu-porter.webp           | Jose Gaspar              | https://unsplash.com/photos/stout-beer-with-thick-foam-egRrALXpCsI                                      |
+| menu-rodvin.webp           | Saman Taheri             | https://unsplash.com/photos/red-wine-in-clear-wine-glass-MXMs8q2OjeA                                    |
+| menu-scones.webp           | Marina Hannah            | https://unsplash.com/photos/two-scones-with-cream-and-jelly-on-a-white-plate-zhQy5_XkwQY                |
+| menu-sjokoladekake.webp    | yiseul han               | https://unsplash.com/photos/a-slice-of-chocolate-cake-on-a-white-plate-_K-yx6wIgt8                      |
+| menu-spekemat.webp         | Mike Houser              | https://unsplash.com/photos/a-wooden-cutting-board-topped-with-meats-and-cheeses-yKYguw7dE6U            |
+| menu-spritz.webp           | Viacheslav Shatunov      | https://unsplash.com/photos/refreshing-orange-cocktail-with-ice-and-fruit-48U_WI5udaI                   |
+| menu-tacos.webp            | Frankie Lopez            | https://unsplash.com/photos/a-wooden-plate-topped-with-three-tacos-and-a-lime-_j4S4V2C8ew               |
+| menu-te.webp               | Yana                     | https://unsplash.com/photos/white-ceramic-teacup-on-white-ceramic-saucer-bhKdRjYJ1CA                    |
+| menu-tiramisu.webp         | Jay                      | https://unsplash.com/photos/a-slice-of-tiramisu-cake-with-cocoa-and-chocolate-shavings-Rjc0kwgs1ps      |
+| menu-vn-iskaffe.webp       | Nguyen Phuc Hau          | https://unsplash.com/photos/a-layered-iced-coffee-with-cream-and-ice-gQemdyCSA5A                        |
+| menu-yoghurt.webp          | Natalie Behn             | https://unsplash.com/photos/a-bowl-of-yogurt-with-blackberries-and-granola-qj_zfYm-sdI                  |
