@@ -4,19 +4,37 @@
 // contract, src/fixtures/menus/types.ts): the offerings as chips, when the
 // chosen one is served, its first items with prices, and "Vis hele menyen"
 // for the menu page (/place/[id]/menu). A venue without a menu says so.
+// A photographed item shows a thumbnail; a tap grows its photo out of it into
+// the viewer, which pages through the list's other photographed items (0458).
 import type { Href } from "expo-router";
-import { useState } from "react";
-import { View } from "react-native";
+import { useCallback, useState } from "react";
+import { type ImageSourcePropType, View } from "react-native";
 
-import { Badge, Chip, Text, Button } from "@/components/ui";
+import {
+  Badge,
+  Button,
+  Chip,
+  LoadingImage,
+  measureRect,
+  PhotoViewer,
+  Pressable,
+  type Rect,
+  Text,
+} from "@/components/ui";
 import type { MockPlace } from "@/fixtures";
+import { libImage } from "@/fixtures/images";
 import {
   isMenuVenue,
   menuForPlace,
+  menuItemImage,
   type MockMenuItem,
   type MockMenuOffering,
 } from "@/fixtures/menus";
 import { formatMoney } from "@/lib/format";
+
+/** Thumbnail sizes in px: the menu page, and the page section's short list. */
+const THUMB = 64;
+const THUMB_COMPACT = 48;
 
 /** How many items the page shows before "Vis hele menyen". */
 export const MENU_PREVIEW_ITEMS = 4;
@@ -88,21 +106,111 @@ export function OfferingChips({
   );
 }
 
-/** One item: name and price on a line, then sizes, words, note and labels. */
+/** The viewer for menu photos: `open(list, item, from)` shows every
+ *  photographed item of `list`, starting at `item`, grown out of `from`. */
+export function useMenuPhotos() {
+  const [photos, setPhotos] = useState<ImageSourcePropType[]>([]);
+  const [index, setIndex] = useState<number | null>(null);
+  const [from, setFrom] = useState<Rect | null>(null);
+  const open = useCallback(
+    (list: readonly MockMenuItem[], item: MockMenuItem, rect: Rect | null) => {
+      const keys = list.flatMap((i) => {
+        const key = menuItemImage(i);
+        return key ? [{ item: i, key }] : [];
+      });
+      const at = keys.findIndex((k) => k.item === item);
+      if (at < 0) return;
+      setPhotos(keys.map((k) => libImage(k.key)));
+      setFrom(rect);
+      setIndex(at);
+    },
+    [],
+  );
+  const viewer = (
+    <PhotoViewer
+      photos={photos}
+      index={index}
+      onClose={() => setIndex(null)}
+      label="Bilder fra menyen"
+      from={from}
+    />
+  );
+  return { open, viewer };
+}
+
+/** One item: name and price on a line, then sizes, words, note and labels;
+ *  its photo's thumbnail on the right when it has one. */
 export function MenuItemRow({
   item,
   compact = false,
+  onPhoto,
 }: {
   item: MockMenuItem;
   /** The page section: one line of description, no labels. */
   compact?: boolean;
+  /** Opens the photo, grown out of the thumbnail's window rect. */
+  onPhoto?: (from: Rect | null) => void;
 }) {
   const sizes = variantsLabel(item);
   // An item without a price always says why (part of a set menu, free), so
   // the note shows in the page section too.
   const showNote = item.note && (!compact || (!item.price && !sizes));
+  const photo = menuItemImage(item);
+  const size = compact ? THUMB_COMPACT : THUMB;
   return (
-    <View accessible accessibilityLabel={menuItemLabel(item)} className="gap-1">
+    <View className="flex-row items-start gap-3">
+      <MenuItemText
+        item={item}
+        compact={compact}
+        sizes={sizes}
+        showNote={!!showNote}
+      />
+      {photo ? (
+        <Pressable
+          accessibilityRole="imagebutton"
+          accessibilityLabel={`Vis bilde av ${item.name}`}
+          hitSlop={8}
+          disabled={!onPhoto}
+          onPress={(e) =>
+            measureRect(e.currentTarget as unknown as View, (rect) =>
+              onPhoto?.(rect),
+            )
+          }
+        >
+          <View
+            className="overflow-hidden rounded-sm"
+            style={{ width: size, height: size }}
+          >
+            <LoadingImage
+              source={libImage(photo)}
+              thumb
+              contentFit="cover"
+              style={{ width: size, height: size }}
+            />
+          </View>
+        </Pressable>
+      ) : null}
+    </View>
+  );
+}
+
+function MenuItemText({
+  item,
+  compact,
+  sizes,
+  showNote,
+}: {
+  item: MockMenuItem;
+  compact: boolean;
+  sizes: string | undefined;
+  showNote: boolean;
+}) {
+  return (
+    <View
+      accessible
+      accessibilityLabel={menuItemLabel(item)}
+      className="flex-1 gap-1"
+    >
       <View className="flex-row items-start justify-between gap-3">
         <Text variant="label" weight="semibold" className="flex-1">
           {item.name}
@@ -151,6 +259,7 @@ export function MenuSection({
   onNavigate: (href: Href) => void;
 }) {
   const [active, setActive] = useState(0);
+  const photos = useMenuPhotos();
   if (!isMenuVenue(place)) return null;
   const menu = menuForPlace(place.id);
   const offering = menu?.offerings[active] ?? menu?.offerings[0];
@@ -181,9 +290,15 @@ export function MenuSection({
           ) : null}
           <View className="gap-4">
             {preview.map((it) => (
-              <MenuItemRow key={it.name} item={it} compact />
+              <MenuItemRow
+                key={it.name}
+                item={it}
+                compact
+                onPhoto={(from) => photos.open(preview, it, from)}
+              />
             ))}
           </View>
+          {photos.viewer}
           <View className="pt-1">
             <Button
               label="Vis hele menyen"

@@ -15,6 +15,7 @@ import {
   NO_MENU_TEXT,
   OfferingChips,
   offeringIndex,
+  useMenuPhotos,
 } from "@/components/place/MenuSection";
 import { RouteHeader } from "@/components/RouteHeader";
 import { pageBody, Screen, Text } from "@/components/ui";
@@ -36,6 +37,8 @@ export default function MenuScreen() {
     offeringIndex(asked, menu?.offerings.length ?? 0),
   );
   const offering = menu?.offerings[active] ?? menu?.offerings[0];
+  // A tapped photo pages through its section's photographed items (0458).
+  const photos = useMenuPhotos();
 
   return (
     <Screen edges={["top"]}>
@@ -72,7 +75,11 @@ export default function MenuScreen() {
                       {s.title}
                     </Text>
                     {s.items.map((it) => (
-                      <MenuItemRow key={it.name} item={it} />
+                      <MenuItemRow
+                        key={it.name}
+                        item={it}
+                        onPhoto={(from) => photos.open(s.items, it, from)}
+                      />
                     ))}
                   </View>
                 ))}
@@ -84,6 +91,7 @@ export default function MenuScreen() {
           </>
         )}
       </ScrollView>
+      {photos.viewer}
     </Screen>
   );
 }

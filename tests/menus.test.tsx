@@ -41,6 +41,8 @@ jest.mock("expo-router", () => ({
     canGoBack: () => true,
   },
   useLocalSearchParams: () => mockParams,
+  // The photo viewer's status bar style registers on focus.
+  useFocusEffect: () => {},
 }));
 
 const METRICS = {
@@ -349,5 +351,39 @@ describe("menu item photos (0456)", () => {
   it("looks an item up by its name and leaves others without one", () => {
     expect(menuItemImage({ name: "Cappuccino" })).toBe("menu-cappuccino");
     expect(menuItemImage({ name: "Ingen slik rett" })).toBeUndefined();
+  });
+});
+
+describe("menu thumbnails (0458)", () => {
+  const p1Items = menuForPlace("p1")!.offerings[0]!.sections.flatMap(
+    (s) => s.items,
+  );
+  const shot = p1Items.find((i) => menuItemImage(i));
+  const bare = p1Items.find((i) => !menuItemImage(i));
+
+  it("show a thumbnail for a photographed item and none for the others", () => {
+    expect(shot).toBeTruthy();
+    expect(bare).toBeTruthy();
+    mockParams = { id: "p1" };
+    render(<MenuScreen />, { wrapper });
+    expect(
+      screen.getByRole("imagebutton", { name: `Vis bilde av ${shot!.name}` }),
+    ).toBeTruthy();
+    expect(
+      screen.queryByRole("imagebutton", { name: `Vis bilde av ${bare!.name}` }),
+    ).toBeNull();
+    // The item still reads whole to a screen reader beside its thumbnail.
+    expect(screen.getByLabelText(menuItemLabel(shot!))).toBeTruthy();
+  });
+
+  it("a tapped thumbnail opens the menu's photo viewer", () => {
+    mockParams = { id: "p1" };
+    render(<MenuScreen />, { wrapper });
+    expect(screen.queryByLabelText("Bilder fra menyen")).toBeNull();
+    fireEvent.press(
+      screen.getByRole("imagebutton", { name: `Vis bilde av ${shot!.name}` }),
+      { currentTarget: null },
+    );
+    expect(screen.getByLabelText("Bilder fra menyen")).toBeTruthy();
   });
 });
