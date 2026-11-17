@@ -15,7 +15,6 @@ import {
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import {
-  EmptyState,
   ErrorState,
   Icon,
   IconButton,
@@ -32,6 +31,7 @@ import {
   type MapDetailSheetHandle,
 } from "@/components/map/MapDetailSheet";
 import { MapFilterSheet } from "@/components/map/MapFilterSheet";
+import { MapEmptyCard, MapStateCard } from "@/components/map/MapStateCard";
 import { MapLayerSheet } from "@/components/map/MapLayerSheet";
 import { MapLocationSheet } from "@/components/map/MapLocationSheet";
 import { basemapFor } from "@/components/map/mapStyles";
@@ -63,7 +63,6 @@ import { useMockResource } from "@/hooks/useMockResource";
 import { useLoadPhase } from "@/hooks/useLoadPhase";
 import { useNotificationReads } from "@/hooks/useNotificationReads";
 import { setDevSimulation, useDevSimulation } from "@/lib/devSimulation";
-import { elevation } from "@/theme";
 
 // Map discovery surface. Thin composition over feature hooks:
 // filters/search, discovery mode, selection (detail sheet), camera, location.
@@ -529,18 +528,13 @@ export default function MapScreen() {
         </MapStateCard>
       ) : null}
 
-      {/* Empty overlay — no results for the current mode/filters */}
+      {/* Empty overlay — no results for the current mode/filters. */}
       {noResults ? (
-        <MapStateCard>
-          <EmptyState
-            fill={false}
-            icon="search"
-            title="Ingen treff"
-            message={discovery.emptyMessage}
-            actionLabel="Nullstill"
-            onAction={filters.reset}
-          />
-        </MapStateCard>
+        <MapEmptyCard
+          mode={discovery.mode}
+          message={discovery.emptyMessage}
+          onReset={filters.reset}
+        />
       ) : null}
 
       <MapFilterSheet
@@ -613,24 +607,6 @@ export default function MapScreen() {
         onBack={selection.back}
         onClose={selection.close}
       />
-    </View>
-  );
-}
-
-// A floating card over the map for the empty/error states (taps outside it
-// still reach the map).
-function MapStateCard({ children }: { children: React.ReactNode }) {
-  return (
-    <View
-      pointerEvents="box-none"
-      className="absolute inset-0 items-center justify-center p-gutter"
-    >
-      <View
-        className="w-full max-w-sm rounded-md bg-surface"
-        style={elevation.e2}
-      >
-        {children}
-      </View>
     </View>
   );
 }

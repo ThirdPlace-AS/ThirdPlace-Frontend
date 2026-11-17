@@ -451,7 +451,7 @@ export default function GroupSwipeScreen() {
               toggle(key);
               showToast({
                 title: was ? "Fjernet fra Lagret" : "Lagret",
-                body: `${card.title} · tømmes når appen starter på nytt`,
+                body: card.title,
                 icon: was ? "bookmark-outline" : "bookmark",
               });
             }}
