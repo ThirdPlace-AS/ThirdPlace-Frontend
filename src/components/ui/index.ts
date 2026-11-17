@@ -71,6 +71,7 @@ export {
   type SortableChipsProps,
   type SortableListProps,
 } from "./Sortable";
+export { FilterPills, type FilterPill } from "./FilterPills";
 export { FollowButton } from "./FollowButton";
 export { HeartToggle, type HeartKind } from "./HeartToggle";
 export { PopIcon } from "./PopIcon";

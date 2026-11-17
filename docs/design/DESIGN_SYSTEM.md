@@ -175,7 +175,7 @@ Rules when adapting an RNR file:
 | `Button`, `IconButton`, `FollowButton`                      | `button`                                                                                                     | P2    |
 | `Input`, `SearchBar`                                        | `input`                                                                                                      | P3    |
 | `Switch`                                                    | none: React Native's `Switch` kept                                                                           | P3    |
-| `Chip`, `ChipGroup`                                         | `toggle`, `toggle-group`                                                                                     | P3    |
+| `Chip`, `ChipGroup`, `FilterPills`                          | `toggle`, `toggle-group`                                                                                     | P3    |
 | `Divider`                                                   | `separator`                                                                                                  | P3    |
 | `Badge`                                                     | `badge`                                                                                                      | P3    |
 | `Skeleton*`                                                 | `skeleton`                                                                                                   | P3    |

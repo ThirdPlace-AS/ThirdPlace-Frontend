@@ -1,15 +1,10 @@
-// The pill row under the Chat search (0459): one horizontal row of `Chip`s,
-// edge to edge so the pills scroll under the screen edge, single select.
-// Chips stay silent (no haptics, per the haptics rule).
-import { memo } from "react";
-import { ScrollView } from "react-native";
-
-import { Chip } from "@/components/ui";
-import { gutterPx } from "@/theme";
+// The pill row under the Chat search (0459): the shared `FilterPills` row
+// (extracted in 0460, Varsler uses the same one) over the chat filters.
+import { FilterPills } from "@/components/ui";
 
 import type { ChatFilter, ChatFilterKey } from "./chatFilters";
 
-export const ChatFilterPills = memo(function ChatFilterPills({
+export function ChatFilterPills({
   pills,
   value,
   onChange,
@@ -18,23 +13,5 @@ export const ChatFilterPills = memo(function ChatFilterPills({
   value: ChatFilterKey;
   onChange: (key: ChatFilterKey) => void;
 }) {
-  return (
-    <ScrollView
-      horizontal
-      showsHorizontalScrollIndicator={false}
-      keyboardShouldPersistTaps="handled"
-      contentContainerClassName="gap-2 py-2"
-      contentContainerStyle={{ paddingHorizontal: gutterPx }}
-    >
-      {pills.map((p) => (
-        <Chip
-          key={p.key}
-          label={p.label}
-          accessibilityLabel={`Filter: ${p.label}`}
-          selected={p.key === value}
-          onPress={() => onChange(p.key)}
-        />
-      ))}
-    </ScrollView>
-  );
-});
+  return <FilterPills pills={pills} value={value} onChange={onChange} />;
+}
