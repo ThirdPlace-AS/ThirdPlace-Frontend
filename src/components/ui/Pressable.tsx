@@ -23,6 +23,7 @@ import {
   type ViewStyle,
 } from "react-native";
 import { useReducedMotion } from "@/hooks/useReducedMotion";
+import { notePressOrigin } from "@/lib/pressOrigin";
 
 import { duration, spring } from "@/theme";
 
@@ -127,6 +128,8 @@ export const Pressable = forwardRef<View, PressableProps>(function Pressable(
     ).start();
 
   const handleIn = (e: GestureResponderEvent) => {
+    // A Sheet or Overlay this press opens grows from here (0457).
+    notePressOrigin(e.nativeEvent.pageX, e.nativeEvent.pageY);
     if (animated) to(1);
     onPressIn?.(e);
   };

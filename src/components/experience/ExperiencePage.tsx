@@ -32,7 +32,9 @@ import {
   Text,
   Pressable as UIPressable,
   type IconName,
+  type Rect,
   Button,
+  useOriginRect,
 } from "@/components/ui";
 import {
   PLACE_KIND_LABEL,
@@ -494,7 +496,7 @@ export function ExperiencePage({
 }
 
 // Inset gallery (radius 20) that pages with dots; a tap opens the full-screen
-// viewer at the shown photo.
+// viewer at the shown photo, grown out of the gallery (0457).
 export function HeroGallery({
   title,
   photos,
@@ -505,20 +507,28 @@ export function HeroGallery({
   const { width } = useWindowDimensions();
   const [page, setPage] = useState(0);
   const [viewer, setViewer] = useState<number | null>(null);
+  const [from, setFrom] = useState<Rect | null>(null);
+  const [galleryRef, measureGallery] = useOriginRect();
+  const open = () =>
+    measureGallery((rect) => {
+      setFrom(rect);
+      setViewer(page);
+    });
   const tap = Gesture.Tap()
     .runOnJS(true)
     .onEnd((_e, ok) => {
-      if (ok) setViewer(page);
+      if (ok) open();
     });
   return (
     <>
       <GestureDetector gesture={tap}>
         <View
+          ref={galleryRef}
           accessible
           accessibilityRole="imagebutton"
           accessibilityLabel={`${title}, ${photos.length} bilder. Åpne bildene`}
           accessibilityActions={[{ name: "activate" }]}
-          onAccessibilityAction={() => setViewer(page)}
+          onAccessibilityAction={open}
           className="overflow-hidden rounded-lg bg-surfaceMuted"
           style={{ height: Math.round((width - 32) * 0.78) }}
         >
@@ -530,6 +540,7 @@ export function HeroGallery({
         index={viewer}
         onClose={() => setViewer(null)}
         label={title}
+        from={from}
       />
     </>
   );

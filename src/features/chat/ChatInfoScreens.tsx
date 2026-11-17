@@ -17,8 +17,10 @@ import {
   EmptyState,
   Icon,
   ListRow,
+  measureRect,
   Page,
   PhotoViewer,
+  type Rect,
   Section,
   Text,
   Pressable as UIPressable,
@@ -101,6 +103,7 @@ export function ChatInfoScreen() {
   const [report, setReport] = useState(false);
   const [leave, setLeave] = useState(false);
   const [viewer, setViewer] = useState<number | null>(null);
+  const [viewerFrom, setViewerFrom] = useState<Rect | null>(null);
   const muted = useIsChatMuted(chat?.id ?? "");
   if (!chat) return <Missing title="Chat-info" />;
   const exp = chat.pinnedExperienceId
@@ -157,7 +160,13 @@ export function ChatInfoScreen() {
               key={i}
               accessibilityRole="imagebutton"
               accessibilityLabel={`Delt bilde ${i + 1}`}
-              onPress={() => setViewer(i)}
+              onPress={(e) =>
+                // The photo grows out of the tapped thumbnail (0457).
+                measureRect(e.currentTarget as unknown as View, (rect) => {
+                  setViewerFrom(rect);
+                  setViewer(i);
+                })
+              }
               className="flex-1"
             >
               <Image
@@ -221,6 +230,7 @@ export function ChatInfoScreen() {
         index={viewer}
         onClose={() => setViewer(null)}
         label="Delte bilder"
+        from={viewerFrom}
       />
     </Page>
   );

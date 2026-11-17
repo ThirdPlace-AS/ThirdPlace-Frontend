@@ -41,9 +41,11 @@ import {
   spring,
   useThemeColors,
 } from "@/theme";
+import { recentPressOrigin } from "@/lib/pressOrigin";
 
 import { BACK_ICON, IconButton } from "./IconButton";
 import { KeyboardAvoider } from "./KeyboardAvoider";
+import { SHEET_FROM_SCALE, scaleAbout } from "./originMotion";
 import { Text } from "./Text";
 import { usePresence } from "./usePresence";
 
@@ -224,12 +226,22 @@ function SheetEngine({
   const dark = tone === "dark";
   const c = useThemeColors();
   const insets = useSafeAreaInsets();
-  const { height: winH } = useWindowDimensions();
+  const { height: winH, width: winW } = useWindowDimensions();
   // A content sheet never grows past the status bar: taller content scrolls
   // inside the card (8 notifications overflowed a 640 dp phone).
   const maxCardH = winH - insets.top - SHEET_TOP_GAP;
   const padBottom = Math.max(insets.bottom, 12) + 16;
   const { mounted, progress, reduced, settled } = usePresence(visible);
+  // The card grows from the tap that opened it (0457): read once per open,
+  // kept through the exit. Null (opened by code) keeps the plain slide.
+  const [originX, setOriginX] = useState<number | null>(
+    () => recentPressOrigin()?.x ?? null,
+  );
+  const [wasVisible, setWasVisible] = useState(visible);
+  if (visible !== wasVisible) {
+    setWasVisible(visible);
+    if (visible) setOriginX(recentPressOrigin()?.x ?? null);
+  }
   const cardH = useSharedValue(winH);
   const drag = useSharedValue(0);
   // While a drag is live the card needs the animated style again (see
@@ -268,15 +280,30 @@ function SheetEngine({
   const scrimStyle = useAnimatedStyle(() => ({
     opacity: progress.value * (1 - Math.min(1, drag.value / cardH.value)),
   }));
-  const cardStyle = useAnimatedStyle(() =>
-    reduced
-      ? { opacity: progress.value, transform: [{ translateY: drag.value }] }
-      : {
-          transform: [
-            { translateY: (1 - progress.value) * cardH.value + drag.value },
-          ],
-        },
-  );
+  const cardStyle = useAnimatedStyle(() => {
+    if (reduced) {
+      return {
+        opacity: progress.value,
+        transform: [{ translateY: drag.value }],
+      };
+    }
+    const slide = (1 - progress.value) * cardH.value + drag.value;
+    if (originX === null) return { transform: [{ translateY: slide }] };
+    // Scale about the tap's x at the card's bottom edge.
+    const s = SHEET_FROM_SCALE + (1 - SHEET_FROM_SCALE) * progress.value;
+    const t = scaleAbout(
+      { x: originX, y: winH },
+      { x: winW / 2, y: winH - cardH.value / 2 },
+      s,
+    );
+    return {
+      transform: [
+        { translateX: t.translateX },
+        { translateY: slide + t.translateY },
+        { scale: s },
+      ],
+    };
+  });
 
   const cardBg = dark
     ? null

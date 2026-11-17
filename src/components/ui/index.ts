@@ -40,6 +40,14 @@ export { ListRow, MetaRow, type ListRowVariant } from "./ListRow";
 export { SearchBar } from "./SearchBar";
 export { Overlay, type OverlayEnter } from "./Overlay";
 export { PhotoViewer } from "./PhotoViewer";
+export {
+  growFromRect,
+  scaleAbout,
+  zoomFromPoint,
+  type Point,
+  type Rect,
+} from "./originMotion";
+export { measureRect, useOriginRect } from "./useOriginRect";
 export { Loader } from "./Loader";
 export { LoadingImage } from "./LoadingImage";
 export { RootPortal, RootPortalHost } from "./RootPortal";

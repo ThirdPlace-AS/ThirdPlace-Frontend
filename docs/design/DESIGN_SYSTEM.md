@@ -214,12 +214,13 @@ Rules when adapting an RNR file:
 One family, two engines, one look (handle, 32 px top radius, `e3`, `SheetHeader`):
 
 | Need                                                                   | Use                                                         | Engine |
-| ---------------------------------------------------------------------- | ----------------------------------------------------------- | ------ | -------- | ----- |
+| ---------------------------------------------------------------------- | ----------------------------------------------------------- | ------ | ---- | -------- | ----- |
 | Action sheet, picker, form, prompt                                     | `<Sheet>` (`fullHeight` for the tall filter sheet)          | Modal  |
 | Snapping map sheet (browse, detail)                                    | `@gorhom/bottom-sheet` + `useSheetChrome()` + `SheetHeader` | gorhom |
-| Full-screen surface (search, filter panel, swipe detail, image viewer) | `<Overlay enter="fade"                                      | "up"   | "left">` | Modal |
+| Full-screen surface (search, filter panel, swipe detail, image viewer) | `<Overlay enter="zoom"                                      | "fade" | "up" | "left">` | Modal |
 
 - Enter 320 ms (`easing.enter`), exit 200 ms (`easing.exit`); reduced motion → 150 ms fade. The Modal stays mounted until the exit finishes (`usePresence`).
+- Surfaces open from the tap (0457, user 2026-11-17). The ui `Pressable` notes where a press landed (`src/lib/pressOrigin.ts`, kept 600 ms). A `<Sheet>` slides up and grows from 0.94 about the tap's x at its bottom edge; an `<Overlay enter="zoom">` grows from 0.85 about the tap and fades in; `<PhotoViewer from={rect}>` grows the photo out of the tapped thumbnail (measured on the tap with `measureRect` / `useOriginRect`) over a black backdrop that fades on its own, and shrinks back into it while it still shows that photo (after paging it fades). The origin is read once per open, so the exit returns to the same spot. Opened by code (no press in the last 600 ms) → the plain slide or fade. Reduced motion → the 150 ms fade. The math is pure and tested (`src/components/ui/originMotion.ts`). A tap on a core React Native `Pressable` records nothing; pass `from` instead.
 - `<Sheet>` closes on scrim tap, Android back, or a drag down on the handle/header (past 25 % of its height or a 900 px/s flick).
 - A content `<Sheet>` stops 16 px below the status bar and scrolls its children inside the card; `fullHeight` sheets own their scroll area and sticky footer. Bottom padding is `max(safe-area bottom, 12) + 16`.
 - Keyboard: edge-to-edge Android does not resize the window (nor a Modal) for the keyboard. Screens with inputs wrap their scroll area **and** footer in `KeyboardAvoider` (`src/components/ui`, react-native-keyboard-controller) on both platforms (wizards, chat composer, `<Sheet>`); scroll views with buttons set `keyboardShouldPersistTaps="handled"`; the tab bar hides while the keyboard is open. Sticky footers get `border-t border-line bg-background`.

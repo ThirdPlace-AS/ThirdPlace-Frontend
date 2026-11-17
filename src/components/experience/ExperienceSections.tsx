@@ -125,7 +125,7 @@ function StepCarousel({
     <Overlay
       visible={index !== null}
       onClose={onClose}
-      enter="fade"
+      enter="zoom"
       statusBarTranslucent
       accessibilityLabel="Hva dere skal gjøre"
     >

@@ -1,6 +1,9 @@
 // Full-screen photo viewer (PDF p24 Bildeviser; Phase 11 G5): swipe between
 // photos, "3 av 10" counter, ✕ to close; Android back closes (Overlay).
 // Bundled fixture photos only (no media contract).
+// Opens out of the tapped thumbnail when the caller passes its rect (`from`,
+// see useOriginRect) and shrinks back into it if closed on the same photo;
+// after paging to another photo it fades out (0457).
 import { useState } from "react";
 import {
   FlatList,
@@ -12,10 +15,12 @@ import {
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
+import { smallImage } from "@/fixtures/images";
 import { media } from "@/theme";
 
 import { IconButton } from "./IconButton";
 import { LoadingImage } from "./LoadingImage";
+import type { Rect } from "./originMotion";
 import { Overlay } from "./Overlay";
 import { StatusBarStyle } from "./StatusBarStyle";
 import { Text } from "./Text";
@@ -25,26 +30,43 @@ export function PhotoViewer({
   index,
   onClose,
   label,
+  from,
 }: {
   photos: readonly ImageSourcePropType[];
   /** Photo to open at; null = closed. */
   index: number | null;
   onClose: () => void;
   label?: string;
+  /** Window rect of the tapped thumbnail; without it the viewer zooms from
+   *  the press point. */
+  from?: Rect | null;
 }) {
   // Keep the last index while the Overlay animates out.
   const [shown, setShown] = useState(index ?? 0);
+  // Still on the photo it opened at: closing shrinks back into the thumbnail.
+  const [atStart, setAtStart] = useState(true);
   if (index !== null && index !== shown) setShown(index);
+  const [wasOpen, setWasOpen] = useState(index !== null);
+  if ((index !== null) !== wasOpen) {
+    setWasOpen(index !== null);
+    if (index !== null) setAtStart(true);
+  }
   return (
     <Overlay
       visible={index !== null}
       onClose={onClose}
-      enter="fade"
+      enter={atStart ? "zoom" : "fade"}
+      from={from}
+      backdrop={media.black}
       statusBarTranslucent
-      style={{ backgroundColor: media.black }}
       accessibilityLabel={label ?? "Bilder"}
     >
-      <ViewerBody photos={photos} start={shown} onClose={onClose} />
+      <ViewerBody
+        photos={photos}
+        start={shown}
+        onClose={onClose}
+        onPage={(i) => setAtStart(i === shown)}
+      />
     </Overlay>
   );
 }
@@ -53,17 +75,22 @@ function ViewerBody({
   photos,
   start,
   onClose,
+  onPage,
 }: {
   photos: readonly ImageSourcePropType[];
   start: number;
   onClose: () => void;
+  onPage: (index: number) => void;
 }) {
   const insets = useSafeAreaInsets();
   const { width, height } = useWindowDimensions();
   const [current, setCurrent] = useState(start);
   const n = photos.length;
-  const onEnd = (e: NativeSyntheticEvent<NativeScrollEvent>) =>
-    setCurrent(Math.round(e.nativeEvent.contentOffset.x / width));
+  const onEnd = (e: NativeSyntheticEvent<NativeScrollEvent>) => {
+    const i = Math.round(e.nativeEvent.contentOffset.x / width);
+    setCurrent(i);
+    onPage(i);
+  };
   return (
     <View className="flex-1">
       <StatusBarStyle style="light" />
@@ -96,6 +123,10 @@ function ViewerBody({
             <LoadingImage
               source={item}
               contentFit="contain"
+              // The small file the thumbnail just drew (in memory) paints on
+              // the first frame, so the photo grows from the start (0457).
+              placeholder={smallImage(item)}
+              placeholderContentFit="contain"
               transition={150}
               style={{ width, height: height * 0.8 }}
             />

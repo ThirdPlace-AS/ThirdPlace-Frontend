@@ -41,6 +41,14 @@ export const presentation = {
   dismissVelocity: 900, // px/s
 } as const;
 
+// Surfaces that open from the tap (0457): start scales and how long a press
+// still counts as the one that opened a surface.
+export const origin = {
+  zoomFrom: 0.85, // Overlay "zoom" from the press point
+  sheetFrom: 0.94, // Sheet grows about the tap while it slides up
+  pressMaxAge: 600, // ms; older presses did not open the surface
+} as const;
+
 // Gesture commit thresholds.
 export const gesture = {
   flingVelocity: 600, // px/s past which a drag commits regardless of distance
@@ -59,6 +67,7 @@ export const motion = {
   spring,
   easing,
   presentation,
+  origin,
   gesture,
 } as const;
 export default motion;
