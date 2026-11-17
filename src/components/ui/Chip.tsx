@@ -35,6 +35,8 @@ export type ChipProps = {
   accessibilityActions?: PressableProps["accessibilityActions"];
   onAccessibilityAction?: PressableProps["onAccessibilityAction"];
   accessibilityHint?: string;
+  /** Spoken name when it should say more than the label (default: label). */
+  accessibilityLabel?: string;
 };
 
 export const Chip = memo(function Chip({
@@ -50,6 +52,7 @@ export const Chip = memo(function Chip({
   accessibilityActions,
   onAccessibilityAction,
   accessibilityHint,
+  accessibilityLabel = label,
 }: ChipProps) {
   const filledOn = variant === "filled" && selected;
   const shell = toggleClass({ size, shell: toggleShell(variant, selected) });
@@ -79,7 +82,7 @@ export const Chip = memo(function Chip({
       <View
         testID={testID}
         accessible
-        accessibilityLabel={label}
+        accessibilityLabel={accessibilityLabel}
         className={shell}
         style={{ minHeight: toggleHeight[size] }}
       >
@@ -91,7 +94,7 @@ export const Chip = memo(function Chip({
     <Pressable
       testID={testID}
       accessibilityRole={role}
-      accessibilityLabel={label}
+      accessibilityLabel={accessibilityLabel}
       accessibilityHint={accessibilityHint}
       accessibilityState={
         role === "button" ? { selected } : { checked: selected }
