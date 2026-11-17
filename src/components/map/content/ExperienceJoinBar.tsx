@@ -97,7 +97,9 @@ export function ExperienceJoinBar({ id }: { id: string }) {
           <Text variant="body" weight="bold" numberOfLines={1}>
             {experience.priceNok ? `${experience.priceNok} kr` : "Gratis"}
           </Text>
-          <Text variant="caption" tone="muted" numberOfLines={1}>
+          {/* Two lines (0461): beside the button one line cut the date and
+              left out the places left on a 360 dp phone. */}
+          <Text variant="caption" tone="muted" numberOfLines={2}>
             {user === "joined"
               ? `Du er påmeldt · ${when}`
               : user === "waitlisted"

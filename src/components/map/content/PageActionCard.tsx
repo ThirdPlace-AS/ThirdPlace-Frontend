@@ -2,30 +2,36 @@
 // the reference video) or a place's chat (user 2026-11-09: "a sticky action
 // section but it should focus on the chat"). It shows only when the page is
 // full screen (user 2026-11-09: "should only show when the screen is full"):
-// it fades in with the page top bar on the last stretch of the drag
-// (pageReveal) and takes touches and screen-reader focus only at the top
-// snap. The card tracks the snap itself: gorhom renders footerComponent as a
+// it fades in once the sheet is at the top snap and fades out as soon as it
+// leaves it (0461: a card tied to the drag covered the rows while the page
+// rose), and takes touches and screen-reader focus only there. The card
+// tracks the snap itself: gorhom renders footerComponent as a
 // component type, so a new render callback would remount it (and close a
 // pay or sign-in sheet opened from it).
 import { useState } from "react";
 import { View } from "react-native";
 import Animated, {
+  Easing,
   runOnJS,
   useAnimatedReaction,
   useAnimatedStyle,
+  useSharedValue,
+  withTiming,
   type SharedValue,
 } from "react-native-reanimated";
 
 import { useReducedMotion } from "@/hooks/useReducedMotion";
-import { elevation, gutterPx } from "@/theme";
+import { duration, easing, elevation, gutterPx } from "@/theme";
 
-import { atPageTop, pageReveal } from "../pageTarget";
+import { atPageTop } from "../pageTarget";
 
 import { ExperienceJoinBar } from "./ExperienceJoinBar";
 import { PlaceChatBar } from "./PlaceChatBar";
 
 /** dp the card rises while it fades in (none with reduced motion). */
 const RISE = 12;
+const ENTER = Easing.bezier(...easing.enter);
+const EXIT = Easing.bezier(...easing.exit);
 
 export function PageActionCard({
   kind,
@@ -47,15 +53,26 @@ export function PageActionCard({
   // Starts hidden: the sheet opens at the peek or mid snap, and the reaction
   // reports the real position on its first run (a remount at the top too).
   const [atTop, setAtTop] = useState(false);
+  // 0 hidden · 1 shown; timed, not tied to the drag.
+  const shown = useSharedValue(0);
   useAnimatedReaction(
     () => atPageTop(animatedIndex.value),
     (now, prev) => {
-      if (now !== prev) runOnJS(setAtTop)(now);
+      if (now === prev) return;
+      const to = now ? 1 : 0;
+      // The first run (a remount) and reduced motion jump straight there.
+      if (prev === null || reduce) shown.value = to;
+      else
+        shown.value = now
+          ? withTiming(1, { duration: duration.base, easing: ENTER })
+          : withTiming(0, { duration: duration.fast, easing: EXIT });
+      runOnJS(setAtTop)(now);
     },
+    [reduce],
   );
   const rise = reduce ? 0 : RISE;
   const reveal = useAnimatedStyle(() => {
-    const t = pageReveal(animatedIndex.value);
+    const t = shown.value;
     return { opacity: t, transform: [{ translateY: (1 - t) * rise }] };
   }, [rise]);
 

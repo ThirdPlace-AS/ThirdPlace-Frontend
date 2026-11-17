@@ -65,6 +65,7 @@ import {
   isPageKind,
   PAGE_FROM,
   PAGE_SNAP,
+  PAGE_SWAP,
   pageInfoFor,
   type PageInfo,
 } from "./pageTarget";
@@ -384,10 +385,18 @@ export const MapDetailSheet = memo(
         [0, 1],
         Extrapolation.CLAMP,
       );
+      // The header is gone before the page top bar fades in (0461: both at
+      // once read as two stacked headers on the way up).
+      const fade = interpolate(
+        animatedIndex.value,
+        [PAGE_FROM, PAGE_SWAP],
+        [1, 0],
+        Extrapolation.CLAMP,
+      );
       // Always set every key: Reanimated keeps a prop that a later style
       // object leaves out (a pushed view kept maxHeight 0 and vanished).
       return topIsPage
-        ? { maxHeight: 64 * (1 - t), opacity: 1 - t, paddingTop: 0 }
+        ? { maxHeight: 64 * (1 - t), opacity: fade, paddingTop: 0 }
         : { maxHeight: 200, opacity: 1, paddingTop: topPad * t };
     }, [pageCapable, topIsPage, topPad]);
 
@@ -592,7 +601,14 @@ function PageTopBar({
       [0, 1],
       Extrapolation.CLAMP,
     );
-    return { height: full * t, opacity: t };
+    // Fades in only once the sheet header has faded out (0461).
+    const o = interpolate(
+      animatedIndex.value,
+      [PAGE_SWAP, PAGE_SNAP],
+      [0, 1],
+      Extrapolation.CLAMP,
+    );
+    return { height: full * t, opacity: o };
   }, [full]);
   return (
     <Animated.View

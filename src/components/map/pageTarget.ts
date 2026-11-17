@@ -33,13 +33,9 @@ export function atPageTop(index: number): boolean {
   return index > PAGE_TOP;
 }
 
-/** How far the floating action card has faded in: 0 below PAGE_FROM, 1 once
- *  the sheet counts as at the top (a card resting at 0.95 let the page text
- *  show through). A worklet, for its animated style. */
-export function pageReveal(index: number): number {
-  "worklet";
-  return Math.min(1, Math.max(0, (index - PAGE_FROM) / (PAGE_TOP - PAGE_FROM)));
-}
+/** Where the sheet header has faded out and the page top bar starts to
+ *  fade in (0461): both at once stacked two headers on the way up. */
+export const PAGE_SWAP = 1.85;
 
 export type PageInfo = {
   /** The small centred caption: "Sosialt · Grünerløkka", "Byrom · Kolsås". */

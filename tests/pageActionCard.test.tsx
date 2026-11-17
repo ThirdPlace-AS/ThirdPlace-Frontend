@@ -1,8 +1,8 @@
 // The map page sheet's floating action card shows only when the page is full
 // screen (user 2026-11-09: "The floating sticky action section in the map
-// details should only show when the screen is full"): it fades in on the
-// last stretch of the drag to the top snap and is not touchable or read out
-// below it.
+// details should only show when the screen is full"): it fades in once the
+// sheet is at the top snap, not with the drag (0461: it covered the rows
+// while the page rose), and is not touchable or read out below it.
 import { describe, expect, it, jest } from "@jest/globals";
 import { render, screen } from "@testing-library/react-native";
 import { StyleSheet } from "react-native";
@@ -14,7 +14,7 @@ import {
   atPageTop,
   PAGE_FROM,
   PAGE_SNAP,
-  pageReveal,
+  PAGE_SWAP,
 } from "@/components/map/pageTarget";
 
 jest.mock("expo-router", () => ({
@@ -27,14 +27,16 @@ jest.mock("expo-router", () => ({
   useLocalSearchParams: () => ({}),
 }));
 // Reanimated's Jest mock never runs reactions; here one runs once after
-// mount, as Reanimated's first run does (previous value null).
+// mount, as Reanimated's first run does (previous value null). Its shared
+// values are new on every render; here one lasts, as a real one does.
 jest.mock("react-native-reanimated", () => {
   // eslint-disable-next-line @typescript-eslint/no-require-imports
-  const { useEffect } = require("react") as typeof import("react");
+  const { useEffect, useRef } = require("react") as typeof import("react");
   return {
     // eslint-disable-next-line @typescript-eslint/no-require-imports
     ...require("react-native-reanimated/mock"),
     useReducedMotion: () => false,
+    useSharedValue: <T,>(init: T) => useRef({ value: init }).current,
     useAnimatedReaction: <T,>(
       prepare: () => T,
       react: (now: T, prev: T | null) => void,
@@ -75,22 +77,16 @@ function card(kind: "experience" | "place", id: string, index: number) {
   return { node, style: StyleSheet.flatten(node.props.style) };
 }
 
-describe("page chrome reveal", () => {
-  it("is hidden at the peek and mid snaps and full at the top", () => {
-    expect(pageReveal(0)).toBe(0);
-    expect(pageReveal(1)).toBe(0);
-    expect(pageReveal(PAGE_FROM)).toBe(0);
-    const halfway = pageReveal((PAGE_FROM + PAGE_SNAP) / 2);
-    expect(halfway).toBeGreaterThan(0);
-    expect(halfway).toBeLessThan(1);
-    expect(pageReveal(PAGE_SNAP)).toBe(1);
-    expect(pageReveal(PAGE_SNAP + 0.2)).toBe(1);
+describe("page chrome", () => {
+  it("swaps the headers inside the page stretch, one after the other", () => {
+    // The sheet header fades out over [PAGE_FROM, PAGE_SWAP] and the page
+    // top bar fades in over [PAGE_SWAP, PAGE_SNAP] (0461).
+    expect(PAGE_SWAP).toBeGreaterThan(PAGE_FROM);
+    expect(PAGE_SWAP).toBeLessThan(PAGE_SNAP);
   });
 
-  it("is fully opaque where the sheet rests just short of the top", () => {
-    // On the device the top snap settled a hair under 2 and a card at 0.95
-    // let the page text show through it.
-    expect(pageReveal(PAGE_SNAP - 0.01)).toBe(1);
+  it("counts a sheet resting just short of the top as the top", () => {
+    // On the device the top snap settled a hair under 2.
     expect(atPageTop(PAGE_SNAP - 0.01)).toBe(true);
   });
 
@@ -111,6 +107,17 @@ describe("PageActionCard", () => {
     expect(screen.queryByText("Samtalen")).toBeNull();
     // The bar stays mounted so it can fade in with the drag.
     expect(screen.getByText("Samtalen", all)).toBeTruthy();
+  });
+
+  it("on the way up it stays hidden until the top", () => {
+    // A card tied to the drag covered the page rows while it rose (0461).
+    const { node, style } = card(
+      "experience",
+      "e1",
+      (PAGE_FROM + PAGE_SNAP) / 2,
+    );
+    expect(style.opacity).toBe(0);
+    expect(node.props.pointerEvents).toBe("none");
   });
 
   it("at the mid snap it is still hidden", () => {
