@@ -16,13 +16,19 @@ export const SNAP_MID = 1;
 // whether the experience page is full screen: step back inside the sheet,
 // collapse the page to the mid snap, close the sheet, or (nothing open) let
 // navigation handle it. Page → 60 % → close (Phase 11 G5).
-export type MapBackAction = "back" | "collapse" | "close" | "none";
+// An item picked on the /search page returns there on back, query and all
+// (0469): its sheet closes in one step, page or not ("search").
+export type MapBackAction = "back" | "collapse" | "close" | "search" | "none";
 export function mapBackAction(
   stackDepth: number,
   isPage = false,
+  fromSearch = false,
 ): MapBackAction {
   if (stackDepth > 1) return "back";
-  if (stackDepth === 1) return isPage ? "collapse" : "close";
+  if (stackDepth === 1) {
+    if (fromSearch) return "search";
+    return isPage ? "collapse" : "close";
+  }
   return "none";
 }
 

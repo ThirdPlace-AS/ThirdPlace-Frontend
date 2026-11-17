@@ -70,6 +70,14 @@ describe("mapBackAction", () => {
     expect(mapBackAction(2, true)).toBe("back");
     expect(mapBackAction(0, true)).toBe("none");
   });
+
+  it("returns to the search page from an item picked there", () => {
+    expect(mapBackAction(1, false, true)).toBe("search");
+    expect(mapBackAction(1, true, true)).toBe("search");
+    // A step inside the sheet still steps back first.
+    expect(mapBackAction(2, true, true)).toBe("back");
+    expect(mapBackAction(0, false, true)).toBe("none");
+  });
 });
 
 describe("browseBackCollapses", () => {

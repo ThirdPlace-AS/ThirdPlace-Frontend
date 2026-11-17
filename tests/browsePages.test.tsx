@@ -84,9 +84,11 @@ describe("search page", () => {
     expect(rows).toHaveLength(1);
     fireEvent.press(rows[0]!);
     const arg = mockNavigate.mock.calls[0]![0] as {
-      params: { focus: string };
+      params: { focus: string; sq: string };
     };
     expect(arg.params.focus).toBe(`place:${p.id}`);
+    // The map gets the query, so back returns to this search (0469).
+    expect(arg.params.sq).toBe(p.name);
   });
 
   it("back leaves the page", () => {

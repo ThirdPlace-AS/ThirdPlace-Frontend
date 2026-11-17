@@ -36,11 +36,15 @@ export function MapSearch({
   onBack,
   onSubmit,
   onSelect,
+  autoFocus = true,
 }: {
   initialQuery: string;
   onBack: () => void;
   onSubmit: (q: string) => void;
-  onSelect: (r: SearchResult) => void;
+  /** The pick and the query it was found with. */
+  onSelect: (r: SearchResult, query: string) => void;
+  /** Off when back returns here from a pick: the results show, no keyboard. */
+  autoFocus?: boolean;
 }) {
   const insets = useSafeAreaInsets();
   const { recent, add, remove, clear } = useRecentSearches();
@@ -59,7 +63,7 @@ export function MapSearch({
   const pick = (r: SearchResult) => {
     add(r.title);
     Keyboard.dismiss();
-    onSelect(r);
+    onSelect(r, query);
   };
 
   return (
@@ -88,7 +92,7 @@ export function MapSearch({
               value={query}
               onChangeText={setQuery}
               onSubmit={submit}
-              autoFocus
+              autoFocus={autoFocus}
             />
           </View>
         </View>
@@ -118,12 +122,15 @@ export function MapSearch({
                 viewed={viewed}
                 onClear={clearViewed}
                 onPick={(v) => {
-                  onSelect({
-                    kind: v.kind,
-                    id: v.id,
-                    title: v.title,
-                    subtitle: "",
-                  });
+                  onSelect(
+                    {
+                      kind: v.kind,
+                      id: v.id,
+                      title: v.title,
+                      subtitle: "",
+                    },
+                    query,
+                  );
                 }}
               />
             </>

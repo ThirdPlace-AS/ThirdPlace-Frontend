@@ -129,11 +129,19 @@ export default function MapScreen() {
   // /map?focus=<kind>:<id>&at=<stamp> (e.g. "Vis på kartet" in the Steder
   // deck) opens that item's detail once per request; the stamp tells repeat
   // taps apart because the tab stays mounted.
-  const { focus, at, q } = useLocalSearchParams<{
+  const { focus, at, q, sq } = useLocalSearchParams<{
     focus?: string;
     at?: string;
     q?: string;
+    /** The /search query a focused item was picked with (0469). */
+    sq?: string;
   }>();
+  // While the item picked on /search is the sheet's root, back returns to
+  // that search, query and all (0469).
+  const [fromSearch, setFromSearch] = useState<{
+    query: string;
+    target: string;
+  } | null>(null);
   const focusKey = focus ? `${focus}:${at ?? ""}` : undefined;
   const [focusedKey, setFocusedKey] = useState<string | undefined>(undefined);
   // A pick from the list or a link zooms the map in until its pin leaves the
@@ -143,8 +151,12 @@ export default function MapScreen() {
     setFocusedKey(focusKey);
     setZoomToPick(true);
     const [kind, id] = (focus ?? "").split(":");
-    if ((kind === "place" || kind === "experience") && id)
+    if ((kind === "place" || kind === "experience") && id) {
       selection.openTarget({ kind, id });
+      setFromSearch(
+        sq !== undefined ? { query: sq, target: `${kind}:${id}` } : null,
+      );
+    }
   }
   // /map?q=<text>&at=<stamp> (submitted on the /search page) applies the
   // text as the map's search filter, once per submit.
@@ -160,6 +172,11 @@ export default function MapScreen() {
   // does not leave the map with the sheet still up. Only while the map is
   // focused; Modal sheets (Filtre, Kartlag, …) handle back themselves.
   const sheetDepth = selection.sheetStack.length;
+  const sheetRoot = selection.sheetStack[0];
+  const sheetRootKey = sheetRoot ? `${sheetRoot.kind}:${sheetRoot.id}` : "";
+  // Closed (swipe, scrim) or replaced by a pin tap: a later open is not
+  // from search.
+  if (fromSearch && fromSearch.target !== sheetRootKey) setFromSearch(null);
   const detailRef = useRef<MapDetailSheetHandle>(null);
   // Whether the detail sheet is the full-screen page, read only by the back
   // key: a ref, so reaching the top does not re-render the whole map screen
@@ -171,14 +188,25 @@ export default function MapScreen() {
   useFocusEffect(
     useCallback(() => {
       const sub = BackHandler.addEventListener("hardwareBackPress", () => {
-        const action = mapBackAction(sheetDepth, detailIsPage.current);
+        const action = mapBackAction(
+          sheetDepth,
+          detailIsPage.current,
+          fromSearch !== null,
+        );
         if (action === "back") sheetBack();
         else if (action === "collapse") detailRef.current?.collapse();
         else if (action === "close") sheetClose();
+        else if (action === "search" && fromSearch) {
+          sheetClose();
+          router.push({
+            pathname: "/search",
+            params: { q: fromSearch.query, resume: "1" },
+          });
+        }
         return action !== "none";
       });
       return () => sub.remove();
-    }, [sheetDepth, sheetBack, sheetClose]),
+    }, [sheetDepth, fromSearch, sheetBack, sheetClose]),
   );
 
   // Mock async load so the surface can show loading/error states (no backend).
