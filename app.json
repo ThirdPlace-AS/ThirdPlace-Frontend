@@ -42,7 +42,7 @@
           "image": "./assets/splash-icon.png",
           "imageWidth": 180,
           "resizeMode": "contain",
-          "backgroundColor": "#FF385C"
+          "backgroundColor": "#E31C5F"
         }
       ],
       "@rnmapbox/maps",
