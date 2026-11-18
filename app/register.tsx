@@ -19,6 +19,7 @@ import { resetTo } from "@/lib/navigation";
 import {
   getSignupEmail,
   markAccountCreated,
+  setSignupEmail,
   useSignupProgress,
 } from "@/lib/signupProgress";
 
@@ -80,12 +81,15 @@ export default function Register() {
             <Button
               label="Opprett konto"
               variant="ember"
-              onPress={() =>
+              onPress={() => {
+                // Kontoinformasjon shows the address typed here (O6),
+                // not the demo persona's.
+                setSignupEmail(email.trim());
                 router.push({
                   pathname: "/verify-code",
                   params: { mode: "email" },
-                })
-              }
+                });
+              }}
             />
             <SocialAuthButtons verb="Fortsett med" onContinue={social} />
           </View>

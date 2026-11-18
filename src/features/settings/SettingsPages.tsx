@@ -24,8 +24,15 @@ import {
   Input,
 } from "@/components/ui";
 import { confirmToast } from "@/copy";
+import { businesses } from "@/fixtures";
 import { gutterPx } from "@/theme";
+import {
+  switchToBusiness,
+  switchToPersonal,
+  useActiveBusinessId,
+} from "@/lib/activeAccount";
 import { useMyProfile } from "@/lib/myProfile";
+import { getSignupEmail } from "@/lib/signupProgress";
 import { setA11yPrefs, useA11yPrefs } from "@/lib/a11yPrefs";
 import { setBlocked, useBlocked } from "@/lib/blocked";
 import { goBackOr } from "@/lib/navigation";
@@ -155,7 +162,8 @@ function LinkRow({
 
 // Kontoinformasjon (PDF p19): E-post, Telefon, Passord, Aktive økter.
 export function AccountScreen() {
-  const [email, setEmail] = useState("ola@epost.no");
+  // The address typed at sign-up (O6), else the demo persona's.
+  const [email, setEmail] = useState(() => getSignupEmail() || "ola@epost.no");
   const [phone, setPhone] = useState("+47 912 34 567");
   const [sessions, setSessions] = useState(SESSIONS);
   return (
@@ -302,31 +310,57 @@ export function ChangePasswordScreen() {
 // Koblede kontoer (PDF p20).
 export function LinkedAccountsScreen() {
   const me = useMyProfile();
+  // "aktiv nå" follows the account switch (G-Q8), not always Utforsker.
+  const activeBiz = useActiveBusinessId();
+  const biz = businesses[0];
+  const bizActive = !!biz && activeBiz === biz.id;
   return (
     <Page title="Koblede kontoer">
-      <Session
-        icon="person-circle-outline"
-        name={me.name}
-        meta="Utforsker · aktiv nå"
-      />
       <UIPressable
         hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
         accessibilityRole="button"
-        onPress={() => router.push("/workspace" as Href)}
+        disabled={!bizActive}
+        dimWhenDisabled={false}
+        onPress={switchToPersonal}
+        contentClassName="flex-row items-center gap-3 rounded-md border border-line bg-surface p-3"
+        pressedScale={0.99}
+      >
+        <Icon name="person-circle-outline" size="md" tone="ink" />
+        <View className="flex-1">
+          <Text variant="label" weight="semibold">
+            {me.name}
+          </Text>
+          <Text variant="caption" tone="muted">
+            {bizActive ? "Utforsker" : "Utforsker · aktiv nå"}
+          </Text>
+        </View>
+        {bizActive ? (
+          <Text variant="caption" weight="semibold">
+            Bytt til
+          </Text>
+        ) : null}
+      </UIPressable>
+      <UIPressable
+        hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+        accessibilityRole="button"
+        onPress={() => {
+          if (biz) switchToBusiness(biz.id);
+          router.push("/workspace" as Href);
+        }}
         contentClassName="flex-row items-center gap-3 rounded-md border border-line bg-surface p-3"
         pressedScale={0.99}
       >
         <Icon name="tp-business" size="md" tone="ink" />
         <View className="flex-1">
           <Text variant="label" weight="semibold">
-            Oslo Kaffebar AS
+            {biz?.name ?? "Bedrift"}
           </Text>
           <Text variant="caption" tone="muted">
-            Bedrift
+            {bizActive ? "Bedrift · aktiv nå" : "Bedrift"}
           </Text>
         </View>
         <Text variant="caption" weight="semibold">
-          Bytt til
+          {bizActive ? "Åpne" : "Bytt til"}
         </Text>
       </UIPressable>
       <Text variant="caption" tone="muted">

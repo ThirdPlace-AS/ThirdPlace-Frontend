@@ -1,5 +1,6 @@
 import { setGuestMode } from "@/components/map/hooks/useGuestMode";
 import { resetCreated } from "@/fixtures/created";
+import { resetActiveAccount } from "@/lib/activeAccount";
 import { resetBlocked } from "@/lib/blocked";
 import { resetCollabDeal } from "@/lib/collabDeal";
 import { resetMyProfile } from "@/lib/myProfile";
@@ -20,6 +21,7 @@ import { resetSignupProgress } from "@/lib/signupProgress";
 export function signOut() {
   resetSignupProgress();
   resetMyProfile();
+  resetActiveAccount();
   resetPreferences();
   resetBlocked();
   resetPrivacyPrefs();

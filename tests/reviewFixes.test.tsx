@@ -12,9 +12,12 @@ import { setGuestMode } from "@/components/map/hooks/useGuestMode";
 import { ReviewsSection } from "@/components/reviews/ReviewsSection";
 import { Button, IconButton, Input, LINK_SLOP } from "@/components/ui";
 import {
+  OWNED_BUSINESS_IDS,
+  businesses,
   chatById,
   experiences,
   groupById,
+  isCatalogueId,
   listingById,
   listings,
   myListingStates,
@@ -30,6 +33,18 @@ import {
   useNotificationPrefs,
 } from "@/lib/notificationPrefs";
 import { whenLabel } from "@/lib/whenLabel";
+import {
+  getActiveBusinessId,
+  resetActiveAccount,
+  switchToBusiness,
+  switchToPersonal,
+} from "@/lib/activeAccount";
+import { ownExperiences } from "@/features/workspace/ownExperiences";
+import {
+  AccountScreen,
+  LinkedAccountsScreen,
+} from "@/features/settings/SettingsPages";
+import { resetSignupProgress, setSignupEmail } from "@/lib/signupProgress";
 
 jest.mock("expo-router", () => ({
   router: {
@@ -57,6 +72,8 @@ afterEach(() => {
   resetNotificationPrefs();
   resetJoinedChats();
   resetCreated();
+  resetActiveAccount();
+  resetSignupProgress();
 });
 
 describe("whenLabel (JR1)", () => {
@@ -229,5 +246,52 @@ describe("48 dp targets (CMP-04)", () => {
     render(<ReviewsSection reviews={[]} onShowAll={() => {}} />);
     const link = screen.getByRole("link");
     expect(link.props.hitSlop).toEqual(LINK_SLOP);
+  });
+});
+
+describe("active account (G-Q8)", () => {
+  it("starts personal, switches to a business and back", () => {
+    expect(getActiveBusinessId()).toBeNull();
+    switchToBusiness("b1");
+    expect(getActiveBusinessId()).toBe("b1");
+    switchToPersonal();
+    expect(getActiveBusinessId()).toBeNull();
+  });
+
+  it("Koblede kontoer marks the active account", () => {
+    const { rerender } = render(<LinkedAccountsScreen />, { wrapper });
+    expect(screen.getByText("Utforsker · aktiv nå")).toBeTruthy();
+    act(() => switchToBusiness(businesses[0]!.id));
+    rerender(<LinkedAccountsScreen />);
+    expect(screen.getByText("Bedrift · aktiv nå")).toBeTruthy();
+    expect(screen.queryByText("Utforsker · aktiv nå")).toBeNull();
+  });
+});
+
+describe("own experiences at own places (#18)", () => {
+  it("lists only experiences at, or organised by, an owned place", () => {
+    const places = new Set(
+      businesses
+        .filter((b) => OWNED_BUSINESS_IDS.includes(b.id))
+        .map((b) => b.placeId),
+    );
+    const own = ownExperiences();
+    expect(own.length).toBeGreaterThan(0);
+    for (const e of own) {
+      expect(
+        places.has(e.placeId ?? "") || places.has(e.organizerPlaceId ?? ""),
+      ).toBe(true);
+    }
+    // Other hosts' legacy experiences elsewhere are no longer counted.
+    const legacy = experiences.filter((e) => !isCatalogueId(e.id));
+    expect(own.length).toBeLessThan(legacy.length);
+  });
+});
+
+describe("Kontoinformasjon e-mail (O6)", () => {
+  it("shows the address typed at sign-up", () => {
+    setSignupEmail("ny@epost.no");
+    render(<AccountScreen />, { wrapper });
+    expect(screen.getByDisplayValue("ny@epost.no")).toBeTruthy();
   });
 });

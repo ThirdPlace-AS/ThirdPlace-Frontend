@@ -18,19 +18,13 @@ import { byStart } from "@/features/workspace/calendarOrder";
 import { hubToday } from "@/features/workspace/hubToday";
 import { clock } from "@/lib/dates";
 import { RouteHeader } from "@/components/RouteHeader";
-import {
-  OWNED_BUSINESS_IDS,
-  businesses,
-  experiences,
-  isCatalogueId,
-} from "@/fixtures";
+import { OWNED_BUSINESS_IDS, businesses } from "@/fixtures";
 
+import { switchToPersonal } from "@/lib/activeAccount";
 import { useMyProfile } from "@/lib/myProfile";
 import { GuestPage } from "@/components/GuestPage";
+import { ownExperiences } from "@/features/workspace/ownExperiences";
 
-// The demo creator's and business's own things: the legacy experiences and
-// whatever they publish in Legg til, never the catalogue's (Phase 19).
-const ownExperiences = () => experiences.filter((e) => !isCatalogueId(e.id));
 const ownBusinesses = () =>
   businesses.filter((b) => OWNED_BUSINESS_IDS.includes(b.id));
 
@@ -101,7 +95,12 @@ function WorkspaceHubContent() {
           <UIPressable
             hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
             accessibilityRole="button"
-            onPress={() => router.navigate("/profile")}
+            accessibilityLabel={`Bytt til ${me.name}`}
+            onPress={() => {
+              // Back to the personal account (G-Q8), then its profile.
+              switchToPersonal();
+              router.navigate("/profile");
+            }}
             contentClassName="rounded-full border border-line bg-surface px-3 py-2"
             pressedScale={0.99}
           >
