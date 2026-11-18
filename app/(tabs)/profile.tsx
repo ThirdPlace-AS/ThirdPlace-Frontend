@@ -15,6 +15,7 @@ import {
   Screen,
   Text,
   Button,
+  LINK_SLOP,
 } from "@/components/ui";
 import { GuestLock } from "@/components/GuestLock";
 import { HintBanner } from "@/components/HintBanner";
@@ -26,6 +27,7 @@ import { experienceById, placeById, profile } from "@/fixtures";
 import { useProfileCounts } from "@/lib/following";
 import { useMyProfile, type MyProfile } from "@/lib/myProfile";
 import { openProfileSteps, PROFILE_STEP_COUNT } from "@/lib/profileSteps";
+import { whenLabel } from "@/lib/whenLabel";
 import {
   coverForPlace,
   libImage,
@@ -292,7 +294,7 @@ function NextPlanCard() {
         </Text>
         <UIPressable
           accessibilityRole="link"
-          hitSlop={{ top: 12, bottom: 12, left: 8, right: 8 }}
+          hitSlop={LINK_SLOP}
           onPress={() => router.push("/plans")}
         >
           <Text variant="label" weight="semibold" tone="ember">
@@ -303,8 +305,8 @@ function NextPlanCard() {
       <ListRow
         variant="card"
         title={exp.title}
-        subtitle={exp.when}
-        accessibilityLabel={`Neste plan: ${exp.title}, ${exp.when}${
+        subtitle={whenLabel(exp)}
+        accessibilityLabel={`Neste plan: ${exp.title}, ${whenLabel(exp)}${
           countdown ? `, ${countdown.toLowerCase()}` : ""
         }`}
         leading={
@@ -322,15 +324,14 @@ function NextPlanCard() {
   );
 }
 
-// "Veien til Skaper" (PDF p12). The copy is illustrative: the real creator
-// criteria are not defined in the contract, so nothing here is evaluated.
+// "Veien til Skaper" (PDF p12). The real creator criteria are not defined in
+// the contract, so the card shows no progress ("2 av 3", bar, rating): review
+// 2026-11-18 G-01.
 function CreatorPathCard() {
-  const { hosted, required, rating } = profile.creatorPath;
   return (
     <UIPressable
       accessibilityRole="button"
       accessibilityLabel="Veien til Skaper, se kravene"
-      accessibilityValue={{ min: 0, max: required, now: hosted }}
       onPress={() => router.push("/become-creator")}
       pressedScale={0.99}
       contentClassName="gap-2 rounded-md bg-surfaceMuted p-4"
@@ -340,15 +341,6 @@ function CreatorPathCard() {
         <Text variant="body" weight="semibold" className="flex-1">
           Veien til Skaper
         </Text>
-      </View>
-      <Text variant="caption" tone="muted">
-        {hosted} av {required} opplevelser arrangert · ★ {rating} snitt
-      </Text>
-      <View className="h-1.5 overflow-hidden rounded-full bg-surface">
-        <View
-          className="h-full rounded-full bg-ink"
-          style={{ width: `${(hosted / required) * 100}%` }}
-        />
       </View>
     </UIPressable>
   );
@@ -364,7 +356,7 @@ function TabBar({ tab, onChange }: { tab: Tab; onChange: (t: Tab) => void }) {
             key={t.key}
             accessibilityRole="tab"
             accessibilityState={{ selected: active }}
-            hitSlop={{ top: 7, bottom: 7 }}
+            hitSlop={{ top: 8, bottom: 8 }}
             onPress={() => onChange(t.key)}
             feedback="none"
             className="flex-1"

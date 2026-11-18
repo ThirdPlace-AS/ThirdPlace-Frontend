@@ -37,6 +37,7 @@ export const confirmToast = {
   counterSent: { title: "Mottilbudet er sendt", icon: "paper-plane-outline" },
   offerAccepted: { title: "Tilbudet er godtatt", icon: ok },
   offerDeclined: { title: "Tilbudet er avslått", icon: ok },
+  contractSigned: { title: "Kontrakten er signert", icon: ok },
   listingPublished: { title: "Listingen er publisert", icon: ok },
   listingSaved: { title: "Endringene er lagret", icon: ok },
   complaintSent: { title: "Klagen er sendt", icon: ok },

@@ -13,7 +13,7 @@ The design system **restyles the PDF's layouts**. It never adds screens, section
 3. **Photo-first.** Imagery runs full-bleed with a tokenised scrim; controls over imagery are round white floating buttons.
 4. **Clear feedback.** Every action responds immediately (motion, state change) and confirms in product voice (`confirmToast`). No demo markers (founder decision 2026-11-06). Still no delivery ticks, no "processing → success" sequences, no invented counts, and payments stay structure only. **No arrows on buttons or links** (founder 2026-11-06): labels never end in "→", and buttons carry no arrow icons (chat send is a paper plane, Sveip's expand is an "i"); only the header back button and list-row chevrons keep their glyphs. Back is always the ← arrow (`BACK_ICON`, user 2026-11-09), on page headers, sheet headers, the map search, the chat thread and the page top bars alike, with no circle around it (user 2026-11-15: a plain ghost `IconButton`, no `variant`; `tests/designGuard.test.ts` checks it). `tests/copyVoice.test.ts` enforces it.
 5. **One way to do each thing.** One button, one chip, one header, one sheet API, one icon entry point. If a screen needs something new, it becomes a primitive first.
-6. **Accessible by default.** 44×44 touch targets, AA contrast in light and dark, every control has a role, label and state; all motion has a reduced-motion fallback.
+6. **Accessible by default.** 48×48 touch targets (Android's 48 dp; review 2026-11-18 CMP-04), AA contrast in light and dark, every control has a role, label and state; all motion has a reduced-motion fallback.
 
 ## 2. Decisions
 
@@ -108,7 +108,7 @@ Centre a lone state (empty, error, success) both ways in the space it has (`Stat
 
 `xs 4 · sm 8 · md 14 · lg 20 · xl 32 · full`, shadcn.io's Airbnb DESIGN.md scale (user 2026-11-15). Cards `md`; inputs, buttons, small tiles, row highlights and notice strips `sm`; large panels `lg`; sheets `xl` (top corners); chips, pills and avatars `full`. Tailwind's own `2xl`/`3xl` still exist (the scale extends Tailwind's), so the guard bans them with any side prefix.
 
-Component sizes from the same design: `Button` md is 48 px tall (sm 40, lg 60) with 8 px corners (`rounded="full"` for pills); `Input` is at least 56 px single-line (multiline from 96) with 8 px corners, a 1 px `line` border and a 2 px `ink` border on focus (`danger` on error), offset in padding so the text never moves; `CodeInput` boxes are 56 px with 8 px corners. The design's pink primary fill and pale-pink disabled state are not used: the ink, gradient and muted fills stay.
+Component sizes from the same design: `Button` md is 48 px tall (sm 40, lg 60) with 8 px corners (`rounded="full"` for pills); `Input` is at least 56 px single-line (multiline from 96) with 8 px corners, a 1 px `line` border and a 2 px `ink` border on focus (`danger` on error), offset in padding so the text never moves; its `type` (`email`, `url`, `phone`, `password`, `newPassword`, `number`, `handle`) picks the keyboard, capitals, autocorrect and autofill hint, and an explicit prop wins (review 2026-11-18 CMP-11); `CodeInput` boxes are 56 px with 8 px corners. The design's pink primary fill and pale-pink disabled state are not used: the ink, gradient and muted fills stay.
 
 ### Elevation
 
@@ -150,7 +150,7 @@ All primitives live in `src/components/ui/`. Each one must implement the states 
 | Expanded / collapsed    | Animated height; `accessibilityState.expanded`                                                                                                                                                                          |
 | Empty / error (screens) | `StateView` with an illustration slot and one or two actions                                                                                                                                                            |
 
-Touch targets are at least 44×44 (use `hitSlop` to reach it on small visuals).
+Touch targets are at least 48×48, Android's 48 dp (review 2026-11-18 CMP-04): `IconButton` and a small `Button` reach it through `hitSlop`; use `hitSlop` the same way on other small visuals. A text link takes `hitSlop={LINK_SLOP}` (from `@/components/ui`: 16 above and below, 12 at the sides), which carries a caption or label line to 48. Where items sit side by side (the chat's reactions) a 44 wide target keeps the row on screen, 48 tall with the slop.
 
 ### Base layer (React Native Reusables)
 

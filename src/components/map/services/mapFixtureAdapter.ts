@@ -41,6 +41,7 @@ import { goingLine } from "@/lib/going";
 import { distanceMeters, formatDistance } from "@/lib/distance";
 import { isPlaceOpen } from "@/lib/openingHours";
 import { getOrigin, type Origin } from "@/lib/origin";
+import { whenLabel } from "@/lib/whenLabel";
 
 import {
   experienceType,
@@ -100,7 +101,7 @@ function experienceToItem(e: MockExperience, origin: Origin): DiscoveryItem {
     category: "Opplevelse",
     title: e.title,
     // "Klatring · Lillestrøm · Lør 12:00": its activity (2026-11-09).
-    subtitle: `${kindLabel} · ${area} · ${e.when}`,
+    subtitle: `${kindLabel} · ${area} · ${whenLabel(e)}`,
     when: e.when,
     price: e.priceNok ? `${e.priceNok} kr` : "Gratis",
     type: experienceType(e),

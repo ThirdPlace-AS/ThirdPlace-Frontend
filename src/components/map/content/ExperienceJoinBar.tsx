@@ -131,6 +131,7 @@ export function ExperienceJoinBar({
 
         {confirm === "leave" ? (
           <LeaveSheet
+            title={`Forlate ${experience.title}?`}
             onClose={() => setConfirm(null)}
             onConfirm={() => setUser("none")}
           />
@@ -158,7 +159,6 @@ export function ExperienceJoinBar({
         ) : null}
         {confirm === "waitlist" ? (
           <WaitlistSheet
-            ahead={3}
             onClose={() => setConfirm(null)}
             onConfirm={() => setUser("waitlisted")}
           />

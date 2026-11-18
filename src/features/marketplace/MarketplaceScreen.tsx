@@ -22,6 +22,7 @@ import {
   type MockListing,
   type MockListingType,
 } from "@/fixtures";
+import { useCreatedVersion } from "@/fixtures/created";
 import { libThumb } from "@/fixtures/images";
 import { gutterPx, useThemeColors } from "@/theme";
 import { fontFamilyFor } from "@/theme/fonts";
@@ -42,6 +43,8 @@ export default function MarketplaceScreen() {
   const [filterOpen, setFilterOpen] = useState(false);
 
   const q = query.trim().toLowerCase();
+  // A listing published this session joins the list (H-04).
+  const created = useCreatedVersion();
   const data = useMemo(
     () =>
       listings.filter(
@@ -53,7 +56,8 @@ export default function MarketplaceScreen() {
             l.owner.toLowerCase().includes(q) ||
             l.tags.some((t) => t.toLowerCase().includes(q))),
       ),
-    [q, type, freeOnly],
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- created: a listing was published or edited
+    [q, type, freeOnly, created],
   );
 
   return (
@@ -233,9 +237,11 @@ function ListingCard({
           {listing.title}
         </Text>
         <Badge kind="status" label={listing.type} />
-        <Text variant="label" weight="semibold">
-          {listing.terms}
-        </Text>
+        {listing.terms ? (
+          <Text variant="label" weight="semibold">
+            {listing.terms}
+          </Text>
+        ) : null}
         <Text variant="caption" tone="muted" numberOfLines={1}>
           {listing.owner}
         </Text>

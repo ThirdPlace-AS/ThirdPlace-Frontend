@@ -97,15 +97,21 @@ export function ToggleRow({
   );
 }
 
-/** A card of toggle rows with local state (settings pages, export sheet). */
+/** A card of toggle rows: local state (export sheet), or a store's values
+ *  through `values` + `onChange` (Varsler, review 2026-11-18 IJ4). */
 export function ToggleList({
   items,
-  initial,
+  initial = {},
+  values,
+  onChange,
 }: {
   items: { label: string; hint?: string; icon: IconName }[];
-  initial: Record<string, boolean>;
+  initial?: Record<string, boolean>;
+  values?: Record<string, boolean>;
+  onChange?: (label: string, value: boolean) => void;
 }) {
-  const [state, setState] = useState(initial);
+  const [local, setLocal] = useState(initial);
+  const state = values ?? local;
   return (
     <View style={{ marginHorizontal: -gutterPx }}>
       {items.map((i) => (
@@ -115,7 +121,11 @@ export function ToggleList({
           label={i.label}
           hint={i.hint}
           value={!!state[i.label]}
-          onValueChange={(v) => setState((st) => ({ ...st, [i.label]: v }))}
+          onValueChange={(v) =>
+            onChange
+              ? onChange(i.label, v)
+              : setLocal((st) => ({ ...st, [i.label]: v }))
+          }
         />
       ))}
     </View>

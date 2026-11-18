@@ -36,6 +36,7 @@ import { isPlaceOpen } from "@/lib/openingHours";
 import { distanceMeters } from "@/lib/distance";
 import { distanceLabelFor, getOrigin, type Origin } from "@/lib/origin";
 import { media } from "@/theme";
+import { whenLabel } from "@/lib/whenLabel";
 
 export type DeckKind = "experience" | "place";
 
@@ -85,8 +86,8 @@ export function experienceToDeckItem(e: MockExperience): DeckItem {
         // An event says so ("Festival · Lør 10:00", Phase 19).
         text:
           e.format === "event"
-            ? `${experienceTypeLabel(e)} · ${e.when}`
-            : e.when,
+            ? `${experienceTypeLabel(e)} · ${whenLabel(e)}`
+            : whenLabel(e),
       },
       {
         icon: "people-outline",
@@ -96,7 +97,7 @@ export function experienceToDeckItem(e: MockExperience): DeckItem {
     ],
     chips: e.tags,
     chatId: chatForExperience(e.id)?.id,
-    subtitle: e.when,
+    subtitle: whenLabel(e),
   };
 }
 

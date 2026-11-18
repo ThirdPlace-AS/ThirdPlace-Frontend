@@ -19,6 +19,7 @@ export {
   type IconButtonVariant,
 } from "./IconButton";
 export {
+  LINK_SLOP,
   Pressable,
   type PressableProps,
   type PressFeedback,
@@ -35,7 +36,7 @@ export { Field, Section } from "./Section";
 export { ScrollRow } from "./ScrollRow";
 export { FadeSwap } from "./FadeSwap";
 export { Avatar, initialsOf, type AvatarSize } from "./Avatar";
-export { Input, type InputProps } from "./Input";
+export { Input, type InputProps, type InputType } from "./Input";
 export { ListRow, MetaRow, type ListRowVariant } from "./ListRow";
 export { SearchBar } from "./SearchBar";
 export { Overlay, type OverlayEnter } from "./Overlay";

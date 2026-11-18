@@ -1,5 +1,4 @@
 import { router, type Href } from "expo-router";
-import { useState } from "react";
 import { ScrollView, View } from "react-native";
 import {
   Icon,
@@ -8,40 +7,31 @@ import {
   Screen,
   Text,
   Button,
+  LINK_SLOP,
 } from "@/components/ui";
 import { RouteHeader } from "@/components/RouteHeader";
-import { showToast } from "@/components/Toast";
-import { confirmToast } from "@/copy";
 import { profile } from "@/fixtures";
 
 // Bli Skaper, per the design (PDF p14): the requirements to unlock the
-// Skaper role (and with it Dashbord and Marketplace), each with its progress,
-// and "Søk om Skaper-rolle". Master spec §10: the real creator criteria are not
-// defined, so the three requirements are the design's illustrative copy —
-// nothing is evaluated, and applying sends nothing (BLOCKED_CONTRACT_GAP).
+// Skaper role (and with it Dashbord and Marketplace). Master spec §10: the real
+// creator criteria are not defined, so the three requirements are the design's
+// illustrative copy and nothing is evaluated (BLOCKED_CONTRACT_GAP). Review
+// 2026-11-18 (G-01 = H-11, #25): no progress ("2 av 3", "oppfylt", bars), no
+// "X av Y krav oppfylt" and no "Søk om Skaper-rolle" (it could never be
+// pressed) until the criteria and the application exist (G-Q1, H-Q5).
 export default function BecomeCreatorScreen() {
-  const [applied, setApplied] = useState(false);
-  const { hosted, required, rating } = profile.creatorPath;
-  const reqs = [
+  const { required } = profile.creatorPath;
+  const reqs: { label: string; next?: { label: string; href: Href } }[] = [
     {
       label: `Arranger ${required} opplevelser`,
-      meta: `${hosted} av ${required}`,
-      progress: hosted / required,
       next: { label: "Legg til en opplevelse", href: "/add" as Href },
     },
-    {
-      label: "Gjennomsnittlig vurdering 4,0+",
-      meta: `${rating} · oppfylt`,
-      progress: 1,
-    },
+    { label: "Gjennomsnittlig vurdering 4,0+" },
     {
       label: "Verifisert identitet",
-      meta: "Ikke startet",
-      progress: 0,
       next: { label: "Start verifisering", href: "/age-verification" as Href },
     },
   ];
-  const met = reqs.filter((r) => r.progress >= 1).length;
 
   return (
     <Screen edges={["top"]}>
@@ -52,46 +42,28 @@ export default function BecomeCreatorScreen() {
         </Text>
 
         {reqs.map((r) => {
-          const done = r.progress >= 1;
-          const next = "next" in r && !done ? r.next : undefined;
+          const next = r.next;
           return (
             <View
               key={r.label}
               className="gap-2 rounded-md border border-line bg-surface p-4"
             >
               <View className="flex-row items-center gap-3">
-                <View
-                  className={`h-9 w-9 items-center justify-center rounded-full ${
-                    done ? "bg-success" : "bg-surfaceMuted"
-                  }`}
-                >
-                  <Icon
-                    name={done ? "checkmark" : "ellipse-outline"}
-                    size="md"
-                    tone={done ? "onInk" : "muted"}
-                  />
+                <View className="h-9 w-9 items-center justify-center rounded-full bg-surfaceMuted">
+                  <Icon name="ellipse-outline" size="md" tone="muted" />
                 </View>
                 <View className="flex-1">
                   <Text variant="body" weight="semibold">
                     {r.label}
                   </Text>
-                  <Text variant="caption" tone={done ? "success" : "muted"}>
-                    {r.meta}
-                  </Text>
                 </View>
-              </View>
-              <View className="h-1.5 overflow-hidden rounded-full bg-surfaceMuted">
-                <View
-                  className={`h-full rounded-full ${done ? "bg-success" : "bg-ink"}`}
-                  style={{ width: `${Math.round(r.progress * 100)}%` }}
-                />
               </View>
               {/* Next step for an open requirement (R30). */}
               {next ? (
                 <UIPressable
                   accessibilityRole="link"
                   onPress={() => router.push(next.href)}
-                  hitSlop={{ top: 10, bottom: 10, left: 8, right: 8 }}
+                  hitSlop={LINK_SLOP}
                   className="self-start"
                   feedback="none"
                 >
@@ -104,25 +76,6 @@ export default function BecomeCreatorScreen() {
           );
         })}
 
-        <View className="rounded-md border border-line bg-surface p-3">
-          <Text variant="label">
-            {met} av {reqs.length} krav oppfylt
-          </Text>
-        </View>
-
-        {/* Muted until every requirement is met, as in the design (PDF p14):
-            the button never invites an application that cannot qualify. An
-            application ends at "sent": the spec has no auto-approval and a
-            review decides (Phase 15); "Du er nå Skaper!" stays a deep link. */}
-        <Button
-          label={applied ? "Søknaden er sendt" : "Søk om Skaper-rolle"}
-          variant="ink"
-          disabled={applied || met < reqs.length}
-          onPress={() => {
-            setApplied(true);
-            showToast(confirmToast.creatorApplied);
-          }}
-        />
         <Button
           label="Se en skaperprofil"
           variant="secondary"

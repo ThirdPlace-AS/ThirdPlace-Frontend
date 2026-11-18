@@ -57,6 +57,7 @@ import {
   notificationThumb,
   type NotificationFilterKey,
 } from "./notificationFilters";
+import { GuestPage } from "@/components/GuestPage";
 
 const TYPE_ICON: Record<NotificationType, keyof typeof Ionicons.glyphMap> = {
   join: "people-outline",
@@ -67,6 +68,18 @@ const TYPE_ICON: Record<NotificationType, keyof typeof Ionicons.glyphMap> = {
 };
 
 export default function NotificationsScreen() {
+  return (
+    <GuestPage
+      title="Varsler"
+      message="Logg inn for å se varslene dine."
+      action="se varslene dine"
+    >
+      <NotificationsContent />
+    </GuestPage>
+  );
+}
+
+function NotificationsContent() {
   const { items, readIds, unread, markRead, markAllRead } =
     useNotificationReads();
   const following = useFollowing();
@@ -88,6 +101,13 @@ export default function NotificationsScreen() {
     const first = entry.items[0];
     if (!first) return;
     entry.items.forEach((n) => markRead(n.id));
+    // A message opens its thread over the Chat tab, so back from the thread
+    // goes to the chat list as in any messaging app (review 2026-11-18 JR2).
+    if (first.target.kind === "chat") {
+      router.dismissTo("/chat");
+      router.push(notificationHref(first.target));
+      return;
+    }
     // Several new followers open the Følgere list; anything else opens what
     // the newest notice names.
     router.push(

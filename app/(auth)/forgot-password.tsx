@@ -9,6 +9,7 @@ import {
   KeyboardAvoider,
   Button,
   Input,
+  LINK_SLOP,
 } from "@/components/ui";
 import { ScreenHeader } from "@/components/ScreenHeader";
 
@@ -36,9 +37,7 @@ export default function ForgotPassword() {
             <Input
               label="E-postadresse"
               placeholder="navn@epost.no"
-              keyboardType="email-address"
-              autoCapitalize="none"
-              autoComplete="email"
+              type="email"
               value={email}
               onChangeText={setEmail}
             />
@@ -60,7 +59,7 @@ export default function ForgotPassword() {
           <Link href="/login" asChild>
             <Pressable
               accessibilityRole="link"
-              hitSlop={{ top: 14, bottom: 14, left: 8, right: 8 }}
+              hitSlop={LINK_SLOP}
               className="self-start"
             >
               <Text variant="label" weight="semibold">

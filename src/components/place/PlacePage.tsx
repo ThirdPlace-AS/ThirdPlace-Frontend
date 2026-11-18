@@ -36,6 +36,7 @@ import {
   LoadingImage,
   Text,
   Pressable as UIPressable,
+  LINK_SLOP,
 } from "@/components/ui";
 import {
   areaLabel,
@@ -67,6 +68,7 @@ import {
 } from "@/components/map/services/itemType";
 import { NEARBY_M, distanceMeters } from "@/lib/distance";
 import { distanceLabelFor, useOrigin } from "@/lib/origin";
+import { whenLabel } from "@/lib/whenLabel";
 
 /** "✓ Verifisert" under a verified business's name (PDF p6). */
 function VerifiedChip() {
@@ -244,8 +246,13 @@ export function PlacePage({
                 accessibilityRole="link"
                 accessibilityLabel={`${formatRating(score)} av 5, ${count} vurderinger. Vis alle`}
                 onPress={() => onNavigate(reviewsHref)}
-                hitSlop={8}
-                contentClassName="mt-1 flex-row items-center gap-1"
+                hitSlop={LINK_SLOP}
+                // The tag chips 12 dp below take taps in their own boxes, so
+                // the slop alone left about 42 dp (0498). py-3 makes the box
+                // itself about 42 dp, about 58 with the top slop; the negative
+                // margins keep the text above and the chips below 12 dp away.
+                className="-mb-3 -mt-2"
+                contentClassName="flex-row items-center gap-1 py-3"
               >
                 <Icon name="star" size="sm" tone="ink" />
                 <Text variant="label" weight="semibold">
@@ -400,7 +407,7 @@ export function PlacePage({
                     e.format === "event" ? "calendar-outline" : "tp-experience"
                   }
                   title={e.title}
-                  subtitle={`${experienceTypeLabel(e)} · ${e.when}`}
+                  subtitle={`${experienceTypeLabel(e)} · ${whenLabel(e)}`}
                   onPress={() => onNavigate(`/experience/${e.id}` as Href)}
                 />
               ))}

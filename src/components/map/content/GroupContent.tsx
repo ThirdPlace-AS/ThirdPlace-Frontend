@@ -31,11 +31,16 @@ import { useGuestMode } from "../hooks/useGuestMode";
 // Phase 18 (founder, screen benchmark: Meetup, Spond): the page leads with
 // "Neste møte", the group's next experience from the fixtures, and shows the
 // group's "Regler" in its creator's words when it has any.
+// A group with a home meets there (review 2026-11-18 CT1 = C8): the group's
+// own text names that place, so an experience held anywhere else is not its
+// next meeting, and the section stays out rather than contradict the page.
 export function nextMeeting(groupId: string, now = new Date()) {
+  const home = groupById(groupId)?.homePlaceId;
   let best: { id: string; title: string; start: Date; where: string } | null =
     null;
   for (const e of experiences) {
     if (e.groupId !== groupId || e.status === "cancelled") continue;
+    if (home && e.placeId !== home) continue;
     const s = sessionsFor(e, now, 1)[0];
     if (s && (!best || s.start < best.start)) {
       best = {
@@ -96,6 +101,11 @@ export function GroupContent({ id }: { id: string }) {
   const home = group.homePlaceId ? placeById(group.homePlaceId) : undefined;
   const { faces, others } = memberFaces(group);
   const open = (href: Href) => router.push(href);
+  // A Lukket or invite-only group's chat is for its members; a guest sees no
+  // group chat (review 2026-11-18 C4). Who may preview an open one: C-Q2.
+  const chat = group.chatId ? chatById(group.chatId) : undefined;
+  const chatVisible =
+    !isGuest && (member || chat === undefined || chat.access === "open");
 
   return (
     <View className="gap-6">
@@ -174,10 +184,7 @@ export function GroupContent({ id }: { id: string }) {
         </View>
       </View>
 
-      <ChatSection
-        chat={group.chatId ? chatById(group.chatId) : undefined}
-        onNavigate={open}
-      />
+      {chatVisible ? <ChatSection chat={chat} onNavigate={open} /> : null}
 
       <View className="gap-3">
         {isGuest ? (
@@ -197,7 +204,7 @@ export function GroupContent({ id }: { id: string }) {
       />
       {leaveOpen ? (
         <LeaveSheet
-          title="Forlate gruppen?"
+          title={`Forlate ${group.name}?`}
           onClose={() => setLeaveOpen(false)}
           onConfirm={() => {
             setMember(false);

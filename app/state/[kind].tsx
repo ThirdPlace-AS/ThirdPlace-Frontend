@@ -192,7 +192,12 @@ function Invite() {
       <Button
         label="Åpne i ThirdPlace"
         variant="ember"
-        onPress={() => resetTo("/map")}
+        onPress={() => {
+          // Opens what the invite names, over the map, so back from it goes
+          // to the map (review 2026-11-18 IJ25: it dropped the target).
+          resetTo("/map");
+          router.push(`/experience/${exp?.id ?? "e1"}`);
+        }}
       />
     </View>
   );

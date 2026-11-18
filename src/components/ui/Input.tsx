@@ -10,7 +10,60 @@ import { useThemeColors } from "@/theme";
 import { inputClass } from "./base/input";
 import { Text } from "./Text";
 
+/** What the field holds; it picks the keyboard and turns off the capital
+ *  letter and autocorrect where they only get in the way (review 2026-11-18
+ *  CMP-11, O9: "Https://" and a capitalised e-mail). Explicit props win. */
+export type InputType =
+  | "text"
+  | "email"
+  | "url"
+  | "phone"
+  | "password"
+  | "newPassword"
+  | "number"
+  | "handle";
+
+type TypeDefaults = Pick<
+  TextInputProps,
+  "keyboardType" | "autoCapitalize" | "autoCorrect" | "autoComplete"
+>;
+
+const TYPE_DEFAULTS: Record<InputType, TypeDefaults> = {
+  text: {},
+  email: {
+    keyboardType: "email-address",
+    autoCapitalize: "none",
+    autoCorrect: false,
+    autoComplete: "email",
+  },
+  url: {
+    keyboardType: "url",
+    autoCapitalize: "none",
+    autoCorrect: false,
+    autoComplete: "url",
+  },
+  phone: {
+    keyboardType: "phone-pad",
+    autoCapitalize: "none",
+    autoCorrect: false,
+    autoComplete: "tel",
+  },
+  password: {
+    autoCapitalize: "none",
+    autoCorrect: false,
+    autoComplete: "password",
+  },
+  newPassword: {
+    autoCapitalize: "none",
+    autoCorrect: false,
+    autoComplete: "password-new",
+  },
+  number: { keyboardType: "number-pad", autoCorrect: false },
+  handle: { autoCapitalize: "none", autoCorrect: false },
+};
+
 export type InputProps = {
+  type?: InputType;
   label?: string;
   placeholder?: string;
   value?: string;
@@ -29,6 +82,7 @@ export type InputProps = {
 };
 
 export function Input({
+  type = "text",
   label,
   placeholder,
   value,
@@ -44,6 +98,7 @@ export function Input({
   helper,
 }: InputProps) {
   const c = useThemeColors();
+  const typed = TYPE_DEFAULTS[type];
   const [focused, setFocused] = useState(false);
   const editable = typeof onChangeText === "function";
   // Border colour per state: base/input. The 2 px emphasis border is
@@ -79,9 +134,10 @@ export function Input({
         onBlur={() => setFocused(false)}
         editable={editable}
         secureTextEntry={secureTextEntry}
-        keyboardType={keyboardType}
-        autoComplete={autoComplete}
-        autoCapitalize={autoCapitalize}
+        keyboardType={keyboardType ?? typed.keyboardType}
+        autoComplete={autoComplete ?? typed.autoComplete}
+        autoCapitalize={autoCapitalize ?? typed.autoCapitalize}
+        autoCorrect={typed.autoCorrect}
         multiline={multiline}
         maxLength={maxLength}
         autoFocus={autoFocus}

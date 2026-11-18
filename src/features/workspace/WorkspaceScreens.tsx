@@ -6,6 +6,7 @@ import {
   Badge,
   Chart,
   Icon,
+  LINK_SLOP,
   pageBody,
   Pressable as UIPressable,
   Screen,
@@ -25,6 +26,7 @@ import {
 } from "@/fixtures";
 
 import { useMyProfile } from "@/lib/myProfile";
+import { GuestPage } from "@/components/GuestPage";
 
 // The demo creator's and business's own things: the legacy experiences and
 // whatever they publish in Legg til, never the catalogue's (Phase 19).
@@ -39,7 +41,7 @@ const ownBusinesses = () =>
 // every number is an example and is badged as such.
 const BIZ = businesses[0];
 
-export function WorkspaceHub() {
+function WorkspaceHubContent() {
   const me = useMyProfile();
   return (
     <Screen edges={["top"]}>
@@ -110,7 +112,7 @@ export function WorkspaceHub() {
         </View>
         <View className="gap-1 rounded-md border border-line bg-surface p-4">
           <Text variant="label" weight="semibold">
-            Kom i gang: 1 av 2 steg gjenstår
+            Kom i gang
           </Text>
           {/* One line per step, each with its own state (a single ✓ in
               front of both read as both done). */}
@@ -119,11 +121,6 @@ export function WorkspaceHub() {
               label: "Verifiser bedriften",
               done: !!BIZ?.verified,
               href: "/business-onboarding" as Href,
-            },
-            {
-              label: "Start abonnement",
-              done: false,
-              href: "/payments" as Href,
             },
           ].map((step) => (
             // Open steps lead on to where they are done (R30).
@@ -290,7 +287,7 @@ const BARS: Record<(typeof RANGES)[number], number[]> = {
   Total: [20, 28, 35, 33, 46, 52, 58, 63, 71, 76, 84, 92],
 };
 
-export function WorkspaceAnalytics() {
+function WorkspaceAnalyticsContent() {
   const [range, setRange] = useState<(typeof RANGES)[number]>("Måned");
   return (
     <Screen edges={["top"]}>
@@ -332,7 +329,11 @@ export function WorkspaceAnalytics() {
   );
 }
 
-export function WorkspaceCalendar() {
+// Kalender's Rediger link stretches to its row's height (checked on the
+// emulator: 56 dp box).
+const STRETCH = { alignSelf: "stretch", justifyContent: "center" } as const;
+
+function WorkspaceCalendarContent() {
   const upcoming = byStart(
     ownExperiences().filter((e) => e.status !== "cancelled"),
   );
@@ -359,8 +360,12 @@ export function WorkspaceCalendar() {
                 {e.capacity} plasser
               </Text>
             </View>
+            {/* The link's own box fills the row's height (three lines, over
+                48), so the target does not hang on hitSlop alone: on the
+                emulator the slop below the text reached only ~11 dp. */}
             <Pressable
-              hitSlop={{ top: 12, bottom: 12, left: 8, right: 8 }}
+              hitSlop={LINK_SLOP}
+              style={STRETCH}
               accessibilityRole="button"
               accessibilityLabel={`Rediger ${e.title}`}
               onPress={() =>
@@ -381,7 +386,7 @@ export function WorkspaceCalendar() {
   );
 }
 
-export function WorkspaceLocations() {
+function WorkspaceLocationsContent() {
   return (
     <Screen edges={["top"]}>
       <RouteHeader title="Lokasjoner" />
@@ -436,5 +441,57 @@ export function WorkspaceLocations() {
         </View>
       </ScrollView>
     </Screen>
+  );
+}
+
+// Account-only (review 2026-11-18, IJ2): a guest sees the lock.
+export function WorkspaceHub() {
+  return (
+    <GuestPage
+      title="Bedrift"
+      message="Logg inn for å se arbeidsflaten."
+      action="se arbeidsflaten"
+    >
+      <WorkspaceHubContent />
+    </GuestPage>
+  );
+}
+
+// Account-only (review 2026-11-18, IJ2): a guest sees the lock.
+export function WorkspaceAnalytics() {
+  return (
+    <GuestPage
+      title="Analyse"
+      message="Logg inn for å se analysen."
+      action="se analysen"
+    >
+      <WorkspaceAnalyticsContent />
+    </GuestPage>
+  );
+}
+
+// Account-only (review 2026-11-18, IJ2): a guest sees the lock.
+export function WorkspaceCalendar() {
+  return (
+    <GuestPage
+      title="Kalender"
+      message="Logg inn for å se kalenderen."
+      action="se kalenderen"
+    >
+      <WorkspaceCalendarContent />
+    </GuestPage>
+  );
+}
+
+// Account-only (review 2026-11-18, IJ2): a guest sees the lock.
+export function WorkspaceLocations() {
+  return (
+    <GuestPage
+      title="Lokasjoner"
+      message="Logg inn for å se lokasjonene."
+      action="se lokasjonene"
+    >
+      <WorkspaceLocationsContent />
+    </GuestPage>
   );
 }

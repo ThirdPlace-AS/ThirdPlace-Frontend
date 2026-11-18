@@ -14,6 +14,12 @@ import {
 import { experiences } from "@/fixtures";
 import { blockPerson, resetBlocked, useBlocked } from "@/lib/blocked";
 import { getChatReads, markChatRead, resetChatReads } from "@/lib/chatReads";
+import {
+  answerOffer,
+  getCollabDeal,
+  resetCollabDeal,
+  signContract,
+} from "@/lib/collabDeal";
 import { getMyProfile, resetMyProfile, updateMyProfile } from "@/lib/myProfile";
 import { resetMyRatings, saveMyRating, useMyRatings } from "@/lib/myRatings";
 import { getOrigin, resetOrigin, setOriginArea } from "@/lib/origin";
@@ -54,6 +60,7 @@ function resetAll() {
   resetPrivacyPrefs();
   resetPinnedChats();
   resetMyRatings();
+  resetCollabDeal();
   resetChatReads();
   resetOrigin();
 }
@@ -105,6 +112,20 @@ test("Logg ut resets the account stores and goes to /welcome", () => {
   expect(pinned.result.current).toEqual([]);
   expect(ratings.result.current).toEqual({});
   expect(mockResetTo).toHaveBeenCalledWith("/welcome");
+});
+
+test("Logg ut clears the collab deal (review 2026-11-18 #9)", () => {
+  act(() => {
+    answerOffer("Godtatt");
+    signContract("Ola Nordmann");
+  });
+  expect(getCollabDeal().signedBy).toBe("Ola Nordmann");
+  act(() => signOut());
+  expect(getCollabDeal()).toEqual({
+    answer: null,
+    counterSplit: null,
+    signedBy: null,
+  });
 });
 
 test("Logg ut forgets what the account sent in (0464)", () => {

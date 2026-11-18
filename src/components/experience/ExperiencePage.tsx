@@ -35,6 +35,7 @@ import {
   type Rect,
   Button,
   useOriginRect,
+  LINK_SLOP,
 } from "@/components/ui";
 import {
   PLACE_KIND_LABEL,
@@ -205,7 +206,7 @@ export function ExperiencePage({
                 accessibilityRole="link"
                 accessibilityLabel={`${formatRating(score)} av 5, ${count} vurderinger. Vis alle`}
                 onPress={() => onNavigate(reviewsHref)}
-                hitSlop={8}
+                hitSlop={LINK_SLOP}
                 contentClassName="mt-1 flex-row items-center gap-1"
               >
                 <Icon name="star" size="sm" tone="ink" />
@@ -440,13 +441,11 @@ export function ExperiencePage({
 
           <View className="h-px bg-line" />
 
-          {/* Footer links. */}
+          {/* Footer links. No "Sjekk inn når du er der": with no GPS
+              arrival check it always said "Du er fremme!" (review
+              2026-11-18 C2, #5). CheckinContent stays for when the check
+              exists (C-Q1). */}
           <View className="gap-1">
-            <FooterLink
-              icon="tp-arrival"
-              label="Sjekk inn når du er der"
-              onPress={() => onOpen({ kind: "checkin", id: exp.id })}
-            />
             {/* Only for the host (0464: anyone could open the host view). */}
             {mine ? (
               <FooterLink

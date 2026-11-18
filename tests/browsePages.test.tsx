@@ -13,6 +13,7 @@ import { resetNotificationReads } from "@/hooks/useNotificationReads";
 const mockPush = jest.fn();
 const mockNavigate = jest.fn();
 const mockReplace = jest.fn();
+const mockDismissTo = jest.fn();
 const mockBack = jest.fn();
 let mockParams: Record<string, string> = {};
 jest.mock("expo-router", () => ({
@@ -20,6 +21,7 @@ jest.mock("expo-router", () => ({
     push: (h: unknown) => mockPush(h),
     navigate: (h: unknown) => mockNavigate(h),
     replace: (h: unknown) => mockReplace(h),
+    dismissTo: (h: unknown) => mockDismissTo(h),
     back: () => mockBack(),
     canGoBack: () => true,
   },
@@ -42,6 +44,7 @@ beforeEach(() => {
   mockPush.mockClear();
   mockNavigate.mockClear();
   mockReplace.mockClear();
+  mockDismissTo.mockClear();
   mockBack.mockClear();
   mockParams = {};
 });
@@ -65,8 +68,11 @@ describe("search page", () => {
     );
     fireEvent.changeText(field, "kaffe");
     fireEvent(field, "submitEditing", { nativeEvent: { text: "kaffe" } });
-    expect(mockNavigate).toHaveBeenCalledTimes(1);
-    const arg = mockNavigate.mock.calls[0]![0] as {
+    // Back down to the map, never a second map over Søk (review IJ9).
+    expect(mockDismissTo).toHaveBeenCalledTimes(1);
+    expect(mockNavigate).not.toHaveBeenCalled();
+    expect(mockPush).not.toHaveBeenCalled();
+    const arg = mockDismissTo.mock.calls[0]![0] as {
       pathname: string;
       params: { q: string };
     };
@@ -83,7 +89,9 @@ describe("search page", () => {
     const rows = screen.getAllByText(p.name);
     expect(rows).toHaveLength(1);
     fireEvent.press(rows[0]!);
-    const arg = mockNavigate.mock.calls[0]![0] as {
+    expect(mockNavigate).not.toHaveBeenCalled();
+    expect(mockPush).not.toHaveBeenCalled();
+    const arg = mockDismissTo.mock.calls[0]![0] as {
       params: { focus: string; sq: string };
     };
     expect(arg.params.focus).toBe(`place:${p.id}`);

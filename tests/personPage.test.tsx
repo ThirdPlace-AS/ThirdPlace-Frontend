@@ -128,6 +128,10 @@ describe("person page (PDF p13)", () => {
         jest.advanceTimersByTime(400);
       });
       expect(screen.getByText(/Blokkere Maria/)).toBeTruthy();
+      // The confirm names who it blocks (review 2026-11-18 CMP-09).
+      expect(
+        screen.getByRole("button", { name: "Blokker Maria" }),
+      ).toBeTruthy();
     } finally {
       jest.useRealTimers();
     }

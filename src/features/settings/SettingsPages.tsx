@@ -29,6 +29,10 @@ import { useMyProfile } from "@/lib/myProfile";
 import { setA11yPrefs, useA11yPrefs } from "@/lib/a11yPrefs";
 import { setBlocked, useBlocked } from "@/lib/blocked";
 import { goBackOr } from "@/lib/navigation";
+import {
+  setNotificationPref,
+  useNotificationPrefs,
+} from "@/lib/notificationPrefs";
 import { signOut } from "@/lib/signOut";
 
 import { NavRow, ToggleList, ToggleRow } from "./settingsUi";
@@ -168,8 +172,18 @@ export function AccountScreen() {
         />
       }
     >
-      <Input label="E-post" value={email} onChangeText={setEmail} />
-      <Input label="Telefon" value={phone} onChangeText={setPhone} />
+      <Input
+        label="E-post"
+        type="email"
+        value={email}
+        onChangeText={setEmail}
+      />
+      <Input
+        label="Telefon"
+        type="phone"
+        value={phone}
+        onChangeText={setPhone}
+      />
       <PasswordRow />
       <LinkRow
         icon="shield-checkmark-outline"
@@ -246,6 +260,7 @@ export function ChangePasswordScreen() {
     >
       <Input
         label="Nåværende passord"
+        type="password"
         secureTextEntry
         value={current}
         onChangeText={setCurrent}
@@ -254,6 +269,7 @@ export function ChangePasswordScreen() {
         <Input
           label="Nytt passord"
           placeholder="Minst 8 tegn"
+          type="newPassword"
           secureTextEntry
           value={pw}
           onChangeText={setPw}
@@ -268,6 +284,7 @@ export function ChangePasswordScreen() {
         <Input
           label="Bekreft passord"
           placeholder="Gjenta passordet"
+          type="newPassword"
           secureTextEntry
           value={again}
           onChangeText={setAgain}
@@ -320,24 +337,21 @@ export function LinkedAccountsScreen() {
   );
 }
 
-// Varsler (PDF p19): PUSH categories + STILLE TIMER.
+// Varsler (PDF p19): PUSH categories + STILLE TIMER. The switches keep
+// their values in src/lib/notificationPrefs.ts (IJ4).
 export function NotificationSettingsScreen() {
+  const prefs = useNotificationPrefs();
   return (
     <Page title="Varsler" density="sections">
       <Section title="Push" rows>
         <ToggleList
-          initial={{
-            Opplevelser: true,
-            Venteliste: true,
-            Venner: true,
-            Chat: true,
-          }}
+          values={prefs}
+          onChange={setNotificationPref}
           items={[
-            {
-              label: "Opplevelser",
-              hint: "24t og 1t før, «skjer nå»",
-              icon: "tp-experience",
-            },
+            // No timing hints ("24t og 1t før", "Push holdes til
+            // morgenen"): the spec sets no reminder times (review
+            // 2026-11-18 IJ5).
+            { label: "Opplevelser", icon: "tp-experience" },
             {
               label: "Venteliste",
               hint: "Når plass åpner seg",
@@ -363,47 +377,25 @@ export function NotificationSettingsScreen() {
       </Section>
       <Section title="Stille timer" rows>
         <ToggleList
-          initial={{ "Ikke forstyrr 23–08": true }}
-          items={[
-            {
-              label: "Ikke forstyrr 23–08",
-              hint: "Push holdes til morgenen",
-              icon: "moon-outline",
-            },
-          ]}
+          values={prefs}
+          onChange={setNotificationPref}
+          items={[{ label: "Ikke forstyrr 23–08", icon: "moon-outline" }]}
         />
       </Section>
     </Page>
   );
 }
 
-// Språk og region (PDF p19).
+// Språk og region (PDF p19). The app is in Norwegian only: p19's other
+// languages, Valuta and Tidssone changed nothing and are hidden until they
+// exist (review 2026-11-18 IJ6; which languages: IJ-Q8).
 export function LanguageScreen() {
-  const langs = ["Norsk (bokmål)", "English", "Svenska", "Dansk"];
-  const [lang, setLang] = useState(langs[0]);
   return (
     <Page title="Språk og region" density="sections">
-      <View className="gap-2" accessibilityRole="radiogroup">
-        {langs.map((l) => (
-          <UIPressable
-            key={l}
-            accessibilityRole="radio"
-            accessibilityState={{ checked: lang === l }}
-            onPress={() => setLang(l)}
-            contentClassName="flex-row items-center justify-between rounded-md border border-line bg-surface px-4 py-4"
-            pressedScale={0.99}
-          >
-            <Text variant="body">{l}</Text>
-            <RadioMark checked={lang === l} />
-          </UIPressable>
-        ))}
+      <View className="flex-row items-center justify-between rounded-md border border-line bg-surface px-4 py-4">
+        <Text variant="body">Norsk (bokmål)</Text>
+        <RadioMark checked />
       </View>
-      <Section title="Region">
-        <View className="overflow-hidden rounded-md border border-line bg-surface">
-          <NavRow icon="cash-outline" label="Valuta" value="NOK (kr)" />
-          <NavRow icon="time-outline" label="Tidssone" value="Oslo (CET)" />
-        </View>
-      </Section>
     </Page>
   );
 }
@@ -542,7 +534,7 @@ export function DeleteAccountScreen() {
         <>
           <Button
             label="Slett kontoen min"
-            variant="secondary"
+            variant="danger"
             disabled={confirm.trim() !== "SLETT"}
             onPress={() => {
               // Deleting ends the session like Logg ut (Phase 15).

@@ -13,6 +13,7 @@ import ListingEditorScreen from "@/features/marketplace/ListingEditorScreen";
 import ListingScreen from "@/features/marketplace/ListingScreen";
 import MyListingsScreen from "@/features/marketplace/MyListingsScreen";
 import { listings } from "@/fixtures";
+import { getCollabDeal, resetCollabDeal } from "@/lib/collabDeal";
 
 const mockPush = jest.fn();
 const mockBack = jest.fn();
@@ -43,22 +44,34 @@ beforeEach(() => {
   mockPush.mockClear();
   mockBack.mockClear();
   mockParams = {};
+  resetCollabDeal();
 });
 
+// l1 (m1) is the account's own listing; requests go to someone else's
+// (review 2026-11-18 #18).
 const l1 = listings[0]!;
+const other = listings.find((l) => l.id === "m2")!;
 
 describe("marketplace pages", () => {
   it("a listing page sends a request into Nytt samarbeid", () => {
-    mockParams = { id: l1.id };
+    mockParams = { id: other.id };
     render(<ListingScreen />, { wrapper });
-    expect(screen.getAllByText(l1.title).length).toBeGreaterThan(0);
+    expect(screen.getAllByText(other.title).length).toBeGreaterThan(0);
     fireEvent.press(screen.getByText("Send forespørsel"));
     expect(mockPush).toHaveBeenCalledWith({
       pathname: "/collab/new",
-      params: { listing: l1.id },
+      params: { listing: other.id },
     });
     fireEvent.press(screen.getByText("Lagre"));
     expect(screen.getByText("Lagret")).toBeTruthy();
+  });
+
+  it("your own listing offers Rediger listing, not a request (#18)", () => {
+    mockParams = { id: l1.id };
+    render(<ListingScreen />, { wrapper });
+    expect(screen.queryByText("Send forespørsel")).toBeNull();
+    fireEvent.press(screen.getByText("Rediger listing"));
+    expect(mockPush).toHaveBeenCalledWith(`/my-listings/${l1.id}/edit`);
   });
 
   it("My listings opens the editor pages", () => {
@@ -107,11 +120,48 @@ describe("collab pages", () => {
     expect(screen.queryByText(/→/)).toBeNull();
     fireEvent.press(screen.getByText("Send mottilbud"));
     expect(mockBack).toHaveBeenCalledTimes(1);
+    // Review 2026-11-18 #9: the answer stays with the deal.
+    expect(getCollabDeal()).toMatchObject({
+      answer: "Mottilbud sendt",
+      counterSplit: "50 / 50",
+    });
   });
 
-  it("the contract signs in place", () => {
+  it("an answered offer shows its answer instead of the buttons (#9)", () => {
+    render(<CollabOfferScreen />, { wrapper });
+    expect(screen.queryByText(/70 %/)).toBeNull();
+    fireEvent.press(screen.getByText("Godta tilbud"));
+    expect(getCollabDeal().answer).toBe("Godtatt");
+    expect(screen.getByText("Godtatt")).toBeTruthy();
+    expect(screen.queryByText("Avslå")).toBeNull();
+  });
+
+  it("the collab page shows the answer and no 70/30 split (#9, H-05)", () => {
+    const first = render(<CollabDetailScreen />, { wrapper });
+    expect(screen.queryByText("Inntektsdeling")).toBeNull();
+    expect(screen.queryByText(/70 %/)).toBeNull();
+    first.unmount();
+    const offer = render(<CollabOfferScreen />, { wrapper });
+    fireEvent.press(screen.getByText("Avslå"));
+    offer.unmount();
+    render(<CollabDetailScreen />, { wrapper });
+    expect(screen.getByText("Avslått")).toBeTruthy();
+  });
+
+  it("Signer needs a full name and Jeg har lest avtalen (#9)", () => {
     render(<CollabContractScreen />, { wrapper });
-    fireEvent.press(screen.getByText("Trykk for å signere"));
-    expect(screen.getByText("✓ Signert")).toBeTruthy();
+    expect(screen.queryByText(/Inntektsdeling/)).toBeNull();
+    const signer = () => screen.getByRole("button", { name: "Signer" });
+    expect(signer().props.accessibilityState?.disabled).toBe(true);
+    const name = screen.getByPlaceholderText("Fornavn Etternavn");
+    fireEvent.changeText(name, "Ola");
+    fireEvent.press(screen.getByLabelText("Jeg har lest avtalen"));
+    expect(signer().props.accessibilityState?.disabled).toBe(true);
+    fireEvent.changeText(name, "Ola Nordmann");
+    expect(signer().props.accessibilityState?.disabled).toBe(false);
+    fireEvent.press(signer());
+    expect(getCollabDeal().signedBy).toBe("Ola Nordmann");
+    expect(screen.getByText("Signert av Ola Nordmann")).toBeTruthy();
+    expect(screen.queryByRole("button", { name: "Signer" })).toBeNull();
   });
 });

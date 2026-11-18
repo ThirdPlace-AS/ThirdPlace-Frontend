@@ -3,12 +3,13 @@ import { useState } from "react";
 import { Pressable, ScrollView, View } from "react-native";
 
 import {
+  Badge,
+  CheckboxMark,
   ChipGroup,
   Field,
   FormPage,
   Icon,
   type IconName,
-  Page,
   pageBody,
   Pressable as UIPressable,
   Screen,
@@ -18,23 +19,35 @@ import {
   Button,
   Input,
 } from "@/components/ui";
-import { showToast, type ToastInput } from "@/components/Toast";
+import { showToast } from "@/components/Toast";
 import { confirmToast } from "@/copy";
 import { RouteHeader } from "@/components/RouteHeader";
 import { listingById, listings } from "@/fixtures";
+import {
+  answerOffer,
+  isFullName,
+  signContract,
+  useCollabDeal,
+} from "@/lib/collabDeal";
 import { goBackOr } from "@/lib/navigation";
 import { useStepBack } from "@/lib/useStepBack";
+import { useConfirmLeave } from "@/lib/useConfirmLeave";
+import { DiscardChangesSheet } from "@/components/DiscardChangesSheet";
+import { GuestPage } from "@/components/GuestPage";
 
 // Collaboration flow, per the design (PDF p16–p18): Nytt samarbeid →
 // Innkommende tilbud (Godta / Avslå / Mottilbud) → Samarbeid (parter,
 // vilkår, tidslinje) → Kontrakt → Signer kontrakt. BLOCKED_CONTRACT_GAP: no
-// offer, negotiation, contract, signature, revenue-split or payout model;
-// each step confirms locally.
+// offer, negotiation, contract, signature, revenue-split or payout model.
+// Review 2026-11-18 #9 (H-02/H-03, founder: deal state + typed sign): the
+// answer to the offer and the signature live in the session's deal
+// (src/lib/collabDeal.ts) and show on the offer, Samarbeid and Kontrakt; no
+// fixed "70 % / 30 %" split is stated as agreed (H-05).
 const TYPES = ["Co-hosting", "Sponsing", "Brand"];
 const HOSTING = ["Likeverdig 50/50", "Primær / sekundær"];
 const SPLITS = ["50 / 50", "60 / 40", "70 / 30"];
 
-export function NewCollabScreen() {
+function NewCollabScreenContent() {
   // From a listing's Venteliste, "Tilby" passes the partner (PDF p18).
   const { listing: listingId, partner } = useLocalSearchParams<{
     listing?: string;
@@ -47,6 +60,13 @@ export function NewCollabScreen() {
   const [hosting, setHosting] = useState(HOSTING[1] ?? "");
   const [split, setSplit] = useState("70 / 30");
   const [msg, setMsg] = useState("");
+  // Leaving with unsaved input asks first (review 2026-11-18 H-12).
+  const leave = useConfirmLeave(
+    msg.trim().length > 0 ||
+      type !== "Co-hosting" ||
+      hosting !== (HOSTING[1] ?? "") ||
+      split !== "70 / 30",
+  );
   return (
     <Screen edges={["top"]}>
       <RouteHeader title="Nytt samarbeid" />
@@ -109,6 +129,7 @@ export function NewCollabScreen() {
             variant="ink"
             disabled={msg.trim().length === 0}
             onPress={() => {
+              leave.allowLeave();
               router.back();
               showToast(confirmToast.requestSent);
             }}
@@ -120,18 +141,27 @@ export function NewCollabScreen() {
           ) : null}
         </StickyFooter>
       </KeyboardAvoider>
+      <DiscardChangesSheet
+        visible={leave.asking}
+        onStay={leave.stay}
+        onDiscard={leave.leave}
+      />
     </Screen>
   );
 }
 
-const TIMELINE: { label: string; meta: string; done: boolean }[] = [
-  { label: "Foreslått", meta: "12. juli", done: true },
-  { label: "Godtatt", meta: "14. juli", done: true },
-  { label: "Kontrakt signert", meta: "Venter", done: false },
-  { label: "Opplevelse gjennomført", meta: "Planlagt 1. aug", done: false },
-];
-
-export function CollabDetailScreen() {
+function CollabDetailScreenContent() {
+  const deal = useCollabDeal();
+  const timeline: { label: string; meta: string; done: boolean }[] = [
+    { label: "Foreslått", meta: "12. juli", done: true },
+    { label: "Godtatt", meta: "14. juli", done: true },
+    {
+      label: "Kontrakt signert",
+      meta: deal.signedBy ? "Signert" : "Venter",
+      done: deal.signedBy !== null,
+    },
+    { label: "Opplevelse gjennomført", meta: "Planlagt 1. aug", done: false },
+  ];
   return (
     <Screen edges={["top"]}>
       <RouteHeader title="Jazz-samarbeid" />
@@ -151,8 +181,10 @@ export function CollabDetailScreen() {
             ["Type", "Co-hosting (primær/sekundær)"],
             ["Opplevelse", "Jazzkveld"],
             ["Startdato", "1. august"],
-            ["Inntektsdeling", "70 % / 30 %"],
             ["Betaling", "Gratis mot eksponering"],
+            ...(deal.answer
+              ? [["Innkommende tilbud", offerAnswerLabel(deal)]]
+              : []),
           ].map(([k, v]) => (
             <View
               key={k}
@@ -166,7 +198,7 @@ export function CollabDetailScreen() {
           ))}
         </View>
         <Label>Tidslinje</Label>
-        {TIMELINE.map((t) => (
+        {timeline.map((t) => (
           <View key={t.label} className="flex-row items-center gap-3">
             <View
               className={`h-4 w-4 rounded-full ${t.done ? "bg-success" : "bg-line"}`}
@@ -220,25 +252,28 @@ export function CollabDetailScreen() {
 }
 
 // Innkommende tilbud + Mottilbud (p17), a page since Phase 12 H4c.
-export function CollabOfferScreen() {
+function CollabOfferScreenContent() {
+  const deal = useCollabDeal();
   const [counter, setCounter] = useState(false);
   // System back leaves the counter-offer form for the offer (0454).
   useStepBack(counter, () => setCounter(false));
   const [split, setSplit] = useState("50 / 50");
-  const finish = (t: ToastInput) => {
-    goBackOr("/collab" as Href);
-    showToast(t);
-  };
+  // An answered offer shows its answer instead of the buttons (#9).
+  const answered = deal.answer !== null && !counter;
   return (
     <FormPage
       title={counter ? "Mottilbud" : "Innkommende tilbud"}
       onBack={counter ? () => setCounter(false) : undefined}
       footer={
-        counter ? (
+        answered ? null : counter ? (
           <Button
             label="Send mottilbud"
             variant="ink"
-            onPress={() => finish(confirmToast.counterSent)}
+            onPress={() => {
+              answerOffer("Mottilbud sendt", split);
+              goBackOr("/collab" as Href);
+              showToast(confirmToast.counterSent);
+            }}
           />
         ) : (
           <View className="flex-row gap-3">
@@ -246,14 +281,22 @@ export function CollabOfferScreen() {
               <Button
                 label="Avslå"
                 variant="secondary"
-                onPress={() => finish(confirmToast.offerDeclined)}
+                onPress={() => {
+                  answerOffer("Avslått");
+                  goBackOr("/collab" as Href);
+                  showToast(confirmToast.offerDeclined);
+                }}
               />
             </View>
             <View className="flex-1">
               <Button
                 label="Godta tilbud"
                 variant="ink"
-                onPress={() => finish(confirmToast.offerAccepted)}
+                onPress={() => {
+                  answerOffer("Godtatt");
+                  goBackOr("/collab" as Href);
+                  showToast(confirmToast.offerAccepted);
+                }}
               />
             </View>
           </View>
@@ -265,10 +308,15 @@ export function CollabOfferScreen() {
           Maria Movik
         </Text>
         <Text variant="caption" tone="muted">
-          Co-hosting · Primær/sekundær · 70 % / 30 %
+          Co-hosting · Primær/sekundær
         </Text>
       </View>
-      {counter ? (
+      {answered ? (
+        <View className="flex-row items-center gap-2">
+          <Text variant="label">Ditt svar:</Text>
+          <Badge kind="status" label={offerAnswerLabel(deal)} />
+        </View>
+      ) : counter ? (
         <>
           <Field label="Din inntektsdeling">
             <ChipRow options={SPLITS} value={split} onChange={setSplit} />
@@ -294,10 +342,28 @@ export function CollabOfferScreen() {
 }
 
 // Kontrakt + Signer kontrakt (p17–p18), a page since Phase 12 H4c.
-export function CollabContractScreen() {
-  const [signed, setSigned] = useState(false);
+function CollabContractScreenContent() {
+  const deal = useCollabDeal();
+  const [name, setName] = useState("");
+  const [read, setRead] = useState(false);
+  const canSign = isFullName(name) && read;
   return (
-    <Page title="Kontrakt">
+    <FormPage
+      title="Kontrakt"
+      footer={
+        deal.signedBy ? null : (
+          <Button
+            label="Signer"
+            variant="ink"
+            disabled={!canSign}
+            onPress={() => {
+              signContract(name);
+              showToast(confirmToast.contractSigned);
+            }}
+          />
+        )
+      }
+    >
       <View className="gap-2 rounded-md border border-line bg-surface p-4">
         <Text variant="title" accessibilityRole="header">
           Samarbeidsavtale
@@ -308,30 +374,56 @@ export function CollabContractScreen() {
         {[
           "1. Samarbeidstype: Co-hosting (primær/sekundær)",
           "2. Opplevelse: Jazzkveld, 1. august",
-          "3. Inntektsdeling: 70 % / 30 %",
-          "4. Ansvar: lokale + utstyr / innhold og promotering",
-          "5. Varighet: engangshendelse",
+          "3. Ansvar: lokale + utstyr / innhold og promotering",
+          "4. Varighet: engangshendelse",
         ].map((c) => (
           <Text key={c} variant="caption">
             {c}
           </Text>
         ))}
       </View>
-      <UIPressable
-        accessibilityRole="button"
-        accessibilityState={{ checked: signed }}
-        onPress={() => {
-          setSigned(true);
-        }}
-        contentClassName="items-center rounded-md border-2 border-dashed border-line py-6"
-        pressedScale={0.99}
-      >
-        <Text variant="caption" tone={signed ? "ink" : "muted"}>
-          {signed ? "✓ Signert" : "Trykk for å signere"}
-        </Text>
-      </UIPressable>
-    </Page>
+      {deal.signedBy ? (
+        <View className="flex-row items-center gap-3 rounded-md border border-line bg-surface p-4">
+          <Icon name="checkmark-circle" size="lg" tone="success" />
+          <Text variant="label" className="flex-1">
+            Signert av {deal.signedBy}
+          </Text>
+        </View>
+      ) : (
+        <>
+          <Input
+            label="Fullt navn"
+            placeholder="Fornavn Etternavn"
+            value={name}
+            onChangeText={setName}
+            autoCapitalize="words"
+          />
+          <UIPressable
+            accessibilityRole="checkbox"
+            accessibilityState={{ checked: read }}
+            accessibilityLabel="Jeg har lest avtalen"
+            onPress={() => setRead((v) => !v)}
+            contentClassName="min-h-14 flex-row items-center gap-3 py-2"
+            pressedScale={0.99}
+          >
+            <CheckboxMark checked={read} />
+            <Text variant="body" className="flex-1">
+              Jeg har lest avtalen
+            </Text>
+          </UIPressable>
+        </>
+      )}
+    </FormPage>
   );
+}
+
+function offerAnswerLabel(deal: {
+  answer: string | null;
+  counterSplit: string | null;
+}): string {
+  return deal.answer === "Mottilbud sendt" && deal.counterSplit
+    ? `Mottilbud sendt · ${deal.counterSplit}`
+    : (deal.answer ?? "");
 }
 
 function Party({
@@ -374,4 +466,56 @@ function ChipRow({
   onChange: (v: string) => void;
 }) {
   return <ChipGroup options={options} value={value} onChange={onChange} />;
+}
+
+// Account-only (review 2026-11-18, IJ2): a guest sees the lock.
+export function NewCollabScreen() {
+  return (
+    <GuestPage
+      title="Nytt samarbeid"
+      message="Logg inn for å starte et samarbeid."
+      action="starte et samarbeid"
+    >
+      <NewCollabScreenContent />
+    </GuestPage>
+  );
+}
+
+// Account-only (review 2026-11-18, IJ2): a guest sees the lock.
+export function CollabDetailScreen() {
+  return (
+    <GuestPage
+      title="Samarbeid"
+      message="Logg inn for å se samarbeidet."
+      action="se samarbeidet"
+    >
+      <CollabDetailScreenContent />
+    </GuestPage>
+  );
+}
+
+// Account-only (review 2026-11-18, IJ2): a guest sees the lock.
+export function CollabOfferScreen() {
+  return (
+    <GuestPage
+      title="Tilbud"
+      message="Logg inn for å se tilbudet."
+      action="se tilbudet"
+    >
+      <CollabOfferScreenContent />
+    </GuestPage>
+  );
+}
+
+// Account-only (review 2026-11-18, IJ2): a guest sees the lock.
+export function CollabContractScreen() {
+  return (
+    <GuestPage
+      title="Kontrakt"
+      message="Logg inn for å se kontrakten."
+      action="se kontrakten"
+    >
+      <CollabContractScreenContent />
+    </GuestPage>
+  );
 }

@@ -1,9 +1,7 @@
-import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
-import { useState } from "react";
-import { ScrollView, View } from "react-native";
+import { useEffect, useState } from "react";
+import { Keyboard, ScrollView, View } from "react-native";
 
-import { Switch } from "@/components/ui/Switch";
 import {
   FadeSwap,
   Field,
@@ -19,20 +17,27 @@ import {
   Chip,
   Input,
 } from "@/components/ui";
+import { DiscardChangesSheet } from "@/components/DiscardChangesSheet";
 import { useGuestMode } from "@/components/map/hooks/useGuestMode";
 import { AreaChips } from "@/components/pickers/AreaChips";
 import { checkBirthday, formatBirthdayInput } from "@/features/onboarding/age";
+import { submitPlace } from "@/fixtures/created";
 import { UnderageScreen } from "@/features/onboarding/UnderageScreen";
 import { resetTo } from "@/lib/navigation";
-import { markOnboarded } from "@/lib/signupProgress";
+import { markOnboarded, setSignupEmail } from "@/lib/signupProgress";
+import { useConfirmLeave } from "@/lib/useConfirmLeave";
 import { useStepBack } from "@/lib/useStepBack";
 
 // Business onboarding, per the design (PDF p3–p5). It continues the
-// role step ("1 av 8") with steps 2–8: Personen bak bedriften → Om bedriften →
-// Hvor ligger dere? → Kontakt og sosialt → Tillatelser → Hva vil dere oppnå? →
-// Se bedriften på kartet. Nothing is created, verified, charged or stored
-// (BLOCKED_CONTRACT_GAP — no business, claim or subscription contract).
-const TOTAL = 8;
+// role step with steps 2–7: Personen bak bedriften → Om bedriften → Hvor
+// ligger dere? → Kontakt og sosialt → Hva vil dere oppnå? → Se bedriften på
+// kartet. Nothing is verified, charged or put on the map (BLOCKED_CONTRACT_GAP
+// — no business, claim or subscription contract). Review 2026-11-18 (#17): no
+// "Tillatelser" step (its switches asked the phone for nothing), the last
+// button says "Fortsett" (the map does not show the business), the e-mail
+// fills "Lag kontoen din", and the name is kept as an Innlevering
+// (submitPlace) like a place sent from Legg til.
+const TOTAL = 7;
 const CATEGORIES = [
   "Kafé",
   "Bar",
@@ -66,6 +71,11 @@ const toggle = (l: string[], v: string) =>
 export default function BusinessOnboarding() {
   const { setGuest } = useGuestMode();
   const [step, setStep] = useState(2); // 1 = the shared role step
+  // A step's keyboard closes with it (review 2026-11-18 O1: the numeric
+  // keyboard from Fødselsdag stayed open on the next steps).
+  useEffect(() => {
+    Keyboard.dismiss();
+  }, [step]);
   const [owner, setOwner] = useState("");
   const [email, setEmail] = useState("");
   // The business branch skips the profile step, so it carries the 18+ gate
@@ -84,8 +94,6 @@ export default function BusinessOnboarding() {
   const [insta, setInsta] = useState("");
   const [fb, setFb] = useState("");
   const [menu, setMenu] = useState("");
-  const [loc, setLoc] = useState(true);
-  const [notif, setNotif] = useState(true);
   const [goals, setGoals] = useState<string[]>([]);
   const [tags, setTags] = useState<string[]>([]);
 
@@ -103,28 +111,34 @@ export default function BusinessOnboarding() {
   const back = () => (step === 2 ? router.back() : setStep((s) => s - 1));
   // System back goes to the step before, like the header ← (0454).
   useStepBack(step > 2 && !blocked, back);
+  // Leaving the form with anything filled in asks first (review 2026-11-18
+  // H-12); the 18+ stop screen and the finish leave without asking.
+  const texts = [owner, email, birthday, name, about, web, phone, street];
+  const filled =
+    [...texts, contact, insta, fb, menu].some((v) => v.trim().length > 0) ||
+    category !== null ||
+    area !== null ||
+    goals.length > 0 ||
+    tags.length > 0;
+  const leave = useConfirmLeave(!blocked && filled);
   const next = () => {
     if (step === 2 && age.status === "underage") {
       setBlocked(true);
       return;
     }
     if (step === TOTAL) {
+      if (name.trim()) submitPlace(name.trim(), area);
+      setSignupEmail(email.trim());
       // As the explorer branch: the account comes last (founder 2026-11-06).
       const nextHref = markOnboarded();
+      leave.allowLeave();
       if (nextHref === "/map") {
         setGuest(false);
         resetTo("/map");
       } else router.push(nextHref);
     } else setStep((s) => s + 1);
   };
-  const cta =
-    step === 4
-      ? "Bekreft plassering"
-      : step === 6
-        ? "Gi tillatelser"
-        : step === TOTAL
-          ? "Se bedriften din på kartet"
-          : "Fortsett";
+  const cta = step === 4 ? "Bekreft plassering" : "Fortsett";
 
   if (blocked) return <UnderageScreen />;
 
@@ -163,14 +177,14 @@ export default function BusinessOnboarding() {
                 <Input
                   label="E-postadresse"
                   placeholder="navn@bedrift.no"
-                  keyboardType="email-address"
+                  type="email"
                   value={email}
                   onChangeText={setEmail}
                 />
                 <Input
                   label="Fødselsdag"
                   placeholder="dd.mm.åååå"
-                  keyboardType="numeric"
+                  type="number"
                   value={birthday}
                   onChangeText={(t) => setBirthday(formatBirthdayInput(t))}
                   maxLength={10}
@@ -214,13 +228,14 @@ export default function BusinessOnboarding() {
                 <Input
                   label="Nettside"
                   placeholder="bedrift.no"
+                  type="url"
                   value={web}
                   onChangeText={setWeb}
                 />
                 <Input
                   label="Telefon"
                   placeholder="+47 …"
-                  keyboardType="numeric"
+                  type="phone"
                   value={phone}
                   onChangeText={setPhone}
                 />
@@ -253,59 +268,35 @@ export default function BusinessOnboarding() {
                 <Input
                   label="Kontakt-e-post"
                   placeholder="hei@bedrift.no"
-                  keyboardType="email-address"
+                  type="email"
                   value={contact}
                   onChangeText={setContact}
                 />
                 <Input
                   label="Instagram"
                   placeholder="@bedrift"
+                  type="handle"
                   value={insta}
                   onChangeText={setInsta}
                 />
                 <Input
                   label="Facebook"
                   placeholder="facebook.com/…"
+                  type="url"
                   value={fb}
                   onChangeText={setFb}
                 />
                 <Input
                   label="Meny-URL (valgfritt)"
                   placeholder="Lenke til meny"
+                  type="url"
                   value={menu}
                   onChangeText={setMenu}
                 />
-                <Text variant="caption" tone="muted">
-                  Alle felt kan endres senere fra dashbordet.
-                </Text>
               </Shell>
             ) : null}
 
             {step === 6 ? (
-              <Shell
-                title="Tillatelser"
-                subtitle="Bedriften trenger to tillatelser for å vises på kartet."
-              >
-                <Perm
-                  icon="location-outline"
-                  label="Posisjon"
-                  tag="ANBEFALT"
-                  hint="Bekrefter hvor bedriften ligger på kartet"
-                  value={loc}
-                  onChange={setLoc}
-                />
-                <Perm
-                  icon="notifications-outline"
-                  label="Varsler"
-                  tag="ANBEFALT"
-                  hint="Få beskjed om anmeldelser, chat og bestillinger"
-                  value={notif}
-                  onChange={setNotif}
-                />
-              </Shell>
-            ) : null}
-
-            {step === 7 ? (
               <Shell
                 title="Hva vil dere oppnå?"
                 subtitle="Velg det som passer best for dere."
@@ -337,7 +328,7 @@ export default function BusinessOnboarding() {
               </Shell>
             ) : null}
 
-            {step === 8 ? (
+            {step === 7 ? (
               <Shell
                 title="Se bedriften på kartet"
                 subtitle="Slik ser kundene dere når bedriften er verifisert."
@@ -361,11 +352,6 @@ export default function BusinessOnboarding() {
                   title="Verifiser bedriften"
                   hint="Org.nummer eller dokumenter"
                 />
-                <NextStep
-                  n={2}
-                  title="Start abonnement"
-                  hint="Velg abonnement"
-                />
               </Shell>
             ) : null}
           </ScrollView>
@@ -375,55 +361,17 @@ export default function BusinessOnboarding() {
           <Button label={cta} variant="ink" disabled={!can} onPress={next} />
         </StickyFooter>
       </KeyboardAvoider>
+      <DiscardChangesSheet
+        visible={leave.asking}
+        onStay={leave.stay}
+        onDiscard={leave.leave}
+      />
     </Screen>
   );
 }
 
 // Wizard step body (design-system StepContent).
 const Shell = StepContent;
-
-function Perm({
-  icon,
-  label,
-  tag,
-  hint,
-  value,
-  onChange,
-}: {
-  icon: keyof typeof Ionicons.glyphMap;
-  label: string;
-  tag: string;
-  hint: string;
-  value: boolean;
-  onChange: (v: boolean) => void;
-}) {
-  return (
-    <View className="flex-row items-center gap-3 rounded-md border border-line bg-surface p-4">
-      <View className="h-10 w-10 items-center justify-center rounded-full bg-surfaceMuted">
-        <Icon name={icon} size="md" tone="ink" />
-      </View>
-      <View className="flex-1 gap-1">
-        <View className="flex-row items-center gap-2">
-          <Text variant="body" weight="semibold">
-            {label}
-          </Text>
-          <Text
-            variant="caption"
-            weight="bold"
-            tone="muted"
-            className="rounded-xs bg-surfaceMuted px-2 py-1"
-          >
-            {tag}
-          </Text>
-        </View>
-        <Text variant="caption" tone="muted">
-          {hint}
-        </Text>
-      </View>
-      <Switch value={value} onValueChange={onChange} label={label} />
-    </View>
-  );
-}
 
 function NextStep({
   n,

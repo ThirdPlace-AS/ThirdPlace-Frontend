@@ -4,6 +4,7 @@
 // discarded on reload — there is no backend to submit or publish to.
 
 import type { MockChatAccess, MockExperience } from "@/fixtures";
+import { clock, isoDay } from "@/lib/dates";
 
 // The Add menu (PDF p10 "Hva vil du legge til?") offers Sted and Opplevelse;
 // Gruppe was added by the founder (2026-11-06).
@@ -111,23 +112,19 @@ export function stepsFor(kind: AddKind | null): StepKey[] {
 /** Photos a kind needs: a group shows a gallery, so at least two. */
 export const minPhotos = (kind: AddKind | null) => (kind === "group" ? 2 : 1);
 
-// Kalender "Rediger" opens the experience flow pre-filled with what the
-// example experience already says (title, description, category, capacity).
-// The category too (0464): without it Kategori was empty and Neste stayed
-// disabled on the first step.
-export function draftFromExperience(e: {
-  title: string;
-  about: string;
-  category: string;
-  capacity: number;
-}): AddDraft {
+// Kalender "Rediger" opens the experience flow pre-filled with everything
+// the experience says: what a copy keeps (place, photos, vibes, frame, plan)
+// plus when it next happens (review 2026-11-18 JR5: date, place, vibes and
+// photos were empty). The category too (0464): without it Kategori was
+// empty and Neste stayed disabled on the first step.
+export function draftFromExperience(
+  e: Parameters<typeof draftCopyOf>[0],
+  extra: { area: string | null; photos: number[]; next: Date | null },
+): AddDraft {
   return {
-    ...EMPTY_DRAFT,
-    kind: "experience",
-    title: e.title,
-    summary: e.about,
-    category: e.category,
-    capacity: String(e.capacity),
+    ...draftCopyOf(e, extra),
+    date: extra.next ? isoDay(extra.next) : null,
+    startTime: extra.next ? clock(extra.next) : null,
   };
 }
 

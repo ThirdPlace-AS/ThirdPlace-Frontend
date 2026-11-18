@@ -6,6 +6,7 @@ import { SafeAreaProvider } from "react-native-safe-area-context";
 
 import { GroupContent } from "@/components/map/content/GroupContent";
 import { ChatInfoScreen } from "@/features/chat/ChatInfoScreens";
+import { groupById } from "@/fixtures";
 import { resetMutedChats } from "@/lib/mutedChats";
 
 jest.mock("expo-router", () => ({
@@ -48,7 +49,8 @@ describe("Forlat gruppen", () => {
     render(<GroupContent id="g1" />, { wrapper });
     fireEvent.press(screen.getByText("Bli medlem"));
     fireEvent.press(screen.getByText("Forlat gruppen"));
-    expect(screen.getByText("Forlate gruppen?")).toBeTruthy();
+    // The confirm names the group (review 2026-11-18 CMP-09).
+    expect(screen.getByText(`Forlate ${groupById("g1")!.name}?`)).toBeTruthy();
     fireEvent.press(screen.getByText("Bli værende"));
     expect(screen.getByText("Forlat gruppen")).toBeTruthy();
 

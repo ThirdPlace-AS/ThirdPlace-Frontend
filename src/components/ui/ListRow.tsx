@@ -91,13 +91,15 @@ export function ListRow({
     <>
       {leading ??
         (icon ? (
-          <Icon name={icon} size="md" tone={danger ? "ember" : "ink"} />
+          <Icon name={icon} size="md" tone={danger ? "danger" : "ink"} />
         ) : null)}
       <View className="flex-1 gap-1">
         <Text
           variant="body"
           weight={variant === "card" ? "semibold" : "regular"}
-          tone={danger ? "ember" : "ink"}
+          // Destructive rows read as danger, not as the brand's pink (review
+          // 2026-11-18 CMP-09).
+          tone={danger ? "danger" : "ink"}
           numberOfLines={1}
         >
           {title}

@@ -27,6 +27,7 @@ import {
 } from "@/fixtures";
 import { Illustration } from "@/components/illustrations/Illustration";
 import { gutterPx } from "@/theme";
+import { GuestPage } from "@/components/GuestPage";
 
 const TABS: { key: MockPlanState; label: string }[] = [
   { key: "upcoming", label: "Kommende" },
@@ -46,6 +47,18 @@ function nextStart(exp: MockExperience, now: Date): Date | undefined {
 }
 
 export default function PlansScreen() {
+  return (
+    <GuestPage
+      title="Mine planer"
+      message="Logg inn for å se planene dine."
+      action="se planene dine"
+    >
+      <PlansContent />
+    </GuestPage>
+  );
+}
+
+function PlansContent() {
   const [tab, setTab] = useState<MockPlanState>("upcoming");
   // Phase 18 (screen benchmark: Google Calendar, Apple Calendar): upcoming
   // plans as a month with a dot on each day; tapping a day narrows the list.

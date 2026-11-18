@@ -29,6 +29,10 @@ import { duration, spring } from "@/theme";
 
 export type PressFeedback = "scale" | "none";
 
+// Touch slop for a text link (review 2026-11-18 #23, CMP-04): a caption
+// (about 16 px) or label (about 20 px) line grows to 48 dp or more.
+export const LINK_SLOP = { top: 16, bottom: 16, left: 12, right: 12 } as const;
+
 export type PressableProps = Omit<RNPressableProps, "children" | "style"> & {
   children?: ReactNode;
   /** Layout classes for the touch target (position, width, margins). */

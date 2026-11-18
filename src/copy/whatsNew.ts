@@ -13,8 +13,8 @@ export const WHATS_NEW: {
   items: [
     {
       icon: "grid-outline",
-      title: "Kategorier på kartet",
-      text: "Velg Kafé, Trening eller Natur og tur rett under søket.",
+      title: "Kategorier i Filtre",
+      text: "Velg Kafé, Trening eller Natur og tur under Kategori i Filtre.",
     },
     {
       icon: "calendar-outline",

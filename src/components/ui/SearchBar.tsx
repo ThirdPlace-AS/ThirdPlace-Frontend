@@ -66,7 +66,7 @@ export function SearchBar({
         <Pressable
           accessibilityRole="button"
           accessibilityLabel="Tøm søk"
-          hitSlop={10}
+          hitSlop={12}
           onPress={() => onChangeText?.("")}
         >
           <Icon name="close-circle" size="md" tone="muted" />
