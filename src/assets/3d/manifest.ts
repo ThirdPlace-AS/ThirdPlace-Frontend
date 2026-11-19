@@ -21,6 +21,7 @@ export type ArtKey =
   | "social"
   | "place"
   | "experience"
+  | "group"
   | "location";
 
 export const CATEGORY_ART: Record<string, ArtKey> = {
@@ -43,6 +44,7 @@ export const CATEGORY_ART: Record<string, ArtKey> = {
   // Kinds
   Sted: "place",
   Opplevelse: "experience",
+  Gruppe: "group",
 };
 
 export const artFiles: Partial<Record<ArtKey, ImageSourcePropType>> = {};

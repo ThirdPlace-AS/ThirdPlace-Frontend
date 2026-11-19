@@ -64,7 +64,7 @@ describe("Veibeskrivelse", () => {
     expect(openURL).toHaveBeenLastCalledWith(directionsUrl(p1.coord));
     screen.unmount();
 
-    render(<PlaceContent id="p1" push={jest.fn()} />, { wrapper });
+    render(<PlaceContent id="p1" />, { wrapper });
     fireEvent.press(screen.getByLabelText(`Veibeskrivelse til ${p1.name}`));
     expect(openURL).toHaveBeenCalledTimes(2);
   });

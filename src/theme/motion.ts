@@ -13,6 +13,8 @@ export const duration = {
   slow: 320,
   fling: 180, // card/preview flung off-screen
   recenter: 500, // map camera recenter
+  focus: 450, // map camera to a tapped pin (centred above the sheet; a pan, or a short zoom to street level)
+  focusFar: 650, // the same when the tap also zooms in (the first one): the sheet arrives before the map rests
   shimmer: 800, // skeleton pulse
 } as const;
 

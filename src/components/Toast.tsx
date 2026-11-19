@@ -122,7 +122,6 @@ export function ToastHost() {
               <Pressable
                 accessibilityRole="button"
                 accessibilityLabel={toast.action.label}
-                haptic="selection"
                 hitSlop={8}
                 onPress={() => {
                   const run = toast.action?.onPress;

@@ -3,6 +3,7 @@ import { useMemo, useState } from "react";
 import type { MockPlace, TimeWindow } from "@/fixtures";
 import type { MapFilters } from "../services/mapFilters";
 import { useCreatedVersion } from "@/fixtures/created";
+import { useOrigin } from "@/lib/origin";
 
 import { resultForMode } from "../services/mapFixtureAdapter";
 import type { DiscoveryMode } from "../types/mapPresentation";
@@ -32,12 +33,24 @@ export function useMapDiscovery({
   const [mode, setMode] = useState<DiscoveryMode>(initial);
   // An experience published in Legg til joins the map right away.
   const created = useCreatedVersion();
+  // Distances (and, from S4, the order) follow the person; the origin only
+  // moves on a real move, so this doesn't recompute on GPS jitter.
+  const origin = useOrigin();
 
   const result = useMemo(
     () =>
-      resultForMode({ mode, places, query, savedIds, time, hasSpots, filters }),
+      resultForMode({
+        mode,
+        places,
+        query,
+        savedIds,
+        time,
+        hasSpots,
+        filters,
+        origin,
+      }),
     // eslint-disable-next-line react-hooks/exhaustive-deps -- created: the fixture lists grew
-    [mode, places, query, savedIds, time, hasSpots, filters, created],
+    [mode, places, query, savedIds, time, hasSpots, filters, created, origin],
   );
 
   return { mode, setMode, ...result };

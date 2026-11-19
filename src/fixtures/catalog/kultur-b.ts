@@ -1,0 +1,943 @@
+// Seeds for the Bøker og kultur interests, part B (Phase 19): Klassisk,
+// Klubb og DJ, Vinyl. Hand-written MOCK content: businesses, clubs and events
+// are fictional; outdoor places use their public names with modest, general
+// descriptions (facilities as OpenStreetMap shows them). See
+// docs/fixtures/VOICE.md.
+import type { InterestSeed } from "./types";
+
+export const KULTUR_B: InterestSeed[] = [
+  {
+    interest: "klassisk",
+    bedrift: {
+      name: "Flygelrommet",
+      category: "Konsertsalong",
+      coord: [10.5862, 59.9188],
+      town: "Bekkestua",
+      address: "Nadderudveien, 1357 Bekkestua",
+      hours: "Tor–lør 18–22 · Søn 14–18",
+      priceNok: 300,
+      vibes: ["Intim", "Rolig"],
+      blurb:
+        "Liten konsertsalong på Bekkestua med flygel, kammermusikk og kaffe i pausen.",
+      about:
+        "Et høyt rom i en gammel villa, med et flygel, femti stoler og store vinduer mot hagen. Unge musikere og erfarne kammermusikere spiller her flere kvelder i uka, og på søndager er det ettermiddagskonserter.",
+      tags: ["Kammermusikk", "Flygel", "Små konserter"],
+      accessibility: ["Trinnfri inngang", "Rullestol-WC"],
+      types: ["Konserter", "Kulturelle aktiviteter"],
+      audiences: ["Par", "Lokalkjente", "Alenereisende"],
+      durationMin: 90,
+      photos: ["klassisk-3", "klassisk-5"],
+      reviews: [
+        [
+          "Elisabeth H.",
+          5,
+          "1 uke siden",
+          "Så nær musikerne at du hører pusten deres. En helt annen opplevelse enn i en stor sal.",
+        ],
+        [
+          "Gunnar L.",
+          4,
+          "1 måned siden",
+          "Vakker musikk, men stolene blir harde etter en time.",
+        ],
+        [
+          "Mei Lin C.",
+          5,
+          "2 måneder siden",
+          "Søndagskonsertene med kaffe og kake har blitt fast for oss.",
+        ],
+      ],
+      chat: [
+        [
+          "Flygelrommet",
+          "Søndag spiller en strykekvartett. Kaffe og kake i pausen.",
+        ],
+        ["Gunnar", "Går det an å få en pute til stolen?"],
+        ["Flygelrommet", "Ja, det står en kurv med puter ved døra."],
+      ],
+      business: {
+        name: "Flygelrommet AS",
+        verified: true,
+        about:
+          "Konsertsalong på Bekkestua, drevet av en pianist og en cellist siden 2016.",
+      },
+    },
+    organisasjon: {
+      name: "Kammermusikkvennene på Jevnaker",
+      category: "Musikkforening",
+      coord: [10.383, 60.2405],
+      town: "Jevnaker",
+      address: "Torggata, 3520 Jevnaker",
+      hours: "Tir 19–21",
+      priceNok: 0,
+      vibes: ["Rolig", "Sosial"],
+      blurb:
+        "Forening på Jevnaker for voksne som spiller eller lytter til kammermusikk.",
+      about:
+        "Vi er amatører og pensjonerte musikere som spiller kammermusikk i små grupper, og lyttere som kommer for å høre. På tirsdager øver vi, og på mandager holder vi lyttekvelder der vi går gjennom et verk sammen.",
+      tags: ["Kammermusikk", "Amatører", "Lyttekvelder"],
+      accessibility: ["Trinnfri inngang"],
+      types: ["Konserter", "Kulturelle aktiviteter"],
+      photos: ["klassisk-1", "klassisk-4"],
+      reviews: [
+        [
+          "Astrid K.",
+          5,
+          "1 måned siden",
+          "Jeg hadde ikke spilt fiolin siden jeg var tjue. Nå spiller jeg i en kvartett hver tirsdag.",
+        ],
+        [
+          "Morten J.",
+          4,
+          "3 måneder siden",
+          "Flinke og hyggelige folk. Det er få celloer her, så vi er ettertraktet.",
+        ],
+      ],
+      chat: [
+        [
+          "Kammermusikkvennene på Jevnaker",
+          "Tirsdag øver vi på en kvartett av Haydn. Lyttere er velkomne.",
+        ],
+        ["Morten", "Kan jeg ta med en venn som spiller bratsj?"],
+        ["Bahram Tehrani", "Ja, vi trenger flere bratsjer."],
+      ],
+      org: {
+        form: "Forening",
+        about:
+          "Forening på Jevnaker for kammermusikk. Vi spiller i små grupper, holder lyttekvelder for nye og arrangerer en kammermusikkhelg.",
+        activities: [
+          "Øving i små grupper på tirsdager",
+          "Lyttekvelder for nye",
+          "Utlån av noter",
+          "Kammermusikkhelg på Jevnaker",
+        ],
+        contactPersonId: "u50",
+      },
+    },
+    byrom: {
+      name: "Operataket",
+      category: "Utsiktspunkt",
+      coord: [10.7519, 59.9081],
+      town: "Bjørvika",
+      address: "Kirsten Flagstads plass, 0150 Oslo",
+      hours: "Alltid åpent",
+      priceNok: 0,
+      vibes: ["Rolig", "Sosial"],
+      blurb:
+        "Det skrå taket på operaen i Bjørvika, der du kan gå helt opp og se ut over fjorden.",
+      about:
+        "Taket på operahuset skrår ned mot vannet, og du kan gå helt opp til toppen fra plassen foran. Det er benker, toaletter og sykkelparkering ved inngangen, og mange stopper her etter en forestilling for å se på lysene over Bjørvika.",
+      tags: ["Gratis", "Ute", "Utsikt"],
+      accessibility: ["Trinnfri inngang"],
+      types: ["Landemerker", "Konserter"],
+      photos: ["klassisk-2", "klassisk-4"],
+      reviews: [
+        [
+          "Ingrid T.",
+          5,
+          "2 uker siden",
+          "Vi gikk opp på taket etter konserten og ble stående lenge. Utsikten er fantastisk om kvelden.",
+        ],
+        [
+          "Lars Ivar M.",
+          4,
+          "1 måned siden",
+          "Flott sted, men det blåser godt på toppen. Ta med jakke.",
+        ],
+      ],
+      chat: [
+        ["Ingrid", "Noen som vil møtes på Operataket før konserten på lørdag?"],
+        ["Lars Ivar", "Jeg kan være der halv sju."],
+      ],
+      space: {
+        facilities: ["Benker", "Toalett", "Sykkelparkering", "Belysning"],
+        access: "Åpent for alle",
+      },
+    },
+    opplevelse: {
+      title: "Klassisk for nybegynnere",
+      hostId: "u50",
+      when: "Man 19:00",
+      repeat: "Ukentlig",
+      venue: "organisasjon",
+      capacity: 15,
+      going: 9,
+      priceNok: 100,
+      about:
+        "En lyttekveld for deg som liker klassisk musikk, men ikke vet hvor du skal begynne. Bahram spiller utdrag fra ett verk, forteller hva du kan lytte etter, og kvelden slutter med at noen av medlemmene spiller.",
+      category: "Musikk",
+      duration: "2 timer",
+      durationMin: 120,
+      languages: ["Norsk", "Engelsk"],
+      included: ["Kaffe og te", "Lytteliste til hjemmebruk"],
+      vibes: ["Lærerikt", "Rolig"],
+      types: ["Konserter", "Kulturelle aktiviteter"],
+      audiences: ["Alenereisende", "Førstegangsbesøkende"],
+      tags: ["Klassisk", "Lytting", "Nybegynner"],
+      photos: ["klassisk-5", "klassisk-1"],
+      steps: [
+        [
+          "Kveldens verk",
+          "Bahram forteller kort om verket og komponisten.",
+          "klassisk-5",
+        ],
+        [
+          "Lytt etter",
+          "Vi hører utdrag og snakker om det vi hørte.",
+          "klassisk-2",
+        ],
+        ["Spørsmål", "Alle spørsmål er lov, også de enkleste.", "klassisk-4"],
+        [
+          "Levende til slutt",
+          "Noen av medlemmene spiller en kort sats.",
+          "klassisk-1",
+        ],
+      ],
+      reviews: [
+        [
+          "Hjørdis",
+          "Jevnaker",
+          5,
+          "1 uke siden",
+          "Jeg har alltid trodd at klassisk musikk ikke var for meg. Nå gleder jeg meg til mandagene.",
+        ],
+        [
+          "Knut",
+          "Gran",
+          4,
+          "1 måned siden",
+          "Lærerikt og hyggelig, men jeg skulle gjerne hatt mer levende musikk.",
+        ],
+        [
+          "Amina",
+          "Roa",
+          5,
+          "2 måneder siden",
+          "Bahram forklarer så det er lett å henge med. Lyttelista har jeg brukt hele uka.",
+        ],
+      ],
+      chat: [
+        [
+          "Bahram Tehrani",
+          "Velkommen! Denne uka hører vi på en strykekvartett. Kaffen står klar.",
+        ],
+        ["Knut", "Trenger jeg å kunne noe om musikk fra før?"],
+        ["Bahram Tehrani", "Nei, du trenger bare å være nysgjerrig."],
+      ],
+    },
+    arrangement: {
+      title: "Kammermusikkhelgen på Jevnaker",
+      hostId: "u50",
+      when: "Lør 14:00",
+      days: 2,
+      venue: "organisasjon",
+      organizer: "organisasjon",
+      capacity: 80,
+      going: 36,
+      priceNok: 250,
+      about:
+        "En helg med kammermusikk på Jevnaker, der foreningens grupper og inviterte musikere spiller korte konserter. Lørdag er det åpen øving du kan se på, og søndag avslutter vi med en konsert med alle gruppene.",
+      category: "Musikk",
+      duration: "3 timer",
+      durationMin: 180,
+      included: ["Inngang begge dagene", "Kaffe og kake"],
+      vibes: ["Rolig", "Koselig"],
+      types: ["Konserter", "Festivaler"],
+      audiences: ["Par", "Lokalkjente", "Alenereisende"],
+      tags: ["Kammermusikk", "Festival"],
+      photos: ["klassisk-1", "klassisk-3"],
+      steps: [
+        [
+          "Lør 14:00 · Åpen øving",
+          "Se gruppene øve, og still spørsmål underveis.",
+          "klassisk-4",
+        ],
+        [
+          "Lør 16:00 · Duo og trio",
+          "Korte konserter med de minste gruppene.",
+          "klassisk-2",
+        ],
+        [
+          "Søn 14:00 · Kaffe og kake",
+          "Vi samles før avslutningskonserten.",
+          "klassisk-5",
+        ],
+        [
+          "Søn 15:00 · Alle gruppene",
+          "Avslutningskonsert der alle gruppene spiller.",
+          "klassisk-1",
+        ],
+      ],
+      reviews: [
+        [
+          "Solfrid",
+          "Jevnaker",
+          5,
+          "1 år siden",
+          "Å se øvingen på lørdag gjorde konserten på søndag mye bedre. Lurt opplegg.",
+        ],
+        [
+          "Tore",
+          "Brandbu",
+          4,
+          "1 år siden",
+          "Vakker musikk, men lokalet ble varmt på søndag.",
+        ],
+        [
+          "Nadja",
+          "Roa",
+          5,
+          "1 år siden",
+          "Varmt og nært. Musikerne pratet med oss i pausen.",
+        ],
+      ],
+      chat: [
+        [
+          "Kammermusikkvennene på Jevnaker",
+          "Billetten gjelder begge dagene. Åpen øving lørdag fra klokka to.",
+        ],
+        ["Tore", "Er det sitteplasser til alle?"],
+        [
+          "Bahram Tehrani",
+          "Ja, vi setter fram stoler til alle som har billett.",
+        ],
+      ],
+    },
+    gruppe: {
+      name: "Klassisk etter jobb",
+      about:
+        "Vi går på klassiske konserter i Oslo og Bærum sammen, gjerne de korte konsertene tidlig på kvelden. Etterpå tar vi en kopp kaffe og snakker om det vi har hørt, uansett hvor mye eller lite vi kan om musikk.",
+      rules:
+        "Foreslå konserter i chatten minst en uke før. Den som kommer først, holder av plasser til de andre.",
+      photos: ["klassisk-2", "klassisk-3"],
+      memberCount: 32,
+      home: "byrom",
+      access: "open",
+      chat: [
+        ["Ingrid", "Kort konsert torsdag klokka fem, noen som blir med?"],
+        ["Lars Ivar", "Jeg kommer rett fra jobb."],
+        ["Ingrid", "Fint, vi møtes på Operataket først."],
+      ],
+    },
+  },
+  {
+    interest: "klubb-og-dj",
+    bedrift: {
+      name: "Basskjelleren",
+      category: "Klubb",
+      coord: [10.7615, 59.9125],
+      town: "Grønland",
+      address: "Smalgangen, 0188 Oslo",
+      hours: "Tor–lør 22–03",
+      priceNok: 200,
+      vibes: ["Energisk", "Livlig"],
+      blurb:
+        "Liten klubb i en kjeller på Grønland, med DJ-er, godt lydanlegg og plass til å danse.",
+      about:
+        "En kjeller med lavt tak, et godt lydanlegg og et dansegulv for rundt to hundre. DJ-er fra Oslo og Romerike spiller house og disco i helgene, og torsdager er det kveld for nye DJ-er.",
+      tags: ["DJ", "Dansegulv", "18 år"],
+      accessibility: ["Sensoriske stimuli"],
+      types: ["Natteliv"],
+      audiences: ["Store grupper", "Lokalkjente", "Alenereisende"],
+      durationMin: 240,
+      photos: ["klubb-1", "klubb-5"],
+      reviews: [
+        [
+          "Sigve A.",
+          5,
+          "1 uke siden",
+          "Beste lyden jeg har hørt i en så liten klubb. Og ingen som står og stirrer på telefonen.",
+        ],
+        [
+          "Tiril B.",
+          4,
+          "1 måned siden",
+          "Fin musikk og hyggelige folk. Lang kø etter midnatt på lørdager.",
+        ],
+        [
+          "Kwame O.",
+          5,
+          "2 måneder siden",
+          "Torsdagene med nye DJ-er er undervurdert. Rolig og gøy.",
+        ],
+      ],
+      chat: [
+        [
+          "Basskjelleren",
+          "Torsdag spiller tre nye DJ-er hver sin time. Dørene åpner klokka ti.",
+        ],
+        ["Tiril", "Er det garderobe?"],
+        ["Basskjelleren", "Ja, rett innenfor døra."],
+      ],
+      business: {
+        name: "Basskjelleren AS",
+        verified: true,
+        about: "Klubb på Grønland, drevet av tre DJ-er siden 2017.",
+      },
+    },
+    organisasjon: {
+      name: "Miksekollektivet i Lørenskog",
+      category: "DJ-kollektiv",
+      coord: [10.97, 59.9285],
+      town: "Lørenskog",
+      address: "Nordliveien, 1462 Lørenskog",
+      hours: "Søn 16–20",
+      priceNok: 0,
+      vibes: ["Kreativ", "Sosial"],
+      blurb:
+        "Kollektiv i Lørenskog for voksne som vil lære å mikse eller spille for andre.",
+      about:
+        "Vi har et lite øvingsrom med to sett utstyr, en kasse plater og en laptop til dem som spiller digitalt. På søndager lærer vi bort det vi kan, og noen ganger spiller vi sammen på Basskjelleren.",
+      tags: ["DJ", "Kurs", "Øvingsrom"],
+      accessibility: ["Trinnfri inngang"],
+      types: ["Natteliv", "Kulturelle aktiviteter"],
+      photos: ["klubb-4", "klubb-3"],
+      reviews: [
+        [
+          "Nikolai R.",
+          5,
+          "1 måned siden",
+          "Jeg hadde aldri rørt en mikser. Etter tre søndager spilte jeg mitt første sett for venner.",
+        ],
+        [
+          "Ida K.",
+          4,
+          "2 måneder siden",
+          "Fint miljø og tålmodige folk. Det er trangt i øvingsrommet når alle er der.",
+        ],
+      ],
+      chat: [
+        [
+          "Miksekollektivet i Lørenskog",
+          "Søndag går vi gjennom hvordan du bygger et sett. Ta med musikken din på en minnepinne.",
+        ],
+        ["Ida", "Kan jeg øve på egen hånd en kveld i uka?"],
+        [
+          "Sander Wiig",
+          "Ja, når du har vært med noen ganger, setter vi deg opp på øvingslista.",
+        ],
+      ],
+      org: {
+        form: "Frivillig gruppe",
+        about:
+          "DJ-kollektiv i Lørenskog for voksne. Vi lærer bort miksing på søndager, deler øvingsrom og utstyr og holder en miksekveld på Basskjelleren.",
+        activities: [
+          "Kurs på søndager",
+          "Felles øvingsrom",
+          "Utlån av utstyr",
+          "Miksekveld på Basskjelleren",
+        ],
+        contactPersonId: "u51",
+      },
+    },
+    byrom: {
+      name: "Olaf Ryes plass",
+      category: "Park",
+      coord: [10.758, 59.9232],
+      town: "Grünerløkka",
+      address: "Olaf Ryes plass, 0552 Oslo",
+      hours: "Alltid åpent",
+      priceNok: 0,
+      vibes: ["Livlig", "Sosial"],
+      blurb: "Parken midt på Grünerløkka, omgitt av kafeer, barer og trær.",
+      about:
+        "En rektangulær park med fontene, mange benker og gangveier med lys, mellom Thorvald Meyers gate og Markveien. Det er et vanlig sted å møtes før man går videre ut om kvelden.",
+      tags: ["Gratis", "Ute", "Møteplass"],
+      accessibility: ["Trinnfri inngang"],
+      types: ["Natteliv", "Friluftsliv"],
+      photos: ["klubb-2", "klubb-5"],
+      reviews: [
+        [
+          "Selma T.",
+          5,
+          "2 uker siden",
+          "Vi møtes alltid her før vi går ut. Det er lett å finne hverandre ved fontenen.",
+        ],
+        [
+          "Bjørn Ove L.",
+          4,
+          "1 måned siden",
+          "Fin park, men full av folk på varme kvelder. Det kan være vanskelig å finne en ledig benk.",
+        ],
+      ],
+      chat: [
+        [
+          "Selma",
+          "Vi møtes ved fontenen på Olaf Ryes plass klokka ti på lørdag?",
+        ],
+        ["Bjørn Ove", "Jeg kommer litt over."],
+      ],
+      space: {
+        facilities: ["Benker", "Belysning", "Sykkelparkering"],
+        access: "Åpent for alle",
+      },
+    },
+    opplevelse: {
+      title: "DJ-kurs for nybegynnere",
+      hostId: "u51",
+      when: "Søn 17:00",
+      repeat: "Ukentlig",
+      venue: "organisasjon",
+      capacity: 6,
+      going: 4,
+      priceNok: 300,
+      about:
+        "To timer i øvingsrommet der du lærer å telle takter, matche tempo og gå fra én låt til den neste. Sander viser på både platespillere og kontroller, og alle får prøve selv.",
+      category: "Musikk",
+      duration: "2 timer",
+      durationMin: 120,
+      languages: ["Norsk", "Engelsk"],
+      included: ["Lån av utstyr", "Hodetelefoner", "Brus og snacks"],
+      vibes: ["Hands-on", "Lærerikt"],
+      types: ["Natteliv", "Kulturelle aktiviteter"],
+      audiences: ["Alenereisende", "Førstegangsbesøkende"],
+      tags: ["DJ", "Miksing", "Nybegynner"],
+      photos: ["klubb-4", "klubb-3"],
+      steps: [
+        ["Utstyret", "Hva knappene gjør, og hvordan du kobler opp.", "klubb-4"],
+        [
+          "Telle takter",
+          "Vi lytter etter rytmen og finner starten på frasene.",
+          "klubb-3",
+        ],
+        ["Matche tempo", "Du får to låter til å gå i samme tempo.", "klubb-4"],
+        [
+          "Din første overgang",
+          "Alle spiller en overgang for de andre.",
+          "klubb-1",
+        ],
+      ],
+      reviews: [
+        [
+          "Martine",
+          "Lørenskog",
+          5,
+          "1 uke siden",
+          "Sander forklarer rolig og lar deg prøve med en gang. Jeg fikk til min første overgang.",
+        ],
+        [
+          "Ole Kristian",
+          "Strømmen",
+          4,
+          "1 måned siden",
+          "Lærerikt, men to timer går fort når seks stykker skal prøve.",
+        ],
+        [
+          "Hassan",
+          "Fjellhamar",
+          5,
+          "2 måneder siden",
+          "Endelig et kurs der ingen ler av en voksen nybegynner.",
+        ],
+      ],
+      chat: [
+        [
+          "Sander Wiig",
+          "Velkommen! Ta med egne hodetelefoner hvis du har. Utstyret står klart.",
+        ],
+        ["Martine", "Må jeg ha med egen musikk?"],
+        [
+          "Sander Wiig",
+          "Nei, vi har mye å velge mellom. Men ta gjerne med noe du liker.",
+        ],
+      ],
+    },
+    arrangement: {
+      title: "Miksekvelden i Basskjelleren",
+      hostId: "u51",
+      when: "Fre 21:00",
+      days: 1,
+      venue: "bedrift",
+      organizer: "organisasjon",
+      capacity: 150,
+      going: 39,
+      priceNok: 150,
+      about:
+        "En fredagskveld i Basskjelleren der medlemmer av Miksekollektivet spiller hver sin time, fra rolig disco tidlig til house utover kvelden. Nye og erfarne DJ-er bytter på bak bordet.",
+      category: "Sosialt",
+      duration: "3 timer",
+      durationMin: 180,
+      included: ["Inngang", "Garderobe"],
+      vibes: ["Sosialt", "Kreativt"],
+      energy: "Høyt",
+      types: ["Natteliv"],
+      audiences: ["Store grupper", "Lokalkjente", "Alenereisende"],
+      tags: ["DJ", "Dans", "Klubbkveld"],
+      photos: ["klubb-1", "klubb-2"],
+      steps: [
+        [
+          "Fre 21:00 · Rolig start",
+          "Disco og funk mens gulvet fylles.",
+          "klubb-5",
+        ],
+        [
+          "Fre 22:00 · Nye DJ-er",
+          "To medlemmer spiller sitt første sett i klubben.",
+          "klubb-3",
+        ],
+        ["Fre 23:00 · House", "Tempoet går opp utover kvelden.", "klubb-1"],
+        [
+          "Fre 23:45 · Siste låt",
+          "Alle DJ-ene samles bak bordet til slutt.",
+          "klubb-4",
+        ],
+      ],
+      reviews: [
+        [
+          "Anniken",
+          "Lørenskog",
+          5,
+          "1 år siden",
+          "Fint å se folk spille sitt første sett for et fullt gulv. Varm stemning hele kvelden.",
+        ],
+        [
+          "Robin",
+          "Grønland",
+          4,
+          "1 år siden",
+          "God musikk, men det ble for varmt i kjelleren mot slutten.",
+        ],
+        [
+          "Dilan",
+          "Rælingen",
+          5,
+          "1 år siden",
+          "Jeg kom for å støtte en venn og ble til siste låt.",
+        ],
+      ],
+      chat: [
+        [
+          "Miksekollektivet i Lørenskog",
+          "Fredag spiller seks av oss. Kom tidlig, de rolige settene i starten er fine.",
+        ],
+        ["Robin", "Er det aldersgrense?"],
+        ["Sander Wiig", "Ja, det er 18 år i Basskjelleren."],
+      ],
+    },
+    gruppe: {
+      name: "Klubbgjengen over 30",
+      about:
+        "Vi er over tretti og liker fortsatt å danse. Vi møtes på Olaf Ryes plass og går ut sammen en lørdag i måneden, helst til klubber med god lyd og plass på gulvet.",
+      rules:
+        "Si fra i chatten innen fredag. Alle drar hjem når de vil, men sier fra i chatten.",
+      photos: ["klubb-2", "klubb-1"],
+      memberCount: 41,
+      home: "byrom",
+      access: "open",
+      chat: [
+        [
+          "Selma",
+          "Lørdag i Basskjelleren? Vi møtes på Olaf Ryes plass klokka ti.",
+        ],
+        ["Robin", "Jeg er med."],
+        ["Selma", "Fint, vi tar trikken sammen."],
+      ],
+    },
+  },
+  {
+    interest: "vinyl",
+    bedrift: {
+      name: "Rillen",
+      category: "Platebutikk",
+      coord: [10.5265, 59.8905],
+      town: "Sandvika",
+      address: "Rådmann Halmrasts vei, 1337 Sandvika",
+      hours: "Tir–fre 11–18 · Lør 10–16",
+      priceNok: 250,
+      vibes: ["Rolig", "Koselig"],
+      blurb:
+        "Platebutikk i Sandvika med nye og brukte plater, lyttestasjon og kaffe.",
+      about:
+        "En liten butikk med kasser av brukte plater, en vegg med nye utgivelser og en lyttestasjon med en god platespiller. Du kan ta med plater du vil selge, og på lørdager setter vi på en plate fra start til slutt.",
+      tags: ["Brukte plater", "Lyttestasjon", "Innkjøp"],
+      accessibility: ["Trinnfri inngang"],
+      types: ["Shopping og møte", "Kulturelle aktiviteter"],
+      audiences: ["Lokalkjente", "Alenereisende"],
+      durationMin: 45,
+      photos: ["vinyl-2", "vinyl-4"],
+      reviews: [
+        [
+          "Erik S.",
+          5,
+          "1 uke siden",
+          "Godt sortert, rimelige priser og folk som vet hva de snakker om.",
+        ],
+        [
+          "Mona H.",
+          4,
+          "1 måned siden",
+          "Fin butikk, men lite plass når flere står ved kassene samtidig.",
+        ],
+        [
+          "Akira T.",
+          5,
+          "2 måneder siden",
+          "Jeg solgte en eske med farens plater her og fikk en god pris og en god prat.",
+        ],
+      ],
+      chat: [
+        [
+          "Rillen",
+          "Lørdag spiller vi en klassiker fra syttitallet fra start til slutt. Kaffen er på oss.",
+        ],
+        ["Mona", "Tar dere imot plater fra et dødsbo?"],
+        ["Rillen", "Ja, ring først, så setter vi av tid til å se gjennom dem."],
+      ],
+      business: {
+        name: "Rillen Plater AS",
+        verified: true,
+        about: "Platebutikk i Sandvika, drevet av to platesamlere siden 2014.",
+      },
+    },
+    organisasjon: {
+      name: "Platesamlerne i Asker",
+      category: "Samlerforening",
+      coord: [10.4375, 59.8345],
+      town: "Asker",
+      address: "Askerveien, 1384 Asker",
+      hours: "Tor 19–21",
+      priceNok: 0,
+      vibes: ["Koselig", "Sosial"],
+      blurb:
+        "Forening i Asker for folk som samler på plater, eller vil begynne.",
+      about:
+        "Vi møtes på torsdager for å bytte plater, høre på det noen har funnet og hjelpe hverandre med å vaske og sortere samlingen. Noen har tusenvis av plater, andre har ti, og alle er like velkomne.",
+      tags: ["Platebytte", "Samlere", "Lyttekveld"],
+      accessibility: ["Trinnfri inngang"],
+      types: ["Kulturelle aktiviteter", "Shopping og møte"],
+      photos: ["vinyl-1", "vinyl-5"],
+      reviews: [
+        [
+          "Jan Petter K.",
+          5,
+          "1 måned siden",
+          "Jeg arvet et skap med plater og visste ikke hva jeg hadde. Nå vet jeg det, og jeg har fått nye venner.",
+        ],
+        [
+          "Wenche L.",
+          4,
+          "2 måneder siden",
+          "Hyggelig gjeng, men det kan bli mye fagprat for oss som er nye.",
+        ],
+      ],
+      chat: [
+        [
+          "Platesamlerne i Asker",
+          "Torsdag har vi platebytte. Ta med det du vil bytte bort.",
+        ],
+        ["Wenche", "Har noen en platevasker jeg kan låne?"],
+        ["Live Granum", "Jeg tar med min på torsdag."],
+      ],
+      org: {
+        form: "Forening",
+        about:
+          "Forening i Asker for platesamlere. Vi bytter plater, lærer hverandre å ta vare på dem og arrangerer en platemesse for alle.",
+        activities: [
+          "Platebytte på torsdager",
+          "Lyttekvelder",
+          "Kurs i platevask",
+          "Platemesse i Asker",
+        ],
+        contactPersonId: "u52",
+      },
+    },
+    byrom: {
+      name: "Vestkanttorget",
+      category: "Torg",
+      coord: [10.7137, 59.9242],
+      town: "Frogner",
+      address: "Amaldus Nielsens plass, 0260 Oslo",
+      hours: "Alltid åpent",
+      priceNok: 0,
+      vibes: ["Koselig", "Livlig"],
+      blurb:
+        "Plassen mellom Frogner og Majorstuen der det er antikk- og bruktmarked på lørdager.",
+      about:
+        "En plass med trær, benker og en fontene mellom Frogner og Majorstuen. På lørdager står det boder med antikviteter, bøker og brukte plater her, og ellers er det et rolig sted å sitte.",
+      tags: ["Gratis", "Ute", "Bruktmarked"],
+      accessibility: ["Trinnfri inngang"],
+      types: ["Shopping og møte", "Landemerker"],
+      photos: ["vinyl-4", "vinyl-3"],
+      reviews: [
+        [
+          "Anne Grete S.",
+          5,
+          "2 uker siden",
+          "Lørdagsmarkedet er en skattekiste. Jeg fant tre plater jeg har lett etter i årevis.",
+        ],
+        [
+          "Thomas W.",
+          4,
+          "1 måned siden",
+          "Koselig marked, men kom tidlig. De beste kassene går fort.",
+        ],
+      ],
+      chat: [
+        [
+          "Anne Grete",
+          "Noen som skal på Vestkanttorget på lørdag? Jeg er der fra ni.",
+        ],
+        ["Thomas", "Jeg kommer litt senere. Hold av de beste kassene."],
+      ],
+      space: {
+        facilities: ["Benker", "Lekeplass", "Belysning"],
+        access: "Åpent for alle",
+      },
+    },
+    opplevelse: {
+      title: "Lytteklubb: én plate fra start til slutt",
+      hostId: "u52",
+      when: "Lør 13:00",
+      repeat: "Ukentlig",
+      venue: "bedrift",
+      capacity: 14,
+      going: 9,
+      priceNok: 0,
+      about:
+        "En time der vi hører én plate fra første til siste spor, uten telefon og uten prat. Etterpå forteller Live litt om plata, og alle som vil, sier hva de hørte.",
+      category: "Musikk",
+      duration: "1 time",
+      durationMin: 60,
+      languages: ["Norsk"],
+      included: ["Kaffe", "Plass i sofaen"],
+      vibes: ["Rolig", "Koselig"],
+      types: ["Kulturelle aktiviteter"],
+      audiences: ["Alenereisende", "Lokalkjente"],
+      tags: ["Vinyl", "Lytting"],
+      photos: ["vinyl-3", "vinyl-1"],
+      steps: [
+        [
+          "Kaffe og plass",
+          "Vi finner en plass og legger bort telefonene.",
+          "vinyl-2",
+        ],
+        ["Side A", "Vi hører den første siden uten å snakke.", "vinyl-1"],
+        ["Side B", "Live snur plata, og vi hører resten.", "vinyl-3"],
+        ["Hva hørte du?", "En kort prat om plata for dem som vil.", "vinyl-5"],
+      ],
+      reviews: [
+        [
+          "Rolf",
+          "Sandvika",
+          5,
+          "1 uke siden",
+          "Jeg har ikke hørt en hel plate uten avbrudd på mange år. Det var nesten som å meditere.",
+        ],
+        [
+          "Kjersti",
+          "Bærums Verk",
+          4,
+          "1 måned siden",
+          "Fint opplegg, men sofaen ble full, og jeg satt på en krakk.",
+        ],
+        [
+          "Ali",
+          "Stabekk",
+          5,
+          "2 måneder siden",
+          "Live forteller om platene på en måte som gjør at du hører dem på nytt.",
+        ],
+      ],
+      chat: [
+        [
+          "Live Granum",
+          "Velkommen! Denne lørdagen hører vi en jazzplate fra sekstitallet. Kaffen er klar.",
+        ],
+        ["Kjersti", "Kan jeg foreslå en plate til neste gang?"],
+        ["Live Granum", "Ja, skriv den i chatten, så setter vi den på lista."],
+      ],
+    },
+    arrangement: {
+      title: "Platemessa i Asker",
+      hostId: "u52",
+      when: "Søn 11:00",
+      days: 1,
+      venue: "organisasjon",
+      organizer: "organisasjon",
+      capacity: 200,
+      going: 37,
+      priceNok: 50,
+      about:
+        "En søndag i Asker med boder fra samlere og små platebutikker, en egen kasse for nybegynnere og en lyttekrok der du kan prøve plater før du kjøper. Platesamlerne hjelper deg gjerne å finne fram.",
+      category: "Sosialt",
+      duration: "Hele dagen",
+      durationMin: 300,
+      included: ["Inngang", "Kaffe"],
+      vibes: ["Sosialt", "Koselig"],
+      types: ["Shopping og møte", "Kulturelle aktiviteter"],
+      audiences: ["Lokalkjente", "Alenereisende", "Store grupper"],
+      tags: ["Vinyl", "Platemesse", "Bruktmarked"],
+      photos: ["vinyl-4", "vinyl-2"],
+      steps: [
+        [
+          "Søn 11:00 · Dørene åpner",
+          "Bodene er klare og kassene fulle.",
+          "vinyl-4",
+        ],
+        [
+          "Søn 12:00 · Nybegynnerkassen",
+          "Gode plater for deg som skal begynne å samle.",
+          "vinyl-2",
+        ],
+        [
+          "Søn 13:00 · Lyttekroken",
+          "Prøv plater på en god spiller før du kjøper.",
+          "vinyl-5",
+        ],
+        [
+          "Søn 15:00 · Siste runde",
+          "Siste sjanse til å finne noe du ikke visste du lette etter.",
+          "vinyl-1",
+        ],
+      ],
+      reviews: [
+        [
+          "Halvor",
+          "Asker",
+          5,
+          "1 år siden",
+          "Jeg fant en plate jeg har lett etter siden jeg var sytten. Kommer igjen neste år.",
+        ],
+        [
+          "Monica",
+          "Heggedal",
+          4,
+          "1 år siden",
+          "Mange gode kasser, men trangt mellom bodene før lunsj.",
+        ],
+        [
+          "Tarek",
+          "Slemmestad",
+          5,
+          "1 år siden",
+          "Lyttekroken var en god idé. Jeg kjøpte bare det jeg faktisk likte.",
+        ],
+      ],
+      chat: [
+        [
+          "Platesamlerne i Asker",
+          "Har du plater du vil selge, si fra i chatten, så finner vi en plass til deg.",
+        ],
+        ["Monica", "Er det kaffe å få?"],
+        ["Live Granum", "Ja, i kafeen innerst i lokalet."],
+      ],
+    },
+    gruppe: {
+      name: "Platejegerne",
+      about:
+        "Vi går på loppemarkeder og platemesser sammen og deler tips om hvor de gode kassene står. Lørdagene starter ofte på Vestkanttorget.",
+      rules:
+        "Del funnene dine i chatten, men ikke kjøp den plata en annen har sagt at de leter etter.",
+      photos: ["vinyl-4", "vinyl-1"],
+      memberCount: 29,
+      home: "byrom",
+      alsoInterests: ["shopping"],
+      access: "open",
+      chat: [
+        ["Anne Grete", "Vestkanttorget på lørdag klokka ni?"],
+        ["Thomas", "Jeg er med."],
+        ["Anne Grete", "Bra, vi møtes ved fontenen."],
+      ],
+    },
+  },
+];

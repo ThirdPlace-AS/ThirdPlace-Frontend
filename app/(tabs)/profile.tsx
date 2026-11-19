@@ -366,7 +366,6 @@ function TabBar({ tab, onChange }: { tab: Tab; onChange: (t: Tab) => void }) {
             accessibilityState={{ selected: active }}
             hitSlop={{ top: 7, bottom: 7 }}
             onPress={() => onChange(t.key)}
-            haptic="selection"
             feedback="none"
             className="flex-1"
             contentClassName={`items-center pb-2.5 ${

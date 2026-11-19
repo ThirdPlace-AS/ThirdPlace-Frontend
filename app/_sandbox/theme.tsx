@@ -107,6 +107,7 @@ const SWATCH_CLASS: Record<string, string> = {
   success: "bg-success",
   onSuccess: "bg-onSuccess",
   danger: "bg-danger",
+  onDanger: "bg-onDanger",
   warning: "bg-warning",
   scrim: "bg-scrim",
   onMedia: "bg-onMedia",

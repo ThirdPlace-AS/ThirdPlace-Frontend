@@ -1,14 +1,15 @@
 // Phase 18 (screen benchmark, "Finding things"): the map pins' categories
 // as a filter, picked in Filtre's Kategori section only (founder 2026-11-08:
-// no category chips on the map or the search page), and applied filters as
-// removable chips on the map and "Fjern «…»".
+// no category chips on the map or the search page). Applied filters show on
+// the map only as the number on Filtre (founder 2026-11-08, ledger 0317);
+// their names reach screen readers through the same labels.
 import { describe, expect, it, jest } from "@jest/globals";
 import { fireEvent, render, screen } from "@testing-library/react-native";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 
 import { MapFilterSheet } from "@/components/map/MapFilterSheet";
 
-import { MapQuickChips } from "@/components/map/MapQuickChips";
+import { MapFilterButton } from "@/components/map/MapFilterButton";
 import {
   activeExtraFilterCount,
   appliedFilterChips,
@@ -107,33 +108,55 @@ describe("applied filters as chips", () => {
   });
 });
 
-describe("applied chips on the map", () => {
-  it("shows only applied filters, a chosen category among them", () => {
-    const onChange = jest.fn();
-    const f: MapFilters = {
-      ...DEFAULT_FILTERS,
-      hasSpots: true,
-      categories: ["kafe"],
-    };
-    render(<MapQuickChips filters={f} onChange={onChange} />);
-    // No category picker on the map: categories are chosen in Filtre.
-    expect(screen.queryAllByRole("checkbox")).toHaveLength(0);
-    fireEvent.press(screen.getByRole("button", { name: "Fjern «Kafé»" }));
-    expect(onChange).toHaveBeenLastCalledWith({ ...f, categories: [] });
-    fireEvent.press(
-      screen.getByRole("button", { name: "Fjern «Ledige plasser»" }),
+describe("applied filters on the map", () => {
+  const f: MapFilters = {
+    ...DEFAULT_FILTERS,
+    hasSpots: true,
+    categories: ["kafe"],
+  };
+
+  it("show only as the number on Filtre, with no chips to remove", () => {
+    const onPress = jest.fn();
+    render(
+      <MapFilterButton
+        filters={f}
+        count={activeExtraFilterCount(f)}
+        onPress={onPress}
+      />,
     );
-    expect(onChange).toHaveBeenLastCalledWith({ ...f, hasSpots: false });
+    expect(screen.getByText("2")).toBeTruthy();
+    // No chip and no picker on the map: everything lives in Filtre.
+    expect(screen.queryAllByRole("checkbox")).toHaveLength(0);
+    expect(screen.queryByRole("button", { name: /^Fjern «/ })).toBeNull();
+    expect(screen.queryByText("Kafé")).toBeNull();
+    fireEvent.press(screen.getByRole("button", { name: "Filtre" }));
+    expect(onPress).toHaveBeenCalledTimes(1);
   });
 
-  it("no row when nothing is applied", () => {
-    render(<MapQuickChips filters={DEFAULT_FILTERS} onChange={jest.fn()} />);
-    expect(screen.toJSON()).toBeNull();
+  it("name what is applied to a screen reader", () => {
+    render(<MapFilterButton filters={f} count={2} onPress={jest.fn()} />);
+    expect(
+      screen.getByRole("button", { name: "Filtre" }).props.accessibilityValue,
+    ).toEqual({ text: "Kafé, Ledige plasser" });
+  });
+
+  it("no number and no value when nothing is applied", () => {
+    render(
+      <MapFilterButton
+        filters={DEFAULT_FILTERS}
+        count={0}
+        onPress={jest.fn()}
+      />,
+    );
+    const button = screen.getByRole("button", { name: "Filtre" });
+    // RN fills in an empty value object; no text means nothing is read out.
+    expect(button.props.accessibilityValue?.text).toBeUndefined();
+    expect(screen.queryByText(/^\d+$/)).toBeNull();
   });
 });
 
 describe("Kategori in Filtre", () => {
-  it("draws the categories like the sheet's other groups and filters", () => {
+  it("is one row per category that opens to Alle and filters", () => {
     // One outline icon per category, as Opplevelsestype has.
     expect(
       MARKER_CATEGORIES.every((c) =>
@@ -158,19 +181,21 @@ describe("Kategori in Filtre", () => {
       </SafeAreaProvider>,
     );
     const before = screen.getByText(/^Vis \d+ resultater$/).props.children;
-    // Outline chips are buttons with a selected state, like Opplevelsestype.
-    for (const c of MARKER_CATEGORIES) {
-      expect(
-        screen.getByRole("button", { name: MARKER_LABEL[c] }),
-      ).toBeTruthy();
-    }
-    expect(screen.queryAllByRole("checkbox", { name: "Kafé" })).toHaveLength(0);
-    const kafe = screen.getByRole("button", { name: "Kafé" });
-    fireEvent.press(kafe);
-    expect(
-      screen.getByRole("button", { name: "Kafé" }).props.accessibilityState,
-    ).toMatchObject({ selected: true });
-    expect(screen.getByText(/^Vis \d+ resultater$/).props.children).not.toBe(
+    // Founder 2026-11-08 (review): one row per category, each opening to
+    // "Alle" and its activities (it replaced the chip grid of ad13df1).
+    const rowOf = (label: string) =>
+      screen.getAllByRole("button", { name: new RegExp(`^${label}`) })[0]!;
+    for (const c of MARKER_CATEGORIES)
+      expect(rowOf(MARKER_LABEL[c]).props.accessibilityState).toMatchObject({
+        expanded: false,
+      });
+    fireEvent.press(rowOf("Kafé"));
+    expect(rowOf("Kafé").props.accessibilityState).toMatchObject({
+      expanded: true,
+    });
+    fireEvent.press(screen.getByRole("checkbox", { name: "Alle" }));
+    expect(rowOf("Kafé").props.accessibilityLabel).toBe("Kafé, Alle");
+    expect(screen.getByText(/^Vis \d+ resultat(er)?$/).props.children).not.toBe(
       before,
     );
   });

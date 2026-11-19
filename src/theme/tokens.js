@@ -37,6 +37,8 @@ const palette = {
     success: "#008A05",
     onSuccess: "#FFFFFF",
     danger: "#C13515",
+    // Text on a danger fill (a solid "Stengt" badge): white = 5.5:1.
+    onDanger: "#FFFFFF",
     warning: "#B05008",
     scrim: "#000000", // use with an opacity modifier, e.g. bg-scrim/40
     onMedia: "#FFFFFF", // content over photos/video (with a scrim), any scheme
@@ -61,6 +63,7 @@ const palette = {
     success: "#008A05",
     onSuccess: "#FFFFFF",
     danger: "#C13515",
+    onDanger: "#FFFFFF",
     warning: "#B05008",
     scrim: "#000000",
     onMedia: "#FFFFFF",
@@ -73,20 +76,24 @@ const palette = {
 };
 
 /**
- * Map art (Phase 12 H3b, founder: every marker its own colour by category).
- * One colour per marker category, from the Okabe–Ito colour-blind-safe set in
- * Airbnb-like tones; the same in light and dark. Never the brand pink, which
- * marks the selected pin. `label*`: pin titles, light on dusk/night maps.
+ * Map art. Pin fills by pin group (user 2026-11-11: "familiar map colours",
+ * like Apple and Google Maps; supersedes Phase 12 H3b's category colours):
+ * what a pin is, a place by its kind and an experience by its activity
+ * (src/components/map/services/pinGroup.ts). Tested for glyph contrast and
+ * for colour-vision deficiencies; the same in light and dark. Never pink or
+ * red, which mark the selected pin. `pinShadow`: the soft edge under every
+ * pin. `label*`: pin titles, light on dusk/night maps.
  */
 const mapPalette = {
-  kafe: "#D55E00",
-  mat: "#E69F00",
-  sosialt: "#F0E442",
-  natur: "#009E73",
-  trening: "#56B4E9",
-  kultur: "#0072B2",
-  kreativt: "#CC79A7",
-  velvaere: "#484848",
+  eat: "#E8590C",
+  night: "#7048E8",
+  social: "#FAB005",
+  nature: "#2F9E44",
+  water: "#1971C2",
+  sport: "#4DABF7",
+  culture: "#9C36B5",
+  wellness: "#0C8599",
+  pinShadow: "#000000",
   labelLight: "#F7F7F7",
   labelHaloDark: "#121212",
   // Terreng (hill shading + contour lines over the Standard style).

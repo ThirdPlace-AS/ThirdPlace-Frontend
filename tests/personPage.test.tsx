@@ -20,7 +20,7 @@ import { SafeAreaProvider } from "react-native-safe-area-context";
 
 import { useGuestMode } from "@/components/map/hooks/useGuestMode";
 import PersonScreen from "@/features/people/PersonScreen";
-import { chatById } from "@/fixtures";
+import { chatById, experiencesHostedBy } from "@/fixtures";
 import { resetCreated } from "@/fixtures/created";
 import { resetFollowing, useFollowing } from "@/lib/following";
 
@@ -104,6 +104,17 @@ describe("person page (PDF p13)", () => {
     } finally {
       act(() => g.result.current.setGuest(false));
     }
+  });
+
+  it("lists everything the person hosts (Phase 19 B1)", () => {
+    // Henrik hosts Badstue's and Bading's opplevelse and arrangement.
+    mockParams = { id: "u10" };
+    const hosted = experiencesHostedBy("u10");
+    expect(hosted.length).toBeGreaterThanOrEqual(4);
+    render(<PersonScreen />, { wrapper });
+    for (const e of hosted) expect(screen.getByText(e.title)).toBeTruthy();
+    fireEvent.press(screen.getByText(hosted[1]!.title));
+    expect(mockPush).toHaveBeenLastCalledWith(`/experience/${hosted[1]!.id}`);
   });
 
   it("Rapporter and Blokker sit behind the •••", () => {

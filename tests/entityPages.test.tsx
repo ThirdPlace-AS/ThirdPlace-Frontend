@@ -30,13 +30,7 @@ describe("routeFor", () => {
   });
 
   it("keeps short sub-views in a sheet", () => {
-    for (const kind of [
-      "attendees",
-      "checkin",
-      "host",
-      "business",
-      "verification",
-    ] as const) {
+    for (const kind of ["attendees", "checkin", "host"] as const) {
       expect(routeFor({ kind, id: "x" })).toBeNull();
     }
   });

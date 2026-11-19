@@ -12,7 +12,8 @@
     "format": "prettier --check .",
     "format:write": "prettier --write .",
     "typecheck": "tsc --noEmit",
-    "test": "jest --ci"
+    "test": "jest --ci",
+    "postinstall": "node scripts/apply-patches.js"
   },
   "dependencies": {
     "@expo-google-fonts/dm-sans": "^0.4.2",

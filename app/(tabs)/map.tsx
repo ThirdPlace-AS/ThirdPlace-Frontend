@@ -5,7 +5,13 @@ import {
   type Href,
 } from "expo-router";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { BackHandler, Keyboard, useWindowDimensions, View } from "react-native";
+import {
+  BackHandler,
+  Keyboard,
+  useWindowDimensions,
+  View,
+  type LayoutChangeEvent,
+} from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import {
@@ -20,11 +26,7 @@ import {
 import { Illustration } from "@/components/illustrations/Illustration";
 import { canUseMapbox, MapCanvas } from "@/components/map/MapCanvas";
 import { DiscoveryModeTabs } from "@/components/map/DiscoveryModeTabs";
-import { AppliedChip, MapQuickChips } from "@/components/map/MapQuickChips";
-import {
-  appliedFilterChips,
-  type MapFilters,
-} from "@/components/map/services/mapFilters";
+import { MapFilterButton } from "@/components/map/MapFilterButton";
 import {
   MapDetailSheet,
   type MapDetailSheetHandle,
@@ -39,11 +41,13 @@ import type {
   DiscoveryItem,
   DiscoveryMode,
 } from "@/components/map/types/mapPresentation";
-import { useMapCamera } from "@/components/map/hooks/useMapCamera";
+import { locateFly, useMapCamera } from "@/components/map/hooks/useMapCamera";
+import { focusPadding } from "@/components/map/services/pinCamera";
 import { useTimeOfDayStyle } from "@/components/map/hooks/useTimeOfDayStyle";
 import { useMapLocation } from "@/components/map/hooks/useMapLocation";
 import { USER_PUCK } from "@/components/map/userPuck";
 import { useMapDiscovery } from "@/components/map/hooks/useMapDiscovery";
+import { useSwipePrefetch } from "@/components/map/hooks/useSwipePrefetch";
 import { useMapFilters } from "@/components/map/hooks/useMapFilters";
 import { useMapSaved } from "@/components/map/hooks/useMapSaved";
 import {
@@ -52,27 +56,19 @@ import {
 } from "@/components/map/hooks/useMapSelection";
 import { SignInPrompt } from "@/components/SignInPrompt";
 import { WhatsNewOnFocus } from "@/components/WhatsNewSheet";
-import {
-  ItemActionsSheet,
-  ShareSheet,
-} from "@/components/actions/ActionSheets";
-import { showToast } from "@/components/Toast";
-import { confirmToast } from "@/copy";
-import { openDirections } from "@/lib/directions";
 import { useGuestMode } from "@/components/map/hooks/useGuestMode";
 import { MapBrowseSheet } from "@/components/map/MapBrowseSheet";
-import { MOCK_WEATHER, OSLO_AREAS, places } from "@/fixtures";
+import { MOCK_WEATHER, AREAS, places } from "@/fixtures";
 import { useMockResource } from "@/hooks/useMockResource";
 import { useLoadPhase } from "@/hooks/useLoadPhase";
 import { useNotificationReads } from "@/hooks/useNotificationReads";
-import { haptics } from "@/lib/haptics";
 import { setDevSimulation, useDevSimulation } from "@/lib/devSimulation";
 import { elevation } from "@/theme";
 
 // Map discovery surface. Thin composition over feature hooks:
 // filters/search, discovery mode, selection (detail sheet), camera, location.
-// Set once the Sveip tab was pre-rendered (R28).
-let swipePrefetched = false;
+// One empty list while loading, so the memoised map children keep their props.
+const NO_ITEMS: DiscoveryItem[] = [];
 
 // Map-only — no list view. All data is MOCK fixtures (no backend).
 export default function MapScreen() {
@@ -116,6 +112,17 @@ export default function MapScreen() {
   const selection = useMapSelection();
   const camera = useMapCamera();
   const location = useMapLocation();
+  // Where the native map opens (read once by it; later moves are requests).
+  const [initialCenter] = useState(() => location.center);
+  // The GPS and compass watches run only while the map is in front (speed
+  // pass 0346): the tab stays mounted behind Sveip, Chat and Profil.
+  const { pause: pauseLocation, resume: resumeLocation } = location;
+  useFocusEffect(
+    useCallback(() => {
+      resumeLocation();
+      return () => pauseLocation();
+    }, [pauseLocation, resumeLocation]),
+  );
 
   // Stable methods (the hooks useCallback these) for memo-friendly handlers.
   const { selectMarker, back: sheetBack, close: sheetClose } = selection;
@@ -130,8 +137,12 @@ export default function MapScreen() {
   }>();
   const focusKey = focus ? `${focus}:${at ?? ""}` : undefined;
   const [focusedKey, setFocusedKey] = useState<string | undefined>(undefined);
+  // A pick from the list or a link zooms the map in until its pin leaves the
+  // cluster; a pin tap keeps the zoom (Phase 19 S4b).
+  const [zoomToPick, setZoomToPick] = useState(false);
   if (focusKey && focusKey !== focusedKey) {
     setFocusedKey(focusKey);
+    setZoomToPick(true);
     const [kind, id] = (focus ?? "").split(":");
     if ((kind === "place" || kind === "experience") && id)
       selection.openTarget({ kind, id });
@@ -151,18 +162,24 @@ export default function MapScreen() {
   // focused; Modal sheets (Filtre, Kartlag, …) handle back themselves.
   const sheetDepth = selection.sheetStack.length;
   const detailRef = useRef<MapDetailSheetHandle>(null);
-  const [detailIsPage, setDetailIsPage] = useState(false);
+  // Whether the detail sheet is the full-screen page, read only by the back
+  // key: a ref, so reaching the top does not re-render the whole map screen
+  // (speed pass 0345; the sheet itself owns the status bar).
+  const detailIsPage = useRef(false);
+  const handlePageChange = useCallback((isPage: boolean) => {
+    detailIsPage.current = isPage;
+  }, []);
   useFocusEffect(
     useCallback(() => {
       const sub = BackHandler.addEventListener("hardwareBackPress", () => {
-        const action = mapBackAction(sheetDepth, detailIsPage);
+        const action = mapBackAction(sheetDepth, detailIsPage.current);
         if (action === "back") sheetBack();
         else if (action === "collapse") detailRef.current?.collapse();
         else if (action === "close") sheetClose();
         return action !== "none";
       });
       return () => sub.remove();
-    }, [sheetDepth, detailIsPage, sheetBack, sheetClose]),
+    }, [sheetDepth, sheetBack, sheetClose]),
   );
 
   // Mock async load so the surface can show loading/error states (no backend).
@@ -181,18 +198,13 @@ export default function MapScreen() {
   // §4 "Loading").
   const loadPhase = useLoadPhase(loading);
 
-  // R28 (Phase 10 open item): the first Sveip visit paid the tab mount and
-  // photo decode. Once the map has content, wait 2 s and pre-render the Sveip
-  // tab in the background (react-navigation preload), once per session; the
-  // first paint of the map is untouched.
-  useEffect(() => {
-    if (status !== "success" || swipePrefetched) return;
-    const t = setTimeout(() => {
-      swipePrefetched = true;
-      router.prefetch("/swipe");
-    }, 2000);
-    return () => clearTimeout(t);
-  }, [status]);
+  // R28: pre-render the Sveip tab once the map has content and has been left
+  // alone for a moment (no open sheet, pick or mode change; speed pass 0352).
+  useSwipePrefetch(
+    status === "success",
+    selection.selectedMarkerId,
+    discovery.mode,
+  );
   const errored = status === "error";
   // Turning the slow-load switch on reloads the map once so the slow path runs.
   useEffect(() => {
@@ -216,6 +228,30 @@ export default function MapScreen() {
     return map;
   }, [items]);
 
+  // Room around a centred pin (services/pinCamera.ts): the map's own height
+  // (it ends at the tab bar, which the page sheet covers) and the bottom of
+  // the search bar and mode chips, both measured once.
+  const [screenH, setScreenH] = useState<number | null>(null);
+  const [topH, setTopH] = useState<number | null>(null);
+  const handleScreenLayout = useCallback((e: LayoutChangeEvent) => {
+    const h = Math.round(e.nativeEvent.layout.height);
+    setScreenH((prev) => (prev === h ? prev : h));
+  }, []);
+  const handleTopLayout = useCallback((e: LayoutChangeEvent) => {
+    const { y, height } = e.nativeEvent.layout;
+    const h = Math.round(y + height);
+    setTopH((prev) => (prev === h ? prev : h));
+  }, []);
+  const pinPadding = useMemo(
+    () =>
+      focusPadding({
+        windowH: windowHeight,
+        mapH: screenH ?? windowHeight,
+        top: topH ?? insets.top,
+      }),
+    [windowHeight, screenH, topH, insets.top],
+  );
+
   // Coord of the selected marker — pans the camera to center the pin above the
   // detail sheet (Google-Maps style). Null when nothing is selected.
   const focusCoord = useMemo(() => {
@@ -225,127 +261,147 @@ export default function MapScreen() {
 
   // Handlers passed to memoized children are stabilized so the memo holds.
   // Tapping a marker opens the detail sheet at the 16% peek (see useMapSelection).
+  // Returns whether it selected: the map then keeps the ring it drew from the
+  // press (MapboxMap, services/pinSelection.ts) or puts the old one back.
   const handleSelectMarker = useCallback(
-    (markerId: string) => {
+    (markerId: string): boolean => {
       const item = itemByMarker.get(markerId);
-      if (item) {
-        haptics.selection();
-        selectMarker(item);
-      }
+      if (!item) return false;
+      setZoomToPick(false);
+      selectMarker(item);
+      return true;
     },
     [itemByMarker, selectMarker],
   );
 
-  // Shared by marker taps and browse-list rows — opens the detail sheet.
+  // Browse-list rows: opens the detail sheet and zooms to the pin.
   const handleSelectItem = useCallback(
     (item: DiscoveryItem) => {
-      haptics.selection();
+      setZoomToPick(true);
       selectMarker(item);
     },
     [selectMarker],
   );
 
   // Saving is an account action everywhere (detail Lagre, Sveip, Steder):
-  // the browse heart now asks guests to sign in too instead of saving.
+  // the browse save button asks guests to sign in too instead of saving.
   const { isGuest } = useGuestMode();
   const [signInOpen, setSignInOpen] = useState(false);
+  const { toggle: toggleSaved } = saved;
   const handleToggleSave = useCallback(
     (item: DiscoveryItem) =>
-      isGuest ? setSignInOpen(true) : saved.toggle(item.markerId),
-    [saved, isGuest],
+      isGuest ? setSignInOpen(true) : toggleSaved(item.markerId),
+    [toggleSaved, isGuest],
   );
 
-  // Long-press on a browse card (Phase 18): Lagre, Del, Veibeskrivelse.
-  // A tap already shows the item on the map, so the menu offers the rest.
-  const [actionsFor, setActionsFor] = useState<DiscoveryItem | null>(null);
-  const [shareFor, setShareFor] = useState<DiscoveryItem | null>(null);
-  const handleItemActions = useCallback((item: DiscoveryItem) => {
-    haptics.selection();
-    setActionsFor(item);
-  }, []);
+  // SoftMap cluster tap: expand the browse list.
+  const handleClusterPress = useCallback(
+    () => setBrowseExpand((n) => n + 1),
+    [],
+  );
 
-  // Tap on empty map: dismiss the keyboard and collapse the open sheet.
+  // Tap on empty map: dismiss the keyboard and collapse the open sheet. It
+  // depends on the stable close, not on the selection object (a new object
+  // whenever the stack changes), or the memoised map renders again with
+  // every map-screen render (review of the speed pass).
   const handleMapPress = useCallback(() => {
     Keyboard.dismiss();
-    selection.close();
-  }, [selection]);
+    sheetClose();
+  }, [sheetClose]);
 
   const handleModeChange = useCallback(
     (m: DiscoveryMode) => {
-      haptics.selection();
       setDiscoveryMode(m);
     },
     [setDiscoveryMode],
   );
 
-  // A quick chip edits the same filters as Filtre (no Hvor recentre).
-  const handleQuickFilters = (next: MapFilters) => filters.setFilters(next);
-  const appliedChips = appliedFilterChips(filters.filters);
+  // Posisjon and areas centre between the top controls and the browse
+  // sheet's peek.
+  const browsePadding = useMemo(
+    () => ({
+      paddingTop: topH ?? insets.top,
+      paddingBottom: browsePeekClearance + 8,
+      paddingLeft: 0,
+      paddingRight: 0,
+    }),
+    [topH, insets.top, browsePeekClearance],
+  );
+  const { flyTo } = camera;
 
   const handleApplyFilters = (next: typeof filters.filters) => {
-    haptics.light();
     // "Where?" recenters the map to the chosen Oslo area (demo — reuses the
     // manual-area fallback; it does not refilter the mock distances).
     if (next.whereArea && next.whereArea !== filters.filters.whereArea) {
-      const area = OSLO_AREAS.find((a) => a.name === next.whereArea);
+      const area = AREAS.find((a) => a.name === next.whereArea);
       if (area) {
         location.selectArea(area);
-        camera.recenter();
+        flyTo(area.coord, 13, { padding: browsePadding });
       }
     }
     filters.setFilters(next);
   };
 
-  // "Posisjon": fly to the user and zoom in (street level); without a fix,
-  // ask for it, or fall back to the manual-area sheet.
-  const handleLocationPress = async () => {
-    if (location.status === "granted" && location.coord) {
-      camera.recenter(USER_PUCK.locateZoom);
-    } else if (location.status === "granted") {
-      // A manual area replaced the GPS fix — go back to the real position.
-      void handleRequestLocation();
-    } else if (await location.hasPermission()) {
-      // OS permission already given: fly straight to the user, no explainer.
-      void handleRequestLocation();
-    } else {
-      setLocationOpen(true);
-    }
-  };
+  // Posisjon (R1b, user 2026-11-10: "the location button must take the user
+  // to their current location"): fly at once to the best position known,
+  // then ease to the fresh fix when it is more than LOCATE_REFINE_M away. With
+  // no position at all the camera stays and the Posisjon sheet says why;
+  // without permission the sheet asks for it. Never a fly to a default place.
+  const flyOnPosition = useCallback(
+    () =>
+      locateFly((coord, followUp) =>
+        flyTo(coord, USER_PUCK.locateZoom, {
+          padding: browsePadding,
+          followUp,
+        }),
+      ),
+    [flyTo, browsePadding],
+  );
 
-  const handleRequestLocation = async () => {
-    const granted = await location.request();
-    camera.recenter(granted ? USER_PUCK.locateZoom : 13);
-    // With a fix, close the Posisjon sheet so the user sees where they are.
-    if (granted) setLocationOpen(false);
-  };
+  const { locate, request: requestLocation } = location;
+  const handleLocationPress = useCallback(async () => {
+    const result = await locate(flyOnPosition());
+    if (result !== "located") setLocationOpen(true);
+  }, [locate, flyOnPosition]);
+
+  const handleRequestLocation = useCallback(async () => {
+    const fly = flyOnPosition();
+    // The Posisjon sheet closes with the first position, so the user sees
+    // the map go there (the fresh fix and the watches can take seconds);
+    // without one it stays open with the reason.
+    const result = await requestLocation((coord, fresh) => {
+      setLocationOpen(false);
+      fly(coord, fresh);
+    });
+    if (result === "located") setLocationOpen(false);
+  }, [requestLocation, flyOnPosition]);
 
   const handleSelectArea = (a: Parameters<typeof location.selectArea>[0]) => {
     location.selectArea(a);
-    camera.recenter();
+    flyTo(a.coord, 13, { padding: browsePadding });
     setLocationOpen(false);
   };
 
   return (
-    <View className="flex-1 bg-background">
+    <View className="flex-1 bg-background" onLayout={handleScreenLayout}>
       <StatusBarStyle style={darkBasemap ? "light" : "auto"} />
       <MapCanvas
         fill
-        markers={loading ? [] : items}
+        focusPadding={pinPadding}
+        markers={loading ? NO_ITEMS : items}
         selectedMarkerId={selection.selectedMarkerId}
         onSelectMarker={handleSelectMarker}
         onMapPress={handleMapPress}
-        onClusterPress={() => setBrowseExpand((n) => n + 1)}
+        onClusterPress={handleClusterPress}
         focusCoord={focusCoord}
+        focusZoomIn={zoomToPick}
         styleURL={basemap.url}
         lightPreset={basemap.period}
         terrain={basemap.terrain}
         ornamentBottom={browsePeekClearance + 8}
         darkBasemap={darkBasemap}
-        recenterSignal={camera.recenterSignal}
-        recenterZoom={camera.recenterZoom}
-        center={location.center}
-        userCoord={location.coord}
-        heading={location.heading}
+        cameraTarget={camera.target}
+        center={initialCenter}
       />
 
       {/* Floating top controls: search + notifications, then discovery modes.
@@ -353,6 +409,7 @@ export default function MapScreen() {
       <View
         // box-none: the gaps between the rows reach the map.
         pointerEvents="box-none"
+        onLayout={handleTopLayout}
         className="absolute top-0 left-0 right-0 gap-2 pb-2"
         style={{ paddingTop: insets.top + 8 }}
       >
@@ -386,22 +443,13 @@ export default function MapScreen() {
               </Text>
             </UIPressable>
             <View className="w-px h-6 bg-line" />
-            <UIPressable
-              accessibilityRole="button"
-              accessibilityLabel="Filtre"
+            {/* Applied filters show only as this number (founder
+                2026-11-08: no filter chips on the map). */}
+            <MapFilterButton
+              filters={filters.filters}
+              count={filters.extraCount}
               onPress={() => setFilterOpen(true)}
-              className="w-12"
-              contentClassName="items-center justify-center h-full"
-            >
-              <Icon name="options-outline" size="md" tone="ink" />
-              {filters.extraCount > 0 ? (
-                <View className="absolute items-center justify-center w-4 h-4 rounded-full right-1 top-1 bg-emberStrong">
-                  <Text variant="caption" weight="bold" tone="onEmber">
-                    {filters.extraCount}
-                  </Text>
-                </View>
-              ) : null}
-            </UIPressable>
+            />
           </View>
           <IconButton
             icon="notifications-outline"
@@ -414,12 +462,6 @@ export default function MapScreen() {
         </View>
 
         <DiscoveryModeTabs mode={discovery.mode} onChange={handleModeChange} />
-        {/* Applied filters as removable chips (Phase 18); the categories
-            are picked in Filtre only (founder 2026-11-08). */}
-        <MapQuickChips
-          filters={filters.filters}
-          onChange={handleQuickFilters}
-        />
       </View>
 
       {/* Map tools (layer + location) docked bottom-right. Historically these
@@ -451,6 +493,7 @@ export default function MapScreen() {
         />
         <IconButton
           icon={location.status === "granted" ? "locate" : "locate-outline"}
+          busy={location.locating}
           label="Posisjon"
           variant="floating"
           size="lg"
@@ -494,19 +537,6 @@ export default function MapScreen() {
             actionLabel="Nullstill"
             onAction={filters.reset}
           />
-          {/* Name what to drop instead of only resetting everything
-              (Airbnb's no-results state; Phase 18). */}
-          {appliedChips.length > 0 ? (
-            <View className="flex-row flex-wrap justify-center gap-2 px-4 pb-6 pt-1">
-              {appliedChips.slice(0, 4).map((c) => (
-                <AppliedChip
-                  key={c.key}
-                  label={c.label}
-                  onRemove={() => filters.setFilters(c.remove(filters.filters))}
-                />
-              ))}
-            </View>
-          ) : null}
         </MapStateCard>
       ) : null}
 
@@ -519,58 +549,6 @@ export default function MapScreen() {
         onClose={() => setFilterOpen(false)}
         onApply={handleApplyFilters}
       />
-      {actionsFor ? (
-        <ItemActionsSheet
-          title={actionsFor.title}
-          subtitle={actionsFor.subtitle}
-          onClose={() => setActionsFor(null)}
-          actions={[
-            saved.isSaved(actionsFor.markerId)
-              ? {
-                  label: "Fjern fra Lagret",
-                  icon: "heart-dislike-outline",
-                  onPress: () => handleToggleSave(actionsFor),
-                }
-              : {
-                  label: "Lagre",
-                  icon: "heart-outline",
-                  // A guest gets the sign-in sheet: open it after this one.
-                  afterClose: true,
-                  onPress: () => {
-                    handleToggleSave(actionsFor);
-                    if (!isGuest) showToast(confirmToast.saved);
-                  },
-                },
-            {
-              label: "Del",
-              icon: "share-outline",
-              afterClose: true,
-              onPress: () => setShareFor(actionsFor),
-            },
-            {
-              label: "Veibeskrivelse",
-              icon: "navigate-outline",
-              afterClose: true,
-              onPress: () => {
-                void openDirections(actionsFor.coord).then((ok) => {
-                  if (!ok)
-                    showToast({
-                      title: "Fikk ikke åpnet kartappen",
-                      icon: "alert-circle-outline",
-                    });
-                });
-              },
-            },
-          ]}
-        />
-      ) : null}
-      {shareFor ? (
-        <ShareSheet
-          title={shareFor.title}
-          slug={shareFor.markerId.replace(":", "/")}
-          onClose={() => setShareFor(null)}
-        />
-      ) : null}
       <SignInPrompt
         visible={signInOpen}
         onClose={() => setSignInOpen(false)}
@@ -603,14 +581,13 @@ export default function MapScreen() {
           to its peek (never below) and the detail, on top, covers it. */}
       {!errored ? (
         <MapBrowseSheet
-          items={loading ? [] : items}
+          items={loading ? NO_ITEMS : items}
           loading={loading}
           loadingSlow={loadPhase === "loader"}
           selectedMarkerId={selection.selectedMarkerId}
           onSelect={handleSelectItem}
           isSaved={saved.isSaved}
           onToggleSave={handleToggleSave}
-          onItemActions={handleItemActions}
           emptyMessage={discovery.emptyMessage}
           areaLabel={location.areaLabel}
           weather={MOCK_WEATHER}
@@ -620,20 +597,19 @@ export default function MapScreen() {
         />
       ) : null}
 
-      {/* Mounted only while open: a closed @gorhom sheet keeps a full-screen
-          container that would swallow taps meant for the map's floating buttons. */}
-      {selection.sheetStack.length > 0 ? (
-        <MapDetailSheet
-          ref={detailRef}
-          onPageChange={setDetailIsPage}
-          stack={selection.sheetStack}
-          openIndex={selection.openIndex}
-          openNonce={selection.openNonce}
-          push={selection.push}
-          onBack={selection.back}
-          onClose={selection.close}
-        />
-      ) : null}
+      {/* Always mounted (0384): closed, the page sheet waits at the app root,
+          so a marker tap only slides it up. Its closed body sits below the
+          screen in box-none containers: taps reach the map's buttons. */}
+      <MapDetailSheet
+        ref={detailRef}
+        onPageChange={handlePageChange}
+        stack={selection.sheetStack}
+        openIndex={selection.openIndex}
+        openNonce={selection.openNonce}
+        push={selection.push}
+        onBack={selection.back}
+        onClose={selection.close}
+      />
     </View>
   );
 }

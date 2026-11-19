@@ -11,8 +11,15 @@ import {
   PlacePage,
   placeThingsToKnow,
 } from "@/components/place/PlacePage";
-import { placeById, places, ratingOf, reviewsForPlace } from "@/fixtures";
+import {
+  areaLabel,
+  placeById,
+  places,
+  ratingOf,
+  reviewsForPlace,
+} from "@/fixtures";
 import { formatRating } from "@/lib/format";
+import { distanceLabelFor } from "@/lib/origin";
 
 const METRICS = {
   frame: { x: 0, y: 0, width: 360, height: 640 },
@@ -54,6 +61,15 @@ describe("PlacePage", () => {
     );
     // No stored count anywhere (the old fixtures said e.g. "(128)").
     expect(screen.queryByText(/\(\d{3,}\)/)).toBeNull();
+  });
+
+  it("the address row says what it is, where, and how far away (2026-11-09)", () => {
+    render(<PlacePage place={p1} onNavigate={jest.fn()} />, { wrapper });
+    expect(
+      screen.getByText(
+        `${p1.category} · ${areaLabel(p1.coord)} · ${distanceLabelFor(p1.coord)}`,
+      ),
+    ).toBeTruthy();
   });
 
   it("links to all reviews, writing a review and nearby places", () => {

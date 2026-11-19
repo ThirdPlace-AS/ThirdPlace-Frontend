@@ -2,13 +2,13 @@ import { useCallback, useMemo, useState } from "react";
 
 import { places } from "@/fixtures";
 import { getA11yPrefs, useA11yPrefs, withWheelchair } from "@/lib/a11yPrefs";
+import { useOrigin } from "@/lib/origin";
 
 import {
   activeExtraFilterCount,
   applyFilters,
   DEFAULT_FILTERS,
   type MapFilters,
-  sortPlaces,
 } from "../services/mapFilters";
 
 // Owns search query + applied filters and derives the filtered place list. Pure
@@ -30,9 +30,13 @@ export function useMapFilters() {
     setFilters((f) => withWheelchair(f, wheelchairOnly));
   }
 
+  // Avstand follows the person (Phase 19): a picked area or a real move
+  // re-filters. The list's order is set later, once places and experiences
+  // are mixed (orderItems).
+  const origin = useOrigin();
   const filteredPlaces = useMemo(
-    () => sortPlaces(applyFilters(places, query, filters), filters.ratingSort),
-    [query, filters],
+    () => applyFilters(places, query, filters, origin),
+    [query, filters, origin],
   );
   const extraCount = useMemo(() => activeExtraFilterCount(filters), [filters]);
 

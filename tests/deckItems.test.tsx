@@ -21,6 +21,7 @@ import {
   reviewsForPlace,
 } from "@/fixtures";
 import { formatRating } from "@/lib/format";
+import { isPlaceOpen } from "@/lib/openingHours";
 
 describe("deck items", () => {
   it("experiences show where, when and places left, no status word", () => {
@@ -42,8 +43,9 @@ describe("deck items", () => {
   });
 
   it("places use the same card fields, rating from their reviews", () => {
+    const now = new Date(2026, 10, 12, 19, 0); // a Thursday evening
     for (const p of places) {
-      const item = placeToDeckItem(p);
+      const item = placeToDeckItem(p, now);
       expect(item.kind).toBe("place");
       expect(item.photos.length).toBeGreaterThanOrEqual(1);
       expect(item.scrims).toHaveLength(item.photos.length);
@@ -51,7 +53,9 @@ describe("deck items", () => {
       const { score, count } = ratingOf(reviewsForPlace(p.id));
       if (count)
         expect(item.lines[1]!.text.startsWith(formatRating(score))).toBe(true);
-      expect(item.lines[2]!.text).toBe(p.openNow ? "Åpent nå" : "Stengt nå");
+      expect(item.lines[2]!.text).toBe(
+        isPlaceOpen(p, now) ? "Åpent nå" : "Stengt nå",
+      );
       expect(item.chatId).toBe(chatForPlace(p.id)?.id);
     }
   });
@@ -59,7 +63,7 @@ describe("deck items", () => {
 
 describe("one deck for places", () => {
   it("a like on a place saves it; undo takes the save back", () => {
-    const items = places.map(placeToDeckItem);
+    const items = places.map((p) => placeToDeckItem(p));
     const saved = renderHook(() => useMapSaved());
     const { result } = renderHook(() =>
       useSwipeDeck({ items, filterKey: "places" }),

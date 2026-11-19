@@ -11,12 +11,14 @@ import type { ImageSourcePropType } from "react-native";
 
 import { media } from "@/theme/media";
 
+import { interestForLabel, type InterestId } from "./catalog/interests";
 import type { LibraryKey } from "./images";
 import {
   chats,
   experiences,
   groups,
-  OSLO_AREAS,
+  invalidateFixtureIndexes,
+  AREAS,
   places,
   profile,
   type CancellationOption,
@@ -44,6 +46,7 @@ let seq = 0;
 
 function bump() {
   version += 1;
+  invalidateFixtureIndexes();
   listeners.forEach((l) => l());
 }
 
@@ -125,6 +128,16 @@ export function createGroup(input: NewGroupInput): {
   seq += 1;
   const groupId = `gx${seq}`;
   const chatId = `cx${seq}`;
+  // The picked interests as catalogue ids (Phase 19 S5): the first is the
+  // group's interest, so its page shows them and search finds the group.
+  const interests = [
+    ...new Set(
+      input.interests.flatMap((l) => {
+        const i = interestForLabel(l);
+        return i ? [i.id as InterestId] : [];
+      }),
+    ),
+  ];
   const group: MockGroup = {
     id: groupId,
     name: input.name.trim(),
@@ -134,6 +147,9 @@ export function createGroup(input: NewGroupInput): {
     cover: input.photos[0]!,
     photos: input.photos,
     mine: true,
+    ...(interests[0] ? { interestId: interests[0] } : {}),
+    interests,
+    chatId,
     ...(input.rules?.trim() ? { rules: input.rules.trim() } : {}),
   };
   const chat: MockChat = {
@@ -240,8 +256,7 @@ export function createExperience(input: NewExperienceInput): string {
   const date = new Date(y ?? 2026, (mo ?? 1) - 1, d ?? 1);
   const place = places.find((p) => p.name === input.area);
   const areaCoord =
-    OSLO_AREAS.find((a) => a.name === input.area)?.coord ??
-    OSLO_AREAS[0]!.coord;
+    AREAS.find((a) => a.name === input.area)?.coord ?? AREAS[0]!.coord;
   const exp: MockExperience = {
     id,
     title: input.title.trim(),

@@ -1,12 +1,17 @@
 // Place page (Phase 12 H5d), in the reference video's layout like the
 // experience page: inset gallery with the photo viewer, centred name and
 // description, a rating line built from the place's reviews, chips; icon rows
-// (Adresse, Åpningstider, Prisnivå, Siste anmeldelse); Vurderinger; "Hvor du
+// (Adresse, Åpningstider, Prisnivå, Siste anmeldelse); Meny for a café, bar
+// or restaurant (user 2026-11-10, MenuSection.tsx); Vurderinger; "Hvor du
 // finner oss" with the map card; Samtalen; Flere steder i nærheten; Ting å
 // vite (tilgjengelighet, spesielle åpningstider, kilde); footer links. Every
 // fact once. MOCK fixture data; no booking or ranking (BLOCKED_CONTRACT_GAP).
 import type { Href } from "expo-router";
-import { useState } from "react";
+import { useMemo, useState } from "react";
+import {
+  useSheetStageFirst,
+  useSheetStageReady,
+} from "@/components/map/sheetStage";
 import { ScrollView, View } from "react-native";
 
 import { ReportSheet } from "@/components/actions/ActionSheets";
@@ -22,7 +27,7 @@ import {
   HeroGallery,
   InfoRow,
 } from "@/components/experience/ExperiencePage";
-import { areaFor } from "@/components/experience/experienceMeta";
+import { MenuSection } from "@/components/place/MenuSection";
 import { ReviewsSection } from "@/components/reviews/ReviewsSection";
 import { sortReviews } from "@/components/reviews/reviewSort";
 import {
@@ -33,20 +38,52 @@ import {
   Pressable as UIPressable,
 } from "@/components/ui";
 import {
+  areaLabel,
+  businessForPlace,
   chatForPlace,
+  experiences,
+  groups,
+  organizationForPlace,
+  personById,
   places,
   priceBandFor,
   ratingOf,
   reviewsForPlace,
   type MockPlace,
 } from "@/fixtures";
+import { useCreatedVersion } from "@/fixtures/created";
+import { isMenuVenue } from "@/fixtures/menus";
 import {
   coverForPlace,
   libImage,
   libThumb,
   photosForPlace,
 } from "@/fixtures/images";
-import { formatRating } from "@/lib/format";
+import { formatRating, membersLabel } from "@/lib/format";
+import { isPlaceOpen } from "@/lib/openingHours";
+import {
+  ITEM_TYPE_ICON,
+  experienceTypeLabel,
+} from "@/components/map/services/itemType";
+import { NEARBY_M, distanceMeters } from "@/lib/distance";
+import { distanceLabelFor, useOrigin } from "@/lib/origin";
+
+/** "✓ Verifisert" under a verified business's name (PDF p6). */
+function VerifiedChip() {
+  return (
+    <View
+      accessible
+      accessibilityLabel="Verifisert bedrift"
+      className="flex-row items-center gap-1 rounded-full bg-success/15 px-md"
+      style={{ minHeight: 32 }}
+    >
+      <Icon name="checkmark-circle" size="sm" tone="success" />
+      <Text variant="caption" weight="semibold" tone="success">
+        Verifisert
+      </Text>
+    </View>
+  );
+}
 
 /** Chips: vibes, then tags not already a vibe (each once). */
 export function placeChips(p: Pick<MockPlace, "vibes" | "tags">): string[] {
@@ -61,12 +98,15 @@ export function placeChips(p: Pick<MockPlace, "vibes" | "tags">): string[] {
 
 /** Other places, nearest first (straight-line distance between the pins). */
 export function nearbyPlaces(p: MockPlace, count = 6): MockPlace[] {
-  const d = (q: MockPlace) =>
-    Math.hypot(q.coord[0] - p.coord[0], (q.coord[1] - p.coord[1]) * 2);
+  // Nearest first, and only what is near (Phase 19: across Akershus the
+  // nearest place can be a town away).
   return places
     .filter((q) => q.id !== p.id && q.placeStatus !== "unavailable")
-    .sort((a, b) => d(a) - d(b))
-    .slice(0, count);
+    .map((q) => ({ q, d: distanceMeters(q.coord, p.coord) }))
+    .filter((x) => x.d <= NEARBY_M)
+    .sort((a, b) => a.d - b.d)
+    .slice(0, count)
+    .map((x) => x.q);
 }
 
 /** "Ting å vite" for a place: facts the listing has, nothing invented. */
@@ -95,6 +135,29 @@ export function placeThingsToKnow(p: MockPlace): Know[] {
       summary: p.specialHours,
       detail: [{ icon: "time-outline", text: p.specialHours }],
     });
+  // A byrom: what is there, who it is for, the season (Phase 19).
+  if (p.space)
+    items.push({
+      key: "fasiliteter",
+      icon: "leaf-outline",
+      title: "Fasiliteter",
+      summary: p.space.facilities.join(", "),
+      detail: [
+        ...p.space.facilities.map((f) => ({
+          icon: "checkmark-circle-outline" as const,
+          text: f,
+        })),
+        { icon: "people-outline", text: p.space.access },
+        ...(p.space.season
+          ? [
+              {
+                icon: "sunny-outline" as const,
+                text: `Sesong: ${p.space.season}`,
+              },
+            ]
+          : []),
+      ],
+    });
   items.push({
     key: "kilde",
     icon: "shield-checkmark-outline",
@@ -112,182 +175,329 @@ export function PlacePage({
   place: MockPlace;
   onNavigate: (href: Href) => void;
 }) {
+  // In the map sheet: the open shows the gallery (what the peek shows), the
+  // first rows come once the sheet rests, the rest a moment later (0381).
+  const first = useSheetStageFirst();
+  const ready = useSheetStageReady();
   const [report, setReport] = useState(false);
   const reviews = reviewsForPlace(place.id);
+  const origin = useOrigin();
   const { score, count } = ratingOf(reviews);
   const latest = sortReviews(reviews, "newest")[0];
   const reviewsHref = `/place/${place.id}/reviews` as Href;
-  const photos = photosForPlace(place).map(libImage);
+  // Lists over every place, experience and group: worked out once per page
+  // (speed pass 0348), and the same photo list for the gallery each render.
+  // Something made in Legg til joins the lists below (review of the speed
+  // pass: the memoised lists kept the arrays they first saw).
+  const created = useCreatedVersion();
+  const photos = useMemo(() => photosForPlace(place).map(libImage), [place]);
   const band = priceBandFor(place.priceNok);
-  const nearby = nearbyPlaces(place);
+  // The lists below the first screen are worked out only once they show.
+  const nearby = useMemo(
+    () => (ready ? nearbyPlaces(place) : []),
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- created: a place made in Legg til
+    [place, created, ready],
+  );
+  // Phase 19: who runs it, what happens here, which groups meet here.
+  const business =
+    place.kind === "bedrift" ? businessForPlace(place.id) : undefined;
+  const org =
+    place.kind === "organisasjon" ? organizationForPlace(place.id) : undefined;
+  const contact = org ? personById(org.contactPersonId) : undefined;
+  const happening = useMemo(
+    () =>
+      ready
+        ? experiences.filter(
+            (e) =>
+              e.status !== "cancelled" &&
+              (e.placeId === place.id || e.organizerPlaceId === place.id),
+          )
+        : [],
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- created: an experience made in Legg til
+    [place.id, created, ready],
+  );
+  const meetingHere = useMemo(
+    () => (ready ? groups.filter((g) => g.homePlaceId === place.id) : []),
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- created: a group made in Legg til
+    [place.id, created, ready],
+  );
 
   return (
     <View className="gap-6">
       <HeroGallery title={place.name} photos={photos} />
 
-      <View className="items-center gap-2 px-2">
-        <Text variant="h1" className="text-center" accessibilityRole="header">
-          {place.name}
-        </Text>
-        <Text variant="body" tone="muted" className="text-center">
-          {place.about}
-        </Text>
-        {count > 0 ? (
-          <UIPressable
-            accessibilityRole="link"
-            accessibilityLabel={`${formatRating(score)} av 5, ${count} vurderinger. Vis alle`}
-            onPress={() => onNavigate(reviewsHref)}
-            hitSlop={8}
-            contentClassName="mt-1 flex-row items-center gap-1"
-          >
-            <Icon name="star" size="sm" tone="ink" />
-            <Text variant="label" weight="semibold">
-              {formatRating(score)}
-            </Text>
-            <Text variant="label" tone="muted">
-              ·
-            </Text>
-            <Text variant="label" weight="semibold" className="underline">
-              {`${count} ${count === 1 ? "vurdering" : "vurderinger"}`}
-            </Text>
-          </UIPressable>
-        ) : null}
-        <View className="mt-1 flex-row flex-wrap justify-center gap-2">
-          {placeChips(place).map((c) => (
-            <Chip key={c} label={c} size="sm" />
-          ))}
-        </View>
-      </View>
-
-      <View className="h-px bg-line" />
-
-      <View className="gap-1">
-        <InfoRow
-          icon="location-outline"
-          title={place.address}
-          subtitle={`${place.category} · ${areaFor(place.coord)}, Oslo`}
-        />
-        <InfoRow
-          icon="time-outline"
-          title={place.openNow ? "Åpent nå" : "Stengt nå"}
-          subtitle={place.hours}
-        />
-        <InfoRow
-          icon="pricetag-outline"
-          title="Prisnivå"
-          subtitle={band === "Gratis" ? "Gratis" : `${band} kr`}
-        />
-        {latest ? (
-          <InfoRow
-            icon="chatbox-ellipses-outline"
-            title="Siste anmeldelse"
-            subtitle={`«${latest.text}» · ${latest.when}`}
-            lines={2}
-          />
-        ) : null}
-      </View>
-
-      <View className="h-px bg-line" />
-
-      <ReviewsSection
-        reviews={reviews}
-        onShowAll={() => onNavigate(reviewsHref)}
-      />
-
-      <View className="h-px bg-line" />
-
-      <View className="gap-3">
-        <Text variant="h2" accessibilityRole="header">
-          Hvor du finner oss
-        </Text>
-        <View className="flex-row items-start gap-3">
-          <View className="flex-1 gap-0.5">
-            <Text variant="label" weight="semibold">
+      {first ? (
+        <>
+          <View className="items-center gap-2 px-2">
+            <Text
+              variant="h1"
+              className="text-center"
+              accessibilityRole="header"
+            >
               {place.name}
             </Text>
-            <Text variant="caption" tone="muted">
-              {place.address}
+            <Text variant="body" tone="muted" className="text-center">
+              {place.about}
             </Text>
+            {count > 0 ? (
+              <UIPressable
+                accessibilityRole="link"
+                accessibilityLabel={`${formatRating(score)} av 5, ${count} vurderinger. Vis alle`}
+                onPress={() => onNavigate(reviewsHref)}
+                hitSlop={8}
+                contentClassName="mt-1 flex-row items-center gap-1"
+              >
+                <Icon name="star" size="sm" tone="ink" />
+                <Text variant="label" weight="semibold">
+                  {formatRating(score)}
+                </Text>
+                <Text variant="label" tone="muted">
+                  ·
+                </Text>
+                <Text variant="label" weight="semibold" className="underline">
+                  {`${count} ${count === 1 ? "vurdering" : "vurderinger"}`}
+                </Text>
+              </UIPressable>
+            ) : null}
+            <View className="mt-1 flex-row flex-wrap justify-center gap-2">
+              {/* The place page is the business's one profile (user
+              2026-11-10), so its verified mark sits here, as PDF p6 draws
+              it. */}
+              {business?.verified ? <VerifiedChip /> : null}
+              {placeChips(place).map((c) => (
+                <Chip key={c} label={c} size="sm" />
+              ))}
+            </View>
           </View>
-          <DirectionsButton coord={place.coord} name={place.name} />
-        </View>
-        <MeetingMap
-          coord={place.coord}
-          label={place.name}
-          onShowOnMap={() =>
-            onNavigate(`/map?focus=place:${place.id}&at=${Date.now()}` as Href)
-          }
-        />
-      </View>
 
-      <ChatSection chat={chatForPlace(place.id)} onNavigate={onNavigate} />
+          <View className="h-px bg-line" />
 
-      {nearby.length > 0 ? (
-        <View className="gap-3">
-          <Text variant="h2" accessibilityRole="header">
-            Flere steder i nærheten
-          </Text>
-          <ScrollView
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            snapToInterval={188}
-            decelerationRate="fast"
-            contentContainerStyle={{ gap: 12 }}
-          >
-            {nearby.map((p) => {
-              const r = ratingOf(reviewsForPlace(p.id));
-              return (
-                <UIPressable
-                  key={p.id}
-                  accessibilityRole="button"
-                  accessibilityLabel={`${p.name}, ${p.category}`}
-                  onPress={() => onNavigate(`/place/${p.id}` as Href)}
-                  style={{ width: 176 }}
-                  contentClassName="gap-1.5"
-                  pressedScale={0.98}
-                >
-                  <LoadingImage
-                    thumb
-                    source={libThumb(coverForPlace(p))}
-                    contentFit="cover"
-                    transition={150}
-                    style={{ width: 176, height: 176, borderRadius: 16 }}
+          <View className="gap-1">
+            <InfoRow
+              icon="location-outline"
+              title={place.address}
+              // How far away it is, from the person (the map's place sheet showed
+              // it before it became this page, 2026-11-09).
+              subtitle={`${place.category} · ${areaLabel(place.coord)} · ${distanceLabelFor(place.coord, origin)}`}
+            />
+            <InfoRow
+              icon="time-outline"
+              title={isPlaceOpen(place) ? "Åpent nå" : "Stengt nå"}
+              subtitle={place.hours}
+            />
+            <InfoRow
+              icon="pricetag-outline"
+              title="Prisnivå"
+              subtitle={band === "Gratis" ? "Gratis" : `${band} kr`}
+            />
+            {latest ? (
+              <InfoRow
+                icon="chatbox-ellipses-outline"
+                title="Siste anmeldelse"
+                subtitle={`«${latest.text}» · ${latest.when}`}
+                lines={2}
+              />
+            ) : null}
+            {/* Who runs it and what they say about themselves, as facts on this
+            page: a business or organisation has one profile, this one (user
+            2026-11-10, "don't need 2 business profiles"). */}
+            {business ? (
+              <InfoRow
+                icon="storefront-outline"
+                title={`Drives av ${business.name}`}
+                subtitle={business.about}
+                lines={2}
+              />
+            ) : null}
+            {org ? (
+              <>
+                <InfoRow
+                  icon={ITEM_TYPE_ICON.organisasjon}
+                  // A club named like its place would say its name twice.
+                  title={
+                    org.name === place.name
+                      ? org.form
+                      : `${org.name} · ${org.form}`
+                  }
+                  subtitle={org.about}
+                  lines={3}
+                />
+                {contact ? (
+                  <InfoRow
+                    icon="person-circle-outline"
+                    title={contact.name}
+                    subtitle="Kontaktperson"
+                    onPress={() => onNavigate(`/people/${contact.id}` as Href)}
                   />
-                  <Text variant="label" weight="semibold" numberOfLines={1}>
-                    {p.name}
-                  </Text>
-                  <Text variant="caption" tone="muted" numberOfLines={1}>
-                    {`${p.category} · ${p.distance}${
-                      r.count ? ` · ★ ${formatRating(r.score)}` : ""
-                    }`}
-                  </Text>
-                </UIPressable>
-              );
-            })}
-          </ScrollView>
-        </View>
+                ) : null}
+                <InfoRow
+                  icon="list-outline"
+                  title="Hva vi gjør"
+                  subtitle={org.activities.join(" · ")}
+                  lines={2}
+                />
+              </>
+            ) : null}
+          </View>
+        </>
       ) : null}
 
-      <View className="h-px bg-line" />
+      {/* Below the first screen: in the map sheet, a moment after it has
+          come to rest (R3a, 0381, src/components/map/sheetStage.ts). */}
+      {ready ? (
+        <>
+          {isMenuVenue(place) ? (
+            <>
+              <View className="h-px bg-line" />
+              <MenuSection place={place} onNavigate={onNavigate} />
+            </>
+          ) : null}
 
-      <KnowSection items={placeThingsToKnow(place)} />
+          <View className="h-px bg-line" />
 
-      <View className="h-px bg-line" />
+          <ReviewsSection
+            reviews={reviews}
+            onShowAll={() => onNavigate(reviewsHref)}
+          />
 
-      <View className="gap-1">
-        <FooterLink
-          icon="create-outline"
-          label="Skriv en anmeldelse"
-          onPress={() => onNavigate(`/review/place/${place.id}` as Href)}
-        />
-        <FooterLink
-          icon="flag-outline"
-          label="Rapporter stedet"
-          onPress={() => setReport(true)}
-        />
-      </View>
+          <View className="h-px bg-line" />
 
-      {report ? <ReportSheet onClose={() => setReport(false)} /> : null}
+          <View className="gap-3">
+            <Text variant="h2" accessibilityRole="header">
+              Hvor du finner oss
+            </Text>
+            <View className="flex-row items-start gap-3">
+              <View className="flex-1 gap-0.5">
+                <Text variant="label" weight="semibold">
+                  {place.name}
+                </Text>
+                <Text variant="caption" tone="muted">
+                  {place.address}
+                </Text>
+              </View>
+              <DirectionsButton coord={place.coord} name={place.name} />
+            </View>
+            <MeetingMap
+              coord={place.coord}
+              label={place.name}
+              onShowOnMap={() =>
+                onNavigate(
+                  `/map?focus=place:${place.id}&at=${Date.now()}` as Href,
+                )
+              }
+            />
+          </View>
+
+          {happening.length > 0 ? (
+            <View className="gap-1">
+              <Text variant="h2" accessibilityRole="header" className="mb-2">
+                Hva skjer her
+              </Text>
+              {happening.map((e) => (
+                <InfoRow
+                  key={e.id}
+                  icon={
+                    e.format === "event" ? "calendar-outline" : "tp-experience"
+                  }
+                  title={e.title}
+                  subtitle={`${experienceTypeLabel(e)} · ${e.when}`}
+                  onPress={() => onNavigate(`/experience/${e.id}` as Href)}
+                />
+              ))}
+            </View>
+          ) : null}
+
+          {meetingHere.length > 0 ? (
+            <View className="gap-1">
+              <Text variant="h2" accessibilityRole="header" className="mb-2">
+                Grupper som møtes her
+              </Text>
+              {meetingHere.map((g) => (
+                <InfoRow
+                  key={g.id}
+                  icon="people-outline"
+                  title={g.name}
+                  subtitle={`Gruppe · ${membersLabel(g.memberCount)}`}
+                  onPress={() => onNavigate(`/group/${g.id}` as Href)}
+                />
+              ))}
+            </View>
+          ) : null}
+
+          {/* Every place has its chat here, in the map sheet too (user
+          2026-11-10: "every place, business and experiances must have a chat
+          on the details modal sheet", "same as the experiances"); at full
+          screen the map sheet also keeps its floating chat card. */}
+          <ChatSection chat={chatForPlace(place.id)} onNavigate={onNavigate} />
+
+          {nearby.length > 0 ? (
+            <View className="gap-3">
+              <Text variant="h2" accessibilityRole="header">
+                Flere steder i nærheten
+              </Text>
+              <ScrollView
+                horizontal
+                showsHorizontalScrollIndicator={false}
+                snapToInterval={188}
+                decelerationRate="fast"
+                contentContainerStyle={{ gap: 12 }}
+              >
+                {nearby.map((p) => {
+                  const r = ratingOf(reviewsForPlace(p.id));
+                  return (
+                    <UIPressable
+                      key={p.id}
+                      accessibilityRole="button"
+                      accessibilityLabel={`${p.name}, ${p.category}`}
+                      onPress={() => onNavigate(`/place/${p.id}` as Href)}
+                      style={{ width: 176 }}
+                      contentClassName="gap-1.5"
+                      pressedScale={0.98}
+                    >
+                      <LoadingImage
+                        thumb
+                        source={libThumb(coverForPlace(p))}
+                        contentFit="cover"
+                        transition={150}
+                        style={{ width: 176, height: 176, borderRadius: 16 }}
+                      />
+                      <Text variant="label" weight="semibold" numberOfLines={1}>
+                        {p.name}
+                      </Text>
+                      <Text variant="caption" tone="muted" numberOfLines={1}>
+                        {`${p.category} · ${distanceLabelFor(p.coord, origin)}${
+                          r.count ? ` · ★ ${formatRating(r.score)}` : ""
+                        }`}
+                      </Text>
+                    </UIPressable>
+                  );
+                })}
+              </ScrollView>
+            </View>
+          ) : null}
+
+          <View className="h-px bg-line" />
+
+          <KnowSection items={placeThingsToKnow(place)} />
+
+          <View className="h-px bg-line" />
+
+          <View className="gap-1">
+            <FooterLink
+              icon="create-outline"
+              label="Skriv en anmeldelse"
+              onPress={() => onNavigate(`/review/place/${place.id}` as Href)}
+            />
+            <FooterLink
+              icon="flag-outline"
+              label="Rapporter stedet"
+              onPress={() => setReport(true)}
+            />
+          </View>
+
+          {report ? <ReportSheet onClose={() => setReport(false)} /> : null}
+        </>
+      ) : null}
     </View>
   );
 }

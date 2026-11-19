@@ -12,6 +12,7 @@ import {
 import {
   Avatar,
   Icon,
+  BACK_ICON,
   IconButton,
   ListRow,
   Screen,
@@ -22,7 +23,6 @@ import {
   Pressable as UIPressable,
 } from "@/components/ui";
 import { Button } from "@/components/Button";
-import { haptics } from "@/lib/haptics";
 import { Chip } from "@/components/Chip";
 import { Input } from "@/components/Input";
 import { showToast } from "@/components/Toast";
@@ -34,9 +34,11 @@ import {
   experienceById,
   experiences,
   people,
+  profile,
   type MockExperience,
   type MockPerson,
 } from "@/fixtures";
+import { useFollowing } from "@/lib/following";
 import { libImage, libThumb } from "@/fixtures/images";
 
 type Phase = "setup" | "lobby" | "swipe" | "match";
@@ -62,6 +64,12 @@ export default function GroupSwipeScreen() {
   const [index, setIndex] = useState(0);
 
   const friends = people.filter((p) => invited.includes(p.id));
+  // Invite from your network: people you follow or who follow you (a
+  // catalogue host joins it once you follow them).
+  const following = useFollowing();
+  const network = people.filter(
+    (p) => following.has(p.id) || profile.followerIds.includes(p.id),
+  );
   // /group-swipe?from=saved (approved addition, 2026-11-06): the deck is the
   // user's saved experiences, it ends instead of looping, and the simulated
   // friends agree on the first card the user likes.
@@ -112,7 +120,7 @@ export default function GroupSwipeScreen() {
     <Screen>
       <View className="flex-row items-center justify-between px-gutter pb-2 pt-1">
         <IconButton
-          icon="chevron-back"
+          icon={BACK_ICON}
           label="Tilbake"
           variant="outline"
           onPress={back}
@@ -146,7 +154,7 @@ export default function GroupSwipeScreen() {
               Inviter venner{invited.length ? ` · ${invited.length} valgt` : ""}
             </Text>
             <ScrollRow gap="gap-3">
-              {people.map((p) => {
+              {network.map((p) => {
                 const on = invited.includes(p.id);
                 return (
                   <UIPressable
@@ -386,7 +394,6 @@ export default function GroupSwipeScreen() {
               onPress={() => {
                 const agrees = fromSaved || card.id === AGREED_ID;
                 if (!agrees) return setIndex((i) => i + 1);
-                haptics.light();
                 setPhase("match");
               }}
             />

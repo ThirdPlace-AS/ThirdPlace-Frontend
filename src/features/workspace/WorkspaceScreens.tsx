@@ -14,8 +14,20 @@ import { hubToday } from "@/features/workspace/hubToday";
 import { clock } from "@/lib/dates";
 import { Chip } from "@/components/Chip";
 import { RouteHeader } from "@/components/RouteHeader";
-import { businesses, experiences } from "@/fixtures";
+import {
+  OWNED_BUSINESS_IDS,
+  businesses,
+  experiences,
+  isCatalogueId,
+} from "@/fixtures";
+
 import { useMyProfile } from "@/lib/myProfile";
+
+// The demo creator's and business's own things: the legacy experiences and
+// whatever they publish in Legg til, never the catalogue's (Phase 19).
+const ownExperiences = () => experiences.filter((e) => !isCatalogueId(e.id));
+const ownBusinesses = () =>
+  businesses.filter((b) => OWNED_BUSINESS_IDS.includes(b.id));
 
 // Business workspace, per the design (PDF p13–p15): the business
 // profile hub (Dashbord, Marketplace, linked personal account, "Kom i gang"),
@@ -150,7 +162,7 @@ export function WorkspaceHub() {
 // hubToday.ts). Each line opens where it is handled.
 function TodayCard() {
   const now = new Date();
-  const { today, week, waiting } = hubToday(experiences, now);
+  const { today, week, waiting } = hubToday(ownExperiences(), now);
   return (
     <View className="gap-1 rounded-lg border border-line bg-surface p-4">
       <Text variant="label" weight="semibold" accessibilityRole="header">
@@ -329,7 +341,9 @@ export function WorkspaceAnalytics() {
 }
 
 export function WorkspaceCalendar() {
-  const upcoming = byStart(experiences.filter((e) => e.status !== "cancelled"));
+  const upcoming = byStart(
+    ownExperiences().filter((e) => e.status !== "cancelled"),
+  );
   return (
     <Screen edges={["top"]}>
       <RouteHeader title="Kalender" />
@@ -381,12 +395,22 @@ export function WorkspaceLocations() {
       <RouteHeader title="Lokasjoner" />
       <ScrollView contentContainerClassName="gap-3 px-gutter py-4 pb-12">
         <Text variant="caption" tone="muted">
-          {businesses.length} lokasjoner
+          {ownBusinesses().length} lokasjoner
         </Text>
-        {businesses.map((b) => (
-          <View
+        {ownBusinesses().map((b) => (
+          // Verifisering (PDF p7) is the owner’s own screen, so it opens
+          // from here (user 2026-11-10: a business has one public profile).
+          <UIPressable
             key={b.id}
-            className="gap-1 rounded-lg border border-line bg-surface p-4"
+            accessibilityRole="button"
+            accessibilityLabel={`${b.name}, ${
+              b.verified ? "verifisert" : "venter på verifisering"
+            }. Verifisering`}
+            onPress={() =>
+              router.push(`/workspace/verification/${b.id}` as Href)
+            }
+            pressedScale={0.99}
+            contentClassName="gap-1 rounded-lg border border-line bg-surface p-4"
           >
             <View className="flex-row items-start justify-between gap-3">
               <Text variant="body" weight="semibold" className="flex-1">
@@ -401,7 +425,13 @@ export function WorkspaceLocations() {
             <Text variant="caption" tone="muted">
               {b.address}
             </Text>
-          </View>
+            <View className="mt-2 flex-row items-center justify-between border-t border-line pt-3">
+              <Text variant="label" weight="semibold">
+                Verifisering
+              </Text>
+              <Icon name="chevron-forward" size="md" tone="muted" />
+            </View>
+          </UIPressable>
         ))}
         <View
           accessibilityRole="button"

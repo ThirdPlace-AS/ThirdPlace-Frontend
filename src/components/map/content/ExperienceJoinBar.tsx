@@ -13,7 +13,6 @@ import { SignInPrompt } from "@/components/SignInPrompt";
 import { Text } from "@/components/ui";
 import { experienceById, sessionsFor } from "@/fixtures";
 import { shortSessionLabel } from "@/lib/dates";
-import { haptics } from "@/lib/haptics";
 import { goingLabel } from "@/lib/going";
 
 import { useExperienceSession } from "../../experience/useExperienceSession";
@@ -56,7 +55,6 @@ export function ExperienceJoinBar({ id }: { id: string }) {
   const gated = (run: () => void) => () =>
     isGuest ? setPromptOpen(true) : run();
   const join = () => {
-    haptics.light();
     setUser("joined");
     setConfirm("joined");
   };

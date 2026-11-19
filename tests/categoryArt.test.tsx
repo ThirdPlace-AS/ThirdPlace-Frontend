@@ -22,6 +22,7 @@ const KEYS: ArtKey[] = [
   "social",
   "place",
   "experience",
+  "group",
   "location",
 ];
 
@@ -36,6 +37,15 @@ describe("CategoryArt", () => {
       expect(KEYS).toContain(key);
       expect(hasCategoryArt(label)).toBe(true);
     }
+  });
+
+  it("the three Legg til kinds all have 3D art (Gruppe too, 2026-11-09)", () => {
+    for (const kind of ["Sted", "Opplevelse", "Gruppe"]) {
+      expect(hasCategoryArt(kind)).toBe(true);
+      const { toJSON } = render(<CategoryArt name={kind} size={48} />);
+      expect(toJSON()).toBeTruthy();
+    }
+    expect(CATEGORY_ART.Gruppe).toBe("group");
   });
 
   it("renders nothing for an unknown category", () => {

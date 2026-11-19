@@ -108,9 +108,26 @@ describe("design-system guard", () => {
     expect(fmt(hits)).toEqual([]);
   });
 
+  it("Material Community Icons only through <PinGlyph> (map pins, Phase 19)", () => {
+    const hits = scan(
+      (line) => /<MaterialCommunityIcons\b/.test(line),
+      (f) => f !== "src/components/ui/PinGlyph.tsx",
+    );
+    expect(fmt(hits)).toEqual([]);
+  });
+
   it("no active:/focus:/hover: in Pressable contentClassName (they block presses)", () => {
     const hits = scan((line) =>
       /contentClassName=.*\b(active|focus|hover):/.test(line),
+    );
+    expect(fmt(hits)).toEqual([]);
+  });
+
+  it("one back arrow: every Tilbake button uses BACK_ICON (user 2026-11-09)", () => {
+    const hits = scan(
+      (line, prev) =>
+        /label="Tilbake"/.test(line) &&
+        !/icon=\{BACK_ICON\}/.test([...prev, line].join("\n")),
     );
     expect(fmt(hits)).toEqual([]);
   });
@@ -143,5 +160,50 @@ describe("design-system guard", () => {
       (file) => !file.endsWith("lib/format.ts"),
     );
     expect(fmt(hits)).toEqual([]);
+  });
+
+  it("haptics only at the chosen moments (user 2026-11-09: 'Also key taps')", () => {
+    // Which file may vibrate, and how (src/lib/haptics.ts names the
+    // strengths). Plain buttons, navigation, chips and switches stay silent,
+    // expo-haptics only loads through src/lib/haptics.ts, and the ui
+    // primitives take no `haptic` prop.
+    const MOMENTS: Record<string, string[]> = {
+      // A dragged card crosses the commit line.
+      "src/components/swipe/SwipeDeck.tsx": ["selection"],
+      // Swipe to reply, the reactions opening, a message sent.
+      "app/chat/[id]/index.tsx": ["longPress", "selection", "tap"],
+      // Save or like turns on.
+      "src/components/ui/HeartToggle.tsx": ["toggleOn"],
+      // A long press opens a row's "Flere valg" menu.
+      "src/components/ui/ListRow.tsx": ["longPress"],
+      // Each step of the Avstand and Varighet sliders (the price slider stays silent).
+      "src/components/SteppedSlider.tsx": ["selection"],
+      // Joined; published, created or sent in.
+      "src/components/experience/JoinedSheet.tsx": ["success"],
+      "src/features/add/AddWizard.tsx": ["success"],
+    };
+    const hits = scan(
+      (line) =>
+        /expo-haptics/.test(line) ||
+        /\bhaptics\b/.test(line) ||
+        /\bhaptic=/.test(line),
+      (file) => !file.endsWith("lib/haptics.ts") && !(file in MOMENTS),
+    );
+    expect(fmt(hits)).toEqual([]);
+    for (const [file, allowed] of Object.entries(MOMENTS)) {
+      const code = fs.readFileSync(path.join(ROOT, file), "utf8");
+      const used = [
+        ...new Set((code.match(/haptics\.\w+/g) ?? []).map((m) => m.slice(8))),
+      ].sort();
+      expect({ file, used }).toEqual({ file, used: [...allowed].sort() });
+    }
+    // The Sveip tick fires from a gesture worklet, so through runOnJS.
+    const deck = fs.readFileSync(
+      path.join(ROOT, "src/components/swipe/SwipeDeck.tsx"),
+      "utf8",
+    );
+    expect((deck.match(/haptics\.\w+/g) ?? []).length).toBe(
+      (deck.match(/runOnJS\(haptics\.\w+\)/g) ?? []).length,
+    );
   });
 });

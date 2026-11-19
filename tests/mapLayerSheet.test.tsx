@@ -10,7 +10,10 @@ import {
 } from "@testing-library/react-native";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 
-import { MapLayerSheet } from "@/components/map/MapLayerSheet";
+import {
+  MAP_PREVIEW_CREDIT,
+  MapLayerSheet,
+} from "@/components/map/MapLayerSheet";
 
 const METRICS = {
   frame: { x: 0, y: 0, width: 360, height: 640 },
@@ -105,13 +108,20 @@ describe("Kartlag", () => {
   it("ⓘ explains Auto, including dark mode", () => {
     setup(false);
     expect(screen.queryByText(/bytter kartstil etter tiden/)).toBeNull();
-    fireEvent.press(screen.getByLabelText("Om Auto"));
+    fireEvent.press(screen.getByLabelText("Om kartstilene og kildene"));
     expect(screen.getByText(/bytter kartstil etter tiden/)).toBeTruthy();
     expect(screen.getByText(/mørk modus, viser Auto natt/)).toBeTruthy();
   });
 
-  it("credits the map sources under the previews", () => {
+  it("credits the map sources behind ⓘ, not under the grids", () => {
+    // User 2026-11-11: "remove the text at the bottom of the map layer
+    // modal"; the credit moved into ⓘ, as the map's own ⓘ holds its credits.
     setup(false);
+    expect(screen.queryByText(MAP_PREVIEW_CREDIT)).toBeNull();
+    fireEvent.press(screen.getByLabelText("Om kartstilene og kildene"));
+    expect(screen.getByText(MAP_PREVIEW_CREDIT)).toBeTruthy();
     expect(screen.getByText(/© Mapbox © OpenStreetMap/)).toBeTruthy();
+    fireEvent.press(screen.getByLabelText("Skjul forklaringen"));
+    expect(screen.queryByText(MAP_PREVIEW_CREDIT)).toBeNull();
   });
 });

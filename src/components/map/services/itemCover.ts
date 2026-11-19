@@ -3,7 +3,7 @@
 // card can fall back to its placeholder.
 import type { ImageSourcePropType } from "react-native";
 
-import { businessById, experienceById, groupById, placeById } from "@/fixtures";
+import { experienceById, groupById, placeById } from "@/fixtures";
 import { coverForPlace, libImage, photosForPlace } from "@/fixtures/images";
 
 import type { DiscoveryItem } from "../types/mapPresentation";
@@ -14,11 +14,6 @@ export function coverForItem(
   switch (item.kind) {
     case "place": {
       const p = placeById(item.id);
-      return p ? libImage(coverForPlace(p)) : undefined;
-    }
-    case "business": {
-      const b = businessById(item.id);
-      const p = b ? placeById(b.placeId) : undefined;
       return p ? libImage(coverForPlace(p)) : undefined;
     }
     case "experience":
@@ -33,8 +28,7 @@ export function coverForItem(
 }
 
 /** Every photo for a card or detail gallery, cover first (at least two per
- * item since 2026-11-06). Businesses show their place's photos. Empty when
- * there is none. */
+ * item since 2026-11-06). Empty when there is none. */
 export function photosForItem(
   item: Pick<DiscoveryItem, "kind" | "id">,
 ): ImageSourcePropType[] {
@@ -43,11 +37,6 @@ export function photosForItem(
       return experienceById(item.id)?.photos ?? [];
     case "place": {
       const p = placeById(item.id);
-      return p ? photosForPlace(p).map(libImage) : [];
-    }
-    case "business": {
-      const b = businessById(item.id);
-      const p = b ? placeById(b.placeId) : undefined;
       return p ? photosForPlace(p).map(libImage) : [];
     }
     case "group":

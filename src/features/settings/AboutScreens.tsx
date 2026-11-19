@@ -58,6 +58,11 @@ export function AboutScreen() {
 const CREDITS = [
   { title: "Kartdata", detail: MAP_PREVIEW_CREDIT.replace(/^Kart /, "") },
   { title: "Bilder", detail: "Unsplash (Unsplash-lisensen)" },
+  {
+    title: "Kartikoner",
+    detail:
+      "Material Design Icons fra Pictogrammers (Pictogrammers Free License), levert med @expo/vector-icons",
+  },
 ];
 
 export function LicensesScreen() {

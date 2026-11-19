@@ -6,7 +6,7 @@ import { FollowButton, Screen, Avatar, Text } from "@/components/ui";
 import { Button } from "@/components/Button";
 import { RouteHeader } from "@/components/RouteHeader";
 import { EmptyState } from "@/components/states/StateView";
-import { chats, experienceById, personById } from "@/fixtures";
+import { chats, experiencesHostedBy, personById } from "@/fixtures";
 import { libImage } from "@/fixtures/images";
 
 // Creator profile, per the design (PDF p14): avatar, name, "Skaper"
@@ -29,9 +29,8 @@ export default function CreatorProfileScreen() {
       </Screen>
     );
   }
-  const hosted = person.hostsExperienceId
-    ? experienceById(person.hostsExperienceId)
-    : undefined;
+  // Everything the creator hosts (catalogue hosts run several, Phase 19).
+  const hosted = experiencesHostedBy(person.id);
 
   return (
     <Screen edges={["top"]}>
@@ -86,15 +85,20 @@ export default function CreatorProfileScreen() {
         <Text variant="title" accessibilityRole="header">
           Kommende
         </Text>
-        {hosted ? (
-          <View className="gap-0.5 rounded-lg border border-line bg-surface p-4">
-            <Text variant="body" weight="semibold">
-              {hosted.title}
-            </Text>
-            <Text variant="caption" tone="muted">
-              {hosted.when}
-            </Text>
-          </View>
+        {hosted.length > 0 ? (
+          hosted.map((h) => (
+            <View
+              key={h.id}
+              className="gap-0.5 rounded-lg border border-line bg-surface p-4"
+            >
+              <Text variant="body" weight="semibold">
+                {h.title}
+              </Text>
+              <Text variant="caption" tone="muted">
+                {h.when}
+              </Text>
+            </View>
+          ))
         ) : (
           <Text variant="caption" tone="muted">
             Ingen kommende opplevelser.

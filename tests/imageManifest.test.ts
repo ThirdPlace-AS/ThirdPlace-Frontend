@@ -1,5 +1,7 @@
 // H0b (Phase 12): every bundled photo ships as WebP in two sizes with a
-// blurred preview, and nothing loads the old JPEGs any more.
+// blurred preview, and nothing loads the old JPEGs any more. Since
+// 2026-11-10 ("Optimize the images") a portrait (person-*) ships only its
+// ≤256 px file: faces are drawn only by Avatar, which always loads that file.
 import { describe, expect, it } from "@jest/globals";
 import fs from "fs";
 import path from "path";
@@ -35,9 +37,13 @@ describe("bundled image manifest", () => {
       expect(keys.length).toBeGreaterThan(0);
       expect(Object.keys(small).sort()).toEqual([...keys].sort());
       for (const key of keys) {
+        const portrait = key.startsWith("person-");
+        // A portrait has no full-size file, and its full entry is the small
+        // one; every other photo has both.
         expect(
           fs.existsSync(path.join(ROOT, "assets", dir, `${key}.webp`)),
-        ).toBe(true);
+        ).toBe(!portrait);
+        if (portrait) expect(full[key]).toBe(small[key]);
         expect(
           fs.existsSync(path.join(ROOT, "assets", dir, `${key}-sm.webp`)),
         ).toBe(true);

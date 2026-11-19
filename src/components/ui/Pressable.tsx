@@ -1,18 +1,20 @@
 // Pressable primitive (docs/design/DESIGN_SYSTEM.md §4 "Pressed").
 // Every tappable surface gets the same tactile response: a quick spring scale
-// on press-in, back on release, optional haptic on press. Under reduced motion
-// it dims instead of scaling. Disabled → 40 % and no feedback.
+// on press-in, back on release. No vibration on a tap (founder 2026-11-09).
+// Under reduced motion it dims instead of scaling. Disabled → 40 % and no
+// feedback.
 //
 // Structure (deliberate — NativeWind only styles core components reliably):
 //   core Pressable   ← a11y, hitSlop, press handlers, `className` (LAYOUT only:
 //                      w-full, self-start, absolute bottom-5 right-5, ml-auto)
-//     Animated.View  ← scale/opacity (style only)
+//     Animated.View  ← scale/opacity (core Animated, style only)
 //       core View    ← `contentClassName` (VISUALS: bg, border, rounded, padding,
 //                      flex-row…) + `contentStyle` (sizes, elevation)
 // Keeping the core Pressable outermost keeps hitSlop working (a touchable
 // can't receive touches outside its parent's bounds).
-import { forwardRef, type ReactNode } from "react";
+import { forwardRef, useMemo, useState, type ReactNode } from "react";
 import {
+  Animated as RNAnimated,
   Pressable as RNPressable,
   View,
   type GestureResponderEvent,
@@ -20,19 +22,11 @@ import {
   type StyleProp,
   type ViewStyle,
 } from "react-native";
-import Animated, {
-  useAnimatedStyle,
-  useSharedValue,
-  withSpring,
-  withTiming,
-} from "react-native-reanimated";
 import { useReducedMotion } from "@/hooks/useReducedMotion";
 
-import { haptics } from "@/lib/haptics";
 import { duration, spring } from "@/theme";
 
 export type PressFeedback = "scale" | "none";
-export type PressHaptic = "selection" | "light" | "none";
 
 export type PressableProps = Omit<RNPressableProps, "children" | "style"> & {
   children?: ReactNode;
@@ -48,8 +42,6 @@ export type PressableProps = Omit<RNPressableProps, "children" | "style"> & {
   feedback?: PressFeedback;
   /** Pressed scale (default 0.97; small controls look better at ~0.92). */
   pressedScale?: number;
-  /** Haptic fired on press (default none). */
-  haptic?: PressHaptic;
   /** Fade to 40 % when disabled (default). Off when the child draws its own
    * disabled look (Button). */
   dimWhenDisabled?: boolean;
@@ -71,6 +63,12 @@ export function stripInteractive(cls?: string): string | undefined {
   return out;
 }
 
+// Speed (R4, 0367): the press scale runs on React Native's core Animated
+// with the native driver. Each Pressable used to create a Reanimated shared
+// value and an animated style (a worklet mapper on the UI runtime) when it
+// mounted; Filtre alone mounts dozens, and its open committed about 11 %
+// sooner without them on the emulator (median of 10 runs against 5). The
+// look is the same: a quick spring scale, or a dim under reduced motion.
 export const Pressable = forwardRef<View, PressableProps>(function Pressable(
   {
     children,
@@ -80,7 +78,6 @@ export const Pressable = forwardRef<View, PressableProps>(function Pressable(
     contentStyle,
     feedback = "scale",
     pressedScale = 0.97,
-    haptic = "none",
     dimWhenDisabled = true,
     disabled,
     onPressIn,
@@ -92,32 +89,54 @@ export const Pressable = forwardRef<View, PressableProps>(function Pressable(
   ref,
 ) {
   const reduced = useReducedMotion();
-  const pressed = useSharedValue(0);
-
-  const animated = useAnimatedStyle(() => {
-    if (feedback === "none") return {};
-    if (reduced) return { opacity: 1 - pressed.value * 0.3 };
+  // 0 at rest, 1 while pressed; animated natively once it has started.
+  const [pressed] = useState(() => new RNAnimated.Value(0));
+  const animated = useMemo(() => {
+    if (feedback === "none") return null;
+    if (reduced)
+      return {
+        opacity: pressed.interpolate({
+          inputRange: [0, 1],
+          outputRange: [1, 0.7],
+        }),
+      };
     return {
-      transform: [{ scale: 1 - pressed.value * (1 - pressedScale) }],
+      transform: [
+        {
+          scale: pressed.interpolate({
+            inputRange: [0, 1],
+            outputRange: [1, pressedScale],
+          }),
+        },
+      ],
     };
-  });
+  }, [feedback, reduced, pressed, pressedScale]);
 
   const to = (v: number) =>
-    reduced
-      ? withTiming(v, { duration: duration.fast })
-      : withSpring(v, spring.snappy);
+    (reduced
+      ? RNAnimated.timing(pressed, {
+          toValue: v,
+          duration: duration.fast,
+          useNativeDriver: true,
+        })
+      : RNAnimated.spring(pressed, {
+          toValue: v,
+          useNativeDriver: true,
+          ...spring.snappy,
+        })
+    ).start();
 
   const handleIn = (e: GestureResponderEvent) => {
-    pressed.value = to(1);
+    if (animated) to(1);
     onPressIn?.(e);
   };
   const handleOut = (e: GestureResponderEvent) => {
-    pressed.value = to(0);
+    if (animated) to(0);
     onPressOut?.(e);
   };
+  // Always hand RN a handler, so a press without onPress (a busy Button)
+  // ends here instead of reaching a parent's onPress.
   const handlePress = (e: GestureResponderEvent) => {
-    if (haptic === "selection") haptics.selection();
-    else if (haptic === "light") haptics.light();
     onPress?.(e);
   };
 
@@ -133,7 +152,7 @@ export const Pressable = forwardRef<View, PressableProps>(function Pressable(
       style={style}
       {...rest}
     >
-      <Animated.View
+      <RNAnimated.View
         style={[
           animated,
           disabled && dimWhenDisabled ? { opacity: 0.4 } : null,
@@ -145,7 +164,7 @@ export const Pressable = forwardRef<View, PressableProps>(function Pressable(
         >
           {children}
         </View>
-      </Animated.View>
+      </RNAnimated.View>
     </RNPressable>
   );
 });

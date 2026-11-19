@@ -4,7 +4,6 @@ import { showToast } from "@/components/Toast";
 import { Text } from "@/components/ui";
 import type { MockExperience, MockSession } from "@/fixtures";
 import { addToCalendar, calendarEventFor } from "@/lib/addToCalendar";
-import { haptics } from "@/lib/haptics";
 
 /** "Legg til i kalender" (Phase 16): the given time of an experience, in
  *  the phone's calendar app. A text link, like "Se alle tider". */
@@ -26,7 +25,6 @@ export function AddToCalendarLink({
       accessibilityHint="Åpner kalenderen med opplevelsen fylt inn"
       hitSlop={{ top: 10, bottom: 10, left: 8, right: 8 }}
       onPress={() => {
-        haptics.light();
         void addToCalendar(calendarEventFor(exp, session)).then((r) => {
           if (r === "unavailable")
             showToast({

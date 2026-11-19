@@ -46,16 +46,19 @@ export function swipeImage(key: SwipeKey): ImageSourcePropType {
 // lighter file or paint the preview while the photo decodes. Keyed by the
 // require() value (an asset id on device, a module object in tests).
 const SMALL_BY_SOURCE = new Map<unknown, ImageSourcePropType>();
-const PREVIEW_BY_SOURCE = new Map<unknown, string>();
+// One `{ uri }` object per preview, built once (speed pass 0349): a new
+// object on every render made expo-image treat the placeholder as changed.
+const PREVIEW_BY_SOURCE = new Map<unknown, { uri: string }>();
 function index<K extends string>(
   dir: string,
   full: Record<K, ImageSourcePropType>,
   small: Record<K, ImageSourcePropType>,
 ) {
   for (const key of Object.keys(full) as K[]) {
-    const preview = PLACEHOLDER[`${dir}/${key}`];
+    const uri = PLACEHOLDER[`${dir}/${key}`];
     SMALL_BY_SOURCE.set(full[key], small[key]);
-    if (preview) {
+    if (uri) {
+      const preview = { uri };
       PREVIEW_BY_SOURCE.set(full[key], preview);
       PREVIEW_BY_SOURCE.set(small[key], preview);
     }
@@ -70,10 +73,10 @@ export function smallImage<T>(source: T): T {
 }
 
 /** Blurred 16 px preview of a bundled photo as an expo-image `placeholder`
- * (painted on the first frames while the photo decodes), if it has one. */
+ * (painted on the first frames while the photo decodes), if it has one. The
+ * same object comes back on every call. */
 export function imagePreview(source: unknown): { uri: string } | undefined {
-  const uri = PREVIEW_BY_SOURCE.get(source);
-  return uri ? { uri } : undefined;
+  return PREVIEW_BY_SOURCE.get(source);
 }
 
 // Map a place category to a sensible library cover (MOCK — presentational only).
@@ -115,13 +118,19 @@ const PLACE_PHOTOS: Record<string, readonly LibraryKey[]> = {
 export function photosForPlace(place: {
   id: string;
   category: string;
+  // Catalogue places (Phase 19) carry their own photos.
+  photos?: readonly LibraryKey[];
 }): readonly LibraryKey[] {
-  return PLACE_PHOTOS[place.id] ?? [coverForPlaceCategory(place.category)];
+  return (
+    place.photos ??
+    PLACE_PHOTOS[place.id] ?? [coverForPlaceCategory(place.category)]
+  );
 }
 
 export function coverForPlace(place: {
   id: string;
   category: string;
+  photos?: readonly LibraryKey[];
 }): LibraryKey {
   return photosForPlace(place)[0] ?? coverForPlaceCategory(place.category);
 }

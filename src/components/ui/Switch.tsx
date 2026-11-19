@@ -4,7 +4,6 @@
 // `label` is required: the switch is announced as "<label>, på/av".
 import { Switch as RNSwitch } from "react-native";
 
-import { haptics } from "@/lib/haptics";
 import { useThemeColors } from "@/theme";
 
 export function Switch({
@@ -23,7 +22,6 @@ export function Switch({
     <RNSwitch
       value={value}
       onValueChange={(next) => {
-        haptics.selection();
         onValueChange(next);
       }}
       disabled={disabled}

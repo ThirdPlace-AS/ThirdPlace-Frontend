@@ -19,7 +19,6 @@ import {
   Pressable as UIPressable,
 } from "@/components/ui";
 import { Button } from "@/components/Button";
-import { haptics } from "@/lib/haptics";
 import { showToast, type ToastInput } from "@/components/Toast";
 import { confirmToast } from "@/copy";
 import { Input } from "@/components/Input";
@@ -106,7 +105,6 @@ export function NewCollabScreen() {
             variant="ink"
             disabled={msg.trim().length === 0}
             onPress={() => {
-              haptics.light();
               router.back();
               showToast(confirmToast.requestSent);
             }}
@@ -315,7 +313,6 @@ export function CollabContractScreen() {
         accessibilityRole="button"
         accessibilityState={{ checked: signed }}
         onPress={() => {
-          if (!signed) haptics.light();
           setSigned(true);
         }}
         contentClassName="items-center rounded-md border-2 border-dashed border-line py-6"

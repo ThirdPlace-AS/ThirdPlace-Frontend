@@ -22,3 +22,20 @@ export function formatThreshold(n: number): string {
 export function membersLabel(n: number): string {
   return n === 1 ? "1 medlem" : `${n} medlemmer`;
 }
+
+/** A menu price (minor units plus currency, MASTER_SPEC's venue menus
+ *  contract): 5400 → "54 kr", 14950 → "149,50 kr", 109500 → "1 095 kr"
+ *  (thousands with a no-break space, so a price never wraps). Only NOK exists
+ *  in the fixtures. */
+export function formatMoney(m: {
+  amountMinor: number;
+  currency: "NOK";
+}): string {
+  const whole = Math.trunc(m.amountMinor / 100);
+  const ore = Math.abs(m.amountMinor % 100);
+  const NBSP = String.fromCharCode(0xa0);
+  const grouped = String(whole).replace(/\B(?=(\d{3})+(?!\d))/g, NBSP);
+  return ore === 0
+    ? `${grouped} kr`
+    : `${grouped},${String(ore).padStart(2, "0")} kr`;
+}

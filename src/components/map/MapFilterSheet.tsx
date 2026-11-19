@@ -1,4 +1,4 @@
-import { useMemo, useRef, useState } from "react";
+import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Pressable, ScrollView, View } from "react-native";
 
 import {
@@ -13,7 +13,7 @@ import { Calendar } from "@/components/Calendar";
 import { CheckboxRow } from "@/components/CheckboxRow";
 import { Chip } from "@/components/Chip";
 import { PriceHistogram } from "./PriceHistogram";
-import { RangeSlider } from "@/components/RangeSlider";
+import { RangeSlider, createReporter } from "@/components/RangeSlider";
 import { RatingStars } from "@/components/RatingStars";
 import { Sheet } from "@/components/Sheet";
 import { SteppedSlider } from "@/components/SteppedSlider";
@@ -26,6 +26,7 @@ import {
   DEFAULT_CHIP_ICON,
   DURATION_STEPS,
   EXPERIENCE_TYPES,
+  experiences,
   LANGUAGES,
   LANGUAGES_VISIBLE,
   places,
@@ -54,6 +55,16 @@ import {
   MARKER_LABEL,
   type MarkerCategory,
 } from "./services/markerCategory";
+import {
+  ITEM_TYPES,
+  ITEM_TYPE_ICON,
+  ITEM_TYPE_LABEL,
+  type ItemType,
+} from "./services/itemType";
+import {
+  interestById,
+  interestsInCategory,
+} from "@/fixtures/catalog/interests";
 import { TypeChip } from "./TypeChip";
 import type { DiscoveryMode } from "./types/mapPresentation";
 
@@ -66,12 +77,15 @@ export {
   type MapFilters,
 } from "./services/mapFilters";
 
-// Distance "smart slider" steps (last = no cap / "Alle").
+// Distance "smart slider" steps (last = no cap / "Alle"). Phase 19: pins
+// across Oslo and Akershus, so the steps reach county scale, measured from
+// the person (src/lib/origin.ts).
 const DISTANCE_STEPS: { m: number | null; label: string }[] = [
-  { m: 500, label: "500 m" },
   { m: 1000, label: "1 km" },
-  { m: 2000, label: "2 km" },
   { m: 5000, label: "5 km" },
+  { m: 10000, label: "10 km" },
+  { m: 25000, label: "25 km" },
+  { m: 50000, label: "50 km" },
   { m: null, label: "Alle" },
 ];
 
@@ -79,7 +93,11 @@ const DISTANCE_STEPS: { m: number | null; label: string }[] = [
 // every render (they never change; the fixtures are constant).
 const DURATION_LABELS = DURATION_STEPS.map((s) => s.label);
 const DISTANCE_LABELS = DISTANCE_STEPS.map((s) => s.label);
-const PRICE_VALUES = places.map((p) => p.priceNok);
+// Places and experiences both carry a price, so both shape the histogram.
+const PRICE_VALUES = [
+  ...places.map((p) => p.priceNok),
+  ...experiences.map((e) => e.priceNok ?? 0),
+];
 
 // Icon-chip items for the taxonomy groups (label + Ionicons glyph), hoisted so
 // they are built once. Vibe/Fasiliteter derive their glyph from the icon maps.
@@ -201,14 +219,122 @@ function Section({
 // chips off-screen.
 type ChipItem = { label: string; icon: string };
 
-// The eight pin categories as chip items (labels as on the pins' legend).
-const CATEGORY_ITEMS: ChipItem[] = MARKER_CATEGORIES.map((c) => ({
-  label: MARKER_LABEL[c],
-  icon: MARKER_FILTER_ICON[c],
+// Type (Phase 19): what the item is, drawn like the other groups.
+const TYPE_ITEMS: ChipItem[] = ITEM_TYPES.map((t) => ({
+  label: ITEM_TYPE_LABEL[t],
+  icon: ITEM_TYPE_ICON[t],
 }));
-const CATEGORY_BY_LABEL: Record<string, MarkerCategory> = Object.fromEntries(
-  MARKER_CATEGORIES.map((c) => [MARKER_LABEL[c], c]),
+const TYPE_BY_LABEL: Record<string, ItemType> = Object.fromEntries(
+  ITEM_TYPES.map((t) => [ITEM_TYPE_LABEL[t], t]),
 );
+/** Kategori as eight rows (founder 2026-11-08: "open each category as a
+ *  row"): each row opens to "Alle" (the whole category) and its activities,
+ *  so one can filter to a single activity. The row says what is picked.
+ *  Picks combine (OR); leaving the last activity also leaves the category. */
+export function categoryRowState(
+  f: Pick<MapFilters, "categories" | "interests">,
+  category: MarkerCategory,
+) {
+  const items = interestsInCategory(category);
+  const picks = f.interests.filter((i) => items.some((x) => x.id === i));
+  const whole = f.categories.includes(category) && picks.length === 0;
+  const summary = whole
+    ? "Alle"
+    : picks.length === 1
+      ? (interestById(picks[0])?.label ?? "1 valgt")
+      : picks.length > 1
+        ? `${picks.length} valgt`
+        : undefined;
+  return { items, picks, whole, summary };
+}
+
+type CategoryPick = Pick<MapFilters, "categories" | "interests">;
+
+/** "Alle" in a row: the whole category on, or off again. */
+export function toggleWholeCategory(
+  f: CategoryPick,
+  category: MarkerCategory,
+): CategoryPick {
+  const { whole } = categoryRowState(f, category);
+  const inCategory = (i: string) => interestById(i)?.category === category;
+  return whole
+    ? {
+        categories: f.categories.filter((x) => x !== category),
+        interests: f.interests,
+      }
+    : {
+        categories: [...new Set([...f.categories, category])],
+        interests: f.interests.filter((i) => !inCategory(i)),
+      };
+}
+
+/** One activity in a row on or off; leaving the last one leaves the
+ *  category too, so nothing stays filtered by accident. */
+export function toggleActivity(
+  f: CategoryPick,
+  category: MarkerCategory,
+  id: string,
+): CategoryPick {
+  const inCategory = (i: string) => interestById(i)?.category === category;
+  if (f.interests.includes(id)) {
+    const interests = f.interests.filter((x) => x !== id);
+    return {
+      interests,
+      categories: interests.some(inCategory)
+        ? f.categories
+        : f.categories.filter((x) => x !== category),
+    };
+  }
+  return {
+    interests: [...f.interests, id],
+    categories: [...new Set([...f.categories, category])],
+  };
+}
+
+const CategoryRow = memo(function CategoryRow({
+  category,
+  filters,
+  onChange,
+}: {
+  category: MarkerCategory;
+  filters: CategoryPick;
+  onChange: (update: (f: CategoryPick) => CategoryPick) => void;
+}) {
+  const { items, picks, whole, summary } = categoryRowState(filters, category);
+  return (
+    <Accordion
+      title={MARKER_LABEL[category]}
+      icon={MARKER_FILTER_ICON[category]}
+      meta={summary}
+      // The chips mount when the row first opens: all eight rows of
+      // activities mounted up front made Filtre slow to open (0319).
+      lazy
+    >
+      <View className="flex-row flex-wrap gap-2 pb-3 pt-1">
+        <Chip
+          variant="outline"
+          size="sm"
+          role="checkbox"
+          label="Alle"
+          selected={whole}
+          onPress={() => onChange((f) => toggleWholeCategory(f, category))}
+        />
+        {items.map((i) => (
+          <Chip
+            key={i.id}
+            variant="outline"
+            size="sm"
+            role="checkbox"
+            label={i.label}
+            selected={picks.includes(i.id)}
+            onPress={() => onChange((f) => toggleActivity(f, category, i.id))}
+          />
+        ))}
+      </View>
+    </Accordion>
+  );
+});
+
 function ChipGroup({
   items,
   selected,
@@ -405,6 +531,95 @@ export function MapFilterSheet({
 
 type OpenSection = "where" | "when" | "who" | null;
 
+// "Pris per gjest" (speed pass 0356). A drag reaches a new 10 kr step about
+// 30 times a second, and on the emulator every React update in Filtre costs
+// 50-100 ms of JS however small (most of it the commit and layout of the
+// sheet), so an update at every step kept the JS thread busy for the whole
+// drag (2.9 s of JS in a 3 s drag) and the thumbs, which follow the finger from
+// the JS thread, lagged. So while a thumb is dragged, the price labels and the
+// histogram follow from this component's own state at most every
+// PRICE_LABEL_MS, and Filtre (and its count) hears the new price at most every
+// PRICE_COMMIT_MS; both show the exact price when the finger lifts.
+const PRICE_LABEL_MS = 80;
+const PRICE_COMMIT_MS = 250;
+
+const PriceRange = memo(function PriceRange({
+  low,
+  high,
+  onChange,
+}: {
+  low: number;
+  high: number;
+  onChange: (low: number, high: number) => void;
+}) {
+  const [live, setLive] = useState<{ low: number; high: number } | null>(null);
+  const [labels] = useState(() =>
+    createReporter((l, h) => setLive({ low: l, high: h }), PRICE_LABEL_MS),
+  );
+  useEffect(() => () => labels.cancel(), [labels]);
+  const onSlide = useCallback(
+    (v: { low: number; high: number } | null) => {
+      if (v) {
+        labels.push(v.low, v.high);
+      } else {
+        // The drag ended: the committed price is exact now.
+        labels.cancel();
+        setLive(null);
+      }
+    },
+    [labels],
+  );
+  const lo = live?.low ?? low;
+  const hi = live?.high ?? high;
+  return (
+    <>
+      <PriceHistogram
+        values={PRICE_VALUES}
+        min={PRICE_FLOOR}
+        max={PRICE_CEIL}
+        low={lo}
+        high={hi}
+      />
+      <RangeSlider
+        min={PRICE_FLOOR}
+        max={PRICE_CEIL}
+        step={PRICE_STEP}
+        minGap={PRICE_STEP}
+        low={low}
+        high={high}
+        reportEveryMs={PRICE_COMMIT_MS}
+        onSlide={onSlide}
+        onChange={onChange}
+      />
+      <View className="flex-row items-center justify-between">
+        <View className="rounded-md border border-line px-4 py-3">
+          <Text variant="caption" tone="muted">
+            Minst
+          </Text>
+          <Text variant="label" weight="regular">
+            kr {lo}
+          </Text>
+        </View>
+        <View className="rounded-md border border-line px-4 py-3">
+          <Text variant="caption" tone="muted">
+            Maksimalt
+          </Text>
+          <Text variant="label" weight="regular">
+            kr {hi}
+            {hi >= PRICE_CEIL ? " +" : ""}
+          </Text>
+        </View>
+      </View>
+    </>
+  );
+});
+
+const toggleIn = (list: string[], value: string): string[] =>
+  list.includes(value) ? list.filter((x) => x !== value) : [...list, value];
+
+// "Fjern alt" is active once anything differs from the defaults.
+const DEFAULT_FILTERS_JSON = JSON.stringify(DEFAULT_FILTERS);
+
 function FilterBody({
   filters,
   query,
@@ -429,11 +644,12 @@ function FilterBody({
   const [openSection, setOpenSection] = useState<OpenSection>(null);
   const [langExpanded, setLangExpanded] = useState(false);
 
-  const toggleIn = (list: string[], value: string): string[] =>
-    list.includes(value) ? list.filter((x) => x !== value) : [...list, value];
-
   // Live "show N results" count — instant, no artificial delay, and the same
   // pipeline as the list (countResults), so N is what the list will show.
+  // Speed pass (0347): countResults counts without building the items, and
+  // the sliders only report a new step. A deferred count (useDeferredValue)
+  // was tried and made the sheet's frames slower on the emulator (median
+  // frame 69 -> 150 ms), so it is not used.
   const resultCount = useMemo(
     () =>
       count
@@ -456,13 +672,45 @@ function FilterBody({
     0,
     DISTANCE_STEPS.findIndex((s) => s.m === draft.maxDistanceM),
   );
-  const atCeil = draft.priceMax >= PRICE_CEIL;
 
-  const toggleSection = (s: Exclude<OpenSection, null>) =>
-    setOpenSection((cur) => (cur === s ? null : s));
+  const toggleSection = useCallback(
+    (s: Exclude<OpenSection, null>) =>
+      setOpenSection((cur) => (cur === s ? null : s)),
+    [],
+  );
 
-  const setRatingSort = (s: RatingSort) =>
-    setDraft((d) => ({ ...d, ratingSort: d.ratingSort === s ? null : s }));
+  const setPrice = useCallback(
+    (lo: number, hi: number) =>
+      setDraft((d) => ({ ...d, priceMin: lo, priceMax: hi })),
+    [],
+  );
+
+  const setRatingSort = useCallback(
+    (s: RatingSort) =>
+      setDraft((d) => ({ ...d, ratingSort: d.ratingSort === s ? null : s })),
+    [],
+  );
+  const changeCategory = useCallback(
+    (update: (f: CategoryPick) => CategoryPick) =>
+      setDraft((d) => ({ ...d, ...update(d) })),
+    [],
+  );
+  const setDuration = useCallback(
+    (i: number) =>
+      setDraft((d) => ({
+        ...d,
+        durationMaxMin: DURATION_STEPS[i]?.min ?? DURATION_NO_CAP,
+      })),
+    [],
+  );
+  const setDistance = useCallback(
+    (i: number) =>
+      setDraft((d) => ({
+        ...d,
+        maxDistanceM: DISTANCE_STEPS[i]?.m ?? null,
+      })),
+    [],
+  );
 
   const guestTotal =
     draft.guests.adults +
@@ -483,36 +731,21 @@ function FilterBody({
     draft.time !== null || draft.dateStart !== null || draft.dateEnd !== null;
 
   // Something to clear? (benchmark F9: "Fjern alt" is inactive otherwise)
-  const canClear = JSON.stringify(draft) !== JSON.stringify(DEFAULT_FILTERS);
+  const canClear = useMemo(
+    () => JSON.stringify(draft) !== DEFAULT_FILTERS_JSON,
+    [draft],
+  );
 
   const footerLabel =
     resultCount === 0
       ? "Ingen tilgjengelige resultater"
-      : `Vis ${resultCount} resultater`;
+      : `Vis ${resultCount} ${resultCount === 1 ? "resultat" : "resultater"}`;
 
-  const visibleLangs = langExpanded
-    ? LANGUAGES
-    : LANGUAGES.slice(0, LANGUAGES_VISIBLE);
-
-  return (
-    <View className="flex-1 gap-4">
-      <ScrollView
-        className="flex-1"
-        contentContainerStyle={{ gap: 16, paddingBottom: 8 }}
-        showsVerticalScrollIndicator={false}
-        keyboardShouldPersistTaps="handled"
-        scrollEventThrottle={32}
-        onScroll={(e) => {
-          const away = e.nativeEvent.contentOffset.y > 36;
-          if (away !== titleAway.current) {
-            titleAway.current = away;
-            onTitleScrolledAway(away);
-          }
-        }}
-      >
-        <Text variant="h1" accessibilityRole="header">
-          Filtre
-        </Text>
+  // Hvor / Når / Hvem, built again only when what they show changes (0356).
+  const isKveld = kveldOnly(draft);
+  const searchRows = useMemo(
+    () => (
+      <>
         {/* Where / When / Who (single-open accordion) */}
         <View className="gap-4">
           <SearchRow
@@ -551,7 +784,7 @@ function FilterBody({
                   const kveld = c.label === "I kveld";
                   const selected =
                     draft.time === c.time &&
-                    (c.time !== "I dag" || kveld === kveldOnly(draft));
+                    (c.time !== "I dag" || kveld === isKveld);
                   return (
                     <Pressable
                       key={c.label}
@@ -705,307 +938,442 @@ function FilterBody({
             </View>
           </SearchRow>
         </View>
+      </>
+    ),
+    [
+      openSection,
+      toggleSection,
+      whenValue,
+      guestTotal,
+      isKveld,
+      draft.whereArea,
+      draft.time,
+      draft.dateStart,
+      draft.dateEnd,
+      draft.dateFlex,
+      draft.guests,
+    ],
+  );
+  // Speed pass (0356): each section is built again only when the filters it
+  // shows change. Every Filtre change used to render the whole body again
+  // (about 80 chips, rows and sliders: 200–360 ms of JS on the emulator), so
+  // each 10 kr step of a price drag, each slider step and each chip tap held
+  // the JS thread that long; now a change renders its own section and the
+  // footer.
+  const categoryPick = useMemo(
+    () => ({ categories: draft.categories, interests: draft.interests }),
+    [draft.categories, draft.interests],
+  );
+  const kategoriSection = useMemo(
+    () => (
+      <>
+        {/* Kategori (Phase 18): the map pins' eight categories, picked
+              only here (founder 2026-11-08) and drawn like the sheet's other
+              groups: outline chips with an icon, an ink ring when chosen. */}
+        <Section title="Kategori">
+          {/* Eight rows, each opening to its activities (founder
+                2026-11-08: nested so one can filter to one activity). */}
+          <View className="gap-1">
+            {MARKER_CATEGORIES.map((c) => (
+              <CategoryRow
+                key={c}
+                category={c}
+                filters={categoryPick}
+                onChange={changeCategory}
+              />
+            ))}
+          </View>
+        </Section>
+      </>
+    ),
+    [categoryPick, changeCategory],
+  );
+  const typeSection = useMemo(
+    () => (
+      <>
+        {/* Type (Phase 19, founder 2026-11-08): Bedrift, Organisasjon,
+              Byrom, Opplevelse, Arrangement, for places and experiences. */}
+        <Section title="Type">
+          <ChipGroup
+            items={TYPE_ITEMS}
+            selected={(l) => {
+              const t = TYPE_BY_LABEL[l];
+              return t !== undefined && draft.kinds.includes(t);
+            }}
+            onToggle={(l) => {
+              const t = TYPE_BY_LABEL[l];
+              if (!t) return;
+              setDraft((d) => ({
+                ...d,
+                kinds: d.kinds.includes(t)
+                  ? d.kinds.filter((x) => x !== t)
+                  : [...d.kinds, t],
+              }));
+            }}
+          />
+        </Section>
+      </>
+    ),
+    [draft.kinds],
+  );
+  const timeOfDaySection = useMemo(
+    () => (
+      <>
+        {/* Tid på dagen (moved out of the "Når?" card) */}
+        <Section title="Tid på dagen">
+          <View>
+            {TIME_OF_DAY.map((t, i) => (
+              <CheckboxRow
+                key={t.key}
+                label={t.label}
+                hint={t.hint}
+                divider={i < TIME_OF_DAY.length - 1}
+                checked={draft.timeOfDay.includes(t.key)}
+                onToggle={() =>
+                  setDraft((d) => ({
+                    ...d,
+                    timeOfDay: toggleIn(d.timeOfDay, t.key),
+                  }))
+                }
+              />
+            ))}
+          </View>
+        </Section>
+      </>
+    ),
+    [draft.timeOfDay],
+  );
+  const expTypeSection = useMemo(
+    () => (
+      <>
+        {/* Opplevelsestype */}
+        <Section title="Opplevelsestype">
+          <ChipGroup
+            items={EXPERIENCE_TYPES}
+            selected={(l) => draft.types.includes(l)}
+            onToggle={(l) =>
+              setDraft((d) => ({ ...d, types: toggleIn(d.types, l) }))
+            }
+          />
+        </Section>
+      </>
+    ),
+    [draft.types],
+  );
+  const audienceSection = useMemo(
+    () => (
+      <>
+        {/* Passer for */}
+        <Section title="Passer for">
+          <ChipGroup
+            items={AUDIENCES}
+            selected={(l) => draft.audiences.includes(l)}
+            onToggle={(l) =>
+              setDraft((d) => ({
+                ...d,
+                audiences: toggleIn(d.audiences, l),
+              }))
+            }
+          />
+        </Section>
+      </>
+    ),
+    [draft.audiences],
+  );
+  const priceSection = useMemo(
+    () => (
+      <>
+        {/* Pris per gjest */}
+        <Section title="Pris per gjest">
+          <PriceRange
+            low={draft.priceMin}
+            high={draft.priceMax}
+            onChange={setPrice}
+          />
+        </Section>
+      </>
+    ),
+    [draft.priceMin, draft.priceMax, setPrice],
+  );
+  const durationSection = useMemo(
+    () => (
+      <>
+        {/* Varighet */}
+        <Section title="Varighet">
+          <SteppedSlider
+            labels={DURATION_LABELS}
+            index={durationIndex}
+            onChange={setDuration}
+          />
+        </Section>
+      </>
+    ),
+    [durationIndex, setDuration],
+  );
+  const distanceSection = useMemo(
+    () => (
+      <>
+        {/* Avstand — smart slider (canonical: distance/travel feasibility) */}
+        <Section
+          title="Avstand"
+          subtitle={
+            draft.maxDistanceM === null
+              ? "Alle avstander"
+              : `Innen ${DISTANCE_STEPS[distanceIndex]?.label ?? ""}`
+          }
+        >
+          <SteppedSlider
+            labels={DISTANCE_LABELS}
+            index={distanceIndex}
+            onChange={setDistance}
+          />
+        </Section>
+      </>
+    ),
+    [draft.maxDistanceM, distanceIndex, setDistance],
+  );
+  const vibeSection = useMemo(
+    () => (
+      <>
+        {/* Interesser: Vibe + Fasiliteter (icon chips) */}
+        <Section title="Vibe">
+          <ChipGroup
+            items={VIBE_ITEMS}
+            selected={(l) => draft.vibes.includes(l as (typeof VIBES)[number])}
+            onToggle={(l) =>
+              setDraft((d) => ({
+                ...d,
+                vibes: d.vibes.includes(l as (typeof VIBES)[number])
+                  ? d.vibes.filter((x) => x !== l)
+                  : [...d.vibes, l as (typeof VIBES)[number]],
+              }))
+            }
+          />
+        </Section>
+      </>
+    ),
+    [draft.vibes],
+  );
+  const tagsSection = useMemo(
+    () => (
+      <>
+        <Section title="Fasiliteter">
+          <ChipGroup
+            items={TAG_ITEMS}
+            selected={(l) => draft.tags.includes(l)}
+            onToggle={(l) =>
+              setDraft((d) => ({ ...d, tags: toggleIn(d.tags, l) }))
+            }
+          />
+        </Section>
+      </>
+    ),
+    [draft.tags],
+  );
+  const ratingSection = useMemo(
+    () => (
+      <>
+        {/* Vurdering — star thresholds + sort */}
+        <Section title="Vurdering">
+          <View className="flex-row flex-wrap gap-2">
+            <Chip
+              label="Alle"
+              selected={draft.minRating === null}
+              onPress={() => setDraft((d) => ({ ...d, minRating: null }))}
+            />
+            {RATING_THRESHOLDS.map((r) => {
+              const selected = draft.minRating === r;
+              return (
+                <UIPressable
+                  key={r}
+                  accessibilityRole="button"
+                  accessibilityState={{ selected }}
+                  accessibilityLabel={`${formatThreshold(r)} stjerner og over`}
+                  onPress={() => setDraft((d) => ({ ...d, minRating: r }))}
+                  contentClassName={`flex-row items-center gap-1.5 rounded-full bg-surface px-3 py-2 ${
+                    selected ? "border-2 border-ink" : "border border-line"
+                  }`}
+                  pressedScale={0.95}
+                >
+                  <RatingStars value={r} size={13} />
+                  <Text variant="label" weight="regular">
+                    {r === 5 ? "5" : `${formatThreshold(r)}+`}
+                  </Text>
+                </UIPressable>
+              );
+            })}
+          </View>
+          <Text variant="label" weight="semibold">
+            Sorter etter
+          </Text>
+          <View className="flex-row flex-wrap gap-2">
+            <Chip
+              label="Høyest vurdert"
+              selected={draft.ratingSort === "best"}
+              onPress={() => setRatingSort("best")}
+            />
+            <Chip
+              label="Flest anmeldelser"
+              selected={draft.ratingSort === "most"}
+              onPress={() => setRatingSort("most")}
+            />
+          </View>
+        </Section>
+      </>
+    ),
+    [draft.minRating, draft.ratingSort, setRatingSort],
+  );
+  const languageSection = useMemo(() => {
+    const visibleLangs = langExpanded
+      ? LANGUAGES
+      : LANGUAGES.slice(0, LANGUAGES_VISIBLE);
+    return (
+      <>
+        {/* Språk som tilbys — "Vis mer/mindre" anchored at the BOTTOM */}
+        <Section title="Språk som tilbys">
+          <View>
+            {visibleLangs.map((l, i) => (
+              <CheckboxRow
+                key={l}
+                label={l}
+                divider={i < visibleLangs.length - 1}
+                checked={draft.languages.includes(l)}
+                onToggle={() =>
+                  setDraft((d) => ({
+                    ...d,
+                    languages: toggleIn(d.languages, l),
+                  }))
+                }
+              />
+            ))}
+            <UIPressable
+              accessibilityRole="button"
+              accessibilityState={{ expanded: langExpanded }}
+              onPress={() => setLangExpanded((e) => !e)}
+              contentClassName="flex-row items-center gap-1 py-3"
+            >
+              <Text variant="body" weight="semibold" className="underline">
+                {langExpanded ? "Vis mindre" : "Vis mer"}
+              </Text>
+              <Icon
+                name={langExpanded ? "chevron-up" : "chevron-down"}
+                size="sm"
+                tone="ink"
+              />
+            </UIPressable>
+          </View>
+        </Section>
+      </>
+    );
+  }, [draft.languages, langExpanded]);
+  const accessSection = useMemo(
+    () => (
+      <>
+        {/* Tilgjengelighetsfunksjoner — collapsed, grouped (benchmark F7) */}
+        <View className="border-t border-line py-2">
+          <Accordion
+            title="Tilgjengelighetsfunksjoner"
+            subtitle="Oppgitt av stedet"
+            lazy
+          >
+            <View className="gap-4">
+              {ACCESSIBILITY_GROUPS.map((g) => (
+                <View key={g.title}>
+                  <Text variant="label" weight="semibold">
+                    {g.title}
+                  </Text>
+                  {g.items.map((a, i) => (
+                    <CheckboxRow
+                      key={a}
+                      label={a}
+                      icon={ACCESSIBILITY_ICONS[a] ?? DEFAULT_CHIP_ICON}
+                      divider={i < g.items.length - 1}
+                      checked={draft.accessibility.includes(a)}
+                      onToggle={() =>
+                        setDraft((d) => ({
+                          ...d,
+                          accessibility: toggleIn(d.accessibility, a),
+                        }))
+                      }
+                    />
+                  ))}
+                </View>
+              ))}
+            </View>
+          </Accordion>
+        </View>
+      </>
+    ),
+    [draft.accessibility],
+  );
+  const availabilitySection = useMemo(
+    () => (
+      <>
+        {/* Tilgjengelighet (availability) */}
+        <Section title="Tilgjengelighet">
+          <View>
+            <CheckboxRow
+              label="Åpent nå"
+              divider
+              checked={draft.openNowOnly}
+              onToggle={() =>
+                setDraft((d) => ({ ...d, openNowOnly: !d.openNowOnly }))
+              }
+            />
+            <CheckboxRow
+              label="Ledige plasser"
+              hint="Gjelder opplevelser"
+              checked={draft.hasSpots}
+              onToggle={() =>
+                setDraft((d) => ({ ...d, hasSpots: !d.hasSpots }))
+              }
+            />
+          </View>
+        </Section>
+      </>
+    ),
+    [draft.openNowOnly, draft.hasSpots],
+  );
+
+  return (
+    <View className="flex-1 gap-4">
+      <ScrollView
+        className="flex-1"
+        contentContainerStyle={{ gap: 16, paddingBottom: 8 }}
+        showsVerticalScrollIndicator={false}
+        keyboardShouldPersistTaps="handled"
+        scrollEventThrottle={32}
+        onScroll={(e) => {
+          const away = e.nativeEvent.contentOffset.y > 36;
+          if (away !== titleAway.current) {
+            titleAway.current = away;
+            onTitleScrolledAway(away);
+          }
+        }}
+      >
+        <Text variant="h1" accessibilityRole="header">
+          Filtre
+        </Text>
+        {searchRows}
 
         {/* All sections mount with the sheet: on the production bundle the
             400 ms deferral made the lower half settle 1.2–1.4 s after the tap
             (0.02–0.33 s without it), so it was removed (Phase 10). */}
         <>
-          {/* Kategori (Phase 18): the map pins' eight categories, picked
-              only here (founder 2026-11-08) and drawn like the sheet's other
-              groups: outline chips with an icon, an ink ring when chosen. */}
-          <Section title="Kategori">
-            <ChipGroup
-              items={CATEGORY_ITEMS}
-              selected={(l) => {
-                const c = CATEGORY_BY_LABEL[l];
-                return c !== undefined && draft.categories.includes(c);
-              }}
-              onToggle={(l) => {
-                const c = CATEGORY_BY_LABEL[l];
-                if (!c) return;
-                setDraft((d) => ({
-                  ...d,
-                  categories: d.categories.includes(c)
-                    ? d.categories.filter((x) => x !== c)
-                    : [...d.categories, c],
-                }));
-              }}
-            />
-          </Section>
-          {/* Tid på dagen (moved out of the "Når?" card) */}
-          <Section title="Tid på dagen">
-            <View>
-              {TIME_OF_DAY.map((t, i) => (
-                <CheckboxRow
-                  key={t.key}
-                  label={t.label}
-                  hint={t.hint}
-                  divider={i < TIME_OF_DAY.length - 1}
-                  checked={draft.timeOfDay.includes(t.key)}
-                  onToggle={() =>
-                    setDraft((d) => ({
-                      ...d,
-                      timeOfDay: toggleIn(d.timeOfDay, t.key),
-                    }))
-                  }
-                />
-              ))}
-            </View>
-          </Section>
-          {/* Opplevelsestype */}
-          <Section title="Opplevelsestype">
-            <ChipGroup
-              items={EXPERIENCE_TYPES}
-              selected={(l) => draft.types.includes(l)}
-              onToggle={(l) =>
-                setDraft((d) => ({ ...d, types: toggleIn(d.types, l) }))
-              }
-            />
-          </Section>
-          {/* Passer for */}
-          <Section title="Passer for">
-            <ChipGroup
-              items={AUDIENCES}
-              selected={(l) => draft.audiences.includes(l)}
-              onToggle={(l) =>
-                setDraft((d) => ({
-                  ...d,
-                  audiences: toggleIn(d.audiences, l),
-                }))
-              }
-            />
-          </Section>
-          {/* Pris per gjest */}
-          <Section title="Pris per gjest">
-            <PriceHistogram
-              values={PRICE_VALUES}
-              min={PRICE_FLOOR}
-              max={PRICE_CEIL}
-              low={draft.priceMin}
-              high={draft.priceMax}
-            />
-            <RangeSlider
-              min={PRICE_FLOOR}
-              max={PRICE_CEIL}
-              step={PRICE_STEP}
-              minGap={PRICE_STEP}
-              low={draft.priceMin}
-              high={draft.priceMax}
-              onChange={(lo, hi) =>
-                setDraft((d) => ({ ...d, priceMin: lo, priceMax: hi }))
-              }
-            />
-            <View className="flex-row items-center justify-between">
-              <View className="rounded-md border border-line px-4 py-3">
-                <Text variant="caption" tone="muted">
-                  Minst
-                </Text>
-                <Text variant="label" weight="regular">
-                  kr {draft.priceMin}
-                </Text>
-              </View>
-              <View className="rounded-md border border-line px-4 py-3">
-                <Text variant="caption" tone="muted">
-                  Maksimalt
-                </Text>
-                <Text variant="label" weight="regular">
-                  kr {draft.priceMax}
-                  {atCeil ? " +" : ""}
-                </Text>
-              </View>
-            </View>
-          </Section>
-          {/* Varighet */}
-          <Section title="Varighet">
-            <SteppedSlider
-              labels={DURATION_LABELS}
-              index={durationIndex}
-              onChange={(i) =>
-                setDraft((d) => ({
-                  ...d,
-                  durationMaxMin: DURATION_STEPS[i]?.min ?? DURATION_NO_CAP,
-                }))
-              }
-            />
-          </Section>
-          {/* Avstand — smart slider (canonical: distance/travel feasibility) */}
-          <Section
-            title="Avstand"
-            subtitle={`Innen ${DISTANCE_STEPS[distanceIndex]?.label ?? "Alle"}`}
-          >
-            <SteppedSlider
-              labels={DISTANCE_LABELS}
-              index={distanceIndex}
-              onChange={(i) =>
-                setDraft((d) => ({
-                  ...d,
-                  maxDistanceM: DISTANCE_STEPS[i]?.m ?? null,
-                }))
-              }
-            />
-          </Section>
-          {/* Interesser: Vibe + Fasiliteter (icon chips) */}
-          <Section title="Vibe">
-            <ChipGroup
-              items={VIBE_ITEMS}
-              selected={(l) =>
-                draft.vibes.includes(l as (typeof VIBES)[number])
-              }
-              onToggle={(l) =>
-                setDraft((d) => ({
-                  ...d,
-                  vibes: d.vibes.includes(l as (typeof VIBES)[number])
-                    ? d.vibes.filter((x) => x !== l)
-                    : [...d.vibes, l as (typeof VIBES)[number]],
-                }))
-              }
-            />
-          </Section>
-
-          <Section title="Fasiliteter">
-            <ChipGroup
-              items={TAG_ITEMS}
-              selected={(l) => draft.tags.includes(l)}
-              onToggle={(l) =>
-                setDraft((d) => ({ ...d, tags: toggleIn(d.tags, l) }))
-              }
-            />
-          </Section>
-
-          {/* Vurdering — star thresholds + sort */}
-          <Section title="Vurdering">
-            <View className="flex-row flex-wrap gap-2">
-              <Chip
-                label="Alle"
-                selected={draft.minRating === null}
-                onPress={() => setDraft((d) => ({ ...d, minRating: null }))}
-              />
-              {RATING_THRESHOLDS.map((r) => {
-                const selected = draft.minRating === r;
-                return (
-                  <UIPressable
-                    key={r}
-                    accessibilityRole="button"
-                    accessibilityState={{ selected }}
-                    accessibilityLabel={`${formatThreshold(r)} stjerner og over`}
-                    onPress={() => setDraft((d) => ({ ...d, minRating: r }))}
-                    haptic="selection"
-                    contentClassName={`flex-row items-center gap-1.5 rounded-full bg-surface px-3 py-2 ${
-                      selected ? "border-2 border-ink" : "border border-line"
-                    }`}
-                    pressedScale={0.95}
-                  >
-                    <RatingStars value={r} size={13} />
-                    <Text variant="label" weight="regular">
-                      {r === 5 ? "5" : `${formatThreshold(r)}+`}
-                    </Text>
-                  </UIPressable>
-                );
-              })}
-            </View>
-            <Text variant="label" weight="semibold">
-              Sorter etter
-            </Text>
-            <View className="flex-row flex-wrap gap-2">
-              <Chip
-                label="Høyest vurdert"
-                selected={draft.ratingSort === "best"}
-                onPress={() => setRatingSort("best")}
-              />
-              <Chip
-                label="Flest anmeldelser"
-                selected={draft.ratingSort === "most"}
-                onPress={() => setRatingSort("most")}
-              />
-            </View>
-          </Section>
-          {/* Språk som tilbys — "Vis mer/mindre" anchored at the BOTTOM */}
-          <Section title="Språk som tilbys">
-            <View>
-              {visibleLangs.map((l, i) => (
-                <CheckboxRow
-                  key={l}
-                  label={l}
-                  divider={i < visibleLangs.length - 1}
-                  checked={draft.languages.includes(l)}
-                  onToggle={() =>
-                    setDraft((d) => ({
-                      ...d,
-                      languages: toggleIn(d.languages, l),
-                    }))
-                  }
-                />
-              ))}
-              <UIPressable
-                accessibilityRole="button"
-                accessibilityState={{ expanded: langExpanded }}
-                onPress={() => setLangExpanded((e) => !e)}
-                contentClassName="flex-row items-center gap-1 py-3"
-              >
-                <Text variant="body" weight="semibold" className="underline">
-                  {langExpanded ? "Vis mindre" : "Vis mer"}
-                </Text>
-                <Icon
-                  name={langExpanded ? "chevron-up" : "chevron-down"}
-                  size="sm"
-                  tone="ink"
-                />
-              </UIPressable>
-            </View>
-          </Section>
-          {/* Tilgjengelighetsfunksjoner — collapsed, grouped (benchmark F7) */}
-          <View className="border-t border-line py-2">
-            <Accordion
-              title="Tilgjengelighetsfunksjoner"
-              subtitle="Oppgitt av stedet"
-            >
-              <View className="gap-4">
-                {ACCESSIBILITY_GROUPS.map((g) => (
-                  <View key={g.title}>
-                    <Text variant="label" weight="semibold">
-                      {g.title}
-                    </Text>
-                    {g.items.map((a, i) => (
-                      <CheckboxRow
-                        key={a}
-                        label={a}
-                        icon={ACCESSIBILITY_ICONS[a] ?? DEFAULT_CHIP_ICON}
-                        divider={i < g.items.length - 1}
-                        checked={draft.accessibility.includes(a)}
-                        onToggle={() =>
-                          setDraft((d) => ({
-                            ...d,
-                            accessibility: toggleIn(d.accessibility, a),
-                          }))
-                        }
-                      />
-                    ))}
-                  </View>
-                ))}
-              </View>
-            </Accordion>
-          </View>
-          {/* Tilgjengelighet (availability) */}
-          <Section title="Tilgjengelighet">
-            <View>
-              <CheckboxRow
-                label="Åpent nå"
-                divider
-                checked={draft.openNowOnly}
-                onToggle={() =>
-                  setDraft((d) => ({ ...d, openNowOnly: !d.openNowOnly }))
-                }
-              />
-              <CheckboxRow
-                label="Ledige plasser"
-                hint="Gjelder opplevelser"
-                checked={draft.hasSpots}
-                onToggle={() =>
-                  setDraft((d) => ({ ...d, hasSpots: !d.hasSpots }))
-                }
-              />
-            </View>
-          </Section>
+          {kategoriSection}
+          {typeSection}
+          {timeOfDaySection}
+          {expTypeSection}
+          {audienceSection}
+          {priceSection}
+          {durationSection}
+          {distanceSection}
+          {vibeSection}
+          {tagsSection}
+          {ratingSection}
+          {languageSection}
+          {accessSection}
+          {availabilitySection}
         </>
       </ScrollView>
 
@@ -1023,6 +1391,10 @@ function FilterBody({
                     time: null,
                     dateStart: null,
                     dateEnd: null,
+                    dateFlex: 0,
+                    // Undo "I kveld" whole: its "Kveld" under Tid på dagen
+                    // stayed ticked and kept filtering (found in Phase 19).
+                    timeOfDay: kveldOnly(d) ? [] : d.timeOfDay,
                   }))
                 : setOpenSection("who")
             }

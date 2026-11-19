@@ -1,4 +1,4 @@
-import { useCallback, useSyncExternalStore } from "react";
+import { useCallback, useMemo, useSyncExternalStore } from "react";
 
 // In-memory saved-items store. Persistence is CONTRACT-BLOCKED (CB-5): a
 // reload clears this. Keyed by DiscoveryItem.markerId. Shared across all hook
@@ -35,5 +35,9 @@ export function useMapSaved() {
     emit();
   }, []);
 
-  return { savedIds, isSaved, toggle };
+  // One object per saved list, so callers that depend on it stay stable.
+  return useMemo(
+    () => ({ savedIds, isSaved, toggle }),
+    [savedIds, isSaved, toggle],
+  );
 }

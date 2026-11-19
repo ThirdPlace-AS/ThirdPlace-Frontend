@@ -9,7 +9,9 @@ export {
 export { Chip, type ChipProps, type ChipSize, type ChipVariant } from "./Chip";
 export { Divider } from "./Divider";
 export { Icon, type IconName, type IconProps, type IconTone } from "./Icon";
+export { PinGlyph, isPinGlyph, type PinGlyphName } from "./PinGlyph";
 export {
+  BACK_ICON,
   IconButton,
   type IconButtonProps,
   type IconButtonSize,
@@ -19,7 +21,6 @@ export {
   Pressable,
   type PressableProps,
   type PressFeedback,
-  type PressHaptic,
 } from "./Pressable";
 export { Switch } from "./Switch";
 export { Text, type TextProps, type TextTone, type TextVariant } from "./Text";

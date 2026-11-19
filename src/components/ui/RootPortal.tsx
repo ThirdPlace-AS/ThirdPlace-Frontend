@@ -41,10 +41,12 @@ export function RootPortalHost() {
 
 /** Shows its children at the root while mounted (one portal at a time). */
 export function RootPortal({ children }: { children: ReactNode }) {
-  // Re-publish on every render so the portal follows its props.
+  // Re-publish whenever the children change, so the portal follows its
+  // props; a render with the same children publishes nothing (speed pass
+  // 0345: every publish re-renders the host at the app root).
   useLayoutEffect(() => {
     publish(children);
-  });
+  }, [children]);
   useEffect(() => () => publish(null), []);
   return null;
 }

@@ -102,7 +102,6 @@ export default function MyListingsScreen() {
         label="Ny listing"
         variant="ember"
         size="xl"
-        haptic="light"
         onPress={() => router.push("/my-listings/new" as Href)}
         className="absolute bottom-6 right-5"
       />

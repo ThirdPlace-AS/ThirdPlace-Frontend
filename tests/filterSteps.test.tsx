@@ -49,4 +49,23 @@ describe("Filtre step footer", () => {
     expect(screen.getByText(/^Vis \d+ resultater$/)).toBeTruthy();
     jest.useRealTimers();
   });
+
+  it("Nullstill after I kveld leaves no filter behind (Phase 19 fix)", () => {
+    jest.useFakeTimers();
+    renderSheet();
+    act(() => {
+      jest.runOnlyPendingTimers();
+    });
+    const before = screen.getByText(/^Vis \d+ resultater$/).props.children;
+    fireEvent.press(screen.getByText("Når"));
+    fireEvent.press(screen.getByText("I kveld"));
+    fireEvent.press(screen.getByText("Nullstill"));
+    expect(screen.getByText("Hopp over")).toBeTruthy();
+    fireEvent.press(screen.getByText("Neste"));
+    // "I kveld" ticked Kveld under Tid på dagen; Nullstill takes it back.
+    expect(screen.getByText(/^Vis \d+ resultater$/).props.children).toBe(
+      before,
+    );
+    jest.useRealTimers();
+  });
 });

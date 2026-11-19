@@ -71,6 +71,37 @@ describe("Accordion", () => {
     fireEvent.press(header);
     expect(onToggle).toHaveBeenCalledTimes(1);
   });
+
+  it("lazy: mounts the content on first open and keeps it after", () => {
+    // Filtre's Kategori rows (0319): 92 activity chips mounted up front made
+    // the sheet slow to open.
+    render(
+      <Accordion title="Trening" lazy>
+        <Text>Klatring</Text>
+      </Accordion>,
+    );
+    // Hidden from screen readers while closed: look past that, at what is
+    // mounted at all.
+    const all = { includeHiddenElements: true } as const;
+    expect(screen.queryByText("Klatring", all)).toBeNull();
+    const header = screen.getByRole("button", { name: "Trening" });
+    fireEvent.press(header);
+    expect(screen.getByText("Klatring", all)).toBeTruthy();
+    // Closing keeps it mounted, so the close can animate.
+    fireEvent.press(screen.getByRole("button", { name: "Trening" }));
+    expect(screen.getByText("Klatring", all)).toBeTruthy();
+  });
+
+  it("not lazy: the content is mounted while collapsed (measured)", () => {
+    render(
+      <Accordion title="Velvære">
+        <Text>Yoga</Text>
+      </Accordion>,
+    );
+    expect(
+      screen.getByText("Yoga", { includeHiddenElements: true }),
+    ).toBeTruthy();
+  });
 });
 
 describe("StateView", () => {

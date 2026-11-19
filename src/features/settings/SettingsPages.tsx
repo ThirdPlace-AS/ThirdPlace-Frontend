@@ -59,7 +59,6 @@ function Session({
           accessibilityRole="button"
           accessibilityLabel={`Logg ut ${name}`}
           onPress={onSignOut}
-          haptic="selection"
           hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
         >
           <Text variant="label" weight="semibold">
@@ -206,7 +205,6 @@ export function AccountScreen() {
             setSessions((list) => list.filter((x) => x.current));
             showToast(confirmToast.otherSessionsSignedOut);
           }}
-          haptic="selection"
           hitSlop={{ top: 12, bottom: 12, left: 8, right: 8 }}
           className="self-start"
         >
@@ -388,7 +386,6 @@ export function LanguageScreen() {
             key={l}
             accessibilityRole="radio"
             accessibilityState={{ selected: lang === l }}
-            haptic="selection"
             onPress={() => setLang(l)}
             contentClassName="flex-row items-center justify-between rounded-md border border-line bg-surface px-4 py-3.5"
             pressedScale={0.99}
@@ -519,7 +516,6 @@ export function BlockedUsersScreen() {
             accessibilityLabel={
               b.blocked ? `Avblokkér ${b.name}` : `Blokker ${b.name} igjen`
             }
-            haptic="selection"
             hitSlop={{ top: 14, bottom: 14, left: 10, right: 10 }}
             onPress={() => setBlocked(b.key, !b.blocked)}
           >

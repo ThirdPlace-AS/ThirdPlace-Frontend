@@ -10,7 +10,7 @@
 //
 // The scrim is a SIBLING behind the card, never its ancestor, so the card's
 // buttons are never nested inside a <button> on web (CLAUDE.md "Sheets").
-import { useState, type ReactNode } from "react";
+import { useMemo, useState, type ReactNode } from "react";
 import {
   KeyboardAvoidingView,
   type LayoutChangeEvent,
@@ -43,7 +43,7 @@ import {
   useThemeColors,
 } from "@/theme";
 
-import { IconButton } from "./IconButton";
+import { BACK_ICON, IconButton } from "./IconButton";
 import { Text } from "./Text";
 import { usePresence } from "./usePresence";
 
@@ -74,6 +74,8 @@ export function SheetHeader({
   divider = false,
   actions,
   center = false,
+  label,
+  labelIcon,
 }: {
   title?: string;
   onClose?: () => void;
@@ -84,6 +86,11 @@ export function SheetHeader({
   actions?: ReactNode;
   /** Centred title (a picker such as Kartlag), not the default left. */
   center?: boolean;
+  /** A short label at the left when there is no title (the map's page
+   *  sheet says what the item is: "Park", "Kafé", "Klatring"). */
+  label?: string;
+  /** Drawn before `label` (the map's page sheet: the pin in its colour). */
+  labelIcon?: ReactNode;
 }) {
   const dark = tone === "dark";
   const variant = dark ? "mediaSubtle" : "ghost";
@@ -100,7 +107,7 @@ export function SheetHeader({
     >
       {onBack ? (
         <IconButton
-          icon="chevron-back"
+          icon={BACK_ICON}
           label="Tilbake"
           size="sm"
           variant={variant}
@@ -108,15 +115,32 @@ export function SheetHeader({
           className="-ml-xs"
         />
       ) : null}
-      <Text
-        variant="h2"
-        weight="bold"
-        tone={dark ? "onMedia" : "ink"}
-        numberOfLines={1}
-        className={center ? "flex-1 text-center" : "flex-1"}
-      >
-        {title ?? ""}
-      </Text>
+      {!title && label ? labelIcon : null}
+      {!title && label ? (
+        <Text
+          variant="label"
+          weight="semibold"
+          tone={dark ? "onMedia" : "ink"}
+          numberOfLines={1}
+          // A long kind ("Vietnamesisk restaurant") shrinks a little beside
+          // its pin on a 360 dp phone instead of losing its end.
+          adjustsFontSizeToFit
+          minimumFontScale={0.85}
+          className="flex-1"
+        >
+          {label}
+        </Text>
+      ) : (
+        <Text
+          variant="h2"
+          weight="bold"
+          tone={dark ? "onMedia" : "ink"}
+          numberOfLines={1}
+          className={center ? "flex-1 text-center" : "flex-1"}
+        >
+          {title ?? ""}
+        </Text>
+      )}
       {actions}
       {onClose ? (
         <IconButton
@@ -132,22 +156,27 @@ export function SheetHeader({
   );
 }
 
-/** Props for the @gorhom engine so map sheets match <Sheet>. */
+/** Props for the @gorhom engine so map sheets match <Sheet>. The same objects
+ *  on every render (speed pass 0345): new ones made gorhom restyle the map
+ *  sheets on each render of the map screen. */
 export function useSheetChrome() {
   const c = useThemeColors();
-  return {
-    backgroundStyle: {
-      backgroundColor: c.surface,
-      borderTopLeftRadius: SHEET_RADIUS,
-      borderTopRightRadius: SHEET_RADIUS,
-    },
-    handleIndicatorStyle: {
-      backgroundColor: c.line,
-      width: 40,
-      height: 4,
-    },
-    style: elevation.e3,
-  };
+  return useMemo(
+    () => ({
+      backgroundStyle: {
+        backgroundColor: c.surface,
+        borderTopLeftRadius: SHEET_RADIUS,
+        borderTopRightRadius: SHEET_RADIUS,
+      },
+      handleIndicatorStyle: {
+        backgroundColor: c.line,
+        width: 40,
+        height: 4,
+      },
+      style: elevation.e3,
+    }),
+    [c.surface, c.line],
+  );
 }
 
 export type SheetProps = {
@@ -167,7 +196,17 @@ export type SheetProps = {
   children: ReactNode;
 };
 
-export function Sheet({
+/** A sheet costs nothing until it is first opened (speed pass 0348: an
+ *  experience page mounted 11 hidden sheets and overlays, each with its
+ *  presence state, shared values and animated styles). Once opened it stays
+ *  mounted, so the exit animation runs and reopening is instant. */
+export function Sheet(props: SheetProps) {
+  const [opened, setOpened] = useState(props.visible);
+  if (props.visible && !opened) setOpened(true);
+  return opened ? <SheetEngine {...props} /> : null;
+}
+
+function SheetEngine({
   visible,
   onClose,
   title,

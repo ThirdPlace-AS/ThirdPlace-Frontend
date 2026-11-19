@@ -131,7 +131,6 @@ function TabButton({
       accessibilityState={{ selected: active }}
       hitSlop={{ top: 7, bottom: 7 }}
       onPress={onPress}
-      haptic="selection"
       feedback="none"
       className="flex-1"
       contentClassName={`items-center pb-2.5 ${

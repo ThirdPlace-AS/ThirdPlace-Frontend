@@ -14,6 +14,7 @@ import {
 } from "react-native-safe-area-context";
 
 import { ToastHost } from "@/components/Toast";
+import { PIN_GLYPH_FONT } from "@/components/ui/PinGlyph";
 import { RootPortalHost } from "@/components/ui/RootPortal";
 import { queryClient } from "@/services/api/queryClient";
 import { useThemeColors } from "@/theme";
@@ -44,6 +45,9 @@ export default function RootLayout() {
   }, []);
   const [fontsLoaded, fontError] = useFonts({
     ...Ionicons.font,
+    // Map pin glyphs (Material Community Icons, Phase 19): loaded before the
+    // map mounts, so a pin image is never copied with a blank glyph.
+    ...PIN_GLYPH_FONT,
     // Brand typeface (src/theme/fonts.ts) — same gate, so text never
     // flashes in the fallback font.
     ...fontAssets,

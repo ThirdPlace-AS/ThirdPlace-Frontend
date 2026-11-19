@@ -77,6 +77,11 @@ function ViewerBody({
           offset: width * i,
           index: i,
         })}
+        // The photo opened and its neighbours, not the whole set (speed pass
+        // 0350: the defaults mounted and decoded up to ten full photos).
+        initialNumToRender={1}
+        maxToRenderPerBatch={1}
+        windowSize={3}
         showsHorizontalScrollIndicator={false}
         onMomentumScrollEnd={onEnd}
         keyExtractor={(_, i) => String(i)}

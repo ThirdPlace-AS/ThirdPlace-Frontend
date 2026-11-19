@@ -9,7 +9,7 @@ import { ActivityIndicator, StyleSheet, View } from "react-native";
 import { brandGradient, useThemeColors } from "@/theme";
 
 import { Icon, type IconName, type IconTone } from "./Icon";
-import { Pressable, type PressHaptic } from "./Pressable";
+import { Pressable } from "./Pressable";
 import { Text, type TextTone } from "./Text";
 
 export type ButtonVariant =
@@ -59,7 +59,6 @@ export type ButtonProps = {
   loading?: boolean;
   /** Stretch to the container width (default true, as before). */
   fullWidth?: boolean;
-  haptic?: PressHaptic;
   accessibilityLabel?: string;
   accessibilityHint?: string;
   testID?: string;
@@ -75,7 +74,6 @@ export function Button({
   disabled = false,
   loading = false,
   fullWidth = true,
-  haptic = "none",
   accessibilityLabel,
   accessibilityHint,
   testID,
@@ -104,7 +102,6 @@ export function Button({
       disabled={disabled}
       // Busy: ignore presses without the disabled dim (the spinner says busy).
       onPress={loading ? undefined : onPress}
-      haptic={haptic}
       dimWhenDisabled={false}
       className={fullWidth ? "w-full" : "self-start"}
       contentClassName={`flex-row items-center justify-center gap-sm ${PAD[size]} ${

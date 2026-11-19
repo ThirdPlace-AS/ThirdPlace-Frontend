@@ -19,7 +19,7 @@ import {
 // pink ring on the one in use.
 // - Karttype (founder, 2026-11-07): Standard, Satellitt, Terreng.
 // - Kartstil: Auto (follow the time of day) and the four times of day; ⓘ says
-//   what Auto does.
+//   what Auto does and credits the previews' map sources.
 // Picking only changes the map behind the sheet; the sheet stays open so both
 // choices can be made (✕, the scrim or back close it). The reference's capture
 // section has no ThirdPlace counterpart and is left out.
@@ -28,7 +28,8 @@ import {
 // Studio styles (assets/map-styles, © Mapbox © OpenStreetMap). Satellitt's
 // imagery is not stored in the app: its tile loads live from the Static Images
 // API (as the meeting-map card does), without the logo, since the credit line
-// under the grids names the sources. SoftMap (web, Expo Go) has no styles, so
+// names the sources: under ⓘ since 2026-11-11 (user: "remove the text at the
+// bottom of the map layer modal"), the way the map's own ⓘ holds its credits. SoftMap (web, Expo Go) has no styles, so
 // a choice only changes the native map.
 
 const STYLE_PREVIEW: Record<MapStylePeriod | "auto", ImageSourcePropType> = {
@@ -152,7 +153,7 @@ export function MapLayerSheet({
             </Text>
             <IconButton
               icon="information-circle-outline"
-              label={info ? "Skjul forklaringen" : "Om Auto"}
+              label={info ? "Skjul forklaringen" : "Om kartstilene og kildene"}
               size="sm"
               variant="ghost"
               selected={info}
@@ -160,18 +161,22 @@ export function MapLayerSheet({
             />
           </View>
           {info ? (
-            <Text variant="caption" tone="muted">
-              Auto bytter kartstil etter tiden på døgnet: daggry 05–08, dag
-              08–17, skumring 17–20 og natt fra 20. Når telefonen er i mørk
-              modus, viser Auto natt.
-            </Text>
+            <View className="gap-1">
+              <Text variant="caption" tone="muted">
+                Auto bytter kartstil etter tiden på døgnet: daggry 05–08, dag
+                08–17, skumring 17–20 og natt fra 20. Når telefonen er i mørk
+                modus, viser Auto natt.
+              </Text>
+              {/* The previews' credit (user 2026-11-11: no text at the
+                  bottom of the sheet), behind ⓘ as the map's own ⓘ holds
+                  its credits. */}
+              <Text variant="caption" tone="muted">
+                {MAP_PREVIEW_CREDIT}
+              </Text>
+            </View>
           ) : null}
           <TileGrid label="Kartstil" tiles={styleTiles} tileWidth={tileWidth} />
         </View>
-
-        <Text variant="caption" tone="muted">
-          {MAP_PREVIEW_CREDIT}
-        </Text>
       </View>
     </Sheet>
   );
@@ -236,7 +241,6 @@ function StyleTile({
       accessibilityState={{ checked: selected }}
       accessibilityLabel={label}
       onPress={onPress}
-      haptic="selection"
       pressedScale={0.97}
       style={{ width }}
       contentClassName="gap-2"

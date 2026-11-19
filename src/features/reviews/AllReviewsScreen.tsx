@@ -166,7 +166,6 @@ function SortSheet({
               accessibilityRole="radio"
               accessibilityState={{ checked: on }}
               onPress={() => setDraft(s)}
-              haptic="selection"
               contentClassName="flex-row items-center justify-between border-b border-line py-4"
             >
               <Text variant="body" weight={on ? "semibold" : "regular"}>

@@ -6,10 +6,16 @@
   "build": {
     "development": {
       "developmentClient": true,
-      "distribution": "internal"
+      "distribution": "internal",
+      "environment": "development",
+      "android": { "buildType": "apk" },
+      "env": { "EXPO_PUBLIC_USE_NATIVE_MAP": "1" }
     },
     "preview": {
-      "distribution": "internal"
+      "distribution": "internal",
+      "environment": "preview",
+      "android": { "buildType": "apk" },
+      "env": { "EXPO_PUBLIC_USE_NATIVE_MAP": "1" }
     },
     "production": {
       "autoIncrement": true
