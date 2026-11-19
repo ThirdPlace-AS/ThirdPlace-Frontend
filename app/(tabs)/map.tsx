@@ -3,6 +3,7 @@ import { FlatList, Pressable, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { Card } from "@/components/Card";
+import { MapCanvas } from "@/components/map/MapCanvas";
 import { PlaceDetailSheet } from "@/components/PlaceDetailSheet";
 import { SearchBar } from "@/components/SearchBar";
 import { EmptyState } from "@/components/states/StateView";
@@ -14,28 +15,6 @@ import {
   type PlaceCategory,
 } from "@/fixtures";
 import { useMockResource } from "@/hooks/useMockResource";
-
-// Soft-map placeholder (no Mapbox token in Phase 1). Pastel blobs + a pin, as in
-// the screens (PDF 5). It is a visual fixture, NOT authoritative geodata.
-function SoftMap() {
-  return (
-    <View className="h-40 overflow-hidden rounded-lg border border-line bg-surfaceMuted">
-      <View
-        className="absolute h-24 w-24 rounded-full bg-success/20"
-        style={{ top: 16, left: 24 }}
-      />
-      <View
-        className="absolute h-20 w-20 rounded-full bg-ember/10"
-        style={{ bottom: 12, right: 28 }}
-      />
-      <View className="flex-1 items-center justify-center">
-        <View className="h-9 w-9 items-center justify-center rounded-full bg-ink">
-          <View className="h-2.5 w-2.5 rounded-full bg-onInk" />
-        </View>
-      </View>
-    </View>
-  );
-}
 
 function CategoryFilter({
   value,
@@ -106,7 +85,7 @@ export default function MapScreen() {
               onChangeText={setQuery}
             />
             <CategoryFilter value={category} onChange={setCategory} />
-            <SoftMap />
+            <MapCanvas places={filtered} onSelect={setSelected} height={160} />
             <Text className="text-base font-semibold text-ink">I nærheten</Text>
             {loading ? (
               <View className="gap-3">

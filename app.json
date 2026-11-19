@@ -19,7 +19,7 @@
       "bundler": "metro",
       "output": "static"
     },
-    "plugins": ["expo-router", "expo-font", "expo-asset"],
+    "plugins": ["expo-router", "expo-font", "expo-asset", "@rnmapbox/maps"],
     "experiments": {
       "typedRoutes": true
     }
