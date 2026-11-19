@@ -1,7 +1,7 @@
 import { describe, expect, it, jest } from "@jest/globals";
 import { fireEvent, render, screen } from "@testing-library/react-native";
 
-import { Button } from "@/components/Button";
+import { Button } from "@/components/ui";
 
 describe("Button", () => {
   it("renders its label", () => {

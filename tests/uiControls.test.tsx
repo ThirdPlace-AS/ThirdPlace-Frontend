@@ -1,0 +1,137 @@
+import { describe, expect, it, jest } from "@jest/globals";
+import { act, fireEvent, render, screen } from "@testing-library/react-native";
+import { Switch as RNSwitch } from "react-native";
+
+import {
+  Badge,
+  Button,
+  Chip,
+  SheetHeader,
+  Switch,
+  Text,
+} from "@/components/ui";
+import { palette, setSchemePreference } from "@/theme";
+
+describe("Button", () => {
+  it("ignores presses and reports busy while loading", () => {
+    const onPress = jest.fn();
+    render(<Button label="Lagre" loading onPress={onPress} />);
+    const btn = screen.getByRole("button", { name: "Lagre" });
+    fireEvent.press(btn);
+    expect(onPress).not.toHaveBeenCalled();
+    expect(btn.props.accessibilityState).toMatchObject({ busy: true });
+  });
+
+  it("reports disabled state", () => {
+    render(<Button label="Neste" disabled />);
+    expect(
+      screen.getByRole("button", { name: "Neste" }).props.accessibilityState,
+    ).toMatchObject({ disabled: true });
+  });
+});
+
+describe("Chip", () => {
+  it("reports selected and fires onPress", () => {
+    const onPress = jest.fn();
+    render(<Chip label="Jazz" selected onPress={onPress} />);
+    const chip = screen.getByRole("button", { name: "Jazz" });
+    expect(chip.props.accessibilityState).toMatchObject({ selected: true });
+    fireEvent.press(chip);
+    expect(onPress).toHaveBeenCalledTimes(1);
+  });
+
+  it("renders a chip without an action as a label, not a button", () => {
+    render(<Chip label="Kaffe" />);
+    expect(screen.getByLabelText("Kaffe")).toBeTruthy();
+    expect(screen.queryByRole("button", { name: "Kaffe" })).toBeNull();
+  });
+
+  it("uses checked state for radio chips", () => {
+    render(<Chip label="Åpen" role="radio" selected />);
+    expect(
+      screen.getByRole("radio", { name: "Åpen" }).props.accessibilityState,
+    ).toMatchObject({ checked: true });
+  });
+});
+
+describe("Switch", () => {
+  it("is a labelled switch with checked state", () => {
+    const onValueChange = jest.fn();
+    render(
+      <Switch value={false} onValueChange={onValueChange} label="Varsler" />,
+    );
+    const sw = screen.getByRole("switch", { name: "Varsler" });
+    expect(sw.props.accessibilityState).toMatchObject({ checked: false });
+    fireEvent(sw, "valueChange", true);
+    expect(onValueChange).toHaveBeenCalledWith(true);
+  });
+
+  // 0467: in dark mode the off track was the border grey (about 1.5:1 on
+  // the page); it is the muted grey there, with a surface-coloured thumb.
+  it("off in dark mode: muted track, surface thumb", () => {
+    act(() => setSchemePreference("dark"));
+    try {
+      render(
+        <Switch value={false} onValueChange={jest.fn()} label="Varsler" />,
+      );
+      const sw = screen.UNSAFE_getByType(RNSwitch);
+      expect(sw.props.trackColor.false).toBe(palette.dark.muted);
+      expect(sw.props.thumbColor).toBe(palette.dark.surface);
+    } finally {
+      act(() => setSchemePreference("system"));
+    }
+  });
+});
+
+describe("Badge", () => {
+  it("renders its label", () => {
+    render(<Badge label="DEMO" />);
+    expect(screen.getByText("DEMO")).toBeTruthy();
+  });
+
+  it("solid success / danger carry white on-colour text; tinted is the default", () => {
+    const tone = () => screen.UNSAFE_getByType(Text).props.tone;
+    render(<Badge label="Åpent" tone="success" solid />);
+    expect(tone()).toBe("onSuccess");
+    screen.unmount();
+    render(<Badge label="Stengt" tone="danger" solid />);
+    expect(tone()).toBe("onDanger");
+    screen.unmount();
+    render(<Badge label="Stengt" tone="danger" />);
+    expect(tone()).toBe("danger");
+    screen.unmount();
+    // Other tones have no solid look and ignore it.
+    render(<Badge label="Ny" tone="neutral" solid />);
+    expect(tone()).toBe("muted");
+  });
+});
+
+describe("SheetHeader", () => {
+  // The map's page sheet says what the item is at the top left (user
+  // 2026-11-11); a title, when there is one, wins.
+  it("shows a label at the left when there is no title", () => {
+    render(<SheetHeader label="Park" onClose={() => {}} />);
+    expect(screen.getByText("Park")).toBeTruthy();
+    expect(screen.getByLabelText("Lukk")).toBeTruthy();
+  });
+
+  it("a title wins over the label", () => {
+    render(<SheetHeader title="Deltakere" label="Park" onClose={() => {}} />);
+    expect(screen.getByText("Deltakere")).toBeTruthy();
+    expect(screen.queryByText("Park")).toBeNull();
+  });
+
+  // The map's sheet draws the item's pin by its label (user 2026-11-11).
+  it("draws the label icon with the label, and not without one", () => {
+    const icon = <Text testID="label-icon">o</Text>;
+    const { unmount } = render(
+      <SheetHeader label="Park" labelIcon={icon} onClose={() => {}} />,
+    );
+    expect(screen.getByTestId("label-icon")).toBeTruthy();
+    unmount();
+    render(
+      <SheetHeader title="Deltakere" labelIcon={icon} onClose={() => {}} />,
+    );
+    expect(screen.queryByTestId("label-icon")).toBeNull();
+  });
+});

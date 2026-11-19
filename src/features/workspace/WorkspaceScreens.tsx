@@ -1,0 +1,496 @@
+import { Ionicons } from "@expo/vector-icons";
+import { router, type Href } from "expo-router";
+import { useState } from "react";
+import { Pressable, ScrollView, View } from "react-native";
+import {
+  Badge,
+  Chart,
+  Icon,
+  LINK_SLOP,
+  pageBody,
+  Pressable as UIPressable,
+  Screen,
+  Section,
+  Text,
+  Chip,
+} from "@/components/ui";
+import { byStart } from "@/features/workspace/calendarOrder";
+import { hubToday } from "@/features/workspace/hubToday";
+import { clock } from "@/lib/dates";
+import { RouteHeader } from "@/components/RouteHeader";
+import { OWNED_BUSINESS_IDS, businesses } from "@/fixtures";
+
+import { switchToPersonal } from "@/lib/activeAccount";
+import { useMyProfile } from "@/lib/myProfile";
+import { GuestPage } from "@/components/GuestPage";
+import { ownExperiences } from "@/features/workspace/ownExperiences";
+
+const ownBusinesses = () =>
+  businesses.filter((b) => OWNED_BUSINESS_IDS.includes(b.id));
+
+// Business workspace, per the design (PDF p13–p15): the business
+// profile hub (Dashbord, Marketplace, linked personal account, "Kom i gang"),
+// Analyse, Kalender and Lokasjoner. BLOCKED_CONTRACT_GAP: no business
+// account, analytics, scheduling, location billing or subscription contract —
+// every number is an example and is badged as such.
+const BIZ = businesses[0];
+
+function WorkspaceHubContent() {
+  const me = useMyProfile();
+  return (
+    <Screen edges={["top"]}>
+      <RouteHeader title={BIZ?.name ?? "Bedrift"} />
+      <ScrollView contentContainerClassName={pageBody.list}>
+        <View className="flex-row items-center gap-2">
+          <Icon
+            name={BIZ?.verified ? "checkmark-circle" : "time-outline"}
+            size="sm"
+            tone={BIZ?.verified ? "success" : "muted"}
+          />
+          <Text variant="label" weight="semibold">
+            {BIZ?.verified ? "Verifisert bedrift" : "Ikke verifisert"}
+          </Text>
+        </View>
+        <TodayCard />
+        <HubCard
+          icon="trending-up-outline"
+          title="Dashbord"
+          hint="Visninger, chat, anmeldelser"
+          onPress={() => router.push("/workspace/analytics")}
+        />
+        <HubCard
+          icon="calendar-outline"
+          title="Kalender"
+          hint="Kommende opplevelser"
+          onPress={() => router.push("/workspace/calendar")}
+        />
+        <HubCard
+          icon="location-outline"
+          title="Lokasjoner"
+          hint="Steder bedriften driver"
+          onPress={() => router.push("/workspace/locations")}
+        />
+        <HubCard
+          icon="wallet-outline"
+          title="Utbetalinger"
+          hint="Utbetalingsmetode og -plan"
+          onPress={() => router.push("/payouts")}
+        />
+        <HubCard
+          icon="people-outline"
+          title="Marketplace"
+          hint="Samarbeid med skapere og bedrifter"
+          onPress={() => router.push("/marketplace" as Href)}
+        />
+        <View className="flex-row items-center gap-3 rounded-md bg-surfaceMuted p-4">
+          <Icon name="person-circle-outline" size="xl" tone="ink" />
+          <View className="flex-1">
+            <Text variant="label" weight="semibold">
+              {me.name}
+            </Text>
+            <Text variant="caption" tone="muted">
+              Personlig konto
+            </Text>
+          </View>
+          <UIPressable
+            hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+            accessibilityRole="button"
+            accessibilityLabel={`Bytt til ${me.name}`}
+            onPress={() => {
+              // Back to the personal account (G-Q8), then its profile.
+              switchToPersonal();
+              router.navigate("/profile");
+            }}
+            contentClassName="rounded-full border border-line bg-surface px-3 py-2"
+            pressedScale={0.99}
+          >
+            <Text variant="caption" weight="semibold">
+              Bytt til
+            </Text>
+          </UIPressable>
+        </View>
+        <View className="gap-1 rounded-md border border-line bg-surface p-4">
+          <Text variant="label" weight="semibold">
+            Kom i gang
+          </Text>
+          {/* One line per step, each with its own state (a single ✓ in
+              front of both read as both done). */}
+          {[
+            {
+              label: "Verifiser bedriften",
+              done: !!BIZ?.verified,
+              href: "/business-onboarding" as Href,
+            },
+          ].map((step) => (
+            // Open steps lead on to where they are done (R30).
+            <UIPressable
+              key={step.label}
+              accessibilityRole={step.done ? "text" : "button"}
+              accessibilityLabel={`${step.label}: ${step.done ? "fullført" : "gjenstår"}`}
+              disabled={step.done}
+              dimWhenDisabled={false}
+              onPress={() => router.push(step.href)}
+              contentClassName="flex-row items-center gap-2 py-1"
+              pressedScale={0.99}
+            >
+              <Icon
+                name={step.done ? "checkmark-circle" : "ellipse-outline"}
+                size="sm"
+                tone={step.done ? "success" : "muted"}
+              />
+              <Text
+                variant="caption"
+                tone={step.done ? "muted" : "ink"}
+                className="flex-1"
+              >
+                {step.label}
+              </Text>
+              {step.done ? null : (
+                <Icon name="chevron-forward" size="sm" tone="muted" />
+              )}
+            </UIPressable>
+          ))}
+        </View>
+      </ScrollView>
+    </Screen>
+  );
+}
+
+// "I dag" (Phase 16, after the section benchmark): what needs the host today,
+// from Kalender's list and Mine listings' waitlists (src/features/workspace/
+// hubToday.ts). Each line opens where it is handled.
+function TodayCard() {
+  const now = new Date();
+  const { today, week, waiting } = hubToday(ownExperiences(), now);
+  return (
+    <View className="gap-1 rounded-md border border-line bg-surface p-4">
+      <Text variant="label" weight="semibold" accessibilityRole="header">
+        I dag
+      </Text>
+      {today.length === 0 ? (
+        <Text variant="caption" tone="muted" className="py-1">
+          Ingen opplevelser i dag.
+        </Text>
+      ) : (
+        today.map(({ exp, start }) => (
+          <TodayRow
+            key={exp.id}
+            icon="time-outline"
+            label={`${clock(start)} · ${exp.title}`}
+            onPress={() => router.push(`/experience/${exp.id}` as Href)}
+          />
+        ))
+      )}
+      <TodayRow
+        icon="calendar-outline"
+        label={`${week} ${week === 1 ? "opplevelse" : "opplevelser"} de neste 7 dagene`}
+        onPress={() => router.push("/workspace/calendar")}
+      />
+      {waiting > 0 ? (
+        <TodayRow
+          icon="people-outline"
+          label={`${waiting} på venteliste i Mine listings`}
+          onPress={() => router.push("/my-listings" as Href)}
+        />
+      ) : null}
+    </View>
+  );
+}
+
+function TodayRow({
+  icon,
+  label,
+  onPress,
+}: {
+  icon: keyof typeof Ionicons.glyphMap;
+  label: string;
+  onPress: () => void;
+}) {
+  return (
+    <UIPressable
+      accessibilityRole="button"
+      accessibilityLabel={label}
+      onPress={onPress}
+      contentClassName="flex-row items-center gap-2 py-2"
+      pressedScale={0.99}
+    >
+      <Icon name={icon} size="sm" tone="muted" />
+      <Text variant="caption" className="flex-1" numberOfLines={1}>
+        {label}
+      </Text>
+      <Icon name="chevron-forward" size="sm" tone="muted" />
+    </UIPressable>
+  );
+}
+
+function HubCard({
+  icon,
+  title,
+  hint,
+  onPress,
+}: {
+  icon: keyof typeof Ionicons.glyphMap;
+  title: string;
+  hint: string;
+  onPress: () => void;
+}) {
+  return (
+    <UIPressable
+      accessibilityRole="button"
+      onPress={onPress}
+      contentClassName="flex-row items-center gap-3 rounded-md border border-line bg-surface p-4"
+      pressedScale={0.99}
+    >
+      <View className="h-11 w-11 items-center justify-center rounded-sm bg-surfaceMuted">
+        <Icon name={icon} size="md" tone="ink" />
+      </View>
+      <View className="flex-1">
+        <Text variant="body" weight="semibold">
+          {title}
+        </Text>
+        <Text variant="caption" tone="muted">
+          {hint}
+        </Text>
+      </View>
+      <Icon name="chevron-forward" size="md" tone="muted" />
+    </UIPressable>
+  );
+}
+
+const RANGES = ["Uke", "Måned", "Total"] as const;
+const STATS: Record<(typeof RANGES)[number], [string, string][]> = {
+  Uke: [
+    ["812", "Visninger"],
+    ["74", "Følgere"],
+    ["31", "Ble med i chat"],
+    ["4,7", "Vurdering"],
+  ],
+  Måned: [
+    ["3 420", "Visninger"],
+    ["312", "Følgere"],
+    ["145", "Ble med i chat"],
+    ["4,7", "Vurdering"],
+  ],
+  Total: [
+    ["18 900", "Visninger"],
+    ["1 204", "Følgere"],
+    ["690", "Ble med i chat"],
+    ["4,6", "Vurdering"],
+  ],
+};
+// Example bar heights per range (the chart follows the Uke/Måned/Total
+// switch like the tiles above; all numbers are examples).
+const BARS: Record<(typeof RANGES)[number], number[]> = {
+  Uke: [48, 62, 55, 70, 66, 81, 74],
+  Måned: [42, 55, 48, 62, 58, 70, 66, 74, 69, 80, 77, 88],
+  Total: [20, 28, 35, 33, 46, 52, 58, 63, 71, 76, 84, 92],
+};
+
+function WorkspaceAnalyticsContent() {
+  const [range, setRange] = useState<(typeof RANGES)[number]>("Måned");
+  return (
+    <Screen edges={["top"]}>
+      <RouteHeader title="Analyse" />
+      <ScrollView contentContainerClassName={pageBody.blocks}>
+        <View className="flex-row items-center gap-2">
+          {RANGES.map((r) => (
+            <Chip
+              key={r}
+              label={r}
+              selected={range === r}
+              onPress={() => setRange(r)}
+            />
+          ))}
+        </View>
+        <View className="flex-row flex-wrap gap-3">
+          {STATS[range].map(([v, l]) => (
+            <View
+              key={l}
+              className="min-w-[40%] flex-1 gap-1 rounded-md bg-surfaceMuted p-4"
+            >
+              <Text variant="h1" accessibilityRole="text">
+                {v}
+              </Text>
+              <Text variant="caption" tone="muted">
+                {l}
+              </Text>
+            </View>
+          ))}
+        </View>
+        <Section title="Visninger siste periode" className="pt-2">
+          <Chart
+            values={BARS[range]}
+            accessibilityLabel="Visninger siste periode: stolpediagram"
+          />
+        </Section>
+      </ScrollView>
+    </Screen>
+  );
+}
+
+// Kalender's Rediger link stretches to its row's height (checked on the
+// emulator: 56 dp box).
+const STRETCH = { alignSelf: "stretch", justifyContent: "center" } as const;
+
+function WorkspaceCalendarContent() {
+  const upcoming = byStart(
+    ownExperiences().filter((e) => e.status !== "cancelled"),
+  );
+  return (
+    <Screen edges={["top"]}>
+      <RouteHeader title="Kalender" />
+      <ScrollView contentContainerClassName={pageBody.list}>
+        <Text variant="title" accessibilityRole="header">
+          Kommende
+        </Text>
+        {upcoming.map((e) => (
+          <View
+            key={e.id}
+            className="flex-row items-center gap-3 rounded-md border border-line bg-surface p-3"
+          >
+            <View className="flex-1">
+              <Text variant="caption" tone="muted">
+                {e.when}
+              </Text>
+              <Text variant="body" weight="semibold">
+                {e.title}
+              </Text>
+              <Text variant="caption" tone="muted">
+                {e.capacity} plasser
+              </Text>
+            </View>
+            {/* The link's own box fills the row's height (three lines, over
+                48), so the target does not hang on hitSlop alone: on the
+                emulator the slop below the text reached only ~11 dp. */}
+            <Pressable
+              hitSlop={LINK_SLOP}
+              style={STRETCH}
+              accessibilityRole="button"
+              accessibilityLabel={`Rediger ${e.title}`}
+              onPress={() =>
+                router.navigate({
+                  pathname: "/add",
+                  params: { edit: e.id, at: String(Date.now()) },
+                })
+              }
+            >
+              <Text variant="label" weight="semibold" className="underline">
+                Rediger
+              </Text>
+            </Pressable>
+          </View>
+        ))}
+      </ScrollView>
+    </Screen>
+  );
+}
+
+function WorkspaceLocationsContent() {
+  return (
+    <Screen edges={["top"]}>
+      <RouteHeader title="Lokasjoner" />
+      <ScrollView contentContainerClassName={pageBody.list}>
+        <Text variant="caption" tone="muted">
+          {ownBusinesses().length} lokasjoner
+        </Text>
+        {ownBusinesses().map((b) => (
+          // Verifisering (PDF p7) is the owner’s own screen, so it opens
+          // from here (user 2026-11-10: a business has one public profile).
+          <UIPressable
+            key={b.id}
+            accessibilityRole="button"
+            accessibilityLabel={`${b.name}, ${
+              b.verified ? "verifisert" : "venter på verifisering"
+            }. Verifisering`}
+            onPress={() =>
+              router.push(`/workspace/verification/${b.id}` as Href)
+            }
+            pressedScale={0.99}
+            contentClassName="gap-1 rounded-md border border-line bg-surface p-4"
+          >
+            <View className="flex-row items-start justify-between gap-3">
+              <Text variant="body" weight="semibold" className="flex-1">
+                {b.name}
+              </Text>
+              <Badge
+                kind="status"
+                label={b.verified ? "✓ Verifisert" : "Venter på verifisering"}
+                tone={b.verified ? "success" : "warning"}
+              />
+            </View>
+            <Text variant="caption" tone="muted">
+              {b.address}
+            </Text>
+            <View className="mt-2 flex-row items-center justify-between border-t border-line pt-3">
+              <Text variant="label" weight="semibold">
+                Verifisering
+              </Text>
+              <Icon name="chevron-forward" size="md" tone="muted" />
+            </View>
+          </UIPressable>
+        ))}
+        <View
+          accessibilityRole="button"
+          accessibilityState={{ disabled: true }}
+          className="items-center rounded-md border border-dashed border-line py-4 opacity-50"
+        >
+          <Text variant="caption" weight="semibold" tone="muted">
+            + Legg til lokasjon
+          </Text>
+        </View>
+      </ScrollView>
+    </Screen>
+  );
+}
+
+// Account-only (review 2026-11-18, IJ2): a guest sees the lock.
+export function WorkspaceHub() {
+  return (
+    <GuestPage
+      title="Bedrift"
+      message="Logg inn for å se arbeidsflaten."
+      action="se arbeidsflaten"
+    >
+      <WorkspaceHubContent />
+    </GuestPage>
+  );
+}
+
+// Account-only (review 2026-11-18, IJ2): a guest sees the lock.
+export function WorkspaceAnalytics() {
+  return (
+    <GuestPage
+      title="Analyse"
+      message="Logg inn for å se analysen."
+      action="se analysen"
+    >
+      <WorkspaceAnalyticsContent />
+    </GuestPage>
+  );
+}
+
+// Account-only (review 2026-11-18, IJ2): a guest sees the lock.
+export function WorkspaceCalendar() {
+  return (
+    <GuestPage
+      title="Kalender"
+      message="Logg inn for å se kalenderen."
+      action="se kalenderen"
+    >
+      <WorkspaceCalendarContent />
+    </GuestPage>
+  );
+}
+
+// Account-only (review 2026-11-18, IJ2): a guest sees the lock.
+export function WorkspaceLocations() {
+  return (
+    <GuestPage
+      title="Lokasjoner"
+      message="Logg inn for å se lokasjonene."
+      action="se lokasjonene"
+    >
+      <WorkspaceLocationsContent />
+    </GuestPage>
+  );
+}

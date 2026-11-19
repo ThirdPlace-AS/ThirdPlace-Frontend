@@ -1,0 +1,306 @@
+# ThirdPlace Design System
+
+**Status:** Phase 1 (foundations) in progress — started 2026-11-05.
+**Supersedes:** the token tables in [DESIGN_TOKENS_PROVISIONAL.md](DESIGN_TOKENS_PROVISIONAL.md) once Phase 1 slice S2 lands (palette values stay the same; the structure changes).
+**Authority order:** `ThirdPlace_All_Screens.pdf` (layout, order, Norwegian copy) → this document (how things look, move and respond) → code. Exception: the founder-approved copy rewrites listed in `docs/SCREEN_INVENTORY.md` ("Founder copy decisions", 2026-11-06) replace the PDF wording on those lines.
+
+The design system **restyles the PDF's layouts**. It never adds screens, sections, rails, rules or copy that the PDF and the master spec don't have.
+
+## 1. Principles
+
+1. **Calm ink canvas, pink as a spark (Airbnb palette, founder decision 2026-11-06).** Ink (`#222222`) carries text, ink buttons and selection. The brand pink is used three ways: the **gradient** (`#E61E4D → #E31C5F → #D70466`, white text) for the main brand CTA (Button `variant="ember"`); **`ember` `#FF385C`** for fills without text — hearts, the active tab, text-less dots, map selection, the logo, FAB glyph discs; **`emberStrong` `#E31C5F`** for pink fills that carry text (number badges, Live tags) and **`emberText` `#DA1249`** for pink text. White on `#FF385C` is only 3.5:1, so it never sits behind text. Toggles, checkboxes, edit links, codes and the current chart bar are ink. Success green `#008A05` is for local completion.
+2. **Soft, round, tactile.** Pill chips, 8 px buttons and inputs, 14 px cards, 32 px sheet tops, one soft shadow tier, press-scale feedback on everything tappable.
+3. **Photo-first.** Imagery runs full-bleed with a tokenised scrim; controls over imagery are round white floating buttons.
+4. **Clear feedback.** Every action responds immediately (motion, state change) and confirms in product voice (`confirmToast`). No demo markers (founder decision 2026-11-06). Still no delivery ticks, no "processing → success" sequences, no invented counts, and payments stay structure only. **No arrows on buttons or links** (founder 2026-11-06): labels never end in "→", and buttons carry no arrow icons (chat send is a paper plane, Sveip's expand is an "i"); only the header back button and list-row chevrons keep their glyphs. Back is always the ← arrow (`BACK_ICON`, user 2026-11-09), on page headers, sheet headers, the map search, the chat thread and the page top bars alike, with no circle around it (user 2026-11-15: a plain ghost `IconButton`, no `variant`; `tests/designGuard.test.ts` checks it). `tests/copyVoice.test.ts` enforces it.
+5. **One way to do each thing.** One button, one chip, one header, one sheet API, one icon entry point. If a screen needs something new, it becomes a primitive first.
+6. **Accessible by default.** 48×48 touch targets (Android's 48 dp; review 2026-11-18 CMP-04), AA contrast in light and dark, every control has a role, label and state; all motion has a reduced-motion fallback.
+
+## 2. Decisions
+
+| Topic             | Decision (2026-11-05)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
+| ----------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Brand colour      | **Airbnb's palette (founder decision 2026-11-06, replaces "ember stays #D80000")**: brand pink `#FF385C`, button gradient `#E61E4D → #E31C5F → #D70466`, text `#222222`, link pink `#DA1249`; logo, splash and app-icon background `#FF385C`. Token names stay (`ember`, `emberText` …) so no call site changes.                                                                                                                                                                                                                   |
+| Typeface          | **Inter** (SIL OFL 1.1, `@expo-google-fonts/inter`, four weights) loaded via `expo-font` (user 2026-11-15, with the shadcn.io Airbnb design system; replaced DM Sans, chosen 2026-11-05). Supersedes the Phase 0.3 "system fonts" decision.                                                                                                                                                                                                                                                                                        |
+| Theme             | Semantic tokens with **light and dark**, shipped together; the app follows the phone setting (`system`, dark palette approved 2026-11-05). Tokens are CSS variables so `className` utilities switch per scheme without `dark:` variants. Map basemap goes to the night style in dark; map pins and photo UI (`media`) stay fixed.                                                                                                                                                                                                  |
+| Sheets            | One Sheet API with two engines: `@gorhom/bottom-sheet` for snapping map sheets, the Modal engine for action sheets. No raw `Modal` outside the engine.                                                                                                                                                                                                                                                                                                                                                                             |
+| Icons             | Ionicons behind a single `Icon` wrapper (outline = default, filled = selected). ThirdPlace-specific glyphs become custom SVGs behind the same wrapper.                                                                                                                                                                                                                                                                                                                                                                             |
+| Illustration / 3D | Art-direction spec, pipeline and named slots now, with themed SVG placeholders. Final art is supplied later and dropped into the slots. IMG.LY/Codesign is not used.                                                                                                                                                                                                                                                                                                                                                               |
+| UI base           | **shadcn/ui through its React Native port, React Native Reusables (RNR)** on `@rn-primitives` (user 2026-11-12). Our look stays: RNR sources are adapted to our tokens, shadcn colour slots alias our CSS variables (our `muted` keeps its meaning), and screens keep importing the same `@/components/ui` names. See §4 "Base layer".                                                                                                                                                                                             |
+| Toolkit           | After Emil Kowalski's `pick-ui-library` list, with RN substitutes where his pick is web-only (user 2026-11-12): clsx + class-variance-authority + tailwind-merge ~2.6, sonner-native, input-otp-native, zustand, FlashList v2, react-native-gifted-charts, react-native-sortables, react-native-keyboard-controller (`KeyboardAvoider`), @react-native-menu/menu (native long-press menus on Android, `ContextMenu`; chosen over zeego, user 2026-11-16). Installing one is not a licence for new UI without a spec or user basis. |
+| Benchmark         | **Design tokens and component specs follow shadcn.io's Airbnb DESIGN.md** (https://www.shadcn.io/design/airbnb, user 2026-11-15): Inter in place of its licensed typeface, its type scale, radii, single shadow tier, button and input specs. The app never uses Airbnb's name, logo, icons, illustrations, 3D renders or layouts, and keeps its own pink rules (no text on `ember`).                                                                                                                                              |
+
+## 3. Foundations
+
+### Colour (semantic)
+
+| Token           | Light     | Dark      | Use                                                        |
+| --------------- | --------- | --------- | ---------------------------------------------------------- |
+| `background`    | `#FFFFFF` | `#121212` | App background                                             |
+| `surface`       | `#FFFFFF` | `#1E1E1E` | Cards, sheets, inputs                                      |
+| `surfaceRaised` | `#FFFFFF` | `#262626` | Floating controls, sheets over content                     |
+| `surfaceMuted`  | `#F7F7F7` | `#2E2E2E` | Secondary buttons, subtle fills                            |
+| `line`          | `#DDDDDD` | `#3A3A3A` | Borders, dividers                                          |
+| `ink`           | `#222222` | `#FFFFFF` | Primary text, ink buttons, selection                       |
+| `onInk`         | `#FFFFFF` | `#222222` | Content on ink                                             |
+| `muted`         | `#6A6A6A` | `#B0B0B0` | Secondary text, placeholders                               |
+| `ember`         | `#FF385C` | `#FF385C` | Pink fills **without text** (heart, active tab, dots, pin) |
+| `emberStrong`   | `#E31C5F` | `#E31C5F` | Pink fills **with text** (number badges, tags)             |
+| `emberText`     | `#DA1249` | `#FF6B85` | Pink text and links                                        |
+| `success`       | `#008A05` | `#008A05` | Local completion                                           |
+| `danger`        | `#C13515` | `#C13515` | Destructive                                                |
+| `onSuccess`     | `#FFFFFF` | `#FFFFFF` | Text on a success fill (solid badges)                      |
+| `onDanger`      | `#FFFFFF` | `#FFFFFF` | Text on a danger fill (solid badges)                       |
+| `warning`       | `#B05008` | `#B05008` | Warning                                                    |
+
+Brand gradient (`brandGradient` in `src/theme/tokens.js`): `#E61E4D → #E31C5F → #D70466`, left to right, white text (≥ 4.5:1 on every stop). Only Button `variant="ember"` draws it.
+
+Opacity modifiers (`bg-scrim/40`, `bg-danger/15`) work on every token but only in Tailwind steps of 5 — `/12` generates nothing. Dark values are defined in S2 and must pass the contrast test (`tests/themeTokens.test.ts`). Never write a hex literal outside `src/theme/`; read native colour props from the theme hook.
+
+### Typography
+
+One family, weight-led hierarchy. Use the `Text` primitive's `variant`, not raw size classes.
+
+| Variant   | Size / line | Weight        | Tracking |
+| --------- | ----------- | ------------- | -------- |
+| `display` | 28 / 39     | 700           |          |
+| `h1`      | 22 / 26     | 600           | −0.44 px |
+| `h2`      | 20 / 24     | 600           | −0.18 px |
+| `title`   | 16 / 20     | 600           |          |
+| `body`    | 16 / 24     | 400           |          |
+| `label`   | 14 / 18     | 500           |          |
+| `caption` | 13 / 16     | 400           |          |
+| `micro`   | 11 / 13     | 600, capitals | 0.32 px  |
+
+Sizes, line heights and tracking follow shadcn.io's Airbnb DESIGN.md (user 2026-11-15), rounded to whole px. One change: `h1` is 600, not the design's 500, which read weaker than the 600 `h2` below it on the emulator. Button labels are 500 (`body`, `label` for `sm`).
+
+No `font-*` weight classes: on Android they rendered Roboto (2026-11-15). Set weight with the `Text` primitive's `weight`, and give a raw `TextInput` `fontFamily: fontFamilyFor("regular")` (the design guard checks). No arbitrary sizes (`text-[10px]`). Note: NativeWind uses rem = 14 px on native, so legacy Tailwind classes render smaller than their names suggest (`text-sm` ≈ 12 px, `text-base` = 14 px). The scale above is in real px, so migrated text is intentionally larger; migrate a screen as a whole rather than mixing old and new text in one block.
+
+### Spacing
+
+4-point scale in **real px** (0427). Padding, margin, gap, space and inset take Tailwind's numbers at their web value in px: `p-1` = 4, `p-2` = 8, `p-3` = 12, `p-4` = 16, `p-6` = 24, `p-8` = 32, `p-12` = 48 (`tailwind.config.js` builds the scale from Tailwind's defaults × 16). The one named step is `gutter` (16), the screen side padding. Width and height keep Tailwind's rem scale (NativeWind's rem is 14 on native), so component and touch-target sizes stay as tuned.
+
+Why: NativeWind renders `rem` at 14 px on native, so before 0427 `p-4` was 14 px next to the 16 px `gutter` and the named steps (`xs` … `section`) were a second vocabulary for the same numbers. Both are gone; the guard (`tests/designGuard.test.ts`, "spacing stays on the 4-pt scale") fails on named steps, arbitrary values (`gap-[3px]`), half steps (2 px micro gaps only in the badge tag and the price histogram) and 5/7/9/11 outside `src/components/ui/` (the Button sizes keep `px-5`).
+
+Roles — use these, not a value picked by eye:
+
+| Role                                                    | Class                                                                                                                     | px           |
+| ------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------- | ------------ |
+| Screen side padding                                     | `px-gutter`                                                                                                               | 16           |
+| Page body                                               | `pageBody.sections · blocks · list · items` (`Page`/`FormPage` `density`): `grow px-gutter pt-4 pb-12`, gap 6 · 4 · 3 · 2 | 16 / 16 / 48 |
+| Page bottom above a tab bar or FAB                      | `pb-28`                                                                                                                   | 112          |
+| Between sections of a page                              | `gap-6` (`Screen` scroll)                                                                                                 | 24           |
+| Between blocks in a section, sheet body                 | `gap-4`                                                                                                                   | 16           |
+| Between rows of a list block                            | `gap-3`                                                                                                                   | 12           |
+| A heading and its block                                 | `Section` (`gap-3`; `rows` = `gap-0` when the rows carry their own `py-3`)                                                | 12           |
+| A field label and its control                           | `Field` (`gap-2`)                                                                                                         | 8            |
+| Between items (chips, buttons in a row, icon and label) | `gap-2`                                                                                                                   | 8            |
+| A text pair (title and its sub-line)                    | `gap-1`                                                                                                                   | 4            |
+| Card padding                                            | `p-4` (compact `p-3`)                                                                                                     | 16 / 12      |
+| List row                                                | `px-4 py-3` (or `px-gutter`)                                                                                              | 16 / 12      |
+| Sticky footer                                           | `px-gutter pt-3`                                                                                                          | 16 / 12      |
+| Floating button (FAB)                                   | `absolute bottom-6 right-4` over a `pb-28` body                                                                           | 24 / 16      |
+
+A heading sits closer to its own block than to the block above (24 between sections, 12 under a heading), so it reads as that block's heading: wrap a titled block in `Section` and a labelled control in `Field` (`src/components/ui/Section.tsx`, 0429) instead of leaving headings loose in the page's gap.
+
+Centre a lone state (empty, error, success) both ways in the space it has (`StateView`; page bodies `grow`, so an `EmptyState` fills the height left); a page's content otherwise starts at the top and runs full width inside the gutter.
+
+### Radius
+
+`xs 4 · sm 8 · md 14 · lg 20 · xl 32 · full`, shadcn.io's Airbnb DESIGN.md scale (user 2026-11-15). Cards `md`; inputs, buttons, small tiles, row highlights and notice strips `sm`; large panels `lg`; sheets `xl` (top corners); chips, pills and avatars `full`. Tailwind's own `2xl`/`3xl` still exist (the scale extends Tailwind's), so the guard bans them with any side prefix.
+
+Component sizes from the same design: `Button` md is 48 px tall (sm 40, lg 60) with 8 px corners (`rounded="full"` for pills); `Input` is at least 56 px single-line (multiline from 96) with 8 px corners, a 1 px `line` border and a 2 px `ink` border on focus (`danger` on error), offset in padding so the text never moves; its `type` (`email`, `url`, `phone`, `password`, `newPassword`, `number`, `handle`) picks the keyboard, capitals, autocorrect and autofill hint, and an explicit prop wins (review 2026-11-18 CMP-11); `CodeInput` boxes are 56 px with 8 px corners. The design's pink primary fill and pale-pink disabled state are not used: the ink, gradient and muted fills stay.
+
+### Elevation
+
+| Level | Use                                              |
+| ----- | ------------------------------------------------ |
+| `e0`  | Flat (most content on `bg`)                      |
+| `e1`  | Cards on imagery or map                          |
+| `e2`  | Floating controls: search pill, map buttons, FAB |
+| `e3`  | Sheets, modals, toasts                           |
+
+The design has one shadow tier (a 1 px hairline ring at 2 %, 0 2 6 at 4 %, 0 4 8 at 10 %), so `e1`–`e3` render the same `boxShadow`; the names stay to say what a surface is. Shadows come only from `src/theme/elevation.ts` (cross-platform `boxShadow`).
+
+### Icons
+
+Sizes `sm 16 · md 20 · lg 24 · xl 32 · 2xl 44 · 3xl 64`. Outline by default, filled when selected/active. Everything goes through `<Icon>`: Ionicons, plus ThirdPlace glyphs (`src/components/ui/glyphs.tsx`, names start with `tp-`) drawn on a 24 px grid with the 1.75 px `iconStroke`, rounded caps and joins.
+
+| Glyph                          | Concept                                                                                                                                                     | Used for                                                                       |
+| ------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------ |
+| `tp-experience`                | Ticket stub                                                                                                                                                 | Opplevelser (chat group, search group, Add, notification settings, onboarding) |
+| `tp-swipe` / `tp-swipe-filled` | Three stacked cards tilted −18°, dot on the front card (founder's sveip.svg, stroke 2 as in the file, the one exception to 1.75); filled = front card solid | Sveip tab                                                                      |
+| `tp-arrival`                   | Pin with a check                                                                                                                                            | GPS check-in                                                                   |
+| `tp-business`                  | Shop front with an awning                                                                                                                                   | Bedrift (account switch, settings, marketplace, places done)                   |
+
+No sparkle, magic-wand or "AI" glyphs: they read as machine-made. Use a literal object instead (ticket, notes, hand, ear, palette).
+
+## 4. Components
+
+All primitives live in `src/components/ui/`. Each one must implement the states that apply to it:
+
+| State                   | Rule                                                                                                                                                                                                                    |
+| ----------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Default                 | Token colours only                                                                                                                                                                                                      |
+| Pressed                 | Scale 0.97 + tint, `spring.snappy`; opacity-only under reduced motion                                                                                                                                                   |
+| Focused                 | 2 px `ink` focus ring (web / keyboard)                                                                                                                                                                                  |
+| Selected                | Ink fill or filled icon; `accessibilityState.selected`                                                                                                                                                                  |
+| Disabled                | 40 % opacity, no press feedback; `accessibilityState.disabled`. `Button` instead turns muted surface + muted label at full opacity (a faded ink fill read as broken), with a one-line reason under it where one exists. |
+| Loading                 | Spinner replaces the label, width locked, presses ignored; `accessibilityState.busy`                                                                                                                                    |
+| Error                   | `danger` border + message under the field                                                                                                                                                                               |
+| Expanded / collapsed    | Animated height; `accessibilityState.expanded`                                                                                                                                                                          |
+| Empty / error (screens) | `StateView` with an illustration slot and one or two actions                                                                                                                                                            |
+
+Touch targets are at least 48×48, Android's 48 dp (review 2026-11-18 CMP-04): `IconButton` and a small `Button` reach it through `hitSlop`; use `hitSlop` the same way on other small visuals. A text link takes `hitSlop={LINK_SLOP}` (from `@/components/ui`: 16 above and below, 12 at the sides), which carries a caption or label line to 48. Where items sit side by side (the chat's reactions) a 44 wide target keeps the row on screen, 48 tall with the slop.
+
+### Base layer (React Native Reusables)
+
+RNR components are copied in with its CLI (`components.json`, `ui` alias `@/components/ui/base`) and live in `src/components/ui/base/` in kebab-case, so they never collide with our PascalCase files on a case-insensitive disk. Only `src/components/ui/*` imports from `base/`; screens keep using our primitives, whose props do not change.
+
+Rules when adapting an RNR file:
+
+- **Colours:** shadcn slots alias our tokens: `primary` = ink / onInk, `secondary` and `accent` = surfaceMuted / ink, `destructive` = danger / onDanger, `card` and `popover` = surface / ink, `border` and `input` = line, `ring` and `foreground` = ink. shadcn's `bg-muted` becomes `bg-surfaceMuted` (colour classes use the camelCase keys) and `text-muted-foreground` becomes `text-muted`. Pink stays `ember*`.
+- **No `dark:` and no `active:` / `hover:` / `focus-visible:` classes (nor their `group-` forms):** the theme switches through CSS variables, and press feedback comes from our `Pressable`.
+- **Type and icons:** no `text-sm`-style sizes (labels take `<Text variant>`), no lucide (Ionicons through `<Icon>`). `base/text` holds the variant and tone tables (cva) and `TextClassContext`, which here carries a **tone, not a class string**: a component sets its label colour with it, an explicit `tone` prop wins, ink otherwise. `Text` keeps its exact class string (no `cn()`), so no screen changes.
+- **No breakpoint variants** (`sm:` and up) and no kebab colour keys; `tests/designGuard.test.ts` checks `base/` for all of these.
+- **Sizes:** NativeWind's `inlineRem` stays 14; RNR's sizes are adapted, not the rem.
+- **Class merging:** `cn()` in `src/lib/utils.ts` uses tailwind-merge extended with our font-size, colour, radius and spacing keys, so `cn("text-display", "text-ink")` keeps both.
+- **Haptics:** only the moments allowed in `tests/designGuard.test.ts`; library defaults that vibrate are switched off.
+- **Portals:** `RootPortal` stays (map page sheet); `@rn-primitives`' `PortalHost` sits next to it, and a Modal that shows a portaled component needs its own named host inside.
+- **Kept, not swapped (P3):** `Switch` stays React Native's own (RNR's is a drawn View pair that animates only on web and loses the platform look and screen-reader role); `Accordion` stays ours (Filtre's controlled single-open and auto-advance already work, RNR's adds a dependency for nothing new). `base/checkbox` holds only the indicator tables: `CheckboxMark` / `RadioMark` draw the box or ring inside a row that owns the role, the press and `accessibilityState`; no `@rn-primitives` package.
+- **Selection state:** a checkbox or radio row says `accessibilityState={{ checked }}` (TalkBack reads "checked" / "not checked"); `selected` is for chips and tabs.
+
+| Our primitive                                               | RNR base                                                                                                     | Phase |
+| ----------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------ | ----- |
+| `Text`                                                      | `text`                                                                                                       | P2    |
+| `Button`, `IconButton`, `FollowButton`                      | `button`                                                                                                     | P2    |
+| `Input`, `SearchBar`                                        | `input`                                                                                                      | P3    |
+| `Switch`                                                    | none: React Native's `Switch` kept                                                                           | P3    |
+| `Chip`, `ChipGroup`, `FilterPills`                          | `toggle`, `toggle-group`                                                                                     | P3    |
+| `Divider`                                                   | `separator`                                                                                                  | P3    |
+| `Badge`                                                     | `badge`                                                                                                      | P3    |
+| `Skeleton*`                                                 | `skeleton`                                                                                                   | P3    |
+| `Avatar` (expo-image kept)                                  | `avatar`                                                                                                     | P3    |
+| `CheckboxMark`, `RadioMark`                                 | `checkbox`, `radio-group` (tables)                                                                           | P3    |
+| `Accordion`                                                 | none: ours kept                                                                                              | P3    |
+| Toasts (`showToast`, `confirmToast`)                        | sonner-native                                                                                                | P4    |
+| `CodeInput` (`/verify-code`, after register and two-factor) | input-otp-native, our boxes; digits only, a tap keeps the code, a pasted or autofilled code keeps its digits | P5    |
+| `Sheet`, `Overlay`, map sheets                              | none: Modal engine and gorhom stay                                                                           | —     |
+| `Chart`                                                     | none: react-native-gifted-charts `BarChart`                                                                  | P8    |
+| `SortableList`, `SortableChips`                             | none: react-native-sortables `Grid` / `Flex` + `Handle`                                                      | P9    |
+
+### Charts
+
+`Chart` is the one bar chart (react-native-gifted-charts, P8). It draws relative heights (0–100): the stats screens (Arbeidsflate Analyse, Marketplace-analyse) show a shape, never invented values, so there are no axes, rules or labels. Bars are `success`, the current period (the last bar) `ink`; the card is `rounded-md border-line bg-surface`. The grow-in is off under reduced motion, presses are off, and the card is one `image` with a summary label ("… : stolpediagram"). A new chart type goes through this primitive, not straight to the library.
+
+### Sortable
+
+`SortableList` and `SortableChips` are the one way to drag things into a new order (react-native-sortables, P9), used where the viewer owns an order: Festet chats on the Chat tab (two or more pins, not while searching) and the interests in Rediger profil. A list row is dragged by the ≡ handle at its end, so the row keeps its press and long press; a chip is dragged after a long press, a tap still reaches it, and a trailing "+ Legg til" stays put (`mode="fixed-order"`). Both are controlled: the caller keeps the order (`moveItem` / `reorderSubset` in `src/lib/reorder.ts`; a search-filtered list keeps the hidden items in their places). Screen readers get "Flytt opp" / "Flytt ned" actions on every item (`moveActions` / `onMoveAction`) that call the same move. The lifted item scales to 1.03 and the rest dim to 85 %; under reduced motion nothing lifts, slides or fades. No vibration: the library's own feedback stays off, per the haptics rule.
+
+### Feedback & states
+
+| Need                | Use                                                                                                                                                                                                                                                                                                                                                                           |
+| ------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------- | ---------------------------------------------------- |
+| Like / save         | `<HeartToggle kind="heart"                                                                                                                                                                                                                                                                                                                                                    | "bookmark">`(pop + ember on save; quiet on unsave). Inside a custom button, use`<PopIcon pop={saved}>`. |
+| Follow              | `<FollowButton>` — "Følg" ink pill → "Følger" muted pill, label cross-fades.                                                                                                                                                                                                                                                                                                  |
+| Collapsible section | `<Accordion>` (animated height + rotating chevron; `variant="card"` for grouped lists; `lazy` mounts heavy content on first open).                                                                                                                                                                                                                                            |
+| Loading list        | `<SkeletonList variant="row"                                                                                                                                                                                                                                                                                                                                                  | "card"                                                                                                  | "mediaCard">` — one busy element for screen readers. |
+| Empty / error       | `<EmptyState>` / `<ErrorState>` (icon in a soft disc, or an `illustration`).                                                                                                                                                                                                                                                                                                  |
+| Toast               | `showToast()` — our ink card on sonner-native (one at a time, 3.5 s or 5 s with an action, tap or swipe up to close), polite live region, fades in/out (still under Reduser bevegelse). Product-voice copy from `confirmToast`. A confirm inside a sheet closes the sheet, then calls `showToastAfterSheet(confirmToast.x)` (waits for the exit; the host sits under Modals). |
+| StickyFooter        | Primary action of a flow or single-goal screen, pinned after the scroll area (hairline, page background, `safeBottom` on stack routes). Wizards, Du er nå Skaper!, gruppe-sveip setup, Nytt samarbeid.                                                                                                                                                                        |
+| ScrollRow           | One line of chips or avatars that scrolls sideways and bleeds to the screen edges, instead of wrapping an orphan at 360 dp (tab chips, group-swipe friends and filters).                                                                                                                                                                                                      |
+
+### Sheets & overlays
+
+One family, two engines, one look (handle, 32 px top radius, `e3`, `SheetHeader`):
+
+| Need                                                                   | Use                                                         | Engine |
+| ---------------------------------------------------------------------- | ----------------------------------------------------------- | ------ | ---- | -------- | ----- |
+| Action sheet, picker, form, prompt                                     | `<Sheet>` (`fullHeight` for the tall filter sheet)          | Modal  |
+| Snapping map sheet (browse, detail)                                    | `@gorhom/bottom-sheet` + `useSheetChrome()` + `SheetHeader` | gorhom |
+| Full-screen surface (search, filter panel, swipe detail, image viewer) | `<Overlay enter="zoom"                                      | "fade" | "up" | "left">` | Modal |
+
+- Enter 320 ms (`easing.enter`), exit 200 ms (`easing.exit`); reduced motion → 150 ms fade. The Modal stays mounted until the exit finishes (`usePresence`).
+- Surfaces open from the tap (0457, user 2026-11-17). The ui `Pressable` notes where a press landed (`src/lib/pressOrigin.ts`, kept 600 ms). A `<Sheet>` slides up and grows from 0.94 about the tap's x at its bottom edge; an `<Overlay enter="zoom">` grows from 0.85 about the tap and fades in; `<PhotoViewer from={rect}>` grows the photo out of the tapped thumbnail (measured on the tap with `measureRect` / `useOriginRect`) over a black backdrop that fades on its own, and shrinks back into it while it still shows that photo (after paging it fades). The origin is read once per open, so the exit returns to the same spot. Opened by code (no press in the last 600 ms) → the plain slide or fade. Reduced motion → the 150 ms fade. The math is pure and tested (`src/components/ui/originMotion.ts`). A tap on a core React Native `Pressable` records nothing; pass `from` instead.
+- `<Sheet>` closes on scrim tap, Android back, or a drag down on the handle/header (past 25 % of its height or a 900 px/s flick).
+- A content `<Sheet>` stops 16 px below the status bar and scrolls its children inside the card; `fullHeight` sheets own their scroll area and sticky footer. Bottom padding is `max(safe-area bottom, 12) + 16`.
+- Keyboard: edge-to-edge Android does not resize the window (nor a Modal) for the keyboard. Screens with inputs wrap their scroll area **and** footer in `KeyboardAvoider` (`src/components/ui`, react-native-keyboard-controller) on both platforms (wizards, chat composer, `<Sheet>`); scroll views with buttons set `keyboardShouldPersistTaps="handled"`; the tab bar hides while the keyboard is open. Sticky footers get `border-t border-line bg-background`.
+- Tab bar: all five tabs use one convention, an outline glyph in `muted` while idle and the filled glyph in ember while open, with the label under it. The centre "Legg til" is the exception (founder 2026-11-08): TikTok’s stacked button in our colours (`AddTabIcon`), an ink face with the plus between an ember layer on the left and the brand gradient’s magenta on the right, the same open or not; its label follows the other tabs. It replaced the outline / filled plus glyph (`tp-add`, 2026-11-07).
+- Experience detail on the map (Phase 11): the gorhom sheet renders in `<RootPortal>` (host in `app/_layout.tsx`), above the tab bar, with snaps 35 % / 60 % / 100 %. Dragging to the top turns it into the full-screen page (handle fades, corners square, page top bar grows in) from `animatedIndex` on the UI thread; back / ← returns to 60 %. Do not hide the tab bar to make room (it resizes gorhom's container and re-snaps) and do not swap in a second page component at the top (the sheet vanished while it mounted). Sveip's expand, Lagret, Mine planer, a chat's pinned experience and "Flere opplevelser" open the same page as the route `/experience/[id]` (Phase 12 H4c); full-screen photos use `PhotoViewer`.
+- Page tops and sections (Phase 12 H7): hub pages (`RouteHeader` → `Header size="page"`) put the back button on its own row and the title large beneath it; sections are sentence-case `title` headings, not grey micro-caps; settings rows run edge to edge with hairlines (`SettingsSection`, `ToggleList`). Grey micro-caps stay only for tiny labels inside components.
+- Pages vs sheets (Phase 12, founder 2026-11-06): content you read, browse or fill in over several fields is a page (stack route, back, deep link); a `Sheet` is only for a short choice, picker, confirmation, filter, share/report/block, sign-in prompt or viewer. The place page (`/place/[id]`) is `PlacePage` in the experience page's video layout under the shared `PageTopBar` (back, caption, share, save); group pages use `EntityPage` (header + the map's detail content + a sheet for short sub-views); other converted pages use `<Page>` (header + scroll) or `<FormPage>` (header + scroll + `StickyFooter` inside a `KeyboardAvoider`) from `src/components/ui/Page.tsx`. A page confirms with `goBackOr()` then `showToast()` (no sheet exit to wait for).
+- gorhom sheets have no back handling of their own. On the map, Android back steps back inside the detail sheet, then closes it, and only then leaves the screen (`mapBackAction` in `useMapSelection`, a focus-scoped `BackHandler` in `app/(tabs)/map.tsx`).
+- Children mount only while open, so state seeds fresh each time. Render the body unconditionally inside `<Overlay>`; mount a whole `<Sheet>` conditionally only when it must reset between uses.
+- A `<Sheet>` or `<Overlay>` that was never opened renders nothing, so a page can hold many hidden sheets for free (speed pass 0348). After the first open the engine stays mounted, so the exit animation runs and later opens behave as before.
+- No raw `Modal` outside `src/components/ui/Sheet.tsx` and `Overlay.tsx`.
+
+## 5. Motion
+
+| Token           | Value        | Use                             |
+| --------------- | ------------ | ------------------------------- |
+| `fast`          | 150 ms       | Chip / toggle fills, icon swaps |
+| `base`          | 220 ms       | Most transitions                |
+| `slow`          | 320 ms       | Sheets, larger layout changes   |
+| `spring.snappy` | 20 / 220 / 1 | Press, heart pop                |
+| `spring.gentle` | 26 / 160 / 1 | Sheets, toasts                  |
+| `spring.card`   | 16 / 240 / 1 | Swipe cards                     |
+
+Easing curves (`easing.*`, cubic-bezier): `standard` 0.2, 0, 0, 1 · `enter` 0.05, 0.7, 0.1, 1 · `exit` 0.3, 0, 0.8, 0.15. Sheet/overlay timing lives in `presentation`.
+
+- Content that replaces content in place (wizard steps, the in-sheet detail stack, the next Steder or group-swipe card) fades in through `<FadeSwap swapKey>` over `base`; nothing under reduced motion. Style only on the animated view.
+- The swipe card glides off in 340–460 ms (fling to tap) and comes back on undo in 400 ms; longer glides held the deck for ~0.9 s and dropped taps.
+- Loading rule (founder, 2026-11-06): a wait under 2 s shows a skeleton; past 2 s the skeleton gives way to `<Loader>` (spinner + label). `useLoadPhase(loading)` returns `skeleton` → `loader`; photos that can arrive late use `<LoadingImage>` (skeleton behind the photo, spinner after 2 s). Map: skeleton cards in the browse sheet, then the loader pill over the map.
+- Photos (Phase 12): every bundled photo is WebP in two sizes plus a 16 px blurred preview, except portraits (`person-*`, since 2026-11-10), which ship only the ≤256 px small file that `Avatar` draws (`scripts/build-image-manifest.js` → `src/fixtures/imageAssets.generated.ts`). Full size (`libImage`) for galleries, cards and the viewer; small (`libThumb`, `smallImage(src)`, `<LoadingImage thumb>`) for rails, rows, thumbnails; avatars pick the small file themselves. `LoadingImage`, `Avatar` and the Sveip carousel paint the preview at once and keep decoded photos in memory (`cachePolicy="memory-disk"`). Add a photo: drop the JPEG in `assets/library`, run `node scripts/build-image-manifest.js --convert`.
+- No fake waits: a screen with nothing to load shows its content at once (`useMockResource({ immediate })`); loading states appear only on a real reload.
+
+Motion explains a change (where something came from, what it became); it never delays navigation. Every animated hook checks `useReducedMotion()` (from `@/hooks/useReducedMotion`: the phone's setting or Tilgjengelighet's "Reduser bevegelse", which also switches Reanimated's global setting) and falls back to an opacity change or none.
+
+### Microinteraction patterns
+
+- **Like / save:** heart pops 1 → 1.25 → 1, fills ember.
+- **Follow:** pill morphs "Følg" → "Følger" (ink → outline).
+- **Join:** button morphs to the joined state locally.
+- **Send message:** bubble slides in from the composer. No delivered/read ticks (contract-blocked).
+- **Filter / chip select:** fill crossfade (`fast`).
+- **Haptics at chosen moments only** (user 2026-11-09: "Add haptic feedback where it makes sense and in the right strength", then "Also key taps"; replaces the no-tap rule of 2026-11-09). Five strengths in `src/lib/haptics.ts`:
+
+  | Strength    | Where                                                                                                       |
+  | ----------- | ----------------------------------------------------------------------------------------------------------- |
+  | `selection` | a dragged Sveip card crosses the commit line; swipe to reply; each step of the Avstand and Varighet sliders |
+  | `toggleOn`  | save or like turns on (`HeartToggle`); turning it off is quiet                                              |
+  | `tap`       | a chat message is sent                                                                                      |
+  | `longPress` | a long press opens a menu (`ListRow` "Flere valg", chat reactions)                                          |
+  | `success`   | a real local completion: joined ("Du er med"), published or created (Add wizard)                            |
+
+  Android plays its own feedback constants (`performAndroidHapticsAsync`: Segment_Tick, Toggle_On, Virtual_Key, Long_Press, Confirm, with older ones on phones below API 34/30), so the phone's touch-feedback setting applies; iOS plays the matching selection, impact and notification calls. Plain buttons, navigation, chips, switches and the price slider (10 kr steps would buzz) stay silent, and the ui primitives take no `haptic` prop. `tests/designGuard.test.ts` holds the list of files and moments.
+
+- **Lagret:** an unsaved row fades out and the rows below close up (`LinearTransition`); the row put back with "Angre" fades in. Nothing else fades in: not the list on opening, rows mounted while scrolling or rows a filter chip shows.
+- **Du er med:** the check springs in just after the sheet has slid up (`ZoomIn`, delayed), with the `success` haptic.
+- **Chat send button:** the plane pops as the button wakes up with the first character (`IconButton pop`).
+
+## 6. Illustration and 3D
+
+- **Vector illustrations** (`src/components/illustrations/Illustration.tsx`, `<Illustration name>`): one hand for every scene — 160 × 120 canvas, ground line at y 104, 2.5 px ink outlines with round caps, flat token fills only (no gradients), **one** ember accent per scene, everyday Oslo objects (trikk, café cup, paint roller, calendar) instead of blobs or faceless people. Theme colours, so light and dark both work. Current set: `offline` (trikk with its pantograph down), `error` (tipped cup), `maintenance` (bucket + roller), `update` (phone + arrow), `emptySaved`, `emptyDeck`, `emptyPlans`. Pass one to `StateView`/`EmptyState` via `illustration`. No emoji in their place.
+- **3D category art** (`<CategoryArt name>`; brief and delivery rules in [ASSET_SPEC_3D.md](ASSET_SPEC_3D.md)): hand-built toon-shaded SVG objects (flat face, one shade, one hard highlight, top-left light, ¾ view, flat contact shadow, token colours, at most one ember element). Used in the Add menu tiles, the location prompt and (P4e) the category field. Real renders replace a key via `src/assets/3d/manifest.ts` without code changes.
+- Art appears only where the PDF has a slot for it.
+
+## 7. Adding something new
+
+1. Check the PDF page and `docs/SCREEN_INVENTORY.md` — is there a basis for it?
+2. Can an existing primitive do it with a variant? Prefer that.
+3. If not, add the primitive in `src/components/ui/` with all applicable states, a11y props, a reduced-motion path and an RNTL test.
+4. Tokens only — no hex, no arbitrary sizes, no hand-written shadows, no raw `Modal`.
+5. Verify on the Android emulator in light and dark; add a ledger line.
+
+Map pins are the one place with a second icon family (Phase 19, founder 2026-11-08): every interest has its own filled pin glyph from Material Community Icons (shipped inside `@expo/vector-icons`), drawn through `PinGlyph` (`src/components/ui/PinGlyph.tsx`; Strikking’s yarn ball is a hand-drawn SVG there). Everything else stays on `<Icon>`.
+
+`tests/designGuard.test.ts` enforces the mechanical rules in CI: no raw hex outside `src/theme`/fixtures/sandbox (escape: a `hex-ok:` comment with the reason), no legacy `text-xs…text-4xl`/`text-[Npx]` classes, no `rounded-2xl`/`rounded-3xl` (any side)/bare `rounded`/`rounded-[…]`, no raw `Modal` outside `Sheet`/`Overlay`, `MaterialCommunityIcons` only through `<PinGlyph>`, `Ionicons` only through `<Icon>` (escape: a `raw-icon:` comment saying why — animated colours, stamps with text shadows, caller-sized stars), no `active:/focus:/hover:` in `contentClassName`, no `InteractionManager`, no `expo-status-bar` import outside `StatusBarStyle`, and no `.toFixed(` outside `src/lib/format.ts`.
+
+**Numbers.** Display decimals use the Norwegian comma (4,8 · 1,1 km) through `src/lib/format.ts` (`formatRating`, `formatDecimal`, `formatThreshold`); fixture strings are written the same way. Times keep the full stop ("kl. 12.00").
+
+**Status bar.** Screens over a fixed dark or light surface (swipe card, photo hero, dusk/night basemap) render `<StatusBarStyle style="light" | "dark" />`; a themed panel opened over one of those renders `style="auto"`. Requests are pushed while the screen is focused and popped on blur, newest wins, and with none left the icons follow the theme (`setStatusBarFallback` in `ThemeRoot`). `Screen` pads from the provider insets (seeded with `initialWindowMetrics`), not a native `SafeAreaView`, so a pushed screen never paints its header under the status bar.
+
+Animated surfaces inside a Modal render a plain style once settled (`usePresence().settled`): on Android a React commit inside a Modal dropped Reanimated's animated style.
+
+## 8. Rollout
+
+Phases (see the implementation ledger for progress): 1 Foundations (docs, tokens, font) → 2 Primitives → 3 Icons, illustrations, 3D pipeline → 4 Screen upgrades → 5 Consistency guard and cleanup → 6 Full-app review.

@@ -6,6 +6,7 @@ import Animated, {
   useSharedValue,
   withSpring,
 } from "react-native-reanimated";
+import { fontFamilyFor } from "@/theme/fonts";
 
 // Smoke test that react-native-reanimated (UI-thread animation) and
 // react-native-gesture-handler (pan gesture) are correctly wired through
@@ -33,7 +34,9 @@ export default function GestureSandbox() {
 
   return (
     <SafeAreaView style={styles.root}>
-      <Text style={styles.hint}>Drag the box — it springs back.</Text>
+      <Text style={[styles.hint, { fontFamily: fontFamilyFor("regular") }]}>
+        Drag the box — it springs back.
+      </Text>
       <View style={styles.stage}>
         <GestureDetector gesture={pan}>
           <Animated.View style={[styles.box, boxStyle]} />
@@ -43,11 +46,11 @@ export default function GestureSandbox() {
   );
 }
 
-// Provisional tokens (see src/theme/tokens.js): background #F8F8F8, muted #808080,
-// Ember #D80000.
+// Sandbox-only literals (see src/theme/tokens.js): background #FFFFFF,
+// muted #808080, brand pink #FF385C.
 const styles = StyleSheet.create({
-  root: { flex: 1, backgroundColor: "#F8F8F8" },
+  root: { flex: 1, backgroundColor: "#FFFFFF" },
   hint: { color: "#808080", textAlign: "center", padding: 16 },
   stage: { flex: 1, alignItems: "center", justifyContent: "center" },
-  box: { width: 96, height: 96, borderRadius: 20, backgroundColor: "#D80000" },
+  box: { width: 96, height: 96, borderRadius: 20, backgroundColor: "#FF385C" },
 });
