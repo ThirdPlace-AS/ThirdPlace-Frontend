@@ -2,6 +2,7 @@ import { View } from "react-native";
 
 import { Icon, Text, Button, Sheet } from "@/components/ui";
 import { resetTo } from "@/lib/navigation";
+import { rememberSignInReturn } from "@/lib/signInReturn";
 
 // Respectful sign-in prompt shown when a guest tries an account-only action
 // (save / join / follow / chat / create). It is a modal over the current screen,
@@ -11,11 +12,15 @@ export function SignInPrompt({
   visible,
   onClose,
   action = "fortsette",
+  returnTo,
 }: {
   visible: boolean;
   onClose: () => void;
   // What the user was trying to do, e.g. "lagre" / "bli med".
   action?: string;
+  /** Where sign-in lands; by default the screen in front (and the map's
+   *  open detail), src/lib/signInReturn.ts. */
+  returnTo?: string;
 }) {
   return (
     <Sheet visible={visible} onClose={onClose} title="Logg inn">
@@ -27,13 +32,15 @@ export function SignInPrompt({
       </View>
 
       {/* Route to the (demo) auth screens — login clears guest mode; the
-          register flow continues into onboarding. resetTo (not push): the
+          register flow continues into onboarding. Either lands back on this
+          spot when it ends (founder 2026-11-19 Q1, startSession). resetTo (not push): the
           prompt is often open on top of another Modal (map detail sheet,
           swipe detail), which would otherwise cover the pushed auth screen. */}
       <Button
         label="Logg inn"
         variant="ink"
         onPress={() => {
+          rememberSignInReturn(returnTo);
           onClose();
           resetTo("/login");
         }}
@@ -42,6 +49,7 @@ export function SignInPrompt({
         label="Opprett konto"
         variant="secondary"
         onPress={() => {
+          rememberSignInReturn(returnTo);
           onClose();
           resetTo("/register");
         }}

@@ -1,3 +1,4 @@
+import { GuestPage } from "@/components/GuestPage";
 import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
 import { useState } from "react";
@@ -20,7 +21,7 @@ type Method = "sms" | "app";
 // Toggle, METODE (SMS / Autentiseringsapp), a QR placeholder for the app
 // method, then "Aktiver 2FA" → "Bekreft identiteten". DEMO — no secret is
 // generated and nothing is enabled (BLOCKED_CONTRACT_GAP).
-export default function TwoFactor() {
+function TwoFactorPage() {
   const [on, setOn] = useState(true);
   const [method, setMethod] = useState<Method>("sms");
   const methods: {
@@ -130,5 +131,19 @@ export default function TwoFactor() {
         ) : null}
       </ScrollView>
     </Screen>
+  );
+}
+
+// Account-only (founder 2026-11-19 Q1: guests browse only): a guest sees
+// the lock and Logg inn, which returns here once signed in.
+export default function TwoFactor() {
+  return (
+    <GuestPage
+      title="Totrinnsbekreftelse"
+      message="Logg inn for å slå på totrinnsbekreftelse."
+      action="slå på totrinnsbekreftelse"
+    >
+      <TwoFactorPage />
+    </GuestPage>
   );
 }

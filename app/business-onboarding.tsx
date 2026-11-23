@@ -18,12 +18,11 @@ import {
   Input,
 } from "@/components/ui";
 import { DiscardChangesSheet } from "@/components/DiscardChangesSheet";
-import { useGuestMode } from "@/components/map/hooks/useGuestMode";
 import { AreaChips } from "@/components/pickers/AreaChips";
 import { checkBirthday, formatBirthdayInput } from "@/features/onboarding/age";
 import { submitPlace } from "@/fixtures/created";
 import { UnderageScreen } from "@/features/onboarding/UnderageScreen";
-import { resetTo } from "@/lib/navigation";
+import { startSession } from "@/lib/startSession";
 import { markOnboarded, setSignupEmail } from "@/lib/signupProgress";
 import { useConfirmLeave } from "@/lib/useConfirmLeave";
 import { useStepBack } from "@/lib/useStepBack";
@@ -69,7 +68,6 @@ const toggle = (l: string[], v: string) =>
   l.includes(v) ? l.filter((x) => x !== v) : [...l, v];
 
 export default function BusinessOnboarding() {
-  const { setGuest } = useGuestMode();
   const [step, setStep] = useState(2); // 1 = the shared role step
   // A step's keyboard closes with it (review 2026-11-18 O1: the numeric
   // keyboard from Fødselsdag stayed open on the next steps).
@@ -132,10 +130,8 @@ export default function BusinessOnboarding() {
       // As the explorer branch: the account comes last (founder 2026-11-06).
       const nextHref = markOnboarded();
       leave.allowLeave();
-      if (nextHref === "/map") {
-        setGuest(false);
-        resetTo("/map");
-      } else router.push(nextHref);
+      if (nextHref === "/map") startSession();
+      else router.push(nextHref);
     } else setStep((s) => s + 1);
   };
   const cta = step === 4 ? "Bekreft plassering" : "Fortsett";

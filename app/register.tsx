@@ -14,8 +14,8 @@ import {
 import { SocialAuthButtons } from "@/components/auth/SocialAuthButtons";
 import { Logo } from "@/components/Logo";
 import { ScreenHeader } from "@/components/ScreenHeader";
-import { useGuestMode } from "@/components/map/hooks/useGuestMode";
 import { resetTo } from "@/lib/navigation";
+import { startSession } from "@/lib/startSession";
 import {
   getSignupEmail,
   markAccountCreated,
@@ -28,7 +28,6 @@ import {
 // follows the code. BLOCKED_CONTRACT_GAP: no auth backend.
 export default function Register() {
   const { onboarded } = useSignupProgress();
-  const { setGuest } = useGuestMode();
   // Typed values stay on the device; nothing is checked or sent.
   // Prefilled from business onboarding's e-mail (review 2026-11-18 #17).
   const [email, setEmail] = useState(getSignupEmail);
@@ -36,8 +35,8 @@ export default function Register() {
   // A social sign-in creates the account without a code.
   const social = () => {
     const nextHref = markAccountCreated();
-    if (nextHref === "/map") setGuest(false);
-    resetTo(nextHref);
+    if (nextHref === "/map") startSession();
+    else resetTo(nextHref);
   };
   return (
     <Screen>

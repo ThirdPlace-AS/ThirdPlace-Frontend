@@ -13,6 +13,7 @@ import {
 } from "@/components/ui";
 import { RouteHeader } from "@/components/RouteHeader";
 import { EmptyState } from "@/components/states/StateView";
+import { useGuestGate } from "@/components/useGuestGate";
 import { chats, experiencesHostedBy, personById } from "@/fixtures";
 import { libImage } from "@/fixtures/images";
 import { whenLabel } from "@/lib/whenLabel";
@@ -25,6 +26,8 @@ export default function CreatorProfileScreen() {
   const { id } = useLocalSearchParams<{ id?: string }>();
   const person = personById(id ?? "");
   const [follow, setFollow] = useState(false);
+  // Following and messaging are personal (founder 2026-11-19 Q1).
+  const { gate, prompt: signInPrompt } = useGuestGate();
   if (!person) {
     return (
       <Screen edges={["top"]}>
@@ -66,7 +69,7 @@ export default function CreatorProfileScreen() {
           <View className="flex-1">
             <FollowButton
               following={follow}
-              onPress={() => setFollow((f) => !f)}
+              onPress={gate("følge folk", () => setFollow((f) => !f))}
               name={person.name}
               size="md"
               fullWidth
@@ -77,7 +80,7 @@ export default function CreatorProfileScreen() {
               label="Melding"
               variant="secondary"
               rounded="full"
-              onPress={() => {
+              onPress={gate("sende meldinger", () => {
                 // Open the direct chat with this person when one exists,
                 // else the chat list (BLOCKED_CONTRACT_GAP: no DM contract).
                 const first = person.name.split(" ")[0] ?? person.name;
@@ -85,7 +88,7 @@ export default function CreatorProfileScreen() {
                   (c) => c.type === "dm" && c.name.startsWith(first),
                 );
                 router.push((dm ? `/chat/${dm.id}` : "/chat") as Href);
-              }}
+              })}
             />
           </View>
         </View>
@@ -117,6 +120,7 @@ export default function CreatorProfileScreen() {
           </Text>
         </Section>
       </ScrollView>
+      {signInPrompt}
     </Screen>
   );
 }

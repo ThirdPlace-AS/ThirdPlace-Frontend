@@ -3,7 +3,7 @@ import "../global.css";
 import { Ionicons } from "@expo/vector-icons";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { useFonts } from "expo-font";
-import { Stack } from "expo-router";
+import { Stack, useGlobalSearchParams, usePathname } from "expo-router";
 import { useEffect } from "react";
 import { LogBox, View } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
@@ -23,6 +23,7 @@ import { useThemeColors } from "@/theme";
 import { fontAssets } from "@/theme/fonts";
 import { ThemeRoot } from "@/theme/ThemeRoot";
 import { useA11yPrefs } from "@/lib/a11yPrefs";
+import { setCurrentRoute } from "@/lib/signInReturn";
 import {
   hydrateDeviceSettings,
   useDeviceSettingsReady,
@@ -76,6 +77,7 @@ export default function RootLayout() {
               <PortalHost />
               <ToastHost />
               <MotionPreference />
+              <RouteTracker />
             </ThemeRoot>
           </KeyboardRoot>
         </QueryClientProvider>
@@ -93,6 +95,17 @@ function MotionPreference() {
   return reduceMotion ? (
     <ReducedMotionConfig mode={ReduceMotion.Always} />
   ) : null;
+}
+
+// Records the screen in front, so a sign-in asked for there can return to
+// it (founder 2026-11-19 Q1, src/lib/signInReturn.ts). Renders nothing.
+function RouteTracker() {
+  const pathname = usePathname();
+  const params = useGlobalSearchParams();
+  useEffect(() => {
+    setCurrentRoute(pathname, params);
+  }, [pathname, params]);
+  return null;
 }
 
 function RootStack() {

@@ -1,3 +1,4 @@
+import { GuestPage } from "@/components/GuestPage";
 import { router, type Href } from "expo-router";
 import { Pressable, View } from "react-native";
 
@@ -21,7 +22,7 @@ import { useMyProfile } from "@/lib/myProfile";
 // makes its account the active one (src/lib/activeAccount.ts, G-Q8).
 // BLOCKED_CONTRACT_GAP: no linked-account or session model; the switch is
 // in memory and changes which account the screens name, nothing more.
-export default function AccountSwitch() {
+function AccountSwitchPage() {
   const me = useMyProfile();
   const activeBiz = useActiveBusinessId();
   const biz = businesses[0];
@@ -102,5 +103,19 @@ export default function AccountSwitch() {
         </UIPressable>
       </View>
     </View>
+  );
+}
+
+// Account-only (founder 2026-11-19 Q1: guests browse only): a guest sees
+// the lock and Logg inn, which returns here once signed in.
+export default function AccountSwitch() {
+  return (
+    <GuestPage
+      title="Bytt konto"
+      message="Logg inn for å bytte konto."
+      action="bytte konto"
+    >
+      <AccountSwitchPage />
+    </GuestPage>
   );
 }

@@ -21,6 +21,7 @@ import {
 import { Gesture, GestureDetector } from "react-native-gesture-handler";
 
 import { BlockSheet, ReportSheet } from "@/components/actions/ActionSheets";
+import { useGuestGate } from "@/components/useGuestGate";
 import { ReviewsSection } from "@/components/reviews/ReviewsSection";
 import { sortReviews } from "@/components/reviews/reviewSort";
 import {
@@ -145,6 +146,8 @@ export function ExperiencePage({
     exp.status === "joined" ? "joined" : "none",
   );
   const [sheet, setSheet] = useState<"report" | "block" | null>(null);
+  // Messaging, reporting and blocking are personal (founder 2026-11-19 Q1).
+  const { gate, prompt: signInPrompt } = useGuestGate();
   const place = placeById(exp.placeId);
   const group = groupById(exp.groupId);
   const host = hostPerson(exp);
@@ -428,9 +431,9 @@ export function ExperiencePage({
               <Button
                 label={`Send melding til ${hostName.split(" ")[0]}`}
                 variant="secondary"
-                onPress={() =>
-                  onNavigate((dm ? `/chat/${dm.id}` : "/chat") as Href)
-                }
+                onPress={gate("sende melding", () =>
+                  onNavigate((dm ? `/chat/${dm.id}` : "/chat") as Href),
+                )}
               />
             )}
           </View>
@@ -467,12 +470,12 @@ export function ExperiencePage({
                 <FooterLink
                   icon="flag-outline"
                   label="Rapporter opplevelsen"
-                  onPress={() => setSheet("report")}
+                  onPress={gate("rapportere", () => setSheet("report"))}
                 />
                 <FooterLink
                   icon="ban-outline"
                   label={`Blokker ${hostName.split(" ")[0]}`}
-                  onPress={() => setSheet("block")}
+                  onPress={gate("blokkere", () => setSheet("block"))}
                 />
               </>
             )}
@@ -488,6 +491,7 @@ export function ExperiencePage({
               onClose={() => setSheet(null)}
             />
           ) : null}
+          {signInPrompt}
         </>
       ) : null}
     </View>

@@ -63,6 +63,7 @@ import { useMockResource } from "@/hooks/useMockResource";
 import { useLoadPhase } from "@/hooks/useLoadPhase";
 import { useNotificationReads } from "@/hooks/useNotificationReads";
 import { setDevSimulation, useDevSimulation } from "@/lib/devSimulation";
+import { setMapTarget } from "@/lib/signInReturn";
 
 // Map discovery surface. Thin composition over feature hooks:
 // filters/search, discovery mode, selection (detail sheet), camera, location.
@@ -177,6 +178,12 @@ export default function MapScreen() {
   // Closed (swipe, scrim) or replaced by a pin tap: a later open is not
   // from search.
   if (fromSearch && fromSearch.target !== sheetRootKey) setFromSearch(null);
+  // The detail in front is where a sign-in asked for from it returns
+  // (founder 2026-11-19 Q1, src/lib/signInReturn.ts).
+  const sheetTop = selection.sheetStack[selection.sheetStack.length - 1];
+  useEffect(() => {
+    setMapTarget(sheetTop ?? null);
+  }, [sheetTop]);
   const detailRef = useRef<MapDetailSheetHandle>(null);
   // Whether the detail sheet is the full-screen page, read only by the back
   // key: a ref, so reaching the top does not re-render the whole map screen
