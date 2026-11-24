@@ -10,22 +10,23 @@ import Animated, {
 
 import { motion, media } from "@/theme";
 
+import { buttonProgress, saveButtonProgress, upDragLeads } from "./deckLogic";
+
 const G = motion.gesture;
 
-// Tinder-style 5-button action row, floating on the card's bottom gradient (no
-// tray). Per the reference the discs are DARK + translucent at rest with COLORED
-// glyphs; they are NOT all one size: rewind + send are small, the X + heart are
-// large, save is medium. At rest the glyphs carry the reference's colors — white
-// X, red heart outline, blue bookmark + paper-plane. As you drag, the disc for
-// the drag direction fills with its accent and its glyph inverts (ink X on a nope
-// drag, white heart on a like drag, ink bookmark on an up/save drag). Rewind +
-// send are neutral but flash on press. The save slot keeps the BOOKMARK (ThirdPlace
-// SAVES — no superlike/match), it is not the reference's star. Share opens the
-// device share sheet with the card title (local, no backend).
-const REST = media.glass; // translucent dark glass — lets each photo's own footer tint show through so the disc blends with the card instead of reading as a foreign grey chip, while staying dark enough that the colored glyphs keep contrast on any photo
-const PRESS = media.glassPressed; // same glass, denser while pressed (rewind/share)
+// The deck's 5-button action row, floating over the card's dark foot (as the
+// reference). Discs are solid, a step lighter than the foot, with no ring;
+// rewind, save and share are small, the X and heart large. Rewind's glyph is
+// grey while there is nothing to undo and white once there is. Every glyph rests white except the ember heart (PDF p7). As you drag,
+// the disc for the drag direction fills and its glyph inverts (ink X on a nope
+// drag, white heart on a like drag, ink bookmark on an up/save drag). Rewind and
+// share flash ember on press. The save slot keeps the BOOKMARK (ThirdPlace SAVES,
+// no superlike/match). Share opens the device share sheet with the card title
+// (local, no backend).
+const REST = media.disc;
+const PRESS = media.discPressed; // rewind/share while pressed
 const INK = media.inkOnLight; // inverted glyph on a light fill
-const DIM = media.onMediaMuted; // rewind glyph when there's nothing to undo
+const DIM = media.onMediaDisabled; // rewind glyph when there's nothing to undo
 const SAVE = media.surface; // neutral light fill when save commits
 const LIKE = media.ember; // ember (brand) — like / join: resting heart + fill
 // PDF p7: every action glyph rests white except the ember heart — no
@@ -33,12 +34,22 @@ const LIKE = media.ember; // ember (brand) — like / join: resting heart + fill
 const ACCENT_BLUE = media.onMedia; // resting bookmark + paper-plane
 const UNDO_ACCENT = LIKE; // rewind / share flash ember on press
 
-// Per-button sizing matched to the reference: X + heart large, rewind/save/send
-// smaller, the glyphs filling a good share of the disc.
-const SIZE_SM = 52; // rewind + share
-const SIZE_MD = 54; // save
+// Per-button sizing measured on the reference (2026-11-18): X + heart large,
+// rewind/save/send small, every disc centred in an equal slot (69 dp pitch,
+// narrower on a small phone) so the centres are evenly spaced.
+const SIZE_SM = 48; // rewind + save + share
 const SIZE_LG = 64; // nope (skip) + like (join)
-const DISC_GAP = 16; // fixed edge-to-edge gap between discs (even cluster, G4)
+const SLOT = 69; // centre-to-centre pitch
+/** Height of the action row, for the card footer that holds it. */
+export const SWIPE_ACTIONS_HEIGHT = SIZE_LG;
+// The band at the foot of the deck that holds the row (measured on the
+// reference 2026-11-18: ~100 dp, the large discs end 14 dp above the tab bar).
+// It sits above the tab bar, which owns the bottom inset, so no inset here.
+export const SWIPE_PANEL_PAD_TOP = 22;
+export const SWIPE_PANEL_PAD_BOTTOM = 14;
+/** Height of the row's band; the card's info block ends above it. */
+export const SWIPE_PANEL_HEIGHT =
+  SWIPE_PANEL_PAD_TOP + SWIPE_ACTIONS_HEIGHT + SWIPE_PANEL_PAD_BOTTOM;
 
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 
@@ -49,10 +60,6 @@ function disc(size: number) {
     borderRadius: size / 2,
     alignItems: "center",
     justifyContent: "center",
-    // Hairline ring so the translucent glass disc reads as a distinct circle on
-    // any footer — including a very dark one — without raising its fill.
-    borderWidth: 1,
-    borderColor: media.hairline,
   } as const;
 }
 
@@ -169,9 +176,13 @@ export function SwipeActions({
   saved,
   tx,
   ty,
+  held,
+  hx,
+  hy,
   w,
   h,
   reduced,
+  details = false,
 }: {
   onUndo: () => void;
   onNope: () => void;
@@ -180,103 +191,163 @@ export function SwipeActions({
   onShare: () => void;
   canUndo: boolean;
   saved: boolean;
-  // Drag signals from the deck so the action discs react/fill with the swipe.
+  // Drag signals from the deck so the action discs react/fill with the swipe
+  // (held at the release value while the card flies off or springs back).
   tx: SharedValue<number>;
   ty: SharedValue<number>;
+  /** 1 from release until the card has flown off or sprung back: the discs
+   *  read `hx`/`hy` (the drag at release) instead of `tx`/`ty`. */
+  held: SharedValue<number>;
+  hx: SharedValue<number>;
+  hy: SharedValue<number>;
   w: number;
   h: number;
   reduced: boolean;
+  /** The details are open: rewind and share leave in one frame and their
+   *  slots stay empty, so X, save and like keep their places (as the
+   *  reference). */
+  details?: boolean;
 }) {
-  // Per-direction drag progress (0→1 at the commit threshold).
-  const like = useDerivedValue(() => {
-    const d = w * G.swipeCommitRatio;
-    return d > 0 ? Math.min(1, Math.max(0, tx.value / d)) : 0;
-  });
-  const nope = useDerivedValue(() => {
-    const d = w * G.swipeCommitRatio;
-    return d > 0 ? Math.min(1, Math.max(0, -tx.value / d)) : 0;
-  });
-  const save = useDerivedValue(() => {
-    const d = (h > 0 ? h : 480) * G.swipeVertCommitRatio;
-    return d > 0 ? Math.min(1, Math.max(0, -ty.value / d)) : 0;
-  });
+  // Per-direction drag progress (0→1). The disc answers the moment the card
+  // moves, then creeps to full (measured on the reference). Only the
+  // direction that leads lights up (user 2026-11-24): an up drag drifts a
+  // little sideways, and that drift must not fill X or the heart.
+  const upLeads = useDerivedValue(() =>
+    upDragLeads(
+      held.value ? hx.value : tx.value,
+      held.value ? hy.value : ty.value,
+      G.swipeVertDamp,
+    ),
+  );
+  const like = useDerivedValue(() =>
+    upLeads.value
+      ? 0
+      : buttonProgress(
+          held.value ? hx.value : tx.value,
+          w,
+          G.swipeButtonSnap,
+          G.swipeButtonRamp,
+        ),
+  );
+  const nope = useDerivedValue(() =>
+    upLeads.value
+      ? 0
+      : buttonProgress(
+          -(held.value ? hx.value : tx.value),
+          w,
+          G.swipeButtonSnap,
+          G.swipeButtonRamp,
+        ),
+  );
+  const save = useDerivedValue(() =>
+    upLeads.value
+      ? saveButtonProgress(
+          -(held.value ? hy.value : ty.value),
+          w,
+          h,
+          G.swipeButtonSnap,
+          G.swipeVertCommitRatio * G.swipeVertDamp,
+        )
+      : 0,
+  );
 
-  // Centered cluster with a FIXED gap between discs, so the edge-to-edge spacing
-  // is even regardless of per-disc diameter (equal-width flex slots gave the two
-  // large discs tighter-looking gaps). Matches the reference's even row.
+  // Centered row of five equal slots, each disc centred in its slot, so the
+  // centres sit an even pitch apart whatever the disc size (as the reference).
+  // A phone narrower than 5 × SLOT + 16 shrinks the pitch, never the discs.
+  const slot = w > 0 ? Math.min(SLOT, Math.floor((w - 16) / 5)) : SLOT;
+  const slotStyle = {
+    width: slot,
+    alignItems: "center",
+    justifyContent: "center",
+  } as const;
   return (
     <View
+      pointerEvents="box-none"
       className="flex-row items-center justify-center"
-      style={{ gap: DISC_GAP }}
     >
-      {/* Rewind — small; flashes amber on press (dims when nothing to undo). */}
-      <FlashButton
-        size={SIZE_SM}
-        iconSize={25}
-        icon="refresh"
-        color={media.onMedia}
-        pressColor={UNDO_ACCENT}
-        label="Angre"
-        onPress={onUndo}
-        disabled={!canUndo}
-      />
+      {/* Rewind — small; flashes ember on press (dims when nothing to undo). */}
+      <View pointerEvents="box-none" style={slotStyle}>
+        {details ? null : (
+          <FlashButton
+            size={SIZE_SM}
+            iconSize={22}
+            icon="refresh"
+            color={media.onMedia}
+            pressColor={UNDO_ACCENT}
+            label="Angre"
+            onPress={onUndo}
+            disabled={!canUndo}
+          />
+        )}
+      </View>
 
       {/* Nope — large; fills white, X inverts to ink. */}
-      <ReactiveButton
-        progress={nope}
-        fill={media.onMedia}
-        size={SIZE_LG}
-        iconSize={38}
-        icon="close"
-        baseColor={media.onMedia}
-        overIcon="close"
-        overColor={INK}
-        reduced={reduced}
-        label="Hopp over"
-        onPress={onNope}
-      />
+      <View pointerEvents="box-none" style={slotStyle}>
+        <ReactiveButton
+          progress={nope}
+          fill={media.onMedia}
+          size={SIZE_LG}
+          iconSize={36}
+          icon="close"
+          baseColor={media.onMedia}
+          overIcon="close"
+          overColor={INK}
+          reduced={reduced}
+          label="Hopp over"
+          onPress={onNope}
+        />
+      </View>
 
-      {/* Save — medium; fills light, bookmark inverts to ink. */}
-      <ReactiveButton
-        progress={save}
-        fill={SAVE}
-        size={SIZE_MD}
-        iconSize={28}
-        icon={saved ? "bookmark" : "bookmark-outline"}
-        baseColor={ACCENT_BLUE}
-        overIcon="bookmark"
-        overColor={INK}
-        reduced={reduced}
-        label={saved ? "Lagret" : "Lagre"}
-        selected={saved}
-        onPress={onSave}
-      />
+      {/* Save — small; fills light, bookmark inverts to ink. */}
+      <View pointerEvents="box-none" style={slotStyle}>
+        <ReactiveButton
+          progress={save}
+          fill={SAVE}
+          size={SIZE_SM}
+          iconSize={24}
+          icon={saved ? "bookmark" : "bookmark-outline"}
+          baseColor={ACCENT_BLUE}
+          overIcon="bookmark"
+          overColor={INK}
+          reduced={reduced}
+          label={saved ? "Lagret" : "Lagre"}
+          selected={saved}
+          onPress={onSave}
+        />
+      </View>
 
-      {/* Like — large; fills ember, heart fills white. */}
-      <ReactiveButton
-        progress={like}
-        fill={LIKE}
-        size={SIZE_LG}
-        iconSize={36}
-        icon="heart-outline"
-        baseColor={LIKE}
-        overIcon="heart"
-        overColor={media.onMedia}
-        reduced={reduced}
-        label="Bli med"
-        onPress={onLike}
-      />
+      {/* Like — large; a solid ember heart; the disc fills ember and the heart
+          turns white. */}
+      <View pointerEvents="box-none" style={slotStyle}>
+        <ReactiveButton
+          progress={like}
+          fill={LIKE}
+          size={SIZE_LG}
+          iconSize={34}
+          icon="heart"
+          baseColor={LIKE}
+          overIcon="heart"
+          overColor={media.onMedia}
+          reduced={reduced}
+          label="Bli med"
+          onPress={onLike}
+        />
+      </View>
 
-      {/* Share — small; DEMO no-op; flashes amber on press. */}
-      <FlashButton
-        size={SIZE_SM}
-        iconSize={24}
-        icon="paper-plane-outline"
-        color={ACCENT_BLUE}
-        pressColor={UNDO_ACCENT}
-        label="Del"
-        onPress={onShare}
-      />
+      {/* Share — small; the device share sheet; flashes ember on press. */}
+      <View pointerEvents="box-none" style={slotStyle}>
+        {details ? null : (
+          <FlashButton
+            size={SIZE_SM}
+            iconSize={22}
+            icon="paper-plane"
+            color={ACCENT_BLUE}
+            pressColor={UNDO_ACCENT}
+            label="Del"
+            onPress={onShare}
+          />
+        )}
+      </View>
     </View>
   );
 }

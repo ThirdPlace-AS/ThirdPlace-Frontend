@@ -75,6 +75,9 @@ export type ExperiencePageProps = {
   /** Leaves to another page: place, group, another experience, host
    *  profile, chat, all reviews (Phase 12 H4c: full entities are pages). */
   onNavigate: (href: Href) => void;
+  /** Leaves out the photo gallery (Sveip's details show the card's photo
+   *  above the page). */
+  hideGallery?: boolean;
 };
 
 /** "1 time" → "Ca. 1 time"; "Hele dagen" stays. */
@@ -134,6 +137,7 @@ export function ExperiencePage({
   exp,
   onOpen,
   onNavigate,
+  hideGallery = false,
 }: ExperiencePageProps) {
   // In the map sheet: the open shows the gallery (what the peek shows), the
   // first rows come once the sheet rests, the rest a moment later (0381).
@@ -184,7 +188,9 @@ export function ExperiencePage({
 
   return (
     <View className="gap-6">
-      <HeroGallery title={exp.title} photos={exp.photos} />
+      {hideGallery ? null : (
+        <HeroGallery title={exp.title} photos={exp.photos} />
+      )}
 
       {first ? (
         <>

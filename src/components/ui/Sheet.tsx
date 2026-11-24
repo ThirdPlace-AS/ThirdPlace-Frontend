@@ -10,7 +10,13 @@
 //
 // The scrim is a SIBLING behind the card, never its ancestor, so the card's
 // buttons are never nested inside a <button> on web (CLAUDE.md "Sheets").
-import { useMemo, useState, type ReactNode } from "react";
+import {
+  createContext,
+  useContext,
+  useMemo,
+  useState,
+  type ReactNode,
+} from "react";
 import {
   type LayoutChangeEvent,
   Modal,
@@ -53,6 +59,17 @@ import { usePresence } from "./usePresence";
 export const SHEET_RADIUS = parseInt(radius.xl ?? "32", 10);
 /** Scrim left visible above the tallest content sheet. */
 const SHEET_TOP_GAP = 16;
+
+// True once the sheet's open slide has landed (and while it stays open).
+// Content that is heavy and below the first screen can mount then: a commit
+// at rest is safe inside the Modal (usePresence), and the slide starts
+// without waiting for it (Filtre, user 2026-11-24). True outside a Sheet.
+const SheetSettledContext = createContext(true);
+
+/** Whether the enclosing Sheet has finished opening; true outside one. */
+export function useSheetSettled(): boolean {
+  return useContext(SheetSettledContext);
+}
 
 export type SheetTone = "light" | "dark";
 
@@ -377,7 +394,11 @@ function SheetEngine({
               </GestureDetector>
               {fullHeight ? (
                 // Tall sheets own their scroll area and sticky footer.
-                <View className="flex-1 gap-4 px-gutter">{children}</View>
+                <View className="flex-1 gap-4 px-gutter">
+                  <SheetSettledContext.Provider value={settled || reduced}>
+                    {children}
+                  </SheetSettledContext.Provider>
+                </View>
               ) : (
                 <ScrollView
                   style={{ flexGrow: 0, flexShrink: 1 }}
@@ -386,7 +407,9 @@ function SheetEngine({
                   bounces={false}
                   overScrollMode="never"
                 >
-                  {children}
+                  <SheetSettledContext.Provider value={settled || reduced}>
+                    {children}
+                  </SheetSettledContext.Provider>
                 </ScrollView>
               )}
             </View>

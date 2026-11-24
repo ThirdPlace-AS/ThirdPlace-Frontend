@@ -4,11 +4,11 @@
 // variants. Modal content is still a React child, so it inherits them too.
 import { vars } from "nativewind";
 import { useEffect, useMemo, type ReactNode } from "react";
-import { View } from "react-native";
+import { View, type StyleProp, type ViewStyle } from "react-native";
 
 import { setStatusBarFallback } from "@/components/ui/StatusBarStyle";
 
-import { useScheme } from "./scheme";
+import { SchemeOverrideContext, useScheme, type Scheme } from "./scheme";
 
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const tokens = require("./tokens.js") as {
@@ -27,5 +27,26 @@ export function ThemeRoot({ children }: { children: ReactNode }) {
     <View style={[{ flex: 1 }, style]} className="bg-background">
       {children}
     </View>
+  );
+}
+
+/** Draws its children in `scheme` whatever the phone's setting: the token
+ *  classes read this View's variables and `useScheme` / `useThemeColors`
+ *  read the context. Sheets opened inside follow it too (Modal content is a
+ *  React child). */
+export function SchemeScope({
+  scheme,
+  style,
+  children,
+}: {
+  scheme: Scheme;
+  style?: StyleProp<ViewStyle>;
+  children: ReactNode;
+}) {
+  const vs = useMemo(() => vars(tokens.cssVars(scheme)), [scheme]);
+  return (
+    <SchemeOverrideContext.Provider value={scheme}>
+      <View style={[vs, style]}>{children}</View>
+    </SchemeOverrideContext.Provider>
   );
 }

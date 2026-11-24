@@ -4,6 +4,7 @@
 // Phase 5 dark-mode sweep has verified every route; the sandbox
 // (app/_sandbox/theme.tsx) can switch it for preview. In-memory only, like the
 // other demo stores — persistence is contract-blocked.
+import { createContext, useContext } from "react";
 import { useColorScheme } from "react-native";
 import { createStore, useStore } from "zustand";
 
@@ -45,11 +46,17 @@ export function resolveScheme(
   return pref;
 }
 
+/** A subtree drawn in one scheme whatever the phone's (Sveip's details sit
+ *  on the dark deck, 2026-11-18). Set through `SchemeScope` (ThemeRoot.tsx),
+ *  which also applies that scheme's colour variables. */
+export const SchemeOverrideContext = createContext<Scheme | null>(null);
+
 /** The active scheme ("light" | "dark"). */
 export function useScheme(): Scheme {
+  const forced = useContext(SchemeOverrideContext);
   const pref = useSchemePreference();
   const system = useColorScheme();
-  return resolveScheme(pref, system);
+  return forced ?? resolveScheme(pref, system);
 }
 
 export type ThemeColors = typeof tokens.palette.light;

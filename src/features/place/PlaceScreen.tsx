@@ -1,18 +1,25 @@
 // Place page (/place/[id]), Phase 12: the video-style PlacePage (H5d) under
-// the same top bar as the experience page. Lagret, Sveip's "i", an
-// experience's venue row, "Flere steder i nærheten" and deep links open it;
-// map pins open the same PlacePage in the map's page sheet (2026-11-09).
+// the same top bar as the experience page. Lagret, an experience's venue
+// row, "Flere steder i nærheten" and deep links open it; map pins open the
+// same PlacePage in the map's page sheet (2026-11-09), Sveip's arrow in place
+// (SwipeDetails, 2026-11-18).
 import { router, useLocalSearchParams, type Href } from "expo-router";
+import { useState } from "react";
 import { ScrollView, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { placeCaption } from "@/components/experience/experienceMeta";
+import { PlaceChatBar } from "@/components/map/content/PlaceChatBar";
 import { markerId } from "@/components/map/types/mapPresentation";
 import { PlacePage } from "@/components/place/PlacePage";
 import { EmptyState, Header, Screen, StatusBarStyle } from "@/components/ui";
-import { placeById } from "@/fixtures";
+import { chatForPlace, placeById } from "@/fixtures";
 import { PageTopBar } from "@/features/entity/PageTopBar";
 import { goBackOr } from "@/lib/navigation";
+import { elevation } from "@/theme";
+
+// The floating chat card's height before it is measured (dp).
+const CHAT_CARD = 96;
 
 export default function PlaceScreen() {
   const { id = "" } = useLocalSearchParams<{ id: string }>();
@@ -33,12 +40,19 @@ export default function PlaceScreen() {
   return <PlacePageBody place={place} />;
 }
 
-function PlacePageBody({
+export function PlacePageBody({
   place,
+  onBack,
 }: {
   place: NonNullable<ReturnType<typeof placeById>>;
+  /** Set where the page is open in place (Sveip's details). */
+  onBack?: () => void;
 }) {
   const insets = useSafeAreaInsets();
+  // The floating chat card, as on the map's page: a place's chat, with its
+  // last message and "Bli med i samtalen".
+  const hasChat = chatForPlace(place.id) != null;
+  const [cardH, setCardH] = useState(CHAT_CARD);
   return (
     <View className="flex-1 bg-background">
       <StatusBarStyle style="auto" />
@@ -47,11 +61,17 @@ function PlacePageBody({
         caption={placeCaption(place)}
         shareMessage={`${place.name} på ThirdPlace: thirdplace.app/place/${place.id}`}
         savedKey={markerId("place", place.id)}
+        onBack={onBack}
       />
       <ScrollView
         contentContainerClassName="px-gutter pt-4"
-        // The page bottom (48) above the home indicator.
-        contentContainerStyle={{ paddingBottom: insets.bottom + 48 }}
+        // The page bottom (48) above the home indicator, or 24 above the
+        // floating chat card.
+        contentContainerStyle={{
+          paddingBottom: hasChat
+            ? Math.max(insets.bottom, 12) + 4 + cardH + 24
+            : insets.bottom + 48,
+        }}
         keyboardShouldPersistTaps="handled"
       >
         <PlacePage
@@ -59,6 +79,24 @@ function PlacePageBody({
           onNavigate={(href: Href) => router.push(href)}
         />
       </ScrollView>
+      {hasChat ? (
+        <View
+          pointerEvents="box-none"
+          className="absolute inset-x-0 bottom-0 px-gutter"
+          style={{ paddingBottom: Math.max(insets.bottom, 12) + 4 }}
+        >
+          <View
+            className="rounded-md border border-line bg-surface px-4 py-3"
+            style={elevation.e2}
+            onLayout={(e) => {
+              const h = Math.round(e.nativeEvent.layout.height);
+              if (h > 0 && h !== cardH) setCardH(h);
+            }}
+          >
+            <PlaceChatBar placeId={place.id} />
+          </View>
+        </View>
+      ) : null}
     </View>
   );
 }

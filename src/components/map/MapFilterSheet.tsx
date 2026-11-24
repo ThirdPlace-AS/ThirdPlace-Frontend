@@ -18,6 +18,7 @@ import {
   Button,
   Chip,
   Sheet,
+  useSheetSettled,
 } from "@/components/ui";
 import { elevation } from "@/theme";
 import { Calendar } from "@/components/Calendar";
@@ -661,6 +662,7 @@ function FilterBody({
   setOpenSection: Dispatch<SetStateAction<OpenSection>>;
 }) {
   const titleAway = useRef(false);
+  const settled = useSheetSettled();
   const [draft, setDraft] = useState<MapFilters>(filters);
   const [langExpanded, setLangExpanded] = useState(false);
 
@@ -1378,25 +1380,31 @@ function FilterBody({
         {/* pb-2: 24 above the first divider, like each section's (8 + gap 16). */}
         <View className="pb-2">{searchRows}</View>
 
-        {/* All sections mount with the sheet: on the production bundle the
-            400 ms deferral made the lower half settle 1.2–1.4 s after the tap
-            (0.02–0.33 s without it), so it was removed (Phase 10). */}
+        {/* The first screen mounts with the sheet; the rest once its slide
+            has landed (user 2026-11-24: on production JS the whole body took
+            ~0.4 s to render before the slide began). Phase 10's fixed 400 ms
+            timer is not back: the rest waits only for the slide, and a commit
+            at rest is safe inside the Modal. */}
         <>
           {kategoriSection}
           {typeSection}
           {timeOfDaySection}
-          {expTypeSection}
-          {audienceSection}
-          {priceSection}
-          {durationSection}
-          {distanceSection}
-          {vibeSection}
-          {tagsSection}
-          {ratingSection}
-          {languageSection}
-          {accessSection}
-          {availabilitySection}
         </>
+        {settled ? (
+          <>
+            {expTypeSection}
+            {audienceSection}
+            {priceSection}
+            {durationSection}
+            {distanceSection}
+            {vibeSection}
+            {tagsSection}
+            {ratingSection}
+            {languageSection}
+            {accessSection}
+            {availabilitySection}
+          </>
+        ) : null}
       </ScrollView>
 
       {/* Sticky footer. While "Når" is open it steps the flow (benchmark W5):
