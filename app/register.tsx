@@ -9,13 +9,19 @@ import {
   KeyboardAvoider,
   Button,
   Input,
+  LINK_SLOP,
 } from "@/components/ui";
 import { SocialAuthButtons } from "@/components/auth/SocialAuthButtons";
 import { Logo } from "@/components/Logo";
 import { ScreenHeader } from "@/components/ScreenHeader";
 import { useGuestMode } from "@/components/map/hooks/useGuestMode";
 import { resetTo } from "@/lib/navigation";
-import { markAccountCreated, useSignupProgress } from "@/lib/signupProgress";
+import {
+  getSignupEmail,
+  markAccountCreated,
+  setSignupEmail,
+  useSignupProgress,
+} from "@/lib/signupProgress";
 
 // Sign-up. From the welcome screen it is the last step after onboarding
 // ("Lag kontoen din"); from "Registrer deg" it comes first and onboarding
@@ -24,7 +30,8 @@ export default function Register() {
   const { onboarded } = useSignupProgress();
   const { setGuest } = useGuestMode();
   // Typed values stay on the device; nothing is checked or sent.
-  const [email, setEmail] = useState("");
+  // Prefilled from business onboarding's e-mail (review 2026-11-18 #17).
+  const [email, setEmail] = useState(getSignupEmail);
   const [password, setPassword] = useState("");
   // A social sign-in creates the account without a code.
   const social = () => {
@@ -59,29 +66,30 @@ export default function Register() {
             <Input
               label="E-postadresse"
               placeholder="navn@epost.no"
-              keyboardType="email-address"
-              autoCapitalize="none"
-              autoComplete="email"
+              type="email"
               value={email}
               onChangeText={setEmail}
             />
             <Input
               label="Passord"
               placeholder="Minst 8 tegn"
+              type="newPassword"
               secureTextEntry
-              autoComplete="password-new"
               value={password}
               onChangeText={setPassword}
             />
             <Button
               label="Opprett konto"
               variant="ember"
-              onPress={() =>
+              onPress={() => {
+                // Kontoinformasjon shows the address typed here (O6),
+                // not the demo persona's.
+                setSignupEmail(email.trim());
                 router.push({
                   pathname: "/verify-code",
                   params: { mode: "email" },
-                })
-              }
+                });
+              }}
             />
             <SocialAuthButtons verb="Fortsett med" onContinue={social} />
           </View>
@@ -93,10 +101,7 @@ export default function Register() {
               Allerede medlem?{" "}
             </Text>
             <Link href="/login" asChild>
-              <Pressable
-                accessibilityRole="link"
-                hitSlop={{ top: 14, bottom: 14, left: 8, right: 8 }}
-              >
+              <Pressable accessibilityRole="link" hitSlop={LINK_SLOP}>
                 <Text variant="caption" weight="semibold" tone="ember">
                   Logg inn
                 </Text>

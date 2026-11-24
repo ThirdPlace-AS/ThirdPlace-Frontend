@@ -6,7 +6,7 @@
 import { useState } from "react";
 import { ScrollView, View } from "react-native";
 
-import { Pressable, Sheet, Text, Button } from "@/components/ui";
+import { Button, LINK_SLOP, Pressable, Sheet, Text } from "@/components/ui";
 import { ratingOf } from "@/fixtures";
 import { formatRating } from "@/lib/format";
 
@@ -64,7 +64,7 @@ export function ReviewsSection({
       <Pressable
         accessibilityRole="link"
         onPress={() => setInfoOpen(true)}
-        hitSlop={8}
+        hitSlop={LINK_SLOP}
         className="self-center"
       >
         <Text variant="caption" tone="muted" className="underline">

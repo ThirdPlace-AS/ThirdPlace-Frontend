@@ -16,6 +16,7 @@ import { RouteHeader } from "@/components/RouteHeader";
 import { SignInPrompt } from "@/components/SignInPrompt";
 import { useGuestMode } from "@/components/map/hooks/useGuestMode";
 import { profile } from "@/fixtures";
+import { pushSummary, useNotificationPrefs } from "@/lib/notificationPrefs";
 import { signOut } from "@/lib/signOut";
 
 import { ExportSheet } from "./ExportSheet";
@@ -44,6 +45,7 @@ type Row = {
 // rows are the results, plus what each one's page holds (settingsIndex.ts).
 export default function SettingsScreen() {
   const guest = useGuestMode();
+  const notificationPrefs = useNotificationPrefs();
   const [exportOpen, setExportOpen] = useState(false);
   const [logoutOpen, setLogoutOpen] = useState(false);
   const [signIn, setSignIn] = useState<string | null>(null);
@@ -75,7 +77,11 @@ export default function SettingsScreen() {
           inside: PAGE_ROWS.Preferanser,
           onPress: gated("endre preferanser", go("/settings/preferences")),
         },
-        { icon: "card-outline", label: "Betaling", onPress: go("/payments") },
+        {
+          icon: "card-outline",
+          label: "Betaling",
+          onPress: gated("se betaling", go("/payments")),
+        },
       ],
     },
     {
@@ -84,7 +90,7 @@ export default function SettingsScreen() {
         {
           icon: "notifications-outline",
           label: "Varsler",
-          value: "På",
+          value: pushSummary(notificationPrefs),
           inside: PAGE_ROWS.Varsler,
           onPress: go("/settings/notifications"),
         },

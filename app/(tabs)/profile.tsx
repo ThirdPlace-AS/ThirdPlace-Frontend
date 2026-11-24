@@ -15,6 +15,7 @@ import {
   Screen,
   Text,
   Button,
+  LINK_SLOP,
 } from "@/components/ui";
 import { GuestLock } from "@/components/GuestLock";
 import { HintBanner } from "@/components/HintBanner";
@@ -22,10 +23,12 @@ import { claimHint, markHintSeen, useHintSeen } from "@/lib/hints";
 import { SignInPrompt } from "@/components/SignInPrompt";
 import { useGuestMode } from "@/components/map/hooks/useGuestMode";
 import { tagIcon } from "@/components/swipe/SwipeCard";
-import { experienceById, placeById, profile } from "@/fixtures";
+import { businesses, experienceById, placeById, profile } from "@/fixtures";
+import { switchToPersonal, useActiveBusinessId } from "@/lib/activeAccount";
 import { useProfileCounts } from "@/lib/following";
 import { useMyProfile, type MyProfile } from "@/lib/myProfile";
 import { openProfileSteps, PROFILE_STEP_COUNT } from "@/lib/profileSteps";
+import { whenLabel } from "@/lib/whenLabel";
 import {
   coverForPlace,
   libImage,
@@ -99,6 +102,7 @@ export default function ProfileScreen() {
                 onDone={() => markHintSeen("profileSwitch")}
               />
             ) : null}
+            <ActiveBusinessCard />
             {/* Header — tapping it opens Rediger profil (PDF p13). */}
             <UIPressable
               accessibilityRole="button"
@@ -275,6 +279,48 @@ function FinishProfileCard({ me }: { me: MyProfile }) {
   );
 }
 
+// While a business is the active account (G-Q8, founder: in-memory switch),
+// Profil names it at the top: the card opens its Arbeidsflate, the button
+// switches back to the personal account this page belongs to.
+function ActiveBusinessCard() {
+  const activeId = useActiveBusinessId();
+  const biz = activeId ? businesses.find((b) => b.id === activeId) : undefined;
+  if (!biz) return null;
+  return (
+    <View className="flex-row items-center gap-3 rounded-md bg-surfaceMuted p-4">
+      <UIPressable
+        accessibilityRole="button"
+        accessibilityLabel={`${biz.name}, aktiv konto`}
+        onPress={() => router.push("/workspace" as Href)}
+        pressedScale={0.99}
+        className="flex-1"
+        contentClassName="flex-row items-center gap-3"
+      >
+        <Icon name="tp-business" size="xl" tone="ink" />
+        <View className="flex-1">
+          <Text variant="label" weight="semibold">
+            {biz.name}
+          </Text>
+          <Text variant="caption" tone="muted">
+            Aktiv konto
+          </Text>
+        </View>
+      </UIPressable>
+      <UIPressable
+        hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+        accessibilityRole="button"
+        onPress={switchToPersonal}
+        contentClassName="rounded-full border border-line bg-surface px-3 py-2"
+        pressedScale={0.99}
+      >
+        <Text variant="caption" weight="semibold">
+          Bytt til personlig
+        </Text>
+      </UIPressable>
+    </View>
+  );
+}
+
 // "Neste plan" (approved addition, 2026-11-06): the first upcoming plan from
 // the same fixture Mine planer reads (no second attendance truth, spec §11),
 // with its "when" label as written. Phase 16 (founder, after the section
@@ -292,7 +338,7 @@ function NextPlanCard() {
         </Text>
         <UIPressable
           accessibilityRole="link"
-          hitSlop={{ top: 12, bottom: 12, left: 8, right: 8 }}
+          hitSlop={LINK_SLOP}
           onPress={() => router.push("/plans")}
         >
           <Text variant="label" weight="semibold" tone="ember">
@@ -303,8 +349,8 @@ function NextPlanCard() {
       <ListRow
         variant="card"
         title={exp.title}
-        subtitle={exp.when}
-        accessibilityLabel={`Neste plan: ${exp.title}, ${exp.when}${
+        subtitle={whenLabel(exp)}
+        accessibilityLabel={`Neste plan: ${exp.title}, ${whenLabel(exp)}${
           countdown ? `, ${countdown.toLowerCase()}` : ""
         }`}
         leading={
@@ -322,15 +368,14 @@ function NextPlanCard() {
   );
 }
 
-// "Veien til Skaper" (PDF p12). The copy is illustrative: the real creator
-// criteria are not defined in the contract, so nothing here is evaluated.
+// "Veien til Skaper" (PDF p12). The real creator criteria are not defined in
+// the contract, so the card shows no progress ("2 av 3", bar, rating): review
+// 2026-11-18 G-01.
 function CreatorPathCard() {
-  const { hosted, required, rating } = profile.creatorPath;
   return (
     <UIPressable
       accessibilityRole="button"
       accessibilityLabel="Veien til Skaper, se kravene"
-      accessibilityValue={{ min: 0, max: required, now: hosted }}
       onPress={() => router.push("/become-creator")}
       pressedScale={0.99}
       contentClassName="gap-2 rounded-md bg-surfaceMuted p-4"
@@ -340,15 +385,6 @@ function CreatorPathCard() {
         <Text variant="body" weight="semibold" className="flex-1">
           Veien til Skaper
         </Text>
-      </View>
-      <Text variant="caption" tone="muted">
-        {hosted} av {required} opplevelser arrangert · ★ {rating} snitt
-      </Text>
-      <View className="h-1.5 overflow-hidden rounded-full bg-surface">
-        <View
-          className="h-full rounded-full bg-ink"
-          style={{ width: `${(hosted / required) * 100}%` }}
-        />
       </View>
     </UIPressable>
   );
@@ -364,7 +400,7 @@ function TabBar({ tab, onChange }: { tab: Tab; onChange: (t: Tab) => void }) {
             key={t.key}
             accessibilityRole="tab"
             accessibilityState={{ selected: active }}
-            hitSlop={{ top: 7, bottom: 7 }}
+            hitSlop={{ top: 8, bottom: 8 }}
             onPress={() => onChange(t.key)}
             feedback="none"
             className="flex-1"

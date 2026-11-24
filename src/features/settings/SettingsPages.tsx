@@ -24,11 +24,22 @@ import {
   Input,
 } from "@/components/ui";
 import { confirmToast } from "@/copy";
+import { businesses } from "@/fixtures";
 import { gutterPx } from "@/theme";
+import {
+  switchToBusiness,
+  switchToPersonal,
+  useActiveBusinessId,
+} from "@/lib/activeAccount";
 import { useMyProfile } from "@/lib/myProfile";
+import { getSignupEmail } from "@/lib/signupProgress";
 import { setA11yPrefs, useA11yPrefs } from "@/lib/a11yPrefs";
 import { setBlocked, useBlocked } from "@/lib/blocked";
 import { goBackOr } from "@/lib/navigation";
+import {
+  setNotificationPref,
+  useNotificationPrefs,
+} from "@/lib/notificationPrefs";
 import { signOut } from "@/lib/signOut";
 
 import { NavRow, ToggleList, ToggleRow } from "./settingsUi";
@@ -151,7 +162,8 @@ function LinkRow({
 
 // Kontoinformasjon (PDF p19): E-post, Telefon, Passord, Aktive økter.
 export function AccountScreen() {
-  const [email, setEmail] = useState("ola@epost.no");
+  // The address typed at sign-up (O6), else the demo persona's.
+  const [email, setEmail] = useState(() => getSignupEmail() || "ola@epost.no");
   const [phone, setPhone] = useState("+47 912 34 567");
   const [sessions, setSessions] = useState(SESSIONS);
   return (
@@ -168,8 +180,18 @@ export function AccountScreen() {
         />
       }
     >
-      <Input label="E-post" value={email} onChangeText={setEmail} />
-      <Input label="Telefon" value={phone} onChangeText={setPhone} />
+      <Input
+        label="E-post"
+        type="email"
+        value={email}
+        onChangeText={setEmail}
+      />
+      <Input
+        label="Telefon"
+        type="phone"
+        value={phone}
+        onChangeText={setPhone}
+      />
       <PasswordRow />
       <LinkRow
         icon="shield-checkmark-outline"
@@ -246,6 +268,7 @@ export function ChangePasswordScreen() {
     >
       <Input
         label="Nåværende passord"
+        type="password"
         secureTextEntry
         value={current}
         onChangeText={setCurrent}
@@ -254,6 +277,7 @@ export function ChangePasswordScreen() {
         <Input
           label="Nytt passord"
           placeholder="Minst 8 tegn"
+          type="newPassword"
           secureTextEntry
           value={pw}
           onChangeText={setPw}
@@ -268,6 +292,7 @@ export function ChangePasswordScreen() {
         <Input
           label="Bekreft passord"
           placeholder="Gjenta passordet"
+          type="newPassword"
           secureTextEntry
           value={again}
           onChangeText={setAgain}
@@ -285,31 +310,57 @@ export function ChangePasswordScreen() {
 // Koblede kontoer (PDF p20).
 export function LinkedAccountsScreen() {
   const me = useMyProfile();
+  // "aktiv nå" follows the account switch (G-Q8), not always Utforsker.
+  const activeBiz = useActiveBusinessId();
+  const biz = businesses[0];
+  const bizActive = !!biz && activeBiz === biz.id;
   return (
     <Page title="Koblede kontoer">
-      <Session
-        icon="person-circle-outline"
-        name={me.name}
-        meta="Utforsker · aktiv nå"
-      />
       <UIPressable
         hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
         accessibilityRole="button"
-        onPress={() => router.push("/workspace" as Href)}
+        disabled={!bizActive}
+        dimWhenDisabled={false}
+        onPress={switchToPersonal}
+        contentClassName="flex-row items-center gap-3 rounded-md border border-line bg-surface p-3"
+        pressedScale={0.99}
+      >
+        <Icon name="person-circle-outline" size="md" tone="ink" />
+        <View className="flex-1">
+          <Text variant="label" weight="semibold">
+            {me.name}
+          </Text>
+          <Text variant="caption" tone="muted">
+            {bizActive ? "Utforsker" : "Utforsker · aktiv nå"}
+          </Text>
+        </View>
+        {bizActive ? (
+          <Text variant="caption" weight="semibold">
+            Bytt til
+          </Text>
+        ) : null}
+      </UIPressable>
+      <UIPressable
+        hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+        accessibilityRole="button"
+        onPress={() => {
+          if (biz) switchToBusiness(biz.id);
+          router.push("/workspace" as Href);
+        }}
         contentClassName="flex-row items-center gap-3 rounded-md border border-line bg-surface p-3"
         pressedScale={0.99}
       >
         <Icon name="tp-business" size="md" tone="ink" />
         <View className="flex-1">
           <Text variant="label" weight="semibold">
-            Oslo Kaffebar AS
+            {biz?.name ?? "Bedrift"}
           </Text>
           <Text variant="caption" tone="muted">
-            Bedrift
+            {bizActive ? "Bedrift · aktiv nå" : "Bedrift"}
           </Text>
         </View>
         <Text variant="caption" weight="semibold">
-          Bytt til
+          {bizActive ? "Åpne" : "Bytt til"}
         </Text>
       </UIPressable>
       <Text variant="caption" tone="muted">
@@ -320,24 +371,21 @@ export function LinkedAccountsScreen() {
   );
 }
 
-// Varsler (PDF p19): PUSH categories + STILLE TIMER.
+// Varsler (PDF p19): PUSH categories + STILLE TIMER. The switches keep
+// their values in src/lib/notificationPrefs.ts (IJ4).
 export function NotificationSettingsScreen() {
+  const prefs = useNotificationPrefs();
   return (
     <Page title="Varsler" density="sections">
       <Section title="Push" rows>
         <ToggleList
-          initial={{
-            Opplevelser: true,
-            Venteliste: true,
-            Venner: true,
-            Chat: true,
-          }}
+          values={prefs}
+          onChange={setNotificationPref}
           items={[
-            {
-              label: "Opplevelser",
-              hint: "24t og 1t før, «skjer nå»",
-              icon: "tp-experience",
-            },
+            // No timing hints ("24t og 1t før", "Push holdes til
+            // morgenen"): the spec sets no reminder times (review
+            // 2026-11-18 IJ5).
+            { label: "Opplevelser", icon: "tp-experience" },
             {
               label: "Venteliste",
               hint: "Når plass åpner seg",
@@ -363,47 +411,25 @@ export function NotificationSettingsScreen() {
       </Section>
       <Section title="Stille timer" rows>
         <ToggleList
-          initial={{ "Ikke forstyrr 23–08": true }}
-          items={[
-            {
-              label: "Ikke forstyrr 23–08",
-              hint: "Push holdes til morgenen",
-              icon: "moon-outline",
-            },
-          ]}
+          values={prefs}
+          onChange={setNotificationPref}
+          items={[{ label: "Ikke forstyrr 23–08", icon: "moon-outline" }]}
         />
       </Section>
     </Page>
   );
 }
 
-// Språk og region (PDF p19).
+// Språk og region (PDF p19). The app is in Norwegian only: p19's other
+// languages, Valuta and Tidssone changed nothing and are hidden until they
+// exist (review 2026-11-18 IJ6; which languages: IJ-Q8).
 export function LanguageScreen() {
-  const langs = ["Norsk (bokmål)", "English", "Svenska", "Dansk"];
-  const [lang, setLang] = useState(langs[0]);
   return (
     <Page title="Språk og region" density="sections">
-      <View className="gap-2" accessibilityRole="radiogroup">
-        {langs.map((l) => (
-          <UIPressable
-            key={l}
-            accessibilityRole="radio"
-            accessibilityState={{ checked: lang === l }}
-            onPress={() => setLang(l)}
-            contentClassName="flex-row items-center justify-between rounded-md border border-line bg-surface px-4 py-4"
-            pressedScale={0.99}
-          >
-            <Text variant="body">{l}</Text>
-            <RadioMark checked={lang === l} />
-          </UIPressable>
-        ))}
+      <View className="flex-row items-center justify-between rounded-md border border-line bg-surface px-4 py-4">
+        <Text variant="body">Norsk (bokmål)</Text>
+        <RadioMark checked />
       </View>
-      <Section title="Region">
-        <View className="overflow-hidden rounded-md border border-line bg-surface">
-          <NavRow icon="cash-outline" label="Valuta" value="NOK (kr)" />
-          <NavRow icon="time-outline" label="Tidssone" value="Oslo (CET)" />
-        </View>
-      </Section>
     </Page>
   );
 }
@@ -542,7 +568,7 @@ export function DeleteAccountScreen() {
         <>
           <Button
             label="Slett kontoen min"
-            variant="secondary"
+            variant="danger"
             disabled={confirm.trim() !== "SLETT"}
             onPress={() => {
               // Deleting ends the session like Logg ut (Phase 15).

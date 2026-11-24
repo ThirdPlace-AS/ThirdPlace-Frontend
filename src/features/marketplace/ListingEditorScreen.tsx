@@ -1,16 +1,20 @@
 // Ny / Rediger listing (PDF p16), a form page since Phase 12 H4c:
 // /my-listings/new and /my-listings/[id]/edit. BLOCKED_CONTRACT_GAP: no
-// listing entity, publishing or pricing contract; it confirms in product
-// voice and goes back.
+// listing entity, publishing or pricing contract. Publiser adds the listing
+// to this session's lists and Lagre endringer saves onto it (created.ts,
+// review 2026-11-18 H-04), then it confirms in product voice and goes back.
 import { useLocalSearchParams, type Href } from "expo-router";
 import { useState } from "react";
 import { View } from "react-native";
 
+import { DiscardChangesSheet } from "@/components/DiscardChangesSheet";
 import { showToast } from "@/components/Toast";
 import { FormPage, Text, Button, Chip, Input } from "@/components/ui";
 import { confirmToast } from "@/copy";
 import { LISTING_TYPES, listingById, type MockListingType } from "@/fixtures";
+import { createListing, updateListing } from "@/fixtures/created";
 import { goBackOr } from "@/lib/navigation";
+import { useConfirmLeave } from "@/lib/useConfirmLeave";
 
 type Draft = { title: string; type: MockListingType; about: string };
 
@@ -18,7 +22,7 @@ export default function ListingEditorScreen() {
   const { id } = useLocalSearchParams<{ id?: string }>();
   const existing = id ? listingById(id) : undefined;
   const isNew = !existing;
-  const [d, setD] = useState<Draft>(
+  const [start] = useState<Draft>(() =>
     existing
       ? {
           title: existing.title,
@@ -26,6 +30,11 @@ export default function ListingEditorScreen() {
           about: existing.description,
         }
       : { title: "", type: "Venue", about: "" },
+  );
+  const [d, setD] = useState<Draft>(start);
+  // Leaving with unsaved input asks first (review 2026-11-18 H-12).
+  const leave = useConfirmLeave(
+    d.title !== start.title || d.type !== start.type || d.about !== start.about,
   );
   const short = d.title.trim().length < 3;
   return (
@@ -38,6 +47,9 @@ export default function ListingEditorScreen() {
             variant="ink"
             disabled={short}
             onPress={() => {
+              if (existing) updateListing(existing.id, d);
+              else createListing(d);
+              leave.allowLeave();
               goBackOr("/my-listings" as Href);
               showToast(
                 isNew
@@ -84,6 +96,11 @@ export default function ListingEditorScreen() {
         onChangeText={(t) => setD({ ...d, about: t })}
         multiline
         maxLength={400}
+      />
+      <DiscardChangesSheet
+        visible={leave.asking}
+        onStay={leave.stay}
+        onDiscard={leave.leave}
       />
     </FormPage>
   );

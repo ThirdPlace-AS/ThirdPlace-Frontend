@@ -31,6 +31,7 @@ export default function ResetPassword() {
             <Input
               label="Nytt passord"
               placeholder="Minst 8 tegn"
+              type="newPassword"
               secureTextEntry
               value={pw}
               onChangeText={setPw}
@@ -45,6 +46,7 @@ export default function ResetPassword() {
             <Input
               label="Bekreft passord"
               placeholder="Gjenta passordet"
+              type="newPassword"
               secureTextEntry
               value={again}
               onChangeText={setAgain}

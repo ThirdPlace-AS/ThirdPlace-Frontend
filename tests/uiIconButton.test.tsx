@@ -11,10 +11,11 @@ describe("IconButton", () => {
     expect(onPress).toHaveBeenCalledTimes(1);
   });
 
-  it("tops small buttons up to a 44pt touch target", () => {
+  it("tops small buttons up to a 48 dp touch target", () => {
     render(<IconButton icon="close" label="Lukk" size="sm" />);
-    // 36 px visual → 4 px slop each side = 44.
-    expect(screen.getByRole("button").props.hitSlop).toBe(4);
+    // 36 px visual → 6 px slop each side = 48 (Android's 48 dp; review
+    // 2026-11-18 CMP-04 raised it from 44).
+    expect(screen.getByRole("button").props.hitSlop).toBe(6);
   });
 
   it("needs no slop at 48 px", () => {

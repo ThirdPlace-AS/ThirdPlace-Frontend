@@ -200,9 +200,11 @@ export function BlockSheet({
           deg i søk. Dere fjernes fra felles chatter.
         </Text>
 
+        {/* The confirm names who it acts on, in the danger tone (review
+            2026-11-18 CMP-09). */}
         <Button
-          label="Blokker"
-          variant="secondary"
+          label={`Blokker ${first}`}
+          variant="danger"
           onPress={() => {
             if (personId) blockPerson(personId, name);
             onClose();
@@ -226,7 +228,7 @@ export function LeaveSheet({
       <View className="gap-3">
         <Button
           label="Forlat"
-          variant="secondary"
+          variant="danger"
           onPress={() => {
             onConfirm();
             onClose();
@@ -238,29 +240,15 @@ export function LeaveSheet({
   );
 }
 
-// Bli med på ventelisten (p23).
+// Bli med på ventelisten (p23). No queue position or "N foran deg": the spec
+// defines no waitlist order (review 2026-11-18 C3).
 export function WaitlistSheet({
-  ahead,
   onClose,
   onConfirm,
-}: Base & { ahead: number; onConfirm: () => void }) {
+}: Base & { onConfirm: () => void }) {
   return (
     <Sheet visible onClose={onClose} title="Bli med på ventelisten?">
       <View className="gap-3">
-        <View className="flex-row items-center gap-3 rounded-md bg-surfaceMuted p-4">
-          <Text variant="h1" accessibilityRole="text">
-            #{ahead + 1}
-          </Text>
-          <View>
-            <Text variant="label" weight="semibold">
-              Din plass i køen
-            </Text>
-            <Text variant="caption" tone="muted">
-              {ahead} personer foran deg
-            </Text>
-          </View>
-        </View>
-
         <Button
           label="Sett meg på ventelisten"
           variant="ink"
@@ -352,7 +340,7 @@ export function CancelSheet({
 
         <Button
           label="Avlys"
-          variant="secondary"
+          variant="danger"
           onPress={() => {
             onConfirm();
             onClose();

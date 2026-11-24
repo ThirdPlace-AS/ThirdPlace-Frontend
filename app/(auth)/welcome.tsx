@@ -8,7 +8,7 @@ import { LogoMark } from "@/components/Logo";
 import { useGuestMode } from "@/components/map/hooks/useGuestMode";
 import { imagePreview, swipeImage } from "@/fixtures/images";
 import { resetTo } from "@/lib/navigation";
-import { Text, Button } from "@/components/ui";
+import { Button, LINK_SLOP, Text } from "@/components/ui";
 import { media } from "@/theme";
 
 // Welcome (PDF p1): a full-bleed café photo with the ThirdPlace mark, and a
@@ -69,10 +69,7 @@ export default function Welcome() {
               Allerede medlem?{" "}
             </Text>
             <Link href="/login" asChild>
-              <Pressable
-                accessibilityRole="link"
-                hitSlop={{ top: 14, bottom: 14, left: 8, right: 8 }}
-              >
+              <Pressable accessibilityRole="link" hitSlop={LINK_SLOP}>
                 <Text variant="caption" weight="semibold" tone="ember">
                   Logg inn
                 </Text>

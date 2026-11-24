@@ -19,7 +19,13 @@ import {
 import PlansScreen from "@/features/saved/PlansScreen";
 import FeedbackScreen from "@/features/settings/FeedbackScreen";
 import { HelpScreen } from "@/features/settings/SettingsPages";
-import { experienceById, experiences, groupById, profile } from "@/fixtures";
+import {
+  experienceById,
+  experiences,
+  groupById,
+  groups,
+  profile,
+} from "@/fixtures";
 import { createGroup, resetCreated } from "@/fixtures/created";
 import { resetMyRatings } from "@/lib/myRatings";
 
@@ -73,6 +79,22 @@ describe("group page", () => {
     expect(screen.getByText(groupById("g1")!.rules!)).toBeTruthy();
     fireEvent.press(screen.getByText(next.title));
     expect(mockPush).toHaveBeenCalledWith(`/experience/${next.id}`);
+  });
+
+  // Review 2026-11-18 CT1 = C8: Neste møte named a venue the group's own
+  // text did not. A group with a home only lists a meeting held there.
+  it("Neste møte only names the group's home", () => {
+    const now = new Date(2026, 10, 18, 8, 0);
+    let shown = 0;
+    for (const g of groups) {
+      const next = nextMeeting(g.id, now);
+      if (!next) continue;
+      shown += 1;
+      if (g.homePlaceId) {
+        expect(experienceById(next.id)!.placeId).toBe(g.homePlaceId);
+      }
+    }
+    expect(shown).toBeGreaterThan(0);
   });
 
   it("a new group keeps its creator's rules, and none when left empty", () => {

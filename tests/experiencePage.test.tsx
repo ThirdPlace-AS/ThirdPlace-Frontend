@@ -100,13 +100,14 @@ describe("ExperiencePage", () => {
       "Slik fungerer vurderinger",
       "Flere opplevelser i området",
       "Om verten",
-      "Sjekk inn når du er der",
       "Rapporter opplevelsen",
       ...experienceChips(e1),
     ]) {
       expect(screen.getAllByText(text).length).toBeGreaterThan(0);
     }
     expect(screen.getByText(/^Vert: /)).toBeTruthy();
+    // Review 2026-11-18 C2 (#5): no check-in entry without a GPS check.
+    expect(screen.queryByText("Sjekk inn når du er der")).toBeNull();
     // Section title "★ 4,7 · 3 vurderinger".
     expect(
       screen.getByText(`★ ${formatRating(score)} · ${count} vurderinger`),

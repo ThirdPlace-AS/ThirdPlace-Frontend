@@ -15,6 +15,7 @@ import { RouteHeader } from "@/components/RouteHeader";
 import { EmptyState } from "@/components/states/StateView";
 import { chats, experiencesHostedBy, personById } from "@/fixtures";
 import { libImage } from "@/fixtures/images";
+import { whenLabel } from "@/lib/whenLabel";
 
 // Creator profile, per the design (PDF p14): avatar, name, "Skaper"
 // role, bio, Følg / Melding, and Kommende / Tidligere experiences.
@@ -100,7 +101,7 @@ export default function CreatorProfileScreen() {
                   {h.title}
                 </Text>
                 <Text variant="caption" tone="muted">
-                  {h.when}
+                  {whenLabel(h)}
                 </Text>
               </View>
             ))

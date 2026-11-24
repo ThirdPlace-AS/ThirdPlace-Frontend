@@ -428,7 +428,9 @@ export default function GroupSwipeScreen() {
           </View>
 
           <Button
-            label="Åpne chatten"
+            // The experience's own chat, not one for this group (D4,
+            // review 2026-11-18): the label says whose chat opens.
+            label="Åpne opplevelsens chat"
             variant="ink"
             onPress={() =>
               matchChat

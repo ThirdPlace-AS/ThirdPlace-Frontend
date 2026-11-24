@@ -1,4 +1,5 @@
 import { router, type ErrorBoundaryProps } from "expo-router";
+import { useState } from "react";
 import { Pressable, Text, View } from "react-native";
 
 import { palette } from "@/theme";
@@ -66,12 +67,18 @@ function CrashButton({
   onPress: () => void;
 }) {
   const c = palette.light;
+  const [pressed, setPressed] = useState(false);
+  // A plain style object: a function style on a core Pressable rendered
+  // nothing here (the button showed as bare text, "Prøv igjen" white on
+  // white; review 2026-11-18 IJ3 / CMP-01).
   return (
     <Pressable
       accessibilityRole="button"
       accessibilityLabel={label}
       onPress={onPress}
-      style={({ pressed }) => ({
+      onPressIn={() => setPressed(true)}
+      onPressOut={() => setPressed(false)}
+      style={{
         minHeight: 48,
         borderRadius: 999,
         alignItems: "center",
@@ -80,7 +87,7 @@ function CrashButton({
         borderColor: primary ? c.ink : c.line,
         backgroundColor: primary ? c.ink : c.surface,
         opacity: pressed ? 0.85 : 1,
-      })}
+      }}
     >
       <Text
         style={{

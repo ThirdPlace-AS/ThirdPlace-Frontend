@@ -100,17 +100,18 @@ describe("Følg tilbake", () => {
     expect(screen.getAllByText("Følg tilbake")).toHaveLength(single.length);
   });
 
-  it("a guest is asked to sign in instead", () => {
+  // Review 2026-11-18 IJ2: a guest has no notices of their own; the page is
+  // locked with a sign-in button instead of the demo account's list.
+  it("a guest sees the lock, not the account's notices", () => {
     const guest = renderHook(() => useGuestMode());
     act(() => guest.result.current.setGuest(true));
     render(<NotificationsScreen />, { wrapper });
-    fireEvent.press(
-      screen.getByLabelText(`Følg tilbake ${follower.actorName}`),
-    );
-    expect(screen.getAllByText("Logg inn").length).toBeGreaterThan(0);
+    expect(screen.getByText("Logg inn for å se varslene dine.")).toBeTruthy();
     expect(
-      screen.getByLabelText(`Følg tilbake ${follower.actorName}`),
-    ).toBeTruthy();
+      screen.queryByLabelText(`Følg tilbake ${follower.actorName}`),
+    ).toBeNull();
+    fireEvent.press(screen.getByRole("button", { name: "Logg inn" }));
+    expect(screen.getAllByText(/Logg inn/).length).toBeGreaterThan(1);
     act(() => guest.result.current.setGuest(false));
   });
 });

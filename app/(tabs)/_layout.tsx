@@ -4,6 +4,7 @@ import { Tabs } from "expo-router/js-tabs";
 import { type ColorValue } from "react-native";
 
 import { AddTabIcon } from "@/components/AddTabIcon";
+import { useGuestMode } from "@/components/map/hooks/useGuestMode";
 import { Icon, type IconName } from "@/components/ui";
 import { useUnreadChatCount } from "@/lib/chatReads";
 import { markHintSeen } from "@/lib/hints";
@@ -33,7 +34,10 @@ function icon(idle: IconName, active: IconName) {
 export default function TabsLayout() {
   const colors = useThemeColors();
   // Chats with unread messages (Phase 16, the WhatsApp / Instagram tab badge).
-  const unreadChats = useUnreadChatCount();
+  const demoUnread = useUnreadChatCount();
+  // A guest has no chats of their own (IJ2): no count on the tab.
+  const { isGuest } = useGuestMode();
+  const unreadChats = isGuest ? 0 : demoUnread;
   return (
     <Tabs
       // System back returns to the tab you came from (0454), not to Kart

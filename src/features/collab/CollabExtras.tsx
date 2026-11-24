@@ -12,6 +12,7 @@ import {
   Text,
 } from "@/components/ui";
 import { collabHistory } from "@/fixtures";
+import { useCollabDeal } from "@/lib/collabDeal";
 import { collabMonth } from "@/features/marketplace/marketplaceStats";
 import { RateSheet } from "@/components/actions/ActionSheets";
 import { RouteHeader } from "@/components/RouteHeader";
@@ -21,27 +22,27 @@ import { RouteHeader } from "@/components/RouteHeader";
 // STRUCTURE ONLY for money: no amounts, payouts or invoices are shown or
 // moved; history and ratings are fixture examples (BLOCKED_CONTRACT_GAP).
 
-const PAY_STEPS: { label: string; done: boolean }[] = [
-  // Same collab and state as the Jazz-samarbeid timeline (PDF p16/p18):
-  // the contract still waits for your signature.
-  { label: "Kontrakt signert", done: false },
-  { label: "Opplevelse gjennomført", done: false },
-  { label: "Oppgjør klart", done: false },
-  { label: "Utbetalt", done: false },
-];
+// Same collab and state as the Jazz-samarbeid timeline (PDF p16/p18): the
+// contract step follows the session's signature (review 2026-11-18 #9).
+function payStepsFor(signed: boolean): { label: string; done: boolean }[] {
+  return [
+    { label: "Kontrakt signert", done: signed },
+    { label: "Opplevelse gjennomført", done: false },
+    { label: "Oppgjør klart", done: false },
+    { label: "Utbetalt", done: false },
+  ];
+}
 
 // Rows of the PDF's Transaksjon block. Values stay "—": money is structure
-// only (no amounts, fees or payout timing are shown as real).
-const TRANSACTION_ROWS = [
-  "Bruttobeløp",
-  "Plattformavgift",
-  "Netto til deg",
-  "Netto til partner",
-];
+// only (no amounts, fees or payout timing are shown as real). No
+// "Plattformavgift" row: the spec sets no fee (review 2026-11-18 H-06).
+const TRANSACTION_ROWS = ["Bruttobeløp", "Netto til deg", "Netto til partner"];
 
 // Betalingsstatus (PDF p18): status card, the steps as a timeline,
 // Transaksjon, Utbetaling and Knyttet til, in the PDF's order.
 export function PaymentStatusScreen() {
+  const deal = useCollabDeal();
+  const PAY_STEPS = payStepsFor(deal.signedBy !== null);
   const next = PAY_STEPS.find((s) => !s.done);
   return (
     <Screen edges={["top"]}>
@@ -57,7 +58,7 @@ export function PaymentStatusScreen() {
           </View>
           <View className="flex-1">
             <Text variant="body" weight="semibold">
-              Venter på kontrakt
+              {deal.signedBy ? "Kontrakten er signert" : "Venter på kontrakt"}
             </Text>
             <Text variant="caption" tone="muted">
               {next ? `Neste steg: ${next.label.toLowerCase()}` : "Fullført"}

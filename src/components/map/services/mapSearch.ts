@@ -43,6 +43,7 @@ import {
 } from "./itemType";
 
 import type { SheetKind } from "../sheetTypes";
+import { whenLabel } from "@/lib/whenLabel";
 
 export type SearchResult = {
   kind: SheetKind;
@@ -357,7 +358,7 @@ export function searchFixtures(query: string): SearchGroups {
       kind: "experience",
       id: e.id,
       title: e.title,
-      subtitle: `${experienceKindLabel(e)} · ${areaFor(e.meetingPoint.coord).name} · ${e.when}`,
+      subtitle: `${experienceKindLabel(e)} · ${areaFor(e.meetingPoint.coord).name} · ${whenLabel(e)}`,
     }));
 
   const groupResults: SearchResult[] = ranked(

@@ -5,6 +5,9 @@
 // 0469: back from a place or experience picked here returns to this page
 // with the same query (`sq` tells the map where it came from); `resume`
 // reopens it showing the results, without the keyboard.
+// Review 2026-11-18 IJ9: a submit or pick goes back down to the map
+// (`dismissTo`) instead of putting a second map on top of this page, so
+// the map's way back to Søk opens one Søk, not a growing chain.
 import { router, useLocalSearchParams, type Href } from "expo-router";
 import { View } from "react-native";
 
@@ -25,7 +28,7 @@ export default function SearchScreen() {
         autoFocus={resume !== "1"}
         onBack={() => goBackOr("/map")}
         onSubmit={(query) =>
-          router.navigate({
+          router.dismissTo({
             pathname: "/map",
             params: { q: query, at: String(Date.now()) },
           })
@@ -36,7 +39,7 @@ export default function SearchScreen() {
             router.push(`/group/${r.id}` as Href);
             return;
           }
-          router.navigate({
+          router.dismissTo({
             pathname: "/map",
             params: {
               focus: `${r.kind}:${r.id}`,

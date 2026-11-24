@@ -5,8 +5,8 @@ import {
   useLocalSearchParams,
   type Href,
 } from "expo-router";
-import { useCallback, useState } from "react";
-import { Pressable, ScrollView, View } from "react-native";
+import { useCallback, useEffect, useState } from "react";
+import { Keyboard, Pressable, ScrollView, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { Switch } from "@/components/ui/Switch";
@@ -30,6 +30,7 @@ import {
   Input,
   LoadingImage,
 } from "@/components/ui";
+import { DiscardChangesSheet } from "@/components/DiscardChangesSheet";
 import { haptics } from "@/lib/haptics";
 import { getMyProfile } from "@/lib/myProfile";
 import { useStepBack } from "@/lib/useStepBack";
@@ -56,6 +57,7 @@ import {
   areaNameLabel,
   places,
   REPEAT_OPTIONS,
+  sessionsFor,
   type MockChatAccess,
   type MockExperience,
 } from "@/fixtures";
@@ -178,6 +180,11 @@ function formatDate(iso: string) {
 export function AddWizard() {
   const [draft, setDraft] = useState<AddDraft>(EMPTY_DRAFT);
   const [stepIndex, setStepIndex] = useState(0);
+  // A step's keyboard closes with it (review 2026-11-18 O1: the numeric
+  // keyboard from Fødselsdag stayed open on the next steps).
+  useEffect(() => {
+    Keyboard.dismiss();
+  }, [stepIndex]);
   const [submitted, setSubmitted] = useState(false);
   // Ids of what the submit created (group + its chat, or the experience).
   const [created, setCreated] = useState<{
@@ -191,11 +198,18 @@ export function AddWizard() {
   const editKey = edit ? `${edit}:${at ?? ""}` : undefined;
   const [seeded, setSeeded] = useState<string | undefined>(undefined);
   const [editing, setEditing] = useState(false);
+  // What the draft started as (a kind just picked, or the experience being
+  // edited): the first step's back asks before dropping anything typed
+  // since (review 2026-11-18 E-06/IJ11).
+  const [baseline, setBaseline] = useState<AddDraft>(EMPTY_DRAFT);
+  const [askDiscard, setAskDiscard] = useState(false);
   if (editKey && editKey !== seeded) {
     setSeeded(editKey);
     const source = experienceById(edit ?? "");
     if (source) {
-      setDraft(draftFromExperience(source));
+      const start = editOf(source);
+      setDraft(start);
+      setBaseline(start);
       setStepIndex(0);
       setSubmitted(false);
       setEditing(true);
@@ -214,10 +228,17 @@ export function AddWizard() {
     setCreated({});
   };
 
-  const back = () => {
-    if (stepIndex > 0) return setStepIndex((i) => i - 1);
+  const clear = () => {
     setDraft(EMPTY_DRAFT);
     setEditing(false);
+  };
+  const back = () => {
+    if (stepIndex > 0) return setStepIndex((i) => i - 1);
+    if (JSON.stringify(draft) !== JSON.stringify(baseline)) {
+      setAskDiscard(true);
+      return;
+    }
+    clear();
   };
   // System back goes to the step before, like the header ←; on the first
   // step it returns to "Hva vil du legge til?" (0454). Called before the
@@ -255,6 +276,7 @@ export function AddWizard() {
       <KindMenu
         onPick={(kind) => {
           setDraft({ ...EMPTY_DRAFT, kind });
+          setBaseline({ ...EMPTY_DRAFT, kind });
           setStepIndex(0);
           setEditing(false);
         }}
@@ -358,6 +380,15 @@ export function AddWizard() {
           ) : null}
         </StickyFooter>
       </KeyboardAvoider>
+      <DiscardChangesSheet
+        visible={askDiscard}
+        onStay={() => setAskDiscard(false)}
+        onDiscard={() => {
+          setAskDiscard(false);
+          // After the sheet's exit, so the step does not swap under it.
+          setTimeout(clear, 240);
+        }}
+      />
     </Screen>
   );
 }
@@ -747,7 +778,12 @@ function StepBody({
           />
           <Field label="Starter">
             <ChipRow
-              options={START_TIMES}
+              options={
+                // An edited experience keeps its own time among the choices.
+                draft.startTime && !START_TIMES.includes(draft.startTime)
+                  ? [...START_TIMES, draft.startTime].sort()
+                  : START_TIMES
+              }
               selected={draft.startTime ? [draft.startTime] : []}
               onPress={(t) => patch({ startTime: t })}
             />
@@ -1202,6 +1238,16 @@ function copyOf(e: MockExperience): AddDraft {
   });
 }
 
+// Rediger: the same fields, and the date and time of its next session.
+function editOf(e: MockExperience): AddDraft {
+  const place = e.placeId ? places.find((p) => p.id === e.placeId) : undefined;
+  return draftFromExperience(e, {
+    area: place?.name ?? areaFor(e.meetingPoint.coord),
+    photos: e.photos.map((p) => PHOTO_POOL.indexOf(p)).filter((i) => i >= 0),
+    next: sessionsFor(e)[0]?.start ?? null,
+  });
+}
+
 // A short choice, so a sheet: the experiences you host, newest first.
 function StartFromSheet({
   visible,
@@ -1422,7 +1468,8 @@ function MonthPicker({
       </View>
       <View className="flex-row flex-wrap">
         {cells.map((d, i) => {
-          if (d === null) return <View key={i} className="h-10 w-[14.28%]" />;
+          if (d === null)
+            return <View key={i} className="w-[14.28%]" style={DAY_CELL} />;
           const iso = isoOf(cursor.y, cursor.m, d);
           const past = iso < todayIso;
           const selected = iso === value;
@@ -1435,7 +1482,8 @@ function MonthPicker({
               disabled={past}
               onPress={() => onChange(iso)}
               className="w-[14.28%]"
-              contentClassName="h-10 items-center justify-center"
+              contentClassName="items-center justify-center"
+              contentStyle={DAY_CELL}
             >
               <View
                 className={`h-9 w-9 items-center justify-center rounded-full ${
@@ -1458,6 +1506,9 @@ function MonthPicker({
     </View>
   );
 }
+
+// A day is a 48 dp touch (review 2026-11-18 CMP-04: about 35 before).
+const DAY_CELL = { height: 48 };
 
 function isoOf(y: number, m: number, d: number) {
   return `${y}-${String(m + 1).padStart(2, "0")}-${String(d).padStart(2, "0")}`;

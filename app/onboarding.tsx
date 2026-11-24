@@ -1,7 +1,7 @@
 import { Image } from "expo-image";
 import { router } from "expo-router";
-import { useState } from "react";
-import { Pressable, ScrollView, View } from "react-native";
+import { useEffect, useState } from "react";
+import { Keyboard, Pressable, ScrollView, View } from "react-native";
 
 import { Switch } from "@/components/ui/Switch";
 import {
@@ -113,6 +113,11 @@ const toggleIn = (list: string[], v: string) =>
 export default function Onboarding() {
   const { setGuest } = useGuestMode();
   const [step, setStep] = useState(0);
+  // A step's keyboard closes with it (review 2026-11-18 O1: the numeric
+  // keyboard from Fødselsdag stayed open on the next steps).
+  useEffect(() => {
+    Keyboard.dismiss();
+  }, [step]);
   const [role, setRole] = useState<MockPersonaKey>("explorer");
   const [name, setName] = useState("");
   // Photo upload is not wired (no picker in the demo): the tap answers inline.
@@ -325,7 +330,7 @@ export default function Onboarding() {
                   <Input
                     label="Fødselsdag"
                     placeholder="dd.mm.åååå"
-                    keyboardType="numeric"
+                    type="number"
                     value={birthday}
                     onChangeText={(t) => setBirthday(formatBirthdayInput(t))}
                     maxLength={10}

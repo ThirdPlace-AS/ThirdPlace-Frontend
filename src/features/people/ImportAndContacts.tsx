@@ -29,7 +29,7 @@ export function ImportContentScreen() {
           placeholder="https://…"
           value={url}
           onChangeText={setUrl}
-          keyboardType="default"
+          type="url"
         />
         {url.length > 0 && !valid ? (
           <Text variant="caption" tone="danger">

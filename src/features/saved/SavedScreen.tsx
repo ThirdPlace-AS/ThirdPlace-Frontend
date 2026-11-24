@@ -29,6 +29,7 @@ import { experienceTypeLabel } from "@/components/map/services/itemType";
 import { coverForPlace, libThumb } from "@/fixtures/images";
 import { Illustration } from "@/components/illustrations/Illustration";
 import { formatRating } from "@/lib/format";
+import { whenLabel } from "@/lib/whenLabel";
 
 // The list's padding and gaps as a style (review of the speed pass: no
 // className on an animated component); the values the classes
@@ -123,7 +124,7 @@ export default function SavedScreen() {
                   key,
                   kind: "experience",
                   title: e.title,
-                  meta: `${experienceTypeLabel(e)} · ${e.when}`,
+                  meta: `${experienceTypeLabel(e)} · ${whenLabel(e)}`,
                   placeId: e.placeId,
                   href: `/experience/${e.id}` as Href,
                   mapKey: key,

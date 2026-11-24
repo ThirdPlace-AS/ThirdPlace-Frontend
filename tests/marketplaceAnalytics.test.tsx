@@ -43,7 +43,8 @@ beforeEach(() => {
 describe("marketplace figures come from the lists", () => {
   it("views and requests are the published listings' sums", () => {
     const published = publishedListings();
-    expect(published.map((l) => l.id)).toEqual(["m1", "m2"]);
+    // Only the account's own listing (review 2026-11-18 #18).
+    expect(published.map((l) => l.id)).toEqual(["m1"]);
     for (const range of ["Uke", "Måned", "Total"] as const) {
       const s = marketplaceStats(range);
       const views = published.reduce(

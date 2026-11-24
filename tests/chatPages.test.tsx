@@ -74,7 +74,8 @@ describe("chat pages", () => {
     render(<ChatInfoScreen />, { wrapper });
     fireEvent.press(screen.getByRole("button", { name: "Forlat" }));
     expect(mockNavigate).not.toHaveBeenCalled();
-    expect(screen.getByText("Forlate chatten?")).toBeTruthy();
+    // The confirm names the chat (review 2026-11-18 CMP-09).
+    expect(screen.getByText(`Forlate ${chatById("c1")!.name}?`)).toBeTruthy();
     const buttons = screen.getAllByRole("button", { name: "Forlat" });
     fireEvent.press(buttons[buttons.length - 1]!);
     expect(mockNavigate).toHaveBeenCalledWith("/chat");

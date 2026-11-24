@@ -22,6 +22,12 @@ import { Text } from "./Text";
 
 export type { ButtonSize, ButtonVariant };
 
+const TOUCH_SLOP: Record<ButtonSize, number | undefined> = {
+  sm: Math.ceil((48 - buttonHeight.sm) / 2),
+  md: undefined,
+  lg: undefined,
+};
+
 export type ButtonProps = {
   label: string;
   onPress?: () => void;
@@ -74,6 +80,8 @@ export function Button({
       // Busy: ignore presses without the disabled dim (the spinner says busy).
       onPress={loading ? undefined : onPress}
       dimWhenDisabled={false}
+      // A small button still takes a 48 dp touch (review 2026-11-18 CMP-04).
+      hitSlop={TOUCH_SLOP[size]}
       className={fullWidth ? "w-full" : "self-start"}
       contentClassName={buttonClass({ size, rounded, fill })}
       contentStyle={{ minHeight: buttonHeight[size] }}

@@ -47,15 +47,7 @@ export const PAGE_ROWS = {
     "GDPR: Last ned dine data",
     "Slett konto",
   ],
-  "Språk og region": [
-    "Norsk (bokmål)",
-    "English",
-    "Svenska",
-    "Dansk",
-    "Region",
-    "Valuta",
-    "Tidssone",
-  ],
+  "Språk og region": ["Norsk (bokmål)"],
   Tilgjengelighet: [
     "Større tekst",
     "Reduser bevegelse",

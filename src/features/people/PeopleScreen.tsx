@@ -78,8 +78,8 @@ export default function PeopleScreen() {
             <Text variant="caption" tone="muted">
               Folk du kanskje vil bli kjent med.
             </Text>
-            {/* The list shows example people with "felles" counts and Følg:
-                say so here, not only on the person page. */}
+            {/* No "N felles" counts: the spec defines no mutual-friend
+                count (review 2026-11-18 G-08). */}
 
             <View className="flex-row flex-wrap items-center gap-2">
               <Chip
@@ -197,9 +197,7 @@ function PersonRow({
     <View className="flex-row items-center gap-3 rounded-md bg-surface px-3 py-3">
       <UIPressable
         accessibilityRole="button"
-        accessibilityLabel={`${person.name}, ${person.area}${
-          person.mutuals > 0 ? `, ${person.mutuals} felles` : ""
-        }`}
+        accessibilityLabel={`${person.name}, ${person.area}`}
         onPress={onPress}
         pressedScale={0.99}
         className="flex-1"
@@ -217,7 +215,6 @@ function PersonRow({
           </Text>
           <Text variant="caption" tone="muted" numberOfLines={1}>
             {person.area}
-            {person.mutuals > 0 ? ` · ${person.mutuals} felles` : ""}
           </Text>
         </View>
       </UIPressable>

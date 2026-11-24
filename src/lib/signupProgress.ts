@@ -12,11 +12,21 @@ import type { Href } from "expo-router";
 export type SignupProgress = { onboarded: boolean; accountCreated: boolean };
 
 const START: SignupProgress = { onboarded: false, accountCreated: false };
-const store = createStore(() => ({ progress: START }));
+// The e-mail typed earlier in onboarding (business branch), so "Lag kontoen
+// din" does not ask for it twice (review 2026-11-18 #17). Memory only.
+const store = createStore(() => ({ progress: START, email: "" }));
 const selectProgress = (s: { progress: SignupProgress }) => s.progress;
 
 function set(next: SignupProgress) {
   store.setState({ progress: next });
+}
+
+export function setSignupEmail(email: string) {
+  store.setState({ email });
+}
+
+export function getSignupEmail(): string {
+  return store.getState().email;
 }
 
 export function getSignupProgress(): SignupProgress {
@@ -47,5 +57,5 @@ export const isSignedUp = (p: SignupProgress) =>
 
 /** Test helper / log out: start over. */
 export function resetSignupProgress() {
-  set(START);
+  store.setState({ progress: START, email: "" });
 }

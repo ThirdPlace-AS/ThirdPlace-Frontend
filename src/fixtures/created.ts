@@ -18,6 +18,8 @@ import {
   experiences,
   groups,
   invalidateFixtureIndexes,
+  listings,
+  myListingStates,
   AREAS,
   areaNameLabel,
   places,
@@ -32,6 +34,8 @@ import {
   type MockChatAccess,
   type MockExperience,
   type MockGroup,
+  type MockListing,
+  type MockListingType,
   type RepeatOption,
   type TimeWindow,
 } from "./index";
@@ -42,6 +46,7 @@ const createdIds = {
   groups: new Set<string>(),
   chats: new Set<string>(),
   experiences: new Set<string>(),
+  listings: new Set<string>(),
 };
 let seq = 0;
 // Places sent in from Legg til, newest first: Innleveringer lists them as
@@ -97,6 +102,8 @@ export function resetCreated() {
   };
   drop(groups, createdIds.groups);
   drop(chats, createdIds.chats);
+  for (const id of createdIds.listings) delete myListingStates[id];
+  drop(listings, createdIds.listings);
   drop(experiences, createdIds.experiences);
   submittedPlaceNames.length = 0;
   seq = 0;
@@ -128,6 +135,51 @@ export function submitPlace(name: string, area: string | null) {
 /** The places sent in this session, newest first. */
 export function submittedPlaces(): readonly string[] {
   return submittedPlaceNames;
+}
+
+export type ListingDraft = {
+  title: string;
+  type: MockListingType;
+  about: string;
+};
+
+/** Publishes a listing from Ny listing (review 2026-11-18 H-04: Publiser
+ *  only showed a toast). It goes first in Marketplace and under Aktive in
+ *  Mine listings, owned by the viewer. Its photos are the first listing of
+ *  the same type's (no upload yet); no price, details or tags are made up,
+ *  so the listing page shows only what was written. Returns its id. */
+export function createListing(draft: ListingDraft): string {
+  seq += 1;
+  const id = `l-new-${seq}`;
+  const like = listings.find((l) => l.type === draft.type) ?? listings[0]!;
+  const listing: MockListing = {
+    id,
+    title: draft.title.trim(),
+    type: draft.type,
+    terms: "",
+    cover: like.cover,
+    photos: like.photos,
+    owner: profile.name,
+    ownerMeta: "",
+    tags: [],
+    details: [],
+    description: draft.about.trim(),
+  };
+  listings.unshift(listing);
+  myListingStates[id] = "Aktive";
+  createdIds.listings.add(id);
+  bump();
+  return id;
+}
+
+/** Saves Rediger listing's title, type and description onto the listing. */
+export function updateListing(id: string, draft: ListingDraft) {
+  const l = listings.find((x) => x.id === id);
+  if (!l) return;
+  l.title = draft.title.trim();
+  l.type = draft.type;
+  l.description = draft.about.trim();
+  bump();
 }
 
 export type NewGroupInput = {

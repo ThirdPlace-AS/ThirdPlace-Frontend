@@ -2,7 +2,14 @@ import { Link } from "expo-router";
 import { useState } from "react";
 import { Pressable, ScrollView, useWindowDimensions, View } from "react-native";
 
-import { Screen, Text, KeyboardAvoider, Button, Input } from "@/components/ui";
+import {
+  Button,
+  Input,
+  KeyboardAvoider,
+  LINK_SLOP,
+  Screen,
+  Text,
+} from "@/components/ui";
 import { SocialAuthButtons } from "@/components/auth/SocialAuthButtons";
 import { Logo } from "@/components/Logo";
 import { ScreenHeader } from "@/components/ScreenHeader";
@@ -45,24 +52,21 @@ export default function Login() {
             <Input
               label="E-postadresse"
               placeholder="navn@epost.no"
-              keyboardType="email-address"
-              autoCapitalize="none"
-              autoComplete="email"
+              type="email"
               value={email}
               onChangeText={setEmail}
             />
             <Input
               label="Passord"
-              placeholder="••••••••"
+              type="password"
               secureTextEntry
-              autoComplete="password"
               value={password}
               onChangeText={setPassword}
             />
             <Link href="/forgot-password" asChild>
               <Pressable
                 accessibilityRole="link"
-                hitSlop={{ top: 14, bottom: 14, left: 8, right: 8 }}
+                hitSlop={LINK_SLOP}
                 className="self-end"
               >
                 <Text variant="label" weight="semibold" tone="ember">
@@ -78,10 +82,7 @@ export default function Login() {
               Har du ikke konto?{" "}
             </Text>
             <Link href="/register" asChild>
-              <Pressable
-                accessibilityRole="link"
-                hitSlop={{ top: 14, bottom: 14, left: 8, right: 8 }}
-              >
+              <Pressable accessibilityRole="link" hitSlop={LINK_SLOP}>
                 <Text variant="caption" weight="semibold" tone="ember">
                   Registrer deg
                 </Text>

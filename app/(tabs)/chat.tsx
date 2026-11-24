@@ -46,6 +46,7 @@ import {
 } from "@/lib/pinnedChats";
 import { chats, type MockChat } from "@/fixtures";
 import { motion } from "@/theme/motion";
+import { GuestPage } from "@/components/GuestPage";
 
 const chatKey = (c: MockChat) => c.id;
 const chatName = (c: MockChat) => c.name;
@@ -63,6 +64,19 @@ const chatName = (c: MockChat) => c.name;
 // realtime or messaging backend; chat types / access modes are display labels
 // (BLOCKED_CONTRACT_GAP).
 export default function ChatScreen() {
+  return (
+    <GuestPage
+      title="Chat"
+      tab
+      message="Logg inn for å se chattene dine."
+      action="se chattene dine"
+    >
+      <ChatContent />
+    </GuestPage>
+  );
+}
+
+function ChatContent() {
   const [query, setQuery] = useState("");
   const [filter, setFilter] = useState<ChatFilterKey>("all");
   const [open, setOpen] = useState<Record<string, boolean>>({});

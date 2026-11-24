@@ -8,15 +8,22 @@ import {
   Text,
 } from "@/components/ui";
 import { businesses } from "@/fixtures";
+import {
+  switchToBusiness,
+  switchToPersonal,
+  useActiveBusinessId,
+} from "@/lib/activeAccount";
 import { useMyProfile } from "@/lib/myProfile";
 
 // Account switcher, per the design (PDF p27): opened with a long press
 // on the Profil tab. Lists the linked accounts — the personal Utforsker
-// profile and the business workspace — plus "Administrer kontoer".
-// BLOCKED_CONTRACT_GAP: no linked-account or session model; switching only
-// navigates between demo screens.
+// profile and the business workspace — plus "Administrer kontoer". A row
+// makes its account the active one (src/lib/activeAccount.ts, G-Q8).
+// BLOCKED_CONTRACT_GAP: no linked-account or session model; the switch is
+// in memory and changes which account the screens name, nothing more.
 export default function AccountSwitch() {
   const me = useMyProfile();
+  const activeBiz = useActiveBusinessId();
   const biz = businesses[0];
   const rows: {
     title: string;
@@ -29,14 +36,21 @@ export default function AccountSwitch() {
       title: me.name,
       hint: "Utforsker",
       icon: "person-circle-outline",
-      active: true,
-      onPress: () => router.back(),
+      active: activeBiz === null,
+      onPress: () => {
+        switchToPersonal();
+        router.back();
+      },
     },
     {
       title: biz?.name ?? "Bedrift",
       hint: "Dashbord",
       icon: "tp-business",
-      onPress: () => router.replace("/workspace" as Href),
+      active: !!biz && activeBiz === biz.id,
+      onPress: () => {
+        if (biz) switchToBusiness(biz.id);
+        router.replace("/workspace" as Href);
+      },
     },
   ];
   return (

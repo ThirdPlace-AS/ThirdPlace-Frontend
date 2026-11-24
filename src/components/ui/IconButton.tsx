@@ -32,7 +32,9 @@ const GLYPH: Record<IconButtonSize, "md" | "lg"> = {
   lg: "lg",
   xl: "lg",
 };
-const MIN_TARGET = 44;
+// Android's 48 dp (review 2026-11-18 CMP-04): a small glyph reaches it
+// through hitSlop.
+const MIN_TARGET = 48;
 
 /** The one back glyph, on every back button (user 2026-11-09: "change the
  *  back arrow everywhere on the app to the same arrow the map details sheet

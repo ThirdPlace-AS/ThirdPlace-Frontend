@@ -395,6 +395,8 @@ function NewMessagesLine() {
 }
 
 const REPLY_SWIPE = 56;
+const REACTION_SIZE = { width: 44, height: 44 };
+const REACTION_SLOP = { top: 2, bottom: 2 };
 
 // Memoised (speed pass 0352): the screen's handlers are stable and take the
 // message, so a bubble renders again only when its own message, reaction or
@@ -593,7 +595,7 @@ function ReactionBar({
     <View
       accessibilityRole="toolbar"
       accessibilityLabel="Reager på meldingen"
-      className={`flex-row items-center gap-1 rounded-full border border-line bg-surface px-2 py-1 ${
+      className={`flex-row items-center rounded-full border border-line bg-surface px-2 py-1 ${
         alignEnd ? "self-end" : "self-start"
       }`}
     >
@@ -604,7 +606,11 @@ function ReactionBar({
           accessibilityLabel={`Reager med ${r}`}
           accessibilityState={{ selected: current === r }}
           onPress={() => onReact(r)}
-          className={`h-9 w-9 items-center justify-center rounded-full ${
+          // 44 wide side by side, 48 tall with the slop (review 2026-11-18
+          // CMP-04: about 32 before).
+          hitSlop={REACTION_SLOP}
+          style={REACTION_SIZE}
+          className={`items-center justify-center rounded-full ${
             current === r ? "bg-surfaceMuted" : ""
           }`}
         >
@@ -616,7 +622,9 @@ function ReactionBar({
           accessibilityRole="button"
           accessibilityLabel="Svar"
           onPress={onReply}
-          className="h-9 items-center justify-center rounded-full px-3"
+          hitSlop={REACTION_SLOP}
+          style={{ height: REACTION_SIZE.height }}
+          className="items-center justify-center rounded-full px-3"
         >
           <Text variant="label" weight="semibold">
             Svar

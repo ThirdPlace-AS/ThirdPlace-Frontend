@@ -9,6 +9,11 @@ import { createStore, useStore } from "zustand";
 const store = createStore(() => ({ guest: false }));
 const selectGuest = (s: { guest: boolean }) => s.guest;
 
+/** For code outside React (signOut): a signed-out app is a guest. */
+export function setGuestMode(next: boolean) {
+  store.setState({ guest: next });
+}
+
 export function useGuestMode() {
   const isGuest = useStore(store, selectGuest);
   const setGuest = useCallback((next: boolean) => {

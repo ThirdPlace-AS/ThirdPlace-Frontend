@@ -133,7 +133,24 @@ describe("published experiences", () => {
 
   it("open Rediger with their category, so Neste works (0464)", () => {
     const e = experienceById(createExperience(BASE_EXP))!;
-    expect(draftFromExperience(e).category).toBe("Kreativt");
+    const extra = { area: "Jevnaker", photos: [0], next: null };
+    expect(draftFromExperience(e, extra).category).toBe("Kreativt");
+  });
+
+  it("open Rediger with date, place, vibes and photos (review JR5)", () => {
+    const e = experiences.find((x) => x.id === "e1")!;
+    const next = new Date(2026, 10, 18, 9, 0);
+    const d = draftFromExperience(e, {
+      area: "Oslo Kaffebar",
+      photos: [2],
+      next,
+    });
+    expect(d.date).toBe("2026-11-18");
+    expect(d.startTime).toBe("09:00");
+    expect(d.area).toBe("Oslo Kaffebar");
+    expect(d.photos).toEqual([2]);
+    expect(d.vibes).toEqual(e.vibes);
+    expect(d.capacity).toBe(String(e.capacity));
   });
 
   it("appear on the map", () => {

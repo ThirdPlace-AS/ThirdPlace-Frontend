@@ -47,6 +47,7 @@ import { leaveChat } from "@/lib/joinedChats";
 import { getMyProfile, useMyProfile, type MyProfile } from "@/lib/myProfile";
 import { isCreatedChat } from "@/fixtures/created";
 import type { LibraryKey } from "@/fixtures/images";
+import { whenLabel } from "@/lib/whenLabel";
 
 const ROLES = ["Vert · Admin", "Deltar", "Venn", "Kun i chatten"];
 /** What a chat is about: its experience's, place's or group's interest. */
@@ -152,7 +153,7 @@ export function ChatInfoScreen() {
             variant="card"
             icon="pricetag-outline"
             title={exp.title}
-            subtitle={`Tilknyttet opplevelse · ${exp.when}`}
+            subtitle={`Tilknyttet opplevelse · ${whenLabel(exp)}`}
             onPress={() => router.push(`/experience/${exp.id}` as Href)}
           />
         ) : null}
@@ -237,7 +238,7 @@ export function ChatInfoScreen() {
       {report ? <ReportSheet onClose={() => setReport(false)} /> : null}
       {leave ? (
         <LeaveSheet
-          title="Forlate chatten?"
+          title={`Forlate ${chat.name}?`}
           onClose={() => setLeave(false)}
           onConfirm={() => {
             leaveChat(chat.id);

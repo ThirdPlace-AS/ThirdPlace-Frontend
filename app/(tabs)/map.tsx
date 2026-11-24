@@ -486,7 +486,8 @@ export default function MapScreen() {
             label="Varsler"
             variant="outline"
             size="lg"
-            badge={unreadNotifs}
+            // A guest has no notices of their own (IJ2).
+            badge={isGuest ? 0 : unreadNotifs}
             onPress={() => router.push("/notifications" as Href)}
           />
         </View>

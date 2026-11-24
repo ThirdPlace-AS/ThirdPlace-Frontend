@@ -1,24 +1,18 @@
-import { useState } from "react";
 import { ScrollView, View } from "react-native";
 
-import {
-  Icon,
-  pageBody,
-  Pressable as UIPressable,
-  Screen,
-  Text,
-  Sheet,
-} from "@/components/ui";
+import { Icon, pageBody, Screen, Text } from "@/components/ui";
 import { RouteHeader } from "@/components/RouteHeader";
 
 import { SettingsSection } from "./settingsUi";
+import { GuestPage } from "@/components/GuestPage";
 
 // Payments (STRUCTURE ONLY). Reached from Settings → Betaling. This renders the
 // layout of a payment-methods / history screen and NOTHING more. It never
 // collects card, bank, or credential data and performs no transaction — that is
 // both a prohibited action and BLOCKED_CONTRACT_GAP (no billing/payment backend).
-export default function PaymentsScreen() {
-  const [infoOpen, setInfoOpen] = useState(false);
+// No "Legg til betalingsmetode": it only opened "Betalingsmetoder kommer
+// snart" (review 2026-11-18 IJ24).
+function PaymentsScreenContent() {
   return (
     <Screen edges={["top"]}>
       <RouteHeader title="Betaling" />
@@ -31,17 +25,6 @@ export default function PaymentsScreen() {
               Lagrede betalingsmetoder vises her.
             </Text>
           </View>
-          <UIPressable
-            accessibilityRole="button"
-            onPress={() => setInfoOpen(true)}
-            contentClassName="flex-row items-center gap-3 border-t border-line px-4 py-4"
-            pressedScale={0.99}
-          >
-            <Icon name="add-circle-outline" size="md" tone="ink" />
-            <Text variant="body" className="flex-1">
-              Legg til betalingsmetode
-            </Text>
-          </UIPressable>
         </SettingsSection>
 
         <SettingsSection title="Historikk">
@@ -57,19 +40,19 @@ export default function PaymentsScreen() {
         {/* BLOCKED_CONTRACT_GAP: no payment/billing contract. Structure only:
             no card or bank inputs, nothing is charged. */}
       </ScrollView>
-
-      <Sheet
-        visible={infoOpen}
-        onClose={() => setInfoOpen(false)}
-        title="Betalingsmetode"
-      >
-        <View className="flex-row items-start gap-3 rounded-md bg-surfaceMuted p-3">
-          <Icon name="shield-checkmark-outline" size="lg" tone="success" />
-          <Text variant="label" weight="regular" className="flex-1 leading-5">
-            Betalingsmetoder kommer snart.
-          </Text>
-        </View>
-      </Sheet>
     </Screen>
+  );
+}
+
+// Account-only (review 2026-11-18, IJ2): a guest sees the lock.
+export default function PaymentsScreen() {
+  return (
+    <GuestPage
+      title="Betaling"
+      message="Logg inn for å se betaling."
+      action="se betaling"
+    >
+      <PaymentsScreenContent />
+    </GuestPage>
   );
 }

@@ -1,5 +1,5 @@
 import { router, type Href } from "expo-router";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { Pressable, ScrollView, View } from "react-native";
 
 import {
@@ -10,9 +10,11 @@ import {
   ScrollRow,
   Text,
   Chip,
+  LINK_SLOP,
 } from "@/components/ui";
 import { RouteHeader } from "@/components/RouteHeader";
 import { listingById, myListingStates } from "@/fixtures";
+import { useCreatedVersion } from "@/fixtures/created";
 
 // Mine listings, per the design (PDF p16); Ny / Rediger listing are form
 // pages (/my-listings/new, /my-listings/[id]/edit, Phase 12 H4c).
@@ -22,14 +24,25 @@ import { listingById, myListingStates } from "@/fixtures";
 // no listing entity, publishing or pricing contract — nothing is published or
 // saved, and no view/request counts are shown (no invented social proof).
 const TABS = ["Aktive", "Utkast", "Avsluttede"] as const;
-// The same list Marketplace-analyse counts (fixtures `myListingStates`).
-const MINE = Object.entries(myListingStates).flatMap(([id, state]) => {
-  const l = listingById(id);
-  return l ? [{ ...l, state }] : [];
-});
+// The same list Marketplace-analyse counts (fixtures `myListingStates`),
+// read again when a listing is published or edited (H-04): newest first.
+function mine() {
+  return Object.entries(myListingStates)
+    .flatMap(([id, state]) => {
+      const l = listingById(id);
+      return l ? [{ ...l, state }] : [];
+    })
+    .sort(
+      (a, b) =>
+        Number(b.id.startsWith("l-new-")) - Number(a.id.startsWith("l-new-")),
+    );
+}
 
 export default function MyListingsScreen() {
   const [tab, setTab] = useState<(typeof TABS)[number]>("Aktive");
+  const version = useCreatedVersion();
+  // eslint-disable-next-line react-hooks/exhaustive-deps -- version marks a change in the fixture lists
+  const MINE = useMemo(() => mine(), [version]);
   const rows = MINE.filter((l) => l.state === tab);
   return (
     <Screen edges={["top"]}>
@@ -71,7 +84,7 @@ export default function MyListingsScreen() {
                   onPress={() =>
                     router.push(`/my-listings/${l.id}/waitlist` as Href)
                   }
-                  hitSlop={{ top: 8, bottom: 8 }}
+                  hitSlop={LINK_SLOP}
                   className="self-start"
                 >
                   <Text
@@ -88,7 +101,7 @@ export default function MyListingsScreen() {
               accessibilityRole="button"
               accessibilityLabel={`Rediger ${l.title}`}
               onPress={() => router.push(`/my-listings/${l.id}/edit` as Href)}
-              hitSlop={{ top: 12, bottom: 12, left: 8, right: 8 }}
+              hitSlop={LINK_SLOP}
             >
               <Text variant="label" weight="semibold" className="underline">
                 Rediger

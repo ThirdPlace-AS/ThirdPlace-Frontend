@@ -3494,7 +3494,8 @@ export const profile = {
   plans: [
     { experienceId: "e1", state: "upcoming", note: "Du er påmeldt" },
     { experienceId: "e5", state: "upcoming", note: "Du er påmeldt" },
-    { experienceId: "e2", state: "waitlisted", note: "Nr. 4 på ventelisten" },
+    // No queue position: the spec has no waitlist order (review C3, 0492).
+    { experienceId: "e2", state: "waitlisted", note: "På ventelisten" },
     { experienceId: "e3", state: "past", note: "Du deltok" },
     { experienceId: "e4", state: "cancelled", note: "Avlyst av verten" },
   ] as MockPlan[],
@@ -3734,7 +3735,7 @@ export const listings: MockListing[] = [
     id: "m2",
     title: "Erfaren jazzvert",
     type: "Skaper",
-    terms: "Fra 2 000 kr",
+    terms: "",
     cover: "person-maria",
     photos: ["person-maria", "venue-music"],
     owner: "Maria Movik",
@@ -3751,7 +3752,7 @@ export const listings: MockListing[] = [
     id: "m3",
     title: "Sponsoravtale: Live-jazz",
     type: "Sponsing",
-    terms: "5 000 kr",
+    terms: "",
     cover: "venue-bar",
     photos: ["venue-bar", "venue-music"],
     owner: "Elvebredden Kulturfond",
@@ -3768,7 +3769,7 @@ export const listings: MockListing[] = [
     id: "m4",
     title: "Co-hosting: Kaffekurs",
     type: "Co-hosting",
-    terms: "70 % / 30 %",
+    terms: "",
     cover: "venue-cafe",
     photos: ["venue-cafe", "venue-cafe-2"],
     owner: "Grünerløkka Bokcafé",
@@ -3811,11 +3812,12 @@ export type StatsRange = "Uke" | "Måned" | "Total";
 export const STATS_RANGES: readonly StatsRange[] = ["Uke", "Måned", "Total"];
 
 export type MyListingState = "Aktive" | "Utkast" | "Avsluttede";
-/** The viewer's own listings (Mine listings) and their state. */
-export const myListingStates: Readonly<Record<string, MyListingState>> = {
+/** The viewer's own listings (Mine listings) and their state. Listings
+ *  published this session are added here by `created.ts` (createListing).
+ *  Only m1 (Oslo Kaffebar, the account's own business): m2 is Maria Movik's
+ *  and m3 Elvebredden Kulturfond's (review 2026-11-18 #18). */
+export const myListingStates: Record<string, MyListingState> = {
   m1: "Aktive",
-  m2: "Aktive",
-  m3: "Utkast",
 };
 
 /** Views and requests per published listing and range. */
@@ -3863,7 +3865,9 @@ export const collabHistory: MockCollab[] = [
   {
     id: "ch1",
     title: "Jazzkveld på Blå",
-    partner: "Oslo Kaffebar",
+    // Not Oslo Kaffebar: that is the account's own business, and rating it
+    // was a self-review (review 2026-11-18 #18).
+    partner: "Maria Movik",
     daysAgo: 5,
     status: "Fullført",
   },
@@ -3968,12 +3972,14 @@ export const MOCK_NOTIFICATIONS: MockNotification[] = [
   {
     id: "n3",
     type: "message",
-    actorName: "Løkka Lesesirkel",
-    actorInitials: "LL",
+    // A group chat the viewer is in (review 2026-11-18 JR2: it named a group
+    // the viewer had not joined and opened its page, not the thread).
+    actorName: "Morgenløp-gjengen",
+    actorInitials: "MG",
     text: "Ny melding i gruppa.",
     minutesAgo: 480,
     read: true,
-    target: { kind: "group", id: "g2" },
+    target: { kind: "chat", id: "c3" },
   },
   {
     id: "n4",

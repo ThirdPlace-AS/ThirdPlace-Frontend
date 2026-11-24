@@ -40,6 +40,7 @@ import {
 import { goBackOr } from "@/lib/navigation";
 import { InterestPicker } from "@/components/pickers/InterestPicker";
 import { useConfirmLeave } from "@/lib/useConfirmLeave";
+import { DiscardChangesSheet } from "@/components/DiscardChangesSheet";
 
 // The experiences you host are public on your person page (PDF p13).
 const HOSTED = profile.activity
@@ -225,23 +226,11 @@ export default function EditProfileScreen() {
         </ScrollView>
       </Sheet>
 
-      <Sheet
+      <DiscardChangesSheet
         visible={leave.asking}
-        onClose={leave.stay}
-        title="Forkaste endringene?"
-      >
-        <Text variant="label" weight="regular">
-          Det du har endret, blir ikke lagret.
-        </Text>
-        <View className="mt-1 gap-2">
-          <Button label="Forkast" variant="danger" onPress={leave.leave} />
-          <Button
-            label="Fortsett å redigere"
-            variant="secondary"
-            onPress={leave.stay}
-          />
-        </View>
-      </Sheet>
+        onStay={leave.stay}
+        onDiscard={leave.leave}
+      />
     </FormPage>
   );
 }
