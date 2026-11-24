@@ -20,7 +20,7 @@
     },
     {
       "name": "@expo/metro-runtime",
-      "version": "57.0.18",
+      "version": "57.0.19",
       "license": "MIT",
       "copyright": [
         "Copyright (c) 2015-present 650 Industries, Inc. (aka Expo)"
@@ -100,6 +100,15 @@
       "version": "0.3.2",
       "license": "MIT",
       "copyright": ["Copyright (c) 2015-present, Facebook, Inc."],
+      "author": null,
+      "text": "4436a9ca3f",
+      "shared": false
+    },
+    {
+      "name": "@react-native-menu/menu",
+      "version": "2.1.2",
+      "license": "MIT",
+      "copyright": ["Copyright (c) 2020 Jesse Katsumata"],
       "author": null,
       "text": "4436a9ca3f",
       "shared": false
@@ -432,7 +441,7 @@
     },
     {
       "name": "expo",
-      "version": "57.0.33",
+      "version": "57.0.34",
       "license": "MIT",
       "copyright": [
         "Copyright (c) 2015-present 650 Industries, Inc. (aka Expo)"
@@ -443,7 +452,7 @@
     },
     {
       "name": "expo-asset",
-      "version": "57.0.21",
+      "version": "57.0.22",
       "license": "MIT",
       "copyright": [
         "Copyright (c) 2015-present 650 Industries, Inc. (aka Expo)"
@@ -454,7 +463,7 @@
     },
     {
       "name": "expo-calendar",
-      "version": "57.0.6",
+      "version": "57.0.7",
       "license": "MIT",
       "copyright": [
         "Copyright (c) 2015-present 650 Industries, Inc. (aka Expo)"
@@ -465,7 +474,7 @@
     },
     {
       "name": "expo-constants",
-      "version": "57.0.24",
+      "version": "57.0.25",
       "license": "MIT",
       "copyright": [
         "Copyright (c) 2015-present 650 Industries, Inc. (aka Expo)"
@@ -542,7 +551,7 @@
     },
     {
       "name": "expo-location",
-      "version": "57.0.23",
+      "version": "57.0.24",
       "license": "MIT",
       "copyright": [
         "Copyright (c) 2015-present 650 Industries, Inc. (aka Expo)"
@@ -564,7 +573,7 @@
     },
     {
       "name": "expo-router",
-      "version": "57.0.31",
+      "version": "57.0.32",
       "license": "MIT",
       "copyright": [],
       "author": "650 Industries, Inc.",
@@ -852,6 +861,15 @@
       "shared": false
     },
     {
+      "name": "react-native-keyboard-controller",
+      "version": "1.21.9",
+      "license": "MIT",
+      "copyright": ["Copyright (c) 2021 Kiryl Ziusko"],
+      "author": null,
+      "text": "4436a9ca3f",
+      "shared": false
+    },
+    {
       "name": "react-native-reanimated",
       "version": "4.5.1",
       "license": "MIT",
@@ -988,6 +1006,15 @@
       ],
       "author": null,
       "text": "d6a0ceee3c",
+      "shared": false
+    },
+    {
+      "name": "tailwind-merge",
+      "version": "2.6.1",
+      "license": "MIT",
+      "copyright": ["Copyright (c) 2021 Dany Castillo"],
+      "author": null,
+      "text": "4436a9ca3f",
       "shared": false
     },
     {
