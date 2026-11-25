@@ -8,6 +8,7 @@ import { LogoMark } from "@/components/Logo";
 import { useGuestMode } from "@/components/map/hooks/useGuestMode";
 import { imagePreview, swipeImage } from "@/fixtures/images";
 import { resetTo } from "@/lib/navigation";
+import { forgetSignInReturn } from "@/lib/signInReturn";
 import { Button, LINK_SLOP, Text } from "@/components/ui";
 import { media } from "@/theme";
 
@@ -61,6 +62,7 @@ export default function Welcome() {
             variant="secondary"
             onPress={() => {
               setGuest(true);
+              forgetSignInReturn();
               resetTo("/map");
             }}
           />

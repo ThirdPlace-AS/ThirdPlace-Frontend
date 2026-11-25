@@ -13,22 +13,18 @@ import {
 import { SocialAuthButtons } from "@/components/auth/SocialAuthButtons";
 import { Logo } from "@/components/Logo";
 import { ScreenHeader } from "@/components/ScreenHeader";
-import { useGuestMode } from "@/components/map/hooks/useGuestMode";
-import { resetTo } from "@/lib/navigation";
+import { startSession } from "@/lib/startSession";
 
 // Sign-in. BLOCKED_CONTRACT_GAP: no auth backend; signing in leaves guest mode.
 export default function Login() {
-  const { setGuest } = useGuestMode();
   // Typed values stay on the device; nothing is checked or sent.
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   // Short phones (< 700 dp): tighter rhythm and a smaller mark, so "Logg
   // inn" clears the fold without changing the PDF order (social first).
   const short = useWindowDimensions().height < 700;
-  const signIn = () => {
-    setGuest(false);
-    resetTo("/map");
-  };
+  // Back where sign-in was asked for, else the map (founder 2026-11-19 Q1).
+  const signIn = startSession;
   return (
     <Screen>
       {/* Edge-to-edge Android does not resize for the keyboard: pad instead,

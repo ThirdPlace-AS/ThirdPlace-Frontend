@@ -15,6 +15,7 @@ import {
 import { ScrollView, View } from "react-native";
 
 import { ReportSheet } from "@/components/actions/ActionSheets";
+import { useGuestGate } from "@/components/useGuestGate";
 import { DirectionsButton } from "@/components/DirectionsButton";
 import {
   ChatSection,
@@ -186,6 +187,8 @@ export function PlacePage({
   const first = useSheetStageFirst();
   const ready = useSheetStageReady();
   const [report, setReport] = useState(false);
+  // Reviewing and reporting are personal (founder 2026-11-19 Q1).
+  const { gate, prompt: signInPrompt } = useGuestGate();
   const reviews = reviewsForPlace(place.id);
   const origin = useOrigin();
   const { score, count } = ratingOf(reviews);
@@ -497,16 +500,19 @@ export function PlacePage({
             <FooterLink
               icon="create-outline"
               label="Skriv en anmeldelse"
-              onPress={() => onNavigate(`/review/place/${place.id}` as Href)}
+              onPress={gate("skrive en anmeldelse", () =>
+                onNavigate(`/review/place/${place.id}` as Href),
+              )}
             />
             <FooterLink
               icon="flag-outline"
               label="Rapporter stedet"
-              onPress={() => setReport(true)}
+              onPress={gate("rapportere", () => setReport(true))}
             />
           </View>
 
           {report ? <ReportSheet onClose={() => setReport(false)} /> : null}
+          {signInPrompt}
         </>
       ) : null}
     </View>

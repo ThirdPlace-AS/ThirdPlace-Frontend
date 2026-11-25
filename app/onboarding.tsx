@@ -20,12 +20,11 @@ import {
   Chip,
   Input,
 } from "@/components/ui";
-import { useGuestMode } from "@/components/map/hooks/useGuestMode";
 import { InterestPicker } from "@/components/pickers/InterestPicker";
 import { experiences, PERSONAS, type MockPersonaKey } from "@/fixtures";
 import { checkBirthday, formatBirthdayInput } from "@/features/onboarding/age";
 import { UnderageScreen } from "@/features/onboarding/UnderageScreen";
-import { resetTo } from "@/lib/navigation";
+import { startSession } from "@/lib/startSession";
 import { OWN_PORTRAIT, updateMyProfile } from "@/lib/myProfile";
 import {
   ONBOARDING_PREFERENCES,
@@ -111,7 +110,6 @@ const toggleIn = (list: string[], v: string) =>
   list.includes(v) ? list.filter((x) => x !== v) : [...list, v];
 
 export default function Onboarding() {
-  const { setGuest } = useGuestMode();
   const [step, setStep] = useState(0);
   // A step's keyboard closes with it (review 2026-11-18 O1: the numeric
   // keyboard from Fødselsdag stayed open on the next steps).
@@ -183,10 +181,8 @@ export default function Onboarding() {
         avatar: photo ? OWN_PORTRAIT : null,
       });
       const nextHref = markOnboarded();
-      if (nextHref === "/map") {
-        setGuest(false);
-        resetTo("/map");
-      } else router.push(nextHref);
+      if (nextHref === "/map") startSession();
+      else router.push(nextHref);
       return;
     }
     setStep((s) => s + 1);

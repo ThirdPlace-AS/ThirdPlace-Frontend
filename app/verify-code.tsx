@@ -6,8 +6,7 @@ import { pageBody, Screen, Text as UIText, Button } from "@/components/ui";
 import { CodeInput } from "@/components/auth/CodeInput";
 import { ScreenHeader } from "@/components/ScreenHeader";
 import { showToast } from "@/components/Toast";
-import { useGuestMode } from "@/components/map/hooks/useGuestMode";
-import { resetTo } from "@/lib/navigation";
+import { startSession } from "@/lib/startSession";
 import { markAccountCreated } from "@/lib/signupProgress";
 
 const RESEND_SECONDS = 60;
@@ -29,16 +28,13 @@ export default function VerifyCode() {
     return () => clearTimeout(t);
   }, [left]);
 
-  const { setGuest } = useGuestMode();
   const confirm = () => {
     if (identity) return router.back();
     // The code completes the account: onboarding next, or (after it) the
     // session starts with a clean stack (session boundary).
     const nextHref = markAccountCreated();
-    if (nextHref === "/map") {
-      setGuest(false);
-      resetTo("/map");
-    } else router.replace(nextHref);
+    if (nextHref === "/map") startSession();
+    else router.replace(nextHref);
   };
 
   return (

@@ -71,7 +71,12 @@ export default function PersonScreen() {
 
   const openSub = (next: SubSheet) => {
     setMenu(false);
-    setTimeout(() => setSub(next), SHEET_SWAP_MS);
+    // Reporting and blocking are personal (founder 2026-11-19 Q1): a guest
+    // gets the sign-in sheet in their place, after the menu has closed.
+    setTimeout(() => {
+      if (isGuest) setSignIn(next === "report" ? "rapportere" : "blokkere");
+      else setSub(next);
+    }, SHEET_SWAP_MS);
   };
 
   const message = () => {

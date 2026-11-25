@@ -12,6 +12,7 @@ import { Pressable, View } from "react-native";
 import { LeaveSheet, ReportSheet } from "@/components/actions/ActionSheets";
 import { SearchField } from "@/components/pickers/Pickers";
 import { showToast, showToastAfterSheet } from "@/components/Toast";
+import { useGuestGate } from "@/components/useGuestGate";
 import {
   Avatar,
   EmptyState,
@@ -118,6 +119,15 @@ function Missing({ title }: { title: string }) {
   );
 }
 
+// The sign-in sheet's words for each info action a guest taps.
+const GUEST_ACTION: Record<string, string> = {
+  Demp: "dempe chatten",
+  "Opphev demping": "dempe chatten",
+  Inviter: "invitere folk",
+  Forlat: "forlate chatten",
+  Rapporter: "rapportere",
+};
+
 export function ChatInfoScreen() {
   const chat = useRouteChat();
   const [report, setReport] = useState(false);
@@ -126,6 +136,9 @@ export function ChatInfoScreen() {
   const [viewerFrom, setViewerFrom] = useState<Rect | null>(null);
   const muted = useIsChatMuted(chat?.id ?? "");
   const me = useMyProfile();
+  // A guest reads the chat (BUILDING_BLOCKS: guests can read chats); the
+  // actions are personal (founder 2026-11-19 Q1).
+  const { gate, prompt: signInPrompt } = useGuestGate();
   if (!chat) return <Missing title="Chat-info" />;
   const exp = chat.pinnedExperienceId
     ? experienceById(chat.pinnedExperienceId)
@@ -222,7 +235,9 @@ export function ChatInfoScreen() {
           <UIPressable
             key={a.label}
             accessibilityRole="button"
-            onPress={() => act(a.label)}
+            onPress={gate(GUEST_ACTION[a.label] ?? "fortsette", () =>
+              act(a.label),
+            )}
             className="flex-1"
             contentClassName="items-center gap-1 rounded-md border border-line bg-surface py-3"
             pressedScale={0.99}
@@ -235,6 +250,7 @@ export function ChatInfoScreen() {
         ))}
       </View>
 
+      {signInPrompt}
       {report ? <ReportSheet onClose={() => setReport(false)} /> : null}
       {leave ? (
         <LeaveSheet

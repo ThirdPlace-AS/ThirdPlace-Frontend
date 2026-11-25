@@ -26,6 +26,8 @@ These are **not** mismatches:
 
 ## Founder copy decisions (2026-11-06)
 
+Product answers from 2026-11-19/20 (guests, roles, business, groups, labels and more): [decisions/FOUNDER_ANSWERS_2026-11-19.md](decisions/FOUNDER_ANSWERS_2026-11-19.md).
+
 The PDF stays the authority for layout and order. For the lines below the
 founder approved plain rewrites (ledger 0179); the app line wins over the PDF.
 Lines that state a product rule are left out or marked as an example under
