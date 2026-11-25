@@ -119,7 +119,7 @@ function RootStack() {
         contentStyle: { backgroundColor: c.background },
       }}
     >
-      {/* Account switcher (PDF p27) floats over the current screen. */}
+      {/* Account switcher link (PDF p27): a guest gets its lock here; signed in, it opens Profil's account sheet (0526). */}
       <Stack.Screen
         name="account-switch"
         options={{

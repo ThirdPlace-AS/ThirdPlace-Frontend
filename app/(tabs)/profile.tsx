@@ -18,13 +18,11 @@ import {
   LINK_SLOP,
 } from "@/components/ui";
 import { GuestLock } from "@/components/GuestLock";
-import { HintBanner } from "@/components/HintBanner";
-import { claimHint, markHintSeen, useHintSeen } from "@/lib/hints";
+import { AccountSheet, ActiveAccountChip } from "@/components/AccountSwitcher";
 import { SignInPrompt } from "@/components/SignInPrompt";
 import { useGuestMode } from "@/components/map/hooks/useGuestMode";
 import { tagIcon } from "@/components/swipe/SwipeCard";
-import { businesses, experienceById, placeById, profile } from "@/fixtures";
-import { switchToPersonal, useActiveBusinessId } from "@/lib/activeAccount";
+import { experienceById, placeById, profile } from "@/fixtures";
 import { useProfileCounts } from "@/lib/following";
 import { useMyProfile, type MyProfile } from "@/lib/myProfile";
 import { openProfileSteps, PROFILE_STEP_COUNT } from "@/lib/profileSteps";
@@ -56,11 +54,6 @@ export default function ProfileScreen() {
   const counts = useProfileCounts();
   const [tab, setTab] = useState<Tab>("experiences");
   const [signIn, setSignIn] = useState(false);
-  const switchHintSeen = useHintSeen("profileSwitch");
-  const [switchHintClaimed] = useState(
-    () => !isGuest && claimHint("profileSwitch"),
-  );
-  const showSwitchHint = switchHintClaimed && !switchHintSeen && !isGuest;
 
   return (
     <Screen edges={["top"]}>
@@ -94,16 +87,10 @@ export default function ProfileScreen() {
           <GuestProfile onSignIn={() => setSignIn(true)} />
         ) : (
           <>
-            {/* One-time tip for the hidden long-press on the Profil tab
-                (account switch, PDF p27; Phase 18). */}
-            {showSwitchHint ? (
-              <HintBanner
-                icon="swap-horizontal-outline"
-                text="Hold inne Profil nederst for å bytte konto."
-                onDone={() => markHintSeen("profileSwitch")}
-              />
-            ) : null}
-            <ActiveBusinessCard />
+            {/* The account you act as (review PR-08, 0526): the chip and
+                a long press on the Profil tab open the same sheet. */}
+            <ActiveAccountChip />
+            <AccountSheet />
             {/* Header — tapping it opens Rediger profil (PDF p13). */}
             <UIPressable
               accessibilityRole="button"
@@ -317,48 +304,6 @@ function StepsCard({
           />
         ))}
       </View>
-    </View>
-  );
-}
-
-// While a business is the active account (G-Q8, founder: in-memory switch),
-// Profil names it at the top: the card opens its Arbeidsflate, the button
-// switches back to the personal account this page belongs to.
-function ActiveBusinessCard() {
-  const activeId = useActiveBusinessId();
-  const biz = activeId ? businesses.find((b) => b.id === activeId) : undefined;
-  if (!biz) return null;
-  return (
-    <View className="flex-row items-center gap-3 rounded-md bg-surfaceMuted p-4">
-      <UIPressable
-        accessibilityRole="button"
-        accessibilityLabel={`${biz.name}, aktiv konto`}
-        onPress={() => router.push("/workspace" as Href)}
-        pressedScale={0.99}
-        className="flex-1"
-        contentClassName="flex-row items-center gap-3"
-      >
-        <Icon name="tp-business" size="xl" tone="ink" />
-        <View className="flex-1">
-          <Text variant="label" weight="semibold">
-            {biz.name}
-          </Text>
-          <Text variant="caption" tone="muted">
-            Aktiv konto
-          </Text>
-        </View>
-      </UIPressable>
-      <UIPressable
-        hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
-        accessibilityRole="button"
-        onPress={switchToPersonal}
-        contentClassName="rounded-full border border-line bg-surface px-3 py-2"
-        pressedScale={0.99}
-      >
-        <Text variant="caption" weight="semibold">
-          Bytt til personlig
-        </Text>
-      </UIPressable>
     </View>
   );
 }

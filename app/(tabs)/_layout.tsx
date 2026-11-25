@@ -7,6 +7,7 @@ import { AddTabIcon } from "@/components/AddTabIcon";
 import { useGuestMode } from "@/components/map/hooks/useGuestMode";
 import { Icon, type IconName } from "@/components/ui";
 import { useUnreadChatCount } from "@/lib/chatReads";
+import { openAccountSheet } from "@/components/AccountSwitcher";
 import { markHintSeen } from "@/lib/hints";
 import { useThemeColors } from "@/theme";
 import { fontFamilyFor } from "@/theme/fonts";
@@ -98,12 +99,18 @@ export default function TabsLayout() {
       />
       <Tabs.Screen
         name="profile"
-        // PDF p27: a long press on Profil opens the account switcher.
+        // PDF p27: a long press on Profil opens the account switcher,
+        // the same sheet as Profil's chip (review PR-08, 0526). A guest
+        // gets the switcher's lock and Logg inn.
         listeners={{
           tabLongPress: () => {
-            // Found the gesture: its one-time tip is no longer needed.
             markHintSeen("profileSwitch");
-            router.push("/account-switch");
+            if (isGuest) {
+              router.push("/account-switch");
+              return;
+            }
+            router.navigate("/profile");
+            openAccountSheet();
           },
         }}
         options={{
