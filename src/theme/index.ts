@@ -44,6 +44,7 @@ export {
   useSchemePreference,
   setSchemePreference,
   getSchemePreference,
+  SCHEME_PREFERENCES,
   type Scheme,
   type SchemePreference,
   type ThemeColors,

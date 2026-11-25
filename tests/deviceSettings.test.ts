@@ -1,7 +1,7 @@
 // Phase 15: device settings (Kartlag choice, Tilgjengelighet) survive a
 // restart through AsyncStorage; Phase 16 adds which one-time hints the phone
-// has shown; Phase 18 the app version it last ran ("Nytt i ThirdPlace").
-// Nothing else is stored.
+// has shown; Phase 18 the app version it last ran ("Nytt i ThirdPlace");
+// 2026-11-24 Utseende's light/dark choice. Nothing else is stored.
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { beforeEach, describe, expect, it, jest } from "@jest/globals";
 
@@ -29,6 +29,12 @@ import {
   setMapType,
 } from "@/lib/mapChoice";
 import { appVersion, restoreWhatsNew } from "@/lib/whatsNew";
+import {
+  DEFAULT_SCHEME_PREFERENCE,
+  getSchemePreference,
+  restoreSchemePreference,
+  setSchemePreference,
+} from "@/theme/scheme";
 
 const saved = async () =>
   JSON.parse((await AsyncStorage.getItem(DEVICE_SETTINGS_KEY)) ?? "{}") as {
@@ -36,6 +42,7 @@ const saved = async () =>
     a11y?: unknown;
     hints?: unknown;
     whatsNew?: unknown;
+    theme?: unknown;
   };
 
 beforeEach(async () => {
@@ -45,6 +52,7 @@ beforeEach(async () => {
   resetA11yPrefs();
   restoreHints(undefined);
   restoreWhatsNew(undefined);
+  restoreSchemePreference(undefined);
 });
 
 describe("device settings", () => {
@@ -76,7 +84,31 @@ describe("device settings", () => {
       hints: DEFAULT_HINTS,
       // A first install records its version (src/lib/whatsNew.ts).
       whatsNew: appVersion() ?? undefined,
+      theme: "system",
     });
+  });
+
+  it("start with the look following the phone", async () => {
+    expect(DEFAULT_SCHEME_PREFERENCE).toBe("system");
+    await hydrateDeviceSettings();
+    expect(getSchemePreference()).toBe("system");
+  });
+
+  it("keep the Utseende choice across a restart", async () => {
+    await hydrateDeviceSettings();
+    setSchemePreference("dark");
+    await new Promise((r) => setTimeout(r, 0));
+    expect((await saved()).theme).toBe("dark");
+    // A restart: stop saving first, then the in-memory choice starts over.
+    resetDeviceSettings();
+    restoreSchemePreference(undefined);
+    expect(getSchemePreference()).toBe("system");
+    await hydrateDeviceSettings();
+    expect(getSchemePreference()).toBe("dark");
+    // Back to the phone's setting is kept too.
+    setSchemePreference("system");
+    await new Promise((r) => setTimeout(r, 0));
+    expect((await saved()).theme).toBe("system");
   });
 
   it("remember a hint the phone has shown", async () => {
@@ -104,11 +136,13 @@ describe("device settings", () => {
       JSON.stringify({
         map: { mapType: "moon", style: "x" },
         a11y: { largerText: "yes" },
+        theme: "sepia",
       }),
     );
     await hydrateDeviceSettings();
     expect(getMapChoice()).toEqual(DEFAULT_MAP_CHOICE);
     expect(getA11yPrefs()).toEqual(DEFAULT_A11Y_PREFS);
+    expect(getSchemePreference()).toBe("system");
   });
 
   it("a build without the native module starts with the defaults", async () => {

@@ -39,8 +39,9 @@ export default function RootLayout() {
   // flashes empty glyphs; the holder uses the theme background to avoid a flash.
   // If the font fails, still render — a blank-forever screen is worse than
   // briefly missing glyphs.
-  // Device settings (map type and style, Tilgjengelighet) load from the phone
-  // behind the same gate, so the first screen already uses them (Phase 15).
+  // Device settings (map type and style, Tilgjengelighet, Utseende) load from
+  // the phone behind the same gate, so the first screen already uses them
+  // (Phase 15) and a dark choice never flashes light.
   const settingsReady = useDeviceSettingsReady();
   useEffect(() => {
     void hydrateDeviceSettings();

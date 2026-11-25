@@ -1,9 +1,9 @@
 // Colour-scheme store (docs/design/DESIGN_SYSTEM.md §2 "Theme").
 //
-// Preference is "light" | "dark" | "system". The default is "light" until the
-// Phase 5 dark-mode sweep has verified every route; the sandbox
-// (app/_sandbox/theme.tsx) can switch it for preview. In-memory only, like the
-// other demo stores — persistence is contract-blocked.
+// Preference is "light" | "dark" | "system" (default: follow the phone). Picked
+// under Innstillinger → Utseende (user request 2026-11-24) or forced from the
+// dev-only sandbox (app/_sandbox/theme.tsx). A device choice: deviceSettings.ts
+// keeps it on the phone across restarts.
 import { createContext, useContext } from "react";
 import { useColorScheme } from "react-native";
 import { createStore, useStore } from "zustand";
@@ -35,6 +35,24 @@ export function getSchemePreference(): SchemePreference {
 
 export function useSchemePreference(): SchemePreference {
   return useStore(store, selectPreference);
+}
+
+export const SCHEME_PREFERENCES: readonly SchemePreference[] = [
+  "system",
+  "light",
+  "dark",
+];
+
+export function onSchemePreferenceChange(l: () => void): () => void {
+  return store.subscribe(() => l());
+}
+
+/** Device settings on start-up, and tests. Unknown values fall back. */
+export function restoreSchemePreference(saved: unknown) {
+  const preference = SCHEME_PREFERENCES.includes(saved as SchemePreference)
+    ? (saved as SchemePreference)
+    : DEFAULT_SCHEME_PREFERENCE;
+  store.setState({ preference });
 }
 
 /** Pure resolver — exported for tests. */
