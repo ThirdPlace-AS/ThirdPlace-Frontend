@@ -3,7 +3,11 @@
 // "Steder"; without one it is left as it is (nearest first, mixed).
 import { describe, expect, it } from "@jest/globals";
 
-import { groupByDay, isHeaderRow } from "@/components/map/services/dayGroups";
+import {
+  groupByDay,
+  isHeaderRow,
+  splitDayRows,
+} from "@/components/map/services/dayGroups";
 import type { DiscoveryItem } from "@/components/map/types/mapPresentation";
 import {
   applyExperienceFilters,
@@ -135,5 +139,29 @@ describe("Når's quick chips filter by real times (0517)", () => {
     expect(kept.map((e) => e.id).sort()).toEqual(
       tonight.map((e) => e.id).sort(),
     );
+  });
+});
+
+describe("splitDayRows (the day shows in the sheet's sticky top section)", () => {
+  it("gives the cards in grouped order and each card's day", () => {
+    const items = [place, ...experiences.slice(0, 6).map((e) => exp(e.id))];
+    const rows = groupByDay(items, week, now);
+    const { items: cards, labels } = splitDayRows(rows);
+    expect(cards).toEqual(rows.filter((r) => !isHeaderRow(r)));
+    expect(labels?.get(place.markerId)).toEqual({
+      title: "Steder",
+      subtitle: undefined,
+    });
+    const first = rows[0]!;
+    if (isHeaderRow(first))
+      expect(labels?.get(cards[0]!.markerId)?.title).toBe(first.title);
+  });
+
+  it("has no labels without a picked date", () => {
+    const items = [place];
+    expect(splitDayRows(groupByDay(items, null, now))).toEqual({
+      items,
+      labels: null,
+    });
   });
 });

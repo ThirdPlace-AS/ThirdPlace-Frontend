@@ -83,3 +83,29 @@ export function groupByDay(
   }
   return rows;
 }
+
+export type DayLabel = { title: string; subtitle?: string };
+
+/**
+ * The grouped rows split for a list whose day shows in a sticky header
+ * instead of between the cards (user 2026-11-25): the items in grouped
+ * order, and each item's day ("I kveld" · "onsdag 25. nov.", or "Steder").
+ * Null labels when the rows have no headers.
+ */
+export function splitDayRows(rows: readonly BrowseRow[]): {
+  items: DiscoveryItem[];
+  labels: Map<string, DayLabel> | null;
+} {
+  const items: DiscoveryItem[] = [];
+  const labels = new Map<string, DayLabel>();
+  let current: DayLabel | null = null;
+  for (const r of rows) {
+    if (isHeaderRow(r)) {
+      current = { title: r.title, subtitle: r.subtitle };
+      continue;
+    }
+    items.push(r);
+    if (current) labels.set(r.markerId, current);
+  }
+  return { items, labels: labels.size > 0 ? labels : null };
+}
