@@ -35,8 +35,4 @@ These are product decisions for the front-end demo. They do not import the V2.2 
 
 ## Follow-up slices
 
-1. Remove the Skaper criteria card from Profil (Q15); "Festival" to "Arrangement" in `src/components/map/services/itemType.ts` (Q24).
-2. Guest lock on every personal action, returning to the same spot (Q1, Q2).
-3. Hide unverified businesses from the map (Q20); Lukket group view for non-members (Q9); waitlist position (Q10).
-4. Draft Hjelp, suspension, accessibility and 2FA text as a review doc, not shipped (Q25).
-5. Sign-in providers, import, block and DM requests (Q26, Q22, Q11, Q17) need a backend contract: record as blocked, invent no UI beyond fixtures.
+Dropped by the user on 2026-11-25: no further slices are planned from these answers. Two had already shipped and stay in the app: guests browse only, with sign-in returning to the same spot (Q1, Q2; ledger 0504), and the drafted Hjelp, suspension, accessibility and 2FA text, kept as a review doc (Q25; ledger 0505).
