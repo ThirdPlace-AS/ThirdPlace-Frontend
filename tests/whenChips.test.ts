@@ -1,7 +1,7 @@
 // Når's quick chips filter by the experiences' real times (0517): they used
 // to match the fixtures' fixed `day` label, so «I kveld» kept no experience
 // and «Denne uka» kept times past Sunday.
-import { describe, expect, it } from "@jest/globals";
+import { afterEach, describe, expect, it, jest } from "@jest/globals";
 
 import {
   applyExperienceFilters,
@@ -11,8 +11,24 @@ import {
 import { experiences, sessionsFor } from "@/fixtures";
 import { isoDay } from "@/lib/dates";
 
+// The test reads sessions still ahead of "now", so it used to fail in the
+// evening (tonight's sessions had started) and on Saturdays (one evening
+// experience). It runs at noon on the coming Wednesday (today, if it is one),
+// a day with many evening experiences, still inside the fixtures' week (0530).
+function comingWednesdayNoon(): Date {
+  const d = new Date();
+  d.setDate(d.getDate() + ((3 - d.getDay() + 7) % 7));
+  d.setHours(12, 0, 0, 0);
+  return d;
+}
+
+afterEach(() => {
+  jest.useRealTimers();
+});
+
 describe("Når's quick chips filter by real times", () => {
   it("«I kveld» keeps tonight's experiences, whatever their fixed day label", () => {
+    jest.useFakeTimers({ now: comingWednesdayNoon() });
     const today = new Date();
     const kept = applyExperienceFilters(experiences, "", {
       ...DEFAULT_FILTERS,
