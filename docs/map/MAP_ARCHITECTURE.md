@@ -228,14 +228,9 @@ clusters them on a 44 dp grid at cell centres and names the towns in view
 - Every list is nearest first, places and experiences mixed, ordered once
   after mixing by `orderItems` (mapFixtureAdapter: a chosen Sorter wins,
   Trending puts the most-reviewed first).
-- One exception (review PR-04 option B, user 2026-11-25, ledger 0517): with a
-  day or period picked in Filtre's Når, the browse list groups by day
-  (`services/dayGroups.ts`): each day's experiences by start time (nearest
-  first on a tie), and the places last. The day is not drawn between the
-  cards: a sticky line under the sheet's top section names the top card's day
-  ("I dag" / "I kveld" when only Kveld is ticked, "I morgen", then the
-  weekday, each with its date; "Steder" for the places; user 2026-11-25,
-  0519). No date chips on the map: the 2026-11-08 rule below stands.
+  A picked date does not change the order either: the day-grouped list of
+  review PR-04 (option B, 0517/0519) was removed again (user 2026-11-25,
+  0520).
 - Avstand (1 · 5 · 10 · 25 · 50 km · Alle) measures from the origin to the
   place or the meeting point (never the fixtures' `distanceM`), and
   `useMapFilters` re-filters when the origin moves.

@@ -2,12 +2,7 @@ import { Ionicons } from "@expo/vector-icons";
 import BottomSheet, { BottomSheetFlatList } from "@gorhom/bottom-sheet";
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useFocusEffect } from "expo-router";
-import {
-  BackHandler,
-  useWindowDimensions,
-  View,
-  type ViewToken,
-} from "react-native";
+import { BackHandler, useWindowDimensions, View } from "react-native";
 import Animated, {
   Extrapolation,
   interpolate,
@@ -37,10 +32,6 @@ import { photosForItem } from "./services/itemCover";
 import { browseCardLine, browseCardOpenBadge } from "./services/itemType";
 import { browseBackCollapses } from "./hooks/useMapSelection";
 import type { DiscoveryItem } from "./types/mapPresentation";
-import { groupByDay, splitDayRows } from "./services/dayGroups";
-
-// The top card counts once half of it shows under the sticky top section.
-const VIEWABILITY = { itemVisiblePercentThreshold: 50 };
 
 // Airbnb-style persistent "browse" sheet. Always peeks (handle + header,
 // measured) when no marker
@@ -73,8 +64,6 @@ export const MapBrowseSheet = memo(function MapBrowseSheet({
   onPeekHeight,
   fullHeight,
   screenHeight,
-  dateWindow,
-  evening = false,
 }: {
   items: DiscoveryItem[];
   selectedMarkerId: string | null;
@@ -98,10 +87,6 @@ export const MapBrowseSheet = memo(function MapBrowseSheet({
   fullHeight?: number | null;
   /** The map's own height (the sheet's container). */
   screenHeight?: number | null;
-  /** Filtre's picked day or period (`dateWindow`): the list groups by day. */
-  dateWindow?: [Date, Date] | null;
-  /** Only "Kveld" picked under Tid på dagen: today's header says "I kveld". */
-  evening?: boolean;
 }) {
   const chrome = useSheetChrome();
   // Peek = handle + the measured city/weather header, so no card photo shows
@@ -207,26 +192,6 @@ export const MapBrowseSheet = memo(function MapBrowseSheet({
   // The cards span the sheet (the window) less the list's gutters; measured
   // here once instead of by every card's photo pager (speed pass 0349).
   const cardWidth = Math.round(useWindowDimensions().width - 2 * gutterPx);
-  // A picked day or period in Filtre's Når groups the list by day (PR-04 B).
-  const [now] = useState(() => new Date());
-  // The day of the card at the top shows in the sheet's sticky top section,
-  // not between the cards (user 2026-11-25).
-  const { items: listItems, labels: dayLabels } = useMemo(
-    () => splitDayRows(groupByDay(items, dateWindow ?? null, now, evening)),
-    [items, dateWindow, now, evening],
-  );
-  const [topId, setTopId] = useState<string | null>(null);
-  // FlatList wants one callback for its whole life.
-  const onViewableItemsChanged = useRef(
-    ({ viewableItems }: { viewableItems: ViewToken<DiscoveryItem>[] }) => {
-      const first = viewableItems.find((v) => v.isViewable)?.item;
-      setTopId(first ? first.markerId : null);
-    },
-  ).current;
-  const dayLabel = dayLabels
-    ? ((topId ? dayLabels.get(topId) : undefined) ??
-      dayLabels.get(listItems[0]?.markerId ?? ""))
-    : undefined;
   const renderItem = useCallback(
     ({ item }: { item: DiscoveryItem }) => (
       <BrowseCard
@@ -316,29 +281,9 @@ export const MapBrowseSheet = memo(function MapBrowseSheet({
           </View>
         </View>
 
-        {/* The day of the card at the top (PR-04 B, user 2026-11-25): sticky
-            above the list, below the peek, while Når has a date. */}
-        {dayLabel && !loading ? (
-          <View
-            accessibilityLiveRegion="polite"
-            className="flex-row items-baseline gap-2 border-t border-line px-gutter pt-3 pb-3"
-          >
-            <Text variant="h2" accessibilityRole="header">
-              {dayLabel.title}
-            </Text>
-            {dayLabel.subtitle ? (
-              <Text variant="body" tone="muted">
-                {dayLabel.subtitle}
-              </Text>
-            ) : null}
-          </View>
-        ) : null}
-
         <BottomSheetFlatList
-          data={listItems}
+          data={items}
           keyExtractor={(i) => i.markerId}
-          onViewableItemsChanged={onViewableItemsChanged}
-          viewabilityConfig={VIEWABILITY}
           contentContainerClassName="gap-6 px-gutter pb-28"
           showsVerticalScrollIndicator={false}
           ListEmptyComponent={
