@@ -23,6 +23,7 @@ import { interestById } from "@/fixtures/catalog/interests";
 import { libImage } from "@/fixtures/images";
 import { shortSessionLabel } from "@/lib/dates";
 import { membersLabel } from "@/lib/format";
+import { joinGroup, leaveGroup, useIsGroupMember } from "@/lib/groupMembership";
 import { Chip, ListRow, Text, Button } from "@/components/ui";
 
 import { Gallery } from "../Gallery";
@@ -72,8 +73,9 @@ export function memberFaces(group: MockGroup, max = MAX_FACES) {
 export function GroupContent({ id }: { id: string }) {
   const group = groupById(id);
   const { isGuest } = useGuestMode();
-  // The creator of a group (made in Legg til) is already in it.
-  const [member, setMember] = useState(group?.mine === true);
+  // The creator of a group (made in Legg til) is already in it; the store
+  // is shared with Profil's «Kom i gang» (0524).
+  const member = useIsGroupMember(id);
   const [promptOpen, setPromptOpen] = useState(false);
   const [leaveOpen, setLeaveOpen] = useState(false);
 
@@ -91,7 +93,7 @@ export function GroupContent({ id }: { id: string }) {
   const toggle = () => {
     if (isGuest) return setPromptOpen(true);
     if (member) return setLeaveOpen(true);
-    setMember(true);
+    joinGroup(id);
   };
 
   const topics = group.interests.flatMap((i) => {
@@ -207,7 +209,7 @@ export function GroupContent({ id }: { id: string }) {
           title={`Forlate ${group.name}?`}
           onClose={() => setLeaveOpen(false)}
           onConfirm={() => {
-            setMember(false);
+            leaveGroup(id);
             showToastAfterSheet({
               title: "Du har forlatt gruppen",
               icon: "exit-outline",

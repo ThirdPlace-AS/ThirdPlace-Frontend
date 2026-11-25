@@ -28,6 +28,7 @@ import { switchToPersonal, useActiveBusinessId } from "@/lib/activeAccount";
 import { useProfileCounts } from "@/lib/following";
 import { useMyProfile, type MyProfile } from "@/lib/myProfile";
 import { openProfileSteps, PROFILE_STEP_COUNT } from "@/lib/profileSteps";
+import { useStarterSteps, type StarterStep } from "@/lib/starterSteps";
 import { whenLabel } from "@/lib/whenLabel";
 import {
   coverForPlace,
@@ -165,11 +166,9 @@ export default function ProfileScreen() {
               ))}
             </View>
 
-            <FinishProfileCard me={me} />
+            <ChecklistCard me={me} />
 
             <NextPlanCard />
-
-            <CreatorPathCard />
 
             <TabBar tab={tab} onChange={setTab} />
             {tab === "experiences" ? <ActivityList /> : null}
@@ -238,40 +237,83 @@ function Stat({
   );
 }
 
-// "Fullfør profilen" (Phase 18, screen benchmark): the Rediger profil fields
-// still empty, each opening the page; gone once everything is filled in.
-function FinishProfileCard({ me }: { me: MyProfile }) {
+// One checklist at a time (review PR-06, 0524): «Kom i gang» while any of
+// its three first steps is open, then "Fullfør profilen" (Phase 18) for the
+// Rediger profil fields still empty. Both are gone once everything is done.
+function ChecklistCard({ me }: { me: MyProfile }) {
+  const starter = useStarterSteps();
+  const startOpen = starter.filter((s) => !s.done);
+  if (startOpen.length > 0) {
+    return (
+      <StepsCard
+        title="Kom i gang"
+        done={starter.length - startOpen.length}
+        total={starter.length}
+        rows={startOpen.map((s: StarterStep) => ({
+          key: s.key,
+          icon: s.icon,
+          label: s.label,
+          href: s.href,
+        }))}
+      />
+    );
+  }
   const open = openProfileSteps(me);
   if (open.length === 0) return null;
-  const done = PROFILE_STEP_COUNT - open.length;
+  return (
+    <StepsCard
+      title="Fullfør profilen"
+      done={PROFILE_STEP_COUNT - open.length}
+      total={PROFILE_STEP_COUNT}
+      rows={open.map((s) => ({
+        key: s.key,
+        icon: s.icon,
+        label: s.label,
+        href: "/profile/edit" as Href,
+      }))}
+    />
+  );
+}
+
+function StepsCard({
+  title,
+  done,
+  total,
+  rows,
+}: {
+  title: string;
+  done: number;
+  total: number;
+  rows: { key: string; icon: IconName; label: string; href: Href }[];
+}) {
   return (
     <View className="gap-3 rounded-md border border-line bg-surface p-4">
       <View className="gap-1">
         <Text variant="body" weight="semibold" accessibilityRole="header">
-          Fullfør profilen
+          {title}
         </Text>
         <Text variant="caption" tone="muted">
-          {done} av {PROFILE_STEP_COUNT} er på plass
+          {done} av {total} er på plass
         </Text>
       </View>
       <View
         accessibilityRole="progressbar"
-        accessibilityLabel="Fullfør profilen"
-        accessibilityValue={{ min: 0, max: PROFILE_STEP_COUNT, now: done }}
+        accessibilityLabel={title}
+        accessibilityValue={{ min: 0, max: total, now: done }}
         className="h-1.5 overflow-hidden rounded-full bg-surfaceMuted"
       >
         <View
           className="h-full rounded-full bg-ink"
-          style={{ width: `${(done / PROFILE_STEP_COUNT) * 100}%` }}
+          style={{ width: `${(done / total) * 100}%` }}
         />
       </View>
       <View>
-        {open.map((s) => (
+        {rows.map((r) => (
           <ListRow
-            key={s.key}
-            icon={s.icon}
-            title={s.label}
-            onPress={() => router.push("/profile/edit" as Href)}
+            key={r.key}
+            icon={r.icon}
+            title={r.label}
+            onPress={() => router.push(r.href)}
           />
         ))}
       </View>
@@ -365,28 +407,6 @@ function NextPlanCard() {
         onPress={() => router.push(`/experience/${exp.id}` as Href)}
       />
     </View>
-  );
-}
-
-// "Veien til Skaper" (PDF p12). The real creator criteria are not defined in
-// the contract, so the card shows no progress ("2 av 3", bar, rating): review
-// 2026-11-18 G-01.
-function CreatorPathCard() {
-  return (
-    <UIPressable
-      accessibilityRole="button"
-      accessibilityLabel="Veien til Skaper, se kravene"
-      onPress={() => router.push("/become-creator")}
-      pressedScale={0.99}
-      contentClassName="gap-2 rounded-md bg-surfaceMuted p-4"
-    >
-      <View className="flex-row items-center gap-2">
-        <Icon name="color-palette-outline" size="md" tone="ink" />
-        <Text variant="body" weight="semibold" className="flex-1">
-          Veien til Skaper
-        </Text>
-      </View>
-    </UIPressable>
   );
 }
 

@@ -1,7 +1,7 @@
 import type { IconName } from "@/components/ui";
 import type { MyProfile } from "@/lib/myProfile";
 
-export type ProfileStepKey = "photo" | "bio" | "interests" | "languages";
+export type ProfileStepKey = "bio" | "interests" | "languages";
 export type ProfileStep = {
   key: ProfileStepKey;
   label: string;
@@ -12,14 +12,10 @@ export type ProfileStep = {
 // next step of a profile). A step is a Rediger profil field that is still
 // empty; nothing is scored. "Vis meg som deltaker" is deliberately not a step:
 // it is a privacy choice that stays off until the person picks it (founder
-// 2026-11-07), so an unfinished profile never presses for it.
+// 2026-11-07), so an unfinished profile never presses for it. The photo is
+// a «Kom i gang» step since review PR-06 (0524), and this card shows only
+// once «Kom i gang» is done: one checklist at a time (src/lib/starterSteps.ts).
 const STEPS: readonly (ProfileStep & { done: (p: MyProfile) => boolean })[] = [
-  {
-    key: "photo",
-    label: "Legg til et profilbilde",
-    icon: "camera-outline",
-    done: (p) => p.avatar !== null,
-  },
   {
     key: "bio",
     label: "Skriv litt om deg selv",
