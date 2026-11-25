@@ -89,7 +89,7 @@ meldinger og ikke hvem som skal på en opplevelse. Personen får ikke beskjed.
 Du kan oppheve blokkeringen i Innstillinger → Blokkerte brukere.
 ```
 
-Based on: Q11 ("block hides both ways everywhere"). Open question: does the blocked person get told? The draft says no, which is the common pattern, but it is **a rule, so the founder must confirm it**. The app today implements block only on the blocker's side (block across accounts needs the backend contract, follow-up slice 5).
+Based on: Q11 ("block hides both ways everywhere"). Open question: does the blocked person get told? The draft says no, which is the common pattern, but it is **a rule, so the founder must confirm it**. The app today implements block only on the blocker's side (block across accounts needs the backend contract).
 
 ---
 
