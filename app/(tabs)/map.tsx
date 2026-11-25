@@ -285,9 +285,12 @@ export default function MapScreen() {
     [dateStart, dateEnd, dateFlex],
   );
   const browseEvening = timeOfDay.length === 1 && timeOfDay[0] === "kveld";
-  // The browse list's full snap ends 8 px under the chips (user 2026-11-25).
+  // The browse list's full snap ends 4 px under the mode chips (user
+  // 2026-11-25). topH includes the top controls' 8 px bottom padding (pb-2)
+  // and the chip row's own 4 px (DiscoveryModeTabs py-1), so the pills end
+  // 12 px above it.
   const browseFullH =
-    screenH != null && topH != null ? screenH - topH - 8 : null;
+    screenH != null && topH != null ? screenH - (topH - 12) - 4 : null;
   const pinPadding = useMemo(
     () =>
       focusPadding({
