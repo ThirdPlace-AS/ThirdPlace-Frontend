@@ -18,12 +18,18 @@ import { byStart } from "@/features/workspace/calendarOrder";
 import { hubToday } from "@/features/workspace/hubToday";
 import { clock } from "@/lib/dates";
 import { RouteHeader } from "@/components/RouteHeader";
-import { OWNED_BUSINESS_IDS, businesses } from "@/fixtures";
+import { OWNED_BUSINESS_IDS, businesses, type MockBusiness } from "@/fixtures";
 
 import { switchToPersonal } from "@/lib/activeAccount";
 import { useMyProfile } from "@/lib/myProfile";
 import { GuestPage } from "@/components/GuestPage";
 import { ownExperiences } from "@/features/workspace/ownExperiences";
+import {
+  businessSteps,
+  useBusinessVerified,
+  type BusinessStep,
+} from "@/features/workspace/businessSteps";
+import { useDevSimulation } from "@/lib/devSimulation";
 
 const ownBusinesses = () =>
   businesses.filter((b) => OWNED_BUSINESS_IDS.includes(b.id));
@@ -37,20 +43,32 @@ const BIZ = businesses[0];
 
 function WorkspaceHubContent() {
   const me = useMyProfile();
+  const verified = useBusinessVerified(BIZ);
+  const { newBusiness } = useDevSimulation();
+  const steps = BIZ
+    ? businessSteps({
+        businessId: BIZ.id,
+        verified,
+        hasExperience: !newBusiness && ownExperiences().length > 0,
+      })
+    : [];
   return (
     <Screen edges={["top"]}>
       <RouteHeader title={BIZ?.name ?? "Bedrift"} />
       <ScrollView contentContainerClassName={pageBody.list}>
         <View className="flex-row items-center gap-2">
           <Icon
-            name={BIZ?.verified ? "checkmark-circle" : "time-outline"}
+            name={verified ? "checkmark-circle" : "time-outline"}
             size="sm"
-            tone={BIZ?.verified ? "success" : "muted"}
+            tone={verified ? "success" : "muted"}
           />
           <Text variant="label" weight="semibold">
-            {BIZ?.verified ? "Verifisert bedrift" : "Ikke verifisert"}
+            {verified ? "Verifisert bedrift" : "Venter på verifisering"}
           </Text>
         </View>
+        {/* What is left to do comes first (review PR-09, 0527), and goes
+            once everything is done. */}
+        <StartSteps steps={steps} />
         <TodayCard />
         <HubCard
           icon="trending-up-outline"
@@ -109,50 +127,71 @@ function WorkspaceHubContent() {
             </Text>
           </UIPressable>
         </View>
-        <View className="gap-1 rounded-md border border-line bg-surface p-4">
-          <Text variant="label" weight="semibold">
-            Kom i gang
-          </Text>
-          {/* One line per step, each with its own state (a single ✓ in
-              front of both read as both done). */}
-          {[
-            {
-              label: "Verifiser bedriften",
-              done: !!BIZ?.verified,
-              href: "/business-onboarding" as Href,
-            },
-          ].map((step) => (
-            // Open steps lead on to where they are done (R30).
-            <UIPressable
-              key={step.label}
-              accessibilityRole={step.done ? "text" : "button"}
-              accessibilityLabel={`${step.label}: ${step.done ? "fullført" : "gjenstår"}`}
-              disabled={step.done}
-              dimWhenDisabled={false}
-              onPress={() => router.push(step.href)}
-              contentClassName="flex-row items-center gap-2 py-1"
-              pressedScale={0.99}
-            >
-              <Icon
-                name={step.done ? "checkmark-circle" : "ellipse-outline"}
-                size="sm"
-                tone={step.done ? "success" : "muted"}
-              />
-              <Text
-                variant="caption"
-                tone={step.done ? "muted" : "ink"}
-                className="flex-1"
-              >
-                {step.label}
-              </Text>
-              {step.done ? null : (
-                <Icon name="chevron-forward" size="sm" tone="muted" />
-              )}
-            </UIPressable>
-          ))}
-        </View>
       </ScrollView>
     </Screen>
+  );
+}
+
+// «Kom i gang» (review PR-09, 0527): one row per step, each with its own
+// state (a single ✓ in front of both read as both done). An open step leads
+// to where it is done (R30); one waiting on someone else says so instead.
+function StartSteps({ steps }: { steps: BusinessStep[] }) {
+  const done = steps.filter((s) => s.done).length;
+  if (steps.length === 0 || done === steps.length) return null;
+  return (
+    <View className="gap-1 rounded-md border border-line bg-surface p-4">
+      <Text variant="label" weight="semibold" accessibilityRole="header">
+        Kom i gang
+      </Text>
+      <Text variant="caption" tone="muted" className="pb-1">
+        {`${done} av ${steps.length} er på plass`}
+      </Text>
+      {steps.map((step) => (
+        <UIPressable
+          key={step.key}
+          accessibilityRole={step.done ? "text" : "button"}
+          accessibilityLabel={`${step.label}: ${
+            step.done
+              ? "fullført"
+              : step.status
+                ? step.status.toLowerCase()
+                : "gjenstår"
+          }`}
+          disabled={step.done}
+          dimWhenDisabled={false}
+          onPress={() => router.push(step.href)}
+          contentClassName="flex-row items-center gap-2 py-2"
+          pressedScale={0.99}
+        >
+          <Icon
+            name={
+              step.done
+                ? "checkmark-circle"
+                : step.status
+                  ? "time-outline"
+                  : "ellipse-outline"
+            }
+            size="sm"
+            tone={step.done ? "success" : "muted"}
+          />
+          <Text
+            variant="caption"
+            tone={step.done ? "muted" : "ink"}
+            className="flex-1"
+          >
+            {step.label}
+          </Text>
+          {step.done ? null : step.status ? (
+            <Text variant="caption" tone="muted">
+              {step.status}
+            </Text>
+          ) : null}
+          {step.done ? null : (
+            <Icon name="chevron-forward" size="sm" tone="muted" />
+          )}
+        </UIPressable>
+      ))}
+    </View>
   );
 }
 
@@ -161,7 +200,12 @@ function WorkspaceHubContent() {
 // hubToday.ts). Each line opens where it is handled.
 function TodayCard() {
   const now = new Date();
-  const { today, week, waiting } = hubToday(ownExperiences(), now);
+  // The dev-only «Ny bedrift» switch shows a business with nothing yet.
+  const { newBusiness } = useDevSimulation();
+  const { today, week, waiting } = hubToday(
+    newBusiness ? [] : ownExperiences(),
+    now,
+  );
   return (
     <View className="gap-1 rounded-md border border-line bg-surface p-4">
       <Text variant="label" weight="semibold" accessibilityRole="header">
@@ -394,40 +438,7 @@ function WorkspaceLocationsContent() {
           {ownBusinesses().length} lokasjoner
         </Text>
         {ownBusinesses().map((b) => (
-          // Verifisering (PDF p7) is the owner’s own screen, so it opens
-          // from here (user 2026-11-10: a business has one public profile).
-          <UIPressable
-            key={b.id}
-            accessibilityRole="button"
-            accessibilityLabel={`${b.name}, ${
-              b.verified ? "verifisert" : "venter på verifisering"
-            }. Verifisering`}
-            onPress={() =>
-              router.push(`/workspace/verification/${b.id}` as Href)
-            }
-            pressedScale={0.99}
-            contentClassName="gap-1 rounded-md border border-line bg-surface p-4"
-          >
-            <View className="flex-row items-start justify-between gap-3">
-              <Text variant="body" weight="semibold" className="flex-1">
-                {b.name}
-              </Text>
-              <Badge
-                kind="status"
-                label={b.verified ? "✓ Verifisert" : "Venter på verifisering"}
-                tone={b.verified ? "success" : "warning"}
-              />
-            </View>
-            <Text variant="caption" tone="muted">
-              {b.address}
-            </Text>
-            <View className="mt-2 flex-row items-center justify-between border-t border-line pt-3">
-              <Text variant="label" weight="semibold">
-                Verifisering
-              </Text>
-              <Icon name="chevron-forward" size="md" tone="muted" />
-            </View>
-          </UIPressable>
+          <LocationCard key={b.id} business={b} />
         ))}
         <View
           accessibilityRole="button"
@@ -440,6 +451,43 @@ function WorkspaceLocationsContent() {
         </View>
       </ScrollView>
     </Screen>
+  );
+}
+
+// Verifisering (PDF p7) is the owner’s own screen, so it opens from here
+// (user 2026-11-10: a business has one public profile).
+function LocationCard({ business: b }: { business: MockBusiness }) {
+  const verified = useBusinessVerified(b);
+  return (
+    <UIPressable
+      accessibilityRole="button"
+      accessibilityLabel={`${b.name}, ${
+        verified ? "verifisert" : "venter på verifisering"
+      }. Verifisering`}
+      onPress={() => router.push(`/workspace/verification/${b.id}` as Href)}
+      pressedScale={0.99}
+      contentClassName="gap-1 rounded-md border border-line bg-surface p-4"
+    >
+      <View className="flex-row items-start justify-between gap-3">
+        <Text variant="body" weight="semibold" className="flex-1">
+          {b.name}
+        </Text>
+        <Badge
+          kind="status"
+          label={verified ? "✓ Verifisert" : "Venter på verifisering"}
+          tone={verified ? "success" : "warning"}
+        />
+      </View>
+      <Text variant="caption" tone="muted">
+        {b.address}
+      </Text>
+      <View className="mt-2 flex-row items-center justify-between border-t border-line pt-3">
+        <Text variant="label" weight="semibold">
+          Verifisering
+        </Text>
+        <Icon name="chevron-forward" size="md" tone="muted" />
+      </View>
+    </UIPressable>
   );
 }
 

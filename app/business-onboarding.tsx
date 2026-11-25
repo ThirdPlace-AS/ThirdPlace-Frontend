@@ -18,6 +18,7 @@ import {
   Input,
 } from "@/components/ui";
 import { DiscardChangesSheet } from "@/components/DiscardChangesSheet";
+import { PinPreview } from "@/components/map/PinPreview";
 import { AreaChips } from "@/components/pickers/AreaChips";
 import { checkBirthday, formatBirthdayInput } from "@/features/onboarding/age";
 import { submitPlace } from "@/fixtures/created";
@@ -329,6 +330,7 @@ export default function BusinessOnboarding() {
                 title="Se bedriften på kartet"
                 subtitle="Slik ser kundene dere når bedriften er verifisert."
               >
+                {/* Ends on the business's own pin (review PR-09, 0527). */}
                 <View className="gap-3 rounded-md border border-line bg-surface p-4">
                   <View className="flex-row items-center gap-2 self-start rounded-full border border-ember px-3 py-1">
                     <Icon name="eye-outline" size="sm" tone="ember" />
@@ -336,6 +338,10 @@ export default function BusinessOnboarding() {
                       Forhåndsvisning. Bare du ser den.
                     </Text>
                   </View>
+                  <PinPreview
+                    name={name.trim() || "Bedriften din"}
+                    category={category}
+                  />
                   <Text variant="body" weight="semibold">
                     {name || "Bedriften din"}
                   </Text>
