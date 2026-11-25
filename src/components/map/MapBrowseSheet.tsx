@@ -62,6 +62,8 @@ export const MapBrowseSheet = memo(function MapBrowseSheet({
   loading = false,
   loadingSlow = false,
   onPeekHeight,
+  fullHeight,
+  screenHeight,
 }: {
   items: DiscoveryItem[];
   selectedMarkerId: string | null;
@@ -80,12 +82,28 @@ export const MapBrowseSheet = memo(function MapBrowseSheet({
   loadingSlow?: boolean;
   /** Measured peek height, so map tools can sit just above it. */
   onPeekHeight?: (h: number) => void;
+  /** Height of the full snap: the map's height less the search bar and
+   *  mode chips on top, so the open list never covers them. */
+  fullHeight?: number | null;
+  /** The map's own height (the sheet's container). */
+  screenHeight?: number | null;
 }) {
   const chrome = useSheetChrome();
   // Peek = handle + the measured city/weather header, so no card photo shows
   // under it (review L11; a fixed 8% left a sliver of the first card).
   const [peek, setPeek] = useState<number | null>(null);
-  const snapPoints = useMemo(() => [peek ?? "8%", "49%", "83.5%"], [peek]);
+  // Full stops just under the search bar and mode chips (user 2026-11-25:
+  // it covered the pills): the measured room below them, never under mid.
+  const snapPoints = useMemo(
+    () => [
+      peek ?? "8%",
+      "49%",
+      fullHeight != null && screenHeight != null
+        ? Math.max(fullHeight, Math.round(screenHeight * 0.6))
+        : "83.5%",
+    ],
+    [peek, fullHeight, screenHeight],
+  );
   const sheetRef = useRef<BottomSheet>(null);
   // Live fractional snap index (0 peek · 1 mid · 2 full), written by gorhom;
   // the floating "Kart" pill reads it. Per mount, so it starts at the peek.

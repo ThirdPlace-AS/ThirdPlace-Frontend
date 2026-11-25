@@ -276,6 +276,9 @@ export default function MapScreen() {
     const h = Math.round(y + height);
     setTopH((prev) => (prev === h ? prev : h));
   }, []);
+  // The browse list's full snap ends 8 px under the chips (user 2026-11-25).
+  const browseFullH =
+    screenH != null && topH != null ? screenH - topH - 8 : null;
   const pinPadding = useMemo(
     () =>
       focusPadding({
@@ -627,6 +630,8 @@ export default function MapScreen() {
           hidden={selection.sheetStack.length > 0}
           expandSignal={browseExpand}
           onPeekHeight={setPeekH}
+          fullHeight={browseFullH}
+          screenHeight={screenH}
         />
       ) : null}
 
