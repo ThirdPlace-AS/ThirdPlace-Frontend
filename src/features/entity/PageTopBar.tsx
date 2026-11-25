@@ -20,7 +20,11 @@ export function PageTopBar({
   caption,
   shareMessage,
   savedKey,
+  onBack,
 }: {
+  /** Back closes the page where it is open in place (Sveip's details); the
+   *  routes go back in the history. */
+  onBack?: () => void;
   caption: string;
   shareMessage: string;
   /** markerId of the entity for the shared Saved store. */
@@ -39,7 +43,7 @@ export function PageTopBar({
       <IconButton
         icon={BACK_ICON}
         label="Tilbake"
-        onPress={() => goBackOr("/map")}
+        onPress={onBack ?? (() => goBackOr("/map"))}
       />
       {/* Balances Del + Lagre on the right so the caption sits on the
           screen's centre line, not left of it. */}

@@ -173,9 +173,13 @@ export function placeThingsToKnow(p: MockPlace): Know[] {
 export function PlacePage({
   place,
   onNavigate,
+  hideGallery = false,
 }: {
   place: MockPlace;
   onNavigate: (href: Href) => void;
+  /** Leaves out the photo gallery (Sveip's details show the card's photo
+   *  above the page). */
+  hideGallery?: boolean;
 }) {
   // In the map sheet: the open shows the gallery (what the peek shows), the
   // first rows come once the sheet rests, the rest a moment later (0381).
@@ -226,7 +230,7 @@ export function PlacePage({
 
   return (
     <View className="gap-6">
-      <HeroGallery title={place.name} photos={photos} />
+      {hideGallery ? null : <HeroGallery title={place.name} photos={photos} />}
 
       {first ? (
         <>

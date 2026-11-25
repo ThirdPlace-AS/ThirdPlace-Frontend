@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useRef, useState } from "react";
+import { useCallback, useLayoutEffect, useMemo, useRef, useState } from "react";
 
 import { useMapSaved } from "@/components/map/hooks/useMapSaved";
 import { markerId } from "@/components/map/types/mapPresentation";
@@ -34,6 +34,14 @@ export function useSwipeDeck(opts?: {
   const given = opts?.items;
   const deck = useMemo<DeckItem[]>(() => given ?? ALL_EXPERIENCES(), [given]);
   const [state, setState] = useState<DeckState>(initialDeck);
+  // The deck's latest state, written the moment it changes (before React has
+  // rendered it). A second swipe that lands before the render reads this, so it
+  // acts on the right card and never on the one that has just gone.
+  const stateRef = useRef<DeckState>(initialDeck);
+  const set = useCallback((next: (s: DeckState) => DeckState) => {
+    stateRef.current = next(stateRef.current);
+    setState(stateRef.current);
+  }, []);
   const { isSaved, toggle } = useMapSaved();
 
   // Reset to the top of the deck whenever the tab or filters change. Done in
@@ -45,6 +53,11 @@ export function useSwipeDeck(opts?: {
     setState(initialDeck);
   }
 
+  // The ref follows the reset once it has rendered.
+  useLayoutEffect(() => {
+    stateRef.current = initialDeck;
+  }, [filterKey]);
+
   const savedKey = (i: DeckItem) => markerId(i.kind, i.id);
 
   // Whether the last committed swipe actually added to Saved. Undo only removes
@@ -53,7 +66,7 @@ export function useSwipeDeck(opts?: {
 
   const commit = useCallback(
     (action: SwipeAction) => {
-      const card = deck[state.index];
+      const card = deck[stateRef.current.index];
       lastAddedSave.current = false;
       // Save = swipe up / bookmark. A like on a place also saves it (founder
       // 2026-11-06: place ♥ = save + join the place's chat).
@@ -63,13 +76,13 @@ export function useSwipeDeck(opts?: {
         toggle(savedKey(card));
         lastAddedSave.current = true;
       }
-      setState((s) => applyAction(s, action));
+      set((s) => applyAction(s, action));
     },
-    [deck, state.index, isSaved, toggle],
+    [deck, set, isSaved, toggle],
   );
 
   const undo = useCallback(() => {
-    const last = state.last;
+    const last = stateRef.current.last;
     if (!last) return;
     // Side effects stay outside the state updater (updaters may be replayed).
     const card = deck[last.index];
@@ -77,10 +90,21 @@ export function useSwipeDeck(opts?: {
       if (isSaved(savedKey(card))) toggle(savedKey(card));
     }
     lastAddedSave.current = false;
-    setState(applyUndo);
-  }, [deck, state.last, isSaved, toggle]);
+    set(applyUndo);
+  }, [deck, set, isSaved, toggle]);
 
-  const restart = useCallback(() => setState(initialDeck), []);
+  const restart = useCallback(() => set(() => initialDeck), [set]);
+
+  // The card on top and the position right now, ahead of the render.
+  const getCurrent = useCallback(
+    () => deck[stateRef.current.index] ?? null,
+    [deck],
+  );
+  const getIndex = useCallback(() => stateRef.current.index, []);
+  const getLastAction = useCallback(
+    () => stateRef.current.last?.action ?? null,
+    [],
+  );
 
   const done = state.index >= deck.length;
   // Top card + up to two peeking behind it (top-3 stack).
@@ -92,6 +116,9 @@ export function useSwipeDeck(opts?: {
     done,
     window,
     current: deck[state.index] ?? null,
+    getCurrent,
+    getIndex,
+    getLastAction,
     savedKeyFor: savedKey,
     isSaved,
     canUndo: canUndo(state),

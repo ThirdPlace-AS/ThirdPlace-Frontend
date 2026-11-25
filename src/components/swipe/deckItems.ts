@@ -11,18 +11,24 @@ import type { ImageSourcePropType } from "react-native";
 
 import type { IconName } from "@/components/ui";
 import { goingLine } from "@/lib/going";
-import { experienceTypeLabel } from "@/components/map/services/itemType";
+import {
+  experienceTypeLabel,
+  placeTypeLabel,
+} from "@/components/map/services/itemType";
+import { resultForMode } from "@/components/map/services/mapFixtureAdapter";
+import type { DiscoveryMode } from "@/components/map/types/mapPresentation";
 import {
   applyExperienceFilters,
   applyFilters,
   type MapFilters,
 } from "@/components/map/services/mapFilters";
 import {
-  PLACE_KIND_LABEL,
   areaFor,
   chatForExperience,
   chatForPlace,
+  experienceById,
   experiences,
+  organizationForPlace,
   placeById,
   places,
   ratingOf,
@@ -53,7 +59,10 @@ export type DeckItem = {
   /** Per-photo bottom scrim tint (parallel to photos). */
   scrims: string[];
   lines: DeckLine[];
+  /** Interests / vibes, shown as pills on a later photo (pagesForPhoto). */
   chips: string[];
+  /** The fixture's short "about" text, shown on the card's second photo. */
+  about: string;
   /** The chat a like offers to join. */
   chatId?: string;
   /** Second line of the "Bli med i samtalen" sheet. */
@@ -96,6 +105,7 @@ export function experienceToDeckItem(e: MockExperience): DeckItem {
       },
     ],
     chips: e.tags,
+    about: e.about,
     chatId: chatForExperience(e.id)?.id,
     subtitle: whenLabel(e),
   };
@@ -104,6 +114,18 @@ export function experienceToDeckItem(e: MockExperience): DeckItem {
 // Places have no per-photo scrim samples; the media base tint keeps the
 // white text legible over any photo (the card also lays a constant floor).
 const PLACE_SCRIM = media.base;
+
+/** What a place is, in its own words: a city space or business by its type
+ *  ("Klatrefelt", "Kafé"), an organisation by its form ("Forening",
+ *  "Klubb"); the card used to say only "Bedrift" or "Byrom" (user
+ *  2026-11-20). */
+function placeTypeText(p: MockPlace): string {
+  if (p.kind === "organisasjon") {
+    const o = organizationForPlace(p.id);
+    if (o) return o.form;
+  }
+  return placeTypeLabel(p);
+}
 
 export function placeToDeckItem(
   p: MockPlace,
@@ -118,10 +140,12 @@ export function placeToDeckItem(
     photos,
     scrims: photos.map(() => PLACE_SCRIM),
     lines: [
+      // The type is its own row (user 2026-11-20), then "Kolsås · 12 km"
+      // (Phase 19), then the rating.
+      { icon: "pricetag-outline", text: placeTypeText(p) },
       {
         icon: "location-outline",
-        // "Byrom · Kolsås · 12 km" (Phase 19).
-        text: `${PLACE_KIND_LABEL[p.kind]} · ${areaFor(p.coord).name} · ${distanceLabelFor(p.coord)}`,
+        text: `${areaFor(p.coord).name} · ${distanceLabelFor(p.coord)}`,
       },
       {
         icon: "star-outline",
@@ -135,8 +159,9 @@ export function placeToDeckItem(
       },
     ],
     chips: p.vibes,
+    about: p.about,
     chatId: chatForPlace(p.id)?.id,
-    subtitle: `${PLACE_KIND_LABEL[p.kind]} · ${areaFor(p.coord).name} · ${distanceLabelFor(p.coord)}`,
+    subtitle: `${placeTypeText(p)} · ${areaFor(p.coord).name} · ${distanceLabelFor(p.coord)}`,
   };
 }
 
@@ -162,4 +187,45 @@ export function deckFor(
         applyExperienceFilters(experiences, "", filters, origin),
         (x) => x.meetingPoint.coord,
       ).map(experienceToDeckItem);
+}
+
+/** What a Sveip tab shows: the same pipeline as the map's mode of that name
+ *  (filters, then the mode's rules, nearest first; Populært most-reviewed
+ *  first). Lagret holds what is saved when the deck is built, so a swipe-save
+ *  never reshuffles the deck under the thumb. */
+export function modeResult(
+  mode: DiscoveryMode,
+  filters: MapFilters,
+  savedIds: readonly string[],
+  origin: Origin = getOrigin(),
+) {
+  return resultForMode({
+    mode,
+    places: applyFilters(places, "", filters, origin),
+    query: "",
+    savedIds,
+    filters,
+    origin,
+  });
+}
+
+/** The deck for a Sveip tab (one card per item the map's mode would list). */
+export function deckForMode(
+  mode: DiscoveryMode,
+  filters: MapFilters,
+  savedIds: readonly string[],
+  origin: Origin = getOrigin(),
+): { items: DeckItem[]; emptyMessage: string } {
+  const result = modeResult(mode, filters, savedIds, origin);
+  const items: DeckItem[] = [];
+  for (const it of result.items) {
+    if (it.kind === "place") {
+      const p = placeById(it.id);
+      if (p) items.push(placeToDeckItem(p));
+    } else if (it.kind === "experience") {
+      const e = experienceById(it.id);
+      if (e) items.push(experienceToDeckItem(e));
+    }
+  }
+  return { items, emptyMessage: result.emptyMessage };
 }

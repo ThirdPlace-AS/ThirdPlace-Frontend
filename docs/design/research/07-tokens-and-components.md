@@ -90,23 +90,23 @@ Expose in `tailwind.config.js` `fontSize` as `[size, { lineHeight, letterSpacing
 
 ## 6. Motion (extends `src/theme/motion.ts`)
 
-| Group    | Token               | Current     | Proposed                                                 |
-| -------- | ------------------- | ----------- | -------------------------------------------------------- |
-| duration | `micro`             | —           | 90 (press in)                                            |
-| duration | `fast/base/slow`    | 150/220/320 | unchanged                                                |
-| duration | `fling`             | 180         | 180 (fallback; swipe uses velocity-based)                |
-| duration | `crossfade`         | —           | 150 (reduced-motion substitute)                          |
-| spring   | `snappy`            | 20/220/1    | unchanged                                                |
-| spring   | `gentle`            | 26/160/1    | unchanged                                                |
-| spring   | `card`              | —           | damping 18, stiffness 200, mass 1 (swipe spring-back)    |
-| spring   | `spark`             | —           | damping 12, stiffness 260, mass 0.8 (icon select / save) |
-| gesture  | `flingVelocity`     | 600         | unchanged (map/preview)                                  |
-| gesture  | `dragCommitPx`      | 72          | unchanged (preview)                                      |
-| gesture  | `swipeCommitRatio`  | —           | 0.28 × card width                                        |
-| gesture  | `swipeVelocity`     | —           | 800 pt/s                                                 |
-| gesture  | `swipeMaxRotateDeg` | —           | 14                                                       |
-| gesture  | `stackScaleStep`    | —           | 0.04                                                     |
-| press    | `pressScale`        | —           | 0.97 (buttons), 0.94 (icons)                             |
+| Group    | Token               | Current     | Proposed                                                               |
+| -------- | ------------------- | ----------- | ---------------------------------------------------------------------- |
+| duration | `micro`             | —           | 90 (press in)                                                          |
+| duration | `fast/base/slow`    | 150/220/320 | unchanged                                                              |
+| duration | `fling`             | 180         | 180 (fallback; swipe uses velocity-based)                              |
+| duration | `crossfade`         | —           | 150 (reduced-motion substitute)                                        |
+| spring   | `snappy`            | 20/220/1    | unchanged                                                              |
+| spring   | `gentle`            | 26/160/1    | unchanged                                                              |
+| spring   | `card`              | —           | damping 18, stiffness 200, mass 1 (not used by Sveip since 2026-11-18) |
+| spring   | `spark`             | —           | damping 12, stiffness 260, mass 0.8 (icon select / save)               |
+| gesture  | `flingVelocity`     | 600         | unchanged (map/preview)                                                |
+| gesture  | `dragCommitPx`      | 72          | unchanged (preview)                                                    |
+| gesture  | `swipeCommitRatio`  | —           | 0.45 × card width (2026-11-18, chosen; was 0.28)                       |
+| gesture  | `swipeVelocity`     | —           | 450 px/s after 0.22 × width (2026-11-18; was 800)                      |
+| gesture  | `swipeMaxRotateDeg` | —           | 25, at 40° per card width (2026-11-18; was 14)                         |
+| gesture  | `stackScaleStep`    | —           | 0.04                                                                   |
+| press    | `pressScale`        | —           | 0.97 (buttons), 0.94 (icons)                                           |
 
 ## 7. Component specifications
 

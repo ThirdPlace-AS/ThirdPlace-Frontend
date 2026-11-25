@@ -106,7 +106,10 @@ export function IconButton({
       className={className}
       contentClassName={iconButtonClass({ variant })}
       contentStyle={[
-        { width: px, height: px },
+        // The radius is set here as well as by the class, so the round
+        // background cannot come out square if the class is late or dropped
+        // (user 2026-11-20: the top icons changed shape at random).
+        { width: px, height: px, borderRadius: px / 2 },
         variant === "floating" || variant === "ink" || variant === "ember"
           ? elevation.e2
           : null,

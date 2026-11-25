@@ -49,4 +49,4 @@ export {
   type SchemePreference,
   type ThemeColors,
 } from "./scheme";
-export { media } from "./media";
+export { headBandColors, media } from "./media";
