@@ -224,7 +224,7 @@ describe("Rediger profil", () => {
     fireEvent.press(screen.getByLabelText("Forhåndsvis"));
     expect(screen.getByText("Slik ser andre profilen din.")).toBeTruthy();
     expect(screen.getByText("Ola N.")).toBeTruthy();
-    expect(screen.getByText("Offentlige opplevelser")).toBeTruthy();
+    expect(screen.getByText("Arrangerer")).toBeTruthy();
     // Nothing was saved, and there is no Følg / Melding on your own page.
     expect(getMyProfile().name).toBe("Ola Nordmann");
     expect(screen.queryByText("Melding")).toBeNull();

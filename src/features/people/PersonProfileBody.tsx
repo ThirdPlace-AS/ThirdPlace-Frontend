@@ -7,9 +7,11 @@ import { Avatar, Chip, Icon, ListRow, Section, Text } from "@/components/ui";
 export type PublicExperience = { id: string; title: string; when: string };
 
 // What others see on a person page (PDF p13 "other user"): photo, name,
-// handle, bio, interests and public experiences. PersonScreen adds Følg and
-// Melding below it; Rediger profil's "Forhåndsvis" (Phase 18) shows the
-// user's own unsaved draft with the same layout.
+// handle, bio, interests and what the person hosts («Arrangerer», review
+// 2026-11-18 PR-10, 0528: one page per person, hosting included, so a host
+// has no separate creator page). PersonScreen adds Følg and Melding below
+// it; your own page as others see it (/people/me) and Rediger profil's
+// "Forhåndsvis" (Phase 18) use the same layout without them.
 export function PersonProfileBody({
   name,
   avatar,
@@ -81,14 +83,14 @@ export function PersonProfileBody({
       ) : null}
 
       {hosted.length > 0 ? (
-        <Section title="Offentlige opplevelser">
+        <Section title="Arrangerer">
           {hosted.map((h) => (
             <ListRow
               key={h.id}
               variant="card"
-              icon="pricetag-outline"
+              icon="tp-experience"
               title={h.title}
-              subtitle={`Vert · ${h.when}`}
+              subtitle={h.when}
               onPress={
                 onOpenExperience ? () => onOpenExperience(h.id) : undefined
               }

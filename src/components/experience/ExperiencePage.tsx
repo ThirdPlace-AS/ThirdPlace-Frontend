@@ -300,7 +300,7 @@ export function ExperiencePage({
               }
               onPress={
                 host && !preview
-                  ? () => onNavigate(`/creator/${host.id}` as Href)
+                  ? () => onNavigate(`/people/${host.id}` as Href)
                   : undefined
               }
             />
@@ -494,7 +494,7 @@ export function ExperiencePage({
               }
               onPress={
                 host && !preview
-                  ? () => onNavigate(`/creator/${host.id}` as Href)
+                  ? () => onNavigate(`/people/${host.id}` as Href)
                   : undefined
               }
               pressedScale={0.99}

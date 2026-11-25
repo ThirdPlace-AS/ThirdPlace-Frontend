@@ -153,6 +153,21 @@ export default function ProfileScreen() {
               ))}
             </View>
 
+            {/* Your one person page as others see it (review PR-10,
+                0528). */}
+            <UIPressable
+              accessibilityRole="link"
+              hitSlop={LINK_SLOP}
+              onPress={() => router.push("/people/me" as Href)}
+              className="self-start"
+              contentClassName="flex-row items-center gap-2"
+            >
+              <Icon name="eye-outline" size="sm" tone="ember" />
+              <Text variant="label" weight="semibold" tone="ember">
+                Se profilen som andre ser den
+              </Text>
+            </UIPressable>
+
             <ChecklistCard me={me} />
 
             <NextPlanCard />
