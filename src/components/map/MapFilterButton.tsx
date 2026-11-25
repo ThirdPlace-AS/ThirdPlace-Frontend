@@ -19,13 +19,14 @@ export const MapFilterButton = memo(function MapFilterButton({
   onPress: () => void;
 }) {
   const applied = appliedFilterChips(filters).map((c) => c.label);
+  // The applied filters ride in the label, which is always set. As an
+  // accessibilityValue that became undefined after «Fjern alt», Android kept
+  // the old text (a removed prop is not reset natively; 0523).
+  const label = applied.length > 0 ? `Filtre, ${applied.join(", ")}` : "Filtre";
   return (
     <UIPressable
       accessibilityRole="button"
-      accessibilityLabel="Filtre"
-      accessibilityValue={
-        applied.length > 0 ? { text: applied.join(", ") } : undefined
-      }
+      accessibilityLabel={label}
       onPress={onPress}
       className="w-12"
       contentClassName="items-center justify-center h-full"

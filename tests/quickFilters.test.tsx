@@ -129,15 +129,31 @@ describe("applied filters on the map", () => {
     expect(screen.queryAllByRole("checkbox")).toHaveLength(0);
     expect(screen.queryByRole("button", { name: /^Fjern «/ })).toBeNull();
     expect(screen.queryByText("Kafé")).toBeNull();
-    fireEvent.press(screen.getByRole("button", { name: "Filtre" }));
+    fireEvent.press(screen.getByRole("button", { name: /^Filtre/ }));
     expect(onPress).toHaveBeenCalledTimes(1);
   });
 
   it("name what is applied to a screen reader", () => {
     render(<MapFilterButton filters={f} count={2} onPress={jest.fn()} />);
     expect(
-      screen.getByRole("button", { name: "Filtre" }).props.accessibilityValue,
-    ).toEqual({ text: "Kafé, Ledige plasser" });
+      screen.getByRole("button", { name: "Filtre, Kafé, Ledige plasser" }),
+    ).toBeTruthy();
+  });
+
+  it("drop the applied filters from the label once cleared (0523)", () => {
+    // As an accessibilityValue that turned undefined, Android kept the old
+    // text after «Fjern alt»; the label is always set, so it updates.
+    const view = render(
+      <MapFilterButton filters={f} count={2} onPress={jest.fn()} />,
+    );
+    view.rerender(
+      <MapFilterButton
+        filters={DEFAULT_FILTERS}
+        count={0}
+        onPress={jest.fn()}
+      />,
+    );
+    expect(screen.getByRole("button", { name: "Filtre" })).toBeTruthy();
   });
 
   it("no number and no value when nothing is applied", () => {
