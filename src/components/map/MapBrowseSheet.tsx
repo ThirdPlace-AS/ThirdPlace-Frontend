@@ -32,6 +32,7 @@ import { photosForItem } from "./services/itemCover";
 import { browseCardLine, browseCardOpenBadge } from "./services/itemType";
 import { browseBackCollapses } from "./hooks/useMapSelection";
 import type { DiscoveryItem } from "./types/mapPresentation";
+import { groupByDay, isHeaderRow, type BrowseRow } from "./services/dayGroups";
 
 // Airbnb-style persistent "browse" sheet. Always peeks (handle + header,
 // measured) when no marker
@@ -64,6 +65,8 @@ export const MapBrowseSheet = memo(function MapBrowseSheet({
   onPeekHeight,
   fullHeight,
   screenHeight,
+  dateWindow,
+  evening = false,
 }: {
   items: DiscoveryItem[];
   selectedMarkerId: string | null;
@@ -87,6 +90,10 @@ export const MapBrowseSheet = memo(function MapBrowseSheet({
   fullHeight?: number | null;
   /** The map's own height (the sheet's container). */
   screenHeight?: number | null;
+  /** Filtre's picked day or period (`dateWindow`): the list groups by day. */
+  dateWindow?: [Date, Date] | null;
+  /** Only "Kveld" picked under Tid på dagen: today's header says "I kveld". */
+  evening?: boolean;
 }) {
   const chrome = useSheetChrome();
   // Peek = handle + the measured city/weather header, so no card photo shows
@@ -192,17 +199,35 @@ export const MapBrowseSheet = memo(function MapBrowseSheet({
   // The cards span the sheet (the window) less the list's gutters; measured
   // here once instead of by every card's photo pager (speed pass 0349).
   const cardWidth = Math.round(useWindowDimensions().width - 2 * gutterPx);
+  // A picked day or period in Filtre's Når groups the list by day (PR-04 B).
+  const [now] = useState(() => new Date());
+  const rows = useMemo(
+    () => groupByDay(items, dateWindow ?? null, now, evening),
+    [items, dateWindow, now, evening],
+  );
   const renderItem = useCallback(
-    ({ item }: { item: DiscoveryItem }) => (
-      <BrowseCard
-        item={item}
-        width={cardWidth}
-        selected={item.markerId === selectedMarkerId}
-        saved={isSaved(item.markerId)}
-        onSelect={handleSelect}
-        onToggleSave={handleToggleSave}
-      />
-    ),
+    ({ item }: { item: BrowseRow }) =>
+      isHeaderRow(item) ? (
+        <View className="flex-row items-baseline gap-2 pt-2">
+          <Text variant="h2" accessibilityRole="header">
+            {item.title}
+          </Text>
+          {item.subtitle ? (
+            <Text variant="body" tone="muted">
+              {item.subtitle}
+            </Text>
+          ) : null}
+        </View>
+      ) : (
+        <BrowseCard
+          item={item}
+          width={cardWidth}
+          selected={item.markerId === selectedMarkerId}
+          saved={isSaved(item.markerId)}
+          onSelect={handleSelect}
+          onToggleSave={handleToggleSave}
+        />
+      ),
     [cardWidth, selectedMarkerId, isSaved, handleSelect, handleToggleSave],
   );
 
@@ -282,8 +307,8 @@ export const MapBrowseSheet = memo(function MapBrowseSheet({
         </View>
 
         <BottomSheetFlatList
-          data={items}
-          keyExtractor={(i) => i.markerId}
+          data={rows}
+          keyExtractor={(i) => (isHeaderRow(i) ? i.key : i.markerId)}
           contentContainerClassName="gap-6 px-gutter pb-28"
           showsVerticalScrollIndicator={false}
           ListEmptyComponent={

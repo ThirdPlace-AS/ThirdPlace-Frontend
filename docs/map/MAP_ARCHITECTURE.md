@@ -228,6 +228,12 @@ clusters them on a 44 dp grid at cell centres and names the towns in view
 - Every list is nearest first, places and experiences mixed, ordered once
   after mixing by `orderItems` (mapFixtureAdapter: a chosen Sorter wins,
   Trending puts the most-reviewed first).
+- One exception (review PR-04 option B, user 2026-11-25, ledger 0517): with a
+  day or period picked in Filtre's Når, the browse list groups by day
+  (`services/dayGroups.ts`): a header per day ("I dag" / "I kveld" when only
+  Kveld is ticked, "I morgen", then the weekday, each with its date), that
+  day's experiences by start time (nearest first on a tie), and the places last
+  under "Steder". No date chips on the map: the 2026-11-08 rule below stands.
 - Avstand (1 · 5 · 10 · 25 · 50 km · Alle) measures from the origin to the
   place or the meeting point (never the fixtures' `distanceM`), and
   `useMapFilters` re-filters when the origin moves.
@@ -273,7 +279,9 @@ clusters them on a 44 dp grid at cell centres and names the towns in view
   250 ms and on release (`PriceRange`).
 - A picked day or period in Når keeps only experiences with a time in it
   (`dateWindow`, widened by `dateFlex` for "± 1 dag"); places have opening
-  hours, not times, and ignore dates.
+  hours, not times, and ignore dates. The quick chips (I dag, I kveld, I
+  morgen, Denne uka, Helg) set that window too and filter the same way
+  (0517); the fixtures' fixed `day` label is only the fallback without one.
 
 ## Item types and labels
 

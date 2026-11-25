@@ -49,6 +49,7 @@ import { USER_PUCK } from "@/components/map/userPuck";
 import { useMapDiscovery } from "@/components/map/hooks/useMapDiscovery";
 import { useSwipePrefetch } from "@/components/map/hooks/useSwipePrefetch";
 import { useMapFilters } from "@/components/map/hooks/useMapFilters";
+import { dateWindow } from "@/components/map/services/mapFilters";
 import { useMapSaved } from "@/components/map/hooks/useMapSaved";
 import {
   mapBackAction,
@@ -276,6 +277,14 @@ export default function MapScreen() {
     const h = Math.round(y + height);
     setTopH((prev) => (prev === h ? prev : h));
   }, []);
+  // A day or period picked in Filtre's Når groups the browse list by day
+  // (review PR-04 option B, user 2026-11-25); memoised for the sheet's memo.
+  const { dateStart, dateEnd, dateFlex, timeOfDay } = filters.filters;
+  const browseDateWindow = useMemo(
+    () => dateWindow({ dateStart, dateEnd, dateFlex }),
+    [dateStart, dateEnd, dateFlex],
+  );
+  const browseEvening = timeOfDay.length === 1 && timeOfDay[0] === "kveld";
   // The browse list's full snap ends 8 px under the chips (user 2026-11-25).
   const browseFullH =
     screenH != null && topH != null ? screenH - topH - 8 : null;
@@ -630,6 +639,8 @@ export default function MapScreen() {
           hidden={selection.sheetStack.length > 0}
           expandSignal={browseExpand}
           onPeekHeight={setPeekH}
+          dateWindow={browseDateWindow}
+          evening={browseEvening}
           fullHeight={browseFullH}
           screenHeight={screenH}
         />

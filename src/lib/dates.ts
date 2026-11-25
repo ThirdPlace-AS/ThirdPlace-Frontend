@@ -82,6 +82,26 @@ export function shortSessionLabel(d: Date, now: Date): string {
   return `${day}. ${d.getDate()}. ${MONTHS_SHORT[d.getMonth()]} ${clock(d)}`;
 }
 
+/** A day header for a list grouped by day (review PR-04): a relative word
+ *  and the date. "I dag" / "onsdag 18. nov.", "I kveld" when only the evening
+ *  is picked, "I morgen" / "torsdag 19. nov.", then "Lørdag" / "21. nov.". */
+export function dayHeader(
+  d: Date,
+  now: Date,
+  evening = false,
+): { title: string; subtitle: string } {
+  const date = `${d.getDate()}. ${MONTHS_SHORT[d.getMonth()] ?? ""}`;
+  const weekday = DAYS[d.getDay()] ?? "";
+  if (sameDay(d, now))
+    return {
+      title: evening ? "I kveld" : "I dag",
+      subtitle: `${weekday} ${date}`,
+    };
+  if (sameDay(d, addDays(now, 1)))
+    return { title: "I morgen", subtitle: `${weekday} ${date}` };
+  return { title: cap(weekday), subtitle: date };
+}
+
 function startOfDay(d: Date) {
   return new Date(d.getFullYear(), d.getMonth(), d.getDate());
 }
