@@ -18,10 +18,12 @@ import { useGuestMode } from "@/components/map/hooks/useGuestMode";
 import { profile } from "@/fixtures";
 import { pushSummary, useNotificationPrefs } from "@/lib/notificationPrefs";
 import { signOut } from "@/lib/signOut";
+import { useSchemePreference } from "@/theme";
 
 import { ExportSheet } from "./ExportSheet";
 import { PAGE_ROWS, searchSettings } from "./settingsIndex";
 import { NavRow, SettingsSection } from "./settingsUi";
+import { SCHEME_LABEL, ThemeSheet } from "./ThemeSheet";
 
 type Row = {
   icon: IconName;
@@ -35,8 +37,9 @@ type Row = {
 // Innstillinger, grouped as in the design (PDF p19): KONTO
 // (Kontoinformasjon, Koblede kontoer, plus Preferanser: PDF p13 draws that
 // page without an entry, so it sits with the account rows) · APP (Varsler,
-// Personvern, Språk og region, Tilgjengelighet) · DATA (Eksporter data,
-// Hjelp og støtte) · Logg ut.
+// Personvern, Språk og region, Tilgjengelighet, plus Utseende: user request
+// 2026-11-24, not in the PDF) · DATA (Eksporter data, Hjelp og støtte) ·
+// Logg ut.
 // Each row opens its PDF sub-screen (p19–p20, p28) as a page (Phase 12 H4c);
 // Eksporter data and Logg ut are short confirmations and stay sheets. Every
 // toggle is local and persists nothing; nothing is exported, sent or deleted
@@ -46,7 +49,9 @@ type Row = {
 export default function SettingsScreen() {
   const guest = useGuestMode();
   const notificationPrefs = useNotificationPrefs();
+  const scheme = useSchemePreference();
   const [exportOpen, setExportOpen] = useState(false);
+  const [themeOpen, setThemeOpen] = useState(false);
   const [logoutOpen, setLogoutOpen] = useState(false);
   const [signIn, setSignIn] = useState<string | null>(null);
   const [query, setQuery] = useState("");
@@ -112,6 +117,15 @@ export default function SettingsScreen() {
           label: "Tilgjengelighet",
           inside: PAGE_ROWS.Tilgjengelighet,
           onPress: go("/settings/accessibility"),
+        },
+        // A short choice, so a sheet rather than a page (CLAUDE.md "Pages,
+        // not modals"); search finds its three options.
+        {
+          icon: "contrast-outline",
+          label: "Utseende",
+          value: SCHEME_LABEL[scheme],
+          inside: Object.values(SCHEME_LABEL),
+          onPress: () => setThemeOpen(true),
         },
       ],
     },
@@ -214,6 +228,7 @@ export default function SettingsScreen() {
       </ScrollView>
 
       <ExportSheet visible={exportOpen} onClose={() => setExportOpen(false)} />
+      <ThemeSheet visible={themeOpen} onClose={() => setThemeOpen(false)} />
 
       <Sheet
         visible={logoutOpen}
