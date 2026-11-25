@@ -1,8 +1,9 @@
 // Experience page (/experience/[id]): the shared ExperiencePage laid out as
 // the reference video's page — top bar (back, caption, share, save), the page
 // body and the join action as a floating card. Phase 12 H4c: a route, not an
-// overlay, so Sveip's expand, Lagret, Mine planer, a chat's pinned
-// experience and "Flere opplevelser" all open the same page with a real back.
+// overlay, so Lagret, Mine planer, a chat's pinned experience and "Flere
+// opplevelser" all open the same page with a real back (Sveip's arrow opens
+// the same body in place, SwipeDetails, 2026-11-18).
 // The map reaches it by dragging its experience sheet to the top snap.
 // Short sub-views (deltakere, sjekk inn, administrer) open in a sheet over
 // the page. Join/save use the shared stores; guests get the sign-in prompt
@@ -54,7 +55,14 @@ export default function ExperienceScreen() {
   return <ExperiencePageBody exp={exp} />;
 }
 
-export function ExperiencePageBody({ exp }: { exp: MockExperience }) {
+export function ExperiencePageBody({
+  exp,
+  onBack,
+}: {
+  exp: MockExperience;
+  /** Set where the page is open in place (Sveip's details). */
+  onBack?: () => void;
+}) {
   const insets = useSafeAreaInsets();
   const [sub, setSub] = useState<SheetTarget[]>([]);
   const [cardH, setCardH] = useState(JOIN_CARD);
@@ -66,6 +74,7 @@ export function ExperiencePageBody({ exp }: { exp: MockExperience }) {
         caption={experienceCaption(exp)}
         shareMessage={`${exp.title} på ThirdPlace: thirdplace.app/experience/${exp.id}`}
         savedKey={markerId("experience", exp.id)}
+        onBack={onBack}
       />
       <ScrollView
         contentContainerClassName="px-gutter pt-4"

@@ -12,6 +12,7 @@ import {
   placeToDeckItem,
   spotsLine,
 } from "@/components/swipe/deckItems";
+import { infoPages, pagesForPhoto } from "@/components/swipe/SwipeCard";
 import { useSwipeDeck } from "@/components/swipe/useSwipeDeck";
 import {
   chatForPlace,
@@ -49,11 +50,13 @@ describe("deck items", () => {
       expect(item.kind).toBe("place");
       expect(item.photos.length).toBeGreaterThanOrEqual(1);
       expect(item.scrims).toHaveLength(item.photos.length);
-      expect(item.lines).toHaveLength(3);
+      // type, where, rating, open now
+      expect(item.lines).toHaveLength(4);
+      expect(item.lines[0]!.text.length).toBeGreaterThan(0);
       const { score, count } = ratingOf(reviewsForPlace(p.id));
       if (count)
-        expect(item.lines[1]!.text.startsWith(formatRating(score))).toBe(true);
-      expect(item.lines[2]!.text).toBe(
+        expect(item.lines[2]!.text.startsWith(formatRating(score))).toBe(true);
+      expect(item.lines[3]!.text).toBe(
         isPlaceOpen(p, now) ? "Åpent nå" : "Stengt nå",
       );
       expect(item.chatId).toBe(chatForPlace(p.id)?.id);
@@ -85,5 +88,42 @@ describe("one deck for places", () => {
     expect(result.current.isSaved(markerId("experience", first.id))).toBe(
       false,
     );
+  });
+});
+
+describe("card info per photo (user 2026-11-18)", () => {
+  it("basics, then about, then tags; empty pages are skipped", () => {
+    expect(infoPages({ about: "Om", chips: ["Kaffe"] })).toEqual([
+      "basics",
+      "about",
+      "tags",
+    ]);
+    expect(infoPages({ about: " ", chips: ["Kaffe"] })).toEqual([
+      "basics",
+      "tags",
+    ]);
+    expect(infoPages({ about: "", chips: [] })).toEqual(["basics"]);
+  });
+
+  it("the last photo takes every page left over", () => {
+    const item = { about: "Om", chips: ["Kaffe"] };
+    // Two photos (most cards): basics, then about + tags together.
+    expect(pagesForPhoto(item, 0, 2)).toEqual(["basics"]);
+    expect(pagesForPhoto(item, 1, 2)).toEqual(["about", "tags"]);
+    // Three photos: one page each.
+    expect(pagesForPhoto(item, 1, 3)).toEqual(["about"]);
+    expect(pagesForPhoto(item, 2, 3)).toEqual(["tags"]);
+    // More photos than pages: the rest show the title alone.
+    expect(pagesForPhoto(item, 3, 5)).toEqual([]);
+    expect(pagesForPhoto(item, 4, 5)).toEqual([]);
+    // One photo: everything on it.
+    expect(pagesForPhoto(item, 0, 1)).toEqual(["basics", "about", "tags"]);
+  });
+
+  it("every fixture card carries its about text and tags", () => {
+    const e = experienceToDeckItem(experiences[0]!);
+    expect(e.about).toBe(experiences[0]!.about);
+    const p = placeToDeckItem(places[0]!);
+    expect(p.about).toBe(places[0]!.about);
   });
 });

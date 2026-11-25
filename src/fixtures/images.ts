@@ -7,6 +7,7 @@ import {
   SWIPE_FULL,
   SWIPE_SMALL,
 } from "./imageAssets.generated";
+import { TOP_TINT } from "./imageTints.generated";
 
 // ── Bundled image library (MOCK demo art — NOT a canonical media contract) ──
 // BLOCKED_CONTRACT_GAP: ThirdPlace has no media-rights / asset model. These are
@@ -49,6 +50,8 @@ const SMALL_BY_SOURCE = new Map<unknown, ImageSourcePropType>();
 // One `{ uri }` object per preview, built once (speed pass 0349): a new
 // object on every render made expo-image treat the placeholder as changed.
 const PREVIEW_BY_SOURCE = new Map<unknown, { uri: string }>();
+// The average colour of each photo's top fifth (Sveip's head band).
+const TINT_BY_SOURCE = new Map<unknown, string>();
 function index<K extends string>(
   dir: string,
   full: Record<K, ImageSourcePropType>,
@@ -57,6 +60,11 @@ function index<K extends string>(
   for (const key of Object.keys(full) as K[]) {
     const uri = PLACEHOLDER[`${dir}/${key}`];
     SMALL_BY_SOURCE.set(full[key], small[key]);
+    const tint = TOP_TINT[`${dir}/${key}`];
+    if (tint) {
+      TINT_BY_SOURCE.set(full[key], tint);
+      TINT_BY_SOURCE.set(small[key], tint);
+    }
     if (uri) {
       const preview = { uri };
       PREVIEW_BY_SOURCE.set(full[key], preview);
@@ -133,4 +141,10 @@ export function coverForPlace(place: {
   photos?: readonly LibraryKey[];
 }): LibraryKey {
   return photosForPlace(place)[0] ?? coverForPlaceCategory(place.category);
+}
+
+/** The colour of a bundled photo's top (#rrggbb, its top fifth averaged;
+ * scripts/build-image-tints.js), if it has one. */
+export function imageTopTint(source: unknown): string | undefined {
+  return TINT_BY_SOURCE.get(source);
 }

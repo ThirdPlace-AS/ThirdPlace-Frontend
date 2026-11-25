@@ -58,6 +58,7 @@ export {
   SheetHeader,
   SHEET_RADIUS,
   useSheetChrome,
+  useSheetSettled,
   type SheetProps,
   type SheetTone,
 } from "./Sheet";
