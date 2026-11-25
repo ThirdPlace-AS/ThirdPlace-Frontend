@@ -15,6 +15,11 @@ import {
   type MapChoice,
 } from "@/lib/mapChoice";
 import {
+  getSchemePreference,
+  onSchemePreferenceChange,
+  restoreSchemePreference,
+} from "@/theme/scheme";
+import {
   appVersion,
   getWhatsNewSeen,
   onWhatsNewChange,
@@ -25,11 +30,11 @@ import {
 // Device settings (founder 2026-11-07, Phase 15): choices that belong to this
 // phone, kept across restarts — the Kartlag map type and style,
 // Tilgjengelighet's switches, and which one-time hints it has shown
-// (Phase 16), and the app version it last ran (Phase 18, "Nytt i ThirdPlace").
-// Nothing about the account or its content is
-// stored here (that needs the contract: BLOCKED_CONTRACT_GAP). One versioned
-// key; read once at start-up behind the root layout's font gate, written on
-// every change.
+// (Phase 16), the app version it last ran (Phase 18, "Nytt i ThirdPlace"),
+// and Utseende's light/dark choice (user request 2026-11-24). Nothing about
+// the account or its content is stored here (that needs the contract:
+// BLOCKED_CONTRACT_GAP). One versioned key; read once at start-up behind the
+// root layout's font gate, written on every change.
 export const DEVICE_SETTINGS_KEY = "thirdplace:device-settings:v1";
 
 // AsyncStorage is loaded lazily and guarded, like expo-haptics
@@ -55,6 +60,7 @@ type Saved = {
   a11y?: Partial<A11yPrefs>;
   hints?: Partial<Hints>;
   whatsNew?: unknown;
+  theme?: unknown;
 };
 
 const readyStore = createStore(() => ({ ready: false }));
@@ -72,6 +78,7 @@ function write() {
     a11y: getA11yPrefs(),
     hints: getHints(),
     whatsNew: getWhatsNewSeen() ?? undefined,
+    theme: getSchemePreference(),
   };
   storage?.setItem(DEVICE_SETTINGS_KEY, JSON.stringify(saved)).catch(() => {
     // A full or locked store only means the choice is not kept.
@@ -99,6 +106,7 @@ export function hydrateDeviceSettings(): Promise<void> {
       resetA11yPrefs({ ...DEFAULT_A11Y_PREFS, ...saved.a11y });
       restoreHints(saved.hints);
       restoreWhatsNew(saved.whatsNew);
+      restoreSchemePreference(saved.theme);
     })
     .catch(() => {})
     .finally(() => {
@@ -106,11 +114,13 @@ export function hydrateDeviceSettings(): Promise<void> {
       const offA11y = onA11yPrefsChange(write);
       const offHints = onHintsChange(write);
       const offWhatsNew = onWhatsNewChange(write);
+      const offTheme = onSchemePreferenceChange(write);
       unsubscribe = () => {
         offMap();
         offA11y();
         offHints();
         offWhatsNew();
+        offTheme();
       };
       // A first install records its version (saved by the write above).
       rememberFirstVersion(appVersion());
