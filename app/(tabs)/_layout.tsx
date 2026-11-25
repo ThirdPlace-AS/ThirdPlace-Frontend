@@ -36,7 +36,8 @@ function icon(idle: IconName, active: IconName) {
 export default function TabsLayout() {
   const themeColors = useThemeColors();
   // On Sveip the bar is black, part of the dark deck (user 2026-11-25): the
-  // deck's base colour with the dark theme's tints, whatever the app theme.
+  // page's own black (media.black, behind the deck) with the dark theme's
+  // tints, whatever the app theme, so bar and page are one colour.
   const onSwipe = (useSegments() as string[]).includes("swipe");
   const colors = onSwipe ? palette.dark : themeColors;
   // Chats with unread messages (Phase 16, the WhatsApp / Instagram tab badge).
@@ -59,8 +60,8 @@ export default function TabsLayout() {
         tabBarInactiveTintColor: colors.muted,
         tabBarLabelStyle: { fontFamily: fontFamilyFor("medium") },
         tabBarStyle: {
-          backgroundColor: onSwipe ? media.base : colors.surface,
-          borderTopColor: onSwipe ? media.base : colors.line,
+          backgroundColor: onSwipe ? media.black : colors.surface,
+          borderTopColor: onSwipe ? media.black : colors.line,
         },
       }}
     >
