@@ -1,11 +1,10 @@
 // One system page (review 2026-11-18 PR-05): offline, error, maintenance,
 // update and "Fant ikke siden" share one layout and one voice. A back arrow
-// when there is somewhere to go back to, the illustration from the set (or an
+// (to the map when there is no history), the illustration from the set (or an
 // icon disc), an h1, one line on what still works, one ink action and an
 // optional text action. No screen promises a time or a cause (CLAUDE.md
 // governance). The crash screen copies this layout by hand: it replaces the
 // root layout, so it has none of these providers.
-import { router } from "expo-router";
 import { ScrollView, View } from "react-native";
 
 import {
@@ -47,10 +46,13 @@ export function SystemState({
   action?: SystemAction;
   /** A quieter way out, drawn as a text button. */
   secondary?: SystemAction;
-  /** Show the back arrow (default: when there is a page to go back to). */
+  /** Show the back arrow (default true; it goes to the map with no history). */
   back?: boolean;
 }) {
-  const showBack = back ?? router.canGoBack();
+  // Always on unless asked off: router.canGoBack() read during the first
+  // render of a deep-linked page said false although system back went to the
+  // map (phone check 0521). goBackOr() covers a cold link.
+  const showBack = back ?? true;
   return (
     <Screen edges={["top", "bottom"]}>
       <View className="h-12 flex-row items-center px-2">
