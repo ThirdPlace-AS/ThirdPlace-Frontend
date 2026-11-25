@@ -135,4 +135,14 @@ describe("theme tokens", () => {
     expect(resolveScheme("system", "dark")).toBe("dark");
     expect(resolveScheme("system", null)).toBe("light");
   });
+
+  it("Auto turns dark with the map's Natt style, whatever the phone", () => {
+    // Map auto bands: dawn 05–08, day 08–17, dusk 17–20, night 20–05.
+    for (const h of [5, 8, 12, 17, 19]) {
+      expect(resolveScheme("auto", "dark", h)).toBe("light");
+    }
+    for (const h of [20, 23, 0, 4]) {
+      expect(resolveScheme("auto", "light", h)).toBe("dark");
+    }
+  });
 });

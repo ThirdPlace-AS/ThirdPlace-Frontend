@@ -1,5 +1,6 @@
 // Innstillinger → Utseende (user request 2026-11-24): follow the phone, or
-// keep the app light or dark. The choice is the scheme store's preference,
+// keep the app light or dark; «Auto» (2026-11-25) turns dark with the
+// map’s Natt style. The choice is the scheme store's preference,
 // which the theme root, status bar and native colours already read; the
 // device settings keep it (tests/deviceSettings.test.ts).
 import { afterEach, describe, expect, it, jest } from "@jest/globals";
@@ -59,7 +60,7 @@ describe("Utseende", () => {
     render(<SettingsScreen />, { wrapper });
     fireEvent.press(screen.getByText("Utseende"));
 
-    expect(screen.getAllByRole("radio")).toHaveLength(3);
+    expect(screen.getAllByRole("radio")).toHaveLength(4);
     expect(
       screen.getByRole("radio", { name: "System" }).props.accessibilityState,
     ).toMatchObject({ checked: true });
@@ -79,6 +80,28 @@ describe("Utseende", () => {
     expect(getSchemePreference()).toBe("system");
   });
 
+  it("Auto turns dark when the map turns to Natt", () => {
+    const now = new Date();
+    now.setHours(19, 58, 0, 0);
+    jest.useFakeTimers({ now });
+    try {
+      const scheme = renderHook(() => useScheme());
+      render(<SettingsScreen />, { wrapper });
+      fireEvent.press(screen.getByText("Utseende"));
+      expect(screen.getByText("Mørk om natten, som kartet")).toBeTruthy();
+      fireEvent.press(screen.getByRole("radio", { name: "Auto" }));
+      expect(getSchemePreference()).toBe("auto");
+      expect(scheme.result.current).toBe("light");
+      // The clock ticks every 5 minutes: 20:03 is night on the map.
+      act(() => {
+        jest.advanceTimersByTime(5 * 60 * 1000);
+      });
+      expect(scheme.result.current).toBe("dark");
+    } finally {
+      jest.useRealTimers();
+    }
+  });
+
   it("names the choice on the row once picked", () => {
     act(() => restoreSchemePreference("dark"));
     render(<SettingsScreen />, { wrapper });
@@ -89,6 +112,6 @@ describe("Utseende", () => {
     render(<SettingsScreen />, { wrapper });
     fireEvent.changeText(screen.getByLabelText("Søk i innstillinger"), "mørk");
     fireEvent.press(screen.getByText("Mørk"));
-    expect(screen.getAllByRole("radio")).toHaveLength(3);
+    expect(screen.getAllByRole("radio")).toHaveLength(4);
   });
 });

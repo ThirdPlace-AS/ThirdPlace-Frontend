@@ -1,4 +1,4 @@
-import { router } from "expo-router";
+import { router, useSegments } from "expo-router";
 
 import { Tabs } from "expo-router/js-tabs";
 import { type ColorValue } from "react-native";
@@ -9,7 +9,8 @@ import { Icon, type IconName } from "@/components/ui";
 import { useUnreadChatCount } from "@/lib/chatReads";
 import { openAccountSheet } from "@/components/AccountSwitcher";
 import { markHintSeen } from "@/lib/hints";
-import { useThemeColors } from "@/theme";
+import { media, palette, useThemeColors } from "@/theme";
+import { SchemeScope } from "@/theme/ThemeRoot";
 import { fontFamilyFor } from "@/theme/fonts";
 
 // Outline when idle, filled when active — the usual iOS/Android tab convention.
@@ -33,7 +34,11 @@ function icon(idle: IconName, active: IconName) {
 // reached full extent; that is gone — the sheet tops out within the screen
 // scene (above the bar), so the bar simply stays put on every screen.
 export default function TabsLayout() {
-  const colors = useThemeColors();
+  const themeColors = useThemeColors();
+  // On Sveip the bar is black, part of the dark deck (user 2026-11-25): the
+  // deck's base colour with the dark theme's tints, whatever the app theme.
+  const onSwipe = (useSegments() as string[]).includes("swipe");
+  const colors = onSwipe ? palette.dark : themeColors;
   // Chats with unread messages (Phase 16, the WhatsApp / Instagram tab badge).
   const demoUnread = useUnreadChatCount();
   // A guest has no chats of their own (IJ2): no count on the tab.
@@ -54,8 +59,8 @@ export default function TabsLayout() {
         tabBarInactiveTintColor: colors.muted,
         tabBarLabelStyle: { fontFamily: fontFamilyFor("medium") },
         tabBarStyle: {
-          backgroundColor: colors.surface,
-          borderTopColor: colors.line,
+          backgroundColor: onSwipe ? media.base : colors.surface,
+          borderTopColor: onSwipe ? media.base : colors.line,
         },
       }}
     >
@@ -76,7 +81,15 @@ export default function TabsLayout() {
           title: "Legg til",
           // TikTok's stacked button in our colours (founder 2026-11-08); the
           // same look open or not, the label turns ember while open.
-          tabBarIcon: () => <AddTabIcon />,
+          // On Sveip's black bar it takes the dark theme's look (white face).
+          tabBarIcon: () =>
+            onSwipe ? (
+              <SchemeScope scheme="dark">
+                <AddTabIcon />
+              </SchemeScope>
+            ) : (
+              <AddTabIcon />
+            ),
         }}
       />
       <Tabs.Screen

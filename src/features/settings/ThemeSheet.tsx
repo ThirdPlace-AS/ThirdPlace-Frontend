@@ -14,12 +14,16 @@ import {
 // open, as Kartlag's choices do, so the new look shows behind it.
 export const SCHEME_LABEL: Record<SchemePreference, string> = {
   system: "System",
+  auto: "Auto",
   light: "Lys",
   dark: "Mørk",
 };
 
+// «Auto» (user 2026-11-25) turns with the map's own auto style: dark while
+// the map shows Natt (20–05), light otherwise.
 const SCHEME_HINT: Partial<Record<SchemePreference, string>> = {
   system: "Følger telefonen",
+  auto: "Mørk om natten, som kartet",
 };
 
 export function ThemeSheet({
