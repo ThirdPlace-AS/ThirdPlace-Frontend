@@ -7,7 +7,7 @@
 // appears twice; everything a creator enters in Legg til shows once. The join
 // action lives in the host's floating ExperienceJoinBar card.
 import type { Href } from "expo-router";
-import { useMemo, useState } from "react";
+import { useMemo, useState, type ReactNode } from "react";
 import {
   useSheetStageFirst,
   useSheetStageReady,
@@ -82,7 +82,22 @@ export type ExperiencePageProps = {
   /** Leaves out the photo gallery (Sveip's details show the card's photo
    *  above the page). */
   hideGallery?: boolean;
+  /** Legg til's last step (review PR-07, 0525): the page as others will see
+   *  it, built from the draft. Nothing that acts is shown (join, chat,
+   *  reviews, report, other experiences); each part has «Endre», which goes
+   *  back to the wizard step that holds it. */
+  preview?: { onEdit: (part: ExperiencePart) => void };
 };
+
+/** The parts of an experience the Add wizard edits, one step each. */
+export type ExperiencePart =
+  | "photos"
+  | "about"
+  | "mood"
+  | "when"
+  | "where"
+  | "frame"
+  | "plan";
 
 /** "1 time" → "Ca. 1 time"; "Hele dagen" stays. */
 export function durationLabel(exp: Pick<MockExperience, "duration">): string {
@@ -142,6 +157,7 @@ export function ExperiencePage({
   onOpen,
   onNavigate,
   hideGallery = false,
+  preview,
 }: ExperiencePageProps) {
   // In the map sheet: the open shows the gallery (what the peek shows), the
   // first rows come once the sheet rests, the rest a moment later (0381).
@@ -173,14 +189,14 @@ export function ExperiencePage({
   // Worked out only once the lower part shows.
   const more = useMemo(
     () =>
-      ready
+      ready && !preview
         ? moreExperiences(exp).map((e) => ({
             e,
             r: ratingOf(reviewsForExperience(e.id)),
           }))
         : [],
     // eslint-disable-next-line react-hooks/exhaustive-deps -- created: an experience made in Legg til
-    [exp, created, ready],
+    [exp, created, ready, preview],
   );
   const reviewsHref = `/experience/${exp.id}/reviews` as Href;
   // The direct chat with the host, matched by person (Phase 19: with many
@@ -192,12 +208,23 @@ export function ExperiencePage({
   // An Arrangement names who puts it on (a club or a business).
   const organizer =
     exp.format === "event" ? placeById(exp.organizerPlaceId) : undefined;
+  // In the preview a row's tap edits its part, and the row says «Endre».
+  const edit = (part: ExperiencePart) =>
+    preview ? () => preview.onEdit(part) : undefined;
+  const action = preview ? "Endre" : undefined;
 
   return (
     <View className="gap-6">
       {hideGallery ? null : (
         <HeroGallery title={exp.title} photos={exp.photos} />
       )}
+      {preview ? (
+        <EditLinks
+          links={[
+            { label: "bildene", onPress: () => preview.onEdit("photos") },
+          ]}
+        />
+      ) : null}
 
       {first ? (
         <>
@@ -239,6 +266,14 @@ export function ExperiencePage({
               ))}
             </View>
           </View>
+          {preview ? (
+            <EditLinks
+              links={[
+                { label: "teksten", onPress: () => preview.onEdit("about") },
+                { label: "stemningen", onPress: () => preview.onEdit("mood") },
+              ]}
+            />
+          ) : null}
 
           {/* PR-03: once joined, the page says so and keeps the next steps.
               Not for a guest or the host. */}
@@ -264,7 +299,7 @@ export function ExperiencePage({
                 host?.area ? `Bor på ${host.area}` : "Arrangerer opplevelsen"
               }
               onPress={
-                host
+                host && !preview
                   ? () => onNavigate(`/creator/${host.id}` as Href)
                   : undefined
               }
@@ -282,21 +317,27 @@ export function ExperiencePage({
               title={place?.name ?? exp.meetingPoint.name}
               subtitle={areaLabel(exp.meetingPoint.coord)}
               onPress={
-                place
+                edit("where") ??
+                (place
                   ? () => onNavigate(`/place/${place.id}` as Href)
-                  : undefined
+                  : undefined)
               }
+              action={action}
             />
             <InfoRow
               icon="time-outline"
               title={durationLabel(exp)}
               subtitle={languageLabel(exp)}
+              onPress={edit("when")}
+              action={action}
             />
             <InfoRow
               icon="clipboard-outline"
               title="Hva er inkludert"
               subtitle={includedLabel(exp)}
               lines={2}
+              onPress={edit("plan")}
+              action={action}
             />
             {latest ? (
               <InfoRow
@@ -309,9 +350,17 @@ export function ExperiencePage({
             ) : null}
             <InfoRow
               icon="people-outline"
-              title={`${going} av ${exp.capacity} plasser tatt`}
-              subtitle="Se deltakere"
-              onPress={() => onOpen({ kind: "attendees", id: exp.id })}
+              title={
+                preview
+                  ? `${exp.capacity} plasser`
+                  : `${going} av ${exp.capacity} plasser tatt`
+              }
+              subtitle={preview ? undefined : "Se deltakere"}
+              onPress={
+                edit("frame") ??
+                (() => onOpen({ kind: "attendees", id: exp.id }))
+              }
+              action={action}
             />
             {group ? (
               <InfoRow
@@ -331,35 +380,56 @@ export function ExperiencePage({
         <>
           <View className="h-px bg-line" />
 
-          <ItinerarySection exp={exp} />
+          <PreviewPart
+            preview={preview}
+            label="programmet"
+            onEdit={edit("plan")}
+          >
+            <ItinerarySection exp={exp} />
+          </PreviewPart>
 
           <View className="h-px bg-line" />
 
-          <ReviewsSection
-            reviews={reviews}
-            onShowAll={() => onNavigate(reviewsHref)}
-          />
+          {/* A new experience has no reviews: the preview leaves them out. */}
+          {preview ? null : (
+            <>
+              <ReviewsSection
+                reviews={reviews}
+                onShowAll={() => onNavigate(reviewsHref)}
+              />
+
+              <View className="h-px bg-line" />
+            </>
+          )}
+
+          <PreviewPart preview={preview} label="tiden" onEdit={edit("when")}>
+            <AvailabilitySection exp={exp} />
+          </PreviewPart>
 
           <View className="h-px bg-line" />
 
-          <AvailabilitySection exp={exp} />
+          <PreviewPart
+            preview={preview}
+            label="møtestedet"
+            onEdit={edit("where")}
+          >
+            <MeetingSection
+              exp={exp}
+              hostName={hostName}
+              onShowOnMap={() =>
+                onNavigate(
+                  `/map?focus=experience:${exp.id}&at=${Date.now()}` as Href,
+                )
+              }
+            />
+          </PreviewPart>
 
-          <View className="h-px bg-line" />
-
-          <MeetingSection
-            exp={exp}
-            hostName={hostName}
-            onShowOnMap={() =>
-              onNavigate(
-                `/map?focus=experience:${exp.id}&at=${Date.now()}` as Href,
-              )
-            }
-          />
-
-          <ChatSection
-            chat={chatForExperience(exp.id)}
-            onNavigate={onNavigate}
-          />
+          {preview ? null : (
+            <ChatSection
+              chat={chatForExperience(exp.id)}
+              onNavigate={onNavigate}
+            />
+          )}
 
           {more.length > 0 ? (
             <View className="gap-3">
@@ -419,9 +489,11 @@ export function ExperiencePage({
             </Text>
             <UIPressable
               accessibilityRole="button"
-              accessibilityLabel={`${hostName}, vert. Se profilen`}
+              accessibilityLabel={
+                preview ? `${hostName}, vert` : `${hostName}, vert. Se profilen`
+              }
               onPress={
-                host
+                host && !preview
                   ? () => onNavigate(`/creator/${host.id}` as Href)
                   : undefined
               }
@@ -442,7 +514,7 @@ export function ExperiencePage({
               </Text>
             </UIPressable>
             {host?.bio ? <Text variant="body">{host.bio}</Text> : null}
-            {mine ? null : (
+            {mine || preview ? null : (
               <Button
                 label={`Send melding til ${hostName.split(" ")[0]}`}
                 variant="secondary"
@@ -455,46 +527,50 @@ export function ExperiencePage({
 
           <View className="h-px bg-line" />
 
-          <ThingsToKnowSection exp={exp} />
+          <PreviewPart preview={preview} label="rammene" onEdit={edit("frame")}>
+            <ThingsToKnowSection exp={exp} />
+          </PreviewPart>
 
-          <View className="h-px bg-line" />
+          {preview ? null : <View className="h-px bg-line" />}
 
           {/* Footer links. No "Sjekk inn når du er der": with no GPS
               arrival check it always said "Du er fremme!" (review
               2026-11-18 C2, #5). CheckinContent stays for when the check
               exists (C-Q1). */}
-          <View className="gap-1">
-            {/* Only for the host (0464: anyone could open the host view). */}
-            {mine ? (
+          {preview ? null : (
+            <View className="gap-1">
+              {/* Only for the host (0464: anyone could open the host view). */}
+              {mine ? (
+                <FooterLink
+                  icon="settings-outline"
+                  label="Administrer"
+                  onPress={() => onOpen({ kind: "host", id: exp.id })}
+                />
+              ) : null}
+              {/* Phase 18: help that starts from this experience (Uber, Amazon). */}
               <FooterLink
-                icon="settings-outline"
-                label="Administrer"
-                onPress={() => onOpen({ kind: "host", id: exp.id })}
+                icon="help-buoy-outline"
+                label="Få hjelp med opplevelsen"
+                onPress={() =>
+                  onNavigate(`/settings/support?about=${exp.id}` as Href)
+                }
               />
-            ) : null}
-            {/* Phase 18: help that starts from this experience (Uber, Amazon). */}
-            <FooterLink
-              icon="help-buoy-outline"
-              label="Få hjelp med opplevelsen"
-              onPress={() =>
-                onNavigate(`/settings/support?about=${exp.id}` as Href)
-              }
-            />
-            {mine ? null : (
-              <>
-                <FooterLink
-                  icon="flag-outline"
-                  label="Rapporter opplevelsen"
-                  onPress={gate("rapportere", () => setSheet("report"))}
-                />
-                <FooterLink
-                  icon="ban-outline"
-                  label={`Blokker ${hostName.split(" ")[0]}`}
-                  onPress={gate("blokkere", () => setSheet("block"))}
-                />
-              </>
-            )}
-          </View>
+              {mine ? null : (
+                <>
+                  <FooterLink
+                    icon="flag-outline"
+                    label="Rapporter opplevelsen"
+                    onPress={gate("rapportere", () => setSheet("report"))}
+                  />
+                  <FooterLink
+                    icon="ban-outline"
+                    label={`Blokker ${hostName.split(" ")[0]}`}
+                    onPress={gate("blokkere", () => setSheet("block"))}
+                  />
+                </>
+              )}
+            </View>
+          )}
 
           {sheet === "report" ? (
             <ReportSheet onClose={() => setSheet(null)} />
@@ -571,6 +647,7 @@ export function InfoRow({
   subtitle,
   lines = 1,
   onPress,
+  action,
 }: {
   icon?: IconName;
   leading?: React.ReactNode;
@@ -578,6 +655,8 @@ export function InfoRow({
   subtitle?: string;
   lines?: number;
   onPress?: () => void;
+  /** A word in place of the chevron (the Add preview's «Endre»). */
+  action?: string;
 }) {
   const body = (
     <>
@@ -594,13 +673,20 @@ export function InfoRow({
           </Text>
         ) : null}
       </View>
-      {onPress ? <Icon name="chevron-forward" size="md" tone="muted" /> : null}
+      {onPress && action ? (
+        <Text variant="label" weight="semibold" className="underline">
+          {action}
+        </Text>
+      ) : onPress ? (
+        <Icon name="chevron-forward" size="md" tone="muted" />
+      ) : null}
     </>
   );
+  const spoken = subtitle ? `${title}, ${subtitle}` : title;
   return onPress ? (
     <UIPressable
       accessibilityRole="button"
-      accessibilityLabel={subtitle ? `${title}, ${subtitle}` : title}
+      accessibilityLabel={action ? `${action}: ${spoken}` : spoken}
       onPress={onPress}
       contentClassName="flex-row items-center gap-3 rounded-sm py-3"
       pressedScale={0.99}
@@ -639,5 +725,53 @@ export function FooterLink({
         {label}
       </Text>
     </UIPressable>
+  );
+}
+
+// The Add preview's «Endre» links (review PR-07, 0525): underlined words at
+// the end of a part, each going back to the step that holds it.
+export function EditLinks({
+  links,
+}: {
+  links: { label: string; onPress: () => void }[];
+}) {
+  return (
+    <View className="flex-row justify-end gap-4">
+      {links.map((l) => (
+        <UIPressable
+          key={l.label}
+          accessibilityRole="button"
+          accessibilityLabel={`Endre ${l.label}`}
+          hitSlop={LINK_SLOP}
+          onPress={l.onPress}
+        >
+          <Text variant="label" weight="semibold" className="underline">
+            {`Endre ${l.label}`}
+          </Text>
+        </UIPressable>
+      ))}
+    </View>
+  );
+}
+
+// A section in the Add preview: shown as it will be, but nothing in it acts
+// (a session, directions, the map); «Endre» under it edits its part.
+function PreviewPart({
+  preview,
+  label,
+  onEdit,
+  children,
+}: {
+  preview: ExperiencePageProps["preview"];
+  label: string;
+  onEdit: (() => void) | undefined;
+  children: ReactNode;
+}) {
+  if (!preview || !onEdit) return <>{children}</>;
+  return (
+    <View className="gap-3">
+      <View pointerEvents="none">{children}</View>
+      <EditLinks links={[{ label, onPress: onEdit }]} />
+    </View>
   );
 }
