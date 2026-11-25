@@ -200,12 +200,13 @@ function StartSteps({ steps }: { steps: BusinessStep[] }) {
 // hubToday.ts). Each line opens where it is handled.
 function TodayCard() {
   const now = new Date();
-  // The dev-only «Ny bedrift» switch shows a business with nothing yet.
+  // The dev-only «Ny bedrift» switch shows a business with nothing yet:
+  // no experiences, so nobody on a waitlist either (the count comes from
+  // Mine listings, not from the experiences passed in).
   const { newBusiness } = useDevSimulation();
-  const { today, week, waiting } = hubToday(
-    newBusiness ? [] : ownExperiences(),
-    now,
-  );
+  const hub = hubToday(newBusiness ? [] : ownExperiences(), now);
+  const { today, week } = hub;
+  const waiting = newBusiness ? 0 : hub.waiting;
   return (
     <View className="gap-1 rounded-md border border-line bg-surface p-4">
       <Text variant="label" weight="semibold" accessibilityRole="header">

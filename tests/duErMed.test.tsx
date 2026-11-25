@@ -60,6 +60,23 @@ afterEach(() => {
   mockPush.mockClear();
 });
 
+describe("the page's photos", () => {
+  // Phone check 2026-11-25 (0529): one photo read «1 bilder».
+  it("counts one photo in the singular", () => {
+    render(
+      <ExperiencePage
+        exp={{ ...e1, photos: e1.photos.slice(0, 1) }}
+        onOpen={jest.fn()}
+        onNavigate={jest.fn()}
+      />,
+      { wrapper },
+    );
+    expect(
+      screen.getByLabelText(`${e1.title}, 1 bilde. Åpne bildene`),
+    ).toBeTruthy();
+  });
+});
+
 describe("«Du er med» on the page", () => {
   it("is not there before joining", () => {
     renderPage();

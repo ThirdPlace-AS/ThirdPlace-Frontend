@@ -620,7 +620,7 @@ export function HeroGallery({
           ref={galleryRef}
           accessible
           accessibilityRole="imagebutton"
-          accessibilityLabel={`${title}, ${photos.length} bilder. Åpne bildene`}
+          accessibilityLabel={`${title}, ${photos.length} ${photos.length === 1 ? "bilde" : "bilder"}. Åpne bildene`}
           accessibilityActions={[{ name: "activate" }]}
           onAccessibilityAction={open}
           className="overflow-hidden rounded-lg bg-surfaceMuted"

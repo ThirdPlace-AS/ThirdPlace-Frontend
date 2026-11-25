@@ -75,6 +75,8 @@ describe("Arbeidsflate", () => {
     render(<WorkspaceHub />, { wrapper });
     expect(screen.getByText("Venter på verifisering")).toBeTruthy();
     expect(screen.getByText("0 av 2 er på plass")).toBeTruthy();
+    // Nothing published, so nobody waiting either (0529).
+    expect(screen.queryByText(/på venteliste/)).toBeNull();
     // The checklist comes before I dag.
     const texts = screen.UNSAFE_root.findAll(
       (n) => typeof n.props.children === "string",
