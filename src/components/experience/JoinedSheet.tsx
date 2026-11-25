@@ -1,26 +1,19 @@
-import { router, type Href } from "expo-router";
 import { useEffect } from "react";
 import { View } from "react-native";
 import Animated, { ZoomIn } from "react-native-reanimated";
 
 import { useReducedMotion } from "@/hooks/useReducedMotion";
 import { haptics } from "@/lib/haptics";
-import { showToast } from "@/components/Toast";
 import {
   Icon,
-  type IconName,
   Pressable as UIPressable,
   Sheet,
   Text,
   Button,
 } from "@/components/ui";
-import {
-  chatForExperience,
-  type MockExperience,
-  type MockSession,
-} from "@/fixtures";
-import { addToCalendar, calendarEventFor } from "@/lib/addToCalendar";
-import { openDirections } from "@/lib/directions";
+import type { MockExperience, MockSession } from "@/fixtures";
+
+import { joinedActions } from "./joinedActions";
 
 // "Du er med" (Phase 18, from the screen benchmark: Airbnb's trip
 // confirmation, Uber's request card): after joining, the time and the
@@ -38,7 +31,6 @@ export function JoinedSheet({
   when: string;
   onClose: () => void;
 }) {
-  const chat = chatForExperience(experience.id);
   const reduced = useReducedMotion();
   // Joining is a real local completion: the success tick as the sheet opens
   // (user 2026-11-09: haptics where it makes sense).
@@ -49,49 +41,7 @@ export function JoinedSheet({
     onClose();
     setTimeout(run, 240);
   };
-  const actions: { label: string; icon: IconName; onPress: () => void }[] = [
-    ...(session
-      ? [
-          {
-            label: "Legg til i kalender",
-            icon: "calendar-outline" as const,
-            onPress: later(() => {
-              void addToCalendar(calendarEventFor(experience, session)).then(
-                (r) => {
-                  if (r === "unavailable")
-                    showToast({
-                      title: "Fikk ikke åpnet kalenderen",
-                      icon: "alert-circle-outline",
-                    });
-                },
-              );
-            }),
-          },
-        ]
-      : []),
-    {
-      label: "Veibeskrivelse",
-      icon: "navigate-outline",
-      onPress: later(() => {
-        void openDirections(experience.meetingPoint.coord).then((ok) => {
-          if (!ok)
-            showToast({
-              title: "Fikk ikke åpnet kartappen",
-              icon: "alert-circle-outline",
-            });
-        });
-      }),
-    },
-    ...(chat
-      ? [
-          {
-            label: "Til samtalen",
-            icon: "chatbubbles-outline" as const,
-            onPress: later(() => router.push(`/chat/${chat.id}` as Href)),
-          },
-        ]
-      : []),
-  ];
+  const actions = joinedActions(experience, session, later);
   return (
     <Sheet visible onClose={onClose} title="Du er med">
       <View className="gap-4">

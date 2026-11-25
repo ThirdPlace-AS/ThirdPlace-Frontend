@@ -1,4 +1,5 @@
-import { useMemo, useState } from "react";
+import { router, type Href } from "expo-router";
+import { useState } from "react";
 import { View } from "react-native";
 
 import {
@@ -10,12 +11,11 @@ import { JoinedSheet } from "@/components/experience/JoinedSheet";
 import { FaceStack } from "@/components/FaceStack";
 import { SignInPrompt } from "@/components/SignInPrompt";
 import { Text, Button } from "@/components/ui";
-import { experienceById, sessionsFor } from "@/fixtures";
+import { chatForExperience, experienceById } from "@/fixtures";
 import { isHostedByMe } from "@/fixtures/created";
-import { shortSessionLabel } from "@/lib/dates";
 import { goingLabel } from "@/lib/going";
 
-import { useExperienceSession } from "../../experience/useExperienceSession";
+import { useJoinSession } from "../../experience/joinedActions";
 
 import { useExperienceJoin } from "../hooks/useExperienceJoin";
 import { useGoing } from "../hooks/useGoing";
@@ -46,13 +46,7 @@ export function ExperienceJoinBar({
   const { isGuest } = useGuestMode();
   const going = useGoing(id);
   const [promptOpen, setPromptOpen] = useState(false);
-  const [chosenId] = useExperienceSession(id);
-  const [now] = useState(() => new Date());
-  const sessions = useMemo(
-    () => (experience ? sessionsFor(experience, now, 8) : []),
-    [experience, now],
-  );
-  const session = sessions.find((s) => s.id === chosenId) ?? sessions[0];
+  const { session, when } = useJoinSession(experience);
   // PDF p23: leaving, paying and joining the waitlist confirm in a sheet.
   // Phase 18: "Du er med" after joining (screen benchmark).
   const [confirm, setConfirm] = useState<
@@ -72,16 +66,20 @@ export function ExperienceJoinBar({
     (session?.spotsLeft ?? experience.capacity - experience.going) -
       (user === "joined" ? 1 : 0),
   );
-  const when = session
-    ? shortSessionLabel(session.start, now)
-    : experience.when;
-
   const hosting = isHostedByMe(id);
+  const chat = chatForExperience(id);
   const primary = (() => {
     if (hosting)
       return { label: "Administrer", action: onManage, disabled: !onManage };
+    // PR-03: once joined, the card leads to the chat and Forlat sits in the
+    // page's «Du er med» card; without a chat it stays here.
     if (user === "joined")
-      return { label: "Forlat", action: () => setConfirm("leave") };
+      return chat
+        ? {
+            label: "Til samtalen",
+            action: () => router.push(`/chat/${chat.id}` as Href),
+          }
+        : { label: "Forlat", action: () => setConfirm("leave") };
     if (user === "waitlisted")
       return { label: "Meld av venteliste", action: () => setUser("none") };
     if (experience.status === "cancelled")
@@ -123,7 +121,15 @@ export function ExperienceJoinBar({
           <Button
             label={primary.label}
             rounded="full"
-            variant={user === "none" && !hosting ? "ember" : "secondary"}
+            variant={
+              hosting
+                ? "secondary"
+                : user === "none"
+                  ? "ember"
+                  : user === "joined" && chat
+                    ? "ink"
+                    : "secondary"
+            }
             disabled={primary.disabled}
             onPress={primary.action}
           />

@@ -54,6 +54,7 @@ import { libImage } from "@/fixtures/images";
 import { formatRating, membersLabel } from "@/lib/format";
 
 import { useExperienceJoin } from "../map/hooks/useExperienceJoin";
+import { useGuestMode } from "../map/hooks/useGuestMode";
 import { ITEM_TYPE_ICON, experienceTypeLabel } from "../map/services/itemType";
 import { PhotoPager } from "../map/PhotoPager";
 import type { SheetTarget } from "../map/sheetTypes";
@@ -64,6 +65,7 @@ import {
   MeetingSection,
   ThingsToKnowSection,
 } from "./ExperienceSections";
+import { JoinedCard } from "./JoinedCard";
 import { hostPerson, moreExperiences } from "./experienceMeta";
 
 /** Height of the page top bar below the status bar (the route page and the
@@ -152,6 +154,7 @@ export function ExperiencePage({
   const [sheet, setSheet] = useState<"report" | "block" | null>(null);
   // Messaging, reporting and blocking are personal (founder 2026-11-19 Q1).
   const { gate, prompt: signInPrompt } = useGuestGate();
+  const { isGuest } = useGuestMode();
   const place = placeById(exp.placeId);
   const group = groupById(exp.groupId);
   const host = hostPerson(exp);
@@ -236,6 +239,12 @@ export function ExperiencePage({
               ))}
             </View>
           </View>
+
+          {/* PR-03: once joined, the page says so and keeps the next steps.
+              Not for a guest or the host. */}
+          {user === "joined" && !mine && !isGuest ? (
+            <JoinedCard experience={exp} />
+          ) : null}
 
           <View className="h-px bg-line" />
 
