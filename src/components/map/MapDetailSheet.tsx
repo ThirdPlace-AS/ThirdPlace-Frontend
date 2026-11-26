@@ -18,7 +18,13 @@ import {
   useState,
 } from "react";
 import { useFocusEffect } from "expo-router";
-import { Share, StyleSheet, View, useWindowDimensions } from "react-native";
+import {
+  Platform,
+  Share,
+  StyleSheet,
+  View,
+  useWindowDimensions,
+} from "react-native";
 import Animated, {
   Extrapolation,
   interpolate,
@@ -508,6 +514,15 @@ export const MapDetailSheet = memo(
   }),
 );
 
+// Android 11 and older (phone check 2026-11-26, the Huawei phone on API 29,
+// reproduced on an API 29 emulator): changing this background's corner radius
+// once the sheet was up, animated or in one React update, left the views drawn
+// over it unpainted (the page's top bar never showed; text and icons further
+// down went blank after a fling). There the corners keep their radius; at the
+// page snap they sit under the status bar.
+const FIXED_CORNERS =
+  Platform.OS === "android" && (Platform.Version as number) < 31;
+
 // Sheet background whose top corners square off on the way to the page snap.
 function PageBackground({ style, animatedIndex }: BottomSheetBackgroundProps) {
   const c = useThemeColors();
@@ -526,7 +541,12 @@ function PageBackground({ style, animatedIndex }: BottomSheetBackgroundProps) {
   return (
     <Animated.View
       pointerEvents="none"
-      style={[style, { backgroundColor: c.surface }, elevation.e3, a]}
+      style={[
+        style,
+        { backgroundColor: c.surface },
+        elevation.e3,
+        FIXED_CORNERS ? null : a,
+      ]}
     />
   );
 }
