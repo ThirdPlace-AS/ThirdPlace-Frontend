@@ -62,8 +62,9 @@ const chatName = (c: MockChat) => c.name;
 // and leave their other section (src/lib/pinnedChats.ts, in memory).
 // 0459 (user 2026-11-17): filter pills under the search (Alle, Ulest,
 // Personer, Grupper, Opplevelser, Steder, Marked; a pill shows only while one
-// of your chats matches it), and the title, search and pills stay put while
-// the list scrolls, with a hairline under them once it has scrolled. No
+// of your chats matches it). The title and search stay put while the list
+// scrolls, with a hairline under them once it has scrolled; the pills scroll
+// with the list (user 2026-11-26). No
 // realtime or messaging backend; chat types / access modes are display labels
 // (BLOCKED_CONTRACT_GAP).
 export default function ChatScreen() {
@@ -235,85 +236,88 @@ function ChatContent() {
             accessibilityLabel="Søk i samtaler"
           />
         </View>
-        {pills.length > 1 ? (
-          <ChatFilterPills pills={pills} value={current} onChange={setFilter} />
-        ) : (
-          <View className="h-2" />
-        )}
+        <View className="h-2" />
         <Animated.View pointerEvents="none" style={hairline}>
           <View className="h-px bg-line" />
         </Animated.View>
       </View>
 
       <ScrollView
-        contentContainerClassName="gap-4 px-gutter pb-28 pt-2"
+        contentContainerClassName="pb-28"
         keyboardShouldPersistTaps="handled"
         onScroll={onScroll}
         scrollEventThrottle={16}
       >
-        {flat && flat.length > 0 ? (
-          <View className="gap-3">{flat.map(row)}</View>
+        {/* The pills scroll away with the list (user 2026-11-26: they need
+            not stay put); title and search stay. */}
+        {pills.length > 1 ? (
+          <ChatFilterPills pills={pills} value={current} onChange={setFilter} />
         ) : null}
+        <View className="gap-4 px-gutter pt-2">
+          {flat && flat.length > 0 ? (
+            <View className="gap-3">{flat.map(row)}</View>
+          ) : null}
 
-        {!flat && pinnedChats.length > 0 ? (
-          <Section title="Festet" className="pt-2">
-            {pinnedChats.length > 1 && !q ? (
-              // Drag to reorder (P9): the ≡ handle at each row's end; the
-              // row keeps its press and long press. Not while searching.
-              <SortableList
-                data={pinnedChats}
-                keyOf={chatKey}
-                nameOf={chatName}
-                renderItem={row}
-                onReorder={reorderPinned}
-              />
-            ) : (
-              <View className="gap-3">{pinnedChats.map(row)}</View>
-            )}
-          </Section>
-        ) : null}
+          {!flat && pinnedChats.length > 0 ? (
+            <Section title="Festet" className="pt-2">
+              {pinnedChats.length > 1 && !q ? (
+                // Drag to reorder (P9): the ≡ handle at each row's end; the
+                // row keeps its press and long press. Not while searching.
+                <SortableList
+                  data={pinnedChats}
+                  keyOf={chatKey}
+                  nameOf={chatName}
+                  renderItem={row}
+                  onReorder={reorderPinned}
+                />
+              ) : (
+                <View className="gap-3">{pinnedChats.map(row)}</View>
+              )}
+            </Section>
+          ) : null}
 
-        {!flat && active.length > 0 ? (
-          <Section title="Aktive samtaler" className="pt-2">
-            <View className="gap-3">{active.map(row)}</View>
-          </Section>
-        ) : null}
+          {!flat && active.length > 0 ? (
+            <Section title="Aktive samtaler" className="pt-2">
+              <View className="gap-3">{active.map(row)}</View>
+            </Section>
+          ) : null}
 
-        {shown.length === 0 && q ? (
-          <EmptyState
-            fill={false}
-            icon="search"
-            title="Ingen treff"
-            message={`Ingen samtaler matcher «${query.trim()}».`}
-            actionLabel="Tøm søk"
-            onAction={() => setQuery("")}
-          />
-        ) : visible.length === 0 ? (
-          // No chats yet: the PDF p26 empty state.
-          <EmptyState
-            fill={false}
-            icon="chatbubble-outline"
-            title="Her starter praten"
-            message="Bli med på noe som skjer, så møter du folk som er der."
-            actionLabel="Finn en opplevelse"
-            onAction={() => router.navigate("/swipe")}
-          />
-        ) : null}
+          {shown.length === 0 && q ? (
+            <EmptyState
+              fill={false}
+              icon="search"
+              title="Ingen treff"
+              message={`Ingen samtaler matcher «${query.trim()}».`}
+              actionLabel="Tøm søk"
+              onAction={() => setQuery("")}
+            />
+          ) : visible.length === 0 ? (
+            // No chats yet: the PDF p26 empty state.
+            <EmptyState
+              fill={false}
+              icon="chatbubble-outline"
+              title="Her starter praten"
+              message="Bli med på noe som skjer, så møter du folk som er der."
+              actionLabel="Finn en opplevelse"
+              onAction={() => router.navigate("/swipe")}
+            />
+          ) : null}
 
-        {archived.length > 0 && !q && !flat ? (
-          <UIPressable
-            accessibilityRole="button"
-            hitSlop={{ top: 5, bottom: 5, left: 8, right: 8 }}
-            onPress={() => router.push("/chat/archived" as Href)}
-            contentClassName="flex-row items-center gap-3 px-1 py-2"
-          >
-            <Icon name="archive-outline" size="md" tone="muted" />
-            <Text variant="caption" tone="muted" className="flex-1">
-              Arkiverte chatter ({archived.length})
-            </Text>
-            <Icon name="chevron-forward" size="sm" tone="muted" />
-          </UIPressable>
-        ) : null}
+          {archived.length > 0 && !q && !flat ? (
+            <UIPressable
+              accessibilityRole="button"
+              hitSlop={{ top: 5, bottom: 5, left: 8, right: 8 }}
+              onPress={() => router.push("/chat/archived" as Href)}
+              contentClassName="flex-row items-center gap-3 px-1 py-2"
+            >
+              <Icon name="archive-outline" size="md" tone="muted" />
+              <Text variant="caption" tone="muted" className="flex-1">
+                Arkiverte chatter ({archived.length})
+              </Text>
+              <Icon name="chevron-forward" size="sm" tone="muted" />
+            </UIPressable>
+          ) : null}
+        </View>
       </ScrollView>
 
       <IconButton
