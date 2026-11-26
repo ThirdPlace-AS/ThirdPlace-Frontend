@@ -2,7 +2,7 @@
 // concepts Ionicons has no honest glyph for. Drawn on the 24 px grid with the
 // shared stroke (iconStroke 1.75, round caps/joins) so they sit next to
 // Ionicons outline icons. Rendered through <Icon name="tp-…">, never directly.
-import Svg, { Circle, G, Path, Rect } from "react-native-svg";
+import Svg, { Path } from "react-native-svg";
 
 import { iconStroke } from "@/theme";
 
@@ -50,59 +50,6 @@ function Experience({ size, color }: GlyphProps) {
   );
 }
 
-/** Sveip — the founder's icon (sveip.svg, 2026-11-06): a stack of three
- * cards tilted -18°, the front one with a dot. Geometry and stroke (2) as
- * supplied; the other glyphs keep the shared 1.75. */
-const swipeLine = (color: string) =>
-  ({ ...line(color), strokeWidth: 2 }) as const;
-const SWIPE_TILT = { rotation: -18, origin: "13.8, 11.5" } as const;
-const SWIPE_BACK =
-  "M5.1 7.3H4.6a1.6 1.6 0 0 0-1.6 1.6v9.3a1.6 1.6 0 0 0 1.6 1.6h.5";
-const SWIPE_MIDDLE =
-  "M7.6 5.2h-.7a1.7 1.7 0 0 0-1.7 1.7v11.2a1.7 1.7 0 0 0 1.7 1.7h.7";
-
-function Swipe({ size, color }: GlyphProps) {
-  return (
-    <Frame size={size}>
-      <G {...SWIPE_TILT}>
-        <Path d={SWIPE_BACK} {...swipeLine(color)} />
-        <Path d={SWIPE_MIDDLE} {...swipeLine(color)} />
-        <Rect
-          x={8}
-          y={2.4}
-          width={11.4}
-          height={17.2}
-          rx={1.4}
-          {...swipeLine(color)}
-        />
-        <Circle cx={11.1} cy={5.9} r={0.65} fill={color} />
-      </G>
-    </Frame>
-  );
-}
-
-/** Active tab: the front card filled (the dot would need a background colour,
- * which a glyph does not get, so it is left out — as before). */
-function SwipeFilled({ size, color }: GlyphProps) {
-  return (
-    <Frame size={size}>
-      <G {...SWIPE_TILT}>
-        <Path d={SWIPE_BACK} {...swipeLine(color)} />
-        <Path d={SWIPE_MIDDLE} {...swipeLine(color)} />
-        <Rect
-          x={8}
-          y={2.4}
-          width={11.4}
-          height={17.2}
-          rx={1.4}
-          fill={color}
-          {...swipeLine(color)}
-        />
-      </G>
-    </Frame>
-  );
-}
-
 /** GPS-ankomst — a pin with a check: "you are here". */
 function Arrival({ size, color }: GlyphProps) {
   return (
@@ -139,8 +86,6 @@ function Business({ size, color }: GlyphProps) {
 
 export const glyphs = {
   "tp-experience": Experience,
-  "tp-swipe": Swipe,
-  "tp-swipe-filled": SwipeFilled,
   "tp-arrival": Arrival,
   "tp-business": Business,
 } as const;

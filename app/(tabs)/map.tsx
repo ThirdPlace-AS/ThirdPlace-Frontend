@@ -163,10 +163,17 @@ export default function MapScreen() {
   // text as the map's search filter, once per submit.
   const queryKey = q !== undefined ? `${q}:${at ?? ""}` : undefined;
   const [queriedKey, setQueriedKey] = useState<string | undefined>(undefined);
+  // The query submitted on /search: back returns there with it while the
+  // map still shows it (phone sweep 2026-11-26).
+  const [submitted, setSubmitted] = useState<string | null>(null);
   if (queryKey && queryKey !== queriedKey) {
     setQueriedKey(queryKey);
     filters.setQuery(q ?? "");
+    setSubmitted(q ?? "");
   }
+  const searchQuery =
+    submitted && submitted === filters.query ? submitted : null;
+  const { setQuery: setMapQuery } = filters;
   const { setMode: setDiscoveryMode } = discovery;
 
   // Android back key: an open detail sheet steps back / closes first, so back
@@ -205,6 +212,7 @@ export default function MapScreen() {
           sheetDepth,
           detailIsPage.current,
           fromSearch !== null,
+          searchQuery !== null,
         );
         if (action === "back") sheetBack();
         else if (action === "collapse") detailRef.current?.collapse();
@@ -215,11 +223,26 @@ export default function MapScreen() {
             pathname: "/search",
             params: { q: fromSearch.query, resume: "1" },
           });
+        } else if (action === "search" && searchQuery !== null) {
+          // Undo the submit: the map drops the query, Søk shows it again.
+          setMapQuery("");
+          setSubmitted(null);
+          router.push({
+            pathname: "/search",
+            params: { q: searchQuery, resume: "1" },
+          });
         }
         return action !== "none";
       });
       return () => sub.remove();
-    }, [sheetDepth, fromSearch, sheetBack, sheetClose]),
+    }, [
+      sheetDepth,
+      fromSearch,
+      searchQuery,
+      setMapQuery,
+      sheetBack,
+      sheetClose,
+    ]),
   );
 
   // Mock async load so the surface can show loading/error states (no backend).

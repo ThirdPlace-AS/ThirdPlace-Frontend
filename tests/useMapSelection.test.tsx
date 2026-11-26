@@ -78,6 +78,14 @@ describe("mapBackAction", () => {
     expect(mapBackAction(2, true, true)).toBe("back");
     expect(mapBackAction(0, false, true)).toBe("none");
   });
+
+  it("returns to the search page from a query submitted there", () => {
+    // Phone sweep 2026-11-26: «Vis alle 26 på kartet», then back left the app.
+    expect(mapBackAction(0, false, false, true)).toBe("search");
+    // An open detail still closes first.
+    expect(mapBackAction(1, false, false, true)).toBe("close");
+    expect(mapBackAction(1, true, false, true)).toBe("collapse");
+  });
 });
 
 describe("browseBackCollapses", () => {

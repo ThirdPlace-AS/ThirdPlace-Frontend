@@ -73,7 +73,9 @@ export default function TabsLayout() {
         name="swipe"
         options={{
           title: "Sveip",
-          tabBarIcon: icon("tp-swipe", "tp-swipe-filled"),
+          // Ionicons' stacked cards, drawn like the other tabs' icons (user
+          // 2026-11-26: the tilted custom glyph did not match them).
+          tabBarIcon: icon("albums-outline", "albums"),
         }}
       />
       <Tabs.Screen

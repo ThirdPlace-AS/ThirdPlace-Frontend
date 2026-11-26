@@ -17,19 +17,22 @@ export const SNAP_MID = 1;
 // collapse the page to the mid snap, close the sheet, or (nothing open) let
 // navigation handle it. Page → 60 % → close (Phase 11 G5).
 // An item picked on the /search page returns there on back, query and all
-// (0469): its sheet closes in one step, page or not ("search").
+// (0469): its sheet closes in one step, page or not ("search"). So does a
+// query submitted there («Vis alle N på kartet», the keyboard's search) while
+// no detail is open (phone sweep 2026-11-26: back left the app).
 export type MapBackAction = "back" | "collapse" | "close" | "search" | "none";
 export function mapBackAction(
   stackDepth: number,
   isPage = false,
   fromSearch = false,
+  queryFromSearch = false,
 ): MapBackAction {
   if (stackDepth > 1) return "back";
   if (stackDepth === 1) {
     if (fromSearch) return "search";
     return isPage ? "collapse" : "close";
   }
-  return "none";
+  return queryFromSearch ? "search" : "none";
 }
 
 // With no detail open, back lowers a pulled-up browse list to its peek

@@ -125,12 +125,13 @@ The design has one shadow tier (a 1 px hairline ring at 2 %, 0 2 6 at 4 %, 0 4 8
 
 Sizes `sm 16 · md 20 · lg 24 · xl 32 · 2xl 44 · 3xl 64`. Outline by default, filled when selected/active. Everything goes through `<Icon>`: Ionicons, plus ThirdPlace glyphs (`src/components/ui/glyphs.tsx`, names start with `tp-`) drawn on a 24 px grid with the 1.75 px `iconStroke`, rounded caps and joins.
 
-| Glyph                          | Concept                                                                                                                                                     | Used for                                                                       |
-| ------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------ |
-| `tp-experience`                | Ticket stub                                                                                                                                                 | Opplevelser (chat group, search group, Add, notification settings, onboarding) |
-| `tp-swipe` / `tp-swipe-filled` | Three stacked cards tilted −18°, dot on the front card (founder's sveip.svg, stroke 2 as in the file, the one exception to 1.75); filled = front card solid | Sveip tab                                                                      |
-| `tp-arrival`                   | Pin with a check                                                                                                                                            | GPS check-in                                                                   |
-| `tp-business`                  | Shop front with an awning                                                                                                                                   | Bedrift (account switch, settings, marketplace, places done)                   |
+| Glyph           | Concept                   | Used for                                                                       |
+| --------------- | ------------------------- | ------------------------------------------------------------------------------ |
+| `tp-experience` | Ticket stub               | Opplevelser (chat group, search group, Add, notification settings, onboarding) |
+| `tp-arrival`    | Pin with a check          | GPS check-in                                                                   |
+| `tp-business`   | Shop front with an awning | Bedrift (account switch, settings, marketplace, places done)                   |
+
+The Sveip tab uses Ionicons `albums-outline` / `albums` like the other tabs (user 2026-11-26; the founder's tilted `tp-swipe` glyph is gone).
 
 No sparkle, magic-wand or "AI" glyphs: they read as machine-made. Use a literal object instead (ticket, notes, hand, ear, palette).
 
