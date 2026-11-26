@@ -459,6 +459,18 @@ export function SwipeDeck() {
     // of it.
     undoGlide.current = back;
   };
+  // «Avbryt» on Bli med i samtalen (or closing it without joining) takes the
+  // like back: the card returns, as the rewind does (phone sweep 2026-11-26:
+  // the card was used up though nothing was joined). The flight may still be
+  // running when the sheet closes, so wait for it.
+  const cancelLike = (tries = 0) => {
+    if (deck.getLastAction() !== "like") return;
+    if (busy.value || inFlight.current) {
+      if (tries < 20) setTimeout(() => cancelLike(tries + 1), 80);
+      return;
+    }
+    undo();
+  };
   // Starts the rewind's slide-in on the commit that has put the card back.
   const startUndoGlide = () => {
     const back = undoGlide.current;
@@ -889,7 +901,11 @@ export function SwipeDeck() {
 
         <JoinChatSheet
           item={joinChatFor}
-          onClose={() => setJoinChatFor(null)}
+          onJoined={() => setJoinChatFor(null)}
+          onCancel={() => {
+            setJoinChatFor(null);
+            cancelLike();
+          }}
         />
 
         {/* Account gate for guest join/save (also used by the detail's CTAs). */}
@@ -1333,21 +1349,24 @@ function Stamps({
   );
 }
 
-// "Bli med i samtalen" (PDF p8): after a like, offer the experience's chat.
+// "Bli med i samtalen" (PDF p8): after a like, offer the experience's chat;
+// «Avbryt» takes the like back and the card returns.
 // "Bli med i chatten" opens the experience chat when the fixtures have one,
 // else confirms. The PDF's "N personer snakker …" count is left out (no real
 // social proof). BLOCKED_CONTRACT_GAP: no chat membership contract.
 function JoinChatSheet({
   item,
-  onClose,
+  onJoined,
+  onCancel,
 }: {
   item: DeckItem | null;
-  onClose: () => void;
+  onJoined: () => void;
+  onCancel: () => void;
 }) {
-  const close = onClose;
+  const close = onCancel;
   const join = () => {
     if (!item) return;
-    onClose();
+    onJoined();
     if (item.chatId) {
       joinChat(item.chatId);
       const id = item.chatId;
