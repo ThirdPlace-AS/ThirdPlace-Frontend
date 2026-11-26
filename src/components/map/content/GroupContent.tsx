@@ -136,7 +136,7 @@ export function GroupContent({ id }: { id: string }) {
 
       {home ? (
         <View className="gap-3">
-          <Text variant="h2" accessibilityRole="header">
+          <Text variant="h1" accessibilityRole="header">
             Møtes på
           </Text>
           <ListRow
@@ -151,7 +151,7 @@ export function GroupContent({ id }: { id: string }) {
 
       {group.rules ? (
         <View className="gap-3">
-          <Text variant="h2" accessibilityRole="header">
+          <Text variant="h1" accessibilityRole="header">
             Regler
           </Text>
           <Text variant="label" weight="regular">
@@ -161,7 +161,7 @@ export function GroupContent({ id }: { id: string }) {
       ) : null}
 
       <View className="gap-3">
-        <Text variant="h2" accessibilityRole="header">
+        <Text variant="h1" accessibilityRole="header">
           Medlemmer
         </Text>
         <View
@@ -227,7 +227,7 @@ function NextMeeting({ groupId }: { groupId: string }) {
   if (!next) return null;
   return (
     <View className="gap-3">
-      <Text variant="h2" accessibilityRole="header">
+      <Text variant="h1" accessibilityRole="header">
         Neste møte
       </Text>
       <ListRow

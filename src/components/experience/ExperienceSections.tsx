@@ -72,7 +72,7 @@ export function ItinerarySection({ exp }: { exp: MockExperience }) {
   if (steps.length === 0) return null;
   return (
     <View className="gap-4">
-      <Text variant="h2" accessibilityRole="header">
+      <Text variant="h1" accessibilityRole="header">
         {/* An Arrangement shows its steps as the program (Phase 19). */}
         {exp.format === "event" ? "Program" : "Hva dere skal gjøre"}
       </Text>
@@ -244,7 +244,7 @@ export function AvailabilitySection({ exp }: { exp: MockExperience }) {
   return (
     <View className="gap-3">
       <View className="gap-1">
-        <Text variant="h2" accessibilityRole="header">
+        <Text variant="h1" accessibilityRole="header">
           Ledige tider
         </Text>
         <Text variant="caption" tone="muted">
@@ -498,7 +498,7 @@ export function MeetingSection({
   const mp = exp.meetingPoint;
   return (
     <View className="gap-3">
-      <Text variant="h2" accessibilityRole="header">
+      <Text variant="h1" accessibilityRole="header">
         Hvor vi møtes
       </Text>
       <View className="flex-row items-start gap-3">
@@ -558,7 +558,7 @@ export function MeetingMap({
   onShowOnMap: () => void;
 }) {
   const { width } = useWindowDimensions();
-  const w = Math.min(640, Math.round(width - 32));
+  const w = Math.min(640, Math.round(width - 48));
   const h = 200;
   const uri = useStaticMap(coord, w, h, 14.5);
   const [full, setFull] = useState(false);
@@ -803,7 +803,7 @@ export function ChatSection({
   };
   return (
     <View className="gap-3">
-      <Text variant="h2" accessibilityRole="header">
+      <Text variant="h1" accessibilityRole="header">
         Samtalen
       </Text>
       <View className="gap-3 rounded-md border border-line p-4">
@@ -940,7 +940,7 @@ export function KnowSection({ items }: { items: Know[] }) {
   const [open, setOpen] = useState<Know | null>(null);
   return (
     <View>
-      <Text variant="h2" accessibilityRole="header">
+      <Text variant="h1" accessibilityRole="header">
         Ting å vite
       </Text>
       {items.map((k) =>
@@ -951,14 +951,14 @@ export function KnowSection({ items }: { items: Know[] }) {
             accessibilityLabel={`${k.title}, ${k.summary}`}
             onPress={() => setOpen(k)}
             pressedScale={0.99}
-            contentClassName="flex-row items-center gap-3 py-3"
+            contentClassName="flex-row items-center gap-4 py-3"
           >
-            <Icon name={k.icon} size="lg" tone="ink" />
+            <Icon name={k.icon} size="xl" tone="ink" />
             <View className="flex-1 gap-1">
-              <Text variant="label" weight="semibold">
+              <Text variant="body" weight="medium">
                 {k.title}
               </Text>
-              <Text variant="caption" tone="muted" numberOfLines={2}>
+              <Text variant="body" tone="muted" numberOfLines={2}>
                 {k.summary}
               </Text>
             </View>
@@ -969,14 +969,14 @@ export function KnowSection({ items }: { items: Know[] }) {
             key={k.key}
             accessible
             accessibilityLabel={`${k.title}, ${k.summary}`}
-            className="flex-row items-center gap-3 py-3"
+            className="flex-row items-center gap-4 py-3"
           >
-            <Icon name={k.icon} size="lg" tone="ink" />
+            <Icon name={k.icon} size="xl" tone="ink" />
             <View className="flex-1 gap-1">
-              <Text variant="label" weight="semibold">
+              <Text variant="body" weight="medium">
                 {k.title}
               </Text>
-              <Text variant="caption" tone="muted">
+              <Text variant="body" tone="muted">
                 {k.summary}
               </Text>
             </View>

@@ -91,7 +91,7 @@ export function ExperiencePageBody({
       />
       <ScrollView
         ref={scrollRef}
-        contentContainerClassName="px-gutter pt-4"
+        contentContainerClassName="px-6 pt-4"
         // The last section ends 24 above the floating join card.
         contentContainerStyle={{
           paddingBottom: Math.max(insets.bottom, 12) + 4 + cardH + 24,

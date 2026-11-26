@@ -249,14 +249,17 @@ export function PlacePage({
   );
 
   return (
-    <View className="gap-6">
+    // 32 between sections (Airbnb tap-through 2026-11-26: more air around
+    // the dividers than our 24).
+    <View className="gap-8">
       {hideGallery ? null : <HeroGallery title={place.name} photos={photos} />}
 
       {first ? (
         <>
           <View className="items-center gap-2 px-2">
             <Text
-              variant="h1"
+              variant="display"
+              weight="semibold"
               className="text-center"
               accessibilityRole="header"
             >
@@ -396,7 +399,7 @@ export function PlacePage({
           <View className="h-px bg-line" />
 
           <View className="gap-3">
-            <Text variant="h2" accessibilityRole="header">
+            <Text variant="h1" accessibilityRole="header">
               Hvor du finner oss
             </Text>
             <View className="flex-row items-start gap-3">
@@ -423,7 +426,7 @@ export function PlacePage({
 
           {happening.length > 0 ? (
             <View className="gap-1">
-              <Text variant="h2" accessibilityRole="header" className="mb-2">
+              <Text variant="h1" accessibilityRole="header" className="mb-2">
                 Hva skjer her
               </Text>
               {happening.map((e) => (
@@ -442,7 +445,7 @@ export function PlacePage({
 
           {meetingHere.length > 0 ? (
             <View className="gap-1">
-              <Text variant="h2" accessibilityRole="header" className="mb-2">
+              <Text variant="h1" accessibilityRole="header" className="mb-2">
                 Grupper som møtes her
               </Text>
               {meetingHere.map((g) => (
@@ -465,7 +468,7 @@ export function PlacePage({
 
           {nearby.length > 0 ? (
             <View className="gap-3">
-              <Text variant="h2" accessibilityRole="header">
+              <Text variant="h1" accessibilityRole="header">
                 Flere steder i nærheten
               </Text>
               <RailScrollView

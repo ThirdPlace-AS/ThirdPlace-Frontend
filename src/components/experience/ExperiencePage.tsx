@@ -231,7 +231,9 @@ export function ExperiencePage({
   const action = preview ? "Endre" : undefined;
 
   return (
-    <View className="gap-6">
+    // 32 between sections (Airbnb tap-through 2026-11-26: more air around
+    // the dividers than our 24).
+    <View className="gap-8">
       {hideGallery ? null : (
         <HeroGallery title={exp.title} photos={exp.photos} />
       )}
@@ -248,7 +250,8 @@ export function ExperiencePage({
           {/* Title block, centred as in the reference. */}
           <View className="items-center gap-2 px-2">
             <Text
-              variant="h1"
+              variant="display"
+              weight="semibold"
               className="text-center"
               accessibilityRole="header"
             >
@@ -307,7 +310,7 @@ export function ExperiencePage({
                 <Avatar
                   name={hostName}
                   source={host ? libImage(host.avatar) : undefined}
-                  size="sm"
+                  size="md"
                   decorative
                 />
               }
@@ -452,7 +455,7 @@ export function ExperiencePage({
 
           {more.length > 0 ? (
             <View className="gap-3">
-              <Text variant="h2" accessibilityRole="header">
+              <Text variant="h1" accessibilityRole="header">
                 Flere opplevelser i området
               </Text>
               <RailScrollView
@@ -503,7 +506,7 @@ export function ExperiencePage({
           {/* Om verten: a centred card, then the bio and the message button, as
           in the reference. */}
           <View className="gap-4">
-            <Text variant="h2" accessibilityRole="header">
+            <Text variant="h1" accessibilityRole="header">
               Om verten
             </Text>
             <UIPressable
@@ -664,7 +667,9 @@ export function HeroGallery({
           accessibilityActions={[{ name: "activate" }]}
           onAccessibilityAction={open}
           className="overflow-hidden rounded-lg bg-surfaceMuted"
-          style={{ height: Math.round((width - 32) * 0.78) }}
+          // Inside the page's 24 dp sides, a little taller than before
+          // (Airbnb's listing photo).
+          style={{ height: Math.round((width - 48) * 0.9) }}
         >
           <PhotoPager photos={photos} onIndexChange={setPage} />
         </View>
@@ -700,15 +705,17 @@ export function InfoRow({
 }) {
   const body = (
     <>
-      <View className="h-10 w-10 items-center justify-center">
-        {leading ?? (icon ? <Icon name={icon} size="lg" tone="ink" /> : null)}
+      {/* Airbnb's fact rows: a bigger icon, the title in medium weight and
+          the subtitle at the same size, muted (tap-through 2026-11-26). */}
+      <View className="h-12 w-12 items-center justify-center">
+        {leading ?? (icon ? <Icon name={icon} size="xl" tone="ink" /> : null)}
       </View>
       <View className="flex-1">
-        <Text variant="body" weight="semibold" numberOfLines={1}>
+        <Text variant="body" weight="medium" numberOfLines={1}>
           {title}
         </Text>
         {subtitle ? (
-          <Text variant="caption" tone="muted" numberOfLines={lines}>
+          <Text variant="body" tone="muted" numberOfLines={lines}>
             {subtitle}
           </Text>
         ) : null}
@@ -728,7 +735,7 @@ export function InfoRow({
       accessibilityRole="button"
       accessibilityLabel={action ? `${action}: ${spoken}` : spoken}
       onPress={onPress}
-      contentClassName="flex-row items-center gap-3 rounded-sm py-3"
+      contentClassName="flex-row items-center gap-4 rounded-sm py-3"
       pressedScale={0.99}
     >
       {body}
@@ -737,7 +744,7 @@ export function InfoRow({
     <View
       accessible
       accessibilityLabel={subtitle ? `${title}, ${subtitle}` : title}
-      className="flex-row items-center gap-3 py-3"
+      className="flex-row items-center gap-4 py-3"
     >
       {body}
     </View>

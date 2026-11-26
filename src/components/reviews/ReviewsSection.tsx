@@ -35,7 +35,7 @@ export function ReviewsSection({
   const newest = sortReviews(reviews, "newest");
   return (
     <View className="gap-4">
-      <Text variant="h2" accessibilityRole="header">
+      <Text variant="h1" accessibilityRole="header">
         {ratingTitle(reviews)}
       </Text>
       {newest.length > 0 ? (

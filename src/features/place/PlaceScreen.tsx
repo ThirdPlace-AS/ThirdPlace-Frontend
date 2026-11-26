@@ -78,7 +78,7 @@ export function PlacePageBody({
       />
       <ScrollView
         ref={scrollRef}
-        contentContainerClassName="px-gutter pt-4"
+        contentContainerClassName="px-6 pt-4"
         // The page bottom (48) above the home indicator, or 24 above the
         // floating chat card.
         contentContainerStyle={{

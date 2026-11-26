@@ -269,7 +269,7 @@ export function MenuSection({
 
   return (
     <View className="gap-3">
-      <Text variant="h2" accessibilityRole="header">
+      <Text variant="h1" accessibilityRole="header">
         Meny
       </Text>
       {!menu || !offering ? (

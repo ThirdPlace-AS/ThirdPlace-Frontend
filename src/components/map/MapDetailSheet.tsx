@@ -565,7 +565,7 @@ export const MapDetailSheet = memo(
               </Animated.View>
               <BottomSheetScrollView
                 ref={scrollRef}
-                contentContainerClassName={`gap-4 px-gutter pt-4 ${footerId ? "pb-36" : "pb-16"}`}
+                contentContainerClassName={`gap-4 px-6 pt-4 ${footerId ? "pb-36" : "pb-16"}`}
                 keyboardShouldPersistTaps="handled"
                 onScrollEndDrag={keepScrollY}
                 onMomentumScrollEnd={keepScrollY}
