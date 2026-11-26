@@ -1,7 +1,7 @@
 import { router, useSegments } from "expo-router";
 
 import { Tabs } from "expo-router/js-tabs";
-import { type ColorValue } from "react-native";
+import { type ColorValue, Pressable } from "react-native";
 
 import { AddTabIcon } from "@/components/AddTabIcon";
 import { useGuestMode } from "@/components/map/hooks/useGuestMode";
@@ -59,6 +59,17 @@ export default function TabsLayout() {
         tabBarActiveTintColor: colors.ember,
         tabBarInactiveTintColor: colors.muted,
         tabBarLabelStyle: { fontFamily: fontFamilyFor("medium") },
+        // No grey press ripple on the tab icons (user 2026-11-26): the default
+        // button draws Android's borderless ripple; a core Pressable without
+        // it keeps the press, long press and accessibility props.
+        tabBarButton: ({
+          android_ripple: _ripple,
+          pressOpacity: _opacity,
+          hoverEffect: _hover,
+          href: _href,
+          ref: _ref,
+          ...props
+        }) => <Pressable {...props} />,
         tabBarStyle: {
           backgroundColor: onSwipe ? media.black : colors.surface,
           borderTopColor: onSwipe ? media.black : colors.line,
