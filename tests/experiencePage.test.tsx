@@ -29,8 +29,10 @@ import {
 import { PageScrollContext } from "@/components/pageScroll";
 import { interestById } from "@/fixtures/catalog/interests";
 import {
+  AvailabilitySection,
   ChatSection,
   MeetingSection,
+  SessionSheet,
   thingsToKnow,
 } from "@/components/experience/ExperienceSections";
 import {
@@ -353,6 +355,41 @@ describe("ExperiencePage sections (H4b)", () => {
     } finally {
       jest.useRealTimers();
     }
+  });
+
+  it("the next time's card shows who is going; later cards do not", () => {
+    render(<AvailabilitySection exp={e1} />, { wrapper });
+    const cards = screen.getAllByRole("button", { name: /plass/ });
+    expect(cards[0]!.props.accessibilityLabel).toMatch(
+      new RegExp(`${e1.going} skal$`),
+    );
+    for (const c of cards.slice(1))
+      expect(c.props.accessibilityLabel).not.toMatch(/skal$/);
+  });
+
+  it("Velg tidspunkt has a month view that narrows the list to a day", () => {
+    const now = new Date();
+    const sessions = sessionsFor(e1, now);
+    render(
+      <SessionSheet
+        exp={e1}
+        sessions={sessions}
+        now={now}
+        visible
+        initial={null}
+        onClose={jest.fn()}
+        onPick={jest.fn()}
+      />,
+      { wrapper },
+    );
+    expect(screen.getAllByRole("radio")).toHaveLength(sessions.length);
+    const first = sessions[0]!.start;
+    fireEvent.press(
+      screen.getByRole("button", {
+        name: new RegExp(`^${first.getDate()}\. .*1 tid$`),
+      }),
+    );
+    expect(screen.getAllByRole("radio")).toHaveLength(1);
   });
 
   it("a Ting å vite row opens a sheet only when the sheet adds to it", () => {

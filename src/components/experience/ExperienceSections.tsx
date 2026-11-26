@@ -53,10 +53,14 @@ import {
   type MockItineraryStep,
   type MockSession,
 } from "@/fixtures";
-import { dayLabel, shortSessionLabel, timeRange } from "@/lib/dates";
+import { dayLabel, isoDay, shortSessionLabel, timeRange } from "@/lib/dates";
+import { goingLabel } from "@/lib/going";
+import { FaceStack } from "@/components/FaceStack";
+import { MonthGrid } from "@/components/MonthGrid";
+import { useGoing } from "@/components/map/hooks/useGoing";
 import { env } from "@/lib/env";
 import { isMember, joinChat, useJoinedChats } from "@/lib/joinedChats";
-import { useScheme } from "@/theme";
+import { useScheme, media } from "@/theme";
 
 import { useExperienceSession } from "./useExperienceSession";
 
@@ -125,11 +129,15 @@ function StepCarousel({
 }) {
   const [shown, setShown] = useState(index ?? 0);
   if (index !== null && index !== shown) setShown(index);
+  const dark = useScheme() === "dark";
   return (
     <Overlay
       visible={index !== null}
       onClose={onClose}
       enter="zoom"
+      // The page stays in view, dimmed, behind the cards (Airbnb tap-through
+      // 2026-11-26; it was a full-screen page of its own).
+      backdrop={dark ? media.scrimStrong : media.scrim}
       statusBarTranslucent
       accessibilityLabel="Hva dere skal gjøre"
     >
@@ -155,14 +163,21 @@ function StepCards({
   const onEnd = (e: NativeSyntheticEvent<NativeScrollEvent>) =>
     setCurrent(Math.round(e.nativeEvent.contentOffset.x / step));
   return (
-    <View className="flex-1 bg-background" style={{ paddingTop: insets.top }}>
-      <StatusBarStyle style="auto" />
+    // Below the dimmed page's top bar (PAGE_BAR_ROW, 52), so the counter and
+    // ✕ do not sit on its title and buttons.
+    <View className="flex-1" style={{ paddingTop: insets.top + 52 }}>
+      <StatusBarStyle style="light" />
       <View className="flex-row items-center justify-between px-gutter py-2">
         <View className="w-10" />
-        <Text variant="label" weight="semibold">
+        <Text variant="label" weight="semibold" tone="onMedia">
           {`${current + 1} av ${steps.length}`}
         </Text>
-        <IconButton icon="close" label="Lukk" onPress={onClose} />
+        <IconButton
+          icon="close"
+          label="Lukk"
+          variant="mediaSubtle"
+          onPress={onClose}
+        />
       </View>
       <FlatList
         data={steps as MockItineraryStep[]}
@@ -222,6 +237,9 @@ export function AvailabilitySection({ exp }: { exp: MockExperience }) {
   const { now, sessions } = useSessions(exp);
   const [chosenId, choose] = useExperienceSession(exp.id);
   const [sheetAt, setSheetAt] = useState<string | null>(null);
+  // Who is going belongs to the next time (the join card's «N skal»), so
+  // only its card shows faces; later times keep their places left.
+  const going = useGoing(exp.id);
   if (sessions.length === 0) return null;
   return (
     <View className="gap-3">
@@ -246,14 +264,15 @@ export function AvailabilitySection({ exp }: { exp: MockExperience }) {
         decelerationRate="fast"
         contentContainerStyle={{ gap: 12 }}
       >
-        {sessions.slice(0, 4).map((s) => {
+        {sessions.slice(0, 4).map((s, i) => {
           const on = s.id === chosenId;
+          const social = i === 0 && going.count > 0;
           return (
             <Pressable
               key={s.id}
               accessibilityRole="button"
               accessibilityState={{ selected: on }}
-              accessibilityLabel={`${dayLabel(s.start, now)}, ${timeRange(s.start, s.end)}, ${placesLeft(s)}`}
+              accessibilityLabel={`${dayLabel(s.start, now)}, ${timeRange(s.start, s.end)}, ${placesLeft(s)}${social ? `, ${goingLabel(going.count)}` : ""}`}
               onPress={() => setSheetAt(s.id)}
               style={{ width: 200 }}
               contentClassName={`gap-1 rounded-md p-4 ${
@@ -273,6 +292,14 @@ export function AvailabilitySection({ exp }: { exp: MockExperience }) {
               >
                 {placesLeft(s)}
               </Text>
+              {social ? (
+                <View className="mt-2 flex-row items-center gap-2">
+                  <FaceStack faces={going.faces} />
+                  <Text variant="caption" weight="semibold">
+                    {goingLabel(going.count)}
+                  </Text>
+                </View>
+              ) : null}
             </Pressable>
           );
         })}
@@ -331,10 +358,26 @@ export function SessionSheet({
 }) {
   const [draft, setDraft] = useState<string | null>(initial);
   const [shown, setShown] = useState(visible);
+  // A month with the days that have a time (Airbnb tap-through 2026-11-26:
+  // its date picker is a calendar); a tap on a day narrows the list to it.
+  const [month, setMonth] = useState<Date>(() => sessions[0]?.start ?? now);
+  const [day, setDay] = useState<string | null>(null);
   if (visible !== shown) {
     setShown(visible);
-    if (visible) setDraft(initial);
+    if (visible) {
+      setDraft(initial);
+      setDay(null);
+      setMonth(sessions[0]?.start ?? now);
+    }
   }
+  const marked = useMemo(() => {
+    const m = new Map<string, number>();
+    for (const s of sessions) {
+      const k = isoDay(s.start);
+      m.set(k, (m.get(k) ?? 0) + 1);
+    }
+    return m;
+  }, [sessions]);
   const days = useMemo(() => {
     const map = new Map<string, MockSession[]>();
     for (const s of sessions) {
@@ -357,52 +400,67 @@ export function SessionSheet({
         contentContainerClassName="gap-6 pb-4"
         showsVerticalScrollIndicator={false}
       >
-        {days.map(([day, list]) => (
-          <View key={day} className="gap-3">
-            <Text variant="label" weight="semibold">
-              {day}
-            </Text>
-            {list.map((s) => {
-              const full = s.spotsLeft <= 0;
-              const on = s.id === draft;
-              return (
-                <Pressable
-                  key={s.id}
-                  accessibilityRole="radio"
-                  accessibilityState={{ checked: on, disabled: full }}
-                  accessibilityLabel={`${day}, ${timeRange(s.start, s.end)}, ${placesLeft(s)}`}
-                  disabled={full}
-                  dimWhenDisabled={false}
-                  onPress={() => setDraft(s.id)}
-                  contentClassName={`flex-row items-center justify-between rounded-md p-4 ${
-                    on ? "border-2 border-ink" : "border border-line"
-                  }`}
-                >
-                  <View className="gap-1">
-                    <Text
-                      variant="body"
-                      weight="semibold"
-                      tone={full ? "muted" : "ink"}
-                      className={full ? "line-through" : ""}
-                    >
-                      {timeRange(s.start, s.end)}
-                    </Text>
-                    <Text variant="caption" tone="muted">
-                      {price}
-                    </Text>
-                  </View>
-                  <Text
-                    variant="caption"
-                    tone={full ? "ink" : "muted"}
-                    weight={full ? "semibold" : "regular"}
+        {marked.size > 1 ? (
+          <MonthGrid
+            month={month}
+            marked={marked}
+            selected={day}
+            onSelect={setDay}
+            onMonthChange={(d) =>
+              setMonth((m) => new Date(m.getFullYear(), m.getMonth() + d, 1))
+            }
+            today={now}
+            countLabel={(n) => `${n} ${n === 1 ? "tid" : "tider"}`}
+          />
+        ) : null}
+        {days
+          .filter(([, list]) => !day || isoDay(list[0]!.start) === day)
+          .map(([label, list]) => (
+            <View key={label} className="gap-3">
+              <Text variant="label" weight="semibold">
+                {label}
+              </Text>
+              {list.map((s) => {
+                const full = s.spotsLeft <= 0;
+                const on = s.id === draft;
+                return (
+                  <Pressable
+                    key={s.id}
+                    accessibilityRole="radio"
+                    accessibilityState={{ checked: on, disabled: full }}
+                    accessibilityLabel={`${label}, ${timeRange(s.start, s.end)}, ${placesLeft(s)}`}
+                    disabled={full}
+                    dimWhenDisabled={false}
+                    onPress={() => setDraft(s.id)}
+                    contentClassName={`flex-row items-center justify-between rounded-md p-4 ${
+                      on ? "border-2 border-ink" : "border border-line"
+                    }`}
                   >
-                    {placesLeft(s)}
-                  </Text>
-                </Pressable>
-              );
-            })}
-          </View>
-        ))}
+                    <View className="gap-1">
+                      <Text
+                        variant="body"
+                        weight="semibold"
+                        tone={full ? "muted" : "ink"}
+                        className={full ? "line-through" : ""}
+                      >
+                        {timeRange(s.start, s.end)}
+                      </Text>
+                      <Text variant="caption" tone="muted">
+                        {price}
+                      </Text>
+                    </View>
+                    <Text
+                      variant="caption"
+                      tone={full ? "ink" : "muted"}
+                      weight={full ? "semibold" : "regular"}
+                    >
+                      {placesLeft(s)}
+                    </Text>
+                  </Pressable>
+                );
+              })}
+            </View>
+          ))}
       </ScrollView>
       {/* Sticky footer, as in the reference: the picked time and "Velg". */}
       <View className="flex-row items-center gap-3 border-t border-line pt-3">
