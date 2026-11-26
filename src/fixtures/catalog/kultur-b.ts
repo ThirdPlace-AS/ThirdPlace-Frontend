@@ -445,7 +445,9 @@ export const KULTUR_B: InterestSeed[] = [
       tags: ["Gratis", "Ute", "Møteplass"],
       accessibility: ["Trinnfri inngang"],
       types: ["Natteliv", "Friluftsliv"],
-      photos: ["klubb-2", "klubb-5"],
+      // A park, so park photos (phone sweep 2026-11-26: it showed two club
+      // photos); shared with other places, as vegansk-7 already is.
+      photos: ["biljard-7", "sjakk-7"],
       reviews: [
         [
           "Selma T.",

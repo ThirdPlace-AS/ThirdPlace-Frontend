@@ -189,8 +189,14 @@ export default function MapScreen() {
   // key: a ref, so reaching the top does not re-render the whole map screen
   // (speed pass 0345; the sheet itself owns the status bar).
   const detailIsPage = useRef(false);
+  // While a place or experience fills the screen as a page, the map under it
+  // is out of TalkBack's way (phone sweep 2026-11-26: the map's search,
+  // pills and buttons were read before the page). The page sheet lives in the
+  // root portal, outside this View, so it stays readable.
+  const [pageUp, setPageUp] = useState(false);
   const handlePageChange = useCallback((isPage: boolean) => {
     detailIsPage.current = isPage;
+    setPageUp(isPage);
   }, []);
   useFocusEffect(
     useCallback(() => {
@@ -423,7 +429,12 @@ export default function MapScreen() {
   };
 
   return (
-    <View className="flex-1 bg-background" onLayout={handleScreenLayout}>
+    <View
+      className="flex-1 bg-background"
+      onLayout={handleScreenLayout}
+      importantForAccessibility={pageUp ? "no-hide-descendants" : "auto"}
+      accessibilityElementsHidden={pageUp}
+    >
       <StatusBarStyle style={darkBasemap ? "light" : "auto"} />
       <MapCanvas
         fill

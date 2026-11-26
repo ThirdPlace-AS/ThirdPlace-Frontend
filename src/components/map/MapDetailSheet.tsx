@@ -377,9 +377,12 @@ export const MapDetailSheet = memo(
           // time the map comes back into focus (0384).
           enableTouchThrough
           {...backdropA11y}
+          // Under the full-screen page the backdrop is out of sight: its
+          // «Lukk» was read before the page (the page has its own back).
+          accessible={!isPage}
         />
       ),
-      [],
+      [isPage],
     );
 
     // Header: the experience page shows only ✕ in sheet mode and collapses it

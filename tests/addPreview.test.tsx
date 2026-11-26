@@ -134,6 +134,43 @@ describe("the wizard", () => {
     expect(screen.queryByText("Tilbake til forhåndsvisningen")).toBeNull();
   });
 
+  it("a place's review lists what was picked under Detaljer", () => {
+    // Phone sweep 2026-11-26: Rullestolvennlig was on, the review left it out.
+    render(<AddWizard />, { wrapper });
+    fireEvent.press(screen.getByText("Sted"));
+    fireEvent.changeText(
+      screen.getByPlaceholderText("F.eks. «Hemmelig takterrasse»"),
+      "Parken",
+    );
+    fireEvent.press(screen.getByLabelText("Kategori, ikke valgt"));
+    fireEvent.press(screen.getByText("Utendørs"));
+    fireEvent.changeText(
+      screen.getByPlaceholderText("Hva gjør dette stedet spesielt?"),
+      "Benker og trær.",
+    );
+    fireEvent.press(screen.getByText("Neste"));
+    fireEvent.press(screen.getByLabelText("Grünerløkka"));
+    fireEvent.press(screen.getByText("Neste"));
+    fireEvent.press(screen.getByLabelText("Bilde 1"));
+    fireEvent.press(screen.getByLabelText("Bilde 2"));
+    fireEvent.press(screen.getByText("Neste"));
+    fireEvent(screen.getByLabelText("Rullestolvennlig"), "valueChange", true);
+    fireEvent(
+      screen.getByLabelText("Nær kollektivtransport"),
+      "valueChange",
+      true,
+    );
+    fireEvent.press(screen.getByText("Neste"));
+    expect(screen.getByText("Se over og send inn")).toBeTruthy();
+    // In the step's order, whatever order they were switched on in.
+    const shown = screen
+      .getAllByText(/^(Rullestolvennlig|Nær kollektivtransport)$/)
+      .map((t) => t.props.children);
+    expect(shown).toEqual(["Rullestolvennlig", "Nær kollektivtransport"]);
+    expect(screen.queryByText("Parkering tilgjengelig")).toBeNull();
+    expect(screen.getByText("Sesong: Hele året")).toBeTruthy();
+  });
+
   it("offers Del after the group is made", () => {
     groupToReview();
     fireEvent.press(screen.getByText("Opprett gruppen"));

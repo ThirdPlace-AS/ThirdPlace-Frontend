@@ -1167,9 +1167,34 @@ function SummaryReview({
           </View>
         </>
       ) : (
-        <EditLinks
-          links={[{ label: "detaljene", onPress: () => onEdit("details") }]}
-        />
+        <>
+          {/* What was picked under Detaljer (phone sweep 2026-11-26: the
+              review left it out), in the step's own order. */}
+          {draft.features.length > 0 ? (
+            <View className="flex-row flex-wrap gap-2">
+              {PLACE_FEATURES.filter((f) => draft.features.includes(f)).map(
+                (f) => (
+                  <View
+                    key={f}
+                    className="rounded-full bg-surfaceMuted px-3 py-1"
+                  >
+                    <Text variant="caption" weight="medium">
+                      {f}
+                    </Text>
+                  </View>
+                ),
+              )}
+            </View>
+          ) : null}
+          {draft.season ? (
+            <Text variant="caption" tone="muted">
+              {`Sesong: ${draft.season}`}
+            </Text>
+          ) : null}
+          <EditLinks
+            links={[{ label: "detaljene", onPress: () => onEdit("details") }]}
+          />
+        </>
       )}
     </Shell>
   );
