@@ -13,12 +13,15 @@ import {
   useSheetStageReady,
 } from "@/components/map/sheetStage";
 import {
-  ScrollView,
   View,
   useWindowDimensions,
   type ImageSourcePropType,
 } from "react-native";
-import { Gesture, GestureDetector } from "react-native-gesture-handler";
+import {
+  Gesture,
+  GestureDetector,
+  ScrollView as RailScrollView,
+} from "react-native-gesture-handler";
 
 import { BlockSheet, ReportSheet } from "@/components/actions/ActionSheets";
 import { useGuestGate } from "@/components/useGuestGate";
@@ -436,7 +439,7 @@ export function ExperiencePage({
               <Text variant="h2" accessibilityRole="header">
                 Flere opplevelser i området
               </Text>
-              <ScrollView
+              <RailScrollView
                 horizontal
                 showsHorizontalScrollIndicator={false}
                 snapToInterval={188}
@@ -477,7 +480,7 @@ export function ExperiencePage({
                     </UIPressable>
                   );
                 })}
-              </ScrollView>
+              </RailScrollView>
             </View>
           ) : null}
 

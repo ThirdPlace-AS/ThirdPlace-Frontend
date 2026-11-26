@@ -16,6 +16,10 @@ import {
   type NativeScrollEvent,
   type NativeSyntheticEvent,
 } from "react-native";
+// Rails in the map page sheet scroll with Gesture Handler: its pan gesture
+// took the horizontal drag from the core ScrollView on Android (phone
+// 2026-11-26).
+import { ScrollView as RailScrollView } from "react-native-gesture-handler";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { AddToCalendarLink } from "@/components/AddToCalendarLink";
@@ -235,7 +239,7 @@ export function AvailabilitySection({ exp }: { exp: MockExperience }) {
           } · ${exp.duration}`}
         </Text>
       </View>
-      <ScrollView
+      <RailScrollView
         horizontal
         showsHorizontalScrollIndicator={false}
         snapToInterval={212}
@@ -272,7 +276,7 @@ export function AvailabilitySection({ exp }: { exp: MockExperience }) {
             </Pressable>
           );
         })}
-      </ScrollView>
+      </RailScrollView>
       <View className="flex-row flex-wrap items-center gap-x-6 gap-y-2">
         <Pressable
           accessibilityRole="button"

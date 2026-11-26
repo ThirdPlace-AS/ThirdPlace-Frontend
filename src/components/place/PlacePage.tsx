@@ -12,7 +12,11 @@ import {
   useSheetStageFirst,
   useSheetStageReady,
 } from "@/components/map/sheetStage";
-import { ScrollView, View } from "react-native";
+import { View } from "react-native";
+// Rails in the map page sheet scroll with Gesture Handler: its pan gesture
+// took the horizontal drag from the core ScrollView on Android (phone
+// 2026-11-26).
+import { ScrollView as RailScrollView } from "react-native-gesture-handler";
 
 import { ReportSheet } from "@/components/actions/ActionSheets";
 import { useGuestGate } from "@/components/useGuestGate";
@@ -449,7 +453,7 @@ export function PlacePage({
               <Text variant="h2" accessibilityRole="header">
                 Flere steder i nærheten
               </Text>
-              <ScrollView
+              <RailScrollView
                 horizontal
                 showsHorizontalScrollIndicator={false}
                 snapToInterval={188}
@@ -486,7 +490,7 @@ export function PlacePage({
                     </UIPressable>
                   );
                 })}
-              </ScrollView>
+              </RailScrollView>
             </View>
           ) : null}
 

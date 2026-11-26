@@ -4,7 +4,11 @@
 // grey "Vis alle vurderinger" button and the underlined "Slik fungerer
 // vurderinger" link. Count and score are derived from the list shown.
 import { useState } from "react";
-import { ScrollView, View } from "react-native";
+import { View } from "react-native";
+// Rails in the map page sheet scroll with Gesture Handler: its pan gesture
+// took the horizontal drag from the core ScrollView on Android (phone
+// 2026-11-26).
+import { ScrollView as RailScrollView } from "react-native-gesture-handler";
 
 import { Button, LINK_SLOP, Pressable, Sheet, Text } from "@/components/ui";
 import { ratingOf } from "@/fixtures";
@@ -35,7 +39,7 @@ export function ReviewsSection({
         {ratingTitle(reviews)}
       </Text>
       {newest.length > 0 ? (
-        <ScrollView
+        <RailScrollView
           horizontal
           showsHorizontalScrollIndicator={false}
           snapToInterval={292}
@@ -52,7 +56,7 @@ export function ReviewsSection({
               <ReviewCard review={r} />
             </View>
           ))}
-        </ScrollView>
+        </RailScrollView>
       ) : null}
       {newest.length > 0 ? (
         <Button
