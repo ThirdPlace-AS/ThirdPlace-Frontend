@@ -57,7 +57,10 @@ composing hooks and components under `src/components/map/`.
   (no mount and layout pass first). Closed, its body sits below the screen
   inside gorhom's `box-none` containers, so taps reach the map's buttons, the
   browse sheet and the tab bar; its backdrop starts with
-  `enableTouchThrough` (it remounts on every refocus) and the wrapper hides
+  `enableTouchThrough` (it remounts on every refocus); an open page
+  comes back where it was (0550: the snap read from `animatedIndex` at blur,
+  the scroll offset kept where a scroll rests, scrolled back once the sheet
+  rests and the content is that tall) and the wrapper hides
   it from the screen reader. While it slides closed it keeps its content;
   once it is down the content goes, the stages reset and the wrapper
   remounts already hidden (0413): on Android, switching a mounted wrapper's

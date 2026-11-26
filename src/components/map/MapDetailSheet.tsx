@@ -6,6 +6,7 @@ import BottomSheet, {
   type BottomSheetFooterProps,
   type BottomSheetHandleProps,
   BottomSheetScrollView,
+  type BottomSheetScrollViewMethods,
 } from "@gorhom/bottom-sheet";
 import {
   forwardRef,
@@ -145,13 +146,61 @@ export const MapDetailSheet = memo(
     // The experience sheet renders at the app root (above the tab bar), so it
     // must leave with the map: a route opened from the page (host profile,
     // chat, Rediger) or another tab would otherwise sit under it. Published
-    // only while the map screen is focused; it remounts at openIndex on return.
+    // only while the map screen is focused; on return it remounts
+    // where it was (restore below).
     const [focused, setFocused] = useState(true);
+    // Where the page was when a route opened over it (phone check 2026-11-26:
+    // back from Vurderinger, the host or a chat put the page at the middle
+    // snap, scrolled to the top; Airbnb returns to the same place). The sheet
+    // remounts at that snap and scrolls back once its content is laid out.
+    const animatedIndex = useSharedValue(-1);
+    const scrollY = useRef(0);
+    const scrollRef = useRef<BottomSheetScrollViewMethods>(null);
+    const [restore, setRestore] = useState<{
+      index: number;
+      y: number;
+    } | null>(null);
+    const pendingScroll = useRef<number | null>(null);
+    // Only where a scroll comes to rest: a per-frame onScroll would cross to
+    // JS on every frame of every scroll.
+    const keepScrollY = useCallback(
+      (e: { nativeEvent: { contentOffset: { y: number } } }) => {
+        scrollY.current = e.nativeEvent.contentOffset.y;
+      },
+      [],
+    );
+    // Back once the sheet rests at its snap (gorhom holds the content at the
+    // top while the sheet moves) and the content reaches that far.
+    const contentH = useRef(0);
+    const resting = useRef(false);
+    const tryScrollBack = useCallback(() => {
+      const y = pendingScroll.current;
+      if (y === null || !resting.current || contentH.current < y) return;
+      pendingScroll.current = null;
+      scrollRef.current?.scrollTo({ y, animated: false });
+    }, []);
+    const scrollBack = useCallback(
+      (_w: number, h: number) => {
+        contentH.current = h;
+        tryScrollBack();
+      },
+      [tryScrollBack],
+    );
     useFocusEffect(
       useCallback(() => {
         setFocused(true);
-        return () => setFocused(false);
-      }, []),
+        return () => {
+          setFocused(false);
+          resting.current = false;
+          // The live position, not the last onChange: a drag that carries on
+          // into the content scroll never reports the top snap (see onTop).
+          const at = Math.round(animatedIndex.get());
+          if (at >= 0) {
+            setRestore({ index: at, y: scrollY.current });
+            pendingScroll.current = scrollY.current;
+          }
+        };
+      }, [animatedIndex]),
     );
     const open = stack.length > 0;
     // What the sheet shows: the open stack, or while it slides closed the
@@ -183,7 +232,6 @@ export const MapDetailSheet = memo(
     );
 
     const sheetRef = useRef<BottomSheet>(null);
-    const animatedIndex = useSharedValue(-1);
     const [isPage, setIsPage] = useState(false);
     const top = shown[shown.length - 1];
     const nested = shown.length > 1;
@@ -290,10 +338,17 @@ export const MapDetailSheet = memo(
     // moment later. Pushed views render everything (the sheet is open).
     const handleSnap = useCallback(
       (i: number) => {
-        if (i >= 0) setSettledKey(rootKeyRef.current);
-        else clearShown();
+        if (i >= 0) {
+          setSettledKey(rootKeyRef.current);
+          resting.current = true;
+          tryScrollBack();
+        } else {
+          scrollY.current = 0;
+          setRestore(null);
+          clearShown();
+        }
       },
-      [clearShown],
+      [clearShown, tryScrollBack],
     );
     useEffect(() => {
       if (!open) return;
@@ -434,7 +489,7 @@ export const MapDetailSheet = memo(
           ref={sheetRef}
           // Closed it waits at -1; a group's docked sheet mounts already at
           // the requested snap.
-          index={open ? openIndex : -1}
+          index={open ? (restore?.index ?? openIndex) : -1}
           snapPoints={snapPoints}
           animatedIndex={animatedIndex}
           enableDynamicSizing={false}
@@ -490,8 +545,12 @@ export const MapDetailSheet = memo(
                 </View>
               </Animated.View>
               <BottomSheetScrollView
+                ref={scrollRef}
                 contentContainerClassName={`gap-4 px-gutter pt-4 ${footerId ? "pb-36" : "pb-16"}`}
                 keyboardShouldPersistTaps="handled"
+                onScrollEndDrag={keepScrollY}
+                onMomentumScrollEnd={keepScrollY}
+                onContentSizeChange={scrollBack}
               >
                 {/* In-sheet push/back fades the new content in (was one frame). */}
                 <FadeSwap swapKey={`${top.kind}:${top.id}`}>
