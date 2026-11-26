@@ -119,7 +119,7 @@ Component sizes from the same design: `Button` md is 48 px tall (sm 40, lg 60) w
 | `e2`  | Floating controls: search pill, map buttons, FAB |
 | `e3`  | Sheets, modals, toasts                           |
 
-The design has one shadow tier (a 1 px hairline ring at 2 %, 0 2 6 at 4 %, 0 4 8 at 10 %), so `e1`–`e3` render the same `boxShadow`; the names stay to say what a surface is. Shadows come only from `src/theme/elevation.ts` (cross-platform `boxShadow`).
+The design has one shadow tier (a 1 px hairline ring at 2 %, 0 2 6 at 4 %, 0 4 8 at 10 %), so `e1`–`e3` render the same `boxShadow`; the names stay to say what a surface is. Shadows come only from `src/theme/elevation.ts` (cross-platform `boxShadow`). A raised card (the pages' floating action card, «Om verten») takes its edge from `useRaisedEdge()`: no border in light, where the shadow alone lifts it as in Airbnb's light frames, and the `line` hairline in dark, where a shadow cannot show (0556).
 
 ### Icons
 

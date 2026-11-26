@@ -21,7 +21,7 @@ import Animated, {
 } from "react-native-reanimated";
 
 import { useReducedMotion } from "@/hooks/useReducedMotion";
-import { duration, easing, elevation, gutterPx } from "@/theme";
+import { duration, easing, elevation, gutterPx, useRaisedEdge } from "@/theme";
 
 import { atPageTop } from "../pageTarget";
 
@@ -53,6 +53,7 @@ export function PageActionCard({
   onManage?: () => void;
 }) {
   const reduce = useReducedMotion();
+  const edge = useRaisedEdge();
   // Starts hidden: the sheet opens at the peek or mid snap, and the reaction
   // reports the real position on its first run (a remount at the top too).
   const [atTop, setAtTop] = useState(false);
@@ -91,7 +92,7 @@ export function PageActionCard({
       ]}
     >
       <View
-        className={`rounded-md border border-line bg-surface px-4 ${
+        className={`rounded-md ${edge} bg-surface px-4 ${
           compact ? "py-2" : "py-3"
         }`}
         style={elevation.e2}

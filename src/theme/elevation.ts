@@ -3,6 +3,8 @@
 // and Android render the same layered soft shadow. Spread into `style`.
 import type { ViewStyle } from "react-native";
 
+import { useScheme } from "./scheme";
+
 export type ElevationLevel = "e0" | "e1" | "e2" | "e3";
 
 // One shadow tier, shadcn.io's Airbnb DESIGN.md (user 2026-11-15): a hairline
@@ -23,3 +25,12 @@ export const elevation: Record<ElevationLevel, Pick<ViewStyle, "boxShadow">> = {
   /** Sheets, modals, toasts. */
   e3: TIER,
 };
+
+/**
+ * The edge of a raised card (Airbnb light frames, 2026-11-26): in light the
+ * shadow alone lifts it, so no border; in dark a shadow cannot show, so the
+ * hairline border draws the edge. Pair with `elevation.e1`/`e2`.
+ */
+export function useRaisedEdge(): string {
+  return useScheme() === "dark" ? "border border-line" : "";
+}
