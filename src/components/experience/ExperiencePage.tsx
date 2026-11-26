@@ -7,7 +7,7 @@
 // appears twice; everything a creator enters in Legg til shows once. The join
 // action lives in the host's floating ExperienceJoinBar card.
 import type { Href } from "expo-router";
-import { useMemo, useState, type ReactNode } from "react";
+import { useMemo, useRef, useState, type ReactNode } from "react";
 import {
   useSheetStageFirst,
   useSheetStageReady,
@@ -25,6 +25,7 @@ import {
 
 import { BlockSheet, ReportSheet } from "@/components/actions/ActionSheets";
 import { useGuestGate } from "@/components/useGuestGate";
+import { usePageScroll } from "@/components/pageScroll";
 import { ReviewsSection } from "@/components/reviews/ReviewsSection";
 import { sortReviews } from "@/components/reviews/reviewSort";
 import {
@@ -201,6 +202,15 @@ export function ExperiencePage({
     // eslint-disable-next-line react-hooks/exhaustive-deps -- created: an experience made in Legg til
     [exp, created, ready, preview],
   );
+  // The rating link brings the page's own reviews into view (Airbnb
+  // tap-through 2026-11-26); without a scrolling host, or before they have
+  // mounted, it opens all reviews as before.
+  const reviewsAnchor = useRef<View>(null);
+  const pageScroll = usePageScroll();
+  const toReviews = () => {
+    if (!pageScroll?.scrollToAnchor(reviewsAnchor.current))
+      onNavigate(reviewsHref);
+  };
   const reviewsHref = `/experience/${exp.id}/reviews` as Href;
   // The direct chat with the host, matched by person (Phase 19: with many
   // hosts a first name is no longer enough).
@@ -246,8 +256,8 @@ export function ExperiencePage({
             {count > 0 ? (
               <UIPressable
                 accessibilityRole="link"
-                accessibilityLabel={`${formatRating(score)} av 5, ${count} vurderinger. Vis alle`}
-                onPress={() => onNavigate(reviewsHref)}
+                accessibilityLabel={`${formatRating(score)} av 5, ${count} vurderinger. Gå til vurderingene`}
+                onPress={toReviews}
                 hitSlop={LINK_SLOP}
                 contentClassName="mt-1 flex-row items-center gap-1"
               >
@@ -396,10 +406,12 @@ export function ExperiencePage({
           {/* A new experience has no reviews: the preview leaves them out. */}
           {preview ? null : (
             <>
-              <ReviewsSection
-                reviews={reviews}
-                onShowAll={() => onNavigate(reviewsHref)}
-              />
+              <View ref={reviewsAnchor} collapsable={false}>
+                <ReviewsSection
+                  reviews={reviews}
+                  onShowAll={() => onNavigate(reviewsHref)}
+                />
+              </View>
 
               <View className="h-px bg-line" />
             </>

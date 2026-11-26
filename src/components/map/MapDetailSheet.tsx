@@ -49,6 +49,7 @@ import {
   useSheetChrome,
 } from "@/components/ui";
 import { SignInPrompt } from "@/components/SignInPrompt";
+import { PageScrollContext, scrollAnchorIn } from "@/components/pageScroll";
 import { PAGE_BAR_ROW } from "@/components/experience/ExperiencePage";
 import { chatForPlace, experienceById, placeById } from "@/fixtures";
 import { elevation, gutterPx, useThemeColors } from "@/theme";
@@ -232,6 +233,24 @@ export const MapDetailSheet = memo(
     );
 
     const sheetRef = useRef<BottomSheet>(null);
+    // A link on the page brings one of its sections into view (pageScroll.ts):
+    // at the top snap it scrolls there; lower, the sheet rises first and the
+    // scroll follows once it rests (tryScrollBack).
+    const pageBox = useRef<View>(null);
+    const scrollToAnchor = useCallback(
+      (anchor: View | null) =>
+        scrollAnchorIn(pageBox.current, anchor, 16, (y) => {
+          if (Math.round(animatedIndex.get()) >= 2) {
+            scrollRef.current?.scrollTo({ y, animated: true });
+            return;
+          }
+          pendingScroll.current = y;
+          resting.current = false;
+          sheetRef.current?.snapToIndex(2);
+        }),
+      [animatedIndex],
+    );
+    const scroller = useMemo(() => ({ scrollToAnchor }), [scrollToAnchor]);
     const [isPage, setIsPage] = useState(false);
     const top = shown[shown.length - 1];
     const nested = shown.length > 1;
@@ -555,7 +574,11 @@ export const MapDetailSheet = memo(
                 {/* In-sheet push/back fades the new content in (was one frame). */}
                 <FadeSwap swapKey={`${top.kind}:${top.id}`}>
                   <SheetStageContext.Provider value={stage}>
-                    <DetailContent target={top} push={push} />
+                    <PageScrollContext.Provider value={scroller}>
+                      <View ref={pageBox}>
+                        <DetailContent target={top} push={push} />
+                      </View>
+                    </PageScrollContext.Provider>
                   </SheetStageContext.Provider>
                 </FadeSwap>
               </BottomSheetScrollView>

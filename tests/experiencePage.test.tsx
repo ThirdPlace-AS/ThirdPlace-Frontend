@@ -26,6 +26,7 @@ import {
   hostPerson,
   moreExperiences,
 } from "@/components/experience/experienceMeta";
+import { PageScrollContext } from "@/components/pageScroll";
 import { interestById } from "@/fixtures/catalog/interests";
 import {
   ChatSection,
@@ -138,6 +139,50 @@ describe("ExperiencePage", () => {
     expect(screen.queryByText("Administrer")).toBeNull();
     fireEvent.press(screen.getByText("Vis alle vurderinger"));
     expect(onNavigate).toHaveBeenCalledWith("/experience/e1/reviews");
+  });
+
+  it("the rating link scrolls to the page's reviews, else opens them", () => {
+    const onNavigate = jest.fn();
+    const scrollToAnchor = jest.fn(() => true);
+    render(
+      <PageScrollContext.Provider value={{ scrollToAnchor }}>
+        <ExperiencePage exp={e1} onOpen={jest.fn()} onNavigate={onNavigate} />
+      </PageScrollContext.Provider>,
+      { wrapper },
+    );
+    fireEvent.press(screen.getByRole("link", { name: /Gå til vurderingene/ }));
+    expect(scrollToAnchor).toHaveBeenCalledTimes(1);
+    expect(onNavigate).not.toHaveBeenCalled();
+
+    // No scrolling host (Sveip's details): all reviews, as before.
+    screen.unmount();
+    renderPage({ onNavigate });
+    fireEvent.press(screen.getByRole("link", { name: /Gå til vurderingene/ }));
+    expect(onNavigate).toHaveBeenCalledWith("/experience/e1/reviews");
+  });
+
+  it("the meeting map opens full screen; Vis på kartet leaves after it closes", () => {
+    jest.useFakeTimers();
+    try {
+      const onShowOnMap = jest.fn();
+      render(
+        <MeetingSection
+          exp={e1}
+          hostName="Maria Movik"
+          onShowOnMap={onShowOnMap}
+        />,
+        { wrapper },
+      );
+      fireEvent.press(screen.getByRole("button", { name: /Åpne kartet/ }));
+      expect(onShowOnMap).not.toHaveBeenCalled();
+      expect(screen.getByRole("button", { name: "Lukk" })).toBeTruthy();
+      fireEvent.press(screen.getByText("Vis på kartet"));
+      expect(onShowOnMap).not.toHaveBeenCalled();
+      act(() => jest.advanceTimersByTime(300));
+      expect(onShowOnMap).toHaveBeenCalledTimes(1);
+    } finally {
+      jest.useRealTimers();
+    }
   });
 
   it("whole places, groups and other experiences open as pages", () => {

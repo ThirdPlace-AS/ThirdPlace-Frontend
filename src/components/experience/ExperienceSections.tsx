@@ -486,7 +486,9 @@ export function MeetingSection({
 
 /** Static map card (Mapbox Static Images with the public token; a calm
  *  placeholder without one) with our own pin, like the reference's map card.
- *  No second live map: the page sits in a sheet/Modal over the real map. */
+ *  No second live map: the page sits in a sheet/Modal over the real map.
+ *  A tap opens the map full screen with ✕ (Airbnb tap-through 2026-11-26:
+ *  it used to leave for the map tab and drop the page). */
 export function MeetingMap({
   coord,
   label = "Møtested",
@@ -498,54 +500,170 @@ export function MeetingMap({
   onShowOnMap: () => void;
 }) {
   const { width } = useWindowDimensions();
-  const scheme = useScheme();
   const w = Math.min(640, Math.round(width - 32));
   const h = 200;
+  const uri = useStaticMap(coord, w, h, 14.5);
+  const [full, setFull] = useState(false);
+  return (
+    <>
+      <Pressable
+        accessibilityRole="button"
+        accessibilityLabel={`${label}. Åpne kartet`}
+        onPress={() => setFull(true)}
+        pressedScale={0.99}
+        contentClassName="overflow-hidden rounded-lg border border-line bg-surfaceMuted"
+        contentStyle={{ height: h }}
+      >
+        {uri ? (
+          <Image
+            source={{ uri }}
+            contentFit="cover"
+            cachePolicy="memory-disk"
+            style={StyleSheet.absoluteFill}
+            accessible={false}
+          />
+        ) : (
+          <View style={StyleSheet.absoluteFill} className="bg-surfaceMuted" />
+        )}
+        <View
+          pointerEvents="none"
+          style={StyleSheet.absoluteFill}
+          className="items-center justify-center"
+        >
+          <MapPin label={label} />
+        </View>
+        <View className="absolute right-3 top-3" pointerEvents="none">
+          <View className="h-9 w-9 items-center justify-center rounded-full bg-surface">
+            <Icon name="expand-outline" size="md" tone="ink" />
+          </View>
+        </View>
+      </Pressable>
+      <MapFullScreen
+        visible={full}
+        coord={coord}
+        label={label}
+        onClose={() => setFull(false)}
+        onShowOnMap={() => {
+          setFull(false);
+          // After the Overlay's exit, so no Modal is left over the map.
+          setTimeout(onShowOnMap, 250);
+        }}
+      />
+    </>
+  );
+}
+
+/** Mapbox Static Images URL for a spot (null without the public token). */
+function useStaticMap(
+  coord: [number, number],
+  w: number,
+  h: number,
+  zoom: number,
+): string | null {
+  const scheme = useScheme();
   const token = env.mapboxToken;
   const style = scheme === "dark" ? "dark-v11" : "light-v11";
-  const uri = token
-    ? `https://api.mapbox.com/styles/v1/mapbox/${style}/static/${coord[0]},${coord[1]},14.5,0/${w}x${h}@2x?access_token=${token}`
+  return token
+    ? `https://api.mapbox.com/styles/v1/mapbox/${style}/static/${coord[0]},${coord[1]},${zoom},0/${w}x${h}@2x?access_token=${token}`
     : null;
+}
+
+function MapPin({ label }: { label: string }) {
   return (
-    <Pressable
-      accessibilityRole="button"
-      accessibilityLabel={`${label}. Vis på kartet`}
-      onPress={onShowOnMap}
-      pressedScale={0.99}
-      contentClassName="overflow-hidden rounded-lg border border-line bg-surfaceMuted"
-      contentStyle={{ height: h }}
+    <>
+      <View className="h-9 w-9 items-center justify-center rounded-full border-2 border-surface bg-ink">
+        <View className="h-2.5 w-2.5 rounded-full bg-surface" />
+      </View>
+      <View className="mt-1 rounded-full bg-surface px-2 py-1">
+        <Text variant="caption" weight="semibold" numberOfLines={1}>
+          {label}
+        </Text>
+      </View>
+    </>
+  );
+}
+
+/** The meeting point's map over the whole screen: ✕ top right, the route in
+ *  the phone's maps app and «Vis på kartet» (the app's own map) below. */
+function MapFullScreen({
+  visible,
+  coord,
+  label,
+  onClose,
+  onShowOnMap,
+}: {
+  visible: boolean;
+  coord: [number, number];
+  label: string;
+  onClose: () => void;
+  onShowOnMap: () => void;
+}) {
+  const { width, height } = useWindowDimensions();
+  const insets = useSafeAreaInsets();
+  // Mapbox Static Images allows up to 1280 per side.
+  const uri = useStaticMap(
+    coord,
+    Math.min(1280, Math.round(width)),
+    Math.min(1280, Math.round(height)),
+    15,
+  );
+  return (
+    <Overlay
+      visible={visible}
+      onClose={onClose}
+      enter="zoom"
+      className="bg-surfaceMuted"
+      statusBarTranslucent
+      accessibilityLabel={`Kart: ${label}`}
     >
-      {uri ? (
-        <Image
-          source={{ uri }}
-          contentFit="cover"
-          cachePolicy="memory-disk"
+      <View className="flex-1">
+        {uri ? (
+          <Image
+            source={{ uri }}
+            contentFit="cover"
+            cachePolicy="memory-disk"
+            style={StyleSheet.absoluteFill}
+            accessible={false}
+          />
+        ) : null}
+        <View
+          pointerEvents="none"
           style={StyleSheet.absoluteFill}
-          accessible={false}
-        />
-      ) : (
-        <View style={StyleSheet.absoluteFill} className="bg-surfaceMuted" />
-      )}
-      <View
-        pointerEvents="none"
-        style={StyleSheet.absoluteFill}
-        className="items-center justify-center"
-      >
-        <View className="h-9 w-9 items-center justify-center rounded-full border-2 border-surface bg-ink">
-          <View className="h-2.5 w-2.5 rounded-full bg-surface" />
+          className="items-center justify-center"
+        >
+          <MapPin label={label} />
         </View>
-        <View className="mt-1 rounded-full bg-surface px-2 py-1">
-          <Text variant="caption" weight="semibold" numberOfLines={1}>
-            {label}
-          </Text>
+        <View
+          pointerEvents="box-none"
+          className="absolute right-4"
+          style={{ top: insets.top + 8 }}
+        >
+          <IconButton
+            icon="close"
+            label="Lukk"
+            variant="floating"
+            onPress={onClose}
+          />
+        </View>
+        <View
+          pointerEvents="box-none"
+          className="absolute inset-x-0 flex-row justify-center gap-3 px-gutter"
+          style={{ bottom: insets.bottom + 24 }}
+        >
+          <View className="flex-1">
+            <DirectionsButton coord={coord} name={label} />
+          </View>
+          <View className="flex-1">
+            <Button
+              label="Vis på kartet"
+              variant="outline"
+              size="sm"
+              onPress={onShowOnMap}
+            />
+          </View>
         </View>
       </View>
-      <View className="absolute right-3 top-3" pointerEvents="none">
-        <View className="h-9 w-9 items-center justify-center rounded-full bg-surface">
-          <Icon name="map-outline" size="md" tone="ink" />
-        </View>
-      </View>
-    </Pressable>
+    </Overlay>
   );
 }
 

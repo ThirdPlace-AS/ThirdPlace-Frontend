@@ -9,8 +9,10 @@
 // the page. Join/save use the shared stores; guests get the sign-in prompt
 // (BLOCKED_CONTRACT_GAP).
 import { router, useLocalSearchParams, type Href } from "expo-router";
-import { useState } from "react";
+import { useCallback, useMemo, useRef, useState } from "react";
 import { ScrollView, View } from "react-native";
+
+import { PageScrollContext, scrollAnchorIn } from "@/components/pageScroll";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { ExperiencePage } from "@/components/experience/ExperiencePage";
@@ -64,6 +66,17 @@ export function ExperiencePageBody({
   onBack?: () => void;
 }) {
   const insets = useSafeAreaInsets();
+  // The rating link scrolls to the page's reviews (pageScroll.ts).
+  const scrollRef = useRef<ScrollView>(null);
+  const boxRef = useRef<View>(null);
+  const scrollToAnchor = useCallback(
+    (anchor: View | null) =>
+      scrollAnchorIn(boxRef.current, anchor, 16, (y) =>
+        scrollRef.current?.scrollTo({ y, animated: true }),
+      ),
+    [],
+  );
+  const scroller = useMemo(() => ({ scrollToAnchor }), [scrollToAnchor]);
   const [sub, setSub] = useState<SheetTarget[]>([]);
   const [cardH, setCardH] = useState(JOIN_CARD);
   const top = sub[sub.length - 1];
@@ -77,6 +90,7 @@ export function ExperiencePageBody({
         onBack={onBack}
       />
       <ScrollView
+        ref={scrollRef}
         contentContainerClassName="px-gutter pt-4"
         // The last section ends 24 above the floating join card.
         contentContainerStyle={{
@@ -84,11 +98,15 @@ export function ExperiencePageBody({
         }}
         keyboardShouldPersistTaps="handled"
       >
-        <ExperiencePage
-          exp={exp}
-          onOpen={(t) => setSub([t])}
-          onNavigate={(href: Href) => router.push(href)}
-        />
+        <PageScrollContext.Provider value={scroller}>
+          <View ref={boxRef}>
+            <ExperiencePage
+              exp={exp}
+              onOpen={(t) => setSub([t])}
+              onNavigate={(href: Href) => router.push(href)}
+            />
+          </View>
+        </PageScrollContext.Provider>
       </ScrollView>
       {/* Join action as the reference's floating card. */}
       <View

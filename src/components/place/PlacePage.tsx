@@ -7,7 +7,7 @@
 // vite (tilgjengelighet, spesielle åpningstider, kilde); footer links. Every
 // fact once. MOCK fixture data; no booking or ranking (BLOCKED_CONTRACT_GAP).
 import type { Href } from "expo-router";
-import { useMemo, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import {
   useSheetStageFirst,
   useSheetStageReady,
@@ -33,6 +33,7 @@ import {
   InfoRow,
 } from "@/components/experience/ExperiencePage";
 import { MenuSection } from "@/components/place/MenuSection";
+import { usePageScroll } from "@/components/pageScroll";
 import { ReviewsSection } from "@/components/reviews/ReviewsSection";
 import { sortReviews } from "@/components/reviews/reviewSort";
 import {
@@ -197,6 +198,15 @@ export function PlacePage({
   const origin = useOrigin();
   const { score, count } = ratingOf(reviews);
   const latest = sortReviews(reviews, "newest")[0];
+  // The rating link brings the page's own reviews into view (Airbnb
+  // tap-through 2026-11-26); without a scrolling host, or before they have
+  // mounted, it opens all reviews as before.
+  const reviewsAnchor = useRef<View>(null);
+  const pageScroll = usePageScroll();
+  const toReviews = () => {
+    if (!pageScroll?.scrollToAnchor(reviewsAnchor.current))
+      onNavigate(reviewsHref);
+  };
   const reviewsHref = `/place/${place.id}/reviews` as Href;
   // Lists over every place, experience and group: worked out once per page
   // (speed pass 0348), and the same photo list for the gallery each render.
@@ -255,8 +265,8 @@ export function PlacePage({
             {count > 0 ? (
               <UIPressable
                 accessibilityRole="link"
-                accessibilityLabel={`${formatRating(score)} av 5, ${count} vurderinger. Vis alle`}
-                onPress={() => onNavigate(reviewsHref)}
+                accessibilityLabel={`${formatRating(score)} av 5, ${count} vurderinger. Gå til vurderingene`}
+                onPress={toReviews}
                 hitSlop={LINK_SLOP}
                 // The tag chips 12 dp below take taps in their own boxes, so
                 // the slop alone left about 42 dp (0498). py-3 makes the box
@@ -373,10 +383,12 @@ export function PlacePage({
 
           <View className="h-px bg-line" />
 
-          <ReviewsSection
-            reviews={reviews}
-            onShowAll={() => onNavigate(reviewsHref)}
-          />
+          <View ref={reviewsAnchor} collapsable={false}>
+            <ReviewsSection
+              reviews={reviews}
+              onShowAll={() => onNavigate(reviewsHref)}
+            />
+          </View>
 
           <View className="h-px bg-line" />
 

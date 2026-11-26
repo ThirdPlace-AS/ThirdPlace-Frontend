@@ -4,8 +4,10 @@
 // same PlacePage in the map's page sheet (2026-11-09), Sveip's arrow in place
 // (SwipeDetails, 2026-11-18).
 import { router, useLocalSearchParams, type Href } from "expo-router";
-import { useState } from "react";
+import { useCallback, useMemo, useRef, useState } from "react";
 import { ScrollView, View } from "react-native";
+
+import { PageScrollContext, scrollAnchorIn } from "@/components/pageScroll";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { placeCaption } from "@/components/experience/experienceMeta";
@@ -49,6 +51,17 @@ export function PlacePageBody({
   onBack?: () => void;
 }) {
   const insets = useSafeAreaInsets();
+  // The rating link scrolls to the page's reviews (pageScroll.ts).
+  const scrollRef = useRef<ScrollView>(null);
+  const boxRef = useRef<View>(null);
+  const scrollToAnchor = useCallback(
+    (anchor: View | null) =>
+      scrollAnchorIn(boxRef.current, anchor, 16, (y) =>
+        scrollRef.current?.scrollTo({ y, animated: true }),
+      ),
+    [],
+  );
+  const scroller = useMemo(() => ({ scrollToAnchor }), [scrollToAnchor]);
   // The floating chat card, as on the map's page: a place's chat, with its
   // last message and "Bli med i samtalen".
   const hasChat = chatForPlace(place.id) != null;
@@ -64,6 +77,7 @@ export function PlacePageBody({
         onBack={onBack}
       />
       <ScrollView
+        ref={scrollRef}
         contentContainerClassName="px-gutter pt-4"
         // The page bottom (48) above the home indicator, or 24 above the
         // floating chat card.
@@ -74,10 +88,14 @@ export function PlacePageBody({
         }}
         keyboardShouldPersistTaps="handled"
       >
-        <PlacePage
-          place={place}
-          onNavigate={(href: Href) => router.push(href)}
-        />
+        <PageScrollContext.Provider value={scroller}>
+          <View ref={boxRef}>
+            <PlacePage
+              place={place}
+              onNavigate={(href: Href) => router.push(href)}
+            />
+          </View>
+        </PageScrollContext.Provider>
       </ScrollView>
       {hasChat ? (
         <View
