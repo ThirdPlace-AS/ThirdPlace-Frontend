@@ -365,23 +365,24 @@ export const MapDetailSheet = memo(
       ],
     );
 
+    // Under the full-screen page the backdrop has nothing to show or catch,
+    // and Android still read its labelled full-screen «Lukk» before the page
+    // (phone sweep 2026-11-26), so it is left out while the page is up.
     const renderBackdrop = useCallback(
-      (props: BottomSheetBackdropProps) => (
-        <BottomSheetBackdrop
-          {...props}
-          appearsOnIndex={1}
-          disappearsOnIndex={0}
-          pressBehavior="close"
-          // Starts letting taps through (gorhom's default starts catching
-          // them until its first reaction): the closed sheet remounts each
-          // time the map comes back into focus (0384).
-          enableTouchThrough
-          {...backdropA11y}
-          // Under the full-screen page the backdrop is out of sight: its
-          // «Lukk» was read before the page (the page has its own back).
-          accessible={!isPage}
-        />
-      ),
+      (props: BottomSheetBackdropProps) =>
+        isPage ? null : (
+          <BottomSheetBackdrop
+            {...props}
+            appearsOnIndex={1}
+            disappearsOnIndex={0}
+            pressBehavior="close"
+            // Starts letting taps through (gorhom's default starts catching
+            // them until its first reaction): the closed sheet remounts each
+            // time the map comes back into focus (0384).
+            enableTouchThrough
+            {...backdropA11y}
+          />
+        ),
       [isPage],
     );
 
