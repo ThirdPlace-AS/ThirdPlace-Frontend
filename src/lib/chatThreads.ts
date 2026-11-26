@@ -15,11 +15,16 @@ export type Thread = {
   sent: ThreadMessage[];
   /** messageId → the viewer's reaction. */
   reactions: Readonly<Record<string, string>>;
+  /** Order of the viewer's last send across chats (higher is newer). */
+  sentAt?: number;
 };
 
 const EMPTY: Thread = { sent: [], reactions: {} };
 type State = { threads: Readonly<Record<string, Thread>> };
 const store = createStore<State>(() => ({ threads: {} }));
+// Counts sends this session, so the Chat list can put the chat you wrote in
+// last on top without a clock.
+let sends = 0;
 
 function update(chatId: string, fn: (t: Thread) => Thread) {
   store.setState(({ threads }) => ({
@@ -28,8 +33,11 @@ function update(chatId: string, fn: (t: Thread) => Thread) {
 }
 
 export function sendMessage(chatId: string, text: string, replyTo?: Reply) {
+  sends += 1;
+  const sentAt = sends;
   update(chatId, (t) => ({
     ...t,
+    sentAt,
     sent: [
       ...t.sent,
       {
@@ -61,6 +69,7 @@ export function toggleReaction(
 /** Tests and logout. */
 export function resetThreads() {
   store.setState({ threads: {} });
+  sends = 0;
 }
 
 const selectThreads = (s: State) => s.threads;
@@ -79,6 +88,20 @@ export function withLastSent<
   const sent = threads[chat.id]?.sent;
   const last = sent?.[sent.length - 1];
   return last ? { ...chat, last: `Du: ${last.text}`, time: last.time } : chat;
+}
+
+/** Chats you wrote in this session first, the latest send on top; the rest
+ *  keep their order (phone sweep 2026-11-26: a chat stayed where it was in
+ *  the Chat list after a send). */
+export function byLastSent<C extends { id: string }>(
+  list: readonly C[],
+  threads: Readonly<Record<string, Thread>>,
+): C[] {
+  const at = (c: C) => threads[c.id]?.sentAt ?? 0;
+  return list
+    .map((c, i) => ({ c, i }))
+    .sort((a, b) => at(b.c) - at(a.c) || a.i - b.i)
+    .map(({ c }) => c);
 }
 
 export function useThread(chatId: string): Thread {

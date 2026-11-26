@@ -7,7 +7,13 @@ import { SafeAreaProvider } from "react-native-safe-area-context";
 
 import ChatScreen from "../app/(tabs)/chat";
 import { chatById } from "@/fixtures";
-import { resetThreads, sendMessage, withLastSent } from "@/lib/chatThreads";
+import {
+  byLastSent,
+  resetThreads,
+  sendMessage,
+  useThreads,
+  withLastSent,
+} from "@/lib/chatThreads";
 
 jest.mock("expo-router", () => ({
   router: {
@@ -59,5 +65,37 @@ describe("chat list after a send", () => {
           ),
         ),
     ).toBe(true);
+  });
+
+  it("puts the chat you wrote in last on top", () => {
+    // Phone sweep 2026-11-26: the row stayed where it was after a send.
+    const rowNames = () =>
+      screen
+        .getAllByRole("button")
+        .map((b) => String(b.props.accessibilityLabel ?? ""))
+        .filter((l) => l.includes(", Du: "));
+    render(<ChatScreen />, { wrapper });
+    const c2 = chatById("c2")!;
+    act(() => sendMessage("c2", "Første"));
+    act(() => sendMessage("c1", "Andre"));
+    let rows = rowNames();
+    expect(rows[0]!.startsWith(`${c1.name}, Du: Andre`)).toBe(true);
+    expect(rows[1]!.startsWith(`${c2.name}, Du: Første`)).toBe(true);
+    act(() => sendMessage("c2", "Tredje"));
+    rows = rowNames();
+    expect(rows[0]!.startsWith(`${c2.name}, Du: Tredje`)).toBe(true);
+  });
+
+  it("keeps the order of chats you have not written in", () => {
+    const list = [{ id: "a" }, { id: "b" }, { id: "c" }];
+    expect(byLastSent(list, {}).map((c) => c.id)).toEqual(["a", "b", "c"]);
+    act(() => sendMessage("c", "Hei"));
+    let threads = {} as ReturnType<typeof useThreads>;
+    function Read() {
+      threads = useThreads();
+      return null;
+    }
+    render(<Read />);
+    expect(byLastSent(list, threads).map((c) => c.id)).toEqual(["c", "a", "b"]);
   });
 });

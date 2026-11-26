@@ -40,7 +40,7 @@ import { useCreatedVersion } from "@/fixtures/created";
 import { isMember, useJoinedChats } from "@/lib/joinedChats";
 import { useNotificationReads } from "@/hooks/useNotificationReads";
 import { markChatRead, unreadOf, useChatReads } from "@/lib/chatReads";
-import { useThreads, withLastSent } from "@/lib/chatThreads";
+import { byLastSent, useThreads, withLastSent } from "@/lib/chatThreads";
 import {
   setPinnedOrder,
   togglePinnedChat,
@@ -96,11 +96,15 @@ function ChatContent() {
   const created = useCreatedVersion();
   // What you wrote this session is the row’s last message.
   const threads = useThreads();
+  // The chat you wrote in last comes first.
   const mine = useMemo(
     () =>
-      chats
-        .filter((c) => c.status === "active" && isMember(c, joined))
-        .map((c) => withLastSent(c, threads)),
+      byLastSent(
+        chats
+          .filter((c) => c.status === "active" && isMember(c, joined))
+          .map((c) => withLastSent(c, threads)),
+        threads,
+      ),
     // eslint-disable-next-line react-hooks/exhaustive-deps -- created: a new group chat joined the list
     [joined, created, threads],
   );
