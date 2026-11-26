@@ -20,10 +20,11 @@ export const SCHEME_LABEL: Record<SchemePreference, string> = {
 };
 
 // «Auto» (user 2026-11-25) turns with the map's own auto style: dark while
-// the map shows Natt (20–05), light otherwise.
+// the map shows Skumring or Natt (17–05; Skumring from 2026-11-26), light
+// otherwise.
 const SCHEME_HINT: Partial<Record<SchemePreference, string>> = {
   system: "Følger telefonen",
-  auto: "Mørk om natten, som kartet",
+  auto: "Mørk fra skumring, som kartet",
 };
 
 export function ThemeSheet({

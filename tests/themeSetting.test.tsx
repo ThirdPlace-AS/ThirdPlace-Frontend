@@ -1,6 +1,6 @@
 // Innstillinger → Utseende (user request 2026-11-24): follow the phone, or
 // keep the app light or dark; «Auto» (2026-11-25) turns dark with the
-// map’s Natt style. The choice is the scheme store's preference,
+// map’s Skumring (2026-11-26: from Skumring, not only Natt). The choice is the scheme store's preference,
 // which the theme root, status bar and native colours already read; the
 // device settings keep it (tests/deviceSettings.test.ts).
 import { afterEach, describe, expect, it, jest } from "@jest/globals";
@@ -80,19 +80,19 @@ describe("Utseende", () => {
     expect(getSchemePreference()).toBe("system");
   });
 
-  it("Auto turns dark when the map turns to Natt", () => {
+  it("Auto turns dark when the map turns to Skumring", () => {
     const now = new Date();
-    now.setHours(19, 58, 0, 0);
+    now.setHours(16, 58, 0, 0);
     jest.useFakeTimers({ now });
     try {
       const scheme = renderHook(() => useScheme());
       render(<SettingsScreen />, { wrapper });
       fireEvent.press(screen.getByText("Utseende"));
-      expect(screen.getByText("Mørk om natten, som kartet")).toBeTruthy();
+      expect(screen.getByText("Mørk fra skumring, som kartet")).toBeTruthy();
       fireEvent.press(screen.getByRole("radio", { name: "Auto" }));
       expect(getSchemePreference()).toBe("auto");
       expect(scheme.result.current).toBe("light");
-      // The clock ticks every 5 minutes: 20:03 is night on the map.
+      // The clock ticks every 5 minutes: 17:03 is dusk on the map.
       act(() => {
         jest.advanceTimersByTime(5 * 60 * 1000);
       });

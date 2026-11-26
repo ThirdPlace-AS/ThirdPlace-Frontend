@@ -20,8 +20,9 @@ const tokens = require("./tokens.js") as {
 };
 
 export type Scheme = "light" | "dark";
-/** "auto" (user 2026-11-25): dark while the map's own auto style is Natt
- *  (periodForHour, 20–05), light otherwise, so the app turns with the map. */
+/** "auto" (user 2026-11-25): dark while the map's own auto style is Skumring
+ *  or Natt (periodForHour, 17–05; Skumring added 2026-11-26), light otherwise,
+ *  so the app turns with the map. */
 export type SchemePreference = Scheme | "system" | "auto";
 
 export const DEFAULT_SCHEME_PREFERENCE: SchemePreference = "system";
@@ -103,7 +104,9 @@ export function resolveScheme(
 ): Scheme {
   if (pref === "system") return system === "dark" ? "dark" : "light";
   if (pref === "auto")
-    return periodForHour(hour) === "night" ? "dark" : "light";
+    return periodForHour(hour) === "dusk" || periodForHour(hour) === "night"
+      ? "dark"
+      : "light";
   return pref;
 }
 
