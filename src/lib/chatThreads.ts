@@ -63,6 +63,24 @@ export function resetThreads() {
   store.setState({ threads: {} });
 }
 
+const selectThreads = (s: State) => s.threads;
+
+/** Every chat's session additions, for lists that show a last message. */
+export function useThreads(): Readonly<Record<string, Thread>> {
+  return useStore(store, selectThreads);
+}
+
+/** A chat as a list shows it once the viewer has written in it this session:
+ *  their last message as the preview, time «Nå» (phone check 2026-11-26: the
+ *  Chat list kept the fixture's last line after a send). */
+export function withLastSent<
+  C extends { id: string; last: string; time: string },
+>(chat: C, threads: Readonly<Record<string, Thread>>): C {
+  const sent = threads[chat.id]?.sent;
+  const last = sent?.[sent.length - 1];
+  return last ? { ...chat, last: `Du: ${last.text}`, time: last.time } : chat;
+}
+
 export function useThread(chatId: string): Thread {
   const select = useCallback(
     (s: State) => s.threads[chatId] ?? EMPTY,

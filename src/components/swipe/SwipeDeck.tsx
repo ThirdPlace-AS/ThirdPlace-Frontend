@@ -867,7 +867,9 @@ export function SwipeDeck() {
             onOpenFilters={openFilters}
             filterActive={activeExtraFilterCount(filters) > 0}
             onOpenNotifications={() => router.push("/notifications" as Href)}
-            unreadCount={unreadNotifs}
+            // A guest has no notifications of their own: no count (as on the
+            // map, phone check 2026-11-26).
+            unreadCount={isGuest ? 0 : unreadNotifs}
             onLight={deck.done}
             onOpenGroup={() => router.push("/group-swipe")}
           />
@@ -1093,7 +1095,13 @@ const DeckCard = memo(function DeckCard({
         >
           <Pressable
             accessibilityRole="button"
-            accessibilityLabel="Vis mer om opplevelsen"
+            // Named by what the card is (phone check 2026-11-26: a place
+            // read «opplevelsen»).
+            accessibilityLabel={
+              item.kind === "place"
+                ? "Vis mer om stedet"
+                : "Vis mer om opplevelsen"
+            }
             onPress={() => onExpand(item, photo, setPhoto)}
             style={{
               position: "absolute",

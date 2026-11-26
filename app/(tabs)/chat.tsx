@@ -39,6 +39,7 @@ import { useCreatedVersion } from "@/fixtures/created";
 import { isMember, useJoinedChats } from "@/lib/joinedChats";
 import { useNotificationReads } from "@/hooks/useNotificationReads";
 import { markChatRead, unreadOf, useChatReads } from "@/lib/chatReads";
+import { useThreads, withLastSent } from "@/lib/chatThreads";
 import {
   setPinnedOrder,
   togglePinnedChat,
@@ -89,10 +90,15 @@ function ChatContent() {
   // Experience and place chats the viewer has not joined stay out of the list.
   const joined = useJoinedChats();
   const created = useCreatedVersion();
+  // What you wrote this session is the row’s last message.
+  const threads = useThreads();
   const mine = useMemo(
-    () => chats.filter((c) => c.status === "active" && isMember(c, joined)),
+    () =>
+      chats
+        .filter((c) => c.status === "active" && isMember(c, joined))
+        .map((c) => withLastSent(c, threads)),
     // eslint-disable-next-line react-hooks/exhaustive-deps -- created: a new group chat joined the list
-    [joined, created],
+    [joined, created, threads],
   );
   const visible = useMemo(
     () =>
