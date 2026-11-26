@@ -113,9 +113,9 @@ export default function TabsLayout() {
       />
       <Tabs.Screen
         name="profile"
-        // PDF p27: a long press on Profil opens the account switcher,
-        // the same sheet as Profil's chip (review PR-08, 0526). A guest
-        // gets the switcher's lock and Logg inn.
+        // PDF p27: a long press on Profil opens the account switcher, the
+        // only way in (user 2026-11-26; PR-08's chip is gone). A guest gets
+        // the switcher's lock and Logg inn.
         listeners={{
           tabLongPress: () => {
             markHintSeen("profileSwitch");

@@ -1,7 +1,7 @@
-// Review 2026-11-18 PR-08 (0526), «Aktiv konto i toppen»: Profil names the
-// account you act as in a chip at the top; the chip and the Profil tab's long
-// press open one sheet with the linked accounts, a ✓ on the active one and
-// «Administrer kontoer». The old mid-page card and the long-press tip are gone.
+// Review 2026-11-18 PR-08 (0526): the Profil tab's long press opens one
+// sheet with the linked accounts, a ✓ on the active one and «Administrer
+// kontoer» (its chip at Profil's top is gone, user 2026-11-26). The old
+// mid-page card and the long-press tip are gone too.
 import { afterEach, describe, expect, it, jest } from "@jest/globals";
 import { act, fireEvent, render, screen } from "@testing-library/react-native";
 import { SafeAreaProvider } from "react-native-safe-area-context";
@@ -48,10 +48,13 @@ afterEach(() => {
 const me = () => getMyProfile().name;
 const biz = businesses[0]!;
 
-describe("Aktiv konto", () => {
-  it("names the personal account and opens the sheet", () => {
+describe("Bytt konto", () => {
+  it("has no chip on Profil: the Profil tab's long hold opens the sheet", () => {
+    // User 2026-11-26: the switch is the tab's long hold only.
     render(<ProfileScreen />, { wrapper });
-    fireEvent.press(screen.getByLabelText(`Aktiv konto: ${me()}`));
+    expect(screen.queryByLabelText(`Aktiv konto: ${me()}`)).toBeNull();
+    expect(screen.queryByText("Bytt konto")).toBeNull();
+    act(() => openAccountSheet());
     expect(screen.getByText("Bytt konto")).toBeTruthy();
     expect(
       screen.getByRole("button", { name: `${me()}, Utforsker` }).props
@@ -71,12 +74,11 @@ describe("Aktiv konto", () => {
   it("picking the business switches and opens Arbeidsflate", () => {
     jest.useFakeTimers();
     render(<ProfileScreen />, { wrapper });
-    fireEvent.press(screen.getByLabelText(`Aktiv konto: ${me()}`));
+    act(() => openAccountSheet());
     fireEvent.press(
       screen.getByRole("button", { name: `${biz.name}, Bedrift` }),
     );
     expect(getActiveBusinessId()).toBe(biz.id);
-    expect(screen.getByLabelText(`Aktiv konto: ${biz.name}`)).toBeTruthy();
     act(() => jest.advanceTimersByTime(300));
     expect(mockPush).toHaveBeenLastCalledWith("/workspace");
   });
@@ -90,10 +92,9 @@ describe("Aktiv konto", () => {
     act(() => openAccountSheet());
     fireEvent.press(screen.getByRole("button", { name: `${me()}, Utforsker` }));
     expect(getActiveBusinessId()).toBeNull();
-    expect(screen.getByLabelText(`Aktiv konto: ${me()}`)).toBeTruthy();
   });
 
-  it("opens from outside (the tab's long press) and manages accounts", () => {
+  it("manages accounts", () => {
     jest.useFakeTimers();
     render(<ProfileScreen />, { wrapper });
     expect(screen.queryByText("Administrer kontoer")).toBeNull();

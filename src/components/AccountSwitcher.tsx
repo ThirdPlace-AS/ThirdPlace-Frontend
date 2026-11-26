@@ -18,9 +18,10 @@ import {
 } from "@/lib/activeAccount";
 import { useMyProfile } from "@/lib/myProfile";
 
-// «Aktiv konto i toppen» (review 2026-11-18 PR-08, 0526): Profil names the
-// account you act as in a chip at the top; the chip, and a long press on the
-// Profil tab (PDF p27), open one sheet listing the linked accounts with a ✓
+// The account switcher (review 2026-11-18 PR-08, 0526): a long press on the
+// Profil tab (PDF p27) opens one sheet; the chip at Profil's top that also
+// opened it is gone (user 2026-11-26: the switch is the tab's long hold).
+// The sheet lists the linked accounts with a ✓
 // on the active one and «Administrer kontoer». The switch itself is the
 // in-memory one in src/lib/activeAccount.ts (G-Q8). BLOCKED_CONTRACT_GAP: no
 // linked-account or session model; only the accounts the fixtures link
@@ -50,39 +51,6 @@ function useActiveAccount() {
   const activeId = useActiveBusinessId();
   const biz = activeId ? businesses.find((b) => b.id === activeId) : undefined;
   return { me, biz };
-}
-
-/** Profil's top chip: who you act as. Opens the account sheet. */
-export function ActiveAccountChip() {
-  const { me, biz } = useActiveAccount();
-  const name = biz?.name ?? me.name;
-  return (
-    <UIPressable
-      accessibilityRole="button"
-      accessibilityLabel={`Aktiv konto: ${name}`}
-      accessibilityHint="Bytt konto"
-      hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
-      onPress={openAccountSheet}
-      pressedScale={0.98}
-      className="self-start"
-      contentClassName="flex-row items-center gap-2 rounded-full border border-line bg-surface py-1 pl-1 pr-3"
-    >
-      {biz ? (
-        <Avatar name={biz.name} icon="tp-business" size="xs" decorative />
-      ) : (
-        <Avatar
-          name={me.name}
-          source={me.avatar ? libImage(me.avatar) : undefined}
-          size="xs"
-          decorative
-        />
-      )}
-      <Text variant="label" weight="semibold" numberOfLines={1}>
-        {name}
-      </Text>
-      <Icon name="chevron-down" size="sm" tone="muted" />
-    </UIPressable>
-  );
 }
 
 type Row = {

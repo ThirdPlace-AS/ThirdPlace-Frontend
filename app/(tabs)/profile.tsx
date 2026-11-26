@@ -18,7 +18,7 @@ import {
   LINK_SLOP,
 } from "@/components/ui";
 import { GuestLock } from "@/components/GuestLock";
-import { AccountSheet, ActiveAccountChip } from "@/components/AccountSwitcher";
+import { AccountSheet } from "@/components/AccountSwitcher";
 import { SignInPrompt } from "@/components/SignInPrompt";
 import { useGuestMode } from "@/components/map/hooks/useGuestMode";
 import { tagIcon } from "@/components/swipe/SwipeCard";
@@ -87,9 +87,8 @@ export default function ProfileScreen() {
           <GuestProfile onSignIn={() => setSignIn(true)} />
         ) : (
           <>
-            {/* The account you act as (review PR-08, 0526): the chip and
-                a long press on the Profil tab open the same sheet. */}
-            <ActiveAccountChip />
+            {/* Bytt konto: a long press on the Profil tab opens it (PR-08,
+                0526; the chip that also did is gone, user 2026-11-26). */}
             <AccountSheet />
             {/* Header — tapping it opens Rediger profil (PDF p13). */}
             <UIPressable

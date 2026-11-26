@@ -19,7 +19,6 @@ import {
   Screen,
   SearchBar,
   SortableList,
-  Accordion,
   Pressable as UIPressable,
   Section,
   Text,
@@ -28,6 +27,7 @@ import {
 import type { ItemAction } from "@/components/actions/ActionSheets";
 import { ContextMenu } from "@/components/actions/ContextMenu";
 import { ChatFilterPills } from "@/features/chat/ChatFilterPills";
+import { ChatPeek } from "@/features/chat/ChatPeek";
 import { ChatRow } from "@/features/chat/ChatRow";
 import {
   chatFilterPills,
@@ -52,8 +52,9 @@ import { GuestPage } from "@/components/GuestPage";
 const chatKey = (c: MockChat) => c.id;
 const chatName = (c: MockChat) => c.name;
 
-// Chat tab, laid out per the design (PDF p9): search, "Aktive samtaler", then
-// collapsible Opplevelser / Steder groups, a pencil FAB for "Ny chat" (p10) and
+// Chat tab, laid out per the design (PDF p9): search, "Aktive samtaler" (the
+// collapsible Opplevelser / Steder groups are gone, user 2026-11-26: every
+// chat is in the one list, the pills still narrow it), a pencil FAB for "Ny chat" (p10) and
 // a link to "Arkiverte chatter" (read-only, p10). Phase 18 (founder, screen
 // benchmark: WhatsApp, Telegram): a long press on a chat offers "Fest øverst"
 // / "Løsne" and "Merk som lest"; pinned chats lead the list under "Festet"
@@ -80,7 +81,8 @@ export default function ChatScreen() {
 function ChatContent() {
   const [query, setQuery] = useState("");
   const [filter, setFilter] = useState<ChatFilterKey>("all");
-  const [open, setOpen] = useState<Record<string, boolean>>({});
+  // A row's picture, larger with the chat's actions (ChatPeek).
+  const [peek, setPeek] = useState<MockChat | null>(null);
   const { unread: unreadNotifs } = useNotificationReads();
   const pins = usePinnedChats();
   const reads = useChatReads();
@@ -154,30 +156,8 @@ function ChatContent() {
     const c = visible.find((x) => x.id === id);
     return c ? [c] : [];
   });
-  const groups = [
-    {
-      key: "experience",
-      label: "Opplevelser",
-      icon: "tp-experience" as const,
-      items: visible.filter((c) => c.type === "experience" && !isPinned(c)),
-    },
-    {
-      key: "place",
-      label: "Steder",
-      icon: "location-outline" as const,
-      items: visible.filter(
-        (c) => (c.type === "place" || c.type === "business") && !isPinned(c),
-      ),
-    },
-  ];
-  // "Aktive samtaler": everything that is not filed under a group below
-  // (DMs, user-created, group-swipe, marketplace …) plus any grouped chat with
-  // unread messages.
-  const grouped = (c: MockChat) =>
-    c.type === "experience" || c.type === "place" || c.type === "business";
-  const active = visible.filter(
-    (c) => !isPinned(c) && (!grouped(c) || c.unread > 0),
-  );
+  // "Aktive samtaler": every chat that is not pinned.
+  const active = visible.filter((c) => !isPinned(c));
 
   const openChat = (c: MockChat) =>
     router.push({ pathname: "/chat/[id]", params: { id: c.id } });
@@ -212,6 +192,7 @@ function ChatContent() {
           pinned={isPinned(c)}
           onPress={() => openChat(c)}
           onLongPress={openMenu}
+          onPicturePress={() => setPeek(c)}
         />
       )}
     </ContextMenu>
@@ -289,22 +270,6 @@ function ChatContent() {
           </Section>
         ) : null}
 
-        {groups.map((g) =>
-          !flat && g.items.length > 0 ? (
-            <Accordion
-              key={g.key}
-              variant="card"
-              icon={g.icon}
-              title={g.label}
-              meta={String(g.items.length)}
-              open={!!open[g.key] || !!q}
-              onToggle={() => setOpen((s) => ({ ...s, [g.key]: !s[g.key] }))}
-            >
-              <View className="gap-3 px-2 pb-2">{g.items.map(row)}</View>
-            </Accordion>
-          ) : null,
-        )}
-
         {shown.length === 0 && q ? (
           <EmptyState
             fill={false}
@@ -350,6 +315,7 @@ function ChatContent() {
         onPress={() => router.push("/chat/new" as Href)}
         className="absolute bottom-6 right-4"
       />
+      <ChatPeek chat={peek} onClose={() => setPeek(null)} />
     </Screen>
   );
 }
