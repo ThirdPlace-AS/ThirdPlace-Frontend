@@ -9,7 +9,9 @@ import { Pressable, View } from "react-native";
 import {
   Avatar,
   Icon,
+  measureRect,
   Pressable as UIPressable,
+  type Rect,
   Text,
   type IconName,
 } from "@/components/ui";
@@ -35,7 +37,9 @@ export function ChatRow({
   chat: MockChat;
   onPress: () => void;
   onLongPress?: () => void;
-  onPicturePress?: () => void;
+  /** The picture's window rect, so the card grows out of it (null from a
+   *  screen reader's action). */
+  onPicturePress?: (from: Rect | null) => void;
   pinned?: boolean;
 }) {
   const icon = chatIcon(chat);
@@ -57,13 +61,17 @@ export function ChatRow({
       onAccessibilityAction={(e) => {
         const name = e.nativeEvent.actionName;
         if (name === "longpress") onLongPress?.();
-        else if (name === "picture") onPicturePress?.();
+        else if (name === "picture") onPicturePress?.(null);
       }}
       pressedScale={0.99}
       contentClassName="flex-row items-center gap-3 rounded-md bg-surface px-4 py-3"
     >
       <Pressable
-        onPress={onPicturePress}
+        onPress={(e) =>
+          measureRect(e.currentTarget as unknown as View, (rect) =>
+            onPicturePress?.(rect),
+          )
+        }
         disabled={!onPicturePress}
         hitSlop={6}
         // The row reads as one button; its "Vis bilde" action opens this.

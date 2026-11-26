@@ -19,6 +19,7 @@ import {
   Screen,
   SearchBar,
   SortableList,
+  type Rect,
   Pressable as UIPressable,
   Section,
   Text,
@@ -83,6 +84,7 @@ function ChatContent() {
   const [filter, setFilter] = useState<ChatFilterKey>("all");
   // A row's picture, larger with the chat's actions (ChatPeek).
   const [peek, setPeek] = useState<MockChat | null>(null);
+  const [peekFrom, setPeekFrom] = useState<Rect | null>(null);
   const { unread: unreadNotifs } = useNotificationReads();
   const pins = usePinnedChats();
   const reads = useChatReads();
@@ -192,7 +194,10 @@ function ChatContent() {
           pinned={isPinned(c)}
           onPress={() => openChat(c)}
           onLongPress={openMenu}
-          onPicturePress={() => setPeek(c)}
+          onPicturePress={(from) => {
+            setPeekFrom(from);
+            setPeek(c);
+          }}
         />
       )}
     </ContextMenu>
@@ -315,7 +320,7 @@ function ChatContent() {
         onPress={() => router.push("/chat/new" as Href)}
         className="absolute bottom-6 right-4"
       />
-      <ChatPeek chat={peek} onClose={() => setPeek(null)} />
+      <ChatPeek chat={peek} from={peekFrom} onClose={() => setPeek(null)} />
     </Screen>
   );
 }

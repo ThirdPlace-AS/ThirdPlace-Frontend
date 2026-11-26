@@ -20,6 +20,7 @@ import {
   Icon,
   Overlay,
   Pressable as UIPressable,
+  type Rect,
   Text,
   type IconName,
 } from "@/components/ui";
@@ -56,11 +57,15 @@ const SIDE = 280;
 
 export function ChatPeek({
   chat,
+  from,
   onClose,
 }: {
   chat: MockChat | null;
+  /** The tapped picture: the card grows out of it (user 2026-11-26). */
+  from?: Rect | null;
   onClose: () => void;
 }) {
+  const dark = useScheme() === "dark";
   // The last chat stays drawn while the card fades out.
   const [shown, setShown] = useState(chat);
   if (chat && chat !== shown) setShown(chat);
@@ -68,6 +73,11 @@ export function ChatPeek({
     <Overlay
       visible={chat !== null}
       onClose={onClose}
+      // Grows out of the tapped picture and shrinks back into it; the dim
+      // fades on its own behind it.
+      enter="zoom"
+      from={from}
+      backdrop={dark ? media.scrimStrong : media.scrim}
       statusBarTranslucent
       accessibilityLabel={shown ? `Bilde: ${shown.name}` : undefined}
     >
@@ -89,7 +99,6 @@ function PeekCard({
 }) {
   const insets = useSafeAreaInsets();
   const c = useThemeColors();
-  const dark = useScheme() === "dark";
   const picture = chatPicture(chat);
   const go = (href: Href) => {
     onClose();
@@ -100,20 +109,13 @@ function PeekCard({
       className="flex-1 items-center"
       style={{ paddingTop: insets.top + 96 }}
     >
-      {/* The dimmed list behind: a tap closes (a sibling behind the card).
-          Styled inline as Sheet's scrim is: its className drew nothing
-          inside the Modal. */}
+      {/* A tap beside the card closes (a sibling behind it; the Overlay's
+          backdrop dims the list). */}
       <Pressable
         accessibilityRole="button"
         accessibilityLabel="Lukk"
         onPress={onClose}
-        style={[
-          StyleSheet.absoluteFill,
-          {
-            backgroundColor: dark ? media.scrimStrong : c.scrim,
-            opacity: dark ? 1 : 0.4,
-          },
-        ]}
+        style={StyleSheet.absoluteFill}
       />
       <View
         className="overflow-hidden rounded-md"
