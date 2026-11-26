@@ -796,6 +796,10 @@ export type Know = {
   title: string;
   summary: string;
   detail: { icon: IconName; text: string }[];
+  /** The sheet adds to the row (a list, or facts the summary leaves out).
+   *  Otherwise the row is plain text: a sheet that only repeats the row is
+   *  a dead end (Airbnb tap-through 2026-11-26). */
+  more?: boolean;
 };
 
 const ACCESS_TEXT: Record<MockExperience["access"], string> = {
@@ -851,6 +855,7 @@ export function thingsToKnow(exp: MockExperience): Know[] {
       icon: "accessibility-outline",
       title: "Tilgjengelighet",
       summary: a11y.length > 0 ? a11y.join(", ") : "Utendørs møtested",
+      more: a11y.length > 1,
       detail:
         a11y.length > 0
           ? a11y.map((t) => ({
@@ -871,7 +876,8 @@ export function ThingsToKnowSection({ exp }: { exp: MockExperience }) {
   return <KnowSection items={thingsToKnow(exp)} />;
 }
 
-/** "Ting å vite": rows that open a short sheet (experiences and places). */
+/** "Ting å vite": rows, each opening a short sheet when it has more to say
+ *  (experiences and places). */
 export function KnowSection({ items }: { items: Know[] }) {
   const [open, setOpen] = useState<Know | null>(null);
   return (
@@ -879,27 +885,46 @@ export function KnowSection({ items }: { items: Know[] }) {
       <Text variant="h2" accessibilityRole="header">
         Ting å vite
       </Text>
-      {items.map((k) => (
-        <Pressable
-          key={k.key}
-          accessibilityRole="button"
-          accessibilityLabel={`${k.title}, ${k.summary}`}
-          onPress={() => setOpen(k)}
-          pressedScale={0.99}
-          contentClassName="flex-row items-center gap-3 py-3"
-        >
-          <Icon name={k.icon} size="lg" tone="ink" />
-          <View className="flex-1 gap-1">
-            <Text variant="label" weight="semibold">
-              {k.title}
-            </Text>
-            <Text variant="caption" tone="muted" numberOfLines={2}>
-              {k.summary}
-            </Text>
+      {items.map((k) =>
+        k.more ? (
+          <Pressable
+            key={k.key}
+            accessibilityRole="button"
+            accessibilityLabel={`${k.title}, ${k.summary}`}
+            onPress={() => setOpen(k)}
+            pressedScale={0.99}
+            contentClassName="flex-row items-center gap-3 py-3"
+          >
+            <Icon name={k.icon} size="lg" tone="ink" />
+            <View className="flex-1 gap-1">
+              <Text variant="label" weight="semibold">
+                {k.title}
+              </Text>
+              <Text variant="caption" tone="muted" numberOfLines={2}>
+                {k.summary}
+              </Text>
+            </View>
+            <Icon name="chevron-forward" size="md" tone="muted" />
+          </Pressable>
+        ) : (
+          <View
+            key={k.key}
+            accessible
+            accessibilityLabel={`${k.title}, ${k.summary}`}
+            className="flex-row items-center gap-3 py-3"
+          >
+            <Icon name={k.icon} size="lg" tone="ink" />
+            <View className="flex-1 gap-1">
+              <Text variant="label" weight="semibold">
+                {k.title}
+              </Text>
+              <Text variant="caption" tone="muted">
+                {k.summary}
+              </Text>
+            </View>
           </View>
-          <Icon name="chevron-forward" size="md" tone="muted" />
-        </Pressable>
-      ))}
+        ),
+      )}
       <Sheet
         visible={open !== null}
         onClose={() => setOpen(null)}

@@ -23,7 +23,11 @@ import {
   ScrollView as RailScrollView,
 } from "react-native-gesture-handler";
 
-import { BlockSheet, ReportSheet } from "@/components/actions/ActionSheets";
+import {
+  BlockSheet,
+  ItemActionsSheet,
+  ReportSheet,
+} from "@/components/actions/ActionSheets";
 import { useGuestGate } from "@/components/useGuestGate";
 import { usePageScroll } from "@/components/pageScroll";
 import { ReviewsSection } from "@/components/reviews/ReviewsSection";
@@ -171,7 +175,7 @@ export function ExperiencePage({
     exp.id,
     exp.status === "joined" ? "joined" : "none",
   );
-  const [sheet, setSheet] = useState<"report" | "block" | null>(null);
+  const [sheet, setSheet] = useState<"help" | "report" | "block" | null>(null);
   // Messaging, reporting and blocking are personal (founder 2026-11-19 Q1).
   const { gate, prompt: signInPrompt } = useGuestGate();
   const { isGuest } = useGuestMode();
@@ -562,31 +566,52 @@ export function ExperiencePage({
                   onPress={() => onOpen({ kind: "host", id: exp.id })}
                 />
               ) : null}
-              {/* Phase 18: help that starts from this experience (Uber, Amazon). */}
+              {/* Help, report and block behind one quiet link (Airbnb
+                  tap-through 2026-11-26: three underlined rows read louder
+                  than the page). Phase 18's help from this experience
+                  stays the first choice; the host sees help only. */}
               <FooterLink
-                icon="help-buoy-outline"
-                label="Få hjelp med opplevelsen"
+                quiet
+                icon={mine ? "help-buoy-outline" : "flag-outline"}
+                label={
+                  mine ? "Få hjelp med opplevelsen" : "Få hjelp eller rapporter"
+                }
                 onPress={() =>
-                  onNavigate(`/settings/support?about=${exp.id}` as Href)
+                  mine
+                    ? onNavigate(`/settings/support?about=${exp.id}` as Href)
+                    : setSheet("help")
                 }
               />
-              {mine ? null : (
-                <>
-                  <FooterLink
-                    icon="flag-outline"
-                    label="Rapporter opplevelsen"
-                    onPress={gate("rapportere", () => setSheet("report"))}
-                  />
-                  <FooterLink
-                    icon="ban-outline"
-                    label={`Blokker ${hostName.split(" ")[0]}`}
-                    onPress={gate("blokkere", () => setSheet("block"))}
-                  />
-                </>
-              )}
             </View>
           )}
 
+          {sheet === "help" ? (
+            <ItemActionsSheet
+              title="Få hjelp eller rapporter"
+              onClose={() => setSheet(null)}
+              actions={[
+                {
+                  label: "Få hjelp med opplevelsen",
+                  icon: "help-buoy-outline",
+                  afterClose: true,
+                  onPress: () =>
+                    onNavigate(`/settings/support?about=${exp.id}` as Href),
+                },
+                {
+                  label: "Rapporter opplevelsen",
+                  icon: "flag-outline",
+                  afterClose: true,
+                  onPress: gate("rapportere", () => setSheet("report")),
+                },
+                {
+                  label: `Blokker ${hostName.split(" ")[0]}`,
+                  icon: "ban-outline",
+                  afterClose: true,
+                  onPress: gate("blokkere", () => setSheet("block")),
+                },
+              ]}
+            />
+          ) : null}
           {sheet === "report" ? (
             <ReportSheet onClose={() => setSheet(null)} />
           ) : null}
@@ -723,10 +748,14 @@ export function FooterLink({
   icon,
   label,
   onPress,
+  quiet = false,
 }: {
   icon: IconName;
   label: string;
   onPress: () => void;
+  /** Help and safety: smaller and muted, so it does not compete with the
+   *  page (Airbnb's «Rapporter denne annonsen»). */
+  quiet?: boolean;
 }) {
   return (
     <UIPressable
@@ -735,8 +764,17 @@ export function FooterLink({
       contentClassName="flex-row items-center gap-3 py-3"
       pressedScale={0.99}
     >
-      <Icon name={icon} size="md" tone="ink" />
-      <Text variant="label" weight="semibold" className="flex-1 underline">
+      <Icon
+        name={icon}
+        size={quiet ? "sm" : "md"}
+        tone={quiet ? "muted" : "ink"}
+      />
+      <Text
+        variant="label"
+        weight={quiet ? "regular" : "semibold"}
+        tone={quiet ? "muted" : undefined}
+        className="flex-1 underline"
+      >
         {label}
       </Text>
     </UIPressable>

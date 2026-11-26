@@ -101,7 +101,7 @@ describe("ExperiencePage", () => {
       "Slik fungerer vurderinger",
       "Flere opplevelser i området",
       "Om verten",
-      "Rapporter opplevelsen",
+      "Få hjelp eller rapporter",
       ...experienceChips(e1),
     ]) {
       expect(screen.getAllByText(text).length).toBeGreaterThan(0);
@@ -330,6 +330,47 @@ describe("ExperiencePage sections (H4b)", () => {
     ]) {
       expect(screen.getAllByText(text)).toHaveLength(1);
     }
+  });
+
+  it("help, report and block sit behind one quiet link", () => {
+    jest.useFakeTimers();
+    try {
+      const onNavigate = jest.fn();
+      renderPage({ onNavigate });
+      // Not on the page itself any more (Airbnb tap-through 2026-11-26).
+      expect(screen.queryByText("Rapporter opplevelsen")).toBeNull();
+      expect(screen.queryByText(/^Blokker /)).toBeNull();
+      fireEvent.press(screen.getByText("Få hjelp eller rapporter"));
+      for (const label of [
+        "Få hjelp med opplevelsen",
+        "Rapporter opplevelsen",
+        "Blokker Maria",
+      ])
+        expect(screen.getByText(label)).toBeTruthy();
+      fireEvent.press(screen.getByText("Få hjelp med opplevelsen"));
+      act(() => jest.advanceTimersByTime(300));
+      expect(onNavigate).toHaveBeenCalledWith("/settings/support?about=e1");
+    } finally {
+      jest.useRealTimers();
+    }
+  });
+
+  it("a Ting å vite row opens a sheet only when the sheet adds to it", () => {
+    renderPage();
+    // Aktivitetsnivå and Avbestilling would only repeat the row.
+    for (const title of [
+      "Krav til deltakere",
+      "Aktivitetsnivå",
+      "Avbestilling",
+    ])
+      expect(
+        screen.queryByRole("button", { name: new RegExp(`^${title}, `) }),
+      ).toBeNull();
+    const more = thingsToKnow(e1).filter((k) => k.more);
+    for (const k of more)
+      expect(
+        screen.getByRole("button", { name: `${k.title}, ${k.summary}` }),
+      ).toBeTruthy();
   });
 
   it("things to know come from the creator's choices and the 18+ rule", () => {

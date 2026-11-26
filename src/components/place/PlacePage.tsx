@@ -127,6 +127,7 @@ export function placeThingsToKnow(p: MockPlace): Know[] {
       summary: p.accessibility.length
         ? p.accessibility.join(", ")
         : "Ikke oppgitt",
+      more: p.accessibility.length > 1,
       detail: p.accessibility.length
         ? p.accessibility.map((a) => ({
             icon: "checkmark-circle-outline" as const,
@@ -150,6 +151,8 @@ export function placeThingsToKnow(p: MockPlace): Know[] {
       icon: "leaf-outline",
       title: "Fasiliteter",
       summary: p.space.facilities.join(", "),
+      // The sheet adds who it is for and the season.
+      more: true,
       detail: [
         ...p.space.facilities.map((f) => ({
           icon: "checkmark-circle-outline" as const,
@@ -521,6 +524,7 @@ export function PlacePage({
               )}
             />
             <FooterLink
+              quiet
               icon="flag-outline"
               label="Rapporter stedet"
               onPress={gate("rapportere", () => setReport(true))}
