@@ -12,12 +12,12 @@
 // 0460 (Instagram benchmark 2, user 2026-11-17): flat rows with the actor's
 // photo (a small type badge on it), one sentence "name text · time", and on
 // the right either "Følg tilbake" or a thumbnail of what the notice names;
-// the shared `FilterPills` row with one pill per type that has notices; and
-// "Du er helt oppdatert" at the top once nothing is unread.
+// and "Du er helt oppdatert" at the top once nothing is unread. The type pills
+// are gone (user 2026-11-26).
 // BLOCKED_CONTRACT_GAP: no push, inbox or notification feed exists.
 import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import { Pressable, View, type ImageSourcePropType } from "react-native";
 
 import { useGuestMode } from "@/components/map/hooks/useGuestMode";
@@ -25,7 +25,6 @@ import { SignInPrompt } from "@/components/SignInPrompt";
 import { EmptyState } from "@/components/states/StateView";
 import {
   Avatar,
-  FilterPills,
   FollowButton,
   Icon,
   LoadingImage,
@@ -50,13 +49,7 @@ import {
 import { notificationHref } from "@/lib/entityRoutes";
 import { toggleFollow, useFollowing } from "@/lib/following";
 
-import {
-  filterNotifications,
-  notificationPerson,
-  notificationPills,
-  notificationThumb,
-  type NotificationFilterKey,
-} from "./notificationFilters";
+import { notificationPerson, notificationThumb } from "./notificationFilters";
 import { GuestPage } from "@/components/GuestPage";
 
 const TYPE_ICON: Record<NotificationType, keyof typeof Ionicons.glyphMap> = {
@@ -85,15 +78,10 @@ function NotificationsContent() {
   const following = useFollowing();
   const { isGuest } = useGuestMode();
   const [signIn, setSignIn] = useState(false);
-  const [filter, setFilter] = useState<NotificationFilterKey>("all");
-  const pills = useMemo(() => notificationPills(items), [items]);
-  // A pill whose type has no notices left falls back to Alle.
-  const active = pills.some((p) => p.key === filter) ? filter : "all";
-  const shown = filterNotifications(items, active);
   const groups = NOTIFICATION_GROUPS.map((title) => ({
     title,
     entries: collapseNotifications(
-      shown.filter((n) => notificationGroup(n.minutesAgo) === title),
+      items.filter((n) => notificationGroup(n.minutesAgo) === title),
     ),
   })).filter((g) => g.entries.length > 0);
 
@@ -146,12 +134,6 @@ function NotificationsContent() {
         />
       ) : (
         <>
-          <FilterPills
-            bleed
-            pills={pills}
-            value={active}
-            onChange={setFilter}
-          />
           {unread === 0 ? (
             <View className="flex-row items-center gap-3">
               <Icon name="checkmark-circle-outline" size="md" tone="muted" />

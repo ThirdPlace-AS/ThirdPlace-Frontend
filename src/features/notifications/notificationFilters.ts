@@ -1,5 +1,5 @@
-// Varsler's pills and row media (0460, Instagram benchmark 2, user
-// 2026-11-17). Pure: which pills show, who an actor is, and what a row's
+// Varsler's row media (0460, Instagram benchmark 2, user
+// 2026-11-17; the type pills were removed 2026-11-26). Pure: who an actor is, and what a row's
 // thumbnail shows. MOCK fixtures only (BLOCKED_CONTRACT_GAP: no notification
 // feed exists).
 import type { ImageSourcePropType } from "react-native";
@@ -12,38 +12,8 @@ import {
   placeById,
   type MockNotification,
   type MockPerson,
-  type NotificationType,
 } from "@/fixtures";
 import { coverForPlace, libImage } from "@/fixtures/images";
-
-export type NotificationFilterKey = "all" | NotificationType;
-
-/** The type pills in their order, after "Alle". */
-const TYPE_PILLS: { key: NotificationType; label: string }[] = [
-  { key: "follow", label: "Følgere" },
-  { key: "invite", label: "Invitasjoner" },
-  { key: "message", label: "Meldinger" },
-  { key: "join", label: "Bli med" },
-  { key: "review", label: "Anmeldelser" },
-];
-
-/** Alle, then one pill per type with at least one notice (no counts). */
-export function notificationPills(
-  items: readonly MockNotification[],
-): { key: NotificationFilterKey; label: string }[] {
-  const types = new Set(items.map((n) => n.type));
-  return [
-    { key: "all", label: "Alle" },
-    ...TYPE_PILLS.filter((p) => types.has(p.key)),
-  ];
-}
-
-export function filterNotifications(
-  items: readonly MockNotification[],
-  key: NotificationFilterKey,
-): MockNotification[] {
-  return key === "all" ? [...items] : items.filter((n) => n.type === key);
-}
 
 /** The person behind a notice, when the actor is one (for their photo). */
 export function notificationPerson(
