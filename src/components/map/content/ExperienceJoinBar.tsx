@@ -96,23 +96,26 @@ export function ExperienceJoinBar({
 
   return (
     <View className="gap-2">
-      <View className="flex-row items-center gap-2">
+      {/* The faces end in "+N", so the count is not written out (user
+          2026-11-27); a screen reader still hears it from the row's label. */}
+      <View
+        accessible
+        accessibilityLabel={`${goingLabel(going.count)}${
+          user === "none" ? `, ${left > 0 ? `${left} igjen` : "Fullt"}` : ""
+        }`}
+        className="flex-row items-center gap-2"
+      >
         <FaceStack faces={going.faces} count={going.count} />
-        <View className="flex-1 flex-row items-center gap-1">
-          <Text variant="caption" weight="semibold">
-            {goingLabel(going.count)}
+        {user === "none" ? (
+          <Text
+            variant="caption"
+            tone="muted"
+            numberOfLines={1}
+            className="flex-1"
+          >
+            {left > 0 ? `${left} igjen` : "Fullt"}
           </Text>
-          {user === "none" ? (
-            <>
-              <Text variant="caption" tone="muted" accessible={false}>
-                ·
-              </Text>
-              <Text variant="caption" tone="muted" numberOfLines={1}>
-                {left > 0 ? `${left} igjen` : "Fullt"}
-              </Text>
-            </>
-          ) : null}
-        </View>
+        ) : null}
       </View>
       <View className="flex-row items-center gap-3">
         <View className="flex-1">

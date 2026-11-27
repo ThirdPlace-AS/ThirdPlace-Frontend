@@ -135,7 +135,11 @@ describe("Se deltakere", () => {
     );
     fireEvent.press(screen.getByLabelText("Bli med"));
     const total = all.length + 1;
-    expect(screen.getAllByText(new RegExp(goingLabel(total))).length).toBe(2);
+    // The attendee list writes the count; the join card says it in its label.
+    expect(screen.getAllByText(new RegExp(goingLabel(total))).length).toBe(1);
+    expect(
+      screen.getByLabelText(new RegExp(`^${goingLabel(total)}$`)),
+    ).toBeTruthy();
     expect(screen.queryByText("Du")).toBeNull();
     expect(screen.getByText(`og ${total - named} andre`)).toBeTruthy();
     act(() => setShowMeAsAttendee(true));
@@ -154,9 +158,15 @@ describe("join card and Personvern", () => {
   it("the join card counts the viewer once joined", () => {
     const e1 = experienceById("e1")!;
     render(<ExperienceJoinBar id="e1" />, { wrapper });
-    expect(screen.getByText(goingLabel(e1.going))).toBeTruthy();
+    // The count is no longer written (the faces end in "+N"); the row's
+    // label still says it (user 2026-11-27, 0562).
+    expect(
+      screen.getByLabelText(new RegExp(`^${goingLabel(e1.going)}`)),
+    ).toBeTruthy();
     fireEvent.press(screen.getByLabelText("Bli med"));
-    expect(screen.getByText(goingLabel(e1.going + 1))).toBeTruthy();
+    expect(
+      screen.getByLabelText(new RegExp(`^${goingLabel(e1.going + 1)}$`)),
+    ).toBeTruthy();
   });
 
   it("Vis meg som deltaker is off until chosen", () => {

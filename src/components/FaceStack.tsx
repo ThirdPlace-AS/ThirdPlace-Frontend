@@ -25,7 +25,6 @@ export function FaceStack({
   const ring = `rounded-full border-2 ${
     onMedia ? "border-onMedia" : "border-surface"
   }`;
-  const total = shown.length + (more > 0 ? 1 : 0);
   return (
     <View
       accessible={false}
@@ -36,7 +35,7 @@ export function FaceStack({
         <View
           key={f.key}
           className={ring}
-          style={{ marginLeft: i === 0 ? 0 : -8, zIndex: total - i }}
+          style={{ marginLeft: i === 0 ? 0 : -8, zIndex: i }}
         >
           <Avatar
             name={f.name}
@@ -50,7 +49,10 @@ export function FaceStack({
       {more > 0 ? (
         <View
           className={ring}
-          style={{ marginLeft: shown.length === 0 ? 0 : -8, zIndex: 0 }}
+          style={{
+            marginLeft: shown.length === 0 ? 0 : -8,
+            zIndex: shown.length,
+          }}
         >
           <Avatar initials={`+${more}`} size="xs" decorative />
         </View>
