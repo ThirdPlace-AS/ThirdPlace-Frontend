@@ -98,23 +98,36 @@ export function ExperienceJoinBar({
     <View className="gap-2">
       <View className="flex-row items-center gap-2">
         <FaceStack faces={going.faces} />
-        <Text variant="caption" weight="semibold">
-          {goingLabel(going.count)}
-        </Text>
+        <View className="flex-1 flex-row items-center gap-1">
+          <Text variant="caption" weight="semibold">
+            {goingLabel(going.count)}
+          </Text>
+          {user === "none" ? (
+            <>
+              <Text variant="caption" tone="muted" accessible={false}>
+                ·
+              </Text>
+              <Text variant="caption" tone="muted" numberOfLines={1}>
+                {left > 0 ? `${left} igjen` : "Fullt"}
+              </Text>
+            </>
+          ) : null}
+        </View>
       </View>
       <View className="flex-row items-center gap-3">
         <View className="flex-1">
           <Text variant="body" weight="bold" numberOfLines={1}>
             {experience.priceNok ? `${experience.priceNok} kr` : "Gratis"}
           </Text>
-          {/* Two lines (0461): beside the button one line cut the date and
-              left out the places left on a 360 dp phone. */}
+          {/* Places left sit on the faces row (0557): beside the button the
+              date and the count wrapped on a 360 dp phone. Two lines stay
+              for the longer joined and waitlist texts (0461). */}
           <Text variant="caption" tone="muted" numberOfLines={2}>
             {user === "joined"
               ? `Du er påmeldt · ${when}`
               : user === "waitlisted"
                 ? `Venteliste · ${when}`
-                : `${when} · ${left > 0 ? `${left} igjen` : "Fullt"}`}
+                : when}
           </Text>
         </View>
         <View style={{ minWidth: 150 }}>
