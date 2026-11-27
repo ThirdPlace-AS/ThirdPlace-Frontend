@@ -27,6 +27,7 @@ import {
   useWindowDimensions,
 } from "react-native";
 import Animated, {
+  Easing,
   Extrapolation,
   interpolate,
   runOnJS,
@@ -52,7 +53,15 @@ import { SignInPrompt } from "@/components/SignInPrompt";
 import { PageScrollContext, scrollAnchorIn } from "@/components/pageScroll";
 import { PAGE_BAR_ROW } from "@/components/experience/ExperiencePage";
 import { chatForPlace, experienceById, placeById } from "@/fixtures";
-import { useElevation, gutterPx, useThemeColors } from "@/theme";
+import { useReducedMotion } from "@/hooks/useReducedMotion";
+import {
+  duration,
+  easing,
+  presentation,
+  useElevation,
+  gutterPx,
+  useThemeColors,
+} from "@/theme";
 
 import { PageActionCard } from "./content/PageActionCard";
 import { MiniPin } from "./MiniPin";
@@ -79,6 +88,9 @@ import {
 } from "./pageTarget";
 import { backdropA11y, sheetA11yChrome, useSheetHandleA11y } from "./sheetA11y";
 import type { PushFn, SheetTarget } from "./sheetTypes";
+
+const SHEET_EASE = Easing.bezier(...easing.sheet);
+const EXIT_EASE = Easing.bezier(...easing.exit);
 
 // Google-Maps-style expandable detail sheet (@gorhom/bottom-sheet) with three
 // snaps — peek, mid, full. Marker taps open it at the peek; the user drags up
@@ -233,6 +245,24 @@ export const MapDetailSheet = memo(
     );
 
     const sheetRef = useRef<BottomSheet>(null);
+    // Opening and closing by code move on the sheet curves (0571): gorhom's
+    // Android default (250 ms, Easing.out(exp)) jumped 16 % then 66 % in its
+    // first two frames on the phone. Drag releases keep gorhom's own timing.
+    const reduced = useReducedMotion();
+    const openConfig = useMemo(
+      () => ({
+        duration: reduced ? duration.fast : presentation.enter,
+        easing: SHEET_EASE,
+      }),
+      [reduced],
+    );
+    const closeConfig = useMemo(
+      () => ({
+        duration: reduced ? duration.fast : presentation.exit,
+        easing: EXIT_EASE,
+      }),
+      [reduced],
+    );
     // A link on the page brings one of its sections into view (pageScroll.ts):
     // at the top snap it scrolls there; lower, the sheet rises first and the
     // scroll follows once it rests (tryScrollBack).
@@ -333,13 +363,13 @@ export const MapDetailSheet = memo(
           const t = setTimeout(clearShown, 0);
           return () => clearTimeout(t);
         }
-        sheetRef.current?.close();
+        sheetRef.current?.close(closeConfig);
         return;
       }
       const resting =
         wasOpen.current && Math.abs(animatedIndex.value - openIndex) < 0.01;
       wasOpen.current = true;
-      sheetRef.current?.snapToIndex(openIndex);
+      sheetRef.current?.snapToIndex(openIndex, openConfig);
       if (!resting) return;
       const key = rootKeyRef.current;
       const t = setTimeout(() => setSettledKey(key), STAGE_SWAP_MS);
