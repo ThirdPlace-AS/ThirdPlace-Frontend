@@ -627,6 +627,7 @@ export const MapDetailSheet = memo(
               ) : null}
               <Animated.View
                 // Under the page top bar it has faded out: no stray taps.
+                renderToHardwareTextureAndroid
                 pointerEvents={isPage && topIsPage ? "none" : "auto"}
                 style={[
                   { paddingHorizontal: gutterPx, overflow: "hidden" },
@@ -812,35 +813,44 @@ function PageTopBar({
     // animated with the drag relaid the sheet out every frame.
     return { opacity: o, transform: [{ translateY: -full * (1 - t) }] };
   }, [full]);
+  // Clipped to its own box at the top of the sheet: unclipped, the bar slid
+  // up out of the sheet and showed over the map on the way down.
   return (
-    <Animated.View
-      pointerEvents={interactive ? "auto" : "none"}
-      style={[
-        { position: "absolute", top: 0, left: 0, right: 0, zIndex: 2 },
-        a,
-      ]}
+    <View
+      pointerEvents={interactive ? "box-none" : "none"}
+      style={{
+        position: "absolute",
+        top: 0,
+        left: 0,
+        right: 0,
+        height: full,
+        overflow: "hidden",
+        zIndex: 2,
+      }}
     >
-      <View
-        className="flex-row items-center gap-1 border-b border-line bg-surface px-2"
-        style={{ paddingTop: topPad, height: full }}
-      >
-        <View className="flex-1 flex-row">
-          <IconButton icon={BACK_ICON} label="Tilbake" onPress={onBack} />
-        </View>
-        <Text
-          variant="caption"
-          weight="semibold"
-          tone="muted"
-          className="text-center"
-          style={{ flex: 2 }}
-          numberOfLines={1}
+      <Animated.View style={a} renderToHardwareTextureAndroid>
+        <View
+          className="flex-row items-center gap-1 border-b border-line bg-surface px-2"
+          style={{ paddingTop: topPad, height: full }}
         >
-          {info.caption}
-        </Text>
-        <View className="flex-1 flex-row justify-end">
-          <ShareSave info={info} />
+          <View className="flex-1 flex-row">
+            <IconButton icon={BACK_ICON} label="Tilbake" onPress={onBack} />
+          </View>
+          <Text
+            variant="caption"
+            weight="semibold"
+            tone="muted"
+            className="text-center"
+            style={{ flex: 2 }}
+            numberOfLines={1}
+          >
+            {info.caption}
+          </Text>
+          <View className="flex-1 flex-row justify-end">
+            <ShareSave info={info} />
+          </View>
         </View>
-      </View>
-    </Animated.View>
+      </Animated.View>
+    </View>
   );
 }

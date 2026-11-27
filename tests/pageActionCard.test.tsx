@@ -4,7 +4,7 @@
 // sheet is at the top snap, not with the drag (0461: it covered the rows
 // while the page rose), and is not touchable or read out below it.
 import { describe, expect, it, jest } from "@jest/globals";
-import { render, screen } from "@testing-library/react-native";
+import { act, render, screen } from "@testing-library/react-native";
 import { StyleSheet } from "react-native";
 import type { SharedValue } from "react-native-reanimated";
 import { SafeAreaProvider } from "react-native-safe-area-context";
@@ -62,7 +62,10 @@ const all = { includeHiddenElements: true } as const;
 // The sheet's position as gorhom reports it (peek 0 · mid 1 · full 2).
 const at = (index: number) => ({ value: index }) as SharedValue<number>;
 
+// Its touch and TalkBack state follow once the sheet has stopped (0572): a
+// poll checks the position every 120 ms; two ticks let it see a still sheet.
 function card(kind: "experience" | "place", id: string, index: number) {
+  jest.useFakeTimers();
   render(
     <PageActionCard
       kind={kind}
@@ -73,6 +76,10 @@ function card(kind: "experience" | "place", id: string, index: number) {
     />,
     { wrapper },
   );
+  act(() => {
+    jest.advanceTimersByTime(250);
+  });
+  jest.useRealTimers();
   const node = screen.getByTestId("page-action-card", all);
   return { node, style: StyleSheet.flatten(node.props.style) };
 }
