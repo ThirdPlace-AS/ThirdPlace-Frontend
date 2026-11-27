@@ -24,6 +24,8 @@ export const confirmToast = {
   ratingSent: { title: "Takk for vurderingen", icon: "star-outline" },
   feedbackSent: { title: "Takk for tilbakemeldingen", icon: ok },
   reportSent: { title: "Takk, rapporten er sendt", icon: ok },
+  notificationDeleted: { title: "Varselet er slettet", icon: "trash-outline" },
+  notificationHidden: { title: "Varselet er skjult", icon: "eye-off-outline" },
   linkCopied: { title: "Lenken er kopiert", icon: "copy-outline" },
   sharedInMessage: { title: "Delt i en melding", icon: "paper-plane-outline" },
   reminderSent: {

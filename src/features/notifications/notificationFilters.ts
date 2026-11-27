@@ -12,6 +12,7 @@ import {
   placeById,
   type MockNotification,
   type MockPerson,
+  type NotificationType,
 } from "@/fixtures";
 import { coverForPlace, libImage } from "@/fixtures/images";
 
@@ -41,4 +42,49 @@ export function notificationThumb(
     return p ? libImage(coverForPlace(p)) : undefined;
   }
   return undefined;
+}
+
+// Filtrer (user 2026-11-27, 0561, Instagram's Varsler filter): which kinds of
+// notice to show and whether only people the viewer follows. Empty kinds =
+// every kind. Screen state only, like the rest of the inbox.
+export type NotificationFilter = {
+  types: ReadonlySet<NotificationType>;
+  onlyFollowing: boolean;
+};
+
+export const NO_NOTIFICATION_FILTER: NotificationFilter = {
+  types: new Set(),
+  onlyFollowing: false,
+};
+
+/** Filtrer's Kategorier, in the order they show. */
+export const NOTIFICATION_CATEGORIES: {
+  type: NotificationType;
+  label: string;
+}[] = [
+  { type: "follow", label: "Følgere" },
+  { type: "message", label: "Meldinger" },
+  { type: "join", label: "Påmeldinger" },
+  { type: "invite", label: "Invitasjoner" },
+  { type: "review", label: "Anmeldelser" },
+];
+
+export function isNotificationFilterOn(f: NotificationFilter): boolean {
+  return f.types.size > 0 || f.onlyFollowing;
+}
+
+/** The notices a filter keeps. `followingIds`: people the viewer follows. */
+export function applyNotificationFilter(
+  items: readonly MockNotification[],
+  f: NotificationFilter,
+  followingIds: ReadonlySet<string>,
+): MockNotification[] {
+  return items.filter((n) => {
+    if (f.types.size > 0 && !f.types.has(n.type)) return false;
+    if (f.onlyFollowing) {
+      const p = notificationPerson(n);
+      if (!p || !followingIds.has(p.id)) return false;
+    }
+    return true;
+  });
 }
