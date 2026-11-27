@@ -20,7 +20,7 @@ export function GoingLine({
   if (!exp) return null;
   return (
     <View className="flex-row items-center gap-2">
-      <FaceStack faces={going.faces} onMedia={onMedia} />
+      <FaceStack faces={going.faces} count={going.count} onMedia={onMedia} />
       <Text
         variant="label"
         weight={onMedia ? undefined : "semibold"}

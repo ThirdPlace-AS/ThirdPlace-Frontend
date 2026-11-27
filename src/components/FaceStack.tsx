@@ -2,32 +2,41 @@ import { View } from "react-native";
 
 import { Avatar } from "@/components/ui";
 import { libImage } from "@/fixtures/images";
-import type { GoingFace } from "@/lib/going";
+import { MAX_FACES, type GoingFace } from "@/lib/going";
 
 /** Overlapping faces of people going who chose to be shown (Phase 16). A
- *  ring in the surface colour (white over photos) keeps them apart.
- *  Decorative: the line next to it says how many are going. */
+ *  ring in the surface colour (white over photos) keeps them apart. With
+ *  `count` above three, a last circle says how many more are going ("+2",
+ *  user 2026-11-27). Decorative: the line next to it says how many go. */
 export function FaceStack({
   faces,
+  count,
   onMedia = false,
 }: {
   faces: GoingFace[];
+  /** Everyone going; the people beyond the faces show as "+N". */
+  count?: number;
   onMedia?: boolean;
 }) {
-  if (faces.length === 0) return null;
+  const shown = faces.slice(0, MAX_FACES);
+  const more =
+    count !== undefined && count > MAX_FACES ? count - shown.length : 0;
+  if (shown.length === 0 && more === 0) return null;
+  const ring = `rounded-full border-2 ${
+    onMedia ? "border-onMedia" : "border-surface"
+  }`;
+  const total = shown.length + (more > 0 ? 1 : 0);
   return (
     <View
       accessible={false}
       importantForAccessibility="no-hide-descendants"
       className="flex-row"
     >
-      {faces.map((f, i) => (
+      {shown.map((f, i) => (
         <View
           key={f.key}
-          className={`rounded-full border-2 ${
-            onMedia ? "border-onMedia" : "border-surface"
-          }`}
-          style={{ marginLeft: i === 0 ? 0 : -8, zIndex: faces.length - i }}
+          className={ring}
+          style={{ marginLeft: i === 0 ? 0 : -8, zIndex: total - i }}
         >
           <Avatar
             name={f.name}
@@ -38,6 +47,14 @@ export function FaceStack({
           />
         </View>
       ))}
+      {more > 0 ? (
+        <View
+          className={ring}
+          style={{ marginLeft: shown.length === 0 ? 0 : -8, zIndex: 0 }}
+        >
+          <Avatar initials={`+${more}`} size="xs" decorative />
+        </View>
+      ) : null}
     </View>
   );
 }

@@ -294,7 +294,7 @@ export function AvailabilitySection({ exp }: { exp: MockExperience }) {
               </Text>
               {social ? (
                 <View className="mt-2 flex-row items-center gap-2">
-                  <FaceStack faces={going.faces} />
+                  <FaceStack faces={going.faces} count={going.count} />
                   <Text variant="caption" weight="semibold">
                     {goingLabel(going.count)}
                   </Text>

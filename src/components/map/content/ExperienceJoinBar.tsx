@@ -97,7 +97,7 @@ export function ExperienceJoinBar({
   return (
     <View className="gap-2">
       <View className="flex-row items-center gap-2">
-        <FaceStack faces={going.faces} />
+        <FaceStack faces={going.faces} count={going.count} />
         <View className="flex-1 flex-row items-center gap-1">
           <Text variant="caption" weight="semibold">
             {goingLabel(going.count)}
