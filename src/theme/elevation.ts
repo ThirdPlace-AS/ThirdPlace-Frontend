@@ -19,10 +19,12 @@ const LIGHT_TIER: Pick<ViewStyle, "boxShadow"> = {
 
 // Dark mode has shadows too (user 2026-11-27). The light tier's 2–10 % black
 // cannot be seen on the #121212 background, so the same three layers are
-// drawn in a deeper black and spread a little wider.
+// drawn in a deeper black. Softer and spread wider than the first take
+// (user 2026-11-27, 0567): lower alpha, larger blur, so it reads as a glow
+// under the card rather than a dark rim.
 const DARK_TIER: Pick<ViewStyle, "boxShadow"> = {
   boxShadow:
-    "0px 0px 0px 1px rgba(0, 0, 0, 0.35), 0px 2px 8px rgba(0, 0, 0, 0.45), 0px 6px 20px rgba(0, 0, 0, 0.6)",
+    "0px 0px 0px 1px rgba(0, 0, 0, 0.2), 0px 4px 16px rgba(0, 0, 0, 0.25), 0px 12px 40px rgba(0, 0, 0, 0.3)",
 };
 
 function tiers(tier: Pick<ViewStyle, "boxShadow">): Elevation {
