@@ -23,6 +23,9 @@ export const spring = {
   snappy: { damping: 20, stiffness: 220, mass: 1 }, // preview / sheet settle / undo
   gentle: { damping: 26, stiffness: 160, mass: 1 }, // content settle
   card: { damping: 16, stiffness: 240, mass: 1 }, // crisp, tiny overshoot; Sveip's spring-back uses gesture.swipeReturnMs since 2026-11-18
+  // The map's gorhom sheets after a drag (0572): critically damped, carries
+  // the finger's speed, never past a snap (so never above the top one).
+  sheet: { damping: 40, stiffness: 400, mass: 1, overshootClamping: true },
 } as const;
 
 // Cubic-bezier control points (plain data — components build the curve with

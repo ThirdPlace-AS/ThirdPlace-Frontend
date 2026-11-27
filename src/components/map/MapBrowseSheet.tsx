@@ -21,7 +21,7 @@ import {
   Text,
   useSheetChrome,
 } from "@/components/ui";
-import { useElevation, gutterPx } from "@/theme";
+import { useElevation, gutterPx, spring } from "@/theme";
 import { areaFor, type MockWeather } from "@/fixtures";
 import { useOrigin } from "@/lib/origin";
 import { formatRating } from "@/lib/format";
@@ -45,6 +45,10 @@ const PEEK_HANDLE = 24;
 // The card's floating bookmark (IconButton size "sm") is this tall; the
 // opening badge on the other corner is centred on the same line.
 const BOOKMARK_PX = 36;
+// After a drag the sheet springs on from the finger's speed and stops at the
+// snap without passing it (0572): gorhom's Android default restarted a 250 ms
+// ease at release, so a quick drag jumped back before going on.
+const SHEET_SPRING = { ...spring.sheet };
 
 // Memoised (speed pass 0345): the map screen passes stable props, so this
 // sheet renders only when its list, selection or state really change.
@@ -227,6 +231,7 @@ export const MapBrowseSheet = memo(function MapBrowseSheet({
         animateOnMount={false}
         snapPoints={snapPoints}
         animatedIndex={browseAnimatedIndex}
+        animationConfigs={SHEET_SPRING}
         enableDynamicSizing={false}
         enablePanDownToClose={false}
         // Hard requirement: the sheet must never slide below its lowest snap

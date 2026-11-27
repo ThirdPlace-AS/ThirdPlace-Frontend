@@ -58,6 +58,7 @@ import {
   duration,
   easing,
   presentation,
+  spring,
   useElevation,
   gutterPx,
   useThemeColors,
@@ -91,6 +92,16 @@ import type { PushFn, SheetTarget } from "./sheetTypes";
 
 const SHEET_EASE = Easing.bezier(...easing.sheet);
 const EXIT_EASE = Easing.bezier(...easing.exit);
+// Drag releases spring on from the finger's speed (0572), see MapBrowseSheet.
+const SHEET_SPRING = { ...spring.sheet };
+// The backdrop under the full-screen page: not read by TalkBack (null, not
+// undefined, or gorhom puts back its English default label).
+const BACKDROP_SILENT = {
+  accessible: false,
+  accessibilityLabel: null,
+  accessibilityHint: null,
+  accessibilityRole: null,
+} as const;
 
 // Google-Maps-style expandable detail sheet (@gorhom/bottom-sheet) with three
 // snaps — peek, mid, full. Marker taps open it at the peek; the user drags up
@@ -301,9 +312,34 @@ export const MapDetailSheet = memo(
     // the top and carries on into the content scroll never "snaps", so gorhom
     // does not report index 2. Drives back handling, the top bar's touch and
     // the status bar.
+    // The state itself changes once the sheet has stopped moving (0572): set
+    // mid-drag, its render (status bar, backdrop, the map screen hiding its
+    // tree from TalkBack) cost frames of 50-66 ms when a slow drag left the
+    // top. The reaction only notes it; a short poll waits for the sheet to rest.
+    const pageNow = useRef(false);
+    const pagePoll = useRef<ReturnType<typeof setInterval> | null>(null);
     const onTop = useCallback(
-      (atTop: boolean) => setIsPage(pageCapable && atTop),
-      [pageCapable],
+      (atTop: boolean) => {
+        pageNow.current = pageCapable && atTop;
+        if (pagePoll.current) return;
+        let last = animatedIndex.get();
+        pagePoll.current = setInterval(() => {
+          const now = animatedIndex.get();
+          if (Math.abs(now - last) < 0.002) {
+            if (pagePoll.current) clearInterval(pagePoll.current);
+            pagePoll.current = null;
+            setIsPage(pageNow.current);
+          }
+          last = now;
+        }, 120);
+      },
+      [pageCapable, animatedIndex],
+    );
+    useEffect(
+      () => () => {
+        if (pagePoll.current) clearInterval(pagePoll.current);
+      },
+      [],
     );
     // Not on the reaction's first run (prev null): the sheet opens below the
     // top, and a same-value set state still rendered the whole sheet once
@@ -477,28 +513,31 @@ export const MapDetailSheet = memo(
 
     // Under the full-screen page the backdrop has nothing to show or catch,
     // and Android still read its labelled full-screen «Lukk» before the page
-    // (phone sweep 2026-11-26), so it is left out while the page is up.
+    // (phone sweep 2026-11-26), so it is silent while the page is up. It stays
+    // mounted: mounting it as a slow drag left the top dropped frames (0572).
     const renderBackdrop = useCallback(
-      (props: BottomSheetBackdropProps) =>
-        isPage ? null : (
-          <BottomSheetBackdrop
-            {...props}
-            appearsOnIndex={1}
-            disappearsOnIndex={0}
-            pressBehavior="close"
-            // Starts letting taps through (gorhom's default starts catching
-            // them until its first reaction): the closed sheet remounts each
-            // time the map comes back into focus (0384).
-            enableTouchThrough
-            {...backdropA11y}
-          />
-        ),
+      (props: BottomSheetBackdropProps) => (
+        <BottomSheetBackdrop
+          {...props}
+          appearsOnIndex={1}
+          disappearsOnIndex={0}
+          pressBehavior="close"
+          // Starts letting taps through (gorhom's default starts catching
+          // them until its first reaction): the closed sheet remounts each
+          // time the map comes back into focus (0384).
+          enableTouchThrough
+          {...(isPage ? BACKDROP_SILENT : backdropA11y)}
+        />
+      ),
       [isPage],
     );
 
-    // Header: the experience page shows only ✕ in sheet mode and collapses it
-    // as the page top bar grows in; pushed views keep back + title and move
+    // Header: the experience page shows only ✕ in sheet mode and fades it out
+    // as the page top bar slides in over it; pushed views keep back + title and move
     // below the status bar at the top snap.
+    // Room for the sheet header, and at the top for the page top bar that
+    // covers it (PageTopBar), so the content starts at the same place.
+    const pageHeaderH = Math.max(64, topPad + PAGE_BAR_ROW);
     const headerStyle = useAnimatedStyle(() => {
       if (!pageCapable) return {};
       const t = interpolate(
@@ -517,10 +556,23 @@ export const MapDetailSheet = memo(
       );
       // Always set every key: Reanimated keeps a prop that a later style
       // object leaves out (a pushed view kept maxHeight 0 and vanished).
+      // A page's header keeps one height and only fades (0572): its height
+      // shrinking with the drag relaid the sheet out every frame and dropped
+      // frames between 1.7 and the top; the page top bar slides over it.
       return topIsPage
-        ? { maxHeight: 64 * (1 - t), opacity: fade, paddingTop: 0 }
-        : { maxHeight: 200, opacity: 1, paddingTop: topPad * t };
-    }, [pageCapable, topIsPage, topPad]);
+        ? {
+            height: pageHeaderH,
+            maxHeight: pageHeaderH,
+            opacity: fade,
+            paddingTop: 0,
+          }
+        : {
+            height: "auto",
+            maxHeight: 200,
+            opacity: 1,
+            paddingTop: topPad * t,
+          };
+    }, [pageCapable, topIsPage, topPad, pageHeaderH]);
 
     const sheet = (
       // Closed, the waiting sheet is out of the screen reader's way too.
@@ -541,6 +593,7 @@ export const MapDetailSheet = memo(
           index={open ? (restore?.index ?? openIndex) : -1}
           snapPoints={snapPoints}
           animatedIndex={animatedIndex}
+          animationConfigs={SHEET_SPRING}
           enableDynamicSizing={false}
           enablePanDownToClose
           onChange={handleSnap}
@@ -573,6 +626,8 @@ export const MapDetailSheet = memo(
                 />
               ) : null}
               <Animated.View
+                // Under the page top bar it has faded out: no stray taps.
+                pointerEvents={isPage && topIsPage ? "none" : "auto"}
                 style={[
                   { paddingHorizontal: gutterPx, overflow: "hidden" },
                   headerStyle,
@@ -753,15 +808,20 @@ function PageTopBar({
       [0, 1],
       Extrapolation.CLAMP,
     );
-    return { height: full * t, opacity: o };
+    // Slides down over the sheet header instead of growing (0572): a height
+    // animated with the drag relaid the sheet out every frame.
+    return { opacity: o, transform: [{ translateY: -full * (1 - t) }] };
   }, [full]);
   return (
     <Animated.View
       pointerEvents={interactive ? "auto" : "none"}
-      style={[{ overflow: "hidden" }, a]}
+      style={[
+        { position: "absolute", top: 0, left: 0, right: 0, zIndex: 2 },
+        a,
+      ]}
     >
       <View
-        className="flex-row items-center gap-1 border-b border-line px-2"
+        className="flex-row items-center gap-1 border-b border-line bg-surface px-2"
         style={{ paddingTop: topPad, height: full }}
       >
         <View className="flex-1 flex-row">
