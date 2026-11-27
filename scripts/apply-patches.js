@@ -36,6 +36,30 @@ const PATCHES = [
       ],
     ],
   },
+  {
+    // The map page sheet's lower part went unpainted on a slow drag down
+    // (ledger TP-PHASE0-FE-0576): gorhom animated its content mask height on
+    // every drag frame. No upstream fix yet (fixedIn null: a new version
+    // stops the install until the patch is checked).
+    pkg: "@gorhom/bottom-sheet",
+    version: "5.2.14",
+    fixedIn: null,
+    file: "@gorhom+bottom-sheet+5.2.14.patch",
+    markers: [
+      [
+        "src/components/bottomSheet/BottomSheetContent.tsx",
+        "ThirdPlace patch: unanimated mask (0576)",
+      ],
+      [
+        "lib/module/components/bottomSheet/BottomSheetContent.js",
+        "ThirdPlace patch: unanimated mask (0576)",
+      ],
+      [
+        "lib/commonjs/components/bottomSheet/BottomSheetContent.js",
+        "ThirdPlace patch: unanimated mask (0576)",
+      ],
+    ],
+  },
 ];
 
 function compare(a, b) {
@@ -86,7 +110,7 @@ for (const p of PATCHES) {
   }
   const installed = JSON.parse(fs.readFileSync(manifest, "utf8")).version;
   if (installed !== p.version) {
-    if (compare(installed, p.fixedIn) >= 0) {
+    if (p.fixedIn && compare(installed, p.fixedIn) >= 0) {
       console.log(
         `[patches] ${p.pkg}@${installed} carries the fix (${p.fixedIn}+); remove patches/${p.file}`,
       );

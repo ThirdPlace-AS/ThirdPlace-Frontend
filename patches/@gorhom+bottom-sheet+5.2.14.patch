@@ -1,0 +1,87 @@
+Stops @gorhom/bottom-sheet from animating its content mask's height and
+bottom padding. BottomSheetContent returned a new animate() for both on
+every frame of a drag (the padding follows the sheet position), and on the
+Huawei phone (Android 10) the animated height fell far below its target for
+a few hundred ms. The mask clips the content and the background, so the
+lower part of the map's page sheet was not painted and the map and tab bar
+showed through on a slow drag down from full screen. Setting the values
+directly keeps the mask at its target (phone capture series 2026-11-28).
+No upstream fix; check the patch against each new gorhom release.
+ThirdPlace ledger TP-PHASE0-FE-0576.
+
+diff --git a/lib/commonjs/components/bottomSheet/BottomSheetContent.js b/lib/commonjs/components/bottomSheet/BottomSheetContent.js
+index 36be0a6..fcfef43 100644
+--- a/lib/commonjs/components/bottomSheet/BottomSheetContent.js
++++ b/lib/commonjs/components/bottomSheet/BottomSheetContent.js
+@@ -156,17 +156,10 @@ function BottomSheetContentComponent({
+     }
+     const paddingBottom = detached ? 0 : animatedPaddingBottom.get();
+     const height = animatedContentHeightMax.get() + paddingBottom;
++    // ThirdPlace patch: unanimated mask (0576)
+     return {
+-      paddingBottom: (0, _utilities.animate)({
+-        point: paddingBottom,
+-        configs: animationConfigs,
+-        overrideReduceMotion
+-      }),
+-      height: (0, _utilities.animate)({
+-        point: height,
+-        configs: animationConfigs,
+-        overrideReduceMotion
+-      })
++      paddingBottom,
++      height
+     };
+   }, [overDragResistanceFactor, enableDynamicSizing, detached, animationConfigs, overrideReduceMotion, animatedLayoutState, animatedContentHeightMax, animatedLayoutState]);
+   const contentContainerStyle = (0, _react.useMemo)(() => [detached ? {
+diff --git a/lib/module/components/bottomSheet/BottomSheetContent.js b/lib/module/components/bottomSheet/BottomSheetContent.js
+index e4696b2..0d47f55 100644
+--- a/lib/module/components/bottomSheet/BottomSheetContent.js
++++ b/lib/module/components/bottomSheet/BottomSheetContent.js
+@@ -150,17 +150,10 @@ function BottomSheetContentComponent({
+     }
+     const paddingBottom = detached ? 0 : animatedPaddingBottom.get();
+     const height = animatedContentHeightMax.get() + paddingBottom;
++    // ThirdPlace patch: unanimated mask (0576)
+     return {
+-      paddingBottom: animate({
+-        point: paddingBottom,
+-        configs: animationConfigs,
+-        overrideReduceMotion
+-      }),
+-      height: animate({
+-        point: height,
+-        configs: animationConfigs,
+-        overrideReduceMotion
+-      })
++      paddingBottom,
++      height
+     };
+   }, [overDragResistanceFactor, enableDynamicSizing, detached, animationConfigs, overrideReduceMotion, animatedLayoutState, animatedContentHeightMax, animatedLayoutState]);
+   const contentContainerStyle = useMemo(() => [detached ? {
+diff --git a/src/components/bottomSheet/BottomSheetContent.tsx b/src/components/bottomSheet/BottomSheetContent.tsx
+index 4a69a68..55c78d5 100644
+--- a/src/components/bottomSheet/BottomSheetContent.tsx
++++ b/src/components/bottomSheet/BottomSheetContent.tsx
+@@ -199,17 +199,11 @@ function BottomSheetContentComponent({
+     const paddingBottom = detached ? 0 : animatedPaddingBottom.get();
+     const height = animatedContentHeightMax.get() + paddingBottom;
+ 
++    // ThirdPlace patch: unanimated mask (0576): a new animate() each drag frame let the mask
++    // height dip far below its target on Android, so the sheet was cut off.
+     return {
+-      paddingBottom: animate({
+-        point: paddingBottom,
+-        configs: animationConfigs,
+-        overrideReduceMotion,
+-      }),
+-      height: animate({
+-        point: height,
+-        configs: animationConfigs,
+-        overrideReduceMotion,
+-      }),
++      paddingBottom,
++      height,
+     };
+   }, [
+     overDragResistanceFactor,
