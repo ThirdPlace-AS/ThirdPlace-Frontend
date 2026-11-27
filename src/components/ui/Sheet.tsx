@@ -285,11 +285,15 @@ function SheetEngine({
     onCloseRef.current = onClose;
   });
   const close = useCallback(() => setClosing(true), []);
+  // Once the exit is done: back to rest for the next open (a swipe-to-close
+  // leaves the drag at the card's height), then tell the parent.
+  const resetDragRef = useRef<(() => void) | null>(null);
   const onHidden = useCallback(() => {
+    resetDragRef.current?.();
     if (closingRef.current) onCloseRef.current();
   }, []);
   const shown = visible && !closing;
-  const { mounted, progress, reduced, settled, onShow } = usePresence(
+  const { mounted, progress, reduced, settled } = usePresence(
     shown,
     onHidden,
     "sheet",
@@ -349,16 +353,14 @@ function SheetEngine({
       }
     });
   const animate = !settled || dragging;
+  useEffect(() => {
+    resetDragRef.current = () => {
+      drag.value = 0;
+    };
+  });
 
   const onCardLayout = (e: LayoutChangeEvent) => {
     cardH.value = e.nativeEvent.layout.height;
-  };
-  // Each open starts from rest: a swipe-to-close leaves the drag at the card's
-  // height. Reset when the Modal's window is up, not on a layout pass: one
-  // landing during a release snapped the card back up for a frame.
-  const onModalShow = () => {
-    drag.value = 0;
-    onShow();
   };
 
   const scrimStyle = useAnimatedStyle(() => ({
@@ -406,7 +408,6 @@ function SheetEngine({
         // System back undoes the last step (0454): an inner step goes back to
         // the step before it, like the header ←; only the first step closes.
         onRequestClose={onBack ?? onSystemBack ?? close}
-        onShow={onModalShow}
       >
         <GestureHandlerRootView style={{ flex: 1 }}>
           {/* The keyboard pads the bottom (edge-to-edge Android does not resize

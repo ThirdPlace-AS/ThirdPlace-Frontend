@@ -9,11 +9,10 @@
 // off-screen or new content did not paint until the next touch (seen on the
 // Map Filtre sheet, 2026-11-06).
 //
-// The enter waits for the Modal's window (pass `onShow` to the Modal) and
-// starts inside that callback: the window comes up 100–280 ms after the Modal
-// mounts, and an enter started at mount had mostly run before its first frame,
-// so the sheet popped up instead of sliding (frame recording, 2026-11-27). If
-// the Modal never reports, the enter starts after SHOW_FALLBACK_MS.
+// The enter starts in the mount effect. On the phone the Modal's window has
+// drawn its first frame by then (the slide starts 50–80 ms after it); waiting
+// for the Modal's onShow left the window empty for 115–147 ms (frame timings,
+// 2026-11-27, ledger 0569). A sheet passes curve "sheet" (easing.sheet).
 // `onHidden` runs once an exit has finished and the Modal is gone.
 import { useCallback, useEffect, useRef, useState } from "react";
 import {
@@ -31,8 +30,6 @@ const CURVES = {
   sheet: Easing.bezier(...easing.sheet),
 };
 const EXIT = Easing.bezier(...easing.exit);
-// Well above the slowest window seen (276 ms on the map's Filtre, emulator).
-const SHOW_FALLBACK_MS = 600;
 
 export function usePresence(
   visible: boolean,
@@ -48,13 +45,6 @@ export function usePresence(
   if (!visible && settled) setSettled(false);
   const progress = useSharedValue(0);
   const hiddenRef = useRef(onHidden);
-  // Starts the enter once per open, and the exit; set in an effect so onShow
-  // can start the enter without waiting for a render.
-  const enterRef = useRef<(() => void) | null>(null);
-  const exitRef = useRef<(() => void) | null>(null);
-  const enteringRef = useRef(false);
-  // onShow arrived before the effect that sets enterRef.
-  const pendingShow = useRef(false);
   useEffect(() => {
     hiddenRef.current = onHidden;
   });
@@ -63,17 +53,10 @@ export function usePresence(
     setMounted(false);
     hiddenRef.current?.();
   }, []);
-  // No state change here: a render on onShow re-rendered the whole sheet just
-  // as it began to slide, and the commit stalled the first frames.
-  const onShow = useCallback(() => {
-    if (enterRef.current) enterRef.current();
-    else pendingShow.current = true;
-  }, []);
 
   useEffect(() => {
-    enterRef.current = () => {
-      if (!visible || enteringRef.current) return;
-      enteringRef.current = true;
+    if (!mounted) return;
+    if (visible) {
       progress.value = withTiming(
         1,
         {
@@ -84,9 +67,7 @@ export function usePresence(
           if (finished) runOnJS(setSettled)(true);
         },
       );
-    };
-    exitRef.current = () => {
-      enteringRef.current = false;
+    } else {
       progress.value = withTiming(
         0,
         {
@@ -97,36 +78,8 @@ export function usePresence(
           if (finished) runOnJS(finishHide)();
         },
       );
-    };
-    if (pendingShow.current) {
-      pendingShow.current = false;
-      enterRef.current();
     }
-  });
+  }, [visible, mounted, reduced, progress, finishHide, curve]);
 
-  // Fallback for a Modal that never reports onShow (a no-op once the enter
-  // has started).
-  useEffect(() => {
-    if (!mounted || !visible) return;
-    const t = setTimeout(() => enterRef.current?.(), SHOW_FALLBACK_MS);
-    return () => clearTimeout(t);
-  }, [mounted, visible]);
-
-  // A reopen while the exit still runs: the window is already up.
-  const wasExiting = useRef(false);
-  useEffect(() => {
-    if (!mounted) {
-      wasExiting.current = false;
-      return;
-    }
-    if (!visible) {
-      wasExiting.current = true;
-      exitRef.current?.();
-    } else if (wasExiting.current) {
-      wasExiting.current = false;
-      enterRef.current?.();
-    }
-  }, [visible, mounted]);
-
-  return { mounted, progress, reduced, settled, onShow };
+  return { mounted, progress, reduced, settled };
 }
