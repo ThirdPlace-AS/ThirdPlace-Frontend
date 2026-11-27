@@ -29,7 +29,7 @@ export const spring = {
 // Reanimated's `Easing.bezier(...easing.standard)`).
 export const easing = {
   standard: [0.2, 0, 0, 1], // most moves on screen
-  enter: [0.05, 0.7, 0.1, 1], // things arriving (overlays)
+  enter: [0.05, 0.7, 0.1, 1], // things arriving (PageActionCard)
   // A sheet sliding up: enter was 45 % of the way up on its first frame, so the
   // sheet popped in; this one is 12 % (iOS sheet curve, 2026-11-27).
   sheet: [0.32, 0.72, 0, 1],

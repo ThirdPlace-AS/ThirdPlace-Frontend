@@ -12,7 +12,7 @@
 // The enter starts in the mount effect. On the phone the Modal's window has
 // drawn its first frame by then (the slide starts 50–80 ms after it); waiting
 // for the Modal's onShow left the window empty for 115–147 ms (frame timings,
-// 2026-11-27, ledger 0569). A sheet passes curve "sheet" (easing.sheet).
+// 2026-11-27, ledger 0569). Sheet and Overlay pass curve "sheet" (easing.sheet).
 // `onHidden` runs once an exit has finished and the Modal is gone.
 import { useCallback, useEffect, useRef, useState } from "react";
 import {
