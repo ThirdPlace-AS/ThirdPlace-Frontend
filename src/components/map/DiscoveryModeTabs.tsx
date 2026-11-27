@@ -1,5 +1,5 @@
 import { memo } from "react";
-import { elevation } from "@/theme";
+import { useElevation } from "@/theme";
 import { Pressable, ScrollView } from "react-native";
 
 import {
@@ -21,6 +21,7 @@ export const DiscoveryModeTabs = memo(function DiscoveryModeTabs({
   mode: DiscoveryMode;
   onChange: (m: DiscoveryMode) => void;
 }) {
+  const elev = useElevation();
   return (
     <ScrollView
       horizontal
@@ -37,7 +38,7 @@ export const DiscoveryModeTabs = memo(function DiscoveryModeTabs({
             accessibilityState={{ selected }}
             accessibilityLabel={DISCOVERY_MODE_LABELS[m]}
             onPress={() => onChange(m)}
-            style={elevation.e1}
+            style={elev.e1}
             className={`flex-row items-center gap-2 rounded-full border px-4 py-2 ${
               selected ? "border-ink bg-ink" : "border-line bg-surface"
             }`}

@@ -52,7 +52,7 @@ import { SignInPrompt } from "@/components/SignInPrompt";
 import { PageScrollContext, scrollAnchorIn } from "@/components/pageScroll";
 import { PAGE_BAR_ROW } from "@/components/experience/ExperiencePage";
 import { chatForPlace, experienceById, placeById } from "@/fixtures";
-import { elevation, gutterPx, useThemeColors } from "@/theme";
+import { useElevation, gutterPx, useThemeColors } from "@/theme";
 
 import { PageActionCard } from "./content/PageActionCard";
 import { MiniPin } from "./MiniPin";
@@ -607,6 +607,7 @@ const FIXED_CORNERS =
 
 // Sheet background whose top corners square off on the way to the page snap.
 function PageBackground({ style, animatedIndex }: BottomSheetBackgroundProps) {
+  const elev = useElevation();
   const c = useThemeColors();
   const chrome = useSheetChrome();
   const radius =
@@ -626,7 +627,7 @@ function PageBackground({ style, animatedIndex }: BottomSheetBackgroundProps) {
       style={[
         style,
         { backgroundColor: c.surface },
-        elevation.e3,
+        elev.e3,
         FIXED_CORNERS ? null : a,
       ]}
     />

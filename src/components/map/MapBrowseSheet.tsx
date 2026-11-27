@@ -21,7 +21,7 @@ import {
   Text,
   useSheetChrome,
 } from "@/components/ui";
-import { elevation, gutterPx } from "@/theme";
+import { useElevation, gutterPx } from "@/theme";
 import { areaFor, type MockWeather } from "@/fixtures";
 import { useOrigin } from "@/lib/origin";
 import { formatRating } from "@/lib/format";
@@ -88,6 +88,7 @@ export const MapBrowseSheet = memo(function MapBrowseSheet({
   /** The map's own height (the sheet's container). */
   screenHeight?: number | null;
 }) {
+  const elev = useElevation();
   const chrome = useSheetChrome();
   // Peek = handle + the measured city/weather header, so no card photo shows
   // under it (review L11; a fixed 8% left a sliver of the first card).
@@ -333,7 +334,7 @@ export const MapBrowseSheet = memo(function MapBrowseSheet({
               accessibilityLabel="Vis kart"
               onPress={() => sheetRef.current?.snapToIndex(0)}
               contentClassName="flex-row items-center gap-2 rounded-full bg-ink px-4 py-3"
-              contentStyle={elevation.e2}
+              contentStyle={elev.e2}
             >
               <Text variant="label" weight="semibold" tone="onInk">
                 Kart

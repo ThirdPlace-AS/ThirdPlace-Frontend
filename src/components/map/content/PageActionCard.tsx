@@ -21,7 +21,13 @@ import Animated, {
 } from "react-native-reanimated";
 
 import { useReducedMotion } from "@/hooks/useReducedMotion";
-import { duration, easing, elevation, gutterPx, useRaisedEdge } from "@/theme";
+import {
+  duration,
+  easing,
+  useElevation,
+  gutterPx,
+  useRaisedEdge,
+} from "@/theme";
 
 import { atPageTop } from "../pageTarget";
 
@@ -52,6 +58,7 @@ export function PageActionCard({
   /** Opens the host view (the viewer hosts this experience, 0464). */
   onManage?: () => void;
 }) {
+  const elev = useElevation();
   const reduce = useReducedMotion();
   const edge = useRaisedEdge();
   // Starts hidden: the sheet opens at the peek or mid snap, and the reaction
@@ -95,7 +102,7 @@ export function PageActionCard({
         className={`rounded-md ${edge} bg-surface px-4 ${
           compact ? "py-2" : "py-3"
         }`}
-        style={elevation.e2}
+        style={elev.e2}
       >
         {kind === "place" ? (
           <PlaceChatBar placeId={id} />

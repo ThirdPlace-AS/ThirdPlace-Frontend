@@ -18,7 +18,7 @@ import { EmptyState, Header, Screen, StatusBarStyle } from "@/components/ui";
 import { chatForPlace, placeById } from "@/fixtures";
 import { PageTopBar } from "@/features/entity/PageTopBar";
 import { goBackOr } from "@/lib/navigation";
-import { elevation, useRaisedEdge } from "@/theme";
+import { useElevation, useRaisedEdge } from "@/theme";
 
 // The floating chat card's height before it is measured (dp).
 const CHAT_CARD = 96;
@@ -50,6 +50,7 @@ export function PlacePageBody({
   /** Set where the page is open in place (Sveip's details). */
   onBack?: () => void;
 }) {
+  const elev = useElevation();
   const insets = useSafeAreaInsets();
   const edge = useRaisedEdge();
   // The rating link scrolls to the page's reviews (pageScroll.ts).
@@ -106,7 +107,7 @@ export function PlacePageBody({
         >
           <View
             className={`rounded-md ${edge} bg-surface px-4 py-3`}
-            style={elevation.e2}
+            style={elev.e2}
             onLayout={(e) => {
               const h = Math.round(e.nativeEvent.layout.height);
               if (h > 0 && h !== cardH) setCardH(h);

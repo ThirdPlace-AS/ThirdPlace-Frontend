@@ -20,7 +20,7 @@ import {
   Sheet,
   useSheetSettled,
 } from "@/components/ui";
-import { elevation } from "@/theme";
+import { useElevation } from "@/theme";
 import { Calendar } from "@/components/Calendar";
 import { CheckboxRow } from "@/components/CheckboxRow";
 import { PriceHistogram } from "./PriceHistogram";
@@ -414,12 +414,6 @@ const ACCESSIBILITY_GROUPS: { title: string; items: AccessibilityOption[] }[] =
     },
   ];
 
-// Soft card shadow for the Where/When/Who cards (className can't express an
-// arbitrary cross-platform shadow, so it lives in a style object).
-const cardShadow = {
-  ...elevation.e1,
-} as const;
-
 // One card of the top Where/When/Who accordion (single-open). Collapsed shows a
 // muted label (left) + bold value (right); expanded shows a large title and the
 // children beneath — matching the reference Where/When/Who flow.
@@ -438,6 +432,9 @@ function SearchRow({
   onToggle: () => void;
   children: React.ReactNode;
 }) {
+  // Soft card shadow for the Where/When/Who cards (className can't express
+  // an arbitrary cross-platform shadow, so it lives in a style object).
+  const cardShadow = useElevation().e1;
   if (open) {
     return (
       <View

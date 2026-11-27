@@ -7,7 +7,7 @@ import { Toaster, toast } from "sonner-native";
 
 import { Icon, Pressable, Text } from "@/components/ui";
 import { useReducedMotion } from "@/hooks/useReducedMotion";
-import { duration, elevation, gutterPx } from "@/theme";
+import { duration, useElevation, gutterPx } from "@/theme";
 
 const CARD_INSET = { marginHorizontal: gutterPx };
 // sonner's positioner has no height of its own (the toast inside is
@@ -72,6 +72,7 @@ function ToastCard({
   toast: ToastInput;
   onClose: () => void;
 }) {
+  const elev = useElevation();
   return (
     // Row: tap-to-close body + an optional action as a SIBLING (no button
     // inside a button on web).
@@ -79,7 +80,7 @@ function ToastCard({
     // mx-gutter class did not reach this view on Android.
     <View
       className="flex-row items-center rounded-md bg-ink"
-      style={[CARD_INSET, elevation.e3]}
+      style={[CARD_INSET, elev.e3]}
     >
       <Pressable
         accessibilityRole="alert"

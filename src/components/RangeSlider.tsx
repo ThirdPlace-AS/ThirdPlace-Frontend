@@ -18,7 +18,7 @@ import Animated, {
 } from "react-native-reanimated";
 import { useReducedMotion } from "@/hooks/useReducedMotion";
 
-import { motion, useThemeColors, elevation } from "@/theme";
+import { motion, useThemeColors, useElevation } from "@/theme";
 
 import { dragIntent } from "./sliderGesture";
 
@@ -89,7 +89,6 @@ const thumbShape = {
   height: THUMB,
   borderRadius: THUMB / 2,
   borderWidth: 1,
-  ...elevation.e1,
 };
 
 // Dual-handle range slider for "Pris per gjest". PanResponder-based so it works
@@ -134,8 +133,10 @@ function RangeSliderBody({
   reportEveryMs?: number;
 }) {
   const colors = useThemeColors();
+  const elev = useElevation();
   const thumbBase = {
     ...thumbShape,
+    ...elev.e1,
     backgroundColor: colors.surfaceRaised,
     borderColor: colors.line,
   };

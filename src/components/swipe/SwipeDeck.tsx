@@ -45,7 +45,7 @@ import { haptics } from "@/lib/haptics";
 import { claimHint, markHintSeen, useHintSeen } from "@/lib/hints";
 import { joinChat } from "@/lib/joinedChats";
 import { getA11yPrefs, useA11yPrefs, withWheelchair } from "@/lib/a11yPrefs";
-import { elevation, motion, useThemeColors, media } from "@/theme";
+import { useElevation, motion, useThemeColors, media } from "@/theme";
 
 import {
   decideCommit,
@@ -1398,6 +1398,7 @@ function JoinChatSheet({
 
 // The one-time gesture hint: what a swipe does, then "Skjønner".
 function SwipeHint({ onDone }: { onDone: () => void }) {
+  const elev = useElevation();
   const reduced = useReducedMotion();
   const rows: { icon: IconName; text: string }[] = [
     { icon: "heart", text: "Sveip til høyre hvis du liker det" },
@@ -1415,7 +1416,7 @@ function SwipeHint({ onDone }: { onDone: () => void }) {
         entering={reduced ? undefined : FadeIn.duration(motion.duration.base)}
         style={{ width: "100%", maxWidth: 360 }}
       >
-        <View className="gap-3 rounded-lg bg-surface p-6" style={elevation.e3}>
+        <View className="gap-3 rounded-lg bg-surface p-6" style={elev.e3}>
           <Text variant="title" weight="semibold" accessibilityRole="header">
             Slik sveiper du
           </Text>

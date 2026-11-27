@@ -60,7 +60,7 @@ import {
 import { isHostedByMe, useCreatedVersion } from "@/fixtures/created";
 import { libImage } from "@/fixtures/images";
 import { formatRating, membersLabel } from "@/lib/format";
-import { elevation, useRaisedEdge } from "@/theme";
+import { useElevation, useRaisedEdge } from "@/theme";
 
 import { useExperienceJoin } from "../map/hooks/useExperienceJoin";
 import { useGuestMode } from "../map/hooks/useGuestMode";
@@ -168,6 +168,7 @@ export function ExperiencePage({
   hideGallery = false,
   preview,
 }: ExperiencePageProps) {
+  const elev = useElevation();
   // In the map sheet: the open shows the gallery (what the peek shows), the
   // first rows come once the sheet rests, the rest a moment later (0381).
   const first = useSheetStageFirst();
@@ -523,7 +524,7 @@ export function ExperiencePage({
               }
               pressedScale={0.99}
               contentClassName={`items-center gap-2 rounded-lg ${edge} bg-surface px-4 py-6`}
-              contentStyle={elevation.e1}
+              contentStyle={elev.e1}
             >
               <Avatar
                 name={hostName}

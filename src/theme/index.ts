@@ -36,7 +36,13 @@ export {
   presentation,
   gesture,
 } from "./motion";
-export { elevation, useRaisedEdge, type ElevationLevel } from "./elevation";
+export {
+  elevationFor,
+  useElevation,
+  useRaisedEdge,
+  type Elevation,
+  type ElevationLevel,
+} from "./elevation";
 export { iconSize, iconStroke, type IconSize } from "./icons";
 export {
   useScheme,

@@ -40,7 +40,7 @@ import Animated, {
 } from "react-native-reanimated";
 
 import {
-  elevation,
+  useElevation,
   media,
   presentation,
   radius,
@@ -179,6 +179,7 @@ export function SheetHeader({
  *  on every render (speed pass 0345): new ones made gorhom restyle the map
  *  sheets on each render of the map screen. */
 export function useSheetChrome() {
+  const elev = useElevation();
   const c = useThemeColors();
   return useMemo(
     () => ({
@@ -192,9 +193,9 @@ export function useSheetChrome() {
         width: 40,
         height: 4,
       },
-      style: elevation.e3,
+      style: elev.e3,
     }),
-    [c.surface, c.line],
+    [c.surface, c.line, elev.e3],
   );
 }
 
@@ -240,6 +241,7 @@ function SheetEngine({
   centerTitle = false,
   children,
 }: SheetProps) {
+  const elev = useElevation();
   const dark = tone === "dark";
   const c = useThemeColors();
   const insets = useSafeAreaInsets();
@@ -373,7 +375,7 @@ function SheetEngine({
                 fullHeight ? "flex-1" : ""
               }`}
               style={[
-                elevation.e3,
+                elev.e3,
                 dark ? { backgroundColor: media.base } : null,
                 { paddingBottom: padBottom },
                 fullHeight ? null : { maxHeight: maxCardH, flexShrink: 1 },
