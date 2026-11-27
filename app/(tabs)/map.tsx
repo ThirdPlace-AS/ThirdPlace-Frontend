@@ -203,7 +203,10 @@ export default function MapScreen() {
   // While a place or experience fills the screen as a page, the map under it
   // is out of TalkBack's way (phone sweep 2026-11-26: the map's search,
   // pills and buttons were read before the page). The page sheet lives in the
-  // root portal, outside this View, so it stays readable.
+  // root portal, outside this View, so it stays readable. The View is kept
+  // out of view flattening (collapsable false): when the prop flipped, the
+  // native tree was rebuilt and the map's surface was destroyed and made
+  // again, one black map frame as the page closed (phone log, 0575).
   const [pageUp, setPageUp] = useState(false);
   const handlePageChange = useCallback((isPage: boolean) => {
     detailIsPage.current = isPage;
@@ -459,6 +462,7 @@ export default function MapScreen() {
     <View
       className="flex-1 bg-background"
       onLayout={handleScreenLayout}
+      collapsable={false}
       importantForAccessibility={pageUp ? "no-hide-descendants" : "auto"}
       accessibilityElementsHidden={pageUp}
     >
