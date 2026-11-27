@@ -58,6 +58,7 @@ export {
   SheetHeader,
   SHEET_RADIUS,
   useSheetChrome,
+  useSheetClose,
   useSheetSettled,
   type SheetProps,
   type SheetTone,

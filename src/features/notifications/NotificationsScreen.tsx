@@ -316,26 +316,28 @@ function NotificationsContent() {
           onClose={() => setDeleteFor(null)}
           title="Vil du slette dette varselet?"
         >
-          <View className="gap-3">
-            <Button
-              label="Slett"
-              variant="danger"
-              onPress={() => {
-                dismiss(idsOf(deleteFor));
-                setDeleteFor(null);
-                openRow.current = null;
-                showToastAfterSheet(confirmToast.notificationDeleted);
-              }}
-            />
-            <Button
-              label="Avbryt"
-              variant="secondary"
-              onPress={() => {
-                setDeleteFor(null);
-                openRow.current?.close();
-              }}
-            />
-          </View>
+          {(close) => (
+            <View className="gap-3">
+              <Button
+                label="Slett"
+                variant="danger"
+                onPress={() => {
+                  dismiss(idsOf(deleteFor));
+                  close();
+                  openRow.current = null;
+                  showToastAfterSheet(confirmToast.notificationDeleted);
+                }}
+              />
+              <Button
+                label="Avbryt"
+                variant="secondary"
+                onPress={() => {
+                  close();
+                  openRow.current?.close();
+                }}
+              />
+            </View>
+          )}
         </Sheet>
       ) : null}
       {blockFor ? (

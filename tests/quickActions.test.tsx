@@ -90,7 +90,9 @@ describe("long-press quick actions", () => {
     const onClose = jest.fn();
     const save = jest.fn();
     const share = jest.fn();
-    render(
+    // The sheet runs its own exit before onClose (2026-11-27), so each pick
+    // gets a fresh sheet.
+    const sheet = () => (
       <ItemActionsSheet
         title="Kaffebrenneriet"
         onClose={onClose}
@@ -103,13 +105,15 @@ describe("long-press quick actions", () => {
             onPress: share,
           },
         ]}
-      />,
-      { wrapper },
+      />
     );
+    const first = render(sheet(), { wrapper });
     expect(screen.getByText("Lagre")).toBeTruthy();
     fireEvent.press(screen.getByText("Lagre"));
     expect(onClose).toHaveBeenCalledTimes(1);
     expect(save).toHaveBeenCalledTimes(1);
+    first.unmount();
+    render(sheet(), { wrapper });
     fireEvent.press(screen.getByText("Del"));
     expect(share).not.toHaveBeenCalled();
     act(() => {

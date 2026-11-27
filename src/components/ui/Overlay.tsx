@@ -73,7 +73,7 @@ function OverlayEngine({
   accessibilityLabel,
   children,
 }: OverlayProps) {
-  const { mounted, progress, reduced, settled } = usePresence(visible);
+  const { mounted, progress, reduced, settled, onShow } = usePresence(visible);
   const { width, height } = useWindowDimensions();
   // Read once per open; kept through the exit so it closes into the same spot.
   const [origin, setOrigin] = useState<{
@@ -127,6 +127,7 @@ function OverlayEngine({
       transparent
       animationType="none"
       onRequestClose={onClose}
+      onShow={onShow}
       statusBarTranslucent={statusBarTranslucent}
     >
       <GestureHandlerRootView style={{ flex: 1 }}>

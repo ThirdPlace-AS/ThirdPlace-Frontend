@@ -1,5 +1,5 @@
 import { describe, expect, it, jest } from "@jest/globals";
-import { fireEvent, render, screen } from "@testing-library/react-native";
+import { act, fireEvent, render, screen } from "@testing-library/react-native";
 import { Modal, ScrollView, Text } from "react-native";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 
@@ -47,7 +47,8 @@ describe("Sheet", () => {
         <Text>Innhold</Text>
       </Sheet>,
     );
-    UNSAFE_getByType(Modal).props.onRequestClose();
+    // Closing runs the exit first, then onClose (2026-11-27).
+    act(() => UNSAFE_getByType(Modal).props.onRequestClose());
     expect(onClose).toHaveBeenCalledTimes(1);
   });
 

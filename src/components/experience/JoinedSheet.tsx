@@ -37,55 +37,79 @@ export function JoinedSheet({
   useEffect(() => {
     haptics.success();
   }, []);
-  const later = (run: () => void) => () => {
-    onClose();
-    setTimeout(run, 240);
-  };
-  const actions = joinedActions(experience, session, later);
   return (
     <Sheet visible onClose={onClose} title="Du er med">
-      <View className="gap-4">
-        <View className="flex-row items-center gap-3 rounded-md border border-line bg-surface p-3">
-          {/* The check springs in just after the sheet has slid up. The
+      {(close) => (
+        <JoinedBody
+          experience={experience}
+          when={when}
+          reduced={reduced}
+          close={close}
+          actions={joinedActions(experience, session, (run) => () => {
+            close();
+            setTimeout(run, 240);
+          })}
+        />
+      )}
+    </Sheet>
+  );
+}
+
+function JoinedBody({
+  experience,
+  when,
+  reduced,
+  close,
+  actions,
+}: {
+  experience: MockExperience;
+  when: string;
+  reduced: boolean;
+  close: () => void;
+  actions: ReturnType<typeof joinedActions>;
+}) {
+  return (
+    <View className="gap-4">
+      <View className="flex-row items-center gap-3 rounded-md border border-line bg-surface p-3">
+        {/* The check springs in just after the sheet has slid up. The
               animated wrapper carries no className (dropped on a cold
               start, CLAUDE.md); the circle inside does. */}
-          <Animated.View
-            entering={
-              reduced ? undefined : ZoomIn.delay(180).springify().damping(13)
-            }
-          >
-            <View className="h-10 w-10 items-center justify-center rounded-full bg-success/15">
-              <Icon name="checkmark" size="md" tone="success" />
-            </View>
-          </Animated.View>
-          <View className="flex-1 gap-1">
-            <Text variant="label" weight="semibold" numberOfLines={2}>
-              {experience.title}
-            </Text>
-            <Text variant="caption" tone="muted" numberOfLines={2}>
-              {when} · {experience.meetingPoint.name}
-            </Text>
+        <Animated.View
+          entering={
+            reduced ? undefined : ZoomIn.delay(180).springify().damping(13)
+          }
+        >
+          <View className="h-10 w-10 items-center justify-center rounded-full bg-success/15">
+            <Icon name="checkmark" size="md" tone="success" />
           </View>
+        </Animated.View>
+        <View className="flex-1 gap-1">
+          <Text variant="label" weight="semibold" numberOfLines={2}>
+            {experience.title}
+          </Text>
+          <Text variant="caption" tone="muted" numberOfLines={2}>
+            {when} · {experience.meetingPoint.name}
+          </Text>
         </View>
-        <View className="gap-1">
-          {actions.map((a) => (
-            <UIPressable
-              key={a.label}
-              accessibilityRole="button"
-              onPress={a.onPress}
-              contentClassName="flex-row items-center gap-3 rounded-sm py-3"
-            >
-              <View className="h-10 w-10 items-center justify-center rounded-full bg-surfaceMuted">
-                <Icon name={a.icon} size="md" tone="ink" />
-              </View>
-              <Text variant="body" className="flex-1">
-                {a.label}
-              </Text>
-            </UIPressable>
-          ))}
-        </View>
-        <Button label="Ferdig" variant="secondary" onPress={onClose} />
       </View>
-    </Sheet>
+      <View className="gap-1">
+        {actions.map((a) => (
+          <UIPressable
+            key={a.label}
+            accessibilityRole="button"
+            onPress={a.onPress}
+            contentClassName="flex-row items-center gap-3 rounded-sm py-3"
+          >
+            <View className="h-10 w-10 items-center justify-center rounded-full bg-surfaceMuted">
+              <Icon name={a.icon} size="md" tone="ink" />
+            </View>
+            <Text variant="body" className="flex-1">
+              {a.label}
+            </Text>
+          </UIPressable>
+        ))}
+      </View>
+      <Button label="Ferdig" variant="secondary" onPress={close} />
+    </View>
   );
 }

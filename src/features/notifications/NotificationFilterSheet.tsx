@@ -42,70 +42,72 @@ export function NotificationFilterSheet({
   const on = isNotificationFilterOn(draft);
   return (
     <Sheet visible onClose={onClose} title="Filtrer">
-      <View className="gap-6">
-        <Button
-          label="Merk alle lest"
-          icon="checkmark-done-outline"
-          variant="secondary"
-          disabled={unread === 0}
-          onPress={() => {
-            onMarkAllRead();
-            onClose();
-          }}
-        />
-        <View>
-          <Text variant="body" weight="semibold" accessibilityRole="header">
-            Kategorier
-          </Text>
-          {NOTIFICATION_CATEGORIES.map((c) => (
+      {(close) => (
+        <View className="gap-6">
+          <Button
+            label="Merk alle lest"
+            icon="checkmark-done-outline"
+            variant="secondary"
+            disabled={unread === 0}
+            onPress={() => {
+              onMarkAllRead();
+              close();
+            }}
+          />
+          <View>
+            <Text variant="body" weight="semibold" accessibilityRole="header">
+              Kategorier
+            </Text>
+            {NOTIFICATION_CATEGORIES.map((c) => (
+              <CheckboxRow
+                key={c.type}
+                label={c.label}
+                checked={draft.types.has(c.type)}
+                onToggle={() => toggleType(c.type)}
+              />
+            ))}
+          </View>
+          <View>
+            <Text variant="body" weight="semibold" accessibilityRole="header">
+              Kontotyper
+            </Text>
             <CheckboxRow
-              key={c.type}
-              label={c.label}
-              checked={draft.types.has(c.type)}
-              onToggle={() => toggleType(c.type)}
+              label="Personer du følger"
+              checked={draft.onlyFollowing}
+              onToggle={() =>
+                setDraft((d) => ({ ...d, onlyFollowing: !d.onlyFollowing }))
+              }
             />
-          ))}
-        </View>
-        <View>
-          <Text variant="body" weight="semibold" accessibilityRole="header">
-            Kontotyper
-          </Text>
-          <CheckboxRow
-            label="Personer du følger"
-            checked={draft.onlyFollowing}
-            onToggle={() =>
-              setDraft((d) => ({ ...d, onlyFollowing: !d.onlyFollowing }))
-            }
-          />
-          <CheckboxRow
-            label="Verifisert"
-            checked={draft.onlyVerified}
-            onToggle={() =>
-              setDraft((d) => ({ ...d, onlyVerified: !d.onlyVerified }))
-            }
-          />
-        </View>
-        <View className="flex-row gap-3">
-          <View className="flex-1">
-            <Button
-              label="Tøm"
-              variant="secondary"
-              disabled={!on}
-              onPress={() => setDraft(NO_NOTIFICATION_FILTER)}
+            <CheckboxRow
+              label="Verifisert"
+              checked={draft.onlyVerified}
+              onToggle={() =>
+                setDraft((d) => ({ ...d, onlyVerified: !d.onlyVerified }))
+              }
             />
           </View>
-          <View className="flex-1">
-            <Button
-              label="Bruk"
-              variant="ink"
-              onPress={() => {
-                onApply(draft);
-                onClose();
-              }}
-            />
+          <View className="flex-row gap-3">
+            <View className="flex-1">
+              <Button
+                label="Tøm"
+                variant="secondary"
+                disabled={!on}
+                onPress={() => setDraft(NO_NOTIFICATION_FILTER)}
+              />
+            </View>
+            <View className="flex-1">
+              <Button
+                label="Bruk"
+                variant="ink"
+                onPress={() => {
+                  onApply(draft);
+                  close();
+                }}
+              />
+            </View>
           </View>
         </View>
-      </View>
+      )}
     </Sheet>
   );
 }

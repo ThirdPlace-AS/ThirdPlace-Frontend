@@ -36,47 +36,49 @@ export function ShareSheet({
   ];
   return (
     <Sheet visible onClose={onClose} title="Del">
-      <View className="gap-4">
-        <View className="gap-1 rounded-md border border-line bg-surface p-3">
-          <Text variant="label" weight="semibold">
-            {title}
-          </Text>
-          <Text variant="caption" tone="muted">
-            thirdplace.app/{slug}
-          </Text>
-        </View>
-        <View className="flex-row gap-6">
-          {actions.map((a) => (
-            <UIPressable
-              key={a.label}
-              accessibilityRole="button"
-              onPress={() => {
-                onClose();
-                if (a.label === "Mer") {
-                  // The system share sheet, with the item link.
-                  setTimeout(
-                    () =>
-                      void Share.share({ message: `thirdplace.app/${slug}` }),
-                    240,
+      {(close) => (
+        <View className="gap-4">
+          <View className="gap-1 rounded-md border border-line bg-surface p-3">
+            <Text variant="label" weight="semibold">
+              {title}
+            </Text>
+            <Text variant="caption" tone="muted">
+              thirdplace.app/{slug}
+            </Text>
+          </View>
+          <View className="flex-row gap-6">
+            {actions.map((a) => (
+              <UIPressable
+                key={a.label}
+                accessibilityRole="button"
+                onPress={() => {
+                  close();
+                  if (a.label === "Mer") {
+                    // The system share sheet, with the item link.
+                    setTimeout(
+                      () =>
+                        void Share.share({ message: `thirdplace.app/${slug}` }),
+                      240,
+                    );
+                    return;
+                  }
+                  showToastAfterSheet(
+                    a.label === "Kopier"
+                      ? confirmToast.linkCopied
+                      : confirmToast.sharedInMessage,
                   );
-                  return;
-                }
-                showToastAfterSheet(
-                  a.label === "Kopier"
-                    ? confirmToast.linkCopied
-                    : confirmToast.sharedInMessage,
-                );
-              }}
-              contentClassName="items-center gap-1"
-            >
-              <View className="h-12 w-12 items-center justify-center rounded-full bg-surfaceMuted">
-                <Icon name={a.icon} size="md" tone="ink" />
-              </View>
-              <Text variant="caption">{a.label}</Text>
-            </UIPressable>
-          ))}
+                }}
+                contentClassName="items-center gap-1"
+              >
+                <View className="h-12 w-12 items-center justify-center rounded-full bg-surfaceMuted">
+                  <Icon name={a.icon} size="md" tone="ink" />
+                </View>
+                <Text variant="caption">{a.label}</Text>
+              </UIPressable>
+            ))}
+          </View>
         </View>
-      </View>
+      )}
     </Sheet>
   );
 }
@@ -101,32 +103,34 @@ export function ItemActionsSheet({
 }: Base & { title: string; subtitle?: string; actions: ItemAction[] }) {
   return (
     <Sheet visible onClose={onClose} title={title}>
-      <View className="gap-1">
-        {subtitle ? (
-          <Text variant="caption" tone="muted" className="pb-2">
-            {subtitle}
-          </Text>
-        ) : null}
-        {actions.map((a) => (
-          <UIPressable
-            key={a.label}
-            accessibilityRole="button"
-            onPress={() => {
-              onClose();
-              if (a.afterClose) setTimeout(a.onPress, 240);
-              else a.onPress();
-            }}
-            contentClassName="flex-row items-center gap-3 rounded-sm py-3"
-          >
-            <View className="h-10 w-10 items-center justify-center rounded-full bg-surfaceMuted">
-              <Icon name={a.icon} size="md" tone="ink" />
-            </View>
-            <Text variant="body" className="flex-1">
-              {a.label}
+      {(close) => (
+        <View className="gap-1">
+          {subtitle ? (
+            <Text variant="caption" tone="muted" className="pb-2">
+              {subtitle}
             </Text>
-          </UIPressable>
-        ))}
-      </View>
+          ) : null}
+          {actions.map((a) => (
+            <UIPressable
+              key={a.label}
+              accessibilityRole="button"
+              onPress={() => {
+                close();
+                if (a.afterClose) setTimeout(a.onPress, 240);
+                else a.onPress();
+              }}
+              contentClassName="flex-row items-center gap-3 rounded-sm py-3"
+            >
+              <View className="h-10 w-10 items-center justify-center rounded-full bg-surfaceMuted">
+                <Icon name={a.icon} size="md" tone="ink" />
+              </View>
+              <Text variant="body" className="flex-1">
+                {a.label}
+              </Text>
+            </UIPressable>
+          ))}
+        </View>
+      )}
     </Sheet>
   );
 }
@@ -145,38 +149,40 @@ export function ReportSheet({ onClose }: Base) {
   const [reason, setReason] = useState<string | null>(null);
   return (
     <Sheet visible onClose={onClose} title="Rapporter">
-      <View className="gap-3">
-        <Text variant="caption" tone="muted">
-          Hva er galt?
-        </Text>
-        {REASONS.map((r) => (
-          <UIPressable
-            key={r}
-            accessibilityRole="radio"
-            accessibilityState={{ checked: reason === r }}
-            onPress={() => setReason(r)}
-            contentClassName="flex-row items-center justify-between rounded-md border border-line bg-surface px-4 py-4"
-            pressedScale={0.99}
-          >
-            <Text variant="label">{r}</Text>
-            <View
-              className={`h-5 w-5 rounded-full border-2 ${
-                reason === r ? "border-ink bg-ink" : "border-line"
-              }`}
-            />
-          </UIPressable>
-        ))}
+      {(close) => (
+        <View className="gap-3">
+          <Text variant="caption" tone="muted">
+            Hva er galt?
+          </Text>
+          {REASONS.map((r) => (
+            <UIPressable
+              key={r}
+              accessibilityRole="radio"
+              accessibilityState={{ checked: reason === r }}
+              onPress={() => setReason(r)}
+              contentClassName="flex-row items-center justify-between rounded-md border border-line bg-surface px-4 py-4"
+              pressedScale={0.99}
+            >
+              <Text variant="label">{r}</Text>
+              <View
+                className={`h-5 w-5 rounded-full border-2 ${
+                  reason === r ? "border-ink bg-ink" : "border-line"
+                }`}
+              />
+            </UIPressable>
+          ))}
 
-        <Button
-          label="Send rapport"
-          variant="ink"
-          disabled={!reason}
-          onPress={() => {
-            onClose();
-            showToastAfterSheet(confirmToast.reportSent);
-          }}
-        />
-      </View>
+          <Button
+            label="Send rapport"
+            variant="ink"
+            disabled={!reason}
+            onPress={() => {
+              close();
+              showToastAfterSheet(confirmToast.reportSent);
+            }}
+          />
+        </View>
+      )}
     </Sheet>
   );
 }
@@ -194,25 +200,27 @@ export function BlockSheet({
   const first = name.split(" ")[0];
   return (
     <Sheet visible onClose={onClose} title={`Blokkere ${first}?`}>
-      <View className="gap-3">
-        <Text variant="caption" tone="muted">
-          {first} kan ikke lenger se profilen din, sende meldinger eller finne
-          deg i søk. Dere fjernes fra felles chatter.
-        </Text>
+      {(close) => (
+        <View className="gap-3">
+          <Text variant="caption" tone="muted">
+            {first} kan ikke lenger se profilen din, sende meldinger eller finne
+            deg i søk. Dere fjernes fra felles chatter.
+          </Text>
 
-        {/* The confirm names who it acts on, in the danger tone (review
+          {/* The confirm names who it acts on, in the danger tone (review
             2026-11-18 CMP-09). */}
-        <Button
-          label={`Blokker ${first}`}
-          variant="danger"
-          onPress={() => {
-            if (personId) blockPerson(personId, name);
-            onClose();
-            showToastAfterSheet(blockedToast(first ?? name));
-          }}
-        />
-        <Button label="Avbryt" variant="ink" onPress={onClose} />
-      </View>
+          <Button
+            label={`Blokker ${first}`}
+            variant="danger"
+            onPress={() => {
+              if (personId) blockPerson(personId, name);
+              close();
+              showToastAfterSheet(blockedToast(first ?? name));
+            }}
+          />
+          <Button label="Avbryt" variant="ink" onPress={close} />
+        </View>
+      )}
     </Sheet>
   );
 }
@@ -225,17 +233,19 @@ export function LeaveSheet({
 }: Base & { title?: string; onConfirm: () => void }) {
   return (
     <Sheet visible onClose={onClose} title={title}>
-      <View className="gap-3">
-        <Button
-          label="Forlat"
-          variant="danger"
-          onPress={() => {
-            onConfirm();
-            onClose();
-          }}
-        />
-        <Button label="Bli værende" variant="ink" onPress={onClose} />
-      </View>
+      {(close) => (
+        <View className="gap-3">
+          <Button
+            label="Forlat"
+            variant="danger"
+            onPress={() => {
+              onConfirm();
+              close();
+            }}
+          />
+          <Button label="Bli værende" variant="ink" onPress={close} />
+        </View>
+      )}
     </Sheet>
   );
 }
@@ -248,17 +258,19 @@ export function WaitlistSheet({
 }: Base & { onConfirm: () => void }) {
   return (
     <Sheet visible onClose={onClose} title="Bli med på ventelisten?">
-      <View className="gap-3">
-        <Button
-          label="Sett meg på ventelisten"
-          variant="ink"
-          onPress={() => {
-            onConfirm();
-            onClose();
-          }}
-        />
-        <Button label="Avbryt" variant="secondary" onPress={onClose} />
-      </View>
+      {(close) => (
+        <View className="gap-3">
+          <Button
+            label="Sett meg på ventelisten"
+            variant="ink"
+            onPress={() => {
+              onConfirm();
+              close();
+            }}
+          />
+          <Button label="Avbryt" variant="secondary" onPress={close} />
+        </View>
+      )}
     </Sheet>
   );
 }
@@ -281,34 +293,36 @@ export function PaySheet({
 }) {
   return (
     <Sheet visible onClose={onClose} title="Bli med">
-      <View className="gap-3">
-        <View className="gap-1 rounded-md border border-line bg-surface p-3">
-          <Text variant="label" weight="semibold">
-            {title}
-          </Text>
-          <Text variant="caption" tone="muted">
-            {when}
-          </Text>
-        </View>
-        <View className="flex-row justify-between px-1">
-          <Text variant="caption" tone="muted">
-            Billett
-          </Text>
-          <Text variant="label" weight="semibold">
-            {priceNok} kr
-          </Text>
-        </View>
+      {(close) => (
+        <View className="gap-3">
+          <View className="gap-1 rounded-md border border-line bg-surface p-3">
+            <Text variant="label" weight="semibold">
+              {title}
+            </Text>
+            <Text variant="caption" tone="muted">
+              {when}
+            </Text>
+          </View>
+          <View className="flex-row justify-between px-1">
+            <Text variant="caption" tone="muted">
+              Billett
+            </Text>
+            <Text variant="label" weight="semibold">
+              {priceNok} kr
+            </Text>
+          </View>
 
-        <Button
-          label="Reserver plass"
-          variant="ink"
-          onPress={() => {
-            onJoined();
-            onClose();
-          }}
-        />
-        <Button label="Avbryt" variant="secondary" onPress={onClose} />
-      </View>
+          <Button
+            label="Reserver plass"
+            variant="ink"
+            onPress={() => {
+              onJoined();
+              close();
+            }}
+          />
+          <Button label="Avbryt" variant="secondary" onPress={close} />
+        </View>
+      )}
     </Sheet>
   );
 }
@@ -325,29 +339,31 @@ export function CancelSheet({
   const [reason, setReason] = useState("");
   return (
     <Sheet visible onClose={onClose} title={`Avlyse ${title}?`}>
-      <View className="gap-3">
-        <Text variant="caption" tone="muted">
-          {going} er påmeldt. Du kan skrive en årsak (valgfritt).
-        </Text>
-        <Input
-          label="Årsak (vises for deltakerne)"
-          placeholder="F.eks. sykdom i bandet …"
-          value={reason}
-          onChangeText={setReason}
-          multiline
-          maxLength={200}
-        />
+      {(close) => (
+        <View className="gap-3">
+          <Text variant="caption" tone="muted">
+            {going} er påmeldt. Du kan skrive en årsak (valgfritt).
+          </Text>
+          <Input
+            label="Årsak (vises for deltakerne)"
+            placeholder="F.eks. sykdom i bandet …"
+            value={reason}
+            onChangeText={setReason}
+            multiline
+            maxLength={200}
+          />
 
-        <Button
-          label="Avlys"
-          variant="danger"
-          onPress={() => {
-            onConfirm();
-            onClose();
-          }}
-        />
-        <Button label="Behold opplevelsen" variant="ink" onPress={onClose} />
-      </View>
+          <Button
+            label="Avlys"
+            variant="danger"
+            onPress={() => {
+              onConfirm();
+              close();
+            }}
+          />
+          <Button label="Behold opplevelsen" variant="ink" onPress={close} />
+        </View>
+      )}
     </Sheet>
   );
 }
@@ -356,33 +372,35 @@ export function CancelSheet({
 export function SpotOfferSheet({ title, onClose }: Base & { title: string }) {
   return (
     <Sheet visible onClose={onClose} title="En plass åpnet seg!">
-      <View className="gap-3">
-        <View className="gap-1 rounded-md border border-line bg-surface p-3">
-          <Text variant="label" weight="semibold">
-            {title}
+      {(close) => (
+        <View className="gap-3">
+          <View className="gap-1 rounded-md border border-line bg-surface p-3">
+            <Text variant="label" weight="semibold">
+              {title}
+            </Text>
+          </View>
+          <Text variant="caption" tone="muted">
+            Vil du ta plassen?
           </Text>
-        </View>
-        <Text variant="caption" tone="muted">
-          Vil du ta plassen?
-        </Text>
 
-        <Button
-          label="Ta plassen"
-          variant="ember"
-          onPress={() => {
-            onClose();
-            showToastAfterSheet(confirmToast.spotTaken);
-          }}
-        />
-        <Button
-          label="Gi den videre"
-          variant="secondary"
-          onPress={() => {
-            onClose();
-            showToastAfterSheet(confirmToast.spotPassed);
-          }}
-        />
-      </View>
+          <Button
+            label="Ta plassen"
+            variant="ember"
+            onPress={() => {
+              close();
+              showToastAfterSheet(confirmToast.spotTaken);
+            }}
+          />
+          <Button
+            label="Gi den videre"
+            variant="secondary"
+            onPress={() => {
+              close();
+              showToastAfterSheet(confirmToast.spotPassed);
+            }}
+          />
+        </View>
+      )}
     </Sheet>
   );
 }
@@ -409,55 +427,57 @@ export function RateSheet({
   const [liked, setLiked] = useState<string[]>([]);
   return (
     <Sheet visible onClose={onClose} title={heading}>
-      <View className="gap-3">
-        <Text variant="caption" tone="muted">
-          {title}
-        </Text>
-        <View className="flex-row gap-1">
-          {[1, 2, 3, 4, 5].map((n) => (
-            <Pressable
-              key={n}
-              accessibilityRole="button"
-              accessibilityLabel={`${n} av 5 stjerner`}
-              onPress={() => setStars(n)}
-            >
-              <Icon
-                name={n <= stars ? "star" : "star-outline"}
-                size="xl"
-                tone={n <= stars ? "ember" : "muted"}
+      {(close) => (
+        <View className="gap-3">
+          <Text variant="caption" tone="muted">
+            {title}
+          </Text>
+          <View className="flex-row gap-1">
+            {[1, 2, 3, 4, 5].map((n) => (
+              <Pressable
+                key={n}
+                accessibilityRole="button"
+                accessibilityLabel={`${n} av 5 stjerner`}
+                onPress={() => setStars(n)}
+              >
+                <Icon
+                  name={n <= stars ? "star" : "star-outline"}
+                  size="xl"
+                  tone={n <= stars ? "ember" : "muted"}
+                />
+              </Pressable>
+            ))}
+          </View>
+          <Text variant="label" weight="semibold">
+            {chipsLabel}
+          </Text>
+          <View className="flex-row flex-wrap gap-2">
+            {chips.map((p) => (
+              <Chip
+                key={p}
+                label={p}
+                selected={liked.includes(p)}
+                onPress={() =>
+                  setLiked((s) =>
+                    s.includes(p) ? s.filter((x) => x !== p) : [...s, p],
+                  )
+                }
               />
-            </Pressable>
-          ))}
+            ))}
+          </View>
+          <Button
+            label="Send vurdering"
+            variant="ink"
+            disabled={stars === 0}
+            onPress={() => {
+              onSent?.({ stars, liked });
+              close();
+              showToastAfterSheet(confirmToast.ratingSent);
+            }}
+          />
+          <Button label="Hopp over" variant="secondary" onPress={close} />
         </View>
-        <Text variant="label" weight="semibold">
-          {chipsLabel}
-        </Text>
-        <View className="flex-row flex-wrap gap-2">
-          {chips.map((p) => (
-            <Chip
-              key={p}
-              label={p}
-              selected={liked.includes(p)}
-              onPress={() =>
-                setLiked((s) =>
-                  s.includes(p) ? s.filter((x) => x !== p) : [...s, p],
-                )
-              }
-            />
-          ))}
-        </View>
-        <Button
-          label="Send vurdering"
-          variant="ink"
-          disabled={stars === 0}
-          onPress={() => {
-            onSent?.({ stars, liked });
-            onClose();
-            showToastAfterSheet(confirmToast.ratingSent);
-          }}
-        />
-        <Button label="Hopp over" variant="secondary" onPress={onClose} />
-      </View>
+      )}
     </Sheet>
   );
 }

@@ -9,6 +9,27 @@ jest.mock("react-native-reanimated", () => ({
   useReducedMotion: () => false,
 }));
 
+// A native Modal reports `onShow` once its window is up; Sheet and Overlay
+// wait for it before they animate in (usePresence). Jest has no window, so
+// report it as soon as the Modal is shown.
+jest.mock("react-native/Libraries/Modal/Modal", () => {
+  const React = require("react");
+  // React Native's own jest Modal (renders nothing while not visible).
+  const Actual = jest.requireActual(
+    "@react-native/jest-preset/jest/mocks/Modal",
+  );
+  const RealModal = Actual.default ?? Actual;
+  function ShowingModal(props) {
+    const { visible, onShow } = props;
+    React.useEffect(() => {
+      if (visible !== false) onShow?.();
+    }, [visible, onShow]);
+    // Bracket access: NativeWind's Babel plugin rewrites React.createElement.
+    return React["create" + "Element"](RealModal, props);
+  }
+  return { __esModule: true, default: ShowingModal };
+});
+
 // Icon fonts: report as loaded so @expo/vector-icons doesn't set state after
 // render (act() warnings) — there are no real fonts under Jest.
 jest.mock("expo-font", () => ({
