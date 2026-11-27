@@ -61,3 +61,8 @@ export const confirmToast = {
 export function blockedToast(name: string): ToastInput {
   return { title: `${name} er blokkert`, icon: ok };
 }
+
+/** Varsler's «…» Fjern følger (user 2026-11-27). */
+export function followerRemovedToast(name: string): ToastInput {
+  return { title: `${name} er fjernet som følger`, icon: ok };
+}

@@ -1,7 +1,8 @@
 // Varsler's swipe actions and Filtrer (user 2026-11-27, 0561, Instagram's
 // notifications): a row swipes left to «…» (Ikke interessert, Blokker) and
 // Slett (asks first); Filtrer keeps chosen kinds of notice or only people you
-// follow, with Tøm and Bruk.
+// follow, with Tøm and Bruk. User 2026-11-27: «…» Fjern følger, Filtrer's
+// Verifisert, and Merk alle lest inside Filtrer's sheet.
 import { afterEach, describe, expect, it, jest } from "@jest/globals";
 import {
   act,
@@ -17,13 +18,14 @@ import {
   NO_NOTIFICATION_FILTER,
   applyNotificationFilter,
   notificationPerson,
+  notificationVerified,
 } from "@/features/notifications/notificationFilters";
 import { MOCK_NOTIFICATIONS, visibleNotifications } from "@/fixtures";
 import {
   resetNotificationReads,
   useNotificationReads,
 } from "@/hooks/useNotificationReads";
-import { resetFollowing } from "@/lib/following";
+import { followerPeople, resetFollowing } from "@/lib/following";
 
 jest.mock("expo-router", () => ({
   router: {
@@ -66,7 +68,7 @@ describe("applyNotificationFilter", () => {
   it("keeps only the picked kinds", () => {
     const kept = applyNotificationFilter(
       all,
-      { types: new Set(["follow"]), onlyFollowing: false },
+      { types: new Set(["follow"]), onlyFollowing: false, onlyVerified: false },
       new Set(),
     );
     expect(kept.length).toBeGreaterThan(0);
@@ -77,13 +79,26 @@ describe("applyNotificationFilter", () => {
     const someone = all.map(notificationPerson).find(Boolean)!;
     const kept = applyNotificationFilter(
       all,
-      { types: new Set(), onlyFollowing: true },
+      { types: new Set(), onlyFollowing: true, onlyVerified: false },
       new Set([someone.id]),
     );
     expect(kept.length).toBeGreaterThan(0);
     expect(kept.every((n) => notificationPerson(n)?.id === someone.id)).toBe(
       true,
     );
+  });
+
+  it("Verifisert keeps verified people and verified businesses", () => {
+    const kept = applyNotificationFilter(
+      all,
+      { types: new Set(), onlyFollowing: false, onlyVerified: true },
+      new Set(),
+    );
+    expect(kept.length).toBeGreaterThan(0);
+    expect(kept.length).toBeLessThan(all.length);
+    expect(kept.every(notificationVerified)).toBe(true);
+    // A place actor counts through its verified business.
+    expect(kept.some((n) => !notificationPerson(n))).toBe(true);
   });
 });
 
@@ -113,6 +128,17 @@ describe("Varsler swipe actions", () => {
     reads.rerender({});
     expect(reads.result.current.items.length).toBeLessThan(before);
   });
+
+  it("«…» Fjern følger removes a follower; others get no such action", () => {
+    const before = followerPeople().length;
+    render(<NotificationsScreen />, { wrapper });
+    // The newest notice is Jonas Berg's follow (a follower).
+    fireEvent.press(screen.getAllByLabelText("Flere valg")[0]!);
+    fireEvent.press(screen.getByRole("button", { name: "Fjern følger" }));
+    expect(followerPeople().length).toBe(before - 1);
+    fireEvent.press(screen.getAllByLabelText("Flere valg")[0]!);
+    expect(screen.queryByRole("button", { name: "Fjern følger" })).toBeNull();
+  });
 });
 
 describe("Filtrer", () => {
@@ -131,5 +157,19 @@ describe("Filtrer", () => {
     fireEvent.press(screen.getByRole("button", { name: "Tøm" }));
     fireEvent.press(screen.getByRole("button", { name: "Bruk" }));
     expect(screen.getByLabelText("Filtrer")).toBeTruthy();
+  });
+
+  it("Merk alle lest sits in the sheet, not the header", () => {
+    render(<NotificationsScreen />, { wrapper });
+    expect(screen.queryByText("Merk alle lest")).toBeNull();
+    expect(screen.getAllByLabelText(/, ulest$/).length).toBeGreaterThan(0);
+    fireEvent.press(screen.getByLabelText("Filtrer"));
+    fireEvent.press(screen.getByRole("button", { name: "Merk alle lest" }));
+    expect(screen.queryAllByLabelText(/, ulest$/)).toHaveLength(0);
+    fireEvent.press(screen.getByLabelText("Filtrer"));
+    expect(
+      screen.getByRole("button", { name: "Merk alle lest" }).props
+        .accessibilityState?.disabled,
+    ).toBe(true);
   });
 });

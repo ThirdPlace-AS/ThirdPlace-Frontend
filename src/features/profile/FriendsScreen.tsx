@@ -19,7 +19,11 @@ import {
 } from "@/components/ui";
 import { directChatFor } from "@/fixtures/created";
 import { PersonListRow } from "@/features/people/PersonListRow";
-import { friendPeople, useFollowing } from "@/lib/following";
+import {
+  friendPeople,
+  useFollowing,
+  useRemovedFollowers,
+} from "@/lib/following";
 
 export default function FriendsScreen() {
   const set = useFollowing();
@@ -27,6 +31,7 @@ export default function FriendsScreen() {
   const [q, setQ] = useState("");
   const [signIn, setSignIn] = useState(false);
 
+  useRemovedFollowers();
   const friends = friendPeople(set);
   const needle = q.trim().toLowerCase();
   const shown = needle

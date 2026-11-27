@@ -1,6 +1,8 @@
 // Filtrer for Varsler (user 2026-11-27, 0561, Instagram's notification
-// filter): Kategorier (the kinds of notice) and Kontotyper (only people you
-// follow), Tøm to clear and Bruk to apply side by side at the bottom. The picks stay a draft until Bruk.
+// filter): Kategorier (the kinds of notice) and Kontotyper (people you follow,
+// verified accounts), Tøm to clear and Bruk to apply side by side. The picks
+// stay a draft until Bruk. "Merk alle lest" sits here too (user 2026-11-27):
+// it acts at once and closes the sheet.
 import { useState } from "react";
 import { View } from "react-native";
 
@@ -19,10 +21,15 @@ export function NotificationFilterSheet({
   value,
   onApply,
   onClose,
+  unread,
+  onMarkAllRead,
 }: {
   value: NotificationFilter;
   onApply: (next: NotificationFilter) => void;
   onClose: () => void;
+  /** Unread notices; Merk alle lest is off at 0. */
+  unread: number;
+  onMarkAllRead: () => void;
 }) {
   const [draft, setDraft] = useState<NotificationFilter>(value);
   const toggleType = (t: NotificationType) =>
@@ -36,6 +43,16 @@ export function NotificationFilterSheet({
   return (
     <Sheet visible onClose={onClose} title="Filtrer">
       <View className="gap-6">
+        <Button
+          label="Merk alle lest"
+          icon="checkmark-done-outline"
+          variant="secondary"
+          disabled={unread === 0}
+          onPress={() => {
+            onMarkAllRead();
+            onClose();
+          }}
+        />
         <View>
           <Text variant="body" weight="semibold" accessibilityRole="header">
             Kategorier
@@ -58,6 +75,13 @@ export function NotificationFilterSheet({
             checked={draft.onlyFollowing}
             onToggle={() =>
               setDraft((d) => ({ ...d, onlyFollowing: !d.onlyFollowing }))
+            }
+          />
+          <CheckboxRow
+            label="Verifisert"
+            checked={draft.onlyVerified}
+            onToggle={() =>
+              setDraft((d) => ({ ...d, onlyVerified: !d.onlyVerified }))
             }
           />
         </View>

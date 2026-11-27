@@ -18,9 +18,15 @@ import {
   Pressable,
   Text,
 } from "@/components/ui";
-import { people, profile, type MockPerson } from "@/fixtures";
+import { people, type MockPerson } from "@/fixtures";
 import { PersonListRow } from "@/features/people/PersonListRow";
-import { followerPeople, toggleFollow, useFollowing } from "@/lib/following";
+import {
+  followerPeople,
+  isFollower,
+  toggleFollow,
+  useFollowing,
+  useRemovedFollowers,
+} from "@/lib/following";
 import { useMyProfile } from "@/lib/myProfile";
 
 type Tab = "followers" | "following";
@@ -47,12 +53,13 @@ export default function FollowersScreen() {
     setKept((k) => (k.has(id) ? k : new Set([...k, id])));
   };
 
+  useRemovedFollowers();
   const followers = followerPeople();
   const followingList = people.filter((p) => kept.has(p.id) || set.has(p.id));
   const followingCount = people.filter((p) => set.has(p.id)).length;
   const list = active === "followers" ? followers : followingList;
 
-  const followsMe = (id: string) => profile.followerIds.includes(id);
+  const followsMe = isFollower;
   const line = (p: MockPerson) => {
     if (set.has(p.id) && followsMe(p.id)) return "Venn";
     const shared = p.interests.filter((i) => me.interests.includes(i));

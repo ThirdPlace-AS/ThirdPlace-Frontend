@@ -5,6 +5,7 @@
 import type { ImageSourcePropType } from "react-native";
 
 import {
+  businessForPlace,
   experienceById,
   groupById,
   people,
@@ -27,6 +28,16 @@ export function notificationPerson(
   return people.find((p) => p.name === n.actorName);
 }
 
+/** Whether the actor is verified: a person with the badge, or a place whose
+ *  business is verified (MOCK flags, user 2026-11-27). */
+export function notificationVerified(n: MockNotification): boolean {
+  const p = notificationPerson(n);
+  if (p) return p.verified === true;
+  if (n.target.kind === "place" || n.target.kind === "reviews")
+    return businessForPlace(n.target.id)?.verified === true;
+  return false;
+}
+
 /** The photo of what a notice names: an experience, place or group. */
 export function notificationThumb(
   n: MockNotification,
@@ -45,16 +56,19 @@ export function notificationThumb(
 }
 
 // Filtrer (user 2026-11-27, 0561, Instagram's Varsler filter): which kinds of
-// notice to show and whether only people the viewer follows. Empty kinds =
-// every kind. Screen state only, like the rest of the inbox.
+// notice to show and whether only people the viewer follows or verified
+// accounts (user 2026-11-27). Empty kinds = every kind; both account kinds
+// picked keep either. Screen state only, like the rest of the inbox.
 export type NotificationFilter = {
   types: ReadonlySet<NotificationType>;
   onlyFollowing: boolean;
+  onlyVerified: boolean;
 };
 
 export const NO_NOTIFICATION_FILTER: NotificationFilter = {
   types: new Set(),
   onlyFollowing: false,
+  onlyVerified: false,
 };
 
 /** Filtrer's Kategorier, in the order they show. */
@@ -70,7 +84,7 @@ export const NOTIFICATION_CATEGORIES: {
 ];
 
 export function isNotificationFilterOn(f: NotificationFilter): boolean {
-  return f.types.size > 0 || f.onlyFollowing;
+  return f.types.size > 0 || f.onlyFollowing || f.onlyVerified;
 }
 
 /** The notices a filter keeps. `followingIds`: people the viewer follows. */
@@ -81,9 +95,11 @@ export function applyNotificationFilter(
 ): MockNotification[] {
   return items.filter((n) => {
     if (f.types.size > 0 && !f.types.has(n.type)) return false;
-    if (f.onlyFollowing) {
+    if (f.onlyFollowing || f.onlyVerified) {
       const p = notificationPerson(n);
-      if (!p || !followingIds.has(p.id)) return false;
+      const followed = f.onlyFollowing && !!p && followingIds.has(p.id);
+      const verified = f.onlyVerified && notificationVerified(n);
+      if (!followed && !verified) return false;
     }
     return true;
   });

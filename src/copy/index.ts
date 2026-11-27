@@ -1,1 +1,1 @@
-export { blockedToast, confirmToast } from "./confirm";
+export { blockedToast, confirmToast, followerRemovedToast } from "./confirm";

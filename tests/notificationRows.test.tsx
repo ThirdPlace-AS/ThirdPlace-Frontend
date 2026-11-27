@@ -90,6 +90,7 @@ describe("Varsler rows (0460)", () => {
   it("says Du er helt oppdatert only when nothing is unread", () => {
     render(<NotificationsScreen />, { wrapper });
     expect(screen.queryByText("Du er helt oppdatert")).toBeNull();
+    fireEvent.press(screen.getByLabelText("Filtrer"));
     fireEvent.press(screen.getByText("Merk alle lest"));
     expect(screen.getByText("Du er helt oppdatert")).toBeTruthy();
   });

@@ -17,6 +17,8 @@
 // 0561 (user 2026-11-27, Instagram's Varsler): swipe a row left for «…»
 // (Ikke interessert, Blokker) and Slett (asks first); Filtrer in the header
 // keeps chosen kinds of notice or only people you follow.
+// User 2026-11-27: «…» also offers Fjern følger for a follower, Filtrer adds
+// Verifisert, and "Merk alle lest" moved from the header into Filtrer's sheet.
 // BLOCKED_CONTRACT_GAP: no push, inbox or notification feed exists.
 import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
@@ -32,7 +34,7 @@ import {
   type ItemAction,
 } from "@/components/actions/ActionSheets";
 import { showToastAfterSheet } from "@/components/Toast";
-import { confirmToast } from "@/copy";
+import { confirmToast, followerRemovedToast } from "@/copy";
 
 import { useGuestMode } from "@/components/map/hooks/useGuestMode";
 import { SignInPrompt } from "@/components/SignInPrompt";
@@ -64,7 +66,13 @@ import {
   type NotificationEntry,
 } from "@/lib/collapseNotifications";
 import { notificationHref } from "@/lib/entityRoutes";
-import { toggleFollow, useFollowing } from "@/lib/following";
+import {
+  isFollower,
+  removeFollower,
+  toggleFollow,
+  useFollowing,
+  useRemovedFollowers,
+} from "@/lib/following";
 
 import { NotificationFilterSheet } from "./NotificationFilterSheet";
 import {
@@ -108,6 +116,7 @@ function NotificationsContent() {
     notInterested,
   } = useNotificationReads();
   const following = useFollowing();
+  useRemovedFollowers();
   const { isGuest } = useGuestMode();
   const [signIn, setSignIn] = useState(false);
   const [filter, setFilter] = useState<NotificationFilter>(
@@ -139,6 +148,7 @@ function NotificationsContent() {
     const first = entry.items[0];
     const person =
       entry.items.length === 1 && first ? notificationPerson(first) : undefined;
+    const firstName = person?.name.split(" ")[0] ?? "";
     return [
       {
         label: "Ikke interessert",
@@ -148,10 +158,22 @@ function NotificationsContent() {
           showToastAfterSheet(confirmToast.notificationHidden);
         },
       },
+      ...(person && isFollower(person.id)
+        ? [
+            {
+              label: "Fjern følger",
+              icon: "person-remove-outline" as const,
+              onPress: () => {
+                removeFollower(person.id);
+                showToastAfterSheet(followerRemovedToast(firstName));
+              },
+            },
+          ]
+        : []),
       ...(person
         ? [
             {
-              label: "Blokker " + person.name.split(" ")[0],
+              label: "Blokker " + firstName,
               icon: "ban-outline" as const,
               afterClose: true,
               onPress: () => setBlockFor({ id: person.id, name: person.name }),
@@ -185,29 +207,12 @@ function NotificationsContent() {
     <Page
       title="Varsler"
       trailing={
-        <View className="flex-row items-center gap-2">
-          <Pressable
-            accessibilityRole="button"
-            accessibilityState={{ disabled: unread === 0 }}
-            disabled={unread === 0}
-            onPress={markAllRead}
-            hitSlop={8}
-          >
-            <Text
-              variant="label"
-              weight="semibold"
-              tone={unread === 0 ? "muted" : "ink"}
-            >
-              Merk alle lest
-            </Text>
-          </Pressable>
-          <IconButton
-            icon="options-outline"
-            label={filterOn ? "Filtrer, filter på" : "Filtrer"}
-            badge={filterOn}
-            onPress={() => setFilterOpen(true)}
-          />
-        </View>
+        <IconButton
+          icon="options-outline"
+          label={filterOn ? "Filtrer, filter på" : "Filtrer"}
+          badge={filterOn}
+          onPress={() => setFilterOpen(true)}
+        />
       }
     >
       {items.length === 0 ? (
@@ -289,6 +294,8 @@ function NotificationsContent() {
           value={filter}
           onApply={setFilter}
           onClose={() => setFilterOpen(false)}
+          unread={unread}
+          onMarkAllRead={markAllRead}
         />
       ) : null}
       {menuFor ? (

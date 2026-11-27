@@ -50,9 +50,10 @@ beforeEach(() => {
 });
 
 describe("Varsler page", () => {
-  it("marks everything read from the header", () => {
+  it("marks everything read from Filtrer's sheet", () => {
     render(<NotificationsScreen />, { wrapper });
     expect(screen.getAllByLabelText(/, ulest$/).length).toBeGreaterThan(0);
+    fireEvent.press(screen.getByLabelText("Filtrer"));
     fireEvent.press(screen.getByText("Merk alle lest"));
     expect(screen.queryAllByLabelText(/, ulest$/)).toHaveLength(0);
     act(() => resetNotificationReads());
