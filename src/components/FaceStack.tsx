@@ -1,8 +1,11 @@
 import { View } from "react-native";
 
-import { Avatar } from "@/components/ui";
+import { Avatar, Text } from "@/components/ui";
 import { libImage } from "@/fixtures/images";
 import { MAX_FACES, type GoingFace } from "@/lib/going";
+
+// The "+N" circle, the size of an xs avatar (24 px).
+const MORE = { width: 24, height: 24 };
 
 /** Overlapping faces of people going who chose to be shown (Phase 16). A
  *  ring in the surface colour (white over photos) keeps them apart. With
@@ -54,7 +57,16 @@ export function FaceStack({
             zIndex: shown.length,
           }}
         >
-          <Avatar initials={`+${more}`} size="xs" decorative />
+          {/* The line grey, not the avatar's surfaceMuted: on a white card
+              in light mode that fill all but vanished (user 2026-11-27). */}
+          <View
+            className="items-center justify-center rounded-full bg-line"
+            style={MORE}
+          >
+            <Text variant="micro" weight="semibold">
+              {`+${more}`}
+            </Text>
+          </View>
         </View>
       ) : null}
     </View>
