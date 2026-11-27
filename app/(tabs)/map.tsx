@@ -12,6 +12,7 @@ import {
   View,
   type LayoutChangeEvent,
 } from "react-native";
+import { useSharedValue } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import {
@@ -192,6 +193,9 @@ export default function MapScreen() {
     setMapTarget(sheetTop ?? null);
   }, [sheetTop]);
   const detailRef = useRef<MapDetailSheetHandle>(null);
+  // The detail sheet's live position, read by the browse sheet on the UI
+  // thread so it can come back while the detail slides out (0574).
+  const detailPosition = useSharedValue(-1);
   // Whether the detail sheet is the full-screen page, read only by the back
   // key: a ref, so reaching the top does not re-render the whole map screen
   // (speed pass 0345; the sheet itself owns the status bar).
@@ -654,6 +658,7 @@ export default function MapScreen() {
           to its peek (never below) and the detail, on top, covers it. */}
       {!errored ? (
         <MapBrowseSheet
+          detailPosition={detailPosition}
           items={loading ? NO_ITEMS : items}
           loading={loading}
           loadingSlow={loadPhase === "loader"}
@@ -677,6 +682,7 @@ export default function MapScreen() {
           screen in box-none containers: taps reach the map's buttons. */}
       <MapDetailSheet
         ref={detailRef}
+        position={detailPosition}
         onPageChange={handlePageChange}
         stack={selection.sheetStack}
         openIndex={selection.openIndex}

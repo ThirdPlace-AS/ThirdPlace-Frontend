@@ -2,14 +2,22 @@ import { Ionicons } from "@expo/vector-icons";
 import BottomSheet, { BottomSheetFlatList } from "@gorhom/bottom-sheet";
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useFocusEffect } from "expo-router";
-import { BackHandler, useWindowDimensions, View } from "react-native";
+import {
+  BackHandler,
+  StyleSheet,
+  useWindowDimensions,
+  View,
+} from "react-native";
 import Animated, {
+  Easing,
   Extrapolation,
   interpolate,
   runOnJS,
   useAnimatedReaction,
   useAnimatedStyle,
   useSharedValue,
+  withTiming,
+  type SharedValue,
 } from "react-native-reanimated";
 import {
   Badge,
@@ -21,7 +29,15 @@ import {
   Text,
   useSheetChrome,
 } from "@/components/ui";
-import { useElevation, gutterPx, spring } from "@/theme";
+import {
+  duration,
+  easing,
+  presentation,
+  useElevation,
+  gutterPx,
+  spring,
+} from "@/theme";
+import { useReducedMotion } from "@/hooks/useReducedMotion";
 import { areaFor, type MockWeather } from "@/fixtures";
 import { useOrigin } from "@/lib/origin";
 import { formatRating } from "@/lib/format";
@@ -49,6 +65,12 @@ const BOOKMARK_PX = 36;
 // snap without passing it (0572): gorhom's Android default restarted a 250 ms
 // ease at release, so a quick drag jumped back before going on.
 const SHEET_SPRING = { ...spring.sheet };
+const SHOW_EASE = Easing.bezier(...easing.sheet);
+// Below this detail position (peek 0, closed -1) only the detail's top edge
+// is left on screen, so the browse sheet starts to come back. Higher up
+// (-0.6 was tried) its peek showed above the detail as a second sheet.
+const LEAVING = -0.95;
+const HIDE_EASE = Easing.bezier(...easing.exit);
 
 // Memoised (speed pass 0345): the map screen passes stable props, so this
 // sheet renders only when its list, selection or state really change.
@@ -62,6 +84,7 @@ export const MapBrowseSheet = memo(function MapBrowseSheet({
   areaLabel,
   weather,
   hidden,
+  detailPosition,
   expandSignal = 0,
   loading = false,
   loadingSlow = false,
@@ -78,6 +101,8 @@ export const MapBrowseSheet = memo(function MapBrowseSheet({
   areaLabel: string | null;
   weather: MockWeather;
   hidden: boolean;
+  /** The marker detail's live position (-1 closed, 0 peek). */
+  detailPosition?: SharedValue<number>;
   // Bumped to force the sheet to expand (e.g. a SoftMap cluster tap).
   expandSignal?: number;
   /** Mock load in flight: show skeleton cards instead of the empty message. */
@@ -172,6 +197,49 @@ export const MapBrowseSheet = memo(function MapBrowseSheet({
     }, [hidden, browseAnimatedIndex]),
   );
 
+  // Out of sight while a marker detail is open (0574): at its peek behind
+  // the detail, it showed as a second sheet with its own handle when the
+  // detail was dragged down past it. It fades out as the detail opens and
+  // rises back in as the detail slides below the peek: waiting for the
+  // detail's onClose left the bare map on screen for about half a second
+  // (phone frame log, 2026-11-27).
+  const reduced = useReducedMotion();
+  const shown = useSharedValue(hidden ? 0 : 1);
+  const showTo = useCallback(
+    (to: 0 | 1) => {
+      "worklet";
+      shown.value = withTiming(
+        to,
+        to === 0
+          ? { duration: duration.fast, easing: HIDE_EASE }
+          : {
+              duration: reduced ? duration.fast : presentation.enter,
+              easing: SHOW_EASE,
+            },
+      );
+    },
+    [reduced, shown],
+  );
+  useEffect(() => {
+    showTo(hidden ? 0 : 1);
+  }, [hidden, showTo]);
+  useAnimatedReaction(
+    () => (detailPosition ? detailPosition.value < LEAVING : false),
+    (leaving, was) => {
+      if (!hidden || was === null || leaving === was) return;
+      showTo(leaving ? 1 : 0);
+    },
+    [hidden, showTo],
+  );
+  const rise = reduced ? 0 : 24;
+  const shownStyle = useAnimatedStyle(
+    () => ({
+      opacity: shown.value,
+      transform: [{ translateY: (1 - shown.value) * rise }],
+    }),
+    [rise],
+  );
+
   // Expand on demand (cluster tap).
   useEffect(() => {
     if (expandSignal > 0 && !hidden) sheetRef.current?.snapToIndex(1);
@@ -221,106 +289,111 @@ export const MapBrowseSheet = memo(function MapBrowseSheet({
 
   return (
     <>
-      <BottomSheet
-        ref={sheetRef}
-        index={0}
-        // Placed at the peek on the first frame, no mount slide. With the
-        // mount animation, the measured peek changed the snap points mid-slide
-        // and the native view stayed at the closed position (below the tab
-        // bar) on the rebuilt dev client, although gorhom reported index 0.
-        animateOnMount={false}
-        snapPoints={snapPoints}
-        animatedIndex={browseAnimatedIndex}
-        animationConfigs={SHEET_SPRING}
-        enableDynamicSizing={false}
-        enablePanDownToClose={false}
-        // Hard requirement: the sheet must never slide below its lowest snap
-        // point. gorhom's default overdrag rubber-bands ~60px past the peek on
-        // an active down-drag; disabling it clamps the gesture at index 0.
-        enableOverDrag={false}
-        {...chrome}
-        {...sheetA11yChrome}
+      <Animated.View
+        pointerEvents={hidden ? "none" : "box-none"}
+        style={[StyleSheet.absoluteFill, shownStyle]}
       >
-        {/* Peek header — city (left) + weather (right). Always visible. */}
-        <View
-          onLayout={(e) => {
-            const h = Math.round(e.nativeEvent.layout.height);
-            if (h > 0) {
-              setPeek(PEEK_HANDLE + h);
-              onPeekHeight?.(PEEK_HANDLE + h);
-            }
-          }}
-          className="flex-row items-center justify-between pb-3 px-gutter"
+        <BottomSheet
+          ref={sheetRef}
+          index={0}
+          // Placed at the peek on the first frame, no mount slide. With the
+          // mount animation, the measured peek changed the snap points mid-slide
+          // and the native view stayed at the closed position (below the tab
+          // bar) on the rebuilt dev client, although gorhom reported index 0.
+          animateOnMount={false}
+          snapPoints={snapPoints}
+          animatedIndex={browseAnimatedIndex}
+          animationConfigs={SHEET_SPRING}
+          enableDynamicSizing={false}
+          enablePanDownToClose={false}
+          // Hard requirement: the sheet must never slide below its lowest snap
+          // point. gorhom's default overdrag rubber-bands ~60px past the peek on
+          // an active down-drag; disabling it clamps the gesture at index 0.
+          enableOverDrag={false}
+          {...chrome}
+          {...sheetA11yChrome}
         >
-          <View className="flex-row items-center flex-1 gap-2">
-            <Icon name="location" size="md" tone="ember" />
-            <View className="flex-1">
-              <Text variant="body" weight="semibold" numberOfLines={1}>
-                {cityLine}
-              </Text>
-              {/* How many results the list holds (fixture count; benchmark
-                  B1). No sort claim: there is no ranking contract. */}
-              {loading ? null : (
-                <Text variant="caption" tone="muted">
-                  {items.length} treff
+          {/* Peek header — city (left) + weather (right). Always visible. */}
+          <View
+            onLayout={(e) => {
+              const h = Math.round(e.nativeEvent.layout.height);
+              if (h > 0) {
+                setPeek(PEEK_HANDLE + h);
+                onPeekHeight?.(PEEK_HANDLE + h);
+              }
+            }}
+            className="flex-row items-center justify-between pb-3 px-gutter"
+          >
+            <View className="flex-row items-center flex-1 gap-2">
+              <Icon name="location" size="md" tone="ember" />
+              <View className="flex-1">
+                <Text variant="body" weight="semibold" numberOfLines={1}>
+                  {cityLine}
                 </Text>
-              )}
+                {/* How many results the list holds (fixture count; benchmark
+                  B1). No sort claim: there is no ranking contract. */}
+                {loading ? null : (
+                  <Text variant="caption" tone="muted">
+                    {items.length} treff
+                  </Text>
+                )}
+              </View>
             </View>
-          </View>
-          <View className="flex-row items-center gap-2">
-            {/* Fixture weather (MockWeather), not a live reading. */}
+            <View className="flex-row items-center gap-2">
+              {/* Fixture weather (MockWeather), not a live reading. */}
 
-            <View
-              accessible
-              accessibilityLabel={`Vær: ${weather.tempC} grader`}
-              className="flex-row items-center gap-2 rounded-full border border-line bg-surface px-3 py-1"
-            >
-              <Icon
-                name={weather.icon as keyof typeof Ionicons.glyphMap}
-                size="md"
-                tone="ink"
-              />
-              <Text variant="label" weight="semibold">
-                {weather.tempC}°
-              </Text>
-            </View>
-          </View>
-        </View>
-
-        <BottomSheetFlatList
-          data={items}
-          keyExtractor={(i) => i.markerId}
-          contentContainerClassName="gap-6 px-gutter pb-28"
-          showsVerticalScrollIndicator={false}
-          ListEmptyComponent={
-            loading ? (
-              loadingSlow ? (
-                <Loader label="Laster steder …" />
-              ) : (
-                <SkeletonList
-                  variant="mediaCard"
-                  count={2}
-                  label="Laster steder"
+              <View
+                accessible
+                accessibilityLabel={`Vær: ${weather.tempC} grader`}
+                className="flex-row items-center gap-2 rounded-full border border-line bg-surface px-3 py-1"
+              >
+                <Icon
+                  name={weather.icon as keyof typeof Ionicons.glyphMap}
+                  size="md"
+                  tone="ink"
                 />
-              )
-            ) : (
-              <View className="items-center gap-3 py-12">
-                <Icon name="compass-outline" size="xl" tone="muted" />
-                <Text variant="caption" tone="muted" className="text-center">
-                  {emptyMessage}
+                <Text variant="label" weight="semibold">
+                  {weather.tempC}°
                 </Text>
               </View>
-            )
-          }
-          renderItem={renderItem}
-          initialNumToRender={4}
-          maxToRenderPerBatch={4}
-          // Two screens of cards above and below (was three; speed pass
-          // 0349). The cards differ in height (lines, tags, who is going),
-          // so there is no getItemLayout.
-          windowSize={5}
-        />
-      </BottomSheet>
+            </View>
+          </View>
+
+          <BottomSheetFlatList
+            data={items}
+            keyExtractor={(i) => i.markerId}
+            contentContainerClassName="gap-6 px-gutter pb-28"
+            showsVerticalScrollIndicator={false}
+            ListEmptyComponent={
+              loading ? (
+                loadingSlow ? (
+                  <Loader label="Laster steder …" />
+                ) : (
+                  <SkeletonList
+                    variant="mediaCard"
+                    count={2}
+                    label="Laster steder"
+                  />
+                )
+              ) : (
+                <View className="items-center gap-3 py-12">
+                  <Icon name="compass-outline" size="xl" tone="muted" />
+                  <Text variant="caption" tone="muted" className="text-center">
+                    {emptyMessage}
+                  </Text>
+                </View>
+              )
+            }
+            renderItem={renderItem}
+            initialNumToRender={4}
+            maxToRenderPerBatch={4}
+            // Two screens of cards above and below (was three; speed pass
+            // 0349). The cards differ in height (lines, tags, who is going),
+            // so there is no getItemLayout.
+            windowSize={5}
+          />
+        </BottomSheet>
+      </Animated.View>
 
       {/* Floating "Kart" pill — fades + slides in as the sheet nears full
           extent; tapping it collapses the

@@ -160,9 +160,20 @@ export const MapDetailSheet = memo(
       onClose: () => void;
       /** Reports whether the experience page is full screen (top snap). */
       onPageChange?: (isPage: boolean) => void;
+      /** The sheet's live position, shared with the browse sheet (0574). */
+      position?: SharedValue<number>;
     }
   >(function MapDetailSheet(
-    { stack, openIndex, openNonce, push, onBack, onClose, onPageChange },
+    {
+      stack,
+      openIndex,
+      openNonce,
+      push,
+      onBack,
+      onClose,
+      onPageChange,
+      position,
+    },
     ref,
   ) {
     const chrome = useSheetChrome();
@@ -177,7 +188,8 @@ export const MapDetailSheet = memo(
     // back from Vurderinger, the host or a chat put the page at the middle
     // snap, scrolled to the top; Airbnb returns to the same place). The sheet
     // remounts at that snap and scrolls back once its content is laid out.
-    const animatedIndex = useSharedValue(-1);
+    const ownIndex = useSharedValue(-1);
+    const animatedIndex = position ?? ownIndex;
     const scrollY = useRef(0);
     const scrollRef = useRef<BottomSheetScrollViewMethods>(null);
     const [restore, setRestore] = useState<{
