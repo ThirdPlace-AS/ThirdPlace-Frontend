@@ -11,16 +11,12 @@ import {
 import { experiences, sessionsFor } from "@/fixtures";
 import { isoDay } from "@/lib/dates";
 
+import { comingWednesdayNoon } from "./setup/clock";
+
 // The test reads sessions still ahead of "now", so it used to fail in the
 // evening (tonight's sessions had started) and on Saturdays (one evening
-// experience). It runs at noon on the coming Wednesday (today, if it is one),
-// a day with many evening experiences, still inside the fixtures' week (0530).
-function comingWednesdayNoon(): Date {
-  const d = new Date();
-  d.setDate(d.getDate() + ((3 - d.getDay() + 7) % 7));
-  d.setHours(12, 0, 0, 0);
-  return d;
-}
+// experience). It runs at noon on the coming Wednesday, a day with many
+// evening experiences (0530).
 
 afterEach(() => {
   jest.useRealTimers();

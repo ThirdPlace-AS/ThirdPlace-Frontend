@@ -51,6 +51,8 @@ import { createGroup, resetCreated } from "@/fixtures/created";
 import { NEARBY_M, distanceMeters } from "@/lib/distance";
 import { resetJoinedChats } from "@/lib/joinedChats";
 
+import { comingWednesdayNoon } from "./setup/clock";
+
 const mockPush = jest.fn();
 let mockParams: Record<string, string> = {};
 jest.mock("expo-router", () => ({
@@ -76,6 +78,7 @@ function wrapper({ children }: { children: React.ReactNode }) {
 }
 
 afterEach(() => {
+  jest.useRealTimers();
   mockPush.mockClear();
   mockParams = {};
   act(() => {
@@ -114,6 +117,8 @@ describe("place pages by kind", () => {
     const org = organizationForPlace(club.id)!;
     const contact = personById(org.contactPersonId)!;
     const nav = jest.fn();
+    // "Lør 10:00" is a weekday label only from Sunday to Thursday (0559).
+    jest.useFakeTimers({ now: comingWednesdayNoon() });
     render(<PlacePage place={club} onNavigate={nav} />, { wrapper });
     // The club shares its place's name: its row says what it is, with the
     // club's own words; the contact person is a row of their own.
