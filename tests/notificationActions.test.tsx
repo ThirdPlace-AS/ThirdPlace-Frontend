@@ -136,6 +136,8 @@ describe("Varsler swipe actions", () => {
     fireEvent.press(screen.getAllByLabelText("Flere valg")[0]!);
     fireEvent.press(screen.getByRole("button", { name: "Fjern følger" }));
     expect(followerPeople().length).toBe(before - 1);
+    // No Følg tilbake once they no longer follow you.
+    expect(screen.queryByLabelText("Følg tilbake Jonas Berg")).toBeNull();
     fireEvent.press(screen.getAllByLabelText("Flere valg")[0]!);
     expect(screen.queryByRole("button", { name: "Fjern følger" })).toBeNull();
   });

@@ -250,11 +250,13 @@ function NotificationsContent() {
           {g.entries.map((entry) => {
             const n = entry.items[0];
             if (!n) return null;
-            // Follow back on a row of one new follower.
+            // Follow back on a row of one new follower, while they still
+            // follow you (none after Fjern følger, user 2026-11-27).
             const person =
               entry.items.length === 1 &&
               n.type === "follow" &&
-              n.target.kind === "person"
+              n.target.kind === "person" &&
+              isFollower(n.target.id)
                 ? n.target.id
                 : null;
             return (
