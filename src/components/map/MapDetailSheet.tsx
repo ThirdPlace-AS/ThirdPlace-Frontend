@@ -1,5 +1,4 @@
 import BottomSheet, {
-  BottomSheetBackdrop,
   type BottomSheetBackdropProps,
   type BottomSheetBackgroundProps,
   BottomSheetFooter,
@@ -66,6 +65,11 @@ import {
 
 import { PageActionCard } from "./content/PageActionCard";
 import { MiniPin } from "./MiniPin";
+import {
+  BackdropContext,
+  RestingBackdrop,
+  type BackdropState,
+} from "./RestingBackdrop";
 import { useGuestMode } from "./hooks/useGuestMode";
 import { useMapSaved } from "./hooks/useMapSaved";
 import { markViewed } from "./hooks/useRecentlyViewed";
@@ -433,8 +437,12 @@ export const MapDetailSheet = memo(
     // first rows mount once the sheet has come to rest at a snap (onChange),
     // or after STAGE_FALLBACK_MS should no snap event come; the rest a
     // moment later. Pushed views render everything (the sheet is open).
+    // The backdrop catches taps only at rest above the peek (0577): set here,
+    // when the sheet has stopped, never mid-drag.
+    const [backdropTouchable, setBackdropTouchable] = useState(false);
     const handleSnap = useCallback(
       (i: number) => {
+        setBackdropTouchable(i >= 1);
         if (i >= 0) {
           setSettledKey(rootKeyRef.current);
           resting.current = true;
@@ -527,21 +535,19 @@ export const MapDetailSheet = memo(
     // and Android still read its labelled full-screen «Lukk» before the page
     // (phone sweep 2026-11-26), so it is silent while the page is up. It stays
     // mounted: mounting it as a slow drag left the top dropped frames (0572).
+    // Our own backdrop (0577): gorhom's switched its touch handling with a
+    // React update as a drag crossed the peek. Touch and screen-reader props
+    // come through context, so the backdrop function never changes.
+    const backdropState = useMemo<BackdropState>(
+      () => ({
+        touchable: backdropTouchable,
+        a11y: isPage ? BACKDROP_SILENT : backdropA11y,
+      }),
+      [backdropTouchable, isPage],
+    );
     const renderBackdrop = useCallback(
-      (props: BottomSheetBackdropProps) => (
-        <BottomSheetBackdrop
-          {...props}
-          appearsOnIndex={1}
-          disappearsOnIndex={0}
-          pressBehavior="close"
-          // Starts letting taps through (gorhom's default starts catching
-          // them until its first reaction): the closed sheet remounts each
-          // time the map comes back into focus (0384).
-          enableTouchThrough
-          {...(isPage ? BACKDROP_SILENT : backdropA11y)}
-        />
-      ),
-      [isPage],
+      (props: BottomSheetBackdropProps) => <RestingBackdrop {...props} />,
+      [],
     );
 
     // Header: the experience page shows only ✕ in sheet mode and fades it out
@@ -598,93 +604,95 @@ export const MapDetailSheet = memo(
         accessibilityElementsHidden={a11yHidden}
       >
         {isPage ? <StatusBarStyle style="auto" /> : null}
-        <BottomSheet
-          ref={sheetRef}
-          // Closed it waits at -1; a group's docked sheet mounts already at
-          // the requested snap.
-          index={open ? (restore?.index ?? openIndex) : -1}
-          snapPoints={snapPoints}
-          animatedIndex={animatedIndex}
-          animationConfigs={SHEET_SPRING}
-          enableDynamicSizing={false}
-          enablePanDownToClose
-          onChange={handleSnap}
-          backdropComponent={renderBackdrop}
-          // The floating card shows on the full-screen page only: it mounts
-          // once the sheet has come to rest, not in the open (0381).
-          footerComponent={footerId && stage >= 1 ? renderFooter : undefined}
-          onClose={() => {
-            // Sync React state when the sheet is dismissed by gesture/backdrop.
-            if (open) onClose();
-          }}
-          {...chrome}
-          {...sheetA11yChrome}
-          {...(pageCapable
-            ? {
-                backgroundComponent: PageBackground,
-                handleComponent: PageHandle,
-              }
-            : null)}
-        >
-          {top ? (
-            <>
-              {pageCapable && pageInfo ? (
-                <PageTopBar
-                  animatedIndex={animatedIndex}
-                  topPad={topPad}
-                  interactive={isPage}
-                  info={pageInfo}
-                  onBack={() => sheetRef.current?.snapToIndex(1)}
-                />
-              ) : null}
-              <Animated.View
-                // Under the page top bar it has faded out: no stray taps.
-                renderToHardwareTextureAndroid
-                pointerEvents={isPage && topIsPage ? "none" : "auto"}
-                style={[
-                  { paddingHorizontal: gutterPx, overflow: "hidden" },
-                  headerStyle,
-                ]}
-              >
-                <View className="pb-2">
-                  <SheetHeader
-                    title={topIsPage ? undefined : titleFor(top)}
-                    // What the item is, top left (user 2026-11-11); the
-                    // page top bar's caption takes over at the top snap.
-                    label={pageInfo?.typeLabel}
-                    // Its pin, in its colour, beside it (the map has no
-                    // colour key; user 2026-11-11).
-                    labelIcon={pageInfo ? <MiniPin target={top} /> : null}
-                    onBack={nested ? onBack : undefined}
-                    onClose={onClose}
-                    actions={pageInfo ? <ShareSave info={pageInfo} /> : null}
+        <BackdropContext.Provider value={backdropState}>
+          <BottomSheet
+            ref={sheetRef}
+            // Closed it waits at -1; a group's docked sheet mounts already at
+            // the requested snap.
+            index={open ? (restore?.index ?? openIndex) : -1}
+            snapPoints={snapPoints}
+            animatedIndex={animatedIndex}
+            animationConfigs={SHEET_SPRING}
+            enableDynamicSizing={false}
+            enablePanDownToClose
+            onChange={handleSnap}
+            backdropComponent={renderBackdrop}
+            // The floating card shows on the full-screen page only: it mounts
+            // once the sheet has come to rest, not in the open (0381).
+            footerComponent={footerId && stage >= 1 ? renderFooter : undefined}
+            onClose={() => {
+              // Sync React state when the sheet is dismissed by gesture/backdrop.
+              if (open) onClose();
+            }}
+            {...chrome}
+            {...sheetA11yChrome}
+            {...(pageCapable
+              ? {
+                  backgroundComponent: PageBackground,
+                  handleComponent: PageHandle,
+                }
+              : null)}
+          >
+            {top ? (
+              <>
+                {pageCapable && pageInfo ? (
+                  <PageTopBar
+                    animatedIndex={animatedIndex}
+                    topPad={topPad}
+                    interactive={isPage}
+                    info={pageInfo}
+                    onBack={() => sheetRef.current?.snapToIndex(1)}
                   />
-                </View>
-              </Animated.View>
-              <BottomSheetScrollView
-                ref={scrollRef}
-                contentContainerClassName={`gap-4 px-6 pt-4 ${footerId ? "pb-36" : "pb-16"}`}
-                keyboardShouldPersistTaps="handled"
-                onScrollEndDrag={keepScrollY}
-                onMomentumScrollEnd={keepScrollY}
-                onContentSizeChange={scrollBack}
-              >
-                {/* In-sheet push/back fades the new content in (was one frame). */}
-                <FadeSwap swapKey={`${top.kind}:${top.id}`}>
-                  <SheetStageContext.Provider value={stage}>
-                    <PageScrollContext.Provider value={scroller}>
-                      <View ref={pageBox}>
-                        <DetailContent target={top} push={push} />
-                      </View>
-                    </PageScrollContext.Provider>
-                  </SheetStageContext.Provider>
-                </FadeSwap>
-              </BottomSheetScrollView>
-            </>
-          ) : (
-            <View />
-          )}
-        </BottomSheet>
+                ) : null}
+                <Animated.View
+                  // Under the page top bar it has faded out: no stray taps.
+                  renderToHardwareTextureAndroid
+                  pointerEvents={isPage && topIsPage ? "none" : "auto"}
+                  style={[
+                    { paddingHorizontal: gutterPx, overflow: "hidden" },
+                    headerStyle,
+                  ]}
+                >
+                  <View className="pb-2">
+                    <SheetHeader
+                      title={topIsPage ? undefined : titleFor(top)}
+                      // What the item is, top left (user 2026-11-11); the
+                      // page top bar's caption takes over at the top snap.
+                      label={pageInfo?.typeLabel}
+                      // Its pin, in its colour, beside it (the map has no
+                      // colour key; user 2026-11-11).
+                      labelIcon={pageInfo ? <MiniPin target={top} /> : null}
+                      onBack={nested ? onBack : undefined}
+                      onClose={onClose}
+                      actions={pageInfo ? <ShareSave info={pageInfo} /> : null}
+                    />
+                  </View>
+                </Animated.View>
+                <BottomSheetScrollView
+                  ref={scrollRef}
+                  contentContainerClassName={`gap-4 px-6 pt-4 ${footerId ? "pb-36" : "pb-16"}`}
+                  keyboardShouldPersistTaps="handled"
+                  onScrollEndDrag={keepScrollY}
+                  onMomentumScrollEnd={keepScrollY}
+                  onContentSizeChange={scrollBack}
+                >
+                  {/* In-sheet push/back fades the new content in (was one frame). */}
+                  <FadeSwap swapKey={`${top.kind}:${top.id}`}>
+                    <SheetStageContext.Provider value={stage}>
+                      <PageScrollContext.Provider value={scroller}>
+                        <View ref={pageBox}>
+                          <DetailContent target={top} push={push} />
+                        </View>
+                      </PageScrollContext.Provider>
+                    </SheetStageContext.Provider>
+                  </FadeSwap>
+                </BottomSheetScrollView>
+              </>
+            ) : (
+              <View />
+            )}
+          </BottomSheet>
+        </BackdropContext.Provider>
       </View>
     );
     // Experiences and places: a sheet at the app root, above the tab bar, only
