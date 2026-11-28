@@ -45,6 +45,7 @@ function RestingBackdropComponent({
   style,
 }: BottomSheetBackdropProps) {
   const { touchable, a11y } = useContext(BackdropContext);
+  const silent = a11y.accessible === false;
   const { close } = useBottomSheet();
   const c = useThemeColors();
   // Same fade as gorhom's backdrop: clear at the peek, full at the middle.
@@ -73,14 +74,16 @@ function RestingBackdropComponent({
           fade,
         ]}
         pointerEvents={touchable ? "auto" : "none"}
-        accessible={a11y.accessible ?? true}
-        accessibilityRole={
-          a11y.accessibilityRole === null
-            ? undefined
-            : (a11y.accessibilityRole ?? "button")
-        }
-        accessibilityLabel={a11y.accessibilityLabel ?? undefined}
-        accessibilityHint={a11y.accessibilityHint ?? undefined}
+        // Silent under the page: a prop set back to undefined kept its old
+        // value on Android (content-desc stayed "Lukk"), so the label and
+        // hint are cleared with "" and the view leaves the screen reader's
+        // tree.
+        importantForAccessibility={silent ? "no-hide-descendants" : "auto"}
+        accessibilityElementsHidden={silent}
+        accessible={!silent}
+        accessibilityRole={silent ? "none" : "button"}
+        accessibilityLabel={silent ? "" : (a11y.accessibilityLabel ?? "")}
+        accessibilityHint={silent ? "" : (a11y.accessibilityHint ?? "")}
       />
     </GestureDetector>
   );
