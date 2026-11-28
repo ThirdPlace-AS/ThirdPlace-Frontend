@@ -1,5 +1,5 @@
-import { createContext, memo, useContext, useMemo } from "react";
-import { StyleSheet } from "react-native";
+import { createContext, memo, useCallback, useContext, useMemo } from "react";
+import { StyleSheet, type AccessibilityActionEvent } from "react-native";
 import { Gesture, GestureDetector } from "react-native-gesture-handler";
 import Animated, {
   Extrapolation,
@@ -39,6 +39,8 @@ export const BackdropContext = createContext<BackdropState>({
 });
 
 const OPACITY = 0.5;
+const ACTIVATE = [{ name: "activate" as const }];
+const NO_ACTIONS: typeof ACTIVATE = [];
 
 function RestingBackdropComponent({
   animatedIndex,
@@ -64,6 +66,12 @@ function RestingBackdropComponent({
       }),
     [close],
   );
+  const onA11yAction = useCallback(
+    (e: AccessibilityActionEvent) => {
+      if (e.nativeEvent.actionName === "activate" && !silent) close();
+    },
+    [close, silent],
+  );
   return (
     <GestureDetector gesture={tap}>
       <Animated.View
@@ -84,6 +92,11 @@ function RestingBackdropComponent({
         accessibilityRole={silent ? "none" : "button"}
         accessibilityLabel={silent ? "" : (a11y.accessibilityLabel ?? "")}
         accessibilityHint={silent ? "" : (a11y.accessibilityHint ?? "")}
+        // TalkBack's double tap is an accessibility click, which the tap
+        // gesture never sees; without this the announced «Lukk» did nothing
+        // (also true of gorhom's backdrop).
+        accessibilityActions={silent ? NO_ACTIONS : ACTIVATE}
+        onAccessibilityAction={onA11yAction}
       />
     </GestureDetector>
   );
