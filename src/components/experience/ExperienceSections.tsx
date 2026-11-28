@@ -16,6 +16,10 @@ import {
   type NativeScrollEvent,
   type NativeSyntheticEvent,
 } from "react-native";
+// Rails in the map page sheet scroll with Gesture Handler: its pan gesture
+// took the horizontal drag from the core ScrollView on Android (phone
+// 2026-11-26).
+import { ScrollView as RailScrollView } from "react-native-gesture-handler";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { AddToCalendarLink } from "@/components/AddToCalendarLink";
@@ -49,10 +53,14 @@ import {
   type MockItineraryStep,
   type MockSession,
 } from "@/fixtures";
-import { dayLabel, shortSessionLabel, timeRange } from "@/lib/dates";
+import { dayLabel, isoDay, shortSessionLabel, timeRange } from "@/lib/dates";
+import { goingLabel } from "@/lib/going";
+import { FaceStack } from "@/components/FaceStack";
+import { MonthGrid } from "@/components/MonthGrid";
+import { useGoing } from "@/components/map/hooks/useGoing";
 import { env } from "@/lib/env";
 import { isMember, joinChat, useJoinedChats } from "@/lib/joinedChats";
-import { useScheme } from "@/theme";
+import { useScheme, media } from "@/theme";
 
 import { useExperienceSession } from "./useExperienceSession";
 
@@ -64,7 +72,7 @@ export function ItinerarySection({ exp }: { exp: MockExperience }) {
   if (steps.length === 0) return null;
   return (
     <View className="gap-4">
-      <Text variant="h2" accessibilityRole="header">
+      <Text variant="h1" accessibilityRole="header">
         {/* An Arrangement shows its steps as the program (Phase 19). */}
         {exp.format === "event" ? "Program" : "Hva dere skal gjøre"}
       </Text>
@@ -121,11 +129,15 @@ function StepCarousel({
 }) {
   const [shown, setShown] = useState(index ?? 0);
   if (index !== null && index !== shown) setShown(index);
+  const dark = useScheme() === "dark";
   return (
     <Overlay
       visible={index !== null}
       onClose={onClose}
       enter="zoom"
+      // The page stays in view, dimmed, behind the cards (Airbnb tap-through
+      // 2026-11-26; it was a full-screen page of its own).
+      backdrop={dark ? media.scrimStrong : media.scrim}
       statusBarTranslucent
       accessibilityLabel="Hva dere skal gjøre"
     >
@@ -151,14 +163,21 @@ function StepCards({
   const onEnd = (e: NativeSyntheticEvent<NativeScrollEvent>) =>
     setCurrent(Math.round(e.nativeEvent.contentOffset.x / step));
   return (
-    <View className="flex-1 bg-background" style={{ paddingTop: insets.top }}>
-      <StatusBarStyle style="auto" />
+    // Below the dimmed page's top bar (PAGE_BAR_ROW, 52), so the counter and
+    // ✕ do not sit on its title and buttons.
+    <View className="flex-1" style={{ paddingTop: insets.top + 52 }}>
+      <StatusBarStyle style="light" />
       <View className="flex-row items-center justify-between px-gutter py-2">
         <View className="w-10" />
-        <Text variant="label" weight="semibold">
+        <Text variant="label" weight="semibold" tone="onMedia">
           {`${current + 1} av ${steps.length}`}
         </Text>
-        <IconButton icon="close" label="Lukk" onPress={onClose} />
+        <IconButton
+          icon="close"
+          label="Lukk"
+          variant="mediaSubtle"
+          onPress={onClose}
+        />
       </View>
       <FlatList
         data={steps as MockItineraryStep[]}
@@ -218,11 +237,14 @@ export function AvailabilitySection({ exp }: { exp: MockExperience }) {
   const { now, sessions } = useSessions(exp);
   const [chosenId, choose] = useExperienceSession(exp.id);
   const [sheetAt, setSheetAt] = useState<string | null>(null);
+  // Who is going belongs to the next time (the join card's «N skal»), so
+  // only its card shows faces; later times keep their places left.
+  const going = useGoing(exp.id);
   if (sessions.length === 0) return null;
   return (
     <View className="gap-3">
       <View className="gap-1">
-        <Text variant="h2" accessibilityRole="header">
+        <Text variant="h1" accessibilityRole="header">
           Ledige tider
         </Text>
         <Text variant="caption" tone="muted">
@@ -235,21 +257,22 @@ export function AvailabilitySection({ exp }: { exp: MockExperience }) {
           } · ${exp.duration}`}
         </Text>
       </View>
-      <ScrollView
+      <RailScrollView
         horizontal
         showsHorizontalScrollIndicator={false}
         snapToInterval={212}
         decelerationRate="fast"
         contentContainerStyle={{ gap: 12 }}
       >
-        {sessions.slice(0, 4).map((s) => {
+        {sessions.slice(0, 4).map((s, i) => {
           const on = s.id === chosenId;
+          const social = i === 0 && going.count > 0;
           return (
             <Pressable
               key={s.id}
               accessibilityRole="button"
               accessibilityState={{ selected: on }}
-              accessibilityLabel={`${dayLabel(s.start, now)}, ${timeRange(s.start, s.end)}, ${placesLeft(s)}`}
+              accessibilityLabel={`${dayLabel(s.start, now)}, ${timeRange(s.start, s.end)}, ${placesLeft(s)}${social ? `, ${goingLabel(going.count)}` : ""}`}
               onPress={() => setSheetAt(s.id)}
               style={{ width: 200 }}
               contentClassName={`gap-1 rounded-md p-4 ${
@@ -269,10 +292,15 @@ export function AvailabilitySection({ exp }: { exp: MockExperience }) {
               >
                 {placesLeft(s)}
               </Text>
+              {social ? (
+                <View className="mt-2 flex-row items-center">
+                  <FaceStack faces={going.faces} count={going.count} />
+                </View>
+              ) : null}
             </Pressable>
           );
         })}
-      </ScrollView>
+      </RailScrollView>
       <View className="flex-row flex-wrap items-center gap-x-6 gap-y-2">
         <Pressable
           accessibilityRole="button"
@@ -327,10 +355,26 @@ export function SessionSheet({
 }) {
   const [draft, setDraft] = useState<string | null>(initial);
   const [shown, setShown] = useState(visible);
+  // A month with the days that have a time (Airbnb tap-through 2026-11-26:
+  // its date picker is a calendar); a tap on a day narrows the list to it.
+  const [month, setMonth] = useState<Date>(() => sessions[0]?.start ?? now);
+  const [day, setDay] = useState<string | null>(null);
   if (visible !== shown) {
     setShown(visible);
-    if (visible) setDraft(initial);
+    if (visible) {
+      setDraft(initial);
+      setDay(null);
+      setMonth(sessions[0]?.start ?? now);
+    }
   }
+  const marked = useMemo(() => {
+    const m = new Map<string, number>();
+    for (const s of sessions) {
+      const k = isoDay(s.start);
+      m.set(k, (m.get(k) ?? 0) + 1);
+    }
+    return m;
+  }, [sessions]);
   const days = useMemo(() => {
     const map = new Map<string, MockSession[]>();
     for (const s of sessions) {
@@ -353,52 +397,67 @@ export function SessionSheet({
         contentContainerClassName="gap-6 pb-4"
         showsVerticalScrollIndicator={false}
       >
-        {days.map(([day, list]) => (
-          <View key={day} className="gap-3">
-            <Text variant="label" weight="semibold">
-              {day}
-            </Text>
-            {list.map((s) => {
-              const full = s.spotsLeft <= 0;
-              const on = s.id === draft;
-              return (
-                <Pressable
-                  key={s.id}
-                  accessibilityRole="radio"
-                  accessibilityState={{ checked: on, disabled: full }}
-                  accessibilityLabel={`${day}, ${timeRange(s.start, s.end)}, ${placesLeft(s)}`}
-                  disabled={full}
-                  dimWhenDisabled={false}
-                  onPress={() => setDraft(s.id)}
-                  contentClassName={`flex-row items-center justify-between rounded-md p-4 ${
-                    on ? "border-2 border-ink" : "border border-line"
-                  }`}
-                >
-                  <View className="gap-1">
-                    <Text
-                      variant="body"
-                      weight="semibold"
-                      tone={full ? "muted" : "ink"}
-                      className={full ? "line-through" : ""}
-                    >
-                      {timeRange(s.start, s.end)}
-                    </Text>
-                    <Text variant="caption" tone="muted">
-                      {price}
-                    </Text>
-                  </View>
-                  <Text
-                    variant="caption"
-                    tone={full ? "ink" : "muted"}
-                    weight={full ? "semibold" : "regular"}
+        {marked.size > 1 ? (
+          <MonthGrid
+            month={month}
+            marked={marked}
+            selected={day}
+            onSelect={setDay}
+            onMonthChange={(d) =>
+              setMonth((m) => new Date(m.getFullYear(), m.getMonth() + d, 1))
+            }
+            today={now}
+            countLabel={(n) => `${n} ${n === 1 ? "tid" : "tider"}`}
+          />
+        ) : null}
+        {days
+          .filter(([, list]) => !day || isoDay(list[0]!.start) === day)
+          .map(([label, list]) => (
+            <View key={label} className="gap-3">
+              <Text variant="label" weight="semibold">
+                {label}
+              </Text>
+              {list.map((s) => {
+                const full = s.spotsLeft <= 0;
+                const on = s.id === draft;
+                return (
+                  <Pressable
+                    key={s.id}
+                    accessibilityRole="radio"
+                    accessibilityState={{ checked: on, disabled: full }}
+                    accessibilityLabel={`${label}, ${timeRange(s.start, s.end)}, ${placesLeft(s)}`}
+                    disabled={full}
+                    dimWhenDisabled={false}
+                    onPress={() => setDraft(s.id)}
+                    contentClassName={`flex-row items-center justify-between rounded-md p-4 ${
+                      on ? "border-2 border-ink" : "border border-line"
+                    }`}
                   >
-                    {placesLeft(s)}
-                  </Text>
-                </Pressable>
-              );
-            })}
-          </View>
-        ))}
+                    <View className="gap-1">
+                      <Text
+                        variant="body"
+                        weight="semibold"
+                        tone={full ? "muted" : "ink"}
+                        className={full ? "line-through" : ""}
+                      >
+                        {timeRange(s.start, s.end)}
+                      </Text>
+                      <Text variant="caption" tone="muted">
+                        {price}
+                      </Text>
+                    </View>
+                    <Text
+                      variant="caption"
+                      tone={full ? "ink" : "muted"}
+                      weight={full ? "semibold" : "regular"}
+                    >
+                      {placesLeft(s)}
+                    </Text>
+                  </Pressable>
+                );
+              })}
+            </View>
+          ))}
       </ScrollView>
       {/* Sticky footer, as in the reference: the picked time and "Velg". */}
       <View className="flex-row items-center gap-3 border-t border-line pt-3">
@@ -436,7 +495,7 @@ export function MeetingSection({
   const mp = exp.meetingPoint;
   return (
     <View className="gap-3">
-      <Text variant="h2" accessibilityRole="header">
+      <Text variant="h1" accessibilityRole="header">
         Hvor vi møtes
       </Text>
       <View className="flex-row items-start gap-3">
@@ -482,7 +541,9 @@ export function MeetingSection({
 
 /** Static map card (Mapbox Static Images with the public token; a calm
  *  placeholder without one) with our own pin, like the reference's map card.
- *  No second live map: the page sits in a sheet/Modal over the real map. */
+ *  No second live map: the page sits in a sheet/Modal over the real map.
+ *  A tap opens the map full screen with ✕ (Airbnb tap-through 2026-11-26:
+ *  it used to leave for the map tab and drop the page). */
 export function MeetingMap({
   coord,
   label = "Møtested",
@@ -494,54 +555,170 @@ export function MeetingMap({
   onShowOnMap: () => void;
 }) {
   const { width } = useWindowDimensions();
-  const scheme = useScheme();
-  const w = Math.min(640, Math.round(width - 32));
+  const w = Math.min(640, Math.round(width - 48));
   const h = 200;
+  const uri = useStaticMap(coord, w, h, 14.5);
+  const [full, setFull] = useState(false);
+  return (
+    <>
+      <Pressable
+        accessibilityRole="button"
+        accessibilityLabel={`${label}. Åpne kartet`}
+        onPress={() => setFull(true)}
+        pressedScale={0.99}
+        contentClassName="overflow-hidden rounded-lg border border-line bg-surfaceMuted"
+        contentStyle={{ height: h }}
+      >
+        {uri ? (
+          <Image
+            source={{ uri }}
+            contentFit="cover"
+            cachePolicy="memory-disk"
+            style={StyleSheet.absoluteFill}
+            accessible={false}
+          />
+        ) : (
+          <View style={StyleSheet.absoluteFill} className="bg-surfaceMuted" />
+        )}
+        <View
+          pointerEvents="none"
+          style={StyleSheet.absoluteFill}
+          className="items-center justify-center"
+        >
+          <MapPin label={label} />
+        </View>
+        <View className="absolute right-3 top-3" pointerEvents="none">
+          <View className="h-9 w-9 items-center justify-center rounded-full bg-surface">
+            <Icon name="expand-outline" size="md" tone="ink" />
+          </View>
+        </View>
+      </Pressable>
+      <MapFullScreen
+        visible={full}
+        coord={coord}
+        label={label}
+        onClose={() => setFull(false)}
+        onShowOnMap={() => {
+          setFull(false);
+          // After the Overlay's exit, so no Modal is left over the map.
+          setTimeout(onShowOnMap, 250);
+        }}
+      />
+    </>
+  );
+}
+
+/** Mapbox Static Images URL for a spot (null without the public token). */
+function useStaticMap(
+  coord: [number, number],
+  w: number,
+  h: number,
+  zoom: number,
+): string | null {
+  const scheme = useScheme();
   const token = env.mapboxToken;
   const style = scheme === "dark" ? "dark-v11" : "light-v11";
-  const uri = token
-    ? `https://api.mapbox.com/styles/v1/mapbox/${style}/static/${coord[0]},${coord[1]},14.5,0/${w}x${h}@2x?access_token=${token}`
+  return token
+    ? `https://api.mapbox.com/styles/v1/mapbox/${style}/static/${coord[0]},${coord[1]},${zoom},0/${w}x${h}@2x?access_token=${token}`
     : null;
+}
+
+function MapPin({ label }: { label: string }) {
   return (
-    <Pressable
-      accessibilityRole="button"
-      accessibilityLabel={`${label}. Vis på kartet`}
-      onPress={onShowOnMap}
-      pressedScale={0.99}
-      contentClassName="overflow-hidden rounded-lg border border-line bg-surfaceMuted"
-      contentStyle={{ height: h }}
+    <>
+      <View className="h-9 w-9 items-center justify-center rounded-full border-2 border-surface bg-ink">
+        <View className="h-2.5 w-2.5 rounded-full bg-surface" />
+      </View>
+      <View className="mt-1 rounded-full bg-surface px-2 py-1">
+        <Text variant="caption" weight="semibold" numberOfLines={1}>
+          {label}
+        </Text>
+      </View>
+    </>
+  );
+}
+
+/** The meeting point's map over the whole screen: ✕ top right, the route in
+ *  the phone's maps app and «Vis på kartet» (the app's own map) below. */
+function MapFullScreen({
+  visible,
+  coord,
+  label,
+  onClose,
+  onShowOnMap,
+}: {
+  visible: boolean;
+  coord: [number, number];
+  label: string;
+  onClose: () => void;
+  onShowOnMap: () => void;
+}) {
+  const { width, height } = useWindowDimensions();
+  const insets = useSafeAreaInsets();
+  // Mapbox Static Images allows up to 1280 per side.
+  const uri = useStaticMap(
+    coord,
+    Math.min(1280, Math.round(width)),
+    Math.min(1280, Math.round(height)),
+    15,
+  );
+  return (
+    <Overlay
+      visible={visible}
+      onClose={onClose}
+      enter="zoom"
+      className="bg-surfaceMuted"
+      statusBarTranslucent
+      accessibilityLabel={`Kart: ${label}`}
     >
-      {uri ? (
-        <Image
-          source={{ uri }}
-          contentFit="cover"
-          cachePolicy="memory-disk"
+      <View className="flex-1">
+        {uri ? (
+          <Image
+            source={{ uri }}
+            contentFit="cover"
+            cachePolicy="memory-disk"
+            style={StyleSheet.absoluteFill}
+            accessible={false}
+          />
+        ) : null}
+        <View
+          pointerEvents="none"
           style={StyleSheet.absoluteFill}
-          accessible={false}
-        />
-      ) : (
-        <View style={StyleSheet.absoluteFill} className="bg-surfaceMuted" />
-      )}
-      <View
-        pointerEvents="none"
-        style={StyleSheet.absoluteFill}
-        className="items-center justify-center"
-      >
-        <View className="h-9 w-9 items-center justify-center rounded-full border-2 border-surface bg-ink">
-          <View className="h-2.5 w-2.5 rounded-full bg-surface" />
+          className="items-center justify-center"
+        >
+          <MapPin label={label} />
         </View>
-        <View className="mt-1 rounded-full bg-surface px-2 py-1">
-          <Text variant="caption" weight="semibold" numberOfLines={1}>
-            {label}
-          </Text>
+        <View
+          pointerEvents="box-none"
+          className="absolute right-4"
+          style={{ top: insets.top + 8 }}
+        >
+          <IconButton
+            icon="close"
+            label="Lukk"
+            variant="floating"
+            onPress={onClose}
+          />
+        </View>
+        <View
+          pointerEvents="box-none"
+          className="absolute inset-x-0 flex-row justify-center gap-3 px-gutter"
+          style={{ bottom: insets.bottom + 24 }}
+        >
+          <View className="flex-1">
+            <DirectionsButton coord={coord} name={label} />
+          </View>
+          <View className="flex-1">
+            <Button
+              label="Vis på kartet"
+              variant="outline"
+              size="sm"
+              onPress={onShowOnMap}
+            />
+          </View>
         </View>
       </View>
-      <View className="absolute right-3 top-3" pointerEvents="none">
-        <View className="h-9 w-9 items-center justify-center rounded-full bg-surface">
-          <Icon name="map-outline" size="md" tone="ink" />
-        </View>
-      </View>
-    </Pressable>
+    </Overlay>
   );
 }
 
@@ -623,7 +800,7 @@ export function ChatSection({
   };
   return (
     <View className="gap-3">
-      <Text variant="h2" accessibilityRole="header">
+      <Text variant="h1" accessibilityRole="header">
         Samtalen
       </Text>
       <View className="gap-3 rounded-md border border-line p-4">
@@ -674,6 +851,10 @@ export type Know = {
   title: string;
   summary: string;
   detail: { icon: IconName; text: string }[];
+  /** The sheet adds to the row (a list, or facts the summary leaves out).
+   *  Otherwise the row is plain text: a sheet that only repeats the row is
+   *  a dead end (Airbnb tap-through 2026-11-26). */
+  more?: boolean;
 };
 
 const ACCESS_TEXT: Record<MockExperience["access"], string> = {
@@ -729,6 +910,7 @@ export function thingsToKnow(exp: MockExperience): Know[] {
       icon: "accessibility-outline",
       title: "Tilgjengelighet",
       summary: a11y.length > 0 ? a11y.join(", ") : "Utendørs møtested",
+      more: a11y.length > 1,
       detail:
         a11y.length > 0
           ? a11y.map((t) => ({
@@ -749,35 +931,55 @@ export function ThingsToKnowSection({ exp }: { exp: MockExperience }) {
   return <KnowSection items={thingsToKnow(exp)} />;
 }
 
-/** "Ting å vite": rows that open a short sheet (experiences and places). */
+/** "Ting å vite": rows, each opening a short sheet when it has more to say
+ *  (experiences and places). */
 export function KnowSection({ items }: { items: Know[] }) {
   const [open, setOpen] = useState<Know | null>(null);
   return (
     <View>
-      <Text variant="h2" accessibilityRole="header">
+      <Text variant="h1" accessibilityRole="header">
         Ting å vite
       </Text>
-      {items.map((k) => (
-        <Pressable
-          key={k.key}
-          accessibilityRole="button"
-          accessibilityLabel={`${k.title}, ${k.summary}`}
-          onPress={() => setOpen(k)}
-          pressedScale={0.99}
-          contentClassName="flex-row items-center gap-3 py-3"
-        >
-          <Icon name={k.icon} size="lg" tone="ink" />
-          <View className="flex-1 gap-1">
-            <Text variant="label" weight="semibold">
-              {k.title}
-            </Text>
-            <Text variant="caption" tone="muted" numberOfLines={2}>
-              {k.summary}
-            </Text>
+      {items.map((k) =>
+        k.more ? (
+          <Pressable
+            key={k.key}
+            accessibilityRole="button"
+            accessibilityLabel={`${k.title}, ${k.summary}`}
+            onPress={() => setOpen(k)}
+            pressedScale={0.99}
+            contentClassName="flex-row items-center gap-4 py-3"
+          >
+            <Icon name={k.icon} size="xl" tone="ink" />
+            <View className="flex-1 gap-1">
+              <Text variant="body" weight="medium">
+                {k.title}
+              </Text>
+              <Text variant="body" tone="muted" numberOfLines={2}>
+                {k.summary}
+              </Text>
+            </View>
+            <Icon name="chevron-forward" size="md" tone="muted" />
+          </Pressable>
+        ) : (
+          <View
+            key={k.key}
+            accessible
+            accessibilityLabel={`${k.title}, ${k.summary}`}
+            className="flex-row items-center gap-4 py-3"
+          >
+            <Icon name={k.icon} size="xl" tone="ink" />
+            <View className="flex-1 gap-1">
+              <Text variant="body" weight="medium">
+                {k.title}
+              </Text>
+              <Text variant="body" tone="muted">
+                {k.summary}
+              </Text>
+            </View>
           </View>
-          <Icon name="chevron-forward" size="md" tone="muted" />
-        </Pressable>
-      ))}
+        ),
+      )}
       <Sheet
         visible={open !== null}
         onClose={() => setOpen(null)}

@@ -32,3 +32,35 @@ describe("react-native-screens listener fix", () => {
     );
   });
 });
+
+// Ledger 0576: @gorhom/bottom-sheet 5.2.14 animated its content mask's height
+// on every drag frame; on the Android 10 phone the mask fell far short of its
+// target and the map page sheet's lower part went unpainted on a slow drag.
+// The patch sets the mask's height and padding directly, in the source Metro
+// bundles and in both built copies.
+describe("@gorhom/bottom-sheet content mask", () => {
+  const gorhom = path.join(
+    __dirname,
+    "..",
+    "node_modules",
+    "@gorhom",
+    "bottom-sheet",
+  );
+  const gorhomVersion: string = JSON.parse(
+    fs.readFileSync(path.join(gorhom, "package.json"), "utf8"),
+  ).version;
+  it("is installed unanimated", () => {
+    // A new gorhom release stops the install (apply-patches.js) until the
+    // patch is checked against it.
+    expect(gorhomVersion).toBe("5.2.14");
+    for (const file of [
+      "src/components/bottomSheet/BottomSheetContent.tsx",
+      "lib/module/components/bottomSheet/BottomSheetContent.js",
+      "lib/commonjs/components/bottomSheet/BottomSheetContent.js",
+    ]) {
+      const text = fs.readFileSync(path.join(gorhom, file), "utf8");
+      expect(text).toContain("ThirdPlace patch: unanimated mask (0576)");
+      expect(text).not.toMatch(/height: (\(0, _utilities\.)?animate\)?\(/);
+    }
+  });
+});

@@ -5,20 +5,18 @@ import type React from "react";
 import { View } from "react-native";
 
 import { EmptyState } from "@/components/ui";
-import { elevation } from "@/theme";
+import { useElevation } from "@/theme";
 
 import type { DiscoveryMode } from "./types/mapPresentation";
 
 export function MapStateCard({ children }: { children: React.ReactNode }) {
+  const elev = useElevation();
   return (
     <View
       pointerEvents="box-none"
       className="absolute inset-0 items-center justify-center p-gutter"
     >
-      <View
-        className="w-full max-w-sm rounded-md bg-surface"
-        style={elevation.e2}
-      >
+      <View className="w-full max-w-sm rounded-md bg-surface" style={elev.e2}>
         {children}
       </View>
     </View>

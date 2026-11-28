@@ -3,7 +3,7 @@ import Animated, { FadeIn, FadeOut } from "react-native-reanimated";
 
 import { Icon, type IconName, Text, Button } from "@/components/ui";
 import { useReducedMotion } from "@/hooks/useReducedMotion";
-import { elevation, motion } from "@/theme";
+import { useElevation, motion } from "@/theme";
 
 // A one-time tip for a gesture the screen does not show (Phase 18, from the
 // screen benchmark: one coach mark for one hidden gesture, YouTube / Apple
@@ -19,6 +19,7 @@ export function HintBanner({
   text: string;
   onDone: () => void;
 }) {
+  const elev = useElevation();
   const reduced = useReducedMotion();
   return (
     <Animated.View
@@ -28,7 +29,7 @@ export function HintBanner({
       <View
         accessibilityLiveRegion="polite"
         className="flex-row items-center gap-3 rounded-md border border-line bg-surface p-3"
-        style={elevation.e1}
+        style={elev.e1}
       >
         <View className="h-9 w-9 items-center justify-center rounded-full bg-surfaceMuted">
           <Icon name={icon} size="md" tone="ink" />

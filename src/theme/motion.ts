@@ -23,13 +23,19 @@ export const spring = {
   snappy: { damping: 20, stiffness: 220, mass: 1 }, // preview / sheet settle / undo
   gentle: { damping: 26, stiffness: 160, mass: 1 }, // content settle
   card: { damping: 16, stiffness: 240, mass: 1 }, // crisp, tiny overshoot; Sveip's spring-back uses gesture.swipeReturnMs since 2026-11-18
+  // The map's gorhom sheets after a drag (0572): critically damped, carries
+  // the finger's speed, never past a snap (so never above the top one).
+  sheet: { damping: 40, stiffness: 400, mass: 1, overshootClamping: true },
 } as const;
 
 // Cubic-bezier control points (plain data — components build the curve with
 // Reanimated's `Easing.bezier(...easing.standard)`).
 export const easing = {
   standard: [0.2, 0, 0, 1], // most moves on screen
-  enter: [0.05, 0.7, 0.1, 1], // things arriving (sheets, overlays)
+  enter: [0.05, 0.7, 0.1, 1], // things arriving (PageActionCard)
+  // A sheet sliding up: enter was 45 % of the way up on its first frame, so the
+  // sheet popped in; this one is 12 % (iOS sheet curve, 2026-11-27).
+  sheet: [0.32, 0.72, 0, 1],
   exit: [0.3, 0, 0.8, 0.15], // things leaving — quick, accelerating
 } as const;
 

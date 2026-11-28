@@ -1,6 +1,6 @@
 // Phase 18 (screen benchmark, "Chat, groups, alerts"): Varsler collapses
-// same-kind notices in a time group and filters by Alle / Invitasjoner /
-// Følgere.
+// same-kind notices in a time group (the type filter pills were removed
+// 2026-11-26).
 import {
   afterEach,
   beforeEach,
@@ -103,23 +103,5 @@ describe("Varsler", () => {
     expect(mockPush).toHaveBeenCalledWith("/profile/followers");
     const read = reads.result.current.readIds;
     expect(follows.every((n) => read.has(n.id))).toBe(true);
-  });
-
-  it("filters by Invitasjoner and Følgere", () => {
-    render(<NotificationsScreen />, { wrapper });
-    const invite = MOCK_NOTIFICATIONS.find((n) => n.type === "invite")!;
-    const join = MOCK_NOTIFICATIONS.find((n) => n.type === "join")!;
-    fireEvent.press(screen.getByText("Invitasjoner"));
-    expect(screen.getByText(invite.actorName)).toBeTruthy();
-    expect(screen.queryByText(join.actorName)).toBeNull();
-    fireEvent.press(screen.getByText("Følgere"));
-    expect(screen.queryByText(invite.actorName)).toBeNull();
-    expect(
-      screen.getByText(
-        `${follows[0]?.actorName} og ${follows.length - 1} andre`,
-      ),
-    ).toBeTruthy();
-    fireEvent.press(screen.getByText("Alle"));
-    expect(screen.getByText(join.actorName)).toBeTruthy();
   });
 });

@@ -1,10 +1,11 @@
-// Varsler's pills and row media (0460, Instagram benchmark 2, user
-// 2026-11-17). Pure: which pills show, who an actor is, and what a row's
+// Varsler's row media (0460, Instagram benchmark 2, user
+// 2026-11-17; the type pills were removed 2026-11-26). Pure: who an actor is, and what a row's
 // thumbnail shows. MOCK fixtures only (BLOCKED_CONTRACT_GAP: no notification
 // feed exists).
 import type { ImageSourcePropType } from "react-native";
 
 import {
+  businessForPlace,
   experienceById,
   groupById,
   people,
@@ -16,35 +17,6 @@ import {
 } from "@/fixtures";
 import { coverForPlace, libImage } from "@/fixtures/images";
 
-export type NotificationFilterKey = "all" | NotificationType;
-
-/** The type pills in their order, after "Alle". */
-const TYPE_PILLS: { key: NotificationType; label: string }[] = [
-  { key: "follow", label: "Følgere" },
-  { key: "invite", label: "Invitasjoner" },
-  { key: "message", label: "Meldinger" },
-  { key: "join", label: "Bli med" },
-  { key: "review", label: "Anmeldelser" },
-];
-
-/** Alle, then one pill per type with at least one notice (no counts). */
-export function notificationPills(
-  items: readonly MockNotification[],
-): { key: NotificationFilterKey; label: string }[] {
-  const types = new Set(items.map((n) => n.type));
-  return [
-    { key: "all", label: "Alle" },
-    ...TYPE_PILLS.filter((p) => types.has(p.key)),
-  ];
-}
-
-export function filterNotifications(
-  items: readonly MockNotification[],
-  key: NotificationFilterKey,
-): MockNotification[] {
-  return key === "all" ? [...items] : items.filter((n) => n.type === key);
-}
-
 /** The person behind a notice, when the actor is one (for their photo). */
 export function notificationPerson(
   n: MockNotification,
@@ -54,6 +26,16 @@ export function notificationPerson(
     if (p) return p;
   }
   return people.find((p) => p.name === n.actorName);
+}
+
+/** Whether the actor is verified: a person with the badge, or a place whose
+ *  business is verified (MOCK flags, user 2026-11-27). */
+export function notificationVerified(n: MockNotification): boolean {
+  const p = notificationPerson(n);
+  if (p) return p.verified === true;
+  if (n.target.kind === "place" || n.target.kind === "reviews")
+    return businessForPlace(n.target.id)?.verified === true;
+  return false;
 }
 
 /** The photo of what a notice names: an experience, place or group. */
@@ -71,4 +53,54 @@ export function notificationThumb(
     return p ? libImage(coverForPlace(p)) : undefined;
   }
   return undefined;
+}
+
+// Filtrer (user 2026-11-27, 0561, Instagram's Varsler filter): which kinds of
+// notice to show and whether only people the viewer follows or verified
+// accounts (user 2026-11-27). Empty kinds = every kind; both account kinds
+// picked keep either. Screen state only, like the rest of the inbox.
+export type NotificationFilter = {
+  types: ReadonlySet<NotificationType>;
+  onlyFollowing: boolean;
+  onlyVerified: boolean;
+};
+
+export const NO_NOTIFICATION_FILTER: NotificationFilter = {
+  types: new Set(),
+  onlyFollowing: false,
+  onlyVerified: false,
+};
+
+/** Filtrer's Kategorier, in the order they show. */
+export const NOTIFICATION_CATEGORIES: {
+  type: NotificationType;
+  label: string;
+}[] = [
+  { type: "follow", label: "Følgere" },
+  { type: "message", label: "Meldinger" },
+  { type: "join", label: "Påmeldinger" },
+  { type: "invite", label: "Invitasjoner" },
+  { type: "review", label: "Anmeldelser" },
+];
+
+export function isNotificationFilterOn(f: NotificationFilter): boolean {
+  return f.types.size > 0 || f.onlyFollowing || f.onlyVerified;
+}
+
+/** The notices a filter keeps. `followingIds`: people the viewer follows. */
+export function applyNotificationFilter(
+  items: readonly MockNotification[],
+  f: NotificationFilter,
+  followingIds: ReadonlySet<string>,
+): MockNotification[] {
+  return items.filter((n) => {
+    if (f.types.size > 0 && !f.types.has(n.type)) return false;
+    if (f.onlyFollowing || f.onlyVerified) {
+      const p = notificationPerson(n);
+      const followed = f.onlyFollowing && !!p && followingIds.has(p.id);
+      const verified = f.onlyVerified && notificationVerified(n);
+      if (!followed && !verified) return false;
+    }
+    return true;
+  });
 }

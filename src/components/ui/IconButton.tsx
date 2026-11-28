@@ -4,7 +4,7 @@
 // optional badge (dot or count) for unread markers.
 import { ActivityIndicator, View } from "react-native";
 
-import { elevation, useThemeColors } from "@/theme";
+import { useElevation, useThemeColors } from "@/theme";
 
 import { Icon, type IconName, type IconTone } from "./Icon";
 import { PopIcon } from "./PopIcon";
@@ -82,6 +82,7 @@ export function IconButton({
   className,
   testID,
 }: IconButtonProps) {
+  const elev = useElevation();
   const c = useThemeColors();
   const px = SIZE_PX[size];
   const slop = Math.max(0, Math.ceil((MIN_TARGET - px) / 2));
@@ -111,7 +112,7 @@ export function IconButton({
         // (user 2026-11-20: the top icons changed shape at random).
         { width: px, height: px, borderRadius: px / 2 },
         variant === "floating" || variant === "ink" || variant === "ember"
-          ? elevation.e2
+          ? elev.e2
           : null,
       ]}
     >

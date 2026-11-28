@@ -26,10 +26,13 @@ import {
   hostPerson,
   moreExperiences,
 } from "@/components/experience/experienceMeta";
+import { PageScrollContext } from "@/components/pageScroll";
 import { interestById } from "@/fixtures/catalog/interests";
 import {
+  AvailabilitySection,
   ChatSection,
   MeetingSection,
+  SessionSheet,
   thingsToKnow,
 } from "@/components/experience/ExperienceSections";
 import {
@@ -100,7 +103,7 @@ describe("ExperiencePage", () => {
       "Slik fungerer vurderinger",
       "Flere opplevelser i området",
       "Om verten",
-      "Rapporter opplevelsen",
+      "Få hjelp eller rapporter",
       ...experienceChips(e1),
     ]) {
       expect(screen.getAllByText(text).length).toBeGreaterThan(0);
@@ -138,6 +141,50 @@ describe("ExperiencePage", () => {
     expect(screen.queryByText("Administrer")).toBeNull();
     fireEvent.press(screen.getByText("Vis alle vurderinger"));
     expect(onNavigate).toHaveBeenCalledWith("/experience/e1/reviews");
+  });
+
+  it("the rating link scrolls to the page's reviews, else opens them", () => {
+    const onNavigate = jest.fn();
+    const scrollToAnchor = jest.fn(() => true);
+    render(
+      <PageScrollContext.Provider value={{ scrollToAnchor }}>
+        <ExperiencePage exp={e1} onOpen={jest.fn()} onNavigate={onNavigate} />
+      </PageScrollContext.Provider>,
+      { wrapper },
+    );
+    fireEvent.press(screen.getByRole("link", { name: /Gå til vurderingene/ }));
+    expect(scrollToAnchor).toHaveBeenCalledTimes(1);
+    expect(onNavigate).not.toHaveBeenCalled();
+
+    // No scrolling host (Sveip's details): all reviews, as before.
+    screen.unmount();
+    renderPage({ onNavigate });
+    fireEvent.press(screen.getByRole("link", { name: /Gå til vurderingene/ }));
+    expect(onNavigate).toHaveBeenCalledWith("/experience/e1/reviews");
+  });
+
+  it("the meeting map opens full screen; Vis på kartet leaves after it closes", () => {
+    jest.useFakeTimers();
+    try {
+      const onShowOnMap = jest.fn();
+      render(
+        <MeetingSection
+          exp={e1}
+          hostName="Maria Movik"
+          onShowOnMap={onShowOnMap}
+        />,
+        { wrapper },
+      );
+      fireEvent.press(screen.getByRole("button", { name: /Åpne kartet/ }));
+      expect(onShowOnMap).not.toHaveBeenCalled();
+      expect(screen.getByRole("button", { name: "Lukk" })).toBeTruthy();
+      fireEvent.press(screen.getByText("Vis på kartet"));
+      expect(onShowOnMap).not.toHaveBeenCalled();
+      act(() => jest.advanceTimersByTime(300));
+      expect(onShowOnMap).toHaveBeenCalledTimes(1);
+    } finally {
+      jest.useRealTimers();
+    }
   });
 
   it("whole places, groups and other experiences open as pages", () => {
@@ -285,6 +332,82 @@ describe("ExperiencePage sections (H4b)", () => {
     ]) {
       expect(screen.getAllByText(text)).toHaveLength(1);
     }
+  });
+
+  it("help, report and block sit behind one quiet link", () => {
+    jest.useFakeTimers();
+    try {
+      const onNavigate = jest.fn();
+      renderPage({ onNavigate });
+      // Not on the page itself any more (Airbnb tap-through 2026-11-26).
+      expect(screen.queryByText("Rapporter opplevelsen")).toBeNull();
+      expect(screen.queryByText(/^Blokker /)).toBeNull();
+      fireEvent.press(screen.getByText("Få hjelp eller rapporter"));
+      for (const label of [
+        "Få hjelp med opplevelsen",
+        "Rapporter opplevelsen",
+        "Blokker Maria",
+      ])
+        expect(screen.getByText(label)).toBeTruthy();
+      fireEvent.press(screen.getByText("Få hjelp med opplevelsen"));
+      act(() => jest.advanceTimersByTime(300));
+      expect(onNavigate).toHaveBeenCalledWith("/settings/support?about=e1");
+    } finally {
+      jest.useRealTimers();
+    }
+  });
+
+  it("the next time's card shows who is going; later cards do not", () => {
+    render(<AvailabilitySection exp={e1} />, { wrapper });
+    const cards = screen.getAllByRole("button", { name: /plass/ });
+    expect(cards[0]!.props.accessibilityLabel).toMatch(
+      new RegExp(`${e1.going} skal$`),
+    );
+    for (const c of cards.slice(1))
+      expect(c.props.accessibilityLabel).not.toMatch(/skal$/);
+  });
+
+  it("Velg tidspunkt has a month view that narrows the list to a day", () => {
+    const now = new Date();
+    const sessions = sessionsFor(e1, now);
+    render(
+      <SessionSheet
+        exp={e1}
+        sessions={sessions}
+        now={now}
+        visible
+        initial={null}
+        onClose={jest.fn()}
+        onPick={jest.fn()}
+      />,
+      { wrapper },
+    );
+    expect(screen.getAllByRole("radio")).toHaveLength(sessions.length);
+    const first = sessions[0]!.start;
+    fireEvent.press(
+      screen.getByRole("button", {
+        name: new RegExp(`^${first.getDate()}\. .*1 tid$`),
+      }),
+    );
+    expect(screen.getAllByRole("radio")).toHaveLength(1);
+  });
+
+  it("a Ting å vite row opens a sheet only when the sheet adds to it", () => {
+    renderPage();
+    // Aktivitetsnivå and Avbestilling would only repeat the row.
+    for (const title of [
+      "Krav til deltakere",
+      "Aktivitetsnivå",
+      "Avbestilling",
+    ])
+      expect(
+        screen.queryByRole("button", { name: new RegExp(`^${title}, `) }),
+      ).toBeNull();
+    const more = thingsToKnow(e1).filter((k) => k.more);
+    for (const k of more)
+      expect(
+        screen.getByRole("button", { name: `${k.title}, ${k.summary}` }),
+      ).toBeTruthy();
   });
 
   it("things to know come from the creator's choices and the 18+ rule", () => {

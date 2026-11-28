@@ -4,8 +4,10 @@
 // same PlacePage in the map's page sheet (2026-11-09), Sveip's arrow in place
 // (SwipeDetails, 2026-11-18).
 import { router, useLocalSearchParams, type Href } from "expo-router";
-import { useState } from "react";
+import { useCallback, useMemo, useRef, useState } from "react";
 import { ScrollView, View } from "react-native";
+
+import { PageScrollContext, scrollAnchorIn } from "@/components/pageScroll";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { placeCaption } from "@/components/experience/experienceMeta";
@@ -16,7 +18,7 @@ import { EmptyState, Header, Screen, StatusBarStyle } from "@/components/ui";
 import { chatForPlace, placeById } from "@/fixtures";
 import { PageTopBar } from "@/features/entity/PageTopBar";
 import { goBackOr } from "@/lib/navigation";
-import { elevation } from "@/theme";
+import { useElevation, useRaisedEdge } from "@/theme";
 
 // The floating chat card's height before it is measured (dp).
 const CHAT_CARD = 96;
@@ -48,7 +50,20 @@ export function PlacePageBody({
   /** Set where the page is open in place (Sveip's details). */
   onBack?: () => void;
 }) {
+  const elev = useElevation();
   const insets = useSafeAreaInsets();
+  const edge = useRaisedEdge();
+  // The rating link scrolls to the page's reviews (pageScroll.ts).
+  const scrollRef = useRef<ScrollView>(null);
+  const boxRef = useRef<View>(null);
+  const scrollToAnchor = useCallback(
+    (anchor: View | null) =>
+      scrollAnchorIn(boxRef.current, anchor, 16, (y) =>
+        scrollRef.current?.scrollTo({ y, animated: true }),
+      ),
+    [],
+  );
+  const scroller = useMemo(() => ({ scrollToAnchor }), [scrollToAnchor]);
   // The floating chat card, as on the map's page: a place's chat, with its
   // last message and "Bli med i samtalen".
   const hasChat = chatForPlace(place.id) != null;
@@ -64,7 +79,8 @@ export function PlacePageBody({
         onBack={onBack}
       />
       <ScrollView
-        contentContainerClassName="px-gutter pt-4"
+        ref={scrollRef}
+        contentContainerClassName="px-6 pt-4"
         // The page bottom (48) above the home indicator, or 24 above the
         // floating chat card.
         contentContainerStyle={{
@@ -74,10 +90,14 @@ export function PlacePageBody({
         }}
         keyboardShouldPersistTaps="handled"
       >
-        <PlacePage
-          place={place}
-          onNavigate={(href: Href) => router.push(href)}
-        />
+        <PageScrollContext.Provider value={scroller}>
+          <View ref={boxRef}>
+            <PlacePage
+              place={place}
+              onNavigate={(href: Href) => router.push(href)}
+            />
+          </View>
+        </PageScrollContext.Provider>
       </ScrollView>
       {hasChat ? (
         <View
@@ -86,8 +106,8 @@ export function PlacePageBody({
           style={{ paddingBottom: Math.max(insets.bottom, 12) + 4 }}
         >
           <View
-            className="rounded-md border border-line bg-surface px-4 py-3"
-            style={elevation.e2}
+            className={`rounded-md ${edge} bg-surface px-4 py-3`}
+            style={elev.e2}
             onLayout={(e) => {
               const h = Math.round(e.nativeEvent.layout.height);
               if (h > 0 && h !== cardH) setCardH(h);

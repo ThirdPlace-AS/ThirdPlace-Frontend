@@ -24,6 +24,8 @@ export const confirmToast = {
   ratingSent: { title: "Takk for vurderingen", icon: "star-outline" },
   feedbackSent: { title: "Takk for tilbakemeldingen", icon: ok },
   reportSent: { title: "Takk, rapporten er sendt", icon: ok },
+  notificationDeleted: { title: "Varselet er slettet", icon: "trash-outline" },
+  notificationHidden: { title: "Varselet er skjult", icon: "eye-off-outline" },
   linkCopied: { title: "Lenken er kopiert", icon: "copy-outline" },
   sharedInMessage: { title: "Delt i en melding", icon: "paper-plane-outline" },
   reminderSent: {
@@ -58,4 +60,9 @@ export const confirmToast = {
 
 export function blockedToast(name: string): ToastInput {
   return { title: `${name} er blokkert`, icon: ok };
+}
+
+/** Varsler's «…» Fjern følger (user 2026-11-27). */
+export function followerRemovedToast(name: string): ToastInput {
+  return { title: `${name} er fjernet som følger`, icon: ok };
 }

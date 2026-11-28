@@ -9,7 +9,10 @@ import { fontFamilyFor } from "@/theme/fonts";
 // p26 error state ("Noe gikk galt"; its "Feilkode" line is left out, since no
 // error codes exist). It replaces the root layout, so it cannot use the
 // providers that layout sets up (theme variables, safe-area insets, portals):
-// plain views, the static light palette and the brand font by name.
+// plain views, the static light palette and the brand font by name. It copies
+// the shared system page (SystemState, review PR-05) by hand: title, one
+// line, an ink "Prøv igjen" and a text "Til kartet". No illustration: the art
+// reads the theme provider this screen does not have.
 export function CrashScreen({ retry }: ErrorBoundaryProps) {
   const c = palette.light;
   const toMap = () => {
@@ -48,8 +51,7 @@ export function CrashScreen({ retry }: ErrorBoundaryProps) {
           marginBottom: 12,
         }}
       >
-        Vi klarte ikke å laste dette akkurat nå. Prøv igjen eller gå tilbake til
-        kartet.
+        Prøv igjen om litt.
       </Text>
       <CrashButton label="Prøv igjen" primary onPress={() => void retry()} />
       <CrashButton label="Til kartet" onPress={toMap} />
@@ -80,12 +82,12 @@ function CrashButton({
       onPressOut={() => setPressed(false)}
       style={{
         minHeight: 48,
-        borderRadius: 999,
+        // The system page's buttons (review PR-05): an ink one, then a text
+        // one, radius sm.
+        borderRadius: 8,
         alignItems: "center",
         justifyContent: "center",
-        borderWidth: 1,
-        borderColor: primary ? c.ink : c.line,
-        backgroundColor: primary ? c.ink : c.surface,
+        backgroundColor: primary ? c.ink : "transparent",
         opacity: pressed ? 0.85 : 1,
       }}
     >

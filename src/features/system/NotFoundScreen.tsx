@@ -1,21 +1,18 @@
-import { EmptyState } from "@/components/states/StateView";
-import { Screen } from "@/components/ui";
+import { SystemState } from "@/components/states/SystemState";
 import { resetTo } from "@/lib/navigation";
 
 // "Fant ikke siden" (Phase 15): what a link to a page that does not exist
 // opens — a mistyped or old link, or a shared join link whose chat or
-// experience is gone. expo-router showed its own English screen here. Same
-// voice as the entity pages' "Fant ikke …" states.
+// experience is gone. expo-router showed its own English screen here. Since
+// review PR-05 it is the shared system page: a back arrow (to the map with no
+// history) and "Til kartet".
 export default function NotFoundScreen() {
   return (
-    <Screen edges={["top", "bottom"]}>
-      <EmptyState
-        icon="map-outline"
-        title="Fant ikke siden"
-        message="Lenken kan være feil, eller siden er fjernet."
-        actionLabel="Til kartet"
-        onAction={() => resetTo("/map")}
-      />
-    </Screen>
+    <SystemState
+      icon="map-outline"
+      title="Fant ikke siden"
+      body="Den kan være flyttet eller slettet."
+      action={{ label: "Til kartet", onPress: () => resetTo("/map") }}
+    />
   );
 }

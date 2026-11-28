@@ -49,9 +49,13 @@ describe("autoStyleKey", () => {
   it("follows the clock in light mode", () => {
     expect(autoStyleKey(12, false)).toBe(styleKeyForHour(12));
   });
-  it("uses the night style whenever the app is dark", () => {
+  it("uses the night style while the app is dark, except at Skumring", () => {
     expect(autoStyleKey(12, true)).toBe(night);
     expect(autoStyleKey(6, true)).toBe(night);
+    expect(autoStyleKey(21, true)).toBe(night);
+    // Auto turns the app dark from Skumring (2026-11-26); the map keeps it.
+    expect(autoStyleKey(18, true)).toBe(styleKeyForHour(18));
+    expect(autoStyleKey(18, true)).not.toBe(night);
   });
 });
 

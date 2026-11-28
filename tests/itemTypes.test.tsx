@@ -40,6 +40,8 @@ import { experiences, places } from "@/fixtures";
 import { resetOrigin } from "@/lib/origin";
 import { useMapSaved } from "@/components/map/hooks/useMapSaved";
 
+import { comingWednesdayNoon } from "./setup/clock";
+
 const mockPush = jest.fn();
 jest.mock("expo-router", () => ({
   router: {
@@ -63,6 +65,7 @@ function wrapper({ children }: { children: React.ReactNode }) {
 }
 
 afterEach(() => {
+  jest.useRealTimers();
   resetOrigin();
   mockPush.mockClear();
 });
@@ -80,6 +83,8 @@ describe("item types", () => {
   });
 
   it("label every map item with its kind and area", () => {
+    // "Lør 10:00" is a weekday label only from Sunday to Thursday (0559).
+    jest.useFakeTimers({ now: comingWednesdayNoon() });
     const r = resultForMode({
       mode: "explore",
       places,

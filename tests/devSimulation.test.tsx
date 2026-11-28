@@ -12,6 +12,7 @@ describe("dev simulation", () => {
       mapOffline: false,
       checkinFar: false,
       slowLoad: false,
+      newBusiness: false,
     });
   });
 

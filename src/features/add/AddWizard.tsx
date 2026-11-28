@@ -31,6 +31,12 @@ import {
   LoadingImage,
 } from "@/components/ui";
 import { DiscardChangesSheet } from "@/components/DiscardChangesSheet";
+import { ShareSheet } from "@/components/actions/ActionSheets";
+import {
+  EditLinks,
+  ExperiencePage,
+  type ExperiencePart,
+} from "@/components/experience/ExperiencePage";
 import { haptics } from "@/lib/haptics";
 import { getMyProfile } from "@/lib/myProfile";
 import { useStepBack } from "@/lib/useStepBack";
@@ -62,10 +68,12 @@ import {
   type MockExperience,
 } from "@/fixtures";
 import {
+  buildExperience,
   createExperience,
   createGroup,
   hostedExperiences,
   submitPlace,
+  type NewExperienceInput,
 } from "@/fixtures/created";
 import { libThumb, smallImage, type LibraryKey } from "@/fixtures/images";
 
@@ -173,6 +181,33 @@ function formatDate(iso: string) {
 }
 
 // The Add flows, per the design (PDF p10–p12). "Hva vil du legge til?" offers
+/** What an experience draft publishes as: the preview builds the page from
+ *  this, and publishing saves the same thing (review PR-07, 0525). */
+function experienceInput(draft: AddDraft): NewExperienceInput {
+  return {
+    title: draft.title,
+    about: draft.summary,
+    category: draft.category ?? "Sosialt",
+    area: draft.area ?? "Grünerløkka",
+    meetingPoint: draft.meetingPoint,
+    photos: draft.photos.map((i) => PHOTO_POOL[i]!),
+    date: draft.date ?? "",
+    startTime: draft.startTime ?? "18:00",
+    duration: draft.duration,
+    repeat: draft.repeat,
+    capacity: Number(draft.capacity) || 1,
+    priceNok: Number(draft.price) || 0,
+    access: draft.access,
+    cancellation: draft.cancellation,
+    vibes: draft.vibes,
+    energy: draft.energy,
+    languages: draft.languages,
+    included: draft.included,
+    steps: draft.steps,
+    hostName: getMyProfile().name,
+  };
+}
+
 // Sted or Opplevelse. A place takes 5 steps and ends in "Send inn til
 // vurdering" (places are reviewed manually); an experience takes 7 steps and
 // ends in "Publiser opplevelsen". The end state confirms in product voice
@@ -203,6 +238,9 @@ export function AddWizard() {
   // since (review 2026-11-18 E-06/IJ11).
   const [baseline, setBaseline] = useState<AddDraft>(EMPTY_DRAFT);
   const [askDiscard, setAskDiscard] = useState(false);
+  // «Endre» on the last step opened this step (review PR-07, 0525): its
+  // button and back return to the preview, not to the next or previous step.
+  const [fromReview, setFromReview] = useState(false);
   if (editKey && editKey !== seeded) {
     setSeeded(editKey);
     const source = experienceById(edit ?? "");
@@ -226,13 +264,26 @@ export function AddWizard() {
     setSubmitted(false);
     setEditing(false);
     setCreated({});
+    setFromReview(false);
   };
 
   const clear = () => {
     setDraft(EMPTY_DRAFT);
     setEditing(false);
+    setFromReview(false);
+  };
+  const toReview = () => {
+    setFromReview(false);
+    setStepIndex(steps.indexOf("review"));
+  };
+  const editPart = (part: StepKey) => {
+    const i = steps.indexOf(part);
+    if (i < 0) return;
+    setFromReview(true);
+    setStepIndex(i);
   };
   const back = () => {
+    if (fromReview && step !== "review") return toReview();
     if (stepIndex > 0) return setStepIndex((i) => i - 1);
     if (JSON.stringify(draft) !== JSON.stringify(baseline)) {
       setAskDiscard(true);
@@ -279,6 +330,7 @@ export function AddWizard() {
           setBaseline({ ...EMPTY_DRAFT, kind });
           setStepIndex(0);
           setEditing(false);
+          setFromReview(false);
         }}
       />
     );
@@ -286,6 +338,7 @@ export function AddWizard() {
 
   const isLast = step === "review";
   const next = () => {
+    if (!isLast && fromReview) return toReview();
     if (!isLast) return setStepIndex((i) => i + 1);
     if (draft.kind === "group") {
       setCreated(
@@ -303,30 +356,7 @@ export function AddWizard() {
     } else if (draft.kind === "place") {
       submitPlace(draft.title, draft.area);
     } else if (draft.kind === "experience" && !editing) {
-      setCreated({
-        experienceId: createExperience({
-          title: draft.title,
-          about: draft.summary,
-          category: draft.category ?? "Sosialt",
-          area: draft.area ?? "Grünerløkka",
-          meetingPoint: draft.meetingPoint,
-          photos: draft.photos.map((i) => PHOTO_POOL[i]!),
-          date: draft.date ?? "",
-          startTime: draft.startTime ?? "18:00",
-          duration: draft.duration,
-          repeat: draft.repeat,
-          capacity: Number(draft.capacity) || 1,
-          priceNok: Number(draft.price) || 0,
-          access: draft.access,
-          cancellation: draft.cancellation,
-          vibes: draft.vibes,
-          energy: draft.energy,
-          languages: draft.languages,
-          included: draft.included,
-          steps: draft.steps,
-          hostName: getMyProfile().name,
-        }),
-      });
+      setCreated({ experienceId: createExperience(experienceInput(draft)) });
     }
     // Published, created or sent in: a real local completion, so the
     // success tick (user 2026-11-09: haptics where it makes sense).
@@ -352,7 +382,12 @@ export function AddWizard() {
             contentContainerClassName={pageBody.sections}
             keyboardShouldPersistTaps="handled"
           >
-            <StepBody step={step} draft={draft} patch={patch} />
+            <StepBody
+              step={step}
+              draft={draft}
+              patch={patch}
+              onEdit={editPart}
+            />
           </ScrollView>
         </FadeSwap>
 
@@ -360,7 +395,9 @@ export function AddWizard() {
           <Button
             label={
               !isLast
-                ? "Neste"
+                ? fromReview
+                  ? "Tilbake til forhåndsvisningen"
+                  : "Neste"
                 : editing
                   ? "Lagre endringer"
                   : draft.kind === "place"
@@ -477,10 +514,12 @@ function StepBody({
   step,
   draft,
   patch,
+  onEdit,
 }: {
   step: StepKey;
   draft: AddDraft;
   patch: (p: Partial<AddDraft>) => void;
+  onEdit: (step: StepKey) => void;
 }) {
   const isPlace = draft.kind === "place";
   const isGroup = draft.kind === "group";
@@ -999,15 +1038,63 @@ function StepBody({
       );
 
     case "review":
-      return <ReviewStep draft={draft} />;
+      return <ReviewStep draft={draft} onEdit={onEdit} />;
 
     default:
       return null;
   }
 }
 
-function ReviewStep({ draft }: { draft: AddDraft }) {
-  const isPlace = draft.kind === "place";
+// The last step (review PR-07, 0525: «Se før du publiserer»). An experience
+// shows its real page, built from the draft the way publishing builds it,
+// with nothing on it that acts and «Endre» on each part. A place (it has no
+// public page until it is approved) and a group keep a summary, with «Endre»
+// on each part. «Endre» opens that step; its button returns here.
+function ReviewStep({
+  draft,
+  onEdit,
+}: {
+  draft: AddDraft;
+  onEdit: (step: StepKey) => void;
+}) {
+  if (draft.kind === "experience") {
+    return <ExperiencePreview draft={draft} onEdit={onEdit} />;
+  }
+  return <SummaryReview draft={draft} onEdit={onEdit} />;
+}
+
+function ExperiencePreview({
+  draft,
+  onEdit,
+}: {
+  draft: AddDraft;
+  onEdit: (step: StepKey) => void;
+}) {
+  const exp = buildExperience(experienceInput(draft));
+  // The page's parts are the wizard's step keys.
+  const edit = (part: ExperiencePart) => onEdit(part);
+  return (
+    <Shell
+      title="Klar til å publisere?"
+      subtitle="Slik ser andre opplevelsen. Trykk Endre for å rette noe."
+    >
+      <ExperiencePage
+        exp={exp}
+        onOpen={() => {}}
+        onNavigate={() => {}}
+        preview={{ onEdit: edit }}
+      />
+    </Shell>
+  );
+}
+
+function SummaryReview({
+  draft,
+  onEdit,
+}: {
+  draft: AddDraft;
+  onEdit: (step: StepKey) => void;
+}) {
   const isGroup = draft.kind === "group";
   const first = draft.photos[0];
   const cover =
@@ -1016,19 +1103,8 @@ function ReviewStep({ draft }: { draft: AddDraft }) {
       : isGroup
         ? libThumb(GROUP_POOL[first]!)
         : PHOTO_POOL[first];
-  const price =
-    draft.price && draft.price !== "0" ? `${draft.price} kr` : "Gratis";
-  const steps = draft.steps.map((x) => x.trim()).filter(Boolean);
   return (
-    <Shell
-      title={
-        isPlace
-          ? "Se over og send inn"
-          : isGroup
-            ? "Se over gruppen"
-            : "Klar til å publisere?"
-      }
-    >
+    <Shell title={isGroup ? "Se over gruppen" : "Se over og send inn"}>
       {cover ? (
         <Image
           source={cover}
@@ -1036,14 +1112,15 @@ function ReviewStep({ draft }: { draft: AddDraft }) {
           style={{ height: 176, width: "100%", borderRadius: 14 }}
         />
       ) : null}
+      <EditLinks
+        links={[{ label: "bildene", onPress: () => onEdit("photos") }]}
+      />
       <View className="gap-1">
         <Text variant="title">{draft.title}</Text>
         <Text variant="caption" tone="muted">
-          {isPlace
-            ? `${draft.category} · ${areaNameLabel(draft.area ?? "")}`
-            : isGroup
-              ? `Gruppe · ${areaNameLabel(draft.area ?? "")}`
-              : `${draft.date ? formatDate(draft.date) : ""} · ${draft.startTime} · ${draft.area}`}
+          {isGroup
+            ? `Gruppe · ${areaNameLabel(draft.area ?? "")}`
+            : `${draft.category} · ${areaNameLabel(draft.area ?? "")}`}
         </Text>
         {draft.summary ? (
           <Text variant="label" weight="regular" className="pt-1">
@@ -1051,6 +1128,12 @@ function ReviewStep({ draft }: { draft: AddDraft }) {
           </Text>
         ) : null}
       </View>
+      <EditLinks
+        links={[
+          { label: "teksten", onPress: () => onEdit("about") },
+          { label: "området", onPress: () => onEdit("where") },
+        ]}
+      />
       {isGroup ? (
         <>
           <Fact
@@ -1070,6 +1153,9 @@ function ReviewStep({ draft }: { draft: AddDraft }) {
               </Text>
             </View>
           ) : null}
+          <EditLinks
+            links={[{ label: "tilgangen", onPress: () => onEdit("access") }]}
+          />
           <View className="flex-row flex-wrap gap-2">
             {draft.interests.map((v) => (
               <View key={v} className="rounded-full bg-surfaceMuted px-3 py-1">
@@ -1080,44 +1166,34 @@ function ReviewStep({ draft }: { draft: AddDraft }) {
             ))}
           </View>
         </>
-      ) : isPlace ? null : (
+      ) : (
         <>
-          <View className="flex-row gap-2">
-            <Fact icon="pricetag-outline" value={price} />
-            <Fact icon="people-outline" value={`${draft.capacity} plasser`} />
-            <Fact icon="globe-outline" value={draft.access} />
-          </View>
-          <View className="flex-row flex-wrap gap-2">
-            {draft.vibes.map((v) => (
-              <View key={v} className="rounded-full bg-surfaceMuted px-3 py-1">
-                <Text variant="caption" weight="medium">
-                  {v}
-                </Text>
-              </View>
-            ))}
-          </View>
-          {draft.included.length ? (
-            <View className="gap-1">
-              <Text variant="label" weight="semibold">
-                Hva er inkludert
-              </Text>
-              <Text variant="label" weight="regular">
-                {draft.included.join(", ")}
-              </Text>
+          {/* What was picked under Detaljer (phone sweep 2026-11-26: the
+              review left it out), in the step's own order. */}
+          {draft.features.length > 0 ? (
+            <View className="flex-row flex-wrap gap-2">
+              {PLACE_FEATURES.filter((f) => draft.features.includes(f)).map(
+                (f) => (
+                  <View
+                    key={f}
+                    className="rounded-full bg-surfaceMuted px-3 py-1"
+                  >
+                    <Text variant="caption" weight="medium">
+                      {f}
+                    </Text>
+                  </View>
+                ),
+              )}
             </View>
           ) : null}
-          {steps.length ? (
-            <View className="gap-1">
-              <Text variant="label" weight="semibold">
-                Hva dere skal gjøre
-              </Text>
-              {steps.map((st, i) => (
-                <Text key={i} variant="label" weight="regular">
-                  {`${i + 1}. ${st}`}
-                </Text>
-              ))}
-            </View>
+          {draft.season ? (
+            <Text variant="caption" tone="muted">
+              {`Sesong: ${draft.season}`}
+            </Text>
           ) : null}
+          <EditLinks
+            links={[{ label: "detaljene", onPress: () => onEdit("details") }]}
+          />
         </>
       )}
     </Shell>
@@ -1148,6 +1224,15 @@ function SubmittedState({
 }) {
   const isPlace = draft.kind === "place";
   const isGroup = draft.kind === "group";
+  const [sharing, setSharing] = useState(false);
+  // «Del» (review PR-07, 0525): what was just made, by its own link. A
+  // place waits for approval, so it has nothing to share yet.
+  const shareSlug =
+    isGroup && created.groupId
+      ? `group/${created.groupId}`
+      : created.experienceId
+        ? `experience/${created.experienceId}`
+        : null;
   return (
     <Screen edges={["top"]}>
       <View className="flex-1 items-center justify-center gap-6 p-gutter">
@@ -1206,6 +1291,13 @@ function SubmittedState({
               }
             />
           ) : null}
+          {shareSlug && !editing ? (
+            <Button
+              label="Del"
+              variant="secondary"
+              onPress={() => setSharing(true)}
+            />
+          ) : null}
           {isPlace ? (
             <Button
               label="Se innleveringer"
@@ -1224,6 +1316,13 @@ function SubmittedState({
           />
         </View>
       </View>
+      {sharing && shareSlug ? (
+        <ShareSheet
+          title={draft.title}
+          slug={shareSlug}
+          onClose={() => setSharing(false)}
+        />
+      ) : null}
     </Screen>
   );
 }

@@ -76,10 +76,12 @@ export function styleKeyForHour(hour: number): MapStyleKey {
   return (MAP_STYLES.find((s) => s.period === period) ?? MAP_STYLES[0]).key;
 }
 
-// The auto basemap: the night style whenever the app is in dark mode (a bright
-// day map under dark chrome looks broken), the time of day otherwise.
+// The auto basemap: the time of day while the app is light. Under dark chrome a
+// bright day map looks broken, so a dark app gets the night style, except
+// at Skumring, which is already dark (Auto turns dark from Skumring, user
+// 2026-11-26, and the map should still show it).
 export function autoStyleKey(hour: number, dark: boolean): MapStyleKey {
-  if (!dark) return styleKeyForHour(hour);
+  if (!dark || periodForHour(hour) === "dusk") return styleKeyForHour(hour);
   return (MAP_STYLES.find((s) => s.period === "night") ?? MAP_STYLES[0]).key;
 }
 

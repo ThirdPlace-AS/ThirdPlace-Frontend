@@ -57,7 +57,10 @@ composing hooks and components under `src/components/map/`.
   (no mount and layout pass first). Closed, its body sits below the screen
   inside gorhom's `box-none` containers, so taps reach the map's buttons, the
   browse sheet and the tab bar; its backdrop starts with
-  `enableTouchThrough` (it remounts on every refocus) and the wrapper hides
+  `enableTouchThrough` (it remounts on every refocus); an open page
+  comes back where it was (0550: the snap read from `animatedIndex` at blur,
+  the scroll offset kept where a scroll rests, scrolled back once the sheet
+  rests and the content is that tall) and the wrapper hides
   it from the screen reader. While it slides closed it keeps its content;
   once it is down the content goes, the stages reset and the wrapper
   remounts already hidden (0413): on Android, switching a mounted wrapper's
@@ -228,6 +231,9 @@ clusters them on a 44 dp grid at cell centres and names the towns in view
 - Every list is nearest first, places and experiences mixed, ordered once
   after mixing by `orderItems` (mapFixtureAdapter: a chosen Sorter wins,
   Trending puts the most-reviewed first).
+  A picked date does not change the order either: the day-grouped list of
+  review PR-04 (option B, 0517/0519) was removed again (user 2026-11-25,
+  0520).
 - Avstand (1 · 5 · 10 · 25 · 50 km · Alle) measures from the origin to the
   place or the meeting point (never the fixtures' `distanceM`), and
   `useMapFilters` re-filters when the origin moves.
@@ -273,7 +279,9 @@ clusters them on a 44 dp grid at cell centres and names the towns in view
   250 ms and on release (`PriceRange`).
 - A picked day or period in Når keeps only experiences with a time in it
   (`dateWindow`, widened by `dateFlex` for "± 1 dag"); places have opening
-  hours, not times, and ignore dates.
+  hours, not times, and ignore dates. The quick chips (I dag, I kveld, I
+  morgen, Denne uka, Helg) set that window too and filter the same way
+  (0517); the fixtures' fixed `day` label is only the fallback without one.
 
 ## Item types and labels
 

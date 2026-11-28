@@ -9,8 +9,10 @@
 // the page. Join/save use the shared stores; guests get the sign-in prompt
 // (BLOCKED_CONTRACT_GAP).
 import { router, useLocalSearchParams, type Href } from "expo-router";
-import { useState } from "react";
+import { useCallback, useMemo, useRef, useState } from "react";
 import { ScrollView, View } from "react-native";
+
+import { PageScrollContext, scrollAnchorIn } from "@/components/pageScroll";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { ExperiencePage } from "@/components/experience/ExperiencePage";
@@ -29,7 +31,7 @@ import {
 import { experienceById, type MockExperience } from "@/fixtures";
 import { PageTopBar } from "@/features/entity/PageTopBar";
 import { goBackOr } from "@/lib/navigation";
-import { elevation } from "@/theme";
+import { useElevation, useRaisedEdge } from "@/theme";
 
 // The floating join card's height before it is measured (0440: 110 dp on
 // a 411 dp phone, the join bar wraps to two lines).
@@ -63,7 +65,20 @@ export function ExperiencePageBody({
   /** Set where the page is open in place (Sveip's details). */
   onBack?: () => void;
 }) {
+  const elev = useElevation();
   const insets = useSafeAreaInsets();
+  const edge = useRaisedEdge();
+  // The rating link scrolls to the page's reviews (pageScroll.ts).
+  const scrollRef = useRef<ScrollView>(null);
+  const boxRef = useRef<View>(null);
+  const scrollToAnchor = useCallback(
+    (anchor: View | null) =>
+      scrollAnchorIn(boxRef.current, anchor, 16, (y) =>
+        scrollRef.current?.scrollTo({ y, animated: true }),
+      ),
+    [],
+  );
+  const scroller = useMemo(() => ({ scrollToAnchor }), [scrollToAnchor]);
   const [sub, setSub] = useState<SheetTarget[]>([]);
   const [cardH, setCardH] = useState(JOIN_CARD);
   const top = sub[sub.length - 1];
@@ -77,18 +92,23 @@ export function ExperiencePageBody({
         onBack={onBack}
       />
       <ScrollView
-        contentContainerClassName="px-gutter pt-4"
+        ref={scrollRef}
+        contentContainerClassName="px-6 pt-4"
         // The last section ends 24 above the floating join card.
         contentContainerStyle={{
           paddingBottom: Math.max(insets.bottom, 12) + 4 + cardH + 24,
         }}
         keyboardShouldPersistTaps="handled"
       >
-        <ExperiencePage
-          exp={exp}
-          onOpen={(t) => setSub([t])}
-          onNavigate={(href: Href) => router.push(href)}
-        />
+        <PageScrollContext.Provider value={scroller}>
+          <View ref={boxRef}>
+            <ExperiencePage
+              exp={exp}
+              onOpen={(t) => setSub([t])}
+              onNavigate={(href: Href) => router.push(href)}
+            />
+          </View>
+        </PageScrollContext.Provider>
       </ScrollView>
       {/* Join action as the reference's floating card. */}
       <View
@@ -97,8 +117,8 @@ export function ExperiencePageBody({
         style={{ paddingBottom: Math.max(insets.bottom, 12) + 4 }}
       >
         <View
-          className="rounded-md border border-line bg-surface px-4 py-3"
-          style={elevation.e2}
+          className={`rounded-md ${edge} bg-surface px-4 py-3`}
+          style={elev.e2}
           onLayout={(e) => {
             const h = Math.round(e.nativeEvent.layout.height);
             if (h > 0 && h !== cardH) setCardH(h);

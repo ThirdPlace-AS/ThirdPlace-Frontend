@@ -1,4 +1,5 @@
-import { useMemo, useState } from "react";
+import { router, type Href } from "expo-router";
+import { useState } from "react";
 import { View } from "react-native";
 
 import {
@@ -10,12 +11,11 @@ import { JoinedSheet } from "@/components/experience/JoinedSheet";
 import { FaceStack } from "@/components/FaceStack";
 import { SignInPrompt } from "@/components/SignInPrompt";
 import { Text, Button } from "@/components/ui";
-import { experienceById, sessionsFor } from "@/fixtures";
+import { chatForExperience, experienceById } from "@/fixtures";
 import { isHostedByMe } from "@/fixtures/created";
-import { shortSessionLabel } from "@/lib/dates";
 import { goingLabel } from "@/lib/going";
 
-import { useExperienceSession } from "../../experience/useExperienceSession";
+import { useJoinSession } from "../../experience/joinedActions";
 
 import { useExperienceJoin } from "../hooks/useExperienceJoin";
 import { useGoing } from "../hooks/useGoing";
@@ -46,13 +46,7 @@ export function ExperienceJoinBar({
   const { isGuest } = useGuestMode();
   const going = useGoing(id);
   const [promptOpen, setPromptOpen] = useState(false);
-  const [chosenId] = useExperienceSession(id);
-  const [now] = useState(() => new Date());
-  const sessions = useMemo(
-    () => (experience ? sessionsFor(experience, now, 8) : []),
-    [experience, now],
-  );
-  const session = sessions.find((s) => s.id === chosenId) ?? sessions[0];
+  const { session, when } = useJoinSession(experience);
   // PDF p23: leaving, paying and joining the waitlist confirm in a sheet.
   // Phase 18: "Du er med" after joining (screen benchmark).
   const [confirm, setConfirm] = useState<
@@ -72,16 +66,20 @@ export function ExperienceJoinBar({
     (session?.spotsLeft ?? experience.capacity - experience.going) -
       (user === "joined" ? 1 : 0),
   );
-  const when = session
-    ? shortSessionLabel(session.start, now)
-    : experience.when;
-
   const hosting = isHostedByMe(id);
+  const chat = chatForExperience(id);
   const primary = (() => {
     if (hosting)
       return { label: "Administrer", action: onManage, disabled: !onManage };
+    // PR-03: once joined, the card leads to the chat and Forlat sits in the
+    // page's «Du er med» card; without a chat it stays here.
     if (user === "joined")
-      return { label: "Forlat", action: () => setConfirm("leave") };
+      return chat
+        ? {
+            label: "Til samtalen",
+            action: () => router.push(`/chat/${chat.id}` as Href),
+          }
+        : { label: "Forlat", action: () => setConfirm("leave") };
     if (user === "waitlisted")
       return { label: "Meld av venteliste", action: () => setUser("none") };
     if (experience.status === "cancelled")
@@ -98,32 +96,56 @@ export function ExperienceJoinBar({
 
   return (
     <View className="gap-2">
-      <View className="flex-row items-center gap-2">
-        <FaceStack faces={going.faces} />
-        <Text variant="caption" weight="semibold">
-          {goingLabel(going.count)}
-        </Text>
+      {/* The faces end in "+N", so the count is not written out (user
+          2026-11-27); a screen reader still hears it from the row's label. */}
+      <View
+        accessible
+        accessibilityLabel={`${goingLabel(going.count)}${
+          user === "none" ? `, ${left > 0 ? `${left} igjen` : "Fullt"}` : ""
+        }`}
+        className="flex-row items-center gap-2"
+      >
+        <FaceStack faces={going.faces} count={going.count} />
+        {user === "none" ? (
+          <Text
+            variant="caption"
+            tone="muted"
+            numberOfLines={1}
+            className="flex-1"
+          >
+            {left > 0 ? `${left} igjen` : "Fullt"}
+          </Text>
+        ) : null}
       </View>
       <View className="flex-row items-center gap-3">
         <View className="flex-1">
           <Text variant="body" weight="bold" numberOfLines={1}>
             {experience.priceNok ? `${experience.priceNok} kr` : "Gratis"}
           </Text>
-          {/* Two lines (0461): beside the button one line cut the date and
-              left out the places left on a 360 dp phone. */}
+          {/* Places left sit on the faces row (0557): beside the button the
+              date and the count wrapped on a 360 dp phone. Two lines stay
+              for the longer joined and waitlist texts (0461). */}
           <Text variant="caption" tone="muted" numberOfLines={2}>
             {user === "joined"
               ? `Du er påmeldt · ${when}`
               : user === "waitlisted"
                 ? `Venteliste · ${when}`
-                : `${when} · ${left > 0 ? `${left} igjen` : "Fullt"}`}
+                : when}
           </Text>
         </View>
         <View style={{ minWidth: 150 }}>
           <Button
             label={primary.label}
             rounded="full"
-            variant={user === "none" && !hosting ? "ember" : "secondary"}
+            variant={
+              hosting
+                ? "secondary"
+                : user === "none"
+                  ? "ember"
+                  : user === "joined" && chat
+                    ? "ink"
+                    : "secondary"
+            }
             disabled={primary.disabled}
             onPress={primary.action}
           />

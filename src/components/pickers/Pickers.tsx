@@ -66,36 +66,42 @@ export function PlacePicker({
     );
   return (
     <Sheet visible onClose={onClose} title="Velg sted">
-      <View className="gap-2">
-        <SearchField value={q} onChange={setQ} placeholder="Søk etter sted …" />
-        {list.length === 0 ? (
-          <Text variant="caption" tone="muted" className="py-6 text-center">
-            Ingen steder matcher «{q}».
-          </Text>
-        ) : null}
-        {list.slice(0, 8).map((p) => (
-          <UIPressable
-            key={p.id}
-            accessibilityRole="button"
-            onPress={() => {
-              onPick(p);
-              onClose();
-            }}
-            contentClassName="flex-row items-center gap-3 rounded-md border border-line bg-surface p-3"
-            pressedScale={0.99}
-          >
-            <Icon name="location-outline" size="md" tone="ink" />
-            <View className="flex-1">
-              <Text variant="label" weight="semibold">
-                {p.name}
-              </Text>
-              <Text variant="caption" tone="muted">
-                {p.category} · {distanceLabelFor(p.coord, origin)}
-              </Text>
-            </View>
-          </UIPressable>
-        ))}
-      </View>
+      {(close) => (
+        <View className="gap-2">
+          <SearchField
+            value={q}
+            onChange={setQ}
+            placeholder="Søk etter sted …"
+          />
+          {list.length === 0 ? (
+            <Text variant="caption" tone="muted" className="py-6 text-center">
+              Ingen steder matcher «{q}».
+            </Text>
+          ) : null}
+          {list.slice(0, 8).map((p) => (
+            <UIPressable
+              key={p.id}
+              accessibilityRole="button"
+              onPress={() => {
+                onPick(p);
+                close();
+              }}
+              contentClassName="flex-row items-center gap-3 rounded-md border border-line bg-surface p-3"
+              pressedScale={0.99}
+            >
+              <Icon name="location-outline" size="md" tone="ink" />
+              <View className="flex-1">
+                <Text variant="label" weight="semibold">
+                  {p.name}
+                </Text>
+                <Text variant="caption" tone="muted">
+                  {p.category} · {distanceLabelFor(p.coord, origin)}
+                </Text>
+              </View>
+            </UIPressable>
+          ))}
+        </View>
+      )}
     </Sheet>
   );
 }
@@ -117,32 +123,34 @@ export function CategoryPicker({
   );
   return (
     <Sheet visible onClose={onClose} title="Velg kategori">
-      <View className="gap-2">
-        <SearchField value={q} onChange={setQ} placeholder="Søk kategori …" />
-        {list.map((o) => (
-          <UIPressable
-            key={o}
-            accessibilityRole="radio"
-            accessibilityState={{ checked: value === o }}
-            onPress={() => {
-              onPick(o);
-              onClose();
-            }}
-            pressedScale={0.99}
-            contentClassName={`flex-row items-center gap-3 rounded-md border bg-surface px-4 py-3 ${
-              value === o ? "border-ink" : "border-line"
-            }`}
-          >
-            {hasCategoryArt(o) ? <CategoryArt name={o} size={32} /> : null}
-            <Text variant="body" weight="medium" className="flex-1">
-              {o}
-            </Text>
-            {value === o ? (
-              <Icon name="checkmark" size="md" tone="ink" />
-            ) : null}
-          </UIPressable>
-        ))}
-      </View>
+      {(close) => (
+        <View className="gap-2">
+          <SearchField value={q} onChange={setQ} placeholder="Søk kategori …" />
+          {list.map((o) => (
+            <UIPressable
+              key={o}
+              accessibilityRole="radio"
+              accessibilityState={{ checked: value === o }}
+              onPress={() => {
+                onPick(o);
+                close();
+              }}
+              pressedScale={0.99}
+              contentClassName={`flex-row items-center gap-3 rounded-md border bg-surface px-4 py-3 ${
+                value === o ? "border-ink" : "border-line"
+              }`}
+            >
+              {hasCategoryArt(o) ? <CategoryArt name={o} size={32} /> : null}
+              <Text variant="body" weight="medium" className="flex-1">
+                {o}
+              </Text>
+              {value === o ? (
+                <Icon name="checkmark" size="md" tone="ink" />
+              ) : null}
+            </UIPressable>
+          ))}
+        </View>
+      )}
     </Sheet>
   );
 }
@@ -162,43 +170,45 @@ export function UserSearch({
   );
   return (
     <Sheet visible onClose={onClose} title={title}>
-      <View className="gap-2">
-        <SearchField
-          value={q}
-          onChange={setQ}
-          placeholder="Navn eller brukernavn …"
-        />
-        {list.length === 0 ? (
-          <Text variant="caption" tone="muted" className="py-6 text-center">
-            Ingen brukere matcher «{q}».
-          </Text>
-        ) : null}
-        {list.map((p) => (
-          <UIPressable
-            key={p.id}
-            accessibilityRole="button"
-            onPress={() => {
-              onPick(p);
-              onClose();
-            }}
-            contentClassName="flex-row items-center gap-3 rounded-md border border-line bg-surface p-3"
-            pressedScale={0.99}
-          >
-            <Image
-              source={libThumb(p.avatar)}
-              style={{ height: 36, width: 36, borderRadius: 18 }}
-            />
-            <View className="flex-1">
-              <Text variant="label" weight="semibold">
-                {p.name}
-              </Text>
-              <Text variant="caption" tone="muted">
-                {p.handle} · {p.area}
-              </Text>
-            </View>
-          </UIPressable>
-        ))}
-      </View>
+      {(close) => (
+        <View className="gap-2">
+          <SearchField
+            value={q}
+            onChange={setQ}
+            placeholder="Navn eller brukernavn …"
+          />
+          {list.length === 0 ? (
+            <Text variant="caption" tone="muted" className="py-6 text-center">
+              Ingen brukere matcher «{q}».
+            </Text>
+          ) : null}
+          {list.map((p) => (
+            <UIPressable
+              key={p.id}
+              accessibilityRole="button"
+              onPress={() => {
+                onPick(p);
+                close();
+              }}
+              contentClassName="flex-row items-center gap-3 rounded-md border border-line bg-surface p-3"
+              pressedScale={0.99}
+            >
+              <Image
+                source={libThumb(p.avatar)}
+                style={{ height: 36, width: 36, borderRadius: 18 }}
+              />
+              <View className="flex-1">
+                <Text variant="label" weight="semibold">
+                  {p.name}
+                </Text>
+                <Text variant="caption" tone="muted">
+                  {p.handle} · {p.area}
+                </Text>
+              </View>
+            </UIPressable>
+          ))}
+        </View>
+      )}
     </Sheet>
   );
 }

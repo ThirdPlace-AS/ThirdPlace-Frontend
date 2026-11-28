@@ -12,6 +12,7 @@ import {
   View,
   type LayoutChangeEvent,
 } from "react-native";
+import { useSharedValue } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import {
@@ -163,10 +164,17 @@ export default function MapScreen() {
   // text as the map's search filter, once per submit.
   const queryKey = q !== undefined ? `${q}:${at ?? ""}` : undefined;
   const [queriedKey, setQueriedKey] = useState<string | undefined>(undefined);
+  // The query submitted on /search: back returns there with it while the
+  // map still shows it (phone sweep 2026-11-26).
+  const [submitted, setSubmitted] = useState<string | null>(null);
   if (queryKey && queryKey !== queriedKey) {
     setQueriedKey(queryKey);
     filters.setQuery(q ?? "");
+    setSubmitted(q ?? "");
   }
+  const searchQuery =
+    submitted && submitted === filters.query ? submitted : null;
+  const { setQuery: setMapQuery } = filters;
   const { setMode: setDiscoveryMode } = discovery;
 
   // Android back key: an open detail sheet steps back / closes first, so back
@@ -185,12 +193,24 @@ export default function MapScreen() {
     setMapTarget(sheetTop ?? null);
   }, [sheetTop]);
   const detailRef = useRef<MapDetailSheetHandle>(null);
+  // The detail sheet's live position, read by the browse sheet on the UI
+  // thread so it can come back while the detail slides out (0574).
+  const detailPosition = useSharedValue(-1);
   // Whether the detail sheet is the full-screen page, read only by the back
   // key: a ref, so reaching the top does not re-render the whole map screen
   // (speed pass 0345; the sheet itself owns the status bar).
   const detailIsPage = useRef(false);
+  // While a place or experience fills the screen as a page, the map under it
+  // is out of TalkBack's way (phone sweep 2026-11-26: the map's search,
+  // pills and buttons were read before the page). The page sheet lives in the
+  // root portal, outside this View, so it stays readable. The View is kept
+  // out of view flattening (collapsable false): when the prop flipped, the
+  // native tree was rebuilt and the map's surface was destroyed and made
+  // again, one black map frame as the page closed (phone log, 0575).
+  const [pageUp, setPageUp] = useState(false);
   const handlePageChange = useCallback((isPage: boolean) => {
     detailIsPage.current = isPage;
+    setPageUp(isPage);
   }, []);
   useFocusEffect(
     useCallback(() => {
@@ -199,6 +219,7 @@ export default function MapScreen() {
           sheetDepth,
           detailIsPage.current,
           fromSearch !== null,
+          searchQuery !== null,
         );
         if (action === "back") sheetBack();
         else if (action === "collapse") detailRef.current?.collapse();
@@ -209,11 +230,26 @@ export default function MapScreen() {
             pathname: "/search",
             params: { q: fromSearch.query, resume: "1" },
           });
+        } else if (action === "search" && searchQuery !== null) {
+          // Undo the submit: the map drops the query, Søk shows it again.
+          setMapQuery("");
+          setSubmitted(null);
+          router.push({
+            pathname: "/search",
+            params: { q: searchQuery, resume: "1" },
+          });
         }
         return action !== "none";
       });
       return () => sub.remove();
-    }, [sheetDepth, fromSearch, sheetBack, sheetClose]),
+    }, [
+      sheetDepth,
+      fromSearch,
+      searchQuery,
+      setMapQuery,
+      sheetBack,
+      sheetClose,
+    ]),
   );
 
   // Mock async load so the surface can show loading/error states (no backend).
@@ -276,6 +312,12 @@ export default function MapScreen() {
     const h = Math.round(y + height);
     setTopH((prev) => (prev === h ? prev : h));
   }, []);
+  // The browse list's full snap ends 4 px under the mode chips (user
+  // 2026-11-25). topH includes the top controls' 8 px bottom padding (pb-2)
+  // and the chip row's own 4 px (DiscoveryModeTabs py-1), so the pills end
+  // 12 px above it.
+  const browseFullH =
+    screenH != null && topH != null ? screenH - (topH - 12) - 4 : null;
   const pinPadding = useMemo(
     () =>
       focusPadding({
@@ -417,7 +459,13 @@ export default function MapScreen() {
   };
 
   return (
-    <View className="flex-1 bg-background" onLayout={handleScreenLayout}>
+    <View
+      className="flex-1 bg-background"
+      onLayout={handleScreenLayout}
+      collapsable={false}
+      importantForAccessibility={pageUp ? "no-hide-descendants" : "auto"}
+      accessibilityElementsHidden={pageUp}
+    >
       <StatusBarStyle style={darkBasemap ? "light" : "auto"} />
       <MapCanvas
         fill
@@ -614,6 +662,7 @@ export default function MapScreen() {
           to its peek (never below) and the detail, on top, covers it. */}
       {!errored ? (
         <MapBrowseSheet
+          detailPosition={detailPosition}
           items={loading ? NO_ITEMS : items}
           loading={loading}
           loadingSlow={loadPhase === "loader"}
@@ -627,6 +676,8 @@ export default function MapScreen() {
           hidden={selection.sheetStack.length > 0}
           expandSignal={browseExpand}
           onPeekHeight={setPeekH}
+          fullHeight={browseFullH}
+          screenHeight={screenH}
         />
       ) : null}
 
@@ -635,6 +686,7 @@ export default function MapScreen() {
           screen in box-none containers: taps reach the map's buttons. */}
       <MapDetailSheet
         ref={detailRef}
+        position={detailPosition}
         onPageChange={handlePageChange}
         stack={selection.sheetStack}
         openIndex={selection.openIndex}

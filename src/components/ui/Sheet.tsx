@@ -8,12 +8,21 @@
 //                    the same surface, 28 px top radius, handle and elevation.
 //   <SheetHandle>, <SheetHeader> are the shared parts.
 //
+// A <Sheet> closes itself (user 2026-11-27, "smooth and native"): the scrim,
+// system back, the drag and ✕ run the exit first and call `onClose` once the
+// sheet is gone, so a sheet its parent mounts only while open still slides
+// away instead of vanishing. Buttons inside close the same way through the
+// `close` that children-as-a-function receive, or useSheetClose().
+//
 // The scrim is a SIBLING behind the card, never its ancestor, so the card's
 // buttons are never nested inside a <button> on web (CLAUDE.md "Sheets").
 import {
   createContext,
+  useCallback,
   useContext,
+  useEffect,
   useMemo,
+  useRef,
   useState,
   type ReactNode,
 } from "react";
@@ -33,14 +42,16 @@ import {
   GestureHandlerRootView,
 } from "react-native-gesture-handler";
 import Animated, {
+  Easing,
   runOnJS,
   useAnimatedStyle,
   useSharedValue,
   withSpring,
+  withTiming,
 } from "react-native-reanimated";
 
 import {
-  elevation,
+  useElevation,
   media,
   presentation,
   radius,
@@ -70,6 +81,19 @@ const SheetSettledContext = createContext(true);
 export function useSheetSettled(): boolean {
   return useContext(SheetSettledContext);
 }
+
+const SheetCloseContext = createContext<(() => void) | null>(null);
+
+/** Close the enclosing Sheet with its exit, then its `onClose`; null
+ *  outside a Sheet. */
+export function useSheetClose(): (() => void) | null {
+  return useContext(SheetCloseContext);
+}
+
+// A drag-to-close continues at the finger's speed (ease-out from it), within
+// the exit's length so the callers' timers (240–260 ms) still hold.
+const FLING_OUT = Easing.out(Easing.cubic);
+const FLING_MIN_MS = 120;
 
 export type SheetTone = "light" | "dark";
 
@@ -179,6 +203,7 @@ export function SheetHeader({
  *  on every render (speed pass 0345): new ones made gorhom restyle the map
  *  sheets on each render of the map screen. */
 export function useSheetChrome() {
+  const elev = useElevation();
   const c = useThemeColors();
   return useMemo(
     () => ({
@@ -192,9 +217,9 @@ export function useSheetChrome() {
         width: 40,
         height: 4,
       },
-      style: elevation.e3,
+      style: elev.e3,
     }),
-    [c.surface, c.line],
+    [c.surface, c.line, elev.e3],
   );
 }
 
@@ -215,7 +240,8 @@ export type SheetProps = {
   fullHeight?: boolean;
   /** Centre the title (pickers such as Kartlag). */
   centerTitle?: boolean;
-  children: ReactNode;
+  /** Content, or a function given `close` (exit first, then onClose). */
+  children: ReactNode | ((close: () => void) => ReactNode);
 };
 
 /** A sheet costs nothing until it is first opened (speed pass 0348: an
@@ -240,6 +266,7 @@ function SheetEngine({
   centerTitle = false,
   children,
 }: SheetProps) {
+  const elev = useElevation();
   const dark = tone === "dark";
   const c = useThemeColors();
   const insets = useSafeAreaInsets();
@@ -248,16 +275,38 @@ function SheetEngine({
   // inside the card (8 notifications overflowed a 640 dp phone).
   const maxCardH = winH - insets.top - SHEET_TOP_GAP;
   const padBottom = Math.max(insets.bottom, 12) + 16;
-  const { mounted, progress, reduced, settled } = usePresence(visible);
+  // Closing from inside: hide first, call onClose once the exit is done.
+  const [closing, setClosing] = useState(false);
+  if (!visible && closing) setClosing(false);
+  const closingRef = useRef(false);
+  const onCloseRef = useRef(onClose);
+  useEffect(() => {
+    closingRef.current = closing;
+    onCloseRef.current = onClose;
+  });
+  const close = useCallback(() => setClosing(true), []);
+  // Once the exit is done: back to rest for the next open (a swipe-to-close
+  // leaves the drag at the card's height), then tell the parent.
+  const resetDragRef = useRef<(() => void) | null>(null);
+  const onHidden = useCallback(() => {
+    resetDragRef.current?.();
+    if (closingRef.current) onCloseRef.current();
+  }, []);
+  const shown = visible && !closing;
+  const { mounted, progress, reduced, settled } = usePresence(
+    shown,
+    onHidden,
+    "sheet",
+  );
   // The card grows from the tap that opened it (0457): read once per open,
   // kept through the exit. Null (opened by code) keeps the plain slide.
   const [originX, setOriginX] = useState<number | null>(
     () => recentPressOrigin()?.x ?? null,
   );
   const [wasVisible, setWasVisible] = useState(visible);
-  if (visible !== wasVisible) {
-    setWasVisible(visible);
-    if (visible) setOriginX(recentPressOrigin()?.x ?? null);
+  if (shown !== wasVisible) {
+    setWasVisible(shown);
+    if (shown) setOriginX(recentPressOrigin()?.x ?? null);
   }
   const cardH = useSharedValue(winH);
   const drag = useSharedValue(0);
@@ -278,20 +327,40 @@ function SheetEngine({
     .onEnd((e) => {
       const far = drag.value > cardH.value * presentation.dismissRatio;
       if (far || e.velocityY > presentation.dismissVelocity) {
-        runOnJS(onClose)();
-      } else {
-        drag.value = withSpring(0, spring.snappy, (finished) => {
-          if (finished) runOnJS(setDragging)(false);
+        // Off the bottom at the release speed (ease-out starts at 3× the
+        // average), never longer than the exit.
+        const rest = Math.max(0, cardH.value - drag.value);
+        const v = Math.max(1, e.velocityY);
+        const ms = Math.min(
+          presentation.exit,
+          Math.max(FLING_MIN_MS, ((3 * rest) / v) * 1000),
+        );
+        drag.value = withTiming(cardH.value, {
+          duration: ms,
+          easing: FLING_OUT,
         });
+        runOnJS(close)();
+      } else {
+        // Back to rest without bouncing past it: an overshoot lifted the
+        // card off the bottom edge for a frame or two.
+        drag.value = withSpring(
+          0,
+          { ...spring.snappy, overshootClamping: true },
+          (finished) => {
+            if (finished) runOnJS(setDragging)(false);
+          },
+        );
       }
     });
   const animate = !settled || dragging;
+  useEffect(() => {
+    resetDragRef.current = () => {
+      drag.value = 0;
+    };
+  });
 
-  // The Modal remounts the card on every open, so this also resets a drag left
-  // over from a swipe-to-close.
   const onCardLayout = (e: LayoutChangeEvent) => {
     cardH.value = e.nativeEvent.layout.height;
-    if (visible) drag.value = 0;
   };
 
   const scrimStyle = useAnimatedStyle(() => ({
@@ -322,6 +391,8 @@ function SheetEngine({
     };
   });
 
+  const body = typeof children === "function" ? children(close) : children;
+
   const cardBg = dark
     ? null
     : surfaceTone === "muted"
@@ -329,93 +400,100 @@ function SheetEngine({
       : "bg-surface";
 
   return (
-    <Modal
-      visible={mounted}
-      transparent
-      animationType="none"
-      // System back undoes the last step (0454): an inner step goes back to
-      // the step before it, like the header ←; only the first step closes.
-      onRequestClose={onBack ?? onSystemBack ?? onClose}
-    >
-      <GestureHandlerRootView style={{ flex: 1 }}>
-        {/* The keyboard pads the bottom (edge-to-edge Android does not resize
+    <SheetCloseContext.Provider value={close}>
+      <Modal
+        visible={mounted}
+        transparent
+        animationType="none"
+        // System back undoes the last step (0454): an inner step goes back to
+        // the step before it, like the header ←; only the first step closes.
+        onRequestClose={onBack ?? onSystemBack ?? close}
+      >
+        <GestureHandlerRootView style={{ flex: 1 }}>
+          {/* The keyboard pads the bottom (edge-to-edge Android does not resize
             the Modal window), and the card shrinks so it stays on screen. */}
-        <KeyboardAvoider
-          className="flex-1 justify-end"
-          // Keeps a content sheet below the status bar when the keyboard
-          // leaves it less room than maxCardH.
-          style={fullHeight ? null : { paddingTop: insets.top + SHEET_TOP_GAP }}
-        >
-          <Animated.View
-            style={[StyleSheet.absoluteFill, animate ? scrimStyle : null]}
+          <KeyboardAvoider
+            className="flex-1 justify-end"
+            // Keeps a content sheet below the status bar when the keyboard
+            // leaves it less room than maxCardH.
+            style={
+              fullHeight ? null : { paddingTop: insets.top + SHEET_TOP_GAP }
+            }
           >
-            <RNPressable
-              accessibilityLabel="Lukk"
-              accessibilityRole="button"
-              onPress={onClose}
-              style={{
-                flex: 1,
-                backgroundColor: dark ? media.scrimStrong : c.scrim,
-                opacity: dark ? 1 : 0.4,
-              }}
-            />
-          </Animated.View>
-          <Animated.View
-            style={[
-              animate ? cardStyle : null,
-              fullHeight ? { height: "92%" } : { flexShrink: 1 },
-            ]}
-            onLayout={onCardLayout}
-          >
-            <View
-              accessibilityViewIsModal
-              className={`rounded-t-xl ${cardBg ?? ""} ${
-                fullHeight ? "flex-1" : ""
-              }`}
-              style={[
-                elevation.e3,
-                dark ? { backgroundColor: media.base } : null,
-                { paddingBottom: padBottom },
-                fullHeight ? null : { maxHeight: maxCardH, flexShrink: 1 },
-              ]}
+            <Animated.View
+              style={[StyleSheet.absoluteFill, animate ? scrimStyle : null]}
             >
-              <GestureDetector gesture={pan}>
-                <View collapsable={false} className="gap-3 px-gutter pb-4 pt-3">
-                  <SheetHandle tone={tone} />
-                  <SheetHeader
-                    title={title}
-                    tone={tone}
-                    onBack={onBack}
-                    onClose={fullHeight ? onClose : undefined}
-                    divider={fullHeight}
-                    center={centerTitle}
-                  />
-                </View>
-              </GestureDetector>
-              {fullHeight ? (
-                // Tall sheets own their scroll area and sticky footer.
-                <View className="flex-1 gap-4 px-gutter">
-                  <SheetSettledContext.Provider value={settled || reduced}>
-                    {children}
-                  </SheetSettledContext.Provider>
-                </View>
-              ) : (
-                <ScrollView
-                  style={{ flexGrow: 0, flexShrink: 1 }}
-                  contentContainerClassName="gap-4 px-gutter"
-                  keyboardShouldPersistTaps="handled"
-                  bounces={false}
-                  overScrollMode="never"
-                >
-                  <SheetSettledContext.Provider value={settled || reduced}>
-                    {children}
-                  </SheetSettledContext.Provider>
-                </ScrollView>
-              )}
-            </View>
-          </Animated.View>
-        </KeyboardAvoider>
-      </GestureHandlerRootView>
-    </Modal>
+              <RNPressable
+                accessibilityLabel="Lukk"
+                accessibilityRole="button"
+                onPress={close}
+                style={{
+                  flex: 1,
+                  backgroundColor: dark ? media.scrimStrong : c.scrim,
+                  opacity: dark ? 1 : 0.4,
+                }}
+              />
+            </Animated.View>
+            <Animated.View
+              style={[
+                animate ? cardStyle : null,
+                fullHeight ? { height: "92%" } : { flexShrink: 1 },
+              ]}
+              onLayout={onCardLayout}
+            >
+              <View
+                accessibilityViewIsModal
+                className={`rounded-t-xl ${cardBg ?? ""} ${
+                  fullHeight ? "flex-1" : ""
+                }`}
+                style={[
+                  elev.e3,
+                  dark ? { backgroundColor: media.base } : null,
+                  { paddingBottom: padBottom },
+                  fullHeight ? null : { maxHeight: maxCardH, flexShrink: 1 },
+                ]}
+              >
+                <GestureDetector gesture={pan}>
+                  <View
+                    collapsable={false}
+                    className="gap-3 px-gutter pb-4 pt-3"
+                  >
+                    <SheetHandle tone={tone} />
+                    <SheetHeader
+                      title={title}
+                      tone={tone}
+                      onBack={onBack}
+                      onClose={fullHeight ? close : undefined}
+                      divider={fullHeight}
+                      center={centerTitle}
+                    />
+                  </View>
+                </GestureDetector>
+                {fullHeight ? (
+                  // Tall sheets own their scroll area and sticky footer.
+                  <View className="flex-1 gap-4 px-gutter">
+                    <SheetSettledContext.Provider value={settled || reduced}>
+                      {body}
+                    </SheetSettledContext.Provider>
+                  </View>
+                ) : (
+                  <ScrollView
+                    style={{ flexGrow: 0, flexShrink: 1 }}
+                    contentContainerClassName="gap-4 px-gutter"
+                    keyboardShouldPersistTaps="handled"
+                    bounces={false}
+                    overScrollMode="never"
+                  >
+                    <SheetSettledContext.Provider value={settled || reduced}>
+                      {body}
+                    </SheetSettledContext.Provider>
+                  </ScrollView>
+                )}
+              </View>
+            </Animated.View>
+          </KeyboardAvoider>
+        </GestureHandlerRootView>
+      </Modal>
+    </SheetCloseContext.Provider>
   );
 }

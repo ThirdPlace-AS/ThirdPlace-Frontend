@@ -290,6 +290,15 @@ describe("design-system guard", () => {
     );
   });
 
+  it("shadows only through useElevation(), which follows the theme (user 2026-11-27: dark mode has shadows too)", () => {
+    const hits = scan(
+      (line) =>
+        /\bboxShadow\b|\bshadow(Color|Opacity|Radius|Offset)\b/.test(line),
+      (file) => !file.startsWith("src/theme/"),
+    );
+    expect(fmt(hits)).toEqual([]);
+  });
+
   it("no InteractionManager (deprecated; deferred updates did not paint in Modals)", () => {
     const hits = scan((line) => /\bInteractionManager\b/.test(line));
     expect(fmt(hits)).toEqual([]);

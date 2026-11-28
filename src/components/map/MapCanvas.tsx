@@ -4,7 +4,7 @@ import { Platform, Pressable, View } from "react-native";
 
 import { env } from "@/lib/env";
 import { useUserLocation } from "@/lib/userLocation";
-import { elevation, palette } from "@/theme";
+import { useElevation, palette } from "@/theme";
 
 import type { MapStylePeriod } from "./mapStyles";
 import {
@@ -178,6 +178,7 @@ function SoftMap({
   onMapPress,
   onClusterPress,
 }: MapProps) {
+  const elev = useElevation();
   // The app's own fix only (the native map's engine position does not exist
   // here); the fallback frames it with the markers.
   const { coord: userCoord, heading } = useUserLocation();
@@ -310,7 +311,7 @@ function SoftMap({
             <View
               className="rounded-full"
               style={[
-                elevation.e1,
+                elev.e1,
                 look.edge ? { padding: 1.5, backgroundColor: look.edge } : null,
               ]}
             >
@@ -340,7 +341,7 @@ function SoftMap({
               style={{ top: selected ? 38 : 34, left: -40, width: 124 }}
             >
               <View
-                style={elevation.e1}
+                style={elev.e1}
                 className="max-w-full rounded-md border border-line bg-surface px-2 py-1"
               >
                 <Text numberOfLines={1} variant="caption" weight="semibold">

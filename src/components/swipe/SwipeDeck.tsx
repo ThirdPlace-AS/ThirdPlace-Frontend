@@ -45,7 +45,7 @@ import { haptics } from "@/lib/haptics";
 import { claimHint, markHintSeen, useHintSeen } from "@/lib/hints";
 import { joinChat } from "@/lib/joinedChats";
 import { getA11yPrefs, useA11yPrefs, withWheelchair } from "@/lib/a11yPrefs";
-import { elevation, motion, useThemeColors, media } from "@/theme";
+import { useElevation, motion, useThemeColors, media } from "@/theme";
 
 import {
   decideCommit,
@@ -459,6 +459,18 @@ export function SwipeDeck() {
     // of it.
     undoGlide.current = back;
   };
+  // «Avbryt» on Bli med i samtalen (or closing it without joining) takes the
+  // like back: the card returns, as the rewind does (phone sweep 2026-11-26:
+  // the card was used up though nothing was joined). The flight may still be
+  // running when the sheet closes, so wait for it.
+  const cancelLike = (tries = 0) => {
+    if (deck.getLastAction() !== "like") return;
+    if (busy.value || inFlight.current) {
+      if (tries < 20) setTimeout(() => cancelLike(tries + 1), 80);
+      return;
+    }
+    undo();
+  };
   // Starts the rewind's slide-in on the commit that has put the card back.
   const startUndoGlide = () => {
     const back = undoGlide.current;
@@ -867,7 +879,9 @@ export function SwipeDeck() {
             onOpenFilters={openFilters}
             filterActive={activeExtraFilterCount(filters) > 0}
             onOpenNotifications={() => router.push("/notifications" as Href)}
-            unreadCount={unreadNotifs}
+            // A guest has no notifications of their own: no count (as on the
+            // map, phone check 2026-11-26).
+            unreadCount={isGuest ? 0 : unreadNotifs}
             onLight={deck.done}
             onOpenGroup={() => router.push("/group-swipe")}
           />
@@ -887,7 +901,11 @@ export function SwipeDeck() {
 
         <JoinChatSheet
           item={joinChatFor}
-          onClose={() => setJoinChatFor(null)}
+          onJoined={() => setJoinChatFor(null)}
+          onCancel={() => {
+            setJoinChatFor(null);
+            cancelLike();
+          }}
         />
 
         {/* Account gate for guest join/save (also used by the detail's CTAs). */}
@@ -1093,7 +1111,13 @@ const DeckCard = memo(function DeckCard({
         >
           <Pressable
             accessibilityRole="button"
-            accessibilityLabel="Vis mer om opplevelsen"
+            // Named by what the card is (phone check 2026-11-26: a place
+            // read «opplevelsen»).
+            accessibilityLabel={
+              item.kind === "place"
+                ? "Vis mer om stedet"
+                : "Vis mer om opplevelsen"
+            }
             onPress={() => onExpand(item, photo, setPhoto)}
             style={{
               position: "absolute",
@@ -1325,21 +1349,24 @@ function Stamps({
   );
 }
 
-// "Bli med i samtalen" (PDF p8): after a like, offer the experience's chat.
+// "Bli med i samtalen" (PDF p8): after a like, offer the experience's chat;
+// «Avbryt» takes the like back and the card returns.
 // "Bli med i chatten" opens the experience chat when the fixtures have one,
 // else confirms. The PDF's "N personer snakker …" count is left out (no real
 // social proof). BLOCKED_CONTRACT_GAP: no chat membership contract.
 function JoinChatSheet({
   item,
-  onClose,
+  onJoined,
+  onCancel,
 }: {
   item: DeckItem | null;
-  onClose: () => void;
+  onJoined: () => void;
+  onCancel: () => void;
 }) {
-  const close = onClose;
+  const close = onCancel;
   const join = () => {
     if (!item) return;
-    onClose();
+    onJoined();
     if (item.chatId) {
       joinChat(item.chatId);
       const id = item.chatId;
@@ -1371,6 +1398,7 @@ function JoinChatSheet({
 
 // The one-time gesture hint: what a swipe does, then "Skjønner".
 function SwipeHint({ onDone }: { onDone: () => void }) {
+  const elev = useElevation();
   const reduced = useReducedMotion();
   const rows: { icon: IconName; text: string }[] = [
     { icon: "heart", text: "Sveip til høyre hvis du liker det" },
@@ -1388,7 +1416,7 @@ function SwipeHint({ onDone }: { onDone: () => void }) {
         entering={reduced ? undefined : FadeIn.duration(motion.duration.base)}
         style={{ width: "100%", maxWidth: 360 }}
       >
-        <View className="gap-3 rounded-lg bg-surface p-6" style={elevation.e3}>
+        <View className="gap-3 rounded-lg bg-surface p-6" style={elev.e3}>
           <Text variant="title" weight="semibold" accessibilityRole="header">
             Slik sveiper du
           </Text>

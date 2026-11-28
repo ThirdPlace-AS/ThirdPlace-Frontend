@@ -15,7 +15,7 @@ import Animated, {
 import { useReducedMotion } from "@/hooks/useReducedMotion";
 import { haptics } from "@/lib/haptics";
 
-import { motion, useThemeColors, elevation } from "@/theme";
+import { motion, useThemeColors, useElevation } from "@/theme";
 import { Text } from "@/components/ui";
 
 import { dragIntent } from "./sliderGesture";
@@ -44,6 +44,7 @@ export function SteppedSlider({
   index: number;
   onChange: (index: number) => void;
 }) {
+  const elev = useElevation();
   const colors = useThemeColors();
   const [trackW, setTrackW] = useState(0);
   const trackWRef = useRef(0);
@@ -218,7 +219,7 @@ export function SteppedSlider({
               backgroundColor: colors.surface,
               borderWidth: 1,
               borderColor: colors.line,
-              ...elevation.e1,
+              ...elev.e1,
             },
             thumbStyle,
           ]}

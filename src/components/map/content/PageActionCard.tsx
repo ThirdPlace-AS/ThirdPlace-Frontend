@@ -8,7 +8,7 @@
 // tracks the snap itself: gorhom renders footerComponent as a
 // component type, so a new render callback would remount it (and close a
 // pay or sign-in sheet opened from it).
-import { useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { View } from "react-native";
 import Animated, {
   Easing,
@@ -21,7 +21,13 @@ import Animated, {
 } from "react-native-reanimated";
 
 import { useReducedMotion } from "@/hooks/useReducedMotion";
-import { duration, easing, elevation, gutterPx } from "@/theme";
+import {
+  duration,
+  easing,
+  useElevation,
+  gutterPx,
+  useRaisedEdge,
+} from "@/theme";
 
 import { atPageTop } from "../pageTarget";
 
@@ -52,10 +58,40 @@ export function PageActionCard({
   /** Opens the host view (the viewer hosts this experience, 0464). */
   onManage?: () => void;
 }) {
+  const elev = useElevation();
   const reduce = useReducedMotion();
+  const edge = useRaisedEdge();
   // Starts hidden: the sheet opens at the peek or mid snap, and the reaction
   // reports the real position on its first run (a remount at the top too).
   const [atTop, setAtTop] = useState(false);
+  // Its touch and TalkBack state follow once the sheet has stopped (0572):
+  // set as a slow drag left the top, the render dropped frames. The fade
+  // below still runs at once on the UI thread.
+  const atTopNow = useRef(false);
+  const poll = useRef<ReturnType<typeof setInterval> | null>(null);
+  const report = useCallback(
+    (now: boolean) => {
+      atTopNow.current = now;
+      if (poll.current) return;
+      let last = animatedIndex.value;
+      poll.current = setInterval(() => {
+        const v = animatedIndex.value;
+        if (Math.abs(v - last) < 0.002) {
+          if (poll.current) clearInterval(poll.current);
+          poll.current = null;
+          setAtTop(atTopNow.current);
+        }
+        last = v;
+      }, 120);
+    },
+    [animatedIndex],
+  );
+  useEffect(
+    () => () => {
+      if (poll.current) clearInterval(poll.current);
+    },
+    [],
+  );
   // 0 hidden · 1 shown; timed, not tied to the drag.
   const shown = useSharedValue(0);
   useAnimatedReaction(
@@ -69,9 +105,9 @@ export function PageActionCard({
         shown.value = now
           ? withTiming(1, { duration: duration.base, easing: ENTER })
           : withTiming(0, { duration: duration.fast, easing: EXIT });
-      runOnJS(setAtTop)(now);
+      runOnJS(report)(now);
     },
-    [reduce],
+    [reduce, report],
   );
   const rise = reduce ? 0 : RISE;
   const reveal = useAnimatedStyle(() => {
@@ -82,6 +118,7 @@ export function PageActionCard({
   return (
     <Animated.View
       testID="page-action-card"
+      renderToHardwareTextureAndroid
       pointerEvents={atTop ? "box-none" : "none"}
       accessibilityElementsHidden={!atTop}
       importantForAccessibility={atTop ? "auto" : "no-hide-descendants"}
@@ -91,10 +128,10 @@ export function PageActionCard({
       ]}
     >
       <View
-        className={`rounded-md border border-line bg-surface px-4 ${
+        className={`rounded-md ${edge} bg-surface px-4 ${
           compact ? "py-2" : "py-3"
         }`}
-        style={elevation.e2}
+        style={elev.e2}
       >
         {kind === "place" ? (
           <PlaceChatBar placeId={id} />

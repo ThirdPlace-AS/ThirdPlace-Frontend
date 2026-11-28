@@ -7,12 +7,16 @@
 // vite (tilgjengelighet, spesielle åpningstider, kilde); footer links. Every
 // fact once. MOCK fixture data; no booking or ranking (BLOCKED_CONTRACT_GAP).
 import type { Href } from "expo-router";
-import { useMemo, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import {
   useSheetStageFirst,
   useSheetStageReady,
 } from "@/components/map/sheetStage";
-import { ScrollView, View } from "react-native";
+import { View } from "react-native";
+// Rails in the map page sheet scroll with Gesture Handler: its pan gesture
+// took the horizontal drag from the core ScrollView on Android (phone
+// 2026-11-26).
+import { ScrollView as RailScrollView } from "react-native-gesture-handler";
 
 import { ReportSheet } from "@/components/actions/ActionSheets";
 import { useGuestGate } from "@/components/useGuestGate";
@@ -29,6 +33,7 @@ import {
   InfoRow,
 } from "@/components/experience/ExperiencePage";
 import { MenuSection } from "@/components/place/MenuSection";
+import { usePageScroll } from "@/components/pageScroll";
 import { ReviewsSection } from "@/components/reviews/ReviewsSection";
 import { sortReviews } from "@/components/reviews/reviewSort";
 import {
@@ -122,6 +127,7 @@ export function placeThingsToKnow(p: MockPlace): Know[] {
       summary: p.accessibility.length
         ? p.accessibility.join(", ")
         : "Ikke oppgitt",
+      more: p.accessibility.length > 1,
       detail: p.accessibility.length
         ? p.accessibility.map((a) => ({
             icon: "checkmark-circle-outline" as const,
@@ -145,6 +151,8 @@ export function placeThingsToKnow(p: MockPlace): Know[] {
       icon: "leaf-outline",
       title: "Fasiliteter",
       summary: p.space.facilities.join(", "),
+      // The sheet adds who it is for and the season.
+      more: true,
       detail: [
         ...p.space.facilities.map((f) => ({
           icon: "checkmark-circle-outline" as const,
@@ -193,6 +201,15 @@ export function PlacePage({
   const origin = useOrigin();
   const { score, count } = ratingOf(reviews);
   const latest = sortReviews(reviews, "newest")[0];
+  // The rating link brings the page's own reviews into view (Airbnb
+  // tap-through 2026-11-26); without a scrolling host, or before they have
+  // mounted, it opens all reviews as before.
+  const reviewsAnchor = useRef<View>(null);
+  const pageScroll = usePageScroll();
+  const toReviews = () => {
+    if (!pageScroll?.scrollToAnchor(reviewsAnchor.current))
+      onNavigate(reviewsHref);
+  };
   const reviewsHref = `/place/${place.id}/reviews` as Href;
   // Lists over every place, experience and group: worked out once per page
   // (speed pass 0348), and the same photo list for the gallery each render.
@@ -232,14 +249,17 @@ export function PlacePage({
   );
 
   return (
-    <View className="gap-6">
+    // 32 between sections (Airbnb tap-through 2026-11-26: more air around
+    // the dividers than our 24).
+    <View className="gap-8">
       {hideGallery ? null : <HeroGallery title={place.name} photos={photos} />}
 
       {first ? (
         <>
           <View className="items-center gap-2 px-2">
             <Text
-              variant="h1"
+              variant="display"
+              weight="semibold"
               className="text-center"
               accessibilityRole="header"
             >
@@ -251,8 +271,8 @@ export function PlacePage({
             {count > 0 ? (
               <UIPressable
                 accessibilityRole="link"
-                accessibilityLabel={`${formatRating(score)} av 5, ${count} vurderinger. Vis alle`}
-                onPress={() => onNavigate(reviewsHref)}
+                accessibilityLabel={`${formatRating(score)} av 5, ${count} vurderinger. Gå til vurderingene`}
+                onPress={toReviews}
                 hitSlop={LINK_SLOP}
                 // The tag chips 12 dp below take taps in their own boxes, so
                 // the slop alone left about 42 dp (0498). py-3 makes the box
@@ -369,15 +389,17 @@ export function PlacePage({
 
           <View className="h-px bg-line" />
 
-          <ReviewsSection
-            reviews={reviews}
-            onShowAll={() => onNavigate(reviewsHref)}
-          />
+          <View ref={reviewsAnchor} collapsable={false}>
+            <ReviewsSection
+              reviews={reviews}
+              onShowAll={() => onNavigate(reviewsHref)}
+            />
+          </View>
 
           <View className="h-px bg-line" />
 
           <View className="gap-3">
-            <Text variant="h2" accessibilityRole="header">
+            <Text variant="h1" accessibilityRole="header">
               Hvor du finner oss
             </Text>
             <View className="flex-row items-start gap-3">
@@ -404,7 +426,7 @@ export function PlacePage({
 
           {happening.length > 0 ? (
             <View className="gap-1">
-              <Text variant="h2" accessibilityRole="header" className="mb-2">
+              <Text variant="h1" accessibilityRole="header" className="mb-2">
                 Hva skjer her
               </Text>
               {happening.map((e) => (
@@ -423,7 +445,7 @@ export function PlacePage({
 
           {meetingHere.length > 0 ? (
             <View className="gap-1">
-              <Text variant="h2" accessibilityRole="header" className="mb-2">
+              <Text variant="h1" accessibilityRole="header" className="mb-2">
                 Grupper som møtes her
               </Text>
               {meetingHere.map((g) => (
@@ -446,10 +468,10 @@ export function PlacePage({
 
           {nearby.length > 0 ? (
             <View className="gap-3">
-              <Text variant="h2" accessibilityRole="header">
+              <Text variant="h1" accessibilityRole="header">
                 Flere steder i nærheten
               </Text>
-              <ScrollView
+              <RailScrollView
                 horizontal
                 showsHorizontalScrollIndicator={false}
                 snapToInterval={188}
@@ -486,7 +508,7 @@ export function PlacePage({
                     </UIPressable>
                   );
                 })}
-              </ScrollView>
+              </RailScrollView>
             </View>
           ) : null}
 
@@ -505,6 +527,7 @@ export function PlacePage({
               )}
             />
             <FooterLink
+              quiet
               icon="flag-outline"
               label="Rapporter stedet"
               onPress={gate("rapportere", () => setReport(true))}

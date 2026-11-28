@@ -14,6 +14,7 @@ import {
   Text,
 } from "@/components/ui";
 import { businessById } from "@/fixtures";
+import { useBusinessVerified } from "@/features/workspace/businessSteps";
 
 // Verifisering, per the design (PDF p7): a three-step timeline —
 // Innsendt → Under vurdering → Godkjent — and the submitted documents with
@@ -52,6 +53,7 @@ export default function VerificationScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const { isGuest } = useGuestMode();
   const business = id ? businessById(id) : undefined;
+  const verified = useBusinessVerified(business);
 
   return (
     <Screen edges={["top"]}>
@@ -64,7 +66,7 @@ export default function VerificationScreen() {
             Fant ikke bedriften.
           </Text>
         ) : (
-          <VerificationBody name={business.name} verified={business.verified} />
+          <VerificationBody name={business.name} verified={verified} />
         )}
       </ScrollView>
     </Screen>

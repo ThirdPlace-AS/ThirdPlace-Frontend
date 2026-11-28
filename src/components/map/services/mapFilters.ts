@@ -272,7 +272,9 @@ const lower = (list: readonly string[]) => list.map((x) => x.toLowerCase());
 
 /** The picked days as a time window: from the first day's start to the
  *  last day's end, widened by `dateFlex` days on each side. */
-export function dateWindow(f: MapFilters): [Date, Date] | null {
+export function dateWindow(
+  f: Pick<MapFilters, "dateStart" | "dateEnd" | "dateFlex">,
+): [Date, Date] | null {
   if (!f.dateStart) return null;
   const day = (iso: string) => {
     const [y, m, d] = iso.split("-").map(Number);
@@ -357,9 +359,13 @@ export function applyExperienceFilters(
       !(place && f.accessibility.every((a) => place.accessibility.includes(a)))
     )
       return false;
-    if (f.time !== null && e.day !== f.time) return false;
-    if (f.time === null && f.dateStart !== null && !hasSessionIn(e, f))
-      return false;
+    // A picked day or period (Når's quick chips set one too) keeps the
+    // experiences with a real time in it (0517: the chips matched the
+    // fixtures' fixed `day` label, so «I kveld» kept almost nothing and
+    // «Denne uka» kept times past Sunday). The label is the fallback only.
+    if (f.dateStart !== null) {
+      if (!hasSessionIn(e, f)) return false;
+    } else if (f.time !== null && e.day !== f.time) return false;
     if (f.hasSpots && e.capacity - e.going <= 0) return false;
     if (q !== "" && !experienceMatchesQuery(e, q) && !"opplevelse".includes(q))
       return false;

@@ -3529,6 +3529,9 @@ export type MockPerson = {
   bio: string;
   mutuals: number; // MOCK shared-friends count (not a real graph)
   interests: string[]; // MOCK tags, not a canonical taxonomy
+  /** MOCK verified badge (user 2026-11-27, Varsler's Filtrer "Verifisert");
+   *  no verification rule exists (BLOCKED_CONTRACT_GAP). */
+  verified?: boolean;
 };
 
 export const people: MockPerson[] = [
@@ -3541,6 +3544,7 @@ export const people: MockPerson[] = [
     bio: "Kaffeentusiast og vert for morgenkaffen. Elsker å møte nye folk.",
     mutuals: 4,
     interests: ["Kaffe", "Fotografi", "Bakst"],
+    verified: true,
   },
   {
     id: "u2",
@@ -3591,6 +3595,7 @@ export const people: MockPerson[] = [
     bio: "Naturvin, lange turer og helgeklatring.",
     mutuals: 2,
     interests: ["Vin", "Friluftsliv", "Klatring"],
+    verified: true,
   },
   {
     id: "u7",

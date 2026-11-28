@@ -28,8 +28,9 @@ import {
 } from "@/components/ui";
 import { moveItem } from "@/lib/reorder";
 import { confirmToast } from "@/copy";
-import { experienceById, profile } from "@/fixtures";
+import { profile } from "@/fixtures";
 import { libImage } from "@/fixtures/images";
+import { myHostedPublic } from "@/features/people/myHosted";
 import { PersonProfileBody } from "@/features/people/PersonProfileBody";
 import {
   OWN_PORTRAIT,
@@ -41,14 +42,6 @@ import { goBackOr } from "@/lib/navigation";
 import { InterestPicker } from "@/components/pickers/InterestPicker";
 import { useConfirmLeave } from "@/lib/useConfirmLeave";
 import { DiscardChangesSheet } from "@/components/DiscardChangesSheet";
-
-// The experiences you host are public on your person page (PDF p13).
-const HOSTED = profile.activity
-  .filter((a) => a.role === "Arrangert")
-  .flatMap((a) => {
-    const e = experienceById(a.experienceId);
-    return e ? [{ id: e.id, title: e.title, when: e.when }] : [];
-  });
 
 export default function EditProfileScreen() {
   const me = useMyProfile();
@@ -221,7 +214,7 @@ export default function EditProfileScreen() {
             meta={profile.handle}
             bio={bio.trim()}
             interests={interests}
-            hosted={HOSTED}
+            hosted={myHostedPublic()}
           />
         </ScrollView>
       </Sheet>

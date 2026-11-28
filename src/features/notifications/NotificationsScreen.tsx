@@ -12,24 +12,42 @@
 // 0460 (Instagram benchmark 2, user 2026-11-17): flat rows with the actor's
 // photo (a small type badge on it), one sentence "name text · time", and on
 // the right either "Følg tilbake" or a thumbnail of what the notice names;
-// the shared `FilterPills` row with one pill per type that has notices; and
-// "Du er helt oppdatert" at the top once nothing is unread.
+// and "Du er helt oppdatert" at the top once nothing is unread. The type pills
+// are gone (user 2026-11-26).
+// 0561 (user 2026-11-27, Instagram's Varsler): swipe a row left for «…»
+// (Ikke interessert, Blokker) and Slett (asks first); Filtrer in the header
+// keeps chosen kinds of notice or only people you follow.
+// User 2026-11-27: «…» also offers Fjern følger for a follower, Filtrer adds
+// Verifisert, and "Merk alle lest" moved from the header into Filtrer's sheet.
 // BLOCKED_CONTRACT_GAP: no push, inbox or notification feed exists.
 import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
-import { useMemo, useState } from "react";
+import { useCallback, useRef, useState } from "react";
 import { Pressable, View, type ImageSourcePropType } from "react-native";
+import ReanimatedSwipeable, {
+  type SwipeableMethods,
+} from "react-native-gesture-handler/ReanimatedSwipeable";
+
+import {
+  BlockSheet,
+  ItemActionsSheet,
+  type ItemAction,
+} from "@/components/actions/ActionSheets";
+import { showToastAfterSheet } from "@/components/Toast";
+import { confirmToast, followerRemovedToast } from "@/copy";
 
 import { useGuestMode } from "@/components/map/hooks/useGuestMode";
 import { SignInPrompt } from "@/components/SignInPrompt";
 import { EmptyState } from "@/components/states/StateView";
 import {
   Avatar,
-  FilterPills,
+  Button,
   FollowButton,
   Icon,
+  IconButton,
   LoadingImage,
   Page,
+  Sheet,
   Text,
   Pressable as UIPressable,
 } from "@/components/ui";
@@ -48,14 +66,22 @@ import {
   type NotificationEntry,
 } from "@/lib/collapseNotifications";
 import { notificationHref } from "@/lib/entityRoutes";
-import { toggleFollow, useFollowing } from "@/lib/following";
-
 import {
-  filterNotifications,
+  isFollower,
+  removeFollower,
+  toggleFollow,
+  useFollowing,
+  useRemovedFollowers,
+} from "@/lib/following";
+
+import { NotificationFilterSheet } from "./NotificationFilterSheet";
+import {
+  NO_NOTIFICATION_FILTER,
+  applyNotificationFilter,
+  isNotificationFilterOn,
   notificationPerson,
-  notificationPills,
   notificationThumb,
-  type NotificationFilterKey,
+  type NotificationFilter,
 } from "./notificationFilters";
 import { GuestPage } from "@/components/GuestPage";
 
@@ -80,22 +106,82 @@ export default function NotificationsScreen() {
 }
 
 function NotificationsContent() {
-  const { items, readIds, unread, markRead, markAllRead } =
-    useNotificationReads();
+  const {
+    items,
+    readIds,
+    unread,
+    markRead,
+    markAllRead,
+    dismiss,
+    notInterested,
+  } = useNotificationReads();
   const following = useFollowing();
+  useRemovedFollowers();
   const { isGuest } = useGuestMode();
   const [signIn, setSignIn] = useState(false);
-  const [filter, setFilter] = useState<NotificationFilterKey>("all");
-  const pills = useMemo(() => notificationPills(items), [items]);
-  // A pill whose type has no notices left falls back to Alle.
-  const active = pills.some((p) => p.key === filter) ? filter : "all";
-  const shown = filterNotifications(items, active);
+  const [filter, setFilter] = useState<NotificationFilter>(
+    NO_NOTIFICATION_FILTER,
+  );
+  const [filterOpen, setFilterOpen] = useState(false);
+  // The row whose «…» sheet or Slett question is open, and who to block.
+  const [menuFor, setMenuFor] = useState<NotificationEntry | null>(null);
+  const [deleteFor, setDeleteFor] = useState<NotificationEntry | null>(null);
+  const [blockFor, setBlockFor] = useState<{ id: string; name: string } | null>(
+    null,
+  );
+  // One row open at a time: opening another closes the last.
+  const openRow = useRef<SwipeableMethods | null>(null);
+  const onRowOpen = useCallback((row: SwipeableMethods) => {
+    if (openRow.current && openRow.current !== row) openRow.current.close();
+    openRow.current = row;
+  }, []);
+  const filterOn = isNotificationFilterOn(filter);
+  const shown = applyNotificationFilter(items, filter, following);
   const groups = NOTIFICATION_GROUPS.map((title) => ({
     title,
     entries: collapseNotifications(
       shown.filter((n) => notificationGroup(n.minutesAgo) === title),
     ),
   })).filter((g) => g.entries.length > 0);
+  const idsOf = (entry: NotificationEntry) => entry.items.map((n) => n.id);
+  const menuActions = (entry: NotificationEntry): ItemAction[] => {
+    const first = entry.items[0];
+    const person =
+      entry.items.length === 1 && first ? notificationPerson(first) : undefined;
+    const firstName = person?.name.split(" ")[0] ?? "";
+    return [
+      {
+        label: "Ikke interessert",
+        icon: "eye-off-outline",
+        onPress: () => {
+          notInterested(idsOf(entry));
+          showToastAfterSheet(confirmToast.notificationHidden);
+        },
+      },
+      ...(person && isFollower(person.id)
+        ? [
+            {
+              label: "Fjern følger",
+              icon: "person-remove-outline" as const,
+              onPress: () => {
+                removeFollower(person.id);
+                showToastAfterSheet(followerRemovedToast(firstName));
+              },
+            },
+          ]
+        : []),
+      ...(person
+        ? [
+            {
+              label: "Blokker " + firstName,
+              icon: "ban-outline" as const,
+              afterClose: true,
+              onPress: () => setBlockFor({ id: person.id, name: person.name }),
+            },
+          ]
+        : []),
+    ];
+  };
 
   const open = (entry: NotificationEntry) => {
     const first = entry.items[0];
@@ -121,21 +207,12 @@ function NotificationsContent() {
     <Page
       title="Varsler"
       trailing={
-        <Pressable
-          accessibilityRole="button"
-          accessibilityState={{ disabled: unread === 0 }}
-          disabled={unread === 0}
-          onPress={markAllRead}
-          hitSlop={8}
-        >
-          <Text
-            variant="label"
-            weight="semibold"
-            tone={unread === 0 ? "muted" : "ink"}
-          >
-            Merk alle lest
-          </Text>
-        </Pressable>
+        <IconButton
+          icon="options-outline"
+          label={filterOn ? "Filtrer, filter på" : "Filtrer"}
+          badge={filterOn}
+          onPress={() => setFilterOpen(true)}
+        />
       }
     >
       {items.length === 0 ? (
@@ -146,12 +223,6 @@ function NotificationsContent() {
         />
       ) : (
         <>
-          <FilterPills
-            bleed
-            pills={pills}
-            value={active}
-            onChange={setFilter}
-          />
           {unread === 0 ? (
             <View className="flex-row items-center gap-3">
               <Icon name="checkmark-circle-outline" size="md" tone="muted" />
@@ -162,6 +233,15 @@ function NotificationsContent() {
           ) : null}
         </>
       )}
+      {items.length > 0 && filterOn && groups.length === 0 ? (
+        <EmptyState
+          fill={false}
+          icon="options-outline"
+          title="Ingen varsler passer filteret"
+          actionLabel="Fjern filteret"
+          onAction={() => setFilter(NO_NOTIFICATION_FILTER)}
+        />
+      ) : null}
       {groups.map((g) => (
         <View key={g.title}>
           <Text variant="body" weight="semibold" accessibilityRole="header">
@@ -170,30 +250,38 @@ function NotificationsContent() {
           {g.entries.map((entry) => {
             const n = entry.items[0];
             if (!n) return null;
-            // Follow back on a row of one new follower.
+            // Follow back on a row of one new follower, while they still
+            // follow you (none after Fjern følger, user 2026-11-27).
             const person =
               entry.items.length === 1 &&
               n.type === "follow" &&
-              n.target.kind === "person"
+              n.target.kind === "person" &&
+              isFollower(n.target.id)
                 ? n.target.id
                 : null;
             return (
-              <NotificationRow
+              <SwipeRow
                 key={entry.key}
-                n={n}
-                actor={entryActor(entry)}
-                isRead={entry.items.every((x) => readIds.has(x.id))}
-                onOpen={() => open(entry)}
-                follow={
-                  person
-                    ? {
-                        following: following.has(person),
-                        onPress: () =>
-                          isGuest ? setSignIn(true) : toggleFollow(person),
-                      }
-                    : undefined
-                }
-              />
+                onOpen={onRowOpen}
+                onMore={() => setMenuFor(entry)}
+                onDelete={() => setDeleteFor(entry)}
+              >
+                <NotificationRow
+                  n={n}
+                  actor={entryActor(entry)}
+                  isRead={entry.items.every((x) => readIds.has(x.id))}
+                  onOpen={() => open(entry)}
+                  follow={
+                    person
+                      ? {
+                          following: following.has(person),
+                          onPress: () =>
+                            isGuest ? setSignIn(true) : toggleFollow(person),
+                        }
+                      : undefined
+                  }
+                />
+              </SwipeRow>
             );
           })}
         </View>
@@ -203,7 +291,129 @@ function NotificationsContent() {
         onClose={() => setSignIn(false)}
         action="følge folk"
       />
+      {filterOpen ? (
+        <NotificationFilterSheet
+          value={filter}
+          onApply={setFilter}
+          onClose={() => setFilterOpen(false)}
+          unread={unread}
+          onMarkAllRead={markAllRead}
+        />
+      ) : null}
+      {menuFor ? (
+        <ItemActionsSheet
+          title={entryActor(menuFor)}
+          actions={menuActions(menuFor)}
+          onClose={() => {
+            setMenuFor(null);
+            openRow.current?.close();
+          }}
+        />
+      ) : null}
+      {deleteFor ? (
+        <Sheet
+          visible
+          onClose={() => setDeleteFor(null)}
+          title="Vil du slette dette varselet?"
+        >
+          {(close) => (
+            <View className="gap-3">
+              <Button
+                label="Slett"
+                variant="danger"
+                onPress={() => {
+                  dismiss(idsOf(deleteFor));
+                  close();
+                  openRow.current = null;
+                  showToastAfterSheet(confirmToast.notificationDeleted);
+                }}
+              />
+              <Button
+                label="Avbryt"
+                variant="secondary"
+                onPress={() => {
+                  close();
+                  openRow.current?.close();
+                }}
+              />
+            </View>
+          )}
+        </Sheet>
+      ) : null}
+      {blockFor ? (
+        <BlockSheet
+          name={blockFor.name}
+          personId={blockFor.id}
+          onClose={() => setBlockFor(null)}
+        />
+      ) : null}
     </Page>
+  );
+}
+
+// Width of each swipe action («…» and Slett).
+const ACTION_W = 72;
+
+// A row that swipes left to show «…» and Slett (0561). Screen readers get
+// the same two as accessibility actions on the row.
+function SwipeRow({
+  children,
+  onOpen,
+  onMore,
+  onDelete,
+}: {
+  children: React.ReactNode;
+  onOpen: (row: SwipeableMethods) => void;
+  onMore: () => void;
+  onDelete: () => void;
+}) {
+  const ref = useRef<SwipeableMethods>(null);
+  return (
+    <ReanimatedSwipeable
+      ref={ref}
+      friction={1.5}
+      rightThreshold={ACTION_W / 2}
+      overshootRight={false}
+      onSwipeableWillOpen={() => {
+        if (ref.current) onOpen(ref.current);
+      }}
+      renderRightActions={() => (
+        <View className="flex-row">
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel="Flere valg"
+            onPress={onMore}
+            className="items-center justify-center bg-surfaceMuted"
+            style={{ width: ACTION_W }}
+          >
+            <Icon name="ellipsis-horizontal" size="md" tone="ink" />
+          </Pressable>
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel="Slett"
+            onPress={onDelete}
+            className="items-center justify-center bg-danger"
+            style={{ width: ACTION_W }}
+          >
+            <Icon name="trash-outline" size="md" tone="onMedia" />
+          </Pressable>
+        </View>
+      )}
+    >
+      <View
+        className="bg-background"
+        accessibilityActions={[
+          { name: "more", label: "Flere valg" },
+          { name: "delete", label: "Slett" },
+        ]}
+        onAccessibilityAction={(e) => {
+          if (e.nativeEvent.actionName === "more") onMore();
+          if (e.nativeEvent.actionName === "delete") onDelete();
+        }}
+      >
+        {children}
+      </View>
+    </ReanimatedSwipeable>
   );
 }
 

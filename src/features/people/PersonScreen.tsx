@@ -1,4 +1,7 @@
-// Person page (/people/[id]), laid out per PDF p13 ("other user"): photo,
+// Person page (/people/[id]), the one page per person (review 2026-11-18
+// PR-10, 0528: a host's experiences show under «Arrangerer» here; /creator/[id]
+// redirects here). /people/me is your own page as others see it, without
+// Følg, Melding or the ••• menu. Laid out per PDF p13 ("other user"): photo,
 // name, handle and area, bio, interest chips with the ones you share marked,
 // "Offentlige opplevelser", then Følg + Melding. Rapporter and Blokker sit
 // behind the ••• in the header. A page since Phase 12 H4c (content you read).
@@ -25,12 +28,14 @@ import {
   Sheet,
 } from "@/components/ui";
 import { experiencesHostedBy, people, profile } from "@/fixtures";
+import { whenLabel } from "@/lib/whenLabel";
 import { directChatFor } from "@/fixtures/created";
 import { libImage } from "@/fixtures/images";
 import { toggleFollow, useFollowing } from "@/lib/following";
 import { useMyProfile } from "@/lib/myProfile";
 import { goBackOr } from "@/lib/navigation";
 
+import { myHostedPublic } from "./myHosted";
 import { PersonProfileBody } from "./PersonProfileBody";
 
 // Sheets close in 200 ms; the next one opens after that (one Modal at a time).
@@ -48,6 +53,8 @@ export default function PersonScreen() {
   const [sub, setSub] = useState<SubSheet | null>(null);
   const [signIn, setSignIn] = useState<string | null>(null);
 
+  if (id === "me" && !isGuest) return <OwnPublicPage />;
+
   if (!person) {
     return (
       <Screen edges={["top", "bottom"]}>
@@ -63,7 +70,11 @@ export default function PersonScreen() {
   }
 
   // Everything the person hosts (catalogue hosts run several, Phase 19).
-  const hosted = experiencesHostedBy(person.id);
+  const hosted = experiencesHostedBy(person.id).map((e) => ({
+    id: e.id,
+    title: e.title,
+    when: whenLabel(e),
+  }));
   const isFollowing = following.has(person.id);
   const shared = new Set(
     person.interests.filter((i) => me.interests.includes(i)),
@@ -160,6 +171,28 @@ export default function PersonScreen() {
         onClose={() => setSignIn(null)}
         action={signIn ?? ""}
       />
+    </Screen>
+  );
+}
+
+// Your own page as others see it (review PR-10, 0528), opened from Profil:
+// your saved profile in the visitor layout, nothing to follow or report.
+function OwnPublicPage() {
+  const me = useMyProfile();
+  return (
+    <Screen edges={["top", "bottom"]}>
+      <Header title="Slik ser andre deg" />
+      <ScrollView contentContainerClassName={pageBody.sections}>
+        <PersonProfileBody
+          name={me.name}
+          avatar={me.avatar ? libImage(me.avatar) : undefined}
+          meta={profile.handle}
+          bio={me.bio}
+          interests={me.interests}
+          hosted={myHostedPublic()}
+          onOpenExperience={(eid) => router.push(`/experience/${eid}` as Href)}
+        />
+      </ScrollView>
     </Screen>
   );
 }

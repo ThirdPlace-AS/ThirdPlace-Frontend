@@ -1,7 +1,7 @@
 import { Pressable, ScrollView, View } from "react-native";
 
 import {
-  elevation,
+  useElevation,
   palette,
   radius,
   setSchemePreference,
@@ -118,6 +118,7 @@ const SWATCH_CLASS: Record<string, string> = {
 
 export default function ThemeSandbox() {
   const scheme = useScheme();
+  const elev = useElevation();
   const pref = useSchemePreference();
   const hex = palette[scheme];
 
@@ -238,7 +239,7 @@ export default function ThemeSandbox() {
             {(["e1", "e2", "e3"] as const).map((e) => (
               <View
                 key={e}
-                style={elevation[e]}
+                style={elev[e]}
                 className="h-20 flex-1 items-center justify-center rounded-lg bg-surfaceRaised"
               >
                 <UIText variant="label">{e}</UIText>

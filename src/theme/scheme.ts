@@ -5,8 +5,14 @@
 // dev-only sandbox (app/_sandbox/theme.tsx). A device choice: deviceSettings.ts
 // keeps it on the phone across restarts.
 import { createContext, useContext } from "react";
-import { useColorScheme } from "react-native";
+import {
+  AppState,
+  useColorScheme,
+  type NativeEventSubscription,
+} from "react-native";
 import { createStore, useStore } from "zustand";
+
+import { periodForHour } from "@/components/map/mapStyles";
 
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const tokens = require("./tokens.js") as {
@@ -14,7 +20,10 @@ const tokens = require("./tokens.js") as {
 };
 
 export type Scheme = "light" | "dark";
-export type SchemePreference = Scheme | "system";
+/** "auto" (user 2026-11-25): dark while the map's own auto style is Skumring
+ *  or Natt (periodForHour, 17–05; Skumring added 2026-11-26), light otherwise,
+ *  so the app turns with the map. */
+export type SchemePreference = Scheme | "system" | "auto";
 
 export const DEFAULT_SCHEME_PREFERENCE: SchemePreference = "system";
 
@@ -39,9 +48,41 @@ export function useSchemePreference(): SchemePreference {
 
 export const SCHEME_PREFERENCES: readonly SchemePreference[] = [
   "system",
+  "auto",
   "light",
   "dark",
 ];
+
+// The local hour, for "auto". It ticks only while "auto" is picked: every
+// 5 minutes (as the map's useTimeOfDayStyle) and when the app comes back to
+// the foreground, and changes state only when the hour changes.
+const CLOCK_TICK_MS = 5 * 60 * 1000;
+const clock = createStore(() => ({ hour: new Date().getHours() }));
+const selectHour = (s: { hour: number }) => s.hour;
+let clockTimer: ReturnType<typeof setInterval> | null = null;
+let clockSub: NativeEventSubscription | null = null;
+
+function tickClock() {
+  const hour = new Date().getHours();
+  if (hour !== clock.getState().hour) clock.setState({ hour });
+}
+
+function syncClock() {
+  const on = store.getState().preference === "auto";
+  if (on && !clockTimer) {
+    tickClock();
+    clockTimer = setInterval(tickClock, CLOCK_TICK_MS);
+    clockSub = AppState.addEventListener("change", (s) => {
+      if (s === "active") tickClock();
+    });
+  } else if (!on && clockTimer) {
+    clearInterval(clockTimer);
+    clockTimer = null;
+    clockSub?.remove();
+    clockSub = null;
+  }
+}
+store.subscribe(syncClock);
 
 export function onSchemePreferenceChange(l: () => void): () => void {
   return store.subscribe(() => l());
@@ -59,8 +100,13 @@ export function restoreSchemePreference(saved: unknown) {
 export function resolveScheme(
   pref: SchemePreference,
   system: string | null | undefined,
+  hour: number = new Date().getHours(),
 ): Scheme {
   if (pref === "system") return system === "dark" ? "dark" : "light";
+  if (pref === "auto")
+    return periodForHour(hour) === "dusk" || periodForHour(hour) === "night"
+      ? "dark"
+      : "light";
   return pref;
 }
 
@@ -74,7 +120,8 @@ export function useScheme(): Scheme {
   const forced = useContext(SchemeOverrideContext);
   const pref = useSchemePreference();
   const system = useColorScheme();
-  return forced ?? resolveScheme(pref, system);
+  const hour = useStore(clock, selectHour);
+  return forced ?? resolveScheme(pref, system, hour);
 }
 
 export type ThemeColors = typeof tokens.palette.light;

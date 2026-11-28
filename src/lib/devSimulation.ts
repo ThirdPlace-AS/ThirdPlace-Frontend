@@ -11,12 +11,20 @@ export type DevSimulation = {
   checkinFar: boolean;
   /** Map content takes 3 s: skeleton for 2 s, then the loader (§4 rule). */
   slowLoad: boolean;
+  /** Arbeidsflate's business shows as new: waiting on verification, nothing
+   *  published (review PR-09, 0527). */
+  newBusiness: boolean;
 };
 
 type State = { state: DevSimulation };
 const store = createStore(
   (): State => ({
-    state: { mapOffline: false, checkinFar: false, slowLoad: false },
+    state: {
+      mapOffline: false,
+      checkinFar: false,
+      slowLoad: false,
+      newBusiness: false,
+    },
   }),
 );
 const selectState = (s: State) => s.state;

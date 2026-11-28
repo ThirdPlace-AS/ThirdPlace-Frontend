@@ -1,14 +1,16 @@
-import { router } from "expo-router";
+import { router, useSegments } from "expo-router";
 
 import { Tabs } from "expo-router/js-tabs";
-import { type ColorValue } from "react-native";
+import { type ColorValue, Pressable } from "react-native";
 
 import { AddTabIcon } from "@/components/AddTabIcon";
 import { useGuestMode } from "@/components/map/hooks/useGuestMode";
 import { Icon, type IconName } from "@/components/ui";
 import { useUnreadChatCount } from "@/lib/chatReads";
+import { openAccountSheet } from "@/components/AccountSwitcher";
 import { markHintSeen } from "@/lib/hints";
-import { useThemeColors } from "@/theme";
+import { media, palette, useThemeColors } from "@/theme";
+import { SchemeScope } from "@/theme/ThemeRoot";
 import { fontFamilyFor } from "@/theme/fonts";
 
 // Outline when idle, filled when active — the usual iOS/Android tab convention.
@@ -32,7 +34,12 @@ function icon(idle: IconName, active: IconName) {
 // reached full extent; that is gone — the sheet tops out within the screen
 // scene (above the bar), so the bar simply stays put on every screen.
 export default function TabsLayout() {
-  const colors = useThemeColors();
+  const themeColors = useThemeColors();
+  // On Sveip the bar is black, part of the dark deck (user 2026-11-25): the
+  // page's own black (media.black, behind the deck) with the dark theme's
+  // tints, whatever the app theme, so bar and page are one colour.
+  const onSwipe = (useSegments() as string[]).includes("swipe");
+  const colors = onSwipe ? palette.dark : themeColors;
   // Chats with unread messages (Phase 16, the WhatsApp / Instagram tab badge).
   const demoUnread = useUnreadChatCount();
   // A guest has no chats of their own (IJ2): no count on the tab.
@@ -52,9 +59,20 @@ export default function TabsLayout() {
         tabBarActiveTintColor: colors.ember,
         tabBarInactiveTintColor: colors.muted,
         tabBarLabelStyle: { fontFamily: fontFamilyFor("medium") },
+        // No grey press ripple on the tab icons (user 2026-11-26): the default
+        // button draws Android's borderless ripple; a core Pressable without
+        // it keeps the press, long press and accessibility props.
+        tabBarButton: ({
+          android_ripple: _ripple,
+          pressOpacity: _opacity,
+          hoverEffect: _hover,
+          href: _href,
+          ref: _ref,
+          ...props
+        }) => <Pressable {...props} />,
         tabBarStyle: {
-          backgroundColor: colors.surface,
-          borderTopColor: colors.line,
+          backgroundColor: onSwipe ? media.black : colors.surface,
+          borderTopColor: onSwipe ? media.black : colors.line,
         },
       }}
     >
@@ -66,7 +84,9 @@ export default function TabsLayout() {
         name="swipe"
         options={{
           title: "Sveip",
-          tabBarIcon: icon("tp-swipe", "tp-swipe-filled"),
+          // Ionicons' stacked cards, drawn like the other tabs' icons (user
+          // 2026-11-26: the tilted custom glyph did not match them).
+          tabBarIcon: icon("albums-outline", "albums"),
         }}
       />
       <Tabs.Screen
@@ -75,7 +95,15 @@ export default function TabsLayout() {
           title: "Legg til",
           // TikTok's stacked button in our colours (founder 2026-11-08); the
           // same look open or not, the label turns ember while open.
-          tabBarIcon: () => <AddTabIcon />,
+          // On Sveip's black bar it takes the dark theme's look (white face).
+          tabBarIcon: () =>
+            onSwipe ? (
+              <SchemeScope scheme="dark">
+                <AddTabIcon />
+              </SchemeScope>
+            ) : (
+              <AddTabIcon />
+            ),
         }}
       />
       <Tabs.Screen
@@ -98,12 +126,18 @@ export default function TabsLayout() {
       />
       <Tabs.Screen
         name="profile"
-        // PDF p27: a long press on Profil opens the account switcher.
+        // PDF p27: a long press on Profil opens the account switcher, the
+        // only way in (user 2026-11-26; PR-08's chip is gone). A guest gets
+        // the switcher's lock and Logg inn.
         listeners={{
           tabLongPress: () => {
-            // Found the gesture: its one-time tip is no longer needed.
             markHintSeen("profileSwitch");
-            router.push("/account-switch");
+            if (isGuest) {
+              router.push("/account-switch");
+              return;
+            }
+            router.navigate("/profile");
+            openAccountSheet();
           },
         }}
         options={{

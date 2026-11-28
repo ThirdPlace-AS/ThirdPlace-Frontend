@@ -326,10 +326,17 @@ export function windowFor(date: Date, now: Date = new Date()): TimeWindow {
   return "Denne uka";
 }
 
-/** Publishes an experience from the Add flow; returns its id. */
-export function createExperience(input: NewExperienceInput): string {
-  seq += 1;
-  const id = `ex${seq}`;
+/** The id Legg til's preview gives the experience it builds (review PR-07,
+ *  0525); never registered, so nothing else can open it. */
+export const PREVIEW_EXPERIENCE_ID = "ex-preview";
+
+/** The experience an Add draft makes, without registering it: Legg til's
+ *  last step shows it as the real page, and publishing saves this same
+ *  object (review PR-07, 0525). */
+export function buildExperience(
+  input: NewExperienceInput,
+  id: string = PREVIEW_EXPERIENCE_ID,
+): MockExperience {
   const [y, mo, d] = input.date.split("-").map(Number);
   const date = new Date(y ?? 2026, (mo ?? 1) - 1, d ?? 1);
   const place = places.find((p) => p.name === input.area);
@@ -380,6 +387,14 @@ export function createExperience(input: NewExperienceInput): string {
         photo: input.photos[i % input.photos.length]!,
       })),
   };
+  return exp;
+}
+
+/** Publishes an experience from the Add flow; returns its id. */
+export function createExperience(input: NewExperienceInput): string {
+  seq += 1;
+  const id = `ex${seq}`;
+  const exp = buildExperience(input, id);
   // Every experience has a chat (founder 2026-11-06); the host is in it.
   const chat: MockChat = {
     id: `cx${seq}`,

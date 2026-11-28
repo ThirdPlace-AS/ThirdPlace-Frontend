@@ -66,6 +66,18 @@ export default function SimulateSandbox() {
         />
         <ListRow
           variant="card"
+          title="Ny bedrift"
+          subtitle="Arbeidsflate viser bedriften som ny: venter på verifisering, ingen opplevelser."
+          trailing={
+            <Switch
+              value={sim.newBusiness}
+              onValueChange={(v) => setDevSimulation({ newBusiness: v })}
+              label="Ny bedrift"
+            />
+          }
+        />
+        <ListRow
+          variant="card"
           title="Krasj"
           subtitle="Skjermen kaster en feil, så krasjskjermen («Noe gikk galt») vises."
         />

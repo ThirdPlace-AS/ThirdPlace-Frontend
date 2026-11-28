@@ -3,6 +3,8 @@ import { View } from "react-native";
 import { IconButton, Pressable as UIPressable, Text } from "@/components/ui";
 import { dayMonthLabel, isoDay, monthTitle, monthWeeks } from "@/lib/dates";
 
+const planCount = (n: number) => `${n} ${n === 1 ? "plan" : "planer"}`;
+
 const WEEKDAYS = ["Ma", "Ti", "On", "To", "Fr", "Lø", "Sø"];
 
 // One month, Monday first (Phase 18, Mine planer's month view, after Google
@@ -15,6 +17,7 @@ export function MonthGrid({
   onSelect,
   onMonthChange,
   today = new Date(),
+  countLabel = planCount,
 }: {
   /** Any date in the month to show. */
   month: Date;
@@ -24,6 +27,8 @@ export function MonthGrid({
   onSelect: (iso: string | null) => void;
   onMonthChange: (delta: -1 | 1) => void;
   today?: Date;
+  /** What a marked day holds, read out: "2 planer" (default), "2 tider". */
+  countLabel?: (n: number) => string;
 }) {
   const todayIso = isoDay(today);
   return (
@@ -71,7 +76,7 @@ export function MonthGrid({
             const count = marked.get(iso) ?? 0;
             const isSel = selected === iso;
             const label = `${dayMonthLabel(d)}${
-              count > 0 ? `, ${count} ${count === 1 ? "plan" : "planer"}` : ""
+              count > 0 ? `, ${countLabel(count)}` : ""
             }`;
             return (
               <UIPressable

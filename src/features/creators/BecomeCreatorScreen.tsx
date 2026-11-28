@@ -80,7 +80,7 @@ export default function BecomeCreatorScreen() {
           label="Se en skaperprofil"
           variant="secondary"
           onPress={() =>
-            router.push({ pathname: "/creator/[id]", params: { id: "u1" } })
+            router.push({ pathname: "/people/[id]", params: { id: "u1" } })
           }
         />
         <Button
